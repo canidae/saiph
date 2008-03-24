@@ -34,10 +34,10 @@ class World {
 
 	private:
 		/* variables */
-		int output[2];
 		int input[2];
+		int output[2];
 
 		/* methods */
-		void update();
 		void handleEscapeSequence(int &pos, int &row, int &col);
+		void update();
 };
