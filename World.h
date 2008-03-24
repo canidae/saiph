@@ -15,18 +15,12 @@
 
 using namespace std;
 
-struct Map {
-	int row;
-	int col;
-	char data[BUFFER];
-	int data_size;
-	char map[ROWS][COLS + 1];
-};
-
 class World {
 	public:
 		/* variables */
-		Map map;
+		int row; // cursor position, row
+		int col; // cursor position, col
+		char map[ROWS][COLS + 1];
 
 		/* constructors */
 		World();
@@ -39,11 +33,13 @@ class World {
 
 	private:
 		/* variables */
+		char data[BUFFER];
+		int data_size;
 		int input[2];
 		int output[2];
 
 		/* methods */
-		void handleEscapeSequence(int &pos, int &row, int &col);
+		void handleEscapeSequence(int &pos);
 		void update();
 };
 #endif

@@ -59,7 +59,7 @@ class Player {
 		~Player();
 
 		/* methods */
-		void parseAttributesAndStatus(Map map);
+		void parseAttributesAndStatus(World world);
 
 	private:
 };

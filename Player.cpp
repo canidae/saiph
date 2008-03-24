@@ -41,11 +41,11 @@ Player::~Player() {
 }
 
 /* methods */
-void Player::parseAttributesAndStatus(Map map) {
+void Player::parseAttributesAndStatus(World world) {
 	/* fetch attributes */
 	char alignment[COLS];
 	alignment[0] = '\0';
-	int matched = sscanf(map.map[22], "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &attributes.strength, &attributes.dexterity, &attributes.constitution, &attributes.intelligence, &attributes.wisdom, &attributes.charisma, alignment);
+	int matched = sscanf(world.map[22], "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &attributes.strength, &attributes.dexterity, &attributes.constitution, &attributes.intelligence, &attributes.wisdom, &attributes.charisma, alignment);
 	if (matched < 7) {
 		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
 		exit(11);
@@ -68,7 +68,7 @@ void Player::parseAttributesAndStatus(Map map) {
 	status.slimed = false;
 	status.stunned = false;
 	char effects[5][COLS];
-	matched = sscanf(map.map[23], "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &status.dungeon, &status.zorkmids, &status.hitpoints, &status.hitpoints_max, &status.power, &status.power_max, &status.armor_class, &status.experience, &status.turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	matched = sscanf(world.map[23], "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &status.dungeon, &status.zorkmids, &status.hitpoints, &status.hitpoints_max, &status.power, &status.power_max, &status.armor_class, &status.experience, &status.turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
 	if (matched < 9) {
 		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
 		exit(12);
@@ -113,6 +113,6 @@ void Player::parseAttributesAndStatus(Map map) {
 	}
 
 	/* fetch position */
-	position.row = map.row;
-	position.col = map.col;
+	position.row = world.row;
+	position.col = world.col;
 }
