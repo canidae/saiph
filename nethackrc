@@ -1,0 +1,22 @@
+# configuration file for saiph
+OPTIONS=align:lawful
+OPTIONS=!autopickup
+OPTIONS=boulder:0
+OPTIONS=color
+OPTIONS=DECgraphics
+OPTIONS=fruit:byte
+OPTIONS=gender:random
+OPTIONS=hilite_pet
+OPTIONS=!legacy
+OPTIONS=lit_corridor
+OPTIONS=menustyle:full
+OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~]
+OPTIONS=name:saiph
+OPTIONS=pickup_burden:Overtaxed
+OPTIONS=!prayconfirm
+OPTIONS=race:human
+OPTIONS=role:valkyrie
+OPTIONS=!sparkle
+OPTIONS=!splash_screen
+OPTIONS=time
+OPTIONS=vary_msgcount:1
