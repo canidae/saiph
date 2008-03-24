@@ -2,6 +2,8 @@
 
 /* constructors */
 World::World() {
+	this->map.row = 0;
+	this->map.col = 0;
 	for (int b = 0; b < BUFFER; ++b)
 		this->map.data[b] = '\0';
 	this->map.data_size = -1;
@@ -102,12 +104,12 @@ void World::handleEscapeSequence(int &pos, int &row, int &col) {
 					/* we got a position */
 					if (divider - start == 3) {
 						/* two digits in row */
-						row = row + ((int) d[divider - 2] - '0') * 10;
+						row += ((int) d[divider - 2] - '0') * 10;
 					}
 					row = row + ((int) d[divider - 1] - '0') - 1;
 					if (pos - divider == 3) {
 						/* two digits in col */
-						col = col + ((int) d[pos - 2] - '0') * 10;
+						col += ((int) d[pos - 2] - '0') * 10;
 					}
 					col = col + ((int) d[pos - 1] - '0') - 1;
 				}
@@ -221,18 +223,27 @@ void World::update() {
 		for (int col = 0; col < COLS; ++col)
 			map.map[row][col] = ' ';
 	}
-	int row = 0;
-	int col = 0;
 	for (int pos = 0; pos < map.data_size; ++pos) {
 		switch (map.data[pos]) {
 			case 27:
 				/* escape sequence coming up */
-				handleEscapeSequence(++pos, row, col);
+				handleEscapeSequence(++pos, map.row, map.col);
+				break;
+
+			case 13:
+				/* carriage return.
+				 * make it go to beginning of line */
+				map.col = 0;
 				break;
 
 			case 8:
+				/* backspace.
+				 * make it go 1 char left */
+				if (map.col > 0)
+					--map.col;
+				break;
+
 			case 10:
-			case 13:
 			case 14:
 			case 15:
 				/* various control characters we'll ignore */
@@ -240,13 +251,13 @@ void World::update() {
 
 			default:
 				/* add this char to the map */
-				if (col >= COLS || row >= ROWS || col < 0 || row < 0) {
-					cerr << "Fell out of the dungeon: " << row << ", " << col << endl;
+				if (map.col >= COLS || map.row >= ROWS || map.col < 0 || map.row < 0) {
+					cerr << "Fell out of the dungeon: " << map.row << ", " << map.col << endl;
 					cerr << &map.data[pos] << endl;
 					exit(4);
 				}
-				map.map[row][col] = map.data[pos];
-				col++;
+				map.map[map.row][map.col] = map.data[pos];
+				map.col++;
 				break;
 		}
 	}

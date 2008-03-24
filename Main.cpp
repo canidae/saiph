@@ -14,6 +14,8 @@ void Main::run() {
 	//cout << map.data << endl;
 	for (int r = 0; r < ROWS; r++)
 		cout << world.map.map[r] << endl;
+	player.parseAttributesAndStatus(world.map);
+	//cout << world.map.data << endl;
 }
 
 /* main */

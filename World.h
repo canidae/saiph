@@ -1,3 +1,6 @@
+#ifndef WORLD_H
+#define WORLD_H
+
 /* stuff you can mess with, but shouldn't */
 #define NETHACK "/usr/games/nethack"
 #define USLEEP 2000000
@@ -13,6 +16,8 @@
 using namespace std;
 
 struct Map {
+	int row;
+	int col;
 	char data[BUFFER];
 	int data_size;
 	char map[ROWS][COLS + 1];
@@ -41,3 +46,4 @@ class World {
 		void handleEscapeSequence(int &pos, int &row, int &col);
 		void update();
 };
+#endif
