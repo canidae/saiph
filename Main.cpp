@@ -10,11 +10,10 @@ Main::~Main() {
 
 /* methods */
 void Main::run() {
-	Map map = world.getMap();
-	cout << "Size: " << map.size << endl;
-	sleep(3);
-	cout << map.data << endl;
-	sleep(4);
+	//cout << "Size: " << map.data_size << endl;
+	//cout << map.data << endl;
+	for (int r = 0; r < ROWS; r++)
+		cout << world.map.map[r] << endl;
 }
 
 /* main */

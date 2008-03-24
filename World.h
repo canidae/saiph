@@ -4,7 +4,6 @@
 /* stuff you _really_ shouldn't mess with */
 #define BUFFER 4096
 #define COLS 80
-#define HISTORY 16
 #define ROWS 24
 
 #include <fcntl.h>
@@ -14,15 +13,15 @@
 using namespace std;
 
 struct Map {
-	char *data;
-	int size;
+	char data[BUFFER];
+	int data_size;
 	char map[ROWS][COLS + 1];
-	char *messages[BUFFER];
 };
 
 class World {
 	public:
 		/* variables */
+		Map map;
 
 		/* constructors */
 		World();
@@ -32,13 +31,9 @@ class World {
 
 		/* methods */
 		void command(char *command);
-		Map getMap();
 
 	private:
 		/* variables */
-		Map *map;
-		int map_current;
-
 		int output[2];
 		int input[2];
 

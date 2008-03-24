@@ -3,7 +3,9 @@ OPTIONS=align:lawful
 OPTIONS=!autopickup
 OPTIONS=boulder:0
 OPTIONS=color
-OPTIONS=DECgraphics
+# DECgraphics looks nice, but it'll make walls look like letters.
+# letters we believe are monsters, so sadly we can't turn this on.
+#OPTIONS=DECgraphics
 OPTIONS=fruit:byte
 OPTIONS=gender:random
 OPTIONS=hilite_pet
