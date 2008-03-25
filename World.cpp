@@ -4,9 +4,12 @@
 World::World() {
 	this->row = 0;
 	this->col = 0;
-	for (int b = 0; b < BUFFER; ++b)
+	for (int b = 0; b < BUFFER; ++b) {
 		this->data[b] = '\0';
+		this->messages[b] = '\0';
+	}
 	this->data_size = -1;
+	this->messages_pos = 0;
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c)
 			this->map[r][c] = ' ';
@@ -37,9 +40,7 @@ World::World() {
 		input[1] = fd; // input == data sent to nethack
 		output[0] = fd; // output == data received from nethack
 		/* make reading from output pipe non-blocking */
-		int result = fcntl(output[0], F_GETFL);
-		result |= O_NONBLOCK;
-		fcntl(output[0], F_SETFL, result);
+		fcntl(output[0], F_SETFL, fcntl(output[0], F_GETFL) | O_NONBLOCK);
 		update();
 	} else {
 		/* start nethack here */
@@ -56,7 +57,7 @@ World::~World() {
 }
 
 /* methods */
-void World::command(char *command) {
+void World::command(const char *command) {
 	/* send a command to nethack */
 	write(input[1], command, strlen(command));
 	update();
@@ -201,11 +202,16 @@ void World::handleEscapeSequence(int &pos) {
 	} else if (data[pos] == ')') {
 		/* designate character set, ignore */
 		++pos;
+	} else if (data[pos] == '*') {
+		/* designate character set, ignore */
+		++pos;
+	} else if (data[pos] == '+') {
+		/* designate character set, ignore */
+		++pos;
 	} else if (data[pos] == 'M') {
 		/* reverse linefeed? */
 		if (row > 0)
 			--row;
-		++pos;
 	} else {
 		cerr << "Unsupported escape sequence code at char " << pos << ": ";
 		cerr << &data[pos] << endl;
@@ -217,11 +223,6 @@ void World::update() {
 	/* update the map */
 	usleep(USLEEP); // sleep a bit so we're sure the map is updated
 	data_size = read(output[0], data, BUFFER);
-	/* reset map */
-	for (int r = 0; r < ROWS; ++r) {
-		for (int c = 0; c < COLS; ++c)
-			map[r][c] = ' ';
-	}
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 27:
@@ -242,9 +243,17 @@ void World::update() {
 					--col;
 				break;
 
-			case 10:
 			case 14:
+				/* shift out, invoke G1 character set
+				 * dungeon drawing */
+				break;
+
 			case 15:
+				/* shift in, invoke G0 character set
+				 * monsters/object drawing */
+				break;
+
+			case 10:
 				/* various control characters we'll ignore */
 				break;
 
@@ -260,6 +269,17 @@ void World::update() {
 				break;
 		}
 	}
+	for (int a = 0; a < COLS; ++a)
+		messages[a + messages_pos] = map[0][a];
+	messages_pos += COLS;
+	/* if first line ends with "--More--" we'll command(" ") for the rest of the message */
+	if (strstr(map[0], MORE))
+		command(" ");
+	else
+		messages_pos = 0;
+
+	cout << data << endl;
+
 	/* the last escape sequence place the cursor on the player
 	 * which is quite handy since we won't have to search for the player then */
 }
