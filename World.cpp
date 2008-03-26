@@ -1,10 +1,11 @@
 #include "World.h"
 
 /* constructors */
-World::World() {
+World::World(Connection *connection) {
+	this->connection = connection;
 	this->row = 0;
 	this->col = 0;
-	for (int b = 0; b < BUFFER; ++b) {
+	for (int b = 0; b < MESSAGE_BUFFER; ++b) {
 		this->data[b] = '\0';
 		this->messages[b] = '\0';
 	}
@@ -15,41 +16,6 @@ World::World() {
 			this->map[r][c] = ' ';
 		this->map[r][80] = '\0';
 	}
-
-	/* set up pipes */
-	if (pipe(input) < 0 || pipe(output) < 0) {
-		cerr << "Plumbing failed" << endl;
-		exit(1);
-	}
-
-	/* set up pty */
-	int fd = 0;
-	char slave[256];
-	slave[0] = '\0';
-	winsize wsize;
-	wsize.ws_row = ROWS;
-	wsize.ws_col = COLS;
-	wsize.ws_xpixel = 640;
-	wsize.ws_ypixel = 480;
-	pid_t pid = forkpty(&fd, slave, NULL, &wsize);
-	if (pid == -1) {
-		cerr << "There is no fork" << endl;
-		exit(2);
-	} else if (pid) {
-		/* fix plumbing */
-		input[1] = fd; // input == data sent to nethack
-		output[0] = fd; // output == data received from nethack
-		/* make reading from output pipe non-blocking */
-		fcntl(output[0], F_SETFL, fcntl(output[0], F_GETFL) | O_NONBLOCK);
-		update();
-	} else {
-		/* start nethack here */
-		int result = execl(NETHACK, NETHACK, NULL);
-		if (result < 0) {
-			cerr << "Unable to enter the dungeon" << endl;
-			exit(3);
-		}
-	}
 }
 
 /* destructors */
@@ -59,7 +25,7 @@ World::~World() {
 /* methods */
 void World::command(const char *command) {
 	/* send a command to nethack */
-	write(input[1], command, strlen(command));
+	connection->send(command);
 	update();
 }
 
@@ -326,8 +292,7 @@ void World::parsePlayerAttributesAndStatus() {
 
 void World::update() {
 	/* update the map */
-	usleep(USLEEP); // sleep a bit so we're sure the map is updated
-	data_size = read(output[0], data, BUFFER);
+	data_size = connection->retrieve(data, MESSAGE_BUFFER);
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 27:

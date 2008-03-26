@@ -6,15 +6,15 @@ RM = rm -f
 CPPFLAGS =
 CXXFLAGS = -O2 -Wall -g
 LDFLAGS = -lutil
-OBJECTS = World.o Main.o Player.o Saiph.o
+OBJECTS = Connection.o Player.o Saiph.o World.o
 
 saiph: $(OBJECTS)
 	$(CXX) $(OBJECTS) $(LDFLAGS) -o saiph
 
-World.o: World.h World.cpp
-Main.o: Main.h Main.cpp
+Connection.o: Connection.h Connection.cpp
 Player.o: Player.h Player.cpp
 Saiph.o: Saiph.h Saiph.cpp
+World.o: World.h World.cpp
 
 .PHONY: clean
 clean:

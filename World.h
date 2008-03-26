@@ -1,20 +1,12 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <fcntl.h>
-#include <iostream>
-#include <pty.h>
+#include "Connection.h"
+#include "Globals.h"
 #include "Player.h"
 
-/* stuff you can mess with, but shouldn't */
-#define NETHACK "/usr/games/nethack"
-#define USLEEP 2000000
-/* stuff you _really_ shouldn't mess with */
-#define BUFFER 4096
-#define COLS 80
 #define END "(end)"
 #define MORE "--More--"
-#define ROWS 24
 /* characters we should do farlook on.
  * this is monsters, objects, traps and certain dungeon features: \{}
  * only necessary to do this on non-unique characters.
@@ -30,12 +22,13 @@ class World {
 		int row; // cursor position, row
 		int col; // cursor position, col
 		char map[ROWS][COLS + 1];
-		char messages[BUFFER]; // messages received on first row
+		char messages[MESSAGE_BUFFER]; // messages received on first row
 		int messages_pos; // used when we get "--More--" and "(end)" messages
+		Connection *connection;
 		Player player;
 
 		/* constructors */
-		World();
+		World(Connection *connection);
 
 		/* destructors */
 		~World();
@@ -45,10 +38,8 @@ class World {
 
 	private:
 		/* variables */
-		char data[BUFFER];
-		int data_size;
-		int input[2];
-		int output[2];
+		char data[MESSAGE_BUFFER];
+		ssize_t data_size;
 
 		/* methods */
 		void handleEscapeSequence(int &pos);

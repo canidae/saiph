@@ -1,6 +1,8 @@
 #ifndef SAIPH_H
 #define SAIPH_H
 
+#include "Connection.h"
+#include "Globals.h"
 #include "World.h"
 
 /* movement */
@@ -21,18 +23,21 @@ using namespace std;
 class Saiph {
 	public:
 		/* variables */
-		World *world;
 
 		/* constructors */
-		Saiph(World *world);
+		Saiph(bool remote);
 
 		/* destructors */
 		~Saiph();
 
 		/* methods */
-		void action();
+		int main();
+		void run();
 
 	private:
+		/* variables */
+		Connection *connection;
+		World *world;
 };
 
 #endif
