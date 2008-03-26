@@ -2,17 +2,20 @@
 
 /* constructors */
 Main::Main() {
+	this->world = new World();
+	this->saiph = new Saiph(this->world);
 }
 
 /* destructors */
 Main::~Main() {
+	delete this->saiph;
+	delete this->world;
 }
 
 /* methods */
 void Main::run() {
 	for (int r = 0; r < ROWS; r++)
-		cout << world.map[r] << endl;
-	player.parseAttributesAndStatus(world);
+		cout << world->map[r] << endl;
 }
 
 /* main */

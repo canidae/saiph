@@ -219,6 +219,111 @@ void World::handleEscapeSequence(int &pos) {
 	}
 }
 
+void World::fetchMessages() {
+	/* fetch the messages currently displayed in map */
+	for (int a = 0; a < COLS; ++a)
+		messages[a + messages_pos] = map[0][a];
+	messages_pos += COLS;
+	/* if first line ends with "--More--" we'll command(" ") for the rest of the message */
+	if (strstr(map[0], MORE))
+		command(" "); // request "next page"
+	/* if there are several items here we may get a menu.
+	 * so we'll have to look for "--More--" on the other lines. */
+	for (int r = 1; r < ROWS - 2; ++r) {
+		string str(map[r]);
+		string::size_type pos = str.find(MORE, 0);
+		if (pos == string::npos)
+			pos = str.find(END, 0);
+		if (pos != string::npos) {
+			/* found "--More--" or "(end)" */
+			for (int r2 = 1; r2 < r; ++r) {
+				for (int c = pos; c < COLS; ++c)
+					messages[c + messages_pos] = map[r2][c];
+				messages_pos += COLS - pos;
+			}
+			command(" "); // requeste "next page"
+			break;
+		}
+	}
+	messages_pos = 0;
+}
+
+void World::parsePlayerAttributesAndStatus() {
+	/* fetch attributes */
+	char alignment[COLS];
+	alignment[0] = '\0';
+	int matched = sscanf(map[22], "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &player.attributes.strength, &player.attributes.dexterity, &player.attributes.constitution, &player.attributes.intelligence, &player.attributes.wisdom, &player.attributes.charisma, alignment);
+	if (matched < 7) {
+		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
+		exit(11);
+	}
+	if (alignment[0] == 'L')
+		player.attributes.alignment = 1;
+	else if (alignment[0] == 'N')
+		player.attributes.alignment = 0;
+	else    
+		player.attributes.alignment = -1;
+
+	/* fetch status */
+	player.status.encumbrance = 0;
+	player.status.hunger = 0;
+	player.status.blind = false;
+	player.status.confused = false;
+	player.status.foodpoisoned = false;
+	player.status.hallucinating = false;
+	player.status.ill = false;
+	player.status.slimed = false;
+	player.status.stunned = false;
+	char effects[5][COLS];
+	matched = sscanf(map[23], "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &player.status.dungeon, &player.status.zorkmids, &player.status.hitpoints, &player.status.hitpoints_max, &player.status.power, &player.status.power_max, &player.status.armor_class, &player.status.experience, &player.status.turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	if (matched < 9) {
+		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
+		exit(12);
+	}
+	int effects_found = matched - 9;
+	for (int a = 0; a < effects_found; ++a) {                                                                                                       
+		if (strcmp(effects[a], "Burdened") == 0) {                                                                                              
+			player.status.encumbrance = 1;
+		} else if (strcmp(effects[a], "Stressed") == 0) {
+			player.status.encumbrance = 2;
+		} else if (strcmp(effects[a], "Strained") == 0) {
+			player.status.encumbrance = 3;
+		} else if (strcmp(effects[a], "Overtaxed") == 0) {
+			player.status.encumbrance = 4;
+		} else if (strcmp(effects[a], "Overloaded") == 0) {
+			player.status.encumbrance = 5;
+		} else if (strcmp(effects[a], "Fainting") == 0) {
+			player.status.hunger = -3;
+		} else if (strcmp(effects[a], "Weak") == 0) {                                                                                           
+			player.status.hunger = -2;
+		} else if (strcmp(effects[a], "Hungry") == 0) {
+			player.status.hunger = -1;
+		} else if (strcmp(effects[a], "Satiated") == 0) {
+			player.status.hunger = 1;
+		} else if (strcmp(effects[a], "Oversatiated") == 0) {
+			player.status.hunger = 2;
+		} else if (strcmp(effects[a], "Blind") == 0) {
+			player.status.blind = true;
+		} else if (strcmp(effects[a], "Conf") == 0) {
+			player.status.confused = true;
+		} else if (strcmp(effects[a], "FoodPois") == 0) {
+			player.status.foodpoisoned = true;
+		} else if (strcmp(effects[a], "Hallu") == 0) {
+			player.status.hallucinating = true;
+		} else if (strcmp(effects[a], "Ill") == 0) {
+			player.status.ill = true;
+		} else if (strcmp(effects[a], "Slime") == 0) {
+			player.status.slimed = true;
+		} else if (strcmp(effects[a], "Stun") == 0) {
+			player.status.stunned = true;
+		}
+	}
+
+	/* fetch position */
+	player.position.row = row;
+	player.position.col = col;
+}
+
 void World::update() {
 	/* update the map */
 	usleep(USLEEP); // sleep a bit so we're sure the map is updated
@@ -269,17 +374,12 @@ void World::update() {
 				break;
 		}
 	}
-	for (int a = 0; a < COLS; ++a)
-		messages[a + messages_pos] = map[0][a];
-	messages_pos += COLS;
-	/* if first line ends with "--More--" we'll command(" ") for the rest of the message */
-	if (strstr(map[0], MORE))
-		command(" ");
-	else
-		messages_pos = 0;
+
+	fetchMessages();
 
 	cout << data << endl;
 
 	/* the last escape sequence place the cursor on the player
 	 * which is quite handy since we won't have to search for the player then */
+	parsePlayerAttributesAndStatus();
 }

@@ -1,7 +1,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "Player.h"
+#include "Saiph.h"
 #include "World.h"
 
 using namespace std;
@@ -9,8 +9,8 @@ using namespace std;
 class Main {
 	public:
 		/* variables */
-		Player player;
-		World world;
+		Saiph *saiph;
+		World *world;
 
 		/* constructors */
 		Main();

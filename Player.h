@@ -1,8 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "World.h"
-
 using namespace std;
 
 struct Attributes {
@@ -59,7 +57,6 @@ class Player {
 		~Player();
 
 		/* methods */
-		void parseAttributesAndStatus(World world);
 
 	private:
 };

@@ -23,6 +23,7 @@
 # sokoban might cause issues.
 OPTIONS=align:lawful
 OPTIONS=!autopickup
+OPTIONS=boulder:0
 OPTIONS=color
 OPTIONS=dungeon: |--------||.77++++.##<><>_\\\\{{}.}..++89}
 #                |--------||.-|++##.##<><>_
@@ -33,10 +34,11 @@ OPTIONS=gender:random
 OPTIONS=hilite_pet
 OPTIONS=!legacy
 OPTIONS=lit_corridor
-OPTIONS=menustyle:full
+OPTIONS=!mail
+OPTIONS=menustyle:partial
 OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~]
 OPTIONS=name:saiph
-OPTIONS=objects:])[="(%!?+/$*0```
+OPTIONS=objects:])[="(%!?+/$*````
 OPTIONS=pickup_burden:Overtaxed
 OPTIONS=!prayconfirm
 OPTIONS=race:human
