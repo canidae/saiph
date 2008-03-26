@@ -21,7 +21,7 @@ class World {
 		/* variables */
 		int row; // cursor position, row
 		int col; // cursor position, col
-		char map[ROWS][COLS + 1];
+		char map[ROWS][COLS + 1]; // we set a '\0' at [ROW][COLS + 1]
 		char messages[MESSAGE_BUFFER]; // messages received on first row
 		int messages_pos; // used when we get "--More--" and "(end)" messages
 		Connection *connection;

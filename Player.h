@@ -1,6 +1,28 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+/* alignment */
+#define CHAOTIC -1
+#define NEUTRAL 0
+#define LAWFUL 1
+/* encumbrance */
+#define UNENCUMBERED 0
+#define BURDENED 1
+#define STRESSED 2
+#define STRAINED 3
+#define OVERTAXED 4
+#define OVERLOADED 5
+/* hunger */
+#define FAINTING -3
+#define WEAK -2
+#define HUNGRY -1
+#define CONTENT 0
+#define SATIATED 1
+#define OVERSATIATED 2
+
+#include <iostream>
+#include "Globals.h"
+
 using namespace std;
 
 struct Attributes {
@@ -12,7 +34,7 @@ struct Attributes {
 	int wisdom;
 	int charisma;
 	/* alignment shows up as text */
-	int alignment; // -1 chaotic, 0 neutral, 1 lawful
+	int alignment; // see defines
 };
 
 struct Status {
@@ -27,8 +49,8 @@ struct Status {
 	int experience;
 	int turn;
 	/* status that shows up as text */
-	int encumbrance; // 0 <nothing>, 1 burdened, 2 stressed, 3 strained, 4 overtaxed, 5 overloaded
-	int hunger; // -3 fainting, -2 weak, -1 hungry, 0 <nothing>, 1 satiated, 2 oversatiated
+	int encumbrance; // see defines
+	int hunger; // see defines
 	bool blind;
 	bool confused;
 	bool foodpoisoned;
@@ -38,17 +60,13 @@ struct Status {
 	bool stunned;
 };
 
-struct Position {
-	int col;
-	int row;
-};
-
 class Player {
 	public:
 		/* variables */
 		Attributes attributes;
 		Status status;
-		Position position;
+		int row;
+		int col;
 
 		/* constructors */
 		Player();
@@ -57,7 +75,7 @@ class Player {
 		~Player();
 
 		/* methods */
-
-	private:
+		void parseAttributeRow(const char *attributerow);
+		void parseStatusRow(const char *statusrow);
 };
 #endif

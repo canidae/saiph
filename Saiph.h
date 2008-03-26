@@ -3,6 +3,7 @@
 
 #include "Connection.h"
 #include "Globals.h"
+#include "Player.h"
 #include "World.h"
 
 /* movement */

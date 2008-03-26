@@ -284,10 +284,6 @@ void World::parsePlayerAttributesAndStatus() {
 			player.status.stunned = true;
 		}
 	}
-
-	/* fetch position */
-	player.position.row = row;
-	player.position.col = col;
 }
 
 void World::update() {
@@ -344,7 +340,11 @@ void World::update() {
 
 	cout << data << endl;
 
+	/* parse attribute & status rows */
+	player.parseAttributeRow(map[ATTRIBUTES_ROW]);
+	player.parseStatusRow(map[STATUS_ROW]);
 	/* the last escape sequence place the cursor on the player
 	 * which is quite handy since we won't have to search for the player then */
-	parsePlayerAttributesAndStatus();
+	player.row = row;
+	player.col = col;
 }
