@@ -5,7 +5,7 @@ World::World(Connection *connection) {
 	this->connection = connection;
 	this->row = 0;
 	this->col = 0;
-	for (int b = 0; b < MESSAGE_BUFFER; ++b) {
+	for (int b = 0; b < BUFFER_SIZE; ++b) {
 		this->data[b] = '\0';
 		this->messages[b] = '\0';
 	}
@@ -16,6 +16,8 @@ World::World(Connection *connection) {
 			this->map[r][c] = ' ';
 		this->map[r][80] = '\0';
 	}
+	/* fetch the first "frame" */
+	update();
 }
 
 /* destructors */
@@ -30,7 +32,7 @@ void World::command(const char *command) {
 }
 
 /* private methods */
-void World::handleEscapeSequence(int &pos) {
+void World::handleEscapeSequence(int &pos, int &colour) {
 	if (data[pos] == 27) {
 		/* sometimes we get 2 escape chars in a row
 		 * just return in those cases */
@@ -66,18 +68,16 @@ void World::handleEscapeSequence(int &pos) {
 				/* set cursor position */
 				row = 0;
 				col = 0;
-				if (divider > 0) {
-					/* we got a position */
-					if (divider - start == 3) {
-						/* two digits in row */
-						row += ((int) data[divider - 2] - '0') * 10;
-					}
-					row = row + ((int) data[divider - 1] - '0') - 1;
-					if (pos - divider == 3) {
-						/* two digits in col */
-						col += ((int) data[pos - 2] - '0') * 10;
-					}
-					col = col + ((int) data[pos - 1] - '0') - 1;
+				if (divider < 0)
+					break;
+				/* we got a position */
+				int matched = sscanf(&data[start + 1], "%d;%d", &row, &col);
+				--row; // terminal starts counting from 1
+				--col; // ditto ^^
+				if (matched < 2) {
+					cerr << "Unable to place cursor" << endl;
+					cerr << &data[start] << endl;
+					exit(13);
 				}
 				break;
 			} else if (data[pos] == 'J') {
@@ -85,26 +85,24 @@ void World::handleEscapeSequence(int &pos) {
 				if (data[pos - 1] == '[') {
 					/* erase everything below current position */
 					for (int r = row + 1; r < ROWS; ++r) {
-						for (int c = 0; c < COLS; ++c) {
+						for (int c = 0; c < COLS; ++c)
 							map[r][c] = ' ';
-						}
 					}
 				} else if (data[pos - 1] == '1') {
 					/* erase everything aboce current position */
 					for (int r = row - 1; r >= 0; --r) {
-						for (int c = 0; c < COLS; ++c) {
+						for (int c = 0; c < COLS; ++c)
 							map[r][c] = ' ';
-						}
 					}
 				} else if (data[pos - 1] == '2') {
 					/* erase entire display */
 					for (int r = 0; r < ROWS; ++r) {
-						for (int c = 0; c < COLS; ++c) {
+						for (int c = 0; c < COLS; ++c)
 							map[r][c] = ' ';
-						}
 					}
 					row = 0;
 					col = 0;
+					colour = 0;
 				} else {
 					cerr << "Unhandled sequence: " << endl;
 					cerr << &data[pos] << endl;
@@ -115,19 +113,16 @@ void World::handleEscapeSequence(int &pos) {
 				/* erase in line */
 				if (data[pos - 1] == '[') {
 					/* erase everything to the right */
-					for (int c = col + 1; c < COLS; ++c) {
+					for (int c = col + 1; c < COLS; ++c)
 						map[row][c] = ' ';
-					}
 				} else if (data[pos - 1] == '1') {
 					/* erase everything to the left */
-					for (int c = 0; c < col; ++c) {
+					for (int c = 0; c < col; ++c)
 						map[row][c] = ' ';
-					}
 				} else if (data[pos - 1] == '2') {
 					/* erase entire line */
-					for (int c = 0; c < COLS; ++c) {
+					for (int c = 0; c < COLS; ++c)
 						map[row][c] = ' ';
-					}
 				} else {
 					cerr << "Unhandled sequence: " << endl;
 					cerr << &data[pos] << endl;
@@ -139,7 +134,25 @@ void World::handleEscapeSequence(int &pos) {
 				/* probably [?1049h */
 				break;
 			} else if (data[pos] == 'm') {
-				/* character attribute (bold, inverted, etc) */
+				/* character attribute (bold, inverted, colour, etc) */
+				if (divider > 0) {
+					cerr << "Unsupported character colour" << endl;
+					cerr << &data[pos] << endl;
+					exit(15);
+					break;
+				}
+				colour = 0;
+				if (pos == start + 1)
+					break;
+				int value = 0;
+				int matched = sscanf(&data[start + 1], "%d", &value);
+				if (matched < 1) {
+					cerr << "Expected numeric value for character attribute" << endl;
+					cerr << &data[pos] << endl;
+					exit(14);
+				}
+				if (value >= 30)
+					colour = value;
 				break;
 			} else if (data[pos] == 27) {
 				/* escape char found, that shouldn't happen */
@@ -214,86 +227,21 @@ void World::fetchMessages() {
 	messages_pos = 0;
 }
 
-void World::parsePlayerAttributesAndStatus() {
-	/* fetch attributes */
-	char alignment[COLS];
-	alignment[0] = '\0';
-	int matched = sscanf(map[22], "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &player.attributes.strength, &player.attributes.dexterity, &player.attributes.constitution, &player.attributes.intelligence, &player.attributes.wisdom, &player.attributes.charisma, alignment);
-	if (matched < 7) {
-		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
-		exit(11);
-	}
-	if (alignment[0] == 'L')
-		player.attributes.alignment = 1;
-	else if (alignment[0] == 'N')
-		player.attributes.alignment = 0;
-	else    
-		player.attributes.alignment = -1;
-
-	/* fetch status */
-	player.status.encumbrance = 0;
-	player.status.hunger = 0;
-	player.status.blind = false;
-	player.status.confused = false;
-	player.status.foodpoisoned = false;
-	player.status.hallucinating = false;
-	player.status.ill = false;
-	player.status.slimed = false;
-	player.status.stunned = false;
-	char effects[5][COLS];
-	matched = sscanf(map[23], "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &player.status.dungeon, &player.status.zorkmids, &player.status.hitpoints, &player.status.hitpoints_max, &player.status.power, &player.status.power_max, &player.status.armor_class, &player.status.experience, &player.status.turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
-	if (matched < 9) {
-		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
-		exit(12);
-	}
-	int effects_found = matched - 9;
-	for (int a = 0; a < effects_found; ++a) {                                                                                                       
-		if (strcmp(effects[a], "Burdened") == 0) {                                                                                              
-			player.status.encumbrance = 1;
-		} else if (strcmp(effects[a], "Stressed") == 0) {
-			player.status.encumbrance = 2;
-		} else if (strcmp(effects[a], "Strained") == 0) {
-			player.status.encumbrance = 3;
-		} else if (strcmp(effects[a], "Overtaxed") == 0) {
-			player.status.encumbrance = 4;
-		} else if (strcmp(effects[a], "Overloaded") == 0) {
-			player.status.encumbrance = 5;
-		} else if (strcmp(effects[a], "Fainting") == 0) {
-			player.status.hunger = -3;
-		} else if (strcmp(effects[a], "Weak") == 0) {                                                                                           
-			player.status.hunger = -2;
-		} else if (strcmp(effects[a], "Hungry") == 0) {
-			player.status.hunger = -1;
-		} else if (strcmp(effects[a], "Satiated") == 0) {
-			player.status.hunger = 1;
-		} else if (strcmp(effects[a], "Oversatiated") == 0) {
-			player.status.hunger = 2;
-		} else if (strcmp(effects[a], "Blind") == 0) {
-			player.status.blind = true;
-		} else if (strcmp(effects[a], "Conf") == 0) {
-			player.status.confused = true;
-		} else if (strcmp(effects[a], "FoodPois") == 0) {
-			player.status.foodpoisoned = true;
-		} else if (strcmp(effects[a], "Hallu") == 0) {
-			player.status.hallucinating = true;
-		} else if (strcmp(effects[a], "Ill") == 0) {
-			player.status.ill = true;
-		} else if (strcmp(effects[a], "Slime") == 0) {
-			player.status.slimed = true;
-		} else if (strcmp(effects[a], "Stun") == 0) {
-			player.status.stunned = true;
-		}
-	}
-}
-
 void World::update() {
 	/* update the map */
-	data_size = connection->retrieve(data, MESSAGE_BUFFER);
+	int colour = 0; // colour of the char
+	data_size = connection->retrieve(data, BUFFER_SIZE);
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
-			case 27:
-				/* escape sequence coming up */
-				handleEscapeSequence(++pos);
+			case 8:
+				/* backspace.
+				 * make it go 1 char left */
+				if (col > 0)
+					--col;
+				break;
+
+			case 10:
+				/* various control characters we'll ignore */
 				break;
 
 			case 13:
@@ -302,25 +250,17 @@ void World::update() {
 				col = 0;
 				break;
 
-			case 8:
-				/* backspace.
-				 * make it go 1 char left */
-				if (col > 0)
-					--col;
-				break;
-
 			case 14:
-				/* shift out, invoke G1 character set
-				 * dungeon drawing */
+				/* shift out, invoke G1 character set */
 				break;
 
 			case 15:
-				/* shift in, invoke G0 character set
-				 * monsters/object drawing */
+				/* shift in, invoke G0 character set */
 				break;
 
-			case 10:
-				/* various control characters we'll ignore */
+			case 27:
+				/* escape sequence coming up */
+				handleEscapeSequence(++pos, colour);
 				break;
 
 			default:
@@ -330,7 +270,25 @@ void World::update() {
 					cerr << &data[pos] << endl;
 					exit(4);
 				}
-				map[row][col] = data[pos];
+				/* remap ambigous symbols */
+				if ((data[pos] == '|' || data[pos] == '-') && colour == 33)
+					map[row][col] = OPEN_DOOR;
+				else if (data[pos] == '#' && colour == 32)
+					map[row][col] = TREE;
+				else if (data[pos] == '#' && colour == 36)
+					map[row][col] = IRON_BARS;
+				else if (data[pos] == '\\' && colour == 33)
+					map[row][col] = THRONE;
+				else if (data[pos] == '{' && colour != 34) // if it's blue it's a fountain
+					map[row][col] = SINK;
+				else if (data[pos] == '}' && colour == 31)
+					map[row][col] = LAVA;
+				else if (data[pos] == '.' && colour == 36)
+					map[row][col] = ICE;
+				else if (data[pos] == '.' && colour == 33)
+					map[row][col] = LOWERED_DRAWBRIDGE;
+				else
+					map[row][col] = data[pos];
 				col++;
 				break;
 		}

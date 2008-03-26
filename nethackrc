@@ -1,34 +1,41 @@
 # configuration file for saiph.
+
 # significant changes:
 # * monsters
 # - ghosts/shades are represented by '6', not ' '
 # * objects
 # - boulders are represented by '0', not '`'
+# - statues are represented by '9', not '`'
 # - iron balls are represented by '`', not '0'
 # - chains are represented by '`', not '_'
 # - venom is representated by '`', not '.'
 # * dungeon
-# - open doors are represented by '7', not '-' and '|'
-# - iron bars & trees are represented by '+', not '#'
+# - closed doors are represented by '7', not '+'
 # - graves are represented by '\', not '|'
 # - sinks are represented by '{', not '#'
-# - raised drawbridges are represented by '+'. not '#'
-# - air is represented by '8', not ' '
-# - clouds are represented by '9', not '#'
-# FIXME
-# certain dungeon features (eg. doors) have special rules for movement.
-# these dungeon features *must* have a unique character.
-# so far i only know about doors, thus only doors are so far fixed.
-# being polyed into a grid bug might cause issues.
-# sokoban might cause issues.
+# - raised drawbridges are represented by '8'. not '#'
+
+# the following dungeon features collide:
+# - solid rock & air (same colour)
+# - walls & open doors (different colours)
+# - corridors, trees & iron bars (different colours)
+# - grave & throne (different colours)
+# - sink & fountain (different colours)
+# - water & lava (different colours)
+# - solid floor, ice & lowered drawbridge (different colours)
 OPTIONS=align:lawful
 OPTIONS=!autopickup
 OPTIONS=boulder:0
 OPTIONS=color
-OPTIONS=dungeon: |--------||.77++++.##<><>_\\\\{{}.}..++89}
-#                |--------||.-|++##.##<><>_
-#                                           |\\#{}.}..## #}
-# solid rock, vertical wall, horizontal wall, upper left corner, upper right corner, lower left corner, lower right corner, cross wall, upward T wall, downward T wall, leftward T wall, rightward T wall, no door, vertical open door, horizontal open door, vertical closed door, horizontal closed door, iron bars, tree, floor of a room, dark corridor, lit corridor, stairs up, stairs down, ladder up, ladder down, altar, grave, throne, kitchen sink, fountain, pool or moat, ice, lava, vertical lowered drawbridge, horizontal lowered drawbridge, vertical raised drawbridge, horizontal raised drawbridge, air, cloud, under water.
+OPTIONS=dungeon: |--------||.-|77##.##<><>_\\\\{{}.}..88 #}
+# graphics     : |--------||.-|++##.##<><>_ |\\#{}.}..## #}
+# 01-07: solid rock, vertical wall, horizontal wall, upper left corner, upper right corner, lower left corner, lower right corner
+# 08-13: cross wall, upward T wall, downward T wall, leftward T wall, rightward T wall, no door
+# 14-17: vertical open door, horizontal open door, vertical closed door, horizontal closed door
+# 18-26: iron bars, tree, floor of a room, dark corridor, lit corridor, stairs up, stairs down, ladder up, ladder down
+# 27-34: altar, grave, throne, kitchen sink, fountain, pool or moat, ice, lava
+# 35-38: vertical lowered drawbridge, horizontal lowered drawbridge, vertical raised drawbridge, horizontal raised drawbridge
+# 39-41: air, cloud, under water
 OPTIONS=fruit:byte
 OPTIONS=gender:random
 OPTIONS=hilite_pet
@@ -38,7 +45,8 @@ OPTIONS=!mail
 OPTIONS=menustyle:partial
 OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~]
 OPTIONS=name:saiph
-OPTIONS=objects:])[="(%!?+/$*````
+OPTIONS=number_pad:0
+OPTIONS=objects:])[="(%!?+/$*9```
 OPTIONS=pickup_burden:Overtaxed
 OPTIONS=!prayconfirm
 OPTIONS=race:human

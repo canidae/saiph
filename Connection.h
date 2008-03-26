@@ -6,8 +6,10 @@
 #include <pty.h>
 #include "Globals.h"
 
+/* local nethack */
 #define LOCAL_NETHACK "/usr/games/nethack"
 #define LOCAL_USLEEP 2000000
+/* remote nethack */
 #define REMOTE_NETHACK ""
 #define REMOTE_USLEEP 2000000
 
