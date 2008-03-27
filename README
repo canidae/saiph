@@ -1,26 +1,28 @@
 saiph - [Stupid|Silly|Smart|Superior]* AI Playing netHack
-* pick an adjective beginning with "S" that describes the bot most accurately
+* use a descriptive word beginning with "S"
 
 dungeon showing the structure of the code, ish:
 
 --------------
 | Connection +################
 ----------+---               #
-          #               ---+----
-          ###       ######+ Main +######
-            #       #     --------     #
-            ####### #                  #
-                --+-+----          ----+----
-              ##+ World +##########+ Saiph |
-              # -----+---          ---------
-              #      ####
-         -----+---    --+-------
-         | Stash |  ##+ Player |
-         -+-------  # ---+----+-
-          #         #    #    #
-     -----+--   ----+--- # ---+------
-     | Item |   | Item | # | Status |
-     --------   -------- # ----------
+          #               ---+-----
+          ###       ######+ Saiph |
+            #       #     ---------
+            ####### #
+                --+-+----
+                | World |
+                ---------
+                     ####
+       --------       --+-------
+       | Item +#######+ Player |
+       --------       ---+----+-
+                         #    #
+                         #  --+---------
+                         #  |  Status  |
+                         #  | (struct) |
+                         #  ------------
                   -------+------
                   | Attributes |
+                  |  (struct)  |
                   --------------

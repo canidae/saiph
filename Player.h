@@ -33,8 +33,7 @@ struct Attributes {
 	int intelligence;
 	int wisdom;
 	int charisma;
-	/* alignment shows up as text */
-	int alignment; // see defines
+	int alignment; // see defined constants
 };
 
 struct Status {
@@ -48,9 +47,8 @@ struct Status {
 	int armor_class;
 	int experience;
 	int turn;
-	/* status that shows up as text */
-	int encumbrance; // see defines
-	int hunger; // see defines
+	int encumbrance; // see defined constants
+	int hunger; // see defined constants
 	bool blind;
 	bool confused;
 	bool foodpoisoned;
@@ -65,8 +63,8 @@ class Player {
 		/* variables */
 		Attributes attributes;
 		Status status;
-		int row;
-		int col;
+		int row; // player position row
+		int col; // player position col
 
 		/* constructors */
 		Player();
