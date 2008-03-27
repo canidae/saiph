@@ -151,8 +151,7 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 					cerr << &data[pos] << endl;
 					exit(14);
 				}
-				if (value >= 30)
-					colour = value;
+				colour = value;
 				break;
 			} else if (data[pos] == 27) {
 				/* escape char found, that shouldn't happen */
@@ -287,6 +286,8 @@ void World::update() {
 					map[row][col] = ICE;
 				else if (data[pos] == '.' && colour == 33)
 					map[row][col] = LOWERED_DRAWBRIDGE;
+				else if (colour == 7 && (data[pos] == '&' || data[pos] == '\'' || data[pos] == '6' || data[pos] == ':' || data[pos] == ';' || (data[pos] >= '@' && data[pos] <= 'Z') || (data[pos] >= 'a' && data[pos] <= 'z') || data[pos] == '~'))
+					map[row][col] = PET;
 				else
 					map[row][col] = data[pos];
 				col++;
@@ -303,6 +304,7 @@ void World::update() {
 	player.parseStatusRow(map[STATUS_ROW]);
 	/* the last escape sequence place the cursor on the player
 	 * which is quite handy since we won't have to search for the player then */
+	map[row][col] = PLAYER;
 	player.row = row;
 	player.col = col;
 }

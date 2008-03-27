@@ -22,6 +22,8 @@
 #define LAVA 133
 #define ICE 134
 #define LOWERED_DRAWBRIDGE 135
+#define PET 136
+#define PLAYER 137
 
 using namespace std;
 
