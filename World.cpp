@@ -5,17 +5,9 @@ World::World(Connection *connection) {
 	this->connection = connection;
 	this->row = 0;
 	this->col = 0;
-	for (int b = 0; b < BUFFER_SIZE; ++b) {
-		this->data[b] = '\0';
-		this->messages[b] = '\0';
-	}
+	memset(this->data, '\0', BUFFER_SIZE);
 	this->data_size = -1;
 	this->messages_pos = 0;
-	for (int r = 0; r < ROWS; ++r) {
-		for (int c = 0; c < COLS; ++c)
-			this->map[r][c] = ' ';
-		this->map[r][80] = '\0';
-	}
 	/* fetch the first "frame" */
 	update();
 }
@@ -34,7 +26,7 @@ void World::command(const char *command) {
 /* private methods */
 void World::handleEscapeSequence(int &pos, int &colour) {
 	if (data[pos] == 27) {
-		/* sometimes we get 2 escape chars in a row
+		/* sometimes we get 2 escape chars in a row,
 		 * just return in those cases */
 		return;
 	} else if (data[pos] == '[') {
@@ -113,7 +105,7 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 				/* erase in line */
 				if (data[pos - 1] == '[') {
 					/* erase everything to the right */
-					for (int c = col + 1; c < COLS; ++c)
+					for (int c = col; c < COLS; ++c)
 						map[row][c] = ' ';
 				} else if (data[pos - 1] == '1') {
 					/* erase everything to the left */
@@ -199,31 +191,57 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 
 void World::fetchMessages() {
 	/* fetch the messages currently displayed in map */
-	for (int a = 0; a < COLS; ++a)
-		messages[a + messages_pos] = map[0][a];
-	messages_pos += COLS;
-	/* if first line ends with "--More--" we'll command(" ") for the rest of the message */
-	if (strstr(map[0], MORE))
-		command(" "); // request "next page"
-	/* if there are several items here we may get a menu.
-	 * so we'll have to look for "--More--" on the other lines. */
-	for (int r = 1; r < ROWS - 2; ++r) {
+	/* if there's a space before "--More--" we got a list */
+	/* this code is ugly :( */
+	bool islist = false;
+	for (int r = 0; r < ROWS; ++r) {
 		string str(map[r]);
 		string::size_type pos = str.find(MORE, 0);
 		if (pos == string::npos)
-			pos = str.find(END, 0);
-		if (pos != string::npos) {
-			/* found "--More--" or "(end)" */
-			for (int r2 = 1; r2 < r; ++r) {
-				for (int c = pos; c < COLS; ++c)
-					messages[c + messages_pos] = map[r2][c];
-				messages_pos += COLS - pos;
-			}
-			command(" "); // requeste "next page"
-			break;
+			continue;
+		/* "--More--" found */
+		if (pos == 0 || map[r][pos - 1] == ' ')
+			islist = true;
+		if (islist) {
+			/* add from map[0][pos - 1] to map[r - 1][80] */
+			for (int r2 = 0; r2 < r; ++r2)
+				fetchMessagesHelper(r2, pos - 1);
+		} else {
+			/* add from map[0][0] to map[r][80] */
+			for (int r2 = 0; r2 <= r; ++r2)
+				fetchMessagesHelper(r2, 0);
 		}
+		/* request next "page" */
+		command(" ");
+		return;
 	}
+	if (!islist)
+		fetchMessagesHelper(0, 0);
+	messages[messages_pos] = '\0';
 	messages_pos = 0;
+}
+
+void World::fetchMessagesHelper(int row, int startcol) {
+	/* copy message into messages array, removing "--More--"
+	 * and keeping 2 spaces between messages.
+	 * player may encounter messages with 2 spaces in it,
+	 * eg. engravings. usually that is quoted. */
+	string str(&map[row][startcol]);
+	string::size_type pos = str.find(MORE, 0);
+	if (pos != string::npos) {
+		/* "--More--" found, remove it */
+		str = str.substr(0, pos);
+	}
+	/* trim */
+	string::size_type ltpos = str.find_first_not_of(" ");
+	if (ltpos == string::npos)
+		return; // no messages
+	str = str.substr(ltpos, str.find_last_not_of(" ") + 1);
+	/* add two spaces at end */
+	str.append(2, ' ');
+	/* copy into messages */
+	str.copy(&messages[messages_pos], str.length());
+	messages_pos += str.length();
 }
 
 void World::update() {
@@ -297,12 +315,13 @@ void World::update() {
 
 	fetchMessages();
 
-	cout << data << endl;
+	//cout << data << endl;
+	//cout << "'" << messages << "'" << endl;
 
 	/* parse attribute & status rows */
 	player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	player.parseStatusRow(map[STATUS_ROW]);
-	/* the last escape sequence place the cursor on the player
+	/* the last escape sequence place the cursor on the player,
 	 * which is quite handy since we won't have to search for the player then */
 	map[row][col] = PLAYER;
 	player.row = row;

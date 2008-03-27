@@ -21,7 +21,7 @@ Connection::Connection(bool remote) {
 		/* set up local pty */
 		int fd = 0;
 		char slave[256];
-		slave[0] = '\0';
+		memset(slave, '\0', 256);
 		winsize wsize;
 		wsize.ws_row = ROWS;
 		wsize.ws_col = COLS;
@@ -56,7 +56,10 @@ Connection::~Connection() {
 ssize_t Connection::retrieve(char *buffer, size_t count) {
 	/* retrieve data */
 	usleep(usleep_time);
-	return read(output[0], buffer, count);
+	ssize_t tmp = read(output[0], buffer, count);
+	if (tmp < (ssize_t) count)
+		buffer[tmp] = '\0';
+	return tmp;
 }
 
 ssize_t Connection::send(const char *buffer) {
