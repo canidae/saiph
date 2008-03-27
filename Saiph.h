@@ -9,6 +9,8 @@
 /* general defines */
 #define HISTORY 128
 #define MAX_DUNGEON 64
+#define MAX_EXPLORE 128
+#define MAX_SEARCH 50
 
 /* enemies */
 #define EADIBLE_CLASSES "beghjmopqtuwxzCDGHJNORTUWXY:"
@@ -32,6 +34,13 @@
 
 using namespace std;
 
+struct History {
+	Dungeon map[HISTORY];
+	int map_counter;
+	char search[MAX_DUNGEON][ROWS][COLS]; // FIXME: branches (mines/astral/sokoban/vlad/wizard)
+	int last_pray;
+};
+
 struct Monster {
 	int row;
 	int col;
@@ -40,11 +49,11 @@ struct Monster {
 	bool no_melee;
 };
 
-struct History {
-	Dungeon map[HISTORY];
-	int map_counter;
-	Dungeon search[MAX_DUNGEON]; // FIXME: branches (mines/astral/sokoban/vlad/wizard)
-	int last_pray;
+struct Target {
+	/* a place we want to explore */
+	int row;
+	int col;
+	int priority;
 };
 
 /* this is our AI */
@@ -64,12 +73,15 @@ class Saiph {
 		/* variables */
 		Connection *connection;
 		History history;
+		Target target[MAX_EXPLORE];
+		int targets;
 		World *world;
 
 		/* methods */
 		void farlook(int row, int col);
 		void inspect();
 		void parseMessages();
+		void shortestPath();
 };
 
 #endif

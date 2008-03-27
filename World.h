@@ -15,16 +15,16 @@
 #define MORE "--More--"
 /* we don't have enough characters to make unique symbols for every tile,
  * these values are supposed to help on that */
-#define OPEN_DOOR 128
-#define TREE 129
-#define IRON_BARS 130
-#define THRONE 131
-#define SINK 132
-#define LAVA 133
-#define ICE 134
-#define LOWERED_DRAWBRIDGE 135
-#define PET 136
-#define PLAYER 137
+#define OPEN_DOOR -128
+#define TREE -127
+#define IRON_BARS -126
+#define THRONE -125
+#define SINK -124
+#define LAVA -123
+#define ICE -122
+#define LOWERED_DRAWBRIDGE -121
+#define PET -120
+#define PLAYER -119
 
 using namespace std;
 
