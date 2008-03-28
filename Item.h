@@ -1,6 +1,9 @@
 #ifndef ITEM_H
 #define ITEM_H
 
+/* forward declare */
+class Item;
+
 using namespace std;
 
 class Item {

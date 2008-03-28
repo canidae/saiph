@@ -4,29 +4,23 @@
 /* forward declare */
 class Saiph;
 
+/* includes */
+#include "Analyzer.h"
 #include "Connection.h"
 #include "Globals.h"
-#include "Filter.h"
 #include "MessageParser.h"
 #include "Player.h"
 #include "World.h"
 
-#include "Filters/MonsterFilter.h"
+/* analyzers */
+#include "Analyzers/HealthAnalyzer.h"
 
 /* general defines */
 #define HISTORY 128
+#define MAX_ANALYZERS 16
 #define MAX_DUNGEON 64
 #define MAX_EXPLORE 128
-#define MAX_FILTERS 16
 #define MAX_SEARCH 64
-
-/* filter types */
-#define FILTER_DOOR 0x0001
-#define FILTER_MONSTER 0x0002
-#define FILTER_OBJECT 0x0004
-#define FILTER_PASSABLE 0x0008
-#define FILTER_TRAP 0x0010
-#define FILTER_UNPASSABLE 0x0020
 
 /* enemies */
 #define EADIBLE_CLASSES "beghjmopqtuwxzCDGHJNORTUWXY:"
@@ -65,16 +59,14 @@ struct Monster {
 	bool no_melee;
 };
 
-struct Target {
-	/* a place we want to explore */
-	int row;
-	int col;
-	int priority;
-};
-
 /* this is our AI */
 class Saiph {
 	public:
+		/* variables */
+		History history;
+		MessageParser *parser;
+		World *world;
+
 		/* constructors */
 		Saiph(bool remote);
 
@@ -82,6 +74,7 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
+		void setNextCommand(const char *command, int priority);
 		void farlook(int row, int col);
 		void parseMessages();
 		void run();
@@ -89,13 +82,8 @@ class Saiph {
 	private:
 		/* variables */
 		Connection *connection;
-		Filter **filters;
-		int filter_count;
-		History history;
-		MessageParser *parser;
-		Target target[MAX_EXPLORE];
-		int targets;
-		World *world;
+		Analyzer **analyzers;
+		int analyzer_count;
 
 		/* methods */
 		void inspect();

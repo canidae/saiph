@@ -1,6 +1,9 @@
 #ifndef STASH_H
 #define STASH_H
 
+/* forward declare */
+class Stash;
+
 #define MAX_ITEMS 128
 
 using namespace std;
