@@ -9,6 +9,14 @@ Saiph::Saiph(bool remote) {
 	memset(this->history.search, 0, MAX_DUNGEON * ROWS * COLS);
 	this->history.map_counter = 0;
 	this->history.last_pray = 0;
+
+	/* message parser */
+	this->parser = new MessageParser(this);
+
+	/* filters */
+	this->filters = new Filter*[MAX_FILTERS];
+	this->filter_count = 0;
+	this->filters[this->filter_count++] = dynamic_cast<Filter*>(new MonsterFilter(this));
 }
 
 /* destructors */
@@ -34,11 +42,7 @@ void Saiph::run() {
 		cerr << target[a].row << ", " << target[a].col << ": " << target[a].priority << endl;
 	}
 
-	/* hunger */
-
-	/* threat */
-
-	/* explore */
+	/* call analyzers */
 
 	/* random, for the time being */
 	char command[2];
@@ -133,36 +137,40 @@ void Saiph::farlook(int row, int col) {
 void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
 	targets = 0;
+	char symbol;
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			if (world->map[r][c] == '&' || world->map[r][c] == '\'' || world->map[r][c] == '6' || world->map[r][c] == ':' || world->map[r][c] == ';' || (world->map[r][c] >= '@' && world->map[r][c] <= 'Z') || (world->map[r][c] >= 'a' && world->map[r][c] <= 'z') || world->map[r][c] == '~') {
-				/* monster here, look at it */
-				farlook(r, c);
-				parseMessages();
-			} else if (world->map[r][c] == '%') {
-				/* there's food or a corpse here, make a special note about it */
-			} else if (world->map[r][c] == ')' || world->map[r][c] == '[' || world->map[r][c] == '=' || world->map[r][c] == '"' || world->map[r][c] == '(' || world->map[r][c] == '!' || world->map[r][c] == '?' || world->map[r][c] == '+' || world->map[r][c] == '/' || world->map[r][c] == '$' || world->map[r][c] == '*' || world->map[r][c] == '9') {
-				/* interesting object here, make it a place we want to visit if we haven't already */
+			int type = 0;
+			symbol = world->map[r][c];
+			if (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~')
+				type |= FILTER_MONSTER;
+			if (symbol == ')' || symbol == '[' || symbol == '=' || symbol == '"' || symbol == '(' || symbol == '%' || symbol == '!' || symbol == '?' || symbol == '+' || symbol == '/' || symbol == '$' || symbol == '*' || symbol == '9')
+				type |= FILTER_OBJECT;
+			/*
 				if (history.search[world->player.status.dungeon][r][c] < MAX_SEARCH) {
 					target[targets].row = r;
 					target[targets].col = c;
 					target[targets].priority = 51;
 					++targets;
 				}
-			} else if (world->map[r][c] == OPEN_DOOR || world->map[r][c] == '7') {
-				/* open/closed door. interesting to travel to if one of it's sides are unexplored */
+			*/
+			if (symbol == OPEN_DOOR || symbol == '7')
+				type |= FILTER_DOOR;
+			/*
 				if (history.search[world->player.status.dungeon][r][c] < MAX_SEARCH && (world->map[r][c - 1] == ' ' || world->map[r][c + 1] == ' ' || world->map[r - 1][c] == ' ' || world->map[r + 1][c] == ' ')) {
 					target[targets].row = r;
 					target[targets].col = c;
 					target[targets].priority = 50;
 					++targets;
 				}
-			} else if (world->map[r][c] == ICE || world->map[r][c] == LOWERED_DRAWBRIDGE || world->map[r][c] == '#' || world->map[r][c] == '.') {
-				/* may be interesting to explore if it seems to be a dead end */
+			*/
+			if (symbol == ICE || symbol == LOWERED_DRAWBRIDGE || symbol == '#' || symbol == '.')
+				type |= FILTER_PASSABLE;
+			/*
 				if (history.search[world->player.status.dungeon][r][c] >= MAX_SEARCH || r <= MAP_ROW_START + 1 || r >= MAP_ROW_END - 1 || c <= 1 || c >= COLS - 1)
 					continue;
 				if (((world->map[r][c - 1] == ' ' || world->map[r][c + 1] == ' ') && ((world->map[r - 1][c] == '|' || world->map[r - 1][c] == '-') && (world->map[r + 1][c] == '|' || world->map[r + 1][c] == '-'))) || ((world->map[r - 1][c] == ' ' || world->map[r + 1][c] == ' ') && ((world->map[r][c - 1] == '|' || world->map[r][c - 1] == '-') && (world->map[r][c + 1] == '|' || world->map[r][c + 1] == '-')))) {
-					/* missing door */
+					// missing door
 					target[targets].row = r;
 					target[targets].col = c;
 					target[targets].priority = 40;
@@ -184,7 +192,9 @@ void Saiph::inspect() {
 					target[targets].priority = 20;
 					++targets;
 				}
-			}
+			*/
+			if (symbol == '^')
+				type |= FILTER_TRAP;
 		}
 	}
 }

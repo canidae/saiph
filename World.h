@@ -1,6 +1,9 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+/* forward declare */
+class World;
+
 #include "Connection.h"
 #include "Globals.h"
 #include "Dungeon.h"

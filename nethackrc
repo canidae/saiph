@@ -3,7 +3,9 @@
 # significant changes:
 # * monsters
 # - ghosts/shades are represented by '6', not ' '
+# - the ']' for mimic is now 'm', if that makes a difference
 # * objects
+# - illegal object is now represented by 'm' (mimic?)
 # - boulders are represented by '0', not '`'
 # - statues are represented by '9', not '`'
 # - iron balls are represented by '`', not '0'
@@ -14,6 +16,8 @@
 # - graves are represented by '\', not '|'
 # - sinks are represented by '{', not '#'
 # - raised drawbridges are represented by '8'. not '#'
+# * traps
+# - web is now represented by '^', not '"'
 
 # the following dungeon features collide:
 # - solid rock & air (same colour)
@@ -43,10 +47,10 @@ OPTIONS=!legacy
 OPTIONS=lit_corridor
 OPTIONS=!mail
 OPTIONS=menustyle:partial
-OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~]
+OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~m
 OPTIONS=name:saiph
 OPTIONS=number_pad:0
-OPTIONS=objects:])[="(%!?+/$*9```
+OPTIONS=objects:m)[="(%!?+/$*9```
 OPTIONS=pickup_burden:Overtaxed
 OPTIONS=!prayconfirm
 OPTIONS=race:human
@@ -54,4 +58,5 @@ OPTIONS=role:valkyrie
 OPTIONS=!sparkle
 OPTIONS=!splash_screen
 OPTIONS=time
+OPTIONS=traps:^^^^^^^^^^^^^^^^^^^^^^
 OPTIONS=vary_msgcount:1

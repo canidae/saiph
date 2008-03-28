@@ -1,6 +1,12 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+/* forward declare */
+class Player;
+
+#include <iostream>
+#include "Globals.h"
+
 /* alignment */
 #define CHAOTIC -1
 #define NEUTRAL 0
@@ -19,9 +25,6 @@
 #define CONTENT 0
 #define SATIATED 1
 #define OVERSATIATED 2
-
-#include <iostream>
-#include "Globals.h"
 
 using namespace std;
 

@@ -1,6 +1,9 @@
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
+/* forward declare */
+class Dungeon;
+
 #include "Globals.h"
 #include "Player.h"
 

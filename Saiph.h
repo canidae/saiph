@@ -1,16 +1,32 @@
 #ifndef SAIPH_H
 #define SAIPH_H
 
+/* forward declare */
+class Saiph;
+
 #include "Connection.h"
 #include "Globals.h"
+#include "Filter.h"
+#include "MessageParser.h"
 #include "Player.h"
 #include "World.h"
+
+#include "Filters/MonsterFilter.h"
 
 /* general defines */
 #define HISTORY 128
 #define MAX_DUNGEON 64
 #define MAX_EXPLORE 128
-#define MAX_SEARCH 50
+#define MAX_FILTERS 16
+#define MAX_SEARCH 64
+
+/* filter types */
+#define FILTER_DOOR 0x0001
+#define FILTER_MONSTER 0x0002
+#define FILTER_OBJECT 0x0004
+#define FILTER_PASSABLE 0x0008
+#define FILTER_TRAP 0x0010
+#define FILTER_UNPASSABLE 0x0020
 
 /* enemies */
 #define EADIBLE_CLASSES "beghjmopqtuwxzCDGHJNORTUWXY:"
@@ -66,21 +82,23 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		int main();
+		void farlook(int row, int col);
+		void parseMessages();
 		void run();
 
 	private:
 		/* variables */
 		Connection *connection;
+		Filter **filters;
+		int filter_count;
 		History history;
+		MessageParser *parser;
 		Target target[MAX_EXPLORE];
 		int targets;
 		World *world;
 
 		/* methods */
-		void farlook(int row, int col);
 		void inspect();
-		void parseMessages();
 		void shortestPath();
 };
 

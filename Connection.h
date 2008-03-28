@@ -1,6 +1,9 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+/* forward declare */
+class Connection;
+
 #include <fcntl.h>
 #include <iostream>
 #include <pty.h>
