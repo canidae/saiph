@@ -51,6 +51,7 @@ OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~m
 OPTIONS=name:saiph
 OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*9```
+OPTIONS=pettype:none
 OPTIONS=pickup_burden:Overtaxed
 OPTIONS=!prayconfirm
 OPTIONS=race:human

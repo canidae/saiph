@@ -11,7 +11,8 @@ HealthAnalyzer::~HealthAnalyzer() {
 }
 
 /* methods */
-void HealthAnalyzer::finish() const {
+void HealthAnalyzer::finish() {
+	cerr << "HealthAnalyzer finish" << endl;
 	/* figure out if we're in danger of dying */
 	/* illness */
 	if (saiph->world->player.status.ill) {
@@ -19,7 +20,7 @@ void HealthAnalyzer::finish() const {
 		 * spell, potion, unihorn, pray
 		 *
 		 * pray for now */
-		saiph->setNextCommand("#pray", 100);
+		saiph->setNextCommand("#pray\n", 100);
 	}
 	/* hp */
 	int hp = saiph->world->player.status.hitpoints;
@@ -35,6 +36,6 @@ void HealthAnalyzer::finish() const {
 		 * elbereth, run, potion, lots of options
 		 *
 		 * elbereth for now */
-		saiph->setNextCommand("E- Elbereth", 90);
+		saiph->setNextCommand("E- Elbereth\n", 90);
 	}
 }

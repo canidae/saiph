@@ -12,7 +12,8 @@ FightAnalyzer::~FightAnalyzer() {
 }
 
 /* methods */
-void FightAnalyzer::analyze(int row, int col, char symbol) const {
+void FightAnalyzer::analyze(int row, int col, char symbol) {
+	cerr << "Found monster at " << row << ", " << col << " - " << symbol << endl;
 	if (monster_count >= FA_MAX_MONSTERS)
 		return; // tracking too many monsters
 	monsters[monster_count].row = row;
@@ -22,7 +23,7 @@ void FightAnalyzer::analyze(int row, int col, char symbol) const {
 	++monster_count;
 }
 
-void FightAnalyzer::finish() const {
+void FightAnalyzer::finish() {
 	/* figure out which monster to attack */
 	if (monster_count <= 0)
 		return;
@@ -35,5 +36,14 @@ void FightAnalyzer::finish() const {
 		}
 	}
 	char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col);
-	saiph->setNextCommand(move, 60);
+	if (move == -1) {
+		cerr << "Unable to find path to monster" << endl;
+		return;
+	}
+	char command[2];
+	command[0] = move;
+	command[1] = '\0';
+	saiph->setNextCommand(command, 60);
+	/* reset */
+	monster_count = 0;
 }

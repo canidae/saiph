@@ -21,7 +21,7 @@ class HealthAnalyzer : public Analyzer {
 		~HealthAnalyzer();
 
 		/* methods */
-		virtual void finish() const;
+		void finish();
 };
 
 #endif

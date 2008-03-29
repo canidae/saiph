@@ -21,10 +21,12 @@ Saiph::Saiph(bool remote) {
 	this->analyzers = new Analyzer*[MAX_ANALYZERS];
 	this->analyzer_count = 0;
 	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
+	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new FightAnalyzer(this));
 }
 
 /* destructors */
 Saiph::~Saiph() {
+	delete [] analyzers;
 	delete world;
 	delete connection;
 }
@@ -84,6 +86,10 @@ void Saiph::parseMessages() {
 
 void Saiph::run() {
 	cout << world->data;
+	/* reset command */
+	memset(this->command.command, '\0', MAX_COMMAND_LENGTH);
+	command.priority = 0;
+
 	/* save dungeon in history */
 	++history.map_counter %= HISTORY;
 	history.map[history.map_counter].clone(world);
@@ -145,6 +151,7 @@ void Saiph::run() {
 	setNextCommand("s", 0);
 
 	/* do the selected move */
+	cerr << "Command: " << command.command << " (priority: " << command.priority << ")" << endl;
 	world->command(command.command);
 }
 
@@ -165,7 +172,10 @@ char Saiph::shortestPath(int row, int col) {
 	/* is this dijkstra? */
 	int cost[ROWS][COLS];
 	int pos[PATH_MAX_NODES][2];
-	memset(cost, PATH_MAX_NODES + 1, ROWS * COLS);
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c)
+			cost[r][c] = PATH_MAX_NODES + 1;
+	}
 	cost[row][col] = 0;
 	int nextnode = 0;
 	int nodes = 1;
@@ -173,74 +183,135 @@ char Saiph::shortestPath(int row, int col) {
 	pos[nextnode][1] = col;
 	int curcost = 0;
 	bool target_found = false;
-	while (curcost++ < PATH_MAX_NODES && !target_found && nextnode < nodes) {
-		for (int r = pos[nextnode][0] - 1; r <= pos[nextnode][0] + 1 && !target_found; ++r) {
+	while (nextnode < nodes && !target_found && nextnode < PATH_MAX_NODES) {
+		int tr = pos[nextnode][0];
+		int tc = pos[nextnode][1];
+		curcost = cost[tr][tc];
+		for (int r = tr - 1; r <= tr + 1 && !target_found; ++r) {
 			if (r < MAP_ROW_START || r >= MAP_ROW_END)
 				continue;
-			for (int c = pos[nextnode][1] - 1; c <= pos[nextnode][1] + 1 && !target_found; ++col) {
+			for (int c = tc - 1; c <= tc + 1 && !target_found; ++c) {
 				if (c < 0 || c >= COLS)
 					continue;
+				if (r == world->player.row && c == world->player.col) {
+					cost[r][c] = curcost + 1;
+					target_found = true;
+					break;
+				}
 				char symbol = world->map[r][c];
-				if ((r == row && c == col) || (symbol != ICE || symbol != LOWERED_DRAWBRIDGE || symbol != '#' || symbol != '.' || symbol != '<' || symbol != '>' || symbol != '_' || symbol != '\\' || symbol != '{' || symbol != ')' || symbol != '[' || symbol != '=' || symbol != '"' || symbol != '(' || symbol != '%' || symbol != '!' || symbol != '?' || symbol != '+' || symbol != '/' || symbol != '$' || symbol != '*' || symbol != '9'))
+				if (!isPassable(symbol))
 					continue;
 				if (symbol == '7' && r != row && c != col)
 					continue; // can't move diagonally through a door */
-				if (cost[r][c] > curcost) {
-					cost[r][c] = curcost;
+				int newcost = cost[tr][tc] + ((r == tr || c == tc) ? 2 : 3);
+				if (cost[r][c] > newcost) {
+					cost[r][c] = newcost;
 					pos[nodes][0] = r;
 					pos[nodes][1] = c;
 					++nodes;
-					if (r == row && c == col)
-						target_found = true;
 				}
 			}
 		}
 		++nextnode;
 	}
+
+	/* print map cost, ish */
+	cout << (char) 27 << "[26;1H";
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c) {
+			cout << (char) (cost[r][c] + 64);
+		}
+		cout << endl;
+	}
 	if (!target_found) {
 		cerr << "Unable to find path" << endl;
 		return -1;
 	}
-	/* backtrace */
-	int r2 = row;
-	int c2 = col;
-	curcost = cost[r2][c2];
-	cerr << "Path found, " << curcost << " moves needed: ";
+	/* least costing move from player is in the right direction */
+	int r = world->player.row;
+	int c = world->player.col;
+	curcost = cost[r][c];
 	char move = -1;
-	while (curcost > 0) {
-		if (r2 > MAP_ROW_START && c2 > 0 && cost[r2 - 1][c2 - 1] < curcost) {
-			move = MOVE_SE;
-			--r2;
-			--c2;
-		} else if (r2 > MAP_ROW_START && cost[r2 - 1][c2] < curcost) {
-			move = MOVE_S;
-			--r2;
-		} else if (r2 > MAP_ROW_START && c2 < COLS && cost[r2 - 1][c2 + 1] < curcost) {
-			move = MOVE_SW;
-			--r2;
-			++c2;
-		} else if (c2 > 0 && cost[r2][c2 - 1] < curcost) {
-			move = MOVE_E;
-			--c2;
-		} else if (c2 < COLS && cost[r2][c2 + 1] < curcost) {
-			move = MOVE_W;
-			++c2;
-		} else if (r2 < MAP_ROW_END && c2 > 0 && cost[r2 + 1][c2 - 1] < curcost) {
-			move = MOVE_NE;
-			++r2;
-			--c2;
-		} else if (r2 < MAP_ROW_END && cost[r2 + 1][c2] < curcost) {
-			move = MOVE_N;
-			++r2;
-		} else if (r2 < MAP_ROW_END && c2 < COLS && cost[r2 + 1][c2 + 1] < curcost) {
-			move = MOVE_NW;
-			++r2;
-			++c2;
+	char lastmove2 = -1;
+	int distance = 0;
+	bool direct_line = true;
+	cerr << "Going from " << r << ", " << c << " to " << row << ", " << col << endl;
+	cerr << "Path found, moves needed: " << endl;
+	while (r != row || c != col) {
+		++distance;
+		char move2 = -1;
+		int nr = r;
+		int nc = c;
+		cerr << r << ", " << c << " | " << row << ", " << col << endl;
+		if (r > MAP_ROW_START && c > 0 && cost[r - 1][c - 1] < curcost) {
+			cerr << "- " << cost[r - 1][c - 1] << " | " << curcost << endl;
+			move2 = MOVE_NW;
+			nr = r - 1;
+			nc = c - 1;
+			curcost = cost[nr][nc];
 		}
-		curcost = cost[r2][c2];
-		cerr << move;
+		if (r > MAP_ROW_START && cost[r - 1][c] < curcost) {
+			cerr << "- " << cost[r - 1][c] << " | " << curcost << endl;
+			move2 = MOVE_N;
+			nr = r - 1;
+			nc = c;
+			curcost = cost[nr][nc];
+		}
+		if (r > MAP_ROW_START && c < COLS && cost[r - 1][c + 1] < curcost) {
+			cerr << "- " << cost[r - 1][c + 1] << " | " << curcost << endl;
+			move2 = MOVE_NE;
+			nr = r - 1;
+			nc = c + 1;
+			curcost = cost[nr][nc];
+		}
+		if (c > 0 && cost[r][c - 1] < curcost) {
+			cerr << "- " << cost[r][c - 1] << " | " << curcost << endl;
+			move2 = MOVE_W;
+			nr = r;
+			nc = c - 1;
+			curcost = cost[nr][nc];
+		}
+		if (c < COLS && cost[r][c + 1] < curcost) {
+			cerr << "- " << cost[r][c + 1] << " | " << curcost << endl;
+			move2 = MOVE_E;
+			nr = r;
+			nc = c + 1;
+			curcost = cost[nr][nc];
+		}
+		if (r < MAP_ROW_END && c > 0 && cost[r + 1][c - 1] < curcost) {
+			cerr << "- " << cost[r + 1][c - 1] << " | " << curcost << endl;
+			move2 = MOVE_SW;
+			nr = r + 1;
+			nc = c - 1;
+			curcost = cost[nr][nc];
+		}
+		if (r < MAP_ROW_END && cost[r + 1][c] < curcost) {
+			cerr << "- " << cost[r + 1][c] << " | " << curcost << endl;
+			move2 = MOVE_S;
+			nr = r + 1;
+			nc = c;
+			curcost = cost[nr][nc];
+		}
+		if (r < MAP_ROW_END && c < COLS && cost[r + 1][c + 1] < curcost) {
+			cerr << "- " << cost[r + 1][c + 1] << " | " << curcost << endl;
+			move2 = MOVE_SE;
+			nr = r + 1;
+			nc = c + 1;
+			curcost = cost[nr][nc];
+		}
+		if (move == -1)
+			move = move2;
+		if (lastmove2 != -1 && lastmove2 != move2)
+			direct_line = false;
+		r = nr;
+		c = nc;
+		lastmove2 = move2;
+		cerr << move2 << endl;;
 	}
 	cerr << endl;
+	cerr << "Direct line: " << direct_line << endl;
+	cerr << "Distance: " << distance << endl;
+
 	return move;
 }
 
@@ -253,7 +324,7 @@ void Saiph::inspect() {
 		for (int c = 0; c < COLS; ++c) {
 			int type = 0;
 			symbol = world->map[r][c];
-			if (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~')
+			if (isMonster(symbol))
 				type |= ANALYZE_MONSTER;
 			if (symbol == ')' || symbol == '[' || symbol == '=' || symbol == '"' || symbol == '(' || symbol == '%' || symbol == '!' || symbol == '?' || symbol == '+' || symbol == '/' || symbol == '$' || symbol == '*' || symbol == '9')
 				type |= ANALYZE_OBJECT;
@@ -275,7 +346,7 @@ void Saiph::inspect() {
 					++targets;
 				}
 			*/
-			if (symbol == ICE || symbol == LOWERED_DRAWBRIDGE || symbol == '#' || symbol == '.' || symbol == '<' || symbol == '>' || symbol == '_' || symbol == '\\' || symbol == '{')
+			if (isPassable(symbol))
 				type |= ANALYZE_PASSABLE;
 			/*
 				if (history.search[world->player.status.dungeon][r][c] >= MAX_SEARCH || r <= MAP_ROW_START + 1 || r >= MAP_ROW_END - 1 || c <= 1 || c >= COLS - 1)
@@ -307,11 +378,19 @@ void Saiph::inspect() {
 			if (symbol == '^')
 				type |= ANALYZE_TRAP;
 			for (int a = 0; a < analyzer_count; ++a) {
-				if (type & analyzers[a]->type != 0)
+				if ((type & analyzers[a]->type) != 0)
 					analyzers[a]->analyze(r, c, symbol);
 			}
 		}
 	}
+}
+
+bool Saiph::isMonster(char symbol) {
+	return (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~');
+}
+
+bool Saiph::isPassable(char symbol) {
+	return (symbol == ICE || symbol == LOWERED_DRAWBRIDGE || symbol == '#' || symbol == '.' || symbol == '<' || symbol == '>' || symbol == '_' || symbol == '\\' || symbol == '{' || symbol == ')' || symbol == '[' || symbol == '=' || symbol == '"' || symbol == '(' || symbol == '%' || symbol == '!' || symbol == '?' || symbol == '+' || symbol == '/' || symbol == '$' || symbol == '*' || symbol == '9' || symbol == OPEN_DOOR);
 }
 
 /* main */

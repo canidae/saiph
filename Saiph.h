@@ -90,6 +90,8 @@ class Saiph {
 		Command command;
 
 		/* methods */
+		bool isMonster(char symbol);
+		bool isPassable(char symbol);
 		void inspect();
 };
 
