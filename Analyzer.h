@@ -27,7 +27,7 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
-		virtual void analyze(int row, int col) const;
+		virtual void analyze(int row, int col, char symbol) const;
 		virtual void finish() const;
 };
 

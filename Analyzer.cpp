@@ -10,7 +10,7 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
-void Analyzer::analyze(int row, int col) const {
+void Analyzer::analyze(int row, int col, char symbol) const {
 }
 
 void Analyzer::finish() const {

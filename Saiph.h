@@ -14,13 +14,18 @@ class Saiph;
 
 /* analyzers */
 #include "Analyzers/HealthAnalyzer.h"
+#include "Analyzers/FightAnalyzer.h"
 
 /* general defines */
 #define HISTORY 128
 #define MAX_ANALYZERS 16
+#define MAX_COMMAND_LENGTH 128
 #define MAX_DUNGEON 64
 #define MAX_EXPLORE 128
 #define MAX_SEARCH 64
+
+/* pathing */
+#define PATH_MAX_NODES 1680
 
 /* enemies */
 #define EADIBLE_CLASSES "beghjmopqtuwxzCDGHJNORTUWXY:"
@@ -51,12 +56,9 @@ struct History {
 	int last_pray;
 };
 
-struct Monster {
-	int row;
-	int col;
-	int threat;
-	bool eadible;
-	bool no_melee;
+struct Command {
+	char command[MAX_COMMAND_LENGTH];
+	int priority;
 };
 
 /* this is our AI */
@@ -74,20 +76,21 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void setNextCommand(const char *command, int priority);
 		void farlook(int row, int col);
 		void parseMessages();
 		void run();
+		void setNextCommand(const char *command, int priority);
+		char shortestPath(int row, int col);
 
 	private:
 		/* variables */
-		Connection *connection;
 		Analyzer **analyzers;
 		int analyzer_count;
+		Connection *connection;
+		Command command;
 
 		/* methods */
 		void inspect();
-		void shortestPath();
 };
 
 #endif
