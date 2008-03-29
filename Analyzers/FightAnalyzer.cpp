@@ -25,25 +25,31 @@ void FightAnalyzer::analyze(int row, int col, char symbol) {
 
 void FightAnalyzer::finish() {
 	/* figure out which monster to attack */
-	if (monster_count <= 0)
-		return;
-	int toughest = 0;
-	int threat = 0;
-	for (int m = 0; m < monster_count; ++m) {
-		if (monsters[m].threat > threat) {
-			threat = monsters[m].threat;
-			toughest = m;
+	for (int mc = 0; mc < monster_count; ++mc) {
+		int toughest = -1;
+		int threat = -1;
+		for (int m = 0; m < monster_count; ++m) {
+			if (monsters[m].threat > threat) {
+				toughest = m;
+				threat = monsters[m].threat;
+			}
+		}
+		if (toughest == -1) {
+			/* no threatening monster */
+			monster_count = 0;
+			return;
+		}
+		cerr << "Fighting " << (char) monsters[toughest].threat << endl;
+		char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col);
+		if (move != -1) {
+			char command[2];
+			command[0] = move;
+			command[1] = '\0';
+			saiph->setNextCommand(command, 60);
+			monster_count = 0;
+			return;
+		} else {
+			monsters[toughest].threat = -1;
 		}
 	}
-	char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col);
-	if (move == -1) {
-		cerr << "Unable to find path to monster" << endl;
-		return;
-	}
-	char command[2];
-	command[0] = move;
-	command[1] = '\0';
-	saiph->setNextCommand(command, 60);
-	/* reset */
-	monster_count = 0;
 }

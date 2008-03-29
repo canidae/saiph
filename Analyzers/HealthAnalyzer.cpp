@@ -12,7 +12,6 @@ HealthAnalyzer::~HealthAnalyzer() {
 
 /* methods */
 void HealthAnalyzer::finish() {
-	cerr << "HealthAnalyzer finish" << endl;
 	/* figure out if we're in danger of dying */
 	/* illness */
 	if (saiph->world->player.status.ill) {
@@ -30,7 +29,7 @@ void HealthAnalyzer::finish() {
 		 * spell, potion, (elbereth?), pray
 		 *
 		 * pray for now */
-		saiph->setNextCommand("#pray", 100);
+		saiph->setNextCommand("#pray\n", 100);
 	} else if (hp * 2 < hp_max) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options

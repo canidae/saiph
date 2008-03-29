@@ -10,9 +10,17 @@ Saiph::Saiph(bool remote) {
 	this->command.priority = 0;
 
 	/* history */
-	memset(this->history.search, 0, MAX_DUNGEON * ROWS * COLS);
+	//memset(this->history.explored, 0, MAX_DUNGEON * ROWS * COLS);
 	this->history.map_counter = 0;
 	this->history.last_pray = 0;
+
+	/* branches */
+	this->current_branch = BRANCH_MAIN;
+	for (int b = 0; b < MAX_BRANCHES; ++b) {
+		memset(this->branch[b].door, '\0', ROWS * COLS);
+		memset(this->branch[b].explore, '\0', ROWS * COLS);
+		memset(this->branch[b].search, '\0', ROWS * COLS);
+	}
 
 	/* message parser */
 	this->parser = new MessageParser(this);
@@ -20,13 +28,18 @@ Saiph::Saiph(bool remote) {
 	/* Analyzers */
 	this->analyzers = new Analyzer*[MAX_ANALYZERS];
 	this->analyzer_count = 0;
-	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
+	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new DoorAnalyzer(this));
+	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new ExploreAnalyzer(this));
 	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new FightAnalyzer(this));
+	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
 }
 
 /* destructors */
 Saiph::~Saiph() {
+	for (int a = 0; a < analyzer_count; ++a)
+		delete analyzers[a];
 	delete [] analyzers;
+	delete parser;
 	delete world;
 	delete connection;
 }
@@ -80,12 +93,69 @@ void Saiph::farlook(int row, int col) {
 	world->command(command);
 }
 
+bool Saiph::isClosedDoor(char symbol) {
+	return (symbol == '7');
+}
+
+bool Saiph::isMonster(char symbol) {
+	return (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~');
+}
+
+bool Saiph::isObject(char symbol) {
+	return (symbol == ')' || symbol == '[' || symbol == '=' || symbol == '"' || symbol == '(' || symbol == '%' || symbol == '!' || symbol == '?' || symbol == '+' || symbol == '/' || symbol == '$' || symbol == '*' || symbol == '9');
+}
+
+bool Saiph::isOpenDoor(char symbol) {
+	return (symbol == OPEN_DOOR);
+}
+
+bool Saiph::isPassable(char symbol) {
+	return (isObject(symbol) || symbol == ICE || symbol == LOWERED_DRAWBRIDGE || symbol == '#' || symbol == '.' || symbol == '<' || symbol == '>' || symbol == '_' || symbol == '\\' || symbol == '{' || symbol == OPEN_DOOR);
+}
+
+bool Saiph::isPet(char symbol) {
+	return (symbol == PET);
+}
+
+bool Saiph::isPlayer(char symbol) {
+	return (symbol == PLAYER);
+}
+
+bool Saiph::isTrap(char symbol) {
+	return (symbol == '^');
+}
+
+bool Saiph::isUnexplored(char symbol) {
+	return (symbol == ' ');
+}
+
+bool Saiph::isUnpassable(char symbol) {
+	return (isMonster(symbol) || isUnexplored(symbol) || symbol == '|' || symbol == '-' || symbol == '8' || symbol == TREE || symbol == IRON_BARS);
+}
+
 void Saiph::parseMessages() {
 	cerr << world->messages << endl;
 }
 
-void Saiph::run() {
+bool Saiph::run() {
+	/* print stuff so we see what we're doing */
 	cout << world->data;
+	/* print search map, ish */
+	cout << (char) 27 << "[26;1H";
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c) {
+			cout << (char) (branch[current_branch].search[r][c] + 48);
+		}
+		cout << endl;
+	}
+	for (int r = 0; r < ROWS; ++r) {
+		cout << (char) 27 << "[" << r + 1 << ";82H";
+		for (int c = 0; c < COLS; ++c) {
+			cout << (char) (branch[current_branch].door[r][c] + 48);
+		}
+	}
+	cout << (char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
+
 	/* reset command */
 	memset(this->command.command, '\0', MAX_COMMAND_LENGTH);
 	command.priority = 0;
@@ -108,51 +178,16 @@ void Saiph::run() {
 	for (int a = 0; a < analyzer_count; ++a)
 		analyzers[a]->finish();
 
-	/* random, for the time being */
-	/*
-	char command[2];
-	switch (rand() % 8) {
-		case 0:
-			command[0] = MOVE_NW;
-			break;
-
-		case 1:
-			command[0] = MOVE_N;
-			break;
-
-		case 2:
-			command[0] = MOVE_NE;
-			break;
-
-		case 3:
-			command[0] = MOVE_W;
-			break;
-
-		case 4:
-			command[0] = MOVE_E;
-			break;
-
-		case 5:
-			command[0] = MOVE_SW;
-			break;
-
-		case 6:
-			command[0] = MOVE_S;
-			break;
-
-		case 7:
-			command[0] = MOVE_SE;
-			break;
+	/* if no command, quit for now */
+	if (command.priority == 0) {
+		cout << (char) 27 << "[51;1H";
+		return false;
 	}
-	command[1] = '\0';
-	*/
-
-	/* if no command, search */
-	setNextCommand("s", 0);
 
 	/* do the selected move */
 	cerr << "Command: " << command.command << " (priority: " << command.priority << ")" << endl;
 	world->command(command.command);
+	return true;
 }
 
 void Saiph::setNextCommand(const char *command, int priority) {
@@ -193,16 +228,16 @@ char Saiph::shortestPath(int row, int col) {
 			for (int c = tc - 1; c <= tc + 1 && !target_found; ++c) {
 				if (c < 0 || c >= COLS)
 					continue;
+				char symbol = world->map[r][c];
+				if ((branch[current_branch].door[r][c] == DA_DOOR_OPEN || branch[current_branch].door[tr][tc] == DA_DOOR_OPEN) && r != tr && c != tc)
+					continue; // can't move diagonally in/out of a door */
 				if (r == world->player.row && c == world->player.col) {
 					cost[r][c] = curcost + 1;
 					target_found = true;
 					break;
 				}
-				char symbol = world->map[r][c];
 				if (!isPassable(symbol))
 					continue;
-				if (symbol == '7' && r != row && c != col)
-					continue; // can't move diagonally through a door */
 				int newcost = cost[tr][tc] + ((r == tr || c == tc) ? 2 : 3);
 				if (cost[r][c] > newcost) {
 					cost[r][c] = newcost;
@@ -215,18 +250,20 @@ char Saiph::shortestPath(int row, int col) {
 		++nextnode;
 	}
 
-	/* print map cost, ish */
-	cout << (char) 27 << "[26;1H";
-	for (int r = 0; r < ROWS; ++r) {
-		for (int c = 0; c < COLS; ++c) {
-			cout << (char) (cost[r][c] + 64);
-		}
-		cout << endl;
-	}
 	if (!target_found) {
-		cerr << "Unable to find path" << endl;
+		cerr << "Unable to find path to " << row << ", " << col << " from " << world->player.row << ", " << world->player.col << endl;
 		return -1;
 	}
+	/* print map */
+	for (int r = 0; r < ROWS; ++r) {
+		cout << (char) 27 << "[" << r + 26 << ";82H";
+		for (int c = 0; c < COLS; ++c) {
+			cout << (char) (cost[r][c] + 48);
+		}
+	}
+	cout << (char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
+
+	cerr << "Pathing to " << row << ", " << col << " from " << world->player.row << ", " << world->player.col << endl;
 	/* least costing move from player is in the right direction */
 	int r = world->player.row;
 	int c = world->player.col;
@@ -235,70 +272,61 @@ char Saiph::shortestPath(int row, int col) {
 	char lastmove2 = -1;
 	int distance = 0;
 	bool direct_line = true;
-	cerr << "Going from " << r << ", " << c << " to " << row << ", " << col << endl;
-	cerr << "Path found, moves needed: " << endl;
 	while (r != row || c != col) {
 		++distance;
 		char move2 = -1;
 		int nr = r;
 		int nc = c;
-		cerr << r << ", " << c << " | " << row << ", " << col << endl;
-		if (r > MAP_ROW_START && c > 0 && cost[r - 1][c - 1] < curcost) {
-			cerr << "- " << cost[r - 1][c - 1] << " | " << curcost << endl;
+		if (r > MAP_ROW_START && c > 0 && cost[r - 1][c - 1] < curcost && branch[current_branch].door[r][c] == DA_NO_DOOR && branch[current_branch].door[r - 1][c - 1] == DA_NO_DOOR) {
 			move2 = MOVE_NW;
 			nr = r - 1;
 			nc = c - 1;
 			curcost = cost[nr][nc];
 		}
 		if (r > MAP_ROW_START && cost[r - 1][c] < curcost) {
-			cerr << "- " << cost[r - 1][c] << " | " << curcost << endl;
 			move2 = MOVE_N;
 			nr = r - 1;
 			nc = c;
 			curcost = cost[nr][nc];
 		}
-		if (r > MAP_ROW_START && c < COLS && cost[r - 1][c + 1] < curcost) {
-			cerr << "- " << cost[r - 1][c + 1] << " | " << curcost << endl;
+		if (r > MAP_ROW_START && c < COLS && cost[r - 1][c + 1] < curcost && branch[current_branch].door[r][c] == DA_NO_DOOR && branch[current_branch].door[r - 1][c + 1] == DA_NO_DOOR) {
 			move2 = MOVE_NE;
 			nr = r - 1;
 			nc = c + 1;
 			curcost = cost[nr][nc];
 		}
 		if (c > 0 && cost[r][c - 1] < curcost) {
-			cerr << "- " << cost[r][c - 1] << " | " << curcost << endl;
 			move2 = MOVE_W;
 			nr = r;
 			nc = c - 1;
 			curcost = cost[nr][nc];
 		}
 		if (c < COLS && cost[r][c + 1] < curcost) {
-			cerr << "- " << cost[r][c + 1] << " | " << curcost << endl;
 			move2 = MOVE_E;
 			nr = r;
 			nc = c + 1;
 			curcost = cost[nr][nc];
 		}
-		if (r < MAP_ROW_END && c > 0 && cost[r + 1][c - 1] < curcost) {
-			cerr << "- " << cost[r + 1][c - 1] << " | " << curcost << endl;
+		if (r < MAP_ROW_END && c > 0 && cost[r + 1][c - 1] < curcost && branch[current_branch].door[r][c] == DA_NO_DOOR && branch[current_branch].door[r + 1][c - 1] == DA_NO_DOOR) {
 			move2 = MOVE_SW;
 			nr = r + 1;
 			nc = c - 1;
 			curcost = cost[nr][nc];
 		}
 		if (r < MAP_ROW_END && cost[r + 1][c] < curcost) {
-			cerr << "- " << cost[r + 1][c] << " | " << curcost << endl;
 			move2 = MOVE_S;
 			nr = r + 1;
 			nc = c;
 			curcost = cost[nr][nc];
 		}
-		if (r < MAP_ROW_END && c < COLS && cost[r + 1][c + 1] < curcost) {
-			cerr << "- " << cost[r + 1][c + 1] << " | " << curcost << endl;
+		if (r < MAP_ROW_END && c < COLS && cost[r + 1][c + 1] < curcost && branch[current_branch].door[r][c] == DA_NO_DOOR && branch[current_branch].door[r + 1][c + 1] == DA_NO_DOOR) {
 			move2 = MOVE_SE;
 			nr = r + 1;
 			nc = c + 1;
 			curcost = cost[nr][nc];
 		}
+		if (r == nr && c == nc)
+			return -1; // this shouldn' happen
 		if (move == -1)
 			move = move2;
 		if (lastmove2 != -1 && lastmove2 != move2)
@@ -306,12 +334,7 @@ char Saiph::shortestPath(int row, int col) {
 		r = nr;
 		c = nc;
 		lastmove2 = move2;
-		cerr << move2 << endl;;
 	}
-	cerr << endl;
-	cerr << "Direct line: " << direct_line << endl;
-	cerr << "Distance: " << distance << endl;
-
 	return move;
 }
 
@@ -324,59 +347,15 @@ void Saiph::inspect() {
 		for (int c = 0; c < COLS; ++c) {
 			int type = 0;
 			symbol = world->map[r][c];
-			if (isMonster(symbol))
-				type |= ANALYZE_MONSTER;
-			if (symbol == ')' || symbol == '[' || symbol == '=' || symbol == '"' || symbol == '(' || symbol == '%' || symbol == '!' || symbol == '?' || symbol == '+' || symbol == '/' || symbol == '$' || symbol == '*' || symbol == '9')
-				type |= ANALYZE_OBJECT;
-			/*
-				if (history.search[world->player.status.dungeon][r][c] < MAX_SEARCH) {
-					target[targets].row = r;
-					target[targets].col = c;
-					target[targets].priority = 51;
-					++targets;
-				}
-			*/
-			if (symbol == OPEN_DOOR || symbol == '7')
-				type |= ANALYZE_DOOR;
-			/*
-				if (history.search[world->player.status.dungeon][r][c] < MAX_SEARCH && (world->map[r][c - 1] == ' ' || world->map[r][c + 1] == ' ' || world->map[r - 1][c] == ' ' || world->map[r + 1][c] == ' ')) {
-					target[targets].row = r;
-					target[targets].col = c;
-					target[targets].priority = 50;
-					++targets;
-				}
-			*/
-			if (isPassable(symbol))
-				type |= ANALYZE_PASSABLE;
-			/*
-				if (history.search[world->player.status.dungeon][r][c] >= MAX_SEARCH || r <= MAP_ROW_START + 1 || r >= MAP_ROW_END - 1 || c <= 1 || c >= COLS - 1)
-					continue;
-				if (((world->map[r][c - 1] == ' ' || world->map[r][c + 1] == ' ') && ((world->map[r - 1][c] == '|' || world->map[r - 1][c] == '-') && (world->map[r + 1][c] == '|' || world->map[r + 1][c] == '-'))) || ((world->map[r - 1][c] == ' ' || world->map[r + 1][c] == ' ') && ((world->map[r][c - 1] == '|' || world->map[r][c - 1] == '-') && (world->map[r][c + 1] == '|' || world->map[r][c + 1] == '-')))) {
-					// missing door
-					target[targets].row = r;
-					target[targets].col = c;
-					target[targets].priority = 40;
-					++targets;
-					continue;
-				}
-				int paths = 0;
-				for (int r2 = r - 1; r2 <= r + 1; ++r2) {
-					for (int c2 = c - 1; c2 <= c + 1; ++c2) {
-						if (r2 == r && c2 == c)
-							continue;
-						if (world->map[r2][c2] != ' ' && world->map[r2][c2] != '-' && world->map[r2][c2] != '|' && world->map[r2][c2] != '8' && world->map[r2][c2] != '}' && world->map[r2][c2] != TREE && world->map[r2][c2] != IRON_BARS)
-							++paths;
-					}
-				}
-				if (paths <= 1) {
-					target[targets].row = r;
-					target[targets].col = c;
-					target[targets].priority = 20;
-					++targets;
-				}
-			*/
-			if (symbol == '^')
-				type |= ANALYZE_TRAP;
+			type |= isClosedDoor(symbol) ? ANALYZE_CLOSED_DOOR : ANALYZE_NONE;
+			type |= isMonster(symbol) ? ANALYZE_MONSTER : ANALYZE_NONE;
+			type |= isObject(symbol) ? ANALYZE_OBJECT : ANALYZE_NONE;
+			type |= isOpenDoor(symbol) ? ANALYZE_OPEN_DOOR : ANALYZE_NONE;
+			type |= isPassable(symbol) ? ANALYZE_PASSABLE : ANALYZE_NONE;
+			type |= isPet(symbol) ? ANALYZE_PET : ANALYZE_NONE;
+			type |= isPlayer(symbol) ? ANALYZE_PLAYER : ANALYZE_NONE;
+			type |= isTrap(symbol) ? ANALYZE_TRAP : ANALYZE_NONE;
+			type |= isUnpassable(symbol) ? ANALYZE_UNPASSABLE : ANALYZE_NONE;
 			for (int a = 0; a < analyzer_count; ++a) {
 				if ((type & analyzers[a]->type) != 0)
 					analyzers[a]->analyze(r, c, symbol);
@@ -385,17 +364,9 @@ void Saiph::inspect() {
 	}
 }
 
-bool Saiph::isMonster(char symbol) {
-	return (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~');
-}
-
-bool Saiph::isPassable(char symbol) {
-	return (symbol == ICE || symbol == LOWERED_DRAWBRIDGE || symbol == '#' || symbol == '.' || symbol == '<' || symbol == '>' || symbol == '_' || symbol == '\\' || symbol == '{' || symbol == ')' || symbol == '[' || symbol == '=' || symbol == '"' || symbol == '(' || symbol == '%' || symbol == '!' || symbol == '?' || symbol == '+' || symbol == '/' || symbol == '$' || symbol == '*' || symbol == '9' || symbol == OPEN_DOOR);
-}
-
 /* main */
 int main() {
 	Saiph saiph(false);
-	for (int a = 0; a < 100; ++a)
-		saiph.run();
+	while (saiph.run())
+		;
 }
