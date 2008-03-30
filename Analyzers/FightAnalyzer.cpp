@@ -40,12 +40,14 @@ void FightAnalyzer::finish() {
 			return;
 		}
 		cerr << "Fighting " << (char) monsters[toughest].threat << endl;
-		char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col);
+		int distance = 0;
+		bool direct_line = false;
+		char move = saiph->shortestPath(saiph->current_branch, saiph->world->player.status.dungeon, monsters[toughest].row, monsters[toughest].col, distance, direct_line);
 		if (move != -1) {
 			char command[2];
 			command[0] = move;
 			command[1] = '\0';
-			saiph->setNextCommand(command, 60);
+			saiph->setNextCommand(command, 70);
 			monster_count = 0;
 			return;
 		} else {

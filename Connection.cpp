@@ -1,5 +1,7 @@
 #include "Connection.h"
 
+#include <errno.h>
+
 /* constructors */
 Connection::Connection(bool remote) {
 	this->remote = remote;
@@ -55,11 +57,21 @@ Connection::~Connection() {
 /* methods */
 ssize_t Connection::retrieve(char *buffer, size_t count) {
 	/* retrieve data */
-	usleep(usleep_time);
-	ssize_t tmp = read(output[0], buffer, count);
-	if (tmp < (ssize_t) count)
-		buffer[tmp] = '\0';
-	return tmp;
+	ssize_t data_received = 0;
+	ssize_t data_received_total = 0;
+	int failed = 0;
+	while (data_received_total == 0 || data_received > 0 || failed < 5) {
+		data_received = read(output[0], &buffer[data_received_total], count - data_received_total);
+		if (data_received != -1)
+			data_received_total += data_received;
+		else
+			++failed;
+		cerr << data_received_total << " | " << data_received << endl;
+		//usleep(usleep_time);
+	}
+	if (data_received_total < (ssize_t) count)
+		buffer[data_received_total] = '\0';
+	return data_received_total;
 }
 
 ssize_t Connection::send(const char *buffer) {

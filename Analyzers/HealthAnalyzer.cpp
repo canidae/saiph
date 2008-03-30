@@ -19,7 +19,16 @@ void HealthAnalyzer::finish() {
 		 * spell, potion, unihorn, pray
 		 *
 		 * pray for now */
-		saiph->setNextCommand("#pray\n", 100);
+		saiph->setNextCommand(HA_PRAY, 100);
+	}
+	/* food */
+	if (saiph->world->player.status.hunger == FAINTING) {
+		saiph->setNextCommand(HA_PRAY, 100);
+	} else if (saiph->world->player.status.hunger == WEAK) {
+		/* eat food, or pray */
+		saiph->setNextCommand(HA_PRAY, 90);
+	} else if (saiph->world->player.status.hunger == HUNGRY) {
+		/* eat food */
 	}
 	/* hp */
 	int hp = saiph->world->player.status.hitpoints;
@@ -29,12 +38,12 @@ void HealthAnalyzer::finish() {
 		 * spell, potion, (elbereth?), pray
 		 *
 		 * pray for now */
-		saiph->setNextCommand("#pray\n", 100);
+		saiph->setNextCommand(HA_PRAY, 100);
 	} else if (hp * 2 < hp_max) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options
 		 *
 		 * elbereth for now */
-		saiph->setNextCommand("E- Elbereth\n", 90);
+		saiph->setNextCommand(HA_ENGRAVE_ELBERETH, 90);
 	}
 }

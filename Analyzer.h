@@ -17,6 +17,8 @@ class Analyzer;
 #define ANALYZE_PLAYER 0x0100
 #define ANALYZE_PET 0x0200
 
+#define ANALYZE_ALL 0xffff
+
 using namespace std;
 
 /* an analyzer can do whatever it wants */

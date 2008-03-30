@@ -1,27 +1,27 @@
-#ifndef DOORANALYZER_H
-#define DOORANALYZER_H
+#ifndef DUNGEONANALYZER_H
+#define DUNGEONANALYZER_H
 
 /* forward declare */
-class DoorAnalyzer;
+class DungeonAnalyzer;
 
 /* includes */
 #include "../Analyzer.h"
 #include "../Saiph.h"
 
 /* defines */
-#define DA_NO_DOOR 0
-#define DA_DOOR_OPEN 1
-#define DA_DOOR_CLOSED 2
+#define DA_NO_DUNGEON 0
+#define DA_DUNGEON_OPEN 1
+#define DA_DUNGEON_CLOSED 2
 
 using namespace std;
 
-class DoorAnalyzer : public Analyzer {
+class DungeonAnalyzer : public Analyzer {
 	public:
 		/* constructors */
-		DoorAnalyzer(Saiph *saiph);
+		DungeonAnalyzer(Saiph *saiph);
 
 		/* destructors */
-		~DoorAnalyzer();
+		~DungeonAnalyzer();
 
 		/* methods */
 		virtual void analyze(int row, int col, char symbol);

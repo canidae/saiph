@@ -163,7 +163,7 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 		}
 		if (pos >= data_size) {
 			cerr << "Did not find stop char for sequence" << endl;
-			cerr << &data[pos] << endl;
+			cerr << data << endl;
 			exit(6);
 		}
 	} else if (data[pos] == '(') {
@@ -284,10 +284,16 @@ void World::update() {
 				/* add this char to the map */
 				if (col >= COLS || row >= ROWS || col < 0 || row < 0) {
 					cerr << "Fell out of the dungeon: " << row << ", " << col << endl;
-					cerr << &data[pos] << endl;
+					cerr << data_size << endl;
+					cerr << pos << endl;
+					cerr << data << endl;
 					exit(4);
 				}
 				/* remap ambigous symbols */
+				if (colour == 7 && data[pos] == '@') {
+					player.row = row;
+					player.col = col;
+				}
 				if ((data[pos] == '|' || data[pos] == '-') && colour == 33)
 					map[row][col] = OPEN_DOOR;
 				else if (data[pos] == '#' && colour == 32)
@@ -321,7 +327,7 @@ void World::update() {
 	/* parse attribute & status rows */
 	player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	player.parseStatusRow(map[STATUS_ROW]);
-	/* the last escape sequence place the cursor on the player,
+	/* the last escape sequence *sometimes* place the cursor on the player,
 	 * which is quite handy since we won't have to search for the player then */
 	map[row][col] = PLAYER;
 	player.row = row;

@@ -11,10 +11,10 @@ class Connection;
 
 /* local nethack */
 #define LOCAL_NETHACK "/usr/games/nethack"
-#define LOCAL_USLEEP 20000
+#define LOCAL_USLEEP 5000 // 5ms
 /* remote nethack */
 #define REMOTE_NETHACK ""
-#define REMOTE_USLEEP 2000000
+#define REMOTE_USLEEP 25000 // 25ms
 
 using namespace std;
 
