@@ -14,8 +14,10 @@ Dungeon::~Dungeon() {
 
 /* methods */
 void Dungeon::clone(const Dungeon *dungeon) {
-	for (int r = 0; r < ROWS; ++r)
-		strcpy(map[r], dungeon->map[r]);
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS + 1; ++c)
+			map[r][c] = dungeon->map[r][c];
+	}
 	strcpy(messages, dungeon->messages);
 	player = dungeon->player;
 }

@@ -1,12 +1,8 @@
 #ifndef PLAYER_H
+/* defines */
 #define PLAYER_H
-
-/* forward declare */
-class Player;
-
-#include <iostream>
-#include "Globals.h"
-
+/* text length for reading textual attribute/status */
+#define MAX_TEXT_LENGTH 16
 /* alignment */
 #define CHAOTIC -1
 #define NEUTRAL 0
@@ -26,8 +22,18 @@ class Player;
 #define SATIATED 1
 #define OVERSATIATED 2
 
+/* includes */
+#include <iostream>
+
+/* forward declare */
+class Player;
+
+/* includes */
+
+/* namespace */
 using namespace std;
 
+/* all values found in the attribute row */
 struct Attributes {
 	/* numeric values */
 	int strength;
@@ -39,6 +45,7 @@ struct Attributes {
 	int alignment; // see defined constants
 };
 
+/* all values found in the status row */
 struct Status {
 	/* numeric values */
 	int dungeon;
@@ -61,6 +68,7 @@ struct Status {
 	bool stunned;
 };
 
+/* the player class holds various info about the player */
 class Player {
 	public:
 		/* variables */

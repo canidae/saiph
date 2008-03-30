@@ -43,13 +43,12 @@ Player::~Player() {
 /* methods */
 void Player::parseAttributeRow(const char *attributerow) {
 	/* fetch attributes */
-	char alignment[COLS];
+	char alignment[MAX_TEXT_LENGTH];
 	alignment[0] = '\0';
 	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &attributes.strength, &attributes.dexterity, &attributes.constitution, &attributes.intelligence, &attributes.wisdom, &attributes.charisma, alignment);
 	if (matched < 7) {
 		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
 		cerr << attributerow << endl;
-		exit(11);
 	}
 	if (alignment[0] == 'L')
 		attributes.alignment = LAWFUL;
@@ -70,12 +69,11 @@ void Player::parseStatusRow(const char *statusrow) {
 	status.ill = false;
 	status.slimed = false;
 	status.stunned = false;
-	char effects[5][COLS];
+	char effects[5][MAX_TEXT_LENGTH];
 	int matched = sscanf(statusrow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &status.dungeon, &status.zorkmids, &status.hitpoints, &status.hitpoints_max, &status.power, &status.power_max, &status.armor_class, &status.experience, &status.turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
 	if (matched < 9) {
 		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
 		cerr << statusrow << endl;
-		exit(12);
 	}
 	int effects_found = matched - 9;
 	for (int a = 0; a < effects_found; ++a) {

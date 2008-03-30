@@ -1,7 +1,5 @@
 #include "Connection.h"
 
-#include <errno.h>
-
 /* constructors */
 Connection::Connection(bool remote) {
 	this->remote = remote;
@@ -66,7 +64,6 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 			data_received_total += data_received;
 		else
 			++failed;
-		cerr << data_received_total << " | " << data_received << endl;
 		//usleep(usleep_time);
 	}
 	if (data_received_total < (ssize_t) count)

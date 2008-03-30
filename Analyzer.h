@@ -1,10 +1,7 @@
 #ifndef ANALYZER_H
-#define ANALYZER_H
-
-/* forward declare */
-class Analyzer;
-
 /* defines */
+#define ANALYZER_H
+/* tiles to be analyzed */
 #define ANALYZE_NONE 0x0000
 #define ANALYZE_CLOSED_DOOR 0x0001
 #define ANALYZE_OPEN_DOOR 0x0002
@@ -16,12 +13,19 @@ class Analyzer;
 #define ANALYZE_UNEXPLORED 0x0080
 #define ANALYZE_PLAYER 0x0100
 #define ANALYZE_PET 0x0200
-
+#define ANALYZE_BOULDER 0x0400
+/* or analyze all tiles */
 #define ANALYZE_ALL 0xffff
 
+/* forward declare */
+class Analyzer;
+
+/* includes */
+
+/* namespace */
 using namespace std;
 
-/* an analyzer can do whatever it wants */
+/* analyze every tile of type and/or do whatever you want in finish() */
 class Analyzer {
 	public:
 		/* variables */
@@ -34,6 +38,7 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
+		virtual void start();
 		virtual void analyze(int row, int col, char symbol);
 		virtual void finish();
 };

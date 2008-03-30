@@ -1,14 +1,18 @@
 #ifndef STASH_H
+/* defines */
 #define STASH_H
+#define MAX_ITEMS 128
 
 /* forward declare */
 class Stash;
 
-#define MAX_ITEMS 128
+/* includes */
 
+/* namespace */
 using namespace std;
 
-/* a Stash is a pile of 1 or more items */
+/* a stash is a pile of 1 or more items
+ * TODO? */
 class Stash {
 	public:
 		/* variables */

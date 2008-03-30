@@ -10,12 +10,18 @@ class ExploreAnalyzer;
 
 /* defines */
 #define EA_MAX_PLACES 128
+#define EA_DEAD_END_VALUE 40
+#define EA_TURN_VALUE 30
+#define EA_STRAIGHT_PATH_VALUE 20
+#define EA_T_CROSS_VALUE 10
+#define EA_NOTHING_VALUE 0
 
 using namespace std;
 
-struct Place {
+struct EA_Place {
 	int row;
 	int col;
+	char move;
 	int value;
 };
 
@@ -33,9 +39,8 @@ class ExploreAnalyzer : public Analyzer {
 
 	private:
 		/* variables */
-		Place places[EA_MAX_PLACES];
+		EA_Place places[EA_MAX_PLACES];
 		int place_count;
-		int max_score;
 		Saiph *saiph;
 };
 

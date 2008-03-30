@@ -15,12 +15,12 @@ Saiph::Saiph(bool remote) {
 	this->history.last_pray = 0;
 
 	/* pathing */
-	memset(pathcost, PATH_MAX_COST - 1, ROWS * COLS);
+	memset(pathcost, 0xff, ROWS * COLS * sizeof(unsigned short));
 
 	/* branches */
 	this->current_branch = BRANCH_MAIN;
 	for (int b = 0; b < MAX_BRANCHES; ++b) {
-		memset(this->branches[b].map, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
+		memset(this->branches[b].map, ' ', MAX_DUNGEON_DEPTH * ROWS * COLS);
 		memset(this->branches[b].search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
 	}
 
@@ -51,29 +51,32 @@ void Saiph::dumpScreens() {
 	/* world map */
 	cout << world->data;
 	/* search map */
-	cout << (unsigned char) 27 << "[26;1H";
+	cout << (char) 27 << "[26;1H";
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (branches[current_branch].search[world->player.status.dungeon][r][c] + 32);
+			if (branches[current_branch].search[world->player.status.dungeon][r][c] == 0)
+				cout << ' ';
+			else
+				cout << (char) (branches[current_branch].search[world->player.status.dungeon][r][c] + 64);
 		}
 		cout << endl;
 	}
 	/* world map as the bots sees it */
 	for (int r = 0; r < ROWS; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
+		cout << (char) 27 << "[" << r + 1 << ";82H";
 		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (world->map[r][c]);
+			cout << (char) (branches[current_branch].map[world->player.status.dungeon][r][c]);
 		}
 	}
 	/* last path */
 	for (int r = 0; r < ROWS; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
+		cout << (char) 27 << "[" << r + 26 << ";82H";
 		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (pathcost[r][c] + 48);
+			cout << (char) (pathcost[r][c] + 48);
 		}
 	}
 	/* return cursor back to player */
-	cout << (unsigned char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
+	cout << (char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
 }
 
 void Saiph::farlook(int row, int col) {
@@ -134,9 +137,19 @@ char Saiph::findNextDirection(const int to_row, const int to_col, int &from_row,
 	return -1;
 }
 
+bool Saiph::hasBoulder(int branch, int dungeon, int row, int col) {
+	char symbol = branches[branch].map[dungeon][row][col];
+	return isBoulder(symbol);
+}
+
 bool Saiph::hasClosedDoor(int branch, int dungeon, int row, int col) {
 	char symbol = branches[branch].map[dungeon][row][col];
 	return isClosedDoor(symbol);
+}
+
+bool Saiph::hasCorridor(int branch, int dungeon, int row, int col) {
+	char symbol = branches[branch].map[dungeon][row][col];
+	return isCorridor(symbol);
 }
 
 bool Saiph::hasMonster(int branch, int dungeon, int row, int col) {
@@ -155,7 +168,7 @@ bool Saiph::hasObject(int branch, int dungeon, int row, int col) {
 
 bool Saiph::hasOpenDoor(int branch, int dungeon, int row, int col) {
 	char symbol = branches[branch].map[dungeon][row][col];
-	return isObject(symbol);
+	return isOpenDoor(symbol);
 }
 
 bool Saiph::hasPassable(int branch, int dungeon, int row, int col) {
@@ -191,8 +204,16 @@ bool Saiph::hasUnpassable(int branch, int dungeon, int row, int col) {
 	return isUnpassable(symbol);
 }
 
+bool Saiph::isBoulder(char symbol) {
+	return (symbol == '0');
+}
+
 bool Saiph::isClosedDoor(char symbol) {
 	return (symbol == '7');
+}
+
+bool Saiph::isCorridor(char symbol) {
+	return (symbol == '#');
 }
 
 bool Saiph::isMonster(char symbol) {
@@ -231,10 +252,6 @@ bool Saiph::isUnpassable(char symbol) {
 	return (symbol == '|' || symbol == '-' || symbol == '8' || symbol == TREE || symbol == IRON_BARS);
 }
 
-void Saiph::parseMessages() {
-	cerr << world->messages << endl;
-}
-
 bool Saiph::run() {
 	/* print stuff so we see what we're doing */
 	dumpScreens();
@@ -248,14 +265,14 @@ bool Saiph::run() {
 	history.map[history.map_counter].clone(world);
 
 	/* deal with messages */
-	parseMessages();
+	parser->parse();
+
+	/* call start() in analyzers */
+	for (int a = 0; a < analyzer_count; ++a)
+		analyzers[a]->start();
 
 	/* inspect the dungeon */
 	inspect();
-	//cerr << "Interesting places: " << targets << endl;
-	//for (int a = 0; a < targets; ++a) {
-	//	cerr << target[a].row << ", " << target[a].col << ": " << target[a].priority << endl;
-	//}
 
 	/* call finish() in analyzers */
 	for (int a = 0; a < analyzer_count; ++a)
@@ -290,7 +307,7 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 	/* is this dijkstra? */
 	distance = 0;
 	direct_line = true;
-	memset(pathcost, PATH_MAX_COST - 1, ROWS * COLS);
+	memset(pathcost, 0xff, ROWS * COLS * sizeof(unsigned short));
 	pathcost[row][col] = 0;
 	int nextnode = 0;
 	int nodes = 1;
@@ -298,7 +315,7 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 	pathpos[nextnode][1] = col;
 	int curcost = 0;
 	bool target_found = false;
-	while (nextnode < nodes && !target_found && curcost < (PATH_MAX_COST - COST_DIAGONAL - 1) && curcost < (PATH_MAX_COST - COST_CARDINAL - 1)) {
+	while (nextnode < nodes && !target_found && nextnode < MAX_NODES) {
 		int tr = pathpos[nextnode][0];
 		int tc = pathpos[nextnode][1];
 		curcost = pathcost[tr][tc];
@@ -334,7 +351,6 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 		return -1;
 	}
 
-	cerr << "Pathing to " << row << ", " << col << " from " << world->player.row << ", " << world->player.col << endl;
 	/* least pathcosting move from player is in the right direction */
 	int r = world->player.row;
 	int c = world->player.col;

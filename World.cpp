@@ -248,8 +248,15 @@ void World::update() {
 	/* update the map */
 	int colour = 0; // colour of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
+	cerr << data << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
+			case 0:
+				/* sometimes we get lots of \0 characters.
+				 * seemingly this happens when certain effects happen.
+				 * for example, gas spore explotion, dagger thrown, etc.
+				 * let's simply ignore these */
+				break;
 			case 8:
 				/* backspace.
 				 * make it go 1 char left */
@@ -287,7 +294,7 @@ void World::update() {
 					cerr << data_size << endl;
 					cerr << pos << endl;
 					cerr << data << endl;
-					exit(4);
+					break;
 				}
 				/* remap ambigous symbols */
 				if (colour == 7 && data[pos] == '@') {

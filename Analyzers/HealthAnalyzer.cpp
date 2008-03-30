@@ -26,7 +26,7 @@ void HealthAnalyzer::finish() {
 		saiph->setNextCommand(HA_PRAY, 100);
 	} else if (saiph->world->player.status.hunger == WEAK) {
 		/* eat food, or pray */
-		saiph->setNextCommand(HA_PRAY, 90);
+		//saiph->setNextCommand(HA_PRAY, 90);
 	} else if (saiph->world->player.status.hunger == HUNGRY) {
 		/* eat food */
 	}

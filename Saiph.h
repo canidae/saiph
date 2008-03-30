@@ -1,23 +1,6 @@
 #ifndef SAIPH_H
+/* defines */
 #define SAIPH_H
-
-/* forward declare */
-class Saiph;
-
-/* includes */
-#include "Analyzer.h"
-#include "Connection.h"
-#include "Globals.h"
-#include "MessageParser.h"
-#include "Player.h"
-#include "World.h"
-
-/* analyzers */
-#include "Analyzers/DungeonAnalyzer.h"
-#include "Analyzers/ExploreAnalyzer.h"
-#include "Analyzers/FightAnalyzer.h"
-#include "Analyzers/HealthAnalyzer.h"
-
 /* general defines */
 #define HISTORY 128
 #define MAX_ANALYZERS 32
@@ -27,7 +10,6 @@ class Saiph;
 #define MAX_DUNGEON_DEPTH 64
 #define MAX_EXPLORE 128
 #define MAX_SEARCH 16
-
 /* branches */
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
@@ -35,16 +17,14 @@ class Saiph;
 #define BRANCH_VLAD 3
 #define BRANCH_WIZARD 4
 #define BRANCH_ASTRAL 5
-
 /* pathing */
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
-#define PATH_MAX_COST 256 // may not exceed 256 (using unsigned char)
-
+#define COST_TRAP 128 // try hard to avoid traps
+#define MAX_NODES 512 // should cover even the most wicked dungeons
 /* questions looks like this
  * ? [ynq] (n)
  */
-
 /* movement */
 #define MOVE_NW 'y'
 #define MOVE_N 'k'
@@ -57,18 +37,37 @@ class Saiph;
 #define MOVE_UP '<'
 #define MOVE_DOWN '>'
 
+/* forward declare */
+class Saiph;
+
+/* includes */
+#include "Analyzer.h"
+#include "Connection.h"
+#include "MessageParser.h"
+#include "Player.h"
+#include "World.h"
+/* analyzers */
+#include "Analyzers/DungeonAnalyzer.h"
+#include "Analyzers/ExploreAnalyzer.h"
+#include "Analyzers/FightAnalyzer.h"
+#include "Analyzers/HealthAnalyzer.h"
+
+/* namespace */
 using namespace std;
 
+/* a branch holds a "static map" for all branches/dlvl's */
 struct Branch {
-	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (monsters, objects)
+	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (monsters, objects, etc)
 	char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
 };
 
+/* a command to send to the game */
 struct Command {
 	char command[MAX_COMMAND_LENGTH];
 	int priority;
 };
 
+/* TODO */
 struct History {
 	Dungeon map[HISTORY];
 	int map_counter;
@@ -95,7 +94,9 @@ class Saiph {
 		void dumpScreens();
 		void farlook(int row, int col);
 		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
+		bool hasBoulder(int branch, int dungeon, int row, int col);
 		bool hasClosedDoor(int branch, int dungeon, int row, int col);
+		bool hasCorridor(int branch, int dungeon, int row, int col);
 		bool hasMonster(int branch, int dungeon, int row, int col);
 		bool hasObject(int branch, int dungeon, int row, int col);
 		bool hasOpenDoor(int branch, int dungeon, int row, int col);
@@ -105,7 +106,9 @@ class Saiph {
 		bool hasTrap(int branch, int dungeon, int row, int col);
 		bool hasUnexplored(int branch, int dungeon, int row, int col);
 		bool hasUnpassable(int branch, int dungeon, int row, int col);
+		bool isBoulder(char symbol);
 		bool isClosedDoor(char symbol);
+		bool isCorridor(char symbol);
 		bool isMonster(char symbol);
 		bool isObject(char symbol);
 		bool isOpenDoor(char symbol);
@@ -115,7 +118,6 @@ class Saiph {
 		bool isTrap(char symbol);
 		bool isUnexplored(char symbol);
 		bool isUnpassable(char symbol);
-		void parseMessages();
 		bool run();
 		void setNextCommand(const char *command, int priority);
 		char shortestPath(int branch, int dungeon, int row, int col, int &distance, bool &direct_line);
@@ -126,8 +128,8 @@ class Saiph {
 		int analyzer_count;
 		Command command;
 		Connection *connection;
-		unsigned char pathcost[ROWS][COLS];
-		unsigned char pathpos[PATH_MAX_COST][2];
+		unsigned short pathcost[ROWS][COLS];
+		unsigned char pathpos[MAX_NODES][2];
 
 		/* methods */
 		void inspect();

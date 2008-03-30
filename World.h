@@ -1,14 +1,6 @@
 #ifndef WORLD_H
+/* defines */
 #define WORLD_H
-
-/* forward declare */
-class World;
-
-#include "Connection.h"
-#include "Globals.h"
-#include "Dungeon.h"
-#include "Player.h"
-
 /* where we can find various stuff */
 #define MAP_ROW_START 1 // where the actual map start
 #define MAP_ROW_END 21 // and end
@@ -29,8 +21,18 @@ class World;
 #define PET -120
 #define PLAYER -119
 
+/* forward declare */
+class World;
+
+/* includes */
+#include "Connection.h"
+#include "Dungeon.h"
+#include "Player.h"
+
+/* namespace */
 using namespace std;
 
+/* the world in our eyes */
 class World: public Dungeon {
 	public:
 		/* variables */
@@ -50,8 +52,8 @@ class World: public Dungeon {
 		/* variables */
 		int row; // cursor position, row
 		int col; // cursor position, col
-		int messages_pos; // used for reading multiple messages
 		Connection *connection;
+		int messages_pos; // used for concatenation multiple messages together
 
 		/* methods */
 		void handleEscapeSequence(int &pos, int &colour);

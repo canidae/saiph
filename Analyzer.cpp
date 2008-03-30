@@ -10,6 +10,9 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
+void Analyzer::start() {
+}
+
 void Analyzer::analyze(int row, int col, char symbol) {
 }
 

@@ -24,8 +24,7 @@ class DungeonAnalyzer : public Analyzer {
 		~DungeonAnalyzer();
 
 		/* methods */
-		virtual void analyze(int row, int col, char symbol);
-		virtual void finish();
+		virtual void start();
 
 	private:
 		/* variables */
