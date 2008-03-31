@@ -30,6 +30,7 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 	symbols[symbol_count++] = GEM;
 	symbols[symbol_count++] = STATUE;
 	symbols[symbol_count++] = IRON_BALL;
+	symbols[symbol_count++] = PLAYER;
 }
 
 /* methods */
@@ -50,31 +51,27 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	bool june = (js == SOLID_ROCK);
 	bool kune = (ks == SOLID_ROCK);
 	bool lune = (ls == SOLID_ROCK);
-	/* unexplored edges */
-	int une = (hune ? 1 : 0) + (june ? 1 : 0) + (kune ? 1 : 0) + (lune ? 1 : 0);
 	/* hjkl unpassable (only walls) */
 	bool hunp = (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL);
 	bool junp = (js == VERTICAL_WALL || js == HORIZONTAL_WALL);
 	bool kunp = (ks == VERTICAL_WALL || ks == HORIZONTAL_WALL);
 	bool lunp = (ls == VERTICAL_WALL || ls == HORIZONTAL_WALL);
-	/* unpassable edges */
-	int unp = (hunp ? 1 : 0) + (junp ? 1 : 0) + (kunp ? 1 : 0) + (lunp ? 1 : 0);
-	/* hjkl unexplored or unpassable */
-	bool h = hune || hunp;
-	bool j = june || junp;
-	bool k = kune || kunp;
-	bool l = lune || lunp;
+	/* are we on floor? */
+	bool floor = (saiph->branches[branch].map[dungeon][row][col] == FLOOR);
+	/* figure out score */
 	int score = 0;
-	if ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))
-		score = (une >= unp) ? EX_DEAD_END_CORRIDOR : EX_DEAD_END_ROOM;
-	else if ((h && j) || (h && k) || (j && l) || (k && l))
-		score = (une >= unp) ? EX_TURN_CORRIDOR : EX_TURN_ROOM;
-	else if ((h && l) || (j && k))
-		score = (une >= unp) ? EX_STRAIGHT_CORRIDOR : EX_STRAIGHT_ROOM;
-	else if ((h || j || k || l))
-		score = (une >= unp) ? EX_TCROSS_CORRIDOR : EX_TCROSS_ROOM;
+	if ((hune && june && kune) || (june && kune && lune) || (hune && kune && lune) || (hune && june && lune))
+		score = EX_DEAD_END;
+	else if ((hune && june) || (hune && kune) || (june && lune) || (kune && lune))
+		score = floor ? EX_UNLIT_ROOM : EX_TURN;
+	else if ((hunp && lunp && (june || kune)) || (junp && kunp && (hune || lune)))
+		score = EX_ROOM_EXIT;
+	else if ((hunp || junp || kunp || lunp) && floor)
+		score = EX_EXTRA_SEARCH;
+
 	if (score <= 0)
 		return; // this place isn't very exciting
+	cerr << "ExploreAnalyzer " << row << ", " << col << ": " << score << endl;
 	places[place_count].row = row;
 	places[place_count].col = col;
 	places[place_count].move = -1;
@@ -96,7 +93,7 @@ void ExploreAnalyzer::finish() {
 			int distance = 0;
 			bool direct_line = false;
 			if (places[pb].value >= best) {
-				places[pb].move = saiph->shortestPath(branch, dungeon, places[pb].row, places[pb].col, distance, direct_line);
+				places[pb].move = saiph->shortestPath(places[pb].row, places[pb].col, distance, direct_line);
 				if (places[pb].value > best || distance < nearest) {
 					p = pb;
 					nearest = distance;

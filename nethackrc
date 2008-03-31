@@ -47,10 +47,10 @@ OPTIONS=!legacy
 OPTIONS=lit_corridor
 OPTIONS=!mail
 OPTIONS=menustyle:partial
-OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@69&;:~m
+OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~m
 OPTIONS=name:saiph
 OPTIONS=number_pad:0
-OPTIONS=objects:m)[="(%!?+/$*'```
+OPTIONS=objects:m)[="(%!?+/$*````
 OPTIONS=pettype:none
 OPTIONS=pickup_burden:Overtaxed
 OPTIONS=!prayconfirm

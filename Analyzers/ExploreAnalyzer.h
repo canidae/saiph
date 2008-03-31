@@ -3,14 +3,12 @@
 #define EXPLOREANALYZER_H
 /* various */
 #define EX_MAX_PLACES 128
-#define EX_DEAD_END_CORRIDOR 20 // think of a corridor that ends
-#define EX_DEAD_END_ROOM 5 // think of a path in a maze that ends
-#define EX_TURN_CORRIDOR 15 // think of a turn in a corridor
-#define EX_TURN_ROOM 10 // think of a corner in a room
-#define EX_STRAIGHT_CORRIDOR 5 // think of a corridor going straight ahead
-#define EX_STRAIGHT_ROOM 5 // think of straight path in a maze
-#define EX_TCROSS_CORRIDOR 5 // think of 3 corridors joining
-#define EX_TCROSS_ROOM 10 // think of a straight wall
+
+#define EX_DEAD_END 20 // corridor that just ends
+#define EX_UNLIT_ROOM 20 // room where we haven't seen the floor
+#define EX_TURN 15 // corridor that turns
+#define EX_ROOM_EXIT 10 // path leading out of room
+#define EX_EXTRA_SEARCH 5 // frantic searching for door
 
 /* forward declare */
 class ExploreAnalyzer;

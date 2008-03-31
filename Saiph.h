@@ -98,7 +98,7 @@ class Saiph {
 		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
 		bool run();
 		void setNextCommand(const char *command, int priority);
-		char shortestPath(int branch, int dungeon, int row, int col, int &distance, bool &direct_line);
+		char shortestPath(int row, int col, int &distance, bool &direct_line);
 
 	private:
 		/* variables */

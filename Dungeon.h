@@ -107,7 +107,7 @@
 #define WAND '/'
 #define GOLD '$'
 #define GEM '*'
-#define STATUE '9'
+#define STATUE '`'
 #define BOULDER '0'
 #define IRON_BALL '`'
 #define CHAINS '`'

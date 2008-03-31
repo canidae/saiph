@@ -10,7 +10,6 @@ Saiph::Saiph(bool remote) {
 	command.priority = 0;
 
 	/* history */
-	//memset(history.explored, 0, MAX_DUNGEON * ROWS * COLS);
 	history.map_counter = 0;
 	history.last_pray = 0;
 
@@ -190,13 +189,15 @@ void Saiph::setNextCommand(const char *command, int priority) {
 	this->command.priority = priority;
 }
 
-char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distance, bool &direct_line) {
+char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 	/* attempt to find the shortest path to destination.
 	 * return unsigned character for which direction player should move
 	 * or -1 if unable to find a path */
 	/* is this dijkstra? */
 	distance = 0;
 	direct_line = true;
+	if (row == world->player.row && col == world->player.col)
+		return -1; // path to where we're standing? :o
 	memset(pathcost, 0xff, ROWS * COLS * sizeof(unsigned short));
 	pathcost[row][col] = 0;
 	int nextnode = 0;
@@ -215,10 +216,10 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 			for (int c = sc - 1; c <= sc + 1 && !target_found; ++c) {
 				if (c < 0 || c >= COLS)
 					continue;
-				char s = branches[branch].map[dungeon][r][c];
+				char s = branches[current_branch].map[world->player.status.dungeon][r][c];
 				if (s == SOLID_ROCK || s == VERTICAL_WALL || s == HORIZONTAL_WALL || s == CLOSED_DOOR || s == IRON_BARS || s == TREE || s == WATER || s == LAVA || s == BOULDER)
 					continue; // can't (or won't) move to these tiles
-				if (r != sr && c != sc && (s == OPEN_DOOR || branches[branch].map[dungeon][sr][sc] == OPEN_DOOR))
+				if (r != sr && c != sc && (s == OPEN_DOOR || branches[current_branch].map[world->player.status.dungeon][sr][sc] == OPEN_DOOR))
 					continue; // can't move diagonally in/out of a door */
 				if (r == world->player.row && c == world->player.col) {
 					pathcost[r][c] = curcost + 1;
@@ -250,11 +251,15 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 	curcost = pathcost[r][c];
 	char move = -1;
 	char lastmove = -1;
-	while (r != row || c != col) {
+	char firstmove = -1;
+	int b = current_branch;
+	int d = world->player.status.dungeon;
+	while (curcost > 0) {
 		++distance;
 		int nr = r;
 		int nc = c;
-		if (pathcost[r - 1][c - 1] < curcost) {
+		char ss = branches[b].map[d][r][c];
+		if (pathcost[r - 1][c - 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r - 1][c - 1] == OPEN_DOOR)) {
 			move = MOVE_NW;
 			nr = r - 1;
 			nc = c - 1;
@@ -266,7 +271,7 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 			nc = c;
 			curcost = pathcost[nr][nc];
 		}
-		if (pathcost[r - 1][c + 1] < curcost) {
+		if (pathcost[r - 1][c + 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r - 1][c + 1] == OPEN_DOOR)) {
 			move = MOVE_NE;
 			nr = r - 1;
 			nc = c + 1;
@@ -284,7 +289,7 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 			nc = c + 1;
 			curcost = pathcost[nr][nc];
 		}
-		if (pathcost[r + 1][c - 1] < curcost) {
+		if (pathcost[r + 1][c - 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r + 1][c - 1] == OPEN_DOOR)) {
 			move = MOVE_SW;
 			nr = r + 1;
 			nc = c - 1;
@@ -296,7 +301,7 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 			nc = c;
 			curcost = pathcost[nr][nc];
 		}
-		if (pathcost[r + 1][c + 1] < curcost) {
+		if (pathcost[r + 1][c + 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r + 1][c + 1] == OPEN_DOOR)) {
 			move = MOVE_SE;
 			nr = r + 1;
 			nc = c + 1;
@@ -307,8 +312,10 @@ char Saiph::shortestPath(int branch, int dungeon, int row, int col, int &distanc
 		r = nr;
 		c = nc;
 		lastmove = move;
+		if (firstmove == -1)
+			firstmove = move;
 	}
-	return move;
+	return firstmove;
 }
 
 /* private methods */
@@ -338,6 +345,8 @@ void Saiph::inspect() {
 /* main */
 int main() {
 	Saiph saiph(false);
-	while (saiph.run())
+	for (int a = 0; a < 5 && saiph.run(); ++a)
 		;
+	//while (saiph.run())
+	//	;
 }
