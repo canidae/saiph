@@ -6,8 +6,6 @@
 /* forward declare */
 class Stash;
 
-/* includes */
-
 /* namespace */
 using namespace std;
 
@@ -32,5 +30,4 @@ class Stash {
 
 	private:
 };
-
 #endif

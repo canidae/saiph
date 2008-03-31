@@ -1,27 +1,11 @@
 #ifndef ANALYZER_H
 /* defines */
 #define ANALYZER_H
-/* tiles to be analyzed */
-#define ANALYZE_NONE 0x0000
-#define ANALYZE_CLOSED_DOOR 0x0001
-#define ANALYZE_OPEN_DOOR 0x0002
-#define ANALYZE_OBJECT 0x0004
-#define ANALYZE_PASSABLE 0x0008
-#define ANALYZE_UNPASSABLE 0x0010
-#define ANALYZE_MONSTER 0x0020
-#define ANALYZE_TRAP 0x0040
-#define ANALYZE_UNEXPLORED 0x0080
-#define ANALYZE_PLAYER 0x0100
-#define ANALYZE_PET 0x0200
-#define ANALYZE_BOULDER 0x0400
-#define ANALYZE_STAIR 0x0800
-/* or analyze all tiles */
-#define ANALYZE_ALL 0xffff
+/* max symbols an analyzer can track */
+#define MAX_SYMBOLS 64
 
 /* forward declare */
 class Analyzer;
-
-/* includes */
 
 /* namespace */
 using namespace std;
@@ -30,7 +14,9 @@ using namespace std;
 class Analyzer {
 	public:
 		/* variables */
-		int type;
+		int max_priority;
+		char symbols[MAX_SYMBOLS];
+		int symbol_count;
 
 		/* constructors */
 		Analyzer();
@@ -44,5 +30,4 @@ class Analyzer {
 		virtual void finish();
 		virtual void end();
 };
-
 #endif

@@ -3,41 +3,37 @@
 /* constructors */
 Player::Player() {
 	/* zero attributes */
-	this->attributes.strength = 0;
-	this->attributes.dexterity = 0;
-	this->attributes.constitution = 0;
-	this->attributes.intelligence = 0;
-	this->attributes.wisdom = 0;
-	this->attributes.charisma = 0;
-	this->attributes.alignment = 0;
+	attributes.strength = 0;
+	attributes.dexterity = 0;
+	attributes.constitution = 0;
+	attributes.intelligence = 0;
+	attributes.wisdom = 0;
+	attributes.charisma = 0;
+	attributes.alignment = 0;
 
 	/* zero status */
-	this->status.dungeon = 0;
-	this->status.zorkmids = 0;
-	this->status.hitpoints = 0;
-	this->status.hitpoints_max = 0;
-	this->status.power = 0;
-	this->status.power_max = 0;
-	this->status.armor_class = 0;
-	this->status.experience = 0;
-	this->status.turn = 0;
-	this->status.encumbrance = 0;
-	this->status.hunger = 0;
-	this->status.blind = false;
-	this->status.confused = false;
-	this->status.foodpoisoned = false;
-	this->status.hallucinating = false;
-	this->status.ill = false;
-	this->status.slimed = false;
-	this->status.stunned = false;
+	status.dungeon = 0;
+	status.zorkmids = 0;
+	status.hitpoints = 0;
+	status.hitpoints_max = 0;
+	status.power = 0;
+	status.power_max = 0;
+	status.armor_class = 0;
+	status.experience = 0;
+	status.turn = 0;
+	status.encumbrance = 0;
+	status.hunger = 0;
+	status.blind = false;
+	status.confused = false;
+	status.foodpoisoned = false;
+	status.hallucinating = false;
+	status.ill = false;
+	status.slimed = false;
+	status.stunned = false;
 
 	/* zero position */
-	this->col = 0;
-	this->row = 0;
-}
-
-/* destructors */
-Player::~Player() {
+	col = 0;
+	row = 0;
 }
 
 /* methods */

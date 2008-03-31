@@ -22,13 +22,11 @@
 #define SATIATED 1
 #define OVERSATIATED 2
 
-/* includes */
-#include <iostream>
-
 /* forward declare */
 class Player;
 
 /* includes */
+#include <iostream>
 
 /* namespace */
 using namespace std;
@@ -79,9 +77,6 @@ class Player {
 
 		/* constructors */
 		Player();
-
-		/* destructors */
-		~Player();
 
 		/* methods */
 		void parseAttributeRow(const char *attributerow);

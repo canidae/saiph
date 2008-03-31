@@ -2,7 +2,8 @@
 
 /* constructors */
 Analyzer::Analyzer() {
-	this->type = 0;
+	max_priority = 0;
+	symbol_count = 0;
 }
 
 /* destructors */

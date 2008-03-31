@@ -13,11 +13,11 @@ Connection::Connection(bool remote) {
 	if (remote) {
 		/* TODO */
 		/* play remotely */
-		this->usleep_time = REMOTE_USLEEP;
+		usleep_time = REMOTE_USLEEP;
 
 	} else {
 		/* play locally */
-		this->usleep_time = LOCAL_USLEEP;
+		usleep_time = LOCAL_USLEEP;
 		/* set up local pty */
 		int fd = 0;
 		char slave[256];
@@ -46,10 +46,6 @@ Connection::Connection(bool remote) {
 			}
 		}
 	}
-}
-
-/* destructors */
-Connection::~Connection() {
 }
 
 /* methods */

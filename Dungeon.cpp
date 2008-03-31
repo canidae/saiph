@@ -2,14 +2,10 @@
 
 /* constructors */
 Dungeon::Dungeon() {
-	memset(this->map, ' ', ROWS * (COLS + 1));
+	memset(map, ' ', ROWS * (COLS + 1));
 	for (int r = 0; r < ROWS; ++r)
-		this->map[r][COLS] = '\0';
-	memset(this->messages, '\0', BUFFER_SIZE);
-}
-
-/* destructors */
-Dungeon::~Dungeon() {
+		map[r][COLS] = '\0';
+	memset(messages, '\0', BUFFER_SIZE);
 }
 
 /* methods */

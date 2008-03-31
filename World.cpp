@@ -3,17 +3,13 @@
 /* constructors */
 World::World(Connection *connection) {
 	this->connection = connection;
-	this->row = 0;
-	this->col = 0;
-	memset(this->data, '\0', BUFFER_SIZE);
-	this->data_size = -1;
-	this->messages_pos = 0;
+	row = 0;
+	col = 0;
+	memset(data, '\0', BUFFER_SIZE);
+	data_size = -1;
+	messages_pos = 0;
 	/* fetch the first "frame" */
 	update();
-}
-
-/* destructors */
-World::~World() {
 }
 
 /* methods */

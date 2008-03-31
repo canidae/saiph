@@ -96,34 +96,6 @@ class Saiph {
 		void dumpScreens();
 		void farlook(int row, int col);
 		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
-		bool hasBoulder(int branch, int dungeon, int row, int col);
-		bool hasClosedDoor(int branch, int dungeon, int row, int col);
-		bool hasCorridor(int branch, int dungeon, int row, int col);
-		bool hasDownStairs(int branch, int dungeon, int row, int col);
-		bool hasMonster(int branch, int dungeon, int row, int col);
-		bool hasObject(int branch, int dungeon, int row, int col);
-		bool hasOpenDoor(int branch, int dungeon, int row, int col);
-		bool hasPassable(int branch, int dungeon, int row, int col);
-		bool hasPet(int branch, int dungeon, int row, int col);
-		bool hasPlayer(int branch, int dungeon, int row, int col);
-		bool hasTrap(int branch, int dungeon, int row, int col);
-		bool hasUnexplored(int branch, int dungeon, int row, int col);
-		bool hasUnpassable(int branch, int dungeon, int row, int col);
-		bool hasUpStairs(int branch, int dungeon, int row, int col);
-		bool isBoulder(char symbol);
-		bool isClosedDoor(char symbol);
-		bool isCorridor(char symbol);
-		bool isDownStairs(char symbol);
-		bool isMonster(char symbol);
-		bool isObject(char symbol);
-		bool isOpenDoor(char symbol);
-		bool isPassable(char symbol);
-		bool isPet(char symbol);
-		bool isPlayer(char symbol);
-		bool isTrap(char symbol);
-		bool isUnexplored(char symbol);
-		bool isUnpassable(char symbol);
-		bool isUpStairs(char symbol);
 		bool run();
 		void setNextCommand(const char *command, int priority);
 		char shortestPath(int branch, int dungeon, int row, int col, int &distance, bool &direct_line);
@@ -139,5 +111,4 @@ class Saiph {
 		/* methods */
 		void inspect();
 };
-
 #endif

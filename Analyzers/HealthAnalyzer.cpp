@@ -3,11 +3,6 @@
 /* constructors */
 HealthAnalyzer::HealthAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
-	this->type = ANALYZE_NONE;
-}
-
-/* destructors */
-HealthAnalyzer::~HealthAnalyzer() {
 }
 
 /* methods */

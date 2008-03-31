@@ -3,78 +3,76 @@
 /* constructors */
 ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
-	this->type = ANALYZE_PASSABLE | ANALYZE_PLAYER | ANALYZE_OBJECT | ANALYZE_OPEN_DOOR;
-	this->place_count = 0;
-}
-
-/* destructors */
-ExploreAnalyzer::~ExploreAnalyzer() {
+	place_count = 0;
+	symbols[symbol_count++] = FLOOR;
+	symbols[symbol_count++] = OPEN_DOOR;
+	symbols[symbol_count++] = CORRIDOR;
+	symbols[symbol_count++] = STAIRS_UP;
+	symbols[symbol_count++] = STAIRS_DOWN;
+	symbols[symbol_count++] = ALTAR;
+	symbols[symbol_count++] = GRAVE;
+	symbols[symbol_count++] = THRONE;
+	symbols[symbol_count++] = SINK;
+	symbols[symbol_count++] = FOUNTAIN;
+	symbols[symbol_count++] = ICE;
+	symbols[symbol_count++] = LOWERED_DRAWBRIDGE;
+	symbols[symbol_count++] = WEAPON;
+	symbols[symbol_count++] = ARMOR;
+	symbols[symbol_count++] = RING;
+	symbols[symbol_count++] = AMULET;
+	symbols[symbol_count++] = TOOL;
+	symbols[symbol_count++] = FOOD;
+	symbols[symbol_count++] = POTION;
+	symbols[symbol_count++] = SCROLL;
+	symbols[symbol_count++] = SPELLBOOK;
+	symbols[symbol_count++] = WAND;
+	symbols[symbol_count++] = GOLD;
+	symbols[symbol_count++] = GEM;
+	symbols[symbol_count++] = STATUE;
+	symbols[symbol_count++] = IRON_BALL;
 }
 
 /* methods */
 void ExploreAnalyzer::analyze(int row, int col, char symbol) {
-	if (row <= MAP_ROW_START || row >= MAP_ROW_END - 1 || col <= 0 || col >= COLS - 1 || place_count >= EA_MAX_PLACES)
+	if (row <= MAP_ROW_START || row >= MAP_ROW_END - 1 || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
 		return;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.status.dungeon;
 	if (saiph->branches[branch].search[dungeon][row][col] >= MAX_SEARCH)
 		return; // we've been here and searched frantically
-	int score = 0;
-	bool hune = saiph->hasUnexplored(branch, dungeon, row, col - 1);
-	bool june = saiph->hasUnexplored(branch, dungeon, row + 1, col);
-	bool kune = saiph->hasUnexplored(branch, dungeon, row - 1, col);
-	bool lune = saiph->hasUnexplored(branch, dungeon, row, col + 1);
+	/* hjkl symbols */
+	char hs = saiph->branches[branch].map[dungeon][row][col - 1];
+	char js = saiph->branches[branch].map[dungeon][row + 1][col];
+	char ks = saiph->branches[branch].map[dungeon][row - 1][col];
+	char ls = saiph->branches[branch].map[dungeon][row][col + 1];
+	/* hjkl unexplored */
+	bool hune = (hs == SOLID_ROCK);
+	bool june = (js == SOLID_ROCK);
+	bool kune = (ks == SOLID_ROCK);
+	bool lune = (ls == SOLID_ROCK);
+	/* unexplored edges */
 	int une = (hune ? 1 : 0) + (june ? 1 : 0) + (kune ? 1 : 0) + (lune ? 1 : 0);
-	bool hunp = saiph->hasUnpassable(branch, dungeon, row, col - 1);
-	bool junp = saiph->hasUnpassable(branch, dungeon, row + 1, col);
-	bool kunp = saiph->hasUnpassable(branch, dungeon, row - 1, col);
-	bool lunp = saiph->hasUnpassable(branch, dungeon, row, col + 1);
+	/* hjkl unpassable (only walls) */
+	bool hunp = (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL);
+	bool junp = (js == VERTICAL_WALL || js == HORIZONTAL_WALL);
+	bool kunp = (ks == VERTICAL_WALL || ks == HORIZONTAL_WALL);
+	bool lunp = (ls == VERTICAL_WALL || ls == HORIZONTAL_WALL);
+	/* unpassable edges */
 	int unp = (hunp ? 1 : 0) + (junp ? 1 : 0) + (kunp ? 1 : 0) + (lunp ? 1 : 0);
+	/* hjkl unexplored or unpassable */
 	bool h = hune || hunp;
 	bool j = june || junp;
 	bool k = kune || kunp;
 	bool l = lune || lunp;
-	bool hhc = saiph->hasCorridor(branch, dungeon, row, col - 1);
-	bool jhc = saiph->hasCorridor(branch, dungeon, row + 1, col);
-	bool khc = saiph->hasCorridor(branch, dungeon, row - 1, col);
-	bool lhc = saiph->hasCorridor(branch, dungeon, row, col + 1);
-	if ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l)) {
-		/* dead end.
-		 * this is a really interesting place */
-		if (une > unp)
-			score = EA_DEAD_END_VALUE;
-		else
-			score = (EA_DEAD_END_VALUE + EA_TURN_VALUE) / 2;
-	} else if ((h && j) || (h && k) || (j && l) || (k && l)) {
-		/* turn.
-		 * turns in rooms aren't that interesting. */
-		int corridors = hhc ? 1 : 0;
-		corridors += jhc ? 1 : 0;
-		corridors += khc ? 1 : 0;
-		corridors += lhc ? 1 : 0;
-		if (corridors > 0 && une > unp)
-			score = EA_TURN_VALUE;
-		else if (corridors > 0)
-			score = (EA_TURN_VALUE + EA_STRAIGHT_PATH_VALUE) / 2;
-		else if (une > unp)
-			score = EA_STRAIGHT_PATH_VALUE;
-		else
-			score = (EA_STRAIGHT_PATH_VALUE + EA_T_CROSS_VALUE) / 2;
-	} else if ((h && l && !jhc && !khc) || (j && k && !hhc && !lhc)) {
-		/* straight path, not in a corridor */
-		if (une > unp)
-			score = EA_STRAIGHT_PATH_VALUE;
-		else
-			score = (EA_STRAIGHT_PATH_VALUE + EA_T_CROSS_VALUE) / 2;
-	} else if ((h || j || k || l) && !(lhc || jhc || khc || lhc)) {
-		/* T-cross, not in a corridor.
-		 * this is really desperate searching.
-		 * should only be done when no stairs are found */
-		if (une > unp)
-			score = EA_T_CROSS_VALUE;
-		else
-			score = (EA_T_CROSS_VALUE + EA_NOTHING_VALUE) / 2;
-	}
+	int score = 0;
+	if ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))
+		score = (une >= unp) ? EX_DEAD_END_CORRIDOR : EX_DEAD_END_ROOM;
+	else if ((h && j) || (h && k) || (j && l) || (k && l))
+		score = (une >= unp) ? EX_TURN_CORRIDOR : EX_TURN_ROOM;
+	else if ((h && l) || (j && k))
+		score = (une >= unp) ? EX_STRAIGHT_CORRIDOR : EX_STRAIGHT_ROOM;
+	else if ((h || j || k || l))
+		score = (une >= unp) ? EX_TCROSS_CORRIDOR : EX_TCROSS_ROOM;
 	if (score <= 0)
 		return; // this place isn't very exciting
 	places[place_count].row = row;

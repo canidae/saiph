@@ -29,9 +29,6 @@ class Connection {
 		/* constructors */
 		Connection(bool remote);
 
-		/* destructors */
-		~Connection();
-
 		/* methods */
 		ssize_t retrieve(char *buffer, size_t count);
 		ssize_t send(const char *buffer);
@@ -42,5 +39,4 @@ class Connection {
 		int output[2];
 		unsigned long usleep_time;
 };
-
 #endif

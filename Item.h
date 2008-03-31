@@ -25,5 +25,4 @@ class Item {
 
 	private:
 };
-
 #endif

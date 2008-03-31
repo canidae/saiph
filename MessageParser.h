@@ -20,13 +20,9 @@ class MessageParser {
 		/* constructors */
 		MessageParser(Saiph *saiph);
 
-		/* destructors */
-		~MessageParser();
-
 		/* methods */
 		void parse();
 
 	private:
 };
-
 #endif

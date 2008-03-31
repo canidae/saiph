@@ -1,27 +1,21 @@
 #ifndef DUNGEONANALYZER_H
+/* defines */
 #define DUNGEONANALYZER_H
 
 /* forward declare */
 class DungeonAnalyzer;
 
 /* includes */
-#include "../Analyzer.h"
 #include "../Saiph.h"
 
-/* defines */
-#define DA_NO_DUNGEON 0
-#define DA_DUNGEON_OPEN 1
-#define DA_DUNGEON_CLOSED 2
-
+/* namespace */
 using namespace std;
 
+/* analyzes the dungeon layout */
 class DungeonAnalyzer : public Analyzer {
 	public:
 		/* constructors */
 		DungeonAnalyzer(Saiph *saiph);
-
-		/* destructors */
-		~DungeonAnalyzer();
 
 		/* methods */
 		virtual void start();
@@ -30,5 +24,4 @@ class DungeonAnalyzer : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 };
-
 #endif
