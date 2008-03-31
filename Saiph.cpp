@@ -34,6 +34,7 @@ Saiph::Saiph(bool remote) {
 	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new ExploreAnalyzer(this));
 	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new FightAnalyzer(this));
 	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
+	this->analyzers[this->analyzer_count++] = dynamic_cast<Analyzer*>(new LevelAnalyzer(this));
 }
 
 /* destructors */
@@ -152,6 +153,11 @@ bool Saiph::hasCorridor(int branch, int dungeon, int row, int col) {
 	return isCorridor(symbol);
 }
 
+bool Saiph::hasDownStairs(int branch, int dungeon, int row, int col) {
+	char symbol = branches[branch].map[dungeon][row][col];
+	return isDownStairs(symbol);
+}
+
 bool Saiph::hasMonster(int branch, int dungeon, int row, int col) {
 	/* FIXME
 	 * should use another map for tracking monsters */
@@ -204,6 +210,11 @@ bool Saiph::hasUnpassable(int branch, int dungeon, int row, int col) {
 	return isUnpassable(symbol);
 }
 
+bool Saiph::hasUpStairs(int branch, int dungeon, int row, int col) {
+	char symbol = branches[branch].map[dungeon][row][col];
+	return isUpStairs(symbol);
+}
+
 bool Saiph::isBoulder(char symbol) {
 	return (symbol == '0');
 }
@@ -214,6 +225,10 @@ bool Saiph::isClosedDoor(char symbol) {
 
 bool Saiph::isCorridor(char symbol) {
 	return (symbol == '#');
+}
+
+bool Saiph::isDownStairs(char symbol) {
+	return (symbol == '>');
 }
 
 bool Saiph::isMonster(char symbol) {
@@ -252,6 +267,10 @@ bool Saiph::isUnpassable(char symbol) {
 	return (symbol == '|' || symbol == '-' || symbol == '8' || symbol == TREE || symbol == IRON_BARS);
 }
 
+bool Saiph::isUpStairs(char symbol) {
+	return (symbol == '<');
+}
+
 bool Saiph::run() {
 	/* print stuff so we see what we're doing */
 	dumpScreens();
@@ -277,6 +296,10 @@ bool Saiph::run() {
 	/* call finish() in analyzers */
 	for (int a = 0; a < analyzer_count; ++a)
 		analyzers[a]->finish();
+
+	/* call end() in analyzers */
+	for (int a = 0; a < analyzer_count; ++a)
+		analyzers[a]->end();
 
 	/* if no command, quit for now */
 	if (command.priority == 0) {
@@ -448,6 +471,7 @@ void Saiph::inspect() {
 			type |= isPlayer(symbol) ? ANALYZE_PLAYER : ANALYZE_NONE;
 			type |= isTrap(symbol) ? ANALYZE_TRAP : ANALYZE_NONE;
 			type |= isUnpassable(symbol) ? ANALYZE_UNPASSABLE : ANALYZE_NONE;
+			type |= (isDownStairs(symbol) || isUpStairs(symbol)) ? ANALYZE_STAIR : ANALYZE_NONE;
 			for (int a = 0; a < analyzer_count; ++a) {
 				if ((type & analyzers[a]->type) != 0 || analyzers[a]->type == ANALYZE_ALL)
 					analyzers[a]->analyze(r, c, symbol);

@@ -51,6 +51,7 @@ class Saiph;
 #include "Analyzers/ExploreAnalyzer.h"
 #include "Analyzers/FightAnalyzer.h"
 #include "Analyzers/HealthAnalyzer.h"
+#include "Analyzers/LevelAnalyzer.h"
 
 /* namespace */
 using namespace std;
@@ -80,6 +81,7 @@ class Saiph {
 		/* variables */
 		Branch branches[MAX_BRANCHES];
 		int current_branch;
+		Command command;
 		History history;
 		MessageParser *parser;
 		World *world;
@@ -97,6 +99,7 @@ class Saiph {
 		bool hasBoulder(int branch, int dungeon, int row, int col);
 		bool hasClosedDoor(int branch, int dungeon, int row, int col);
 		bool hasCorridor(int branch, int dungeon, int row, int col);
+		bool hasDownStairs(int branch, int dungeon, int row, int col);
 		bool hasMonster(int branch, int dungeon, int row, int col);
 		bool hasObject(int branch, int dungeon, int row, int col);
 		bool hasOpenDoor(int branch, int dungeon, int row, int col);
@@ -106,9 +109,11 @@ class Saiph {
 		bool hasTrap(int branch, int dungeon, int row, int col);
 		bool hasUnexplored(int branch, int dungeon, int row, int col);
 		bool hasUnpassable(int branch, int dungeon, int row, int col);
+		bool hasUpStairs(int branch, int dungeon, int row, int col);
 		bool isBoulder(char symbol);
 		bool isClosedDoor(char symbol);
 		bool isCorridor(char symbol);
+		bool isDownStairs(char symbol);
 		bool isMonster(char symbol);
 		bool isObject(char symbol);
 		bool isOpenDoor(char symbol);
@@ -118,6 +123,7 @@ class Saiph {
 		bool isTrap(char symbol);
 		bool isUnexplored(char symbol);
 		bool isUnpassable(char symbol);
+		bool isUpStairs(char symbol);
 		bool run();
 		void setNextCommand(const char *command, int priority);
 		char shortestPath(int branch, int dungeon, int row, int col, int &distance, bool &direct_line);
@@ -126,7 +132,6 @@ class Saiph {
 		/* variables */
 		Analyzer **analyzers;
 		int analyzer_count;
-		Command command;
 		Connection *connection;
 		unsigned short pathcost[ROWS][COLS];
 		unsigned char pathpos[MAX_NODES][2];

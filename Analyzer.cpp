@@ -18,3 +18,6 @@ void Analyzer::analyze(int row, int col, char symbol) {
 
 void Analyzer::finish() {
 }
+
+void Analyzer::end() {
+}

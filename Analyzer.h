@@ -14,6 +14,7 @@
 #define ANALYZE_PLAYER 0x0100
 #define ANALYZE_PET 0x0200
 #define ANALYZE_BOULDER 0x0400
+#define ANALYZE_STAIR 0x0800
 /* or analyze all tiles */
 #define ANALYZE_ALL 0xffff
 
@@ -41,6 +42,7 @@ class Analyzer {
 		virtual void start();
 		virtual void analyze(int row, int col, char symbol);
 		virtual void finish();
+		virtual void end();
 };
 
 #endif
