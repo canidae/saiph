@@ -60,9 +60,7 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 			data_received_total += data_received;
 		else
 			++failed;
-		usleep(usleep_time);
-		usleep(usleep_time);
-		usleep(usleep_time);
+		//usleep(usleep_time);
 	}
 	if (data_received_total < (ssize_t) count)
 		buffer[data_received_total] = '\0';

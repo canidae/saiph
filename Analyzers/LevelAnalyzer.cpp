@@ -12,7 +12,7 @@ void LevelAnalyzer::end() {
 	/* time to descend */
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.status.dungeon;
-	if (saiph->branches[branch].map[dungeon][saiph->world->player.row][saiph->world->player.col] == STAIRS_DOWN) {
+	if (saiph->branches[branch]->map[dungeon][saiph->world->player.row][saiph->world->player.col] == STAIRS_DOWN) {
 		/* standing on downstairs, descend */
 		char command[2];
 		command[0] = MOVE_DOWN;
@@ -22,7 +22,7 @@ void LevelAnalyzer::end() {
 	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			if (saiph->branches[branch].map[dungeon][r][c] == STAIRS_DOWN) {
+			if (saiph->branches[branch]->map[dungeon][r][c] == STAIRS_DOWN) {
 				int distance = 0;
 				bool direct_line = false;
 				char move = saiph->shortestPath(r, c, distance, direct_line);

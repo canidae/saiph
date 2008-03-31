@@ -39,13 +39,13 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 		return;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.status.dungeon;
-	if (saiph->branches[branch].search[dungeon][row][col] >= MAX_SEARCH)
+	if (saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH)
 		return; // we've been here and searched frantically
 	/* hjkl symbols */
-	char hs = saiph->branches[branch].map[dungeon][row][col - 1];
-	char js = saiph->branches[branch].map[dungeon][row + 1][col];
-	char ks = saiph->branches[branch].map[dungeon][row - 1][col];
-	char ls = saiph->branches[branch].map[dungeon][row][col + 1];
+	char hs = saiph->branches[branch]->map[dungeon][row][col - 1];
+	char js = saiph->branches[branch]->map[dungeon][row + 1][col];
+	char ks = saiph->branches[branch]->map[dungeon][row - 1][col];
+	char ls = saiph->branches[branch]->map[dungeon][row][col + 1];
 	/* hjkl unexplored */
 	bool hune = (hs == SOLID_ROCK);
 	bool june = (js == SOLID_ROCK);
@@ -57,7 +57,7 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	bool kunp = (ks == VERTICAL_WALL || ks == HORIZONTAL_WALL);
 	bool lunp = (ls == VERTICAL_WALL || ls == HORIZONTAL_WALL);
 	/* are we on floor? */
-	bool floor = (saiph->branches[branch].map[dungeon][row][col] == FLOOR);
+	bool floor = (saiph->branches[branch]->map[dungeon][row][col] == FLOOR);
 	/* figure out score */
 	int score = 0;
 	if ((hune && june && kune) || (june && kune && lune) || (hune && kune && lune) || (hune && june && lune))
@@ -106,7 +106,7 @@ void ExploreAnalyzer::finish() {
 
 		if (saiph->world->player.row == places[p].row && saiph->world->player.col == places[p].col) {
 			/* no need to move, search instead */
-			++saiph->branches[branch].search[dungeon][places[p].row][places[p].col];
+			++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
 			char command[2];
 			command[0] = 's';
 			command[1] = '\0';

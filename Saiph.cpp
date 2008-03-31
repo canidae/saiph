@@ -9,18 +9,27 @@ Saiph::Saiph(bool remote) {
 	memset(command.command, '\0', MAX_COMMAND_LENGTH);
 	command.priority = 0;
 
-	/* history */
-	history.map_counter = 0;
-	history.last_pray = 0;
-
 	/* pathing */
-	memset(pathcost, 0xff, ROWS * COLS * sizeof(unsigned short));
+	pathcost = new unsigned short*[ROWS];
+	for (int r = 0; r < ROWS; ++r) {
+		pathcost[r] = new unsigned short[COLS];
+		for (int c = 0; c < COLS; ++c)
+			pathcost[r][c] = 0xffff;
+	}
+	pathpos = new unsigned char*[MAX_NODES];
+	for (int r = 0; r < MAX_NODES; ++r) {
+		pathpos[r] = new unsigned char[2];
+		pathpos[r][0] = 0;
+		pathpos[r][1] = 0;
+	}
 
 	/* branches */
+	branches = new Branch*[MAX_BRANCHES];
 	current_branch = BRANCH_MAIN;
 	for (int b = 0; b < MAX_BRANCHES; ++b) {
-		memset(branches[b].map, ' ', MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b].search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
+		branches[b] = new Branch;
+		memset(branches[b]->map, ' ', MAX_DUNGEON_DEPTH * ROWS * COLS);
+		memset(branches[b]->search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
 	}
 
 	/* message parser */
@@ -29,6 +38,7 @@ Saiph::Saiph(bool remote) {
 	/* Analyzers */
 	analyzers = new Analyzer*[MAX_ANALYZERS];
 	analyzer_count = 0;
+	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new DoorAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new DungeonAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new ExploreAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new FightAnalyzer(this));
@@ -41,6 +51,15 @@ Saiph::~Saiph() {
 	for (int a = 0; a < analyzer_count; ++a)
 		delete analyzers[a];
 	delete [] analyzers;
+	for (int b = 0; b < MAX_BRANCHES; ++b)
+		delete branches[b];
+	delete [] branches;
+	for (int p = 0; p < ROWS; ++p)
+		delete [] pathcost[p];
+	delete [] pathcost;
+	for (int p = 0; p < MAX_NODES; ++p)
+		delete [] pathpos[p];
+	delete [] pathpos;
 	delete parser;
 	delete world;
 	delete connection;
@@ -54,10 +73,10 @@ void Saiph::dumpScreens() {
 	cout << (char) 27 << "[26;1H";
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			if (branches[current_branch].search[world->player.status.dungeon][r][c] == 0)
+			if (branches[current_branch]->search[world->player.status.dungeon][r][c] == 0)
 				cout << ' ';
 			else
-				cout << (char) (branches[current_branch].search[world->player.status.dungeon][r][c] + 64);
+				cout << (char) (branches[current_branch]->search[world->player.status.dungeon][r][c] + 64);
 		}
 		cout << endl;
 	}
@@ -65,7 +84,7 @@ void Saiph::dumpScreens() {
 	for (int r = 0; r < ROWS; ++r) {
 		cout << (char) 27 << "[" << r + 1 << ";82H";
 		for (int c = 0; c < COLS; ++c) {
-			cout << (char) (branches[current_branch].map[world->player.status.dungeon][r][c]);
+			cout << (char) (branches[current_branch]->map[world->player.status.dungeon][r][c]);
 		}
 	}
 	/* last path */
@@ -146,8 +165,6 @@ bool Saiph::run() {
 	command.priority = 0;
 
 	/* save dungeon in history */
-	++history.map_counter %= HISTORY;
-	history.map[history.map_counter].clone(world);
 
 	/* deal with messages */
 	parser->parse();
@@ -183,6 +200,9 @@ void Saiph::setNextCommand(const char *command, int priority) {
 	/* priority range from 0 to 100.
 	 * each analyzer set their own priorities.
 	 * this is done so each analyzer may overrule another */
+	/* FIXME
+	 * no range check on the char array? tsk, tsk.
+	 * might be an idea to rethink this stuff anyways */
 	if (priority < this->command.priority)
 		return;
 	strcpy(this->command.command, command);
@@ -198,15 +218,19 @@ char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 	direct_line = true;
 	if (row == world->player.row && col == world->player.col)
 		return -1; // path to where we're standing? :o
-	memset(pathcost, 0xff, ROWS * COLS * sizeof(unsigned short));
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c)
+			pathcost[r][c] = 0xffff;
+	}
 	pathcost[row][col] = 0;
 	int nextnode = 0;
 	int nodes = 1;
+	int stopnodes = MAX_NODES - 8; // we check in the while-loop, but increase in the for-loops, may exceed limit
 	pathpos[nextnode][0] = row;
 	pathpos[nextnode][1] = col;
 	int curcost = 0;
 	bool target_found = false;
-	while (nextnode < nodes && !target_found && nextnode < MAX_NODES) {
+	while (nextnode < nodes && !target_found && nextnode < stopnodes) {
 		int sr = pathpos[nextnode][0];
 		int sc = pathpos[nextnode][1];
 		curcost = pathcost[sr][sc];
@@ -216,10 +240,10 @@ char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 			for (int c = sc - 1; c <= sc + 1 && !target_found; ++c) {
 				if (c < 0 || c >= COLS)
 					continue;
-				char s = branches[current_branch].map[world->player.status.dungeon][r][c];
+				char s = branches[current_branch]->map[world->player.status.dungeon][r][c];
 				if (s == SOLID_ROCK || s == VERTICAL_WALL || s == HORIZONTAL_WALL || s == CLOSED_DOOR || s == IRON_BARS || s == TREE || s == WATER || s == LAVA || s == BOULDER)
 					continue; // can't (or won't) move to these tiles
-				if (r != sr && c != sc && (s == OPEN_DOOR || branches[current_branch].map[world->player.status.dungeon][sr][sc] == OPEN_DOOR))
+				if (r != sr && c != sc && (s == OPEN_DOOR || branches[current_branch]->map[world->player.status.dungeon][sr][sc] == OPEN_DOOR))
 					continue; // can't move diagonally in/out of a door */
 				if (r == world->player.row && c == world->player.col) {
 					pathcost[r][c] = curcost + 1;
@@ -258,8 +282,8 @@ char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 		++distance;
 		int nr = r;
 		int nc = c;
-		char ss = branches[b].map[d][r][c];
-		if (pathcost[r - 1][c - 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r - 1][c - 1] == OPEN_DOOR)) {
+		char ss = branches[b]->map[d][r][c];
+		if (pathcost[r - 1][c - 1] < curcost && !(ss == OPEN_DOOR || branches[b]->map[d][r - 1][c - 1] == OPEN_DOOR)) {
 			move = MOVE_NW;
 			nr = r - 1;
 			nc = c - 1;
@@ -271,7 +295,7 @@ char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 			nc = c;
 			curcost = pathcost[nr][nc];
 		}
-		if (pathcost[r - 1][c + 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r - 1][c + 1] == OPEN_DOOR)) {
+		if (pathcost[r - 1][c + 1] < curcost && !(ss == OPEN_DOOR || branches[b]->map[d][r - 1][c + 1] == OPEN_DOOR)) {
 			move = MOVE_NE;
 			nr = r - 1;
 			nc = c + 1;
@@ -289,7 +313,7 @@ char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 			nc = c + 1;
 			curcost = pathcost[nr][nc];
 		}
-		if (pathcost[r + 1][c - 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r + 1][c - 1] == OPEN_DOOR)) {
+		if (pathcost[r + 1][c - 1] < curcost && !(ss == OPEN_DOOR || branches[b]->map[d][r + 1][c - 1] == OPEN_DOOR)) {
 			move = MOVE_SW;
 			nr = r + 1;
 			nc = c - 1;
@@ -301,7 +325,7 @@ char Saiph::shortestPath(int row, int col, int &distance, bool &direct_line) {
 			nc = c;
 			curcost = pathcost[nr][nc];
 		}
-		if (pathcost[r + 1][c + 1] < curcost && !(ss == OPEN_DOOR || branches[b].map[d][r + 1][c + 1] == OPEN_DOOR)) {
+		if (pathcost[r + 1][c + 1] < curcost && !(ss == OPEN_DOOR || branches[b]->map[d][r + 1][c + 1] == OPEN_DOOR)) {
 			move = MOVE_SE;
 			nr = r + 1;
 			nc = c + 1;
@@ -345,8 +369,8 @@ void Saiph::inspect() {
 /* main */
 int main() {
 	Saiph saiph(false);
-	for (int a = 0; a < 5 && saiph.run(); ++a)
-		;
-	//while (saiph.run())
+	//for (int a = 0; a < 5 && saiph.run(); ++a)
 	//	;
+	while (saiph.run())
+		;
 }

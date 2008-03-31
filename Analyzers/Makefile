@@ -3,10 +3,11 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g
-OBJECTS = DungeonAnalyzer.o ExploreAnalyzer.o FightAnalyzer.o HealthAnalyzer.o LevelAnalyzer.o
+OBJECTS = DoorAnalyzer.o DungeonAnalyzer.o ExploreAnalyzer.o FightAnalyzer.o HealthAnalyzer.o LevelAnalyzer.o
 
 analyzers: $(OBJECTS)
 
+DoorAnalyzer.o: DoorAnalyzer.h DoorAnalyzer.cpp
 DungeonAnalyzer.o: DungeonAnalyzer.h DungeonAnalyzer.cpp
 ExploreAnalyzer.o: ExploreAnalyzer.h ExploreAnalyzer.cpp
 FightAnalyzer.o: FightAnalyzer.h FightAnalyzer.cpp

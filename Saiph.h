@@ -2,7 +2,6 @@
 /* defines */
 #define SAIPH_H
 /* general defines */
-#define HISTORY 128
 #define MAX_ANALYZERS 32
 #define MAX_BRANCHES 6
 #define MAX_BRANCH_DEPTH 64
@@ -52,6 +51,7 @@ class Saiph;
 #include "Analyzers/FightAnalyzer.h"
 #include "Analyzers/HealthAnalyzer.h"
 #include "Analyzers/LevelAnalyzer.h"
+#include "Analyzers/DoorAnalyzer.h"
 
 /* namespace */
 using namespace std;
@@ -68,21 +68,13 @@ struct Command {
 	int priority;
 };
 
-/* TODO */
-struct History {
-	Dungeon map[HISTORY];
-	int map_counter;
-	int last_pray;
-};
-
 /* this is our AI */
 class Saiph {
 	public:
 		/* variables */
-		Branch branches[MAX_BRANCHES];
+		Branch **branches;
 		int current_branch;
 		Command command;
-		History history;
 		MessageParser *parser;
 		World *world;
 
@@ -105,8 +97,8 @@ class Saiph {
 		Analyzer **analyzers;
 		int analyzer_count;
 		Connection *connection;
-		unsigned short pathcost[ROWS][COLS];
-		unsigned char pathpos[MAX_NODES][2];
+		unsigned short **pathcost;
+		unsigned char **pathpos;
 
 		/* methods */
 		void inspect();
