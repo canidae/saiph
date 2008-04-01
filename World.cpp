@@ -7,30 +7,21 @@ World::World(Connection *connection) {
 	col = 0;
 	data = new char[BUFFER_SIZE];
 	memset(data, '\0', BUFFER_SIZE);
-	new_data = new char*[ROWS * COLS];
-	for (int r = 0; r < ROWS * COLS; ++r)
-		new_data[r] = new char[3];
-	memset(data, ' ', ROWS * COLS);
 	data_size = -1;
 	messages_pos = 0;
 	/* fetch the first "frame" */
-	new_data_count = 0;
 	update();
 }
 
 /* destructors */
 World::~World() {
 	delete [] data;
-	for (int r = 0; r < ROWS * COLS; ++r)
-		delete [] new_data[r];
-	delete [] new_data;
 }
 
 /* methods */
 void World::command(const char *command) {
 	/* send a command to nethack */
 	connection->send(command);
-	new_data_count = 0;
 	update();
 }
 
@@ -330,9 +321,6 @@ void World::update() {
 				else if (colour == 7 && (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~'))
 					symbol = PET;
 				map[row][col] = symbol;
-				new_data[new_data_count][0] = row;
-				new_data[new_data_count][1] = col;
-				new_data[new_data_count][2] = symbol;
 				col++;
 				break;
 		}
@@ -346,9 +334,23 @@ void World::update() {
 	/* parse attribute & status rows */
 	player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	player.parseStatusRow(map[STATUS_ROW]);
-	/* the last escape sequence *sometimes* place the cursor on the player,
-	 * which is quite handy since we won't have to search for the player then */
-	map[row][col] = PLAYER;
-	player.row = row;
-	player.col = col;
+	if (row >= MAP_ROW_START && row <= MAP_ROW_END && col >= 0 && col < COLS) {
+		/* the last escape sequence *sometimes* place the cursor on the player,
+		 * which is quite handy since we won't have to search for the player then */
+		map[row][col] = PLAYER;
+		player.row = row;
+		player.col = col;
+	} else if (row == 0) {
+		/* cursor on first row? possibly a question? */
+		cerr << "POSSIBLY QUESTION" << endl;
+		cerr << data << endl;
+		/* answer "yes" & carry on */
+		command("y");
+	} else {
+		/* hmm, what else can it be? */
+		cerr << "CURSOR ON UNEXPECTED LOCATION: " << row << ", " << col << endl;
+		cerr << data << endl;
+		sleep(1000);
+		exit(42);
+	}
 }

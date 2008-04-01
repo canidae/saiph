@@ -21,8 +21,6 @@ class World: public Dungeon {
 		/* variables */
 		char *data;
 		ssize_t data_size;
-		char **new_data;
-		int new_data_count;
 
 		/* constructors */
 		World(Connection *connection);

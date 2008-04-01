@@ -2,7 +2,7 @@
 /* defines */
 #define DUNGEON_H
 /* buffer for various stuff */
-#define BUFFER_SIZE 4096
+#define BUFFER_SIZE 65536
 /* dungeon limits */
 #define ROWS 24
 #define COLS 80

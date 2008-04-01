@@ -3,10 +3,10 @@
 #define CONNECTION_H
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
-#define LOCAL_USLEEP 5000 // 5ms
+#define LOCAL_USLEEP 500000
 /* remove */
 #define REMOTE_NETHACK ""
-#define REMOTE_USLEEP 25000 // 25ms
+#define REMOTE_USLEEP 25000
 
 /* forward declare */
 class Connection;
