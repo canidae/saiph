@@ -56,22 +56,26 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	bool junp = (js == VERTICAL_WALL || js == HORIZONTAL_WALL);
 	bool kunp = (ks == VERTICAL_WALL || ks == HORIZONTAL_WALL);
 	bool lunp = (ls == VERTICAL_WALL || ls == HORIZONTAL_WALL);
+	/* *une || *unp */
+	bool h = hune || hunp;
+	bool j = june || junp;
+	bool k = kune || kunp;
+	bool l = lune || lunp;
 	/* are we on floor? */
 	bool floor = (saiph->branches[branch]->map[dungeon][row][col] == FLOOR);
 	/* figure out score */
 	int score = 0;
-	if ((hune && june && kune) || (june && kune && lune) || (hune && kune && lune) || (hune && june && lune))
+	if (floor && (hune || june || kune || lune))
+		score = EX_UNLIT_ROOM;
+	else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l)))
 		score = EX_DEAD_END;
-	else if ((hune && june) || (hune && kune) || (june && lune) || (kune && lune))
-		score = floor ? EX_UNLIT_ROOM : EX_TURN;
-	else if ((hunp && lunp && (june || kune)) || (junp && kunp && (hune || lune)))
-		score = EX_ROOM_EXIT;
-	else if ((hunp || junp || kunp || lunp) && floor)
+	else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l)))
+		score = EX_TURN;
+	else if (floor && (hunp || junp || kunp || lunp))
 		score = EX_EXTRA_SEARCH;
 
 	if (score <= 0)
 		return; // this place isn't very exciting
-	cerr << "ExploreAnalyzer " << row << ", " << col << ": " << score << endl;
 	places[place_count].row = row;
 	places[place_count].col = col;
 	places[place_count].move = -1;
@@ -85,7 +89,7 @@ void ExploreAnalyzer::finish() {
 	/* figure out which place to explore */
 	for (int pa = 0; pa < place_count; ++pa) {
 		int p = -1;
-		int nearest = MAX_NODES;
+		int nearest = ROWS * COLS;
 		int best = 0;
 		for (int pb = 0; pb < place_count; ++pb) {
 			if (places[pb].value < 0)
@@ -93,7 +97,7 @@ void ExploreAnalyzer::finish() {
 			int distance = 0;
 			bool direct_line = false;
 			if (places[pb].value >= best) {
-				places[pb].move = saiph->shortestPath(places[pb].row, places[pb].col, distance, direct_line);
+				places[pb].move = saiph->shortestPath(places[pb].row, places[pb].col, false, distance, direct_line);
 				if (places[pb].value > best || distance < nearest) {
 					p = pb;
 					nearest = distance;
@@ -106,7 +110,10 @@ void ExploreAnalyzer::finish() {
 
 		if (saiph->world->player.row == places[p].row && saiph->world->player.col == places[p].col) {
 			/* no need to move, search instead */
-			++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
+			if (saiph->branches[branch]->map[dungeon][places[p].row][places[p].col] == CORRIDOR && places[p].value < EX_DEAD_END)
+				saiph->branches[branch]->search[dungeon][places[p].row][places[p].col] += MAX_SEARCH;
+			else
+				++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
 			char command[2];
 			command[0] = 's';
 			command[1] = '\0';

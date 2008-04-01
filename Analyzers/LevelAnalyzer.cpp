@@ -25,7 +25,7 @@ void LevelAnalyzer::end() {
 			if (saiph->branches[branch]->map[dungeon][r][c] == STAIRS_DOWN) {
 				int distance = 0;
 				bool direct_line = false;
-				char move = saiph->shortestPath(r, c, distance, direct_line);
+				char move = saiph->shortestPath(r, c, false, distance, direct_line);
 				if (move != -1) {
 					char command[2];
 					command[0] = move;

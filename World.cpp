@@ -5,17 +5,32 @@ World::World(Connection *connection) {
 	this->connection = connection;
 	row = 0;
 	col = 0;
+	data = new char[BUFFER_SIZE];
 	memset(data, '\0', BUFFER_SIZE);
+	new_data = new char*[ROWS * COLS];
+	for (int r = 0; r < ROWS * COLS; ++r)
+		new_data[r] = new char[3];
+	memset(data, ' ', ROWS * COLS);
 	data_size = -1;
 	messages_pos = 0;
 	/* fetch the first "frame" */
+	new_data_count = 0;
 	update();
+}
+
+/* destructors */
+World::~World() {
+	delete [] data;
+	for (int r = 0; r < ROWS * COLS; ++r)
+		delete [] new_data[r];
+	delete [] new_data;
 }
 
 /* methods */
 void World::command(const char *command) {
 	/* send a command to nethack */
 	connection->send(command);
+	new_data_count = 0;
 	update();
 }
 
@@ -222,6 +237,8 @@ void World::fetchMessagesHelper(int row, int startcol) {
 	 * and keeping 2 spaces between messages.
 	 * player may encounter messages with 2 spaces in it,
 	 * eg. engravings. usually that is quoted. */
+	if (row < 0 || row > ROWS || startcol < 0)
+		return;
 	string str(&map[row][startcol]);
 	string::size_type pos = str.find(MORE, 0);
 	if (pos != string::npos) {
@@ -293,30 +310,29 @@ void World::update() {
 					break;
 				}
 				/* remap ambigous symbols */
-				if (colour == 7 && data[pos] == '@') {
-					player.row = row;
-					player.col = col;
-				}
-				if ((data[pos] == '|' || data[pos] == '-') && colour == 33)
-					map[row][col] = OPEN_DOOR;
-				else if (data[pos] == '#' && colour == 32)
-					map[row][col] = TREE;
-				else if (data[pos] == '#' && colour == 36)
-					map[row][col] = IRON_BARS;
-				else if (data[pos] == '\\' && colour == 33)
-					map[row][col] = THRONE;
-				else if (data[pos] == '{' && colour != 34) // if it's blue it's a fountain
-					map[row][col] = SINK;
-				else if (data[pos] == '}' && colour == 31)
-					map[row][col] = LAVA;
-				else if (data[pos] == '.' && colour == 36)
-					map[row][col] = ICE;
-				else if (data[pos] == '.' && colour == 33)
-					map[row][col] = LOWERED_DRAWBRIDGE;
-				else if (colour == 7 && (data[pos] == '&' || data[pos] == '\'' || data[pos] == '6' || data[pos] == ':' || data[pos] == ';' || (data[pos] >= '@' && data[pos] <= 'Z') || (data[pos] >= 'a' && data[pos] <= 'z') || data[pos] == '~'))
-					map[row][col] = PET;
-				else
-					map[row][col] = data[pos];
+				char symbol = data[pos];
+				if ((symbol == '|' || symbol == '-') && colour == 33)
+					symbol = OPEN_DOOR;
+				else if (symbol == '#' && colour == 32)
+					symbol = TREE;
+				else if (symbol == '#' && colour == 36)
+					symbol = IRON_BARS;
+				else if (symbol == '\\' && colour == 33)
+					symbol = THRONE;
+				else if (symbol == '{' && colour != 34) // if it's blue it's a fountain
+					symbol = SINK;
+				else if (symbol == '}' && colour == 31)
+					symbol = LAVA;
+				else if (symbol == '.' && colour == 36)
+					symbol = ICE;
+				else if (symbol == '.' && colour == 33)
+					symbol = LOWERED_DRAWBRIDGE;
+				else if (colour == 7 && (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~'))
+					symbol = PET;
+				map[row][col] = symbol;
+				new_data[new_data_count][0] = row;
+				new_data[new_data_count][1] = col;
+				new_data[new_data_count][2] = symbol;
 				col++;
 				break;
 		}

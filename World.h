@@ -19,11 +19,16 @@ using namespace std;
 class World: public Dungeon {
 	public:
 		/* variables */
-		char data[BUFFER_SIZE];
+		char *data;
 		ssize_t data_size;
+		char **new_data;
+		int new_data_count;
 
 		/* constructors */
 		World(Connection *connection);
+
+		/* destructors */
+		~World();
 
 		/* methods */
 		void command(const char *command);

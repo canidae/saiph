@@ -19,7 +19,7 @@ void DungeonAnalyzer::start() {
 			char symbol = saiph->world->map[r][c];
 			if (symbol == SOLID_ROCK) {
 				/* nothing exciting, carry on */
-			} else if (symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL ||symbol == FLOOR || symbol == OPEN_DOOR || symbol == CLOSED_DOOR || symbol == IRON_BARS || symbol == TREE || symbol == CORRIDOR || symbol == STAIRS_UP || symbol == STAIRS_DOWN || symbol == ALTAR || symbol == GRAVE || symbol == THRONE || symbol == SINK || symbol == FOUNTAIN || symbol == WATER || symbol == ICE || symbol == LAVA || symbol == LOWERED_DRAWBRIDGE || symbol == RAISED_DRAWBRIDGE || symbol == TRAP || symbol == BOULDER) {
+			} else if (symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL ||symbol == FLOOR || symbol == OPEN_DOOR || symbol == CLOSED_DOOR || symbol == IRON_BARS || symbol == TREE || symbol == CORRIDOR || symbol == STAIRS_UP || symbol == STAIRS_DOWN || symbol == ALTAR || symbol == GRAVE || symbol == THRONE || symbol == SINK || symbol == FOUNTAIN || symbol == WATER || symbol == ICE || symbol == LAVA || symbol == LOWERED_DRAWBRIDGE || symbol == RAISED_DRAWBRIDGE || symbol == TRAP) {
 				/* "static" dungeon features (doors may be destroyed, though).
 				 * update the map showing static stuff */
 				saiph->branches[branch]->map[dungeon][r][c] = symbol;

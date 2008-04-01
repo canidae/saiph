@@ -95,7 +95,7 @@ void FightAnalyzer::finish() {
 		cerr << "Fighting " << (char) monsters[toughest].threat << endl;
 		int distance = 0;
 		bool direct_line = false;
-		char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col, distance, direct_line);
+		char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col, true, distance, direct_line);
 		if (move != -1) {
 			char command[2];
 			command[0] = move;

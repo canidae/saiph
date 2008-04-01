@@ -19,8 +19,10 @@
 /* pathing */
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
-#define COST_TRAP 128 // try hard to avoid traps
-#define MAX_NODES 512 // should cover even the most wicked dungeons
+#define COST_LAVA 16384 // lava, hot!
+#define COST_TRAP 128 // avoid traps
+#define COST_WATER 4096 // avoid water if possible
+#define MAX_PASSABLE 32 // stuff we can go through
 /* questions looks like this
  * ? [ynq] (n)
  */
@@ -90,17 +92,20 @@ class Saiph {
 		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
 		bool run();
 		void setNextCommand(const char *command, int priority);
-		char shortestPath(int row, int col, int &distance, bool &direct_line);
+		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
 
 	private:
 		/* variables */
 		Analyzer **analyzers;
 		int analyzer_count;
 		Connection *connection;
-		unsigned short **pathcost;
-		unsigned char **pathpos;
+		unsigned int **pathcost;
+		char **pathpos;
+		char *passable;
+		int passable_count;
 
 		/* methods */
 		void inspect();
+		void updatePathMap();
 };
 #endif
