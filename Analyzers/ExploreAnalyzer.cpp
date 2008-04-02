@@ -74,6 +74,11 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	else if (floor && (hunp || junp || kunp || lunp))
 		score = EX_EXTRA_SEARCH;
 
+	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && score < EX_DEAD_END) {
+		/* don't search in corridors unless it's a dead end */
+		saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
+		return;
+	}
 	if (score <= 0)
 		return; // this place isn't very exciting
 	places[place_count].row = row;
@@ -110,10 +115,7 @@ void ExploreAnalyzer::finish() {
 
 		if (saiph->world->player.row == places[p].row && saiph->world->player.col == places[p].col) {
 			/* no need to move, search instead */
-			if (saiph->branches[branch]->map[dungeon][places[p].row][places[p].col] == CORRIDOR && places[p].value < EX_DEAD_END)
-				saiph->branches[branch]->search[dungeon][places[p].row][places[p].col] += MAX_SEARCH;
-			else
-				++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
+			++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
 			char command[2];
 			command[0] = 's';
 			command[1] = '\0';

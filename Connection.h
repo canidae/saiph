@@ -3,9 +3,10 @@
 #define CONNECTION_H
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
-#define LOCAL_USLEEP 500000
-/* remove */
-#define REMOTE_NETHACK ""
+#define LOCAL_USLEEP 5000
+/* remote */
+#define REMOTE_NETHACK_URL "nethack.alt.org"
+#define REMOTE_NETHACK "/usr/bin/telnet"
 #define REMOTE_USLEEP 25000
 
 /* forward declare */
@@ -13,6 +14,7 @@ class Connection;
 
 /* includes */
 #include <fcntl.h>
+#include <fstream>
 #include <iostream>
 #include <pty.h>
 #include "Dungeon.h"
@@ -35,8 +37,7 @@ class Connection {
 
 	private:
 		/* variables */
-		int input[2];
-		int output[2];
+		int link[2];
 		unsigned long usleep_time;
 };
 #endif

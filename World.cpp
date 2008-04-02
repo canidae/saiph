@@ -127,6 +127,9 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 				/* can possibly be ignored */
 				/* probably [?1049h */
 				break;
+			} else if (data[pos] == 'l') {
+				/* DEC Private Mode Reset? :s */
+				break;
 			} else if (data[pos] == 'm') {
 				/* character attribute (bold, inverted, colour, etc) */
 				if (divider > 0) {
@@ -146,6 +149,9 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 					exit(14);
 				}
 				colour = value;
+				break;
+			} else if (data[pos] == 'r') {
+				/* this is some scrolling crap, ignore it */
 				break;
 			} else if (data[pos] == 27) {
 				/* escape char found, that shouldn't happen */
@@ -184,6 +190,12 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 		/* reverse linefeed? */
 		if (row > 0)
 			--row;
+	} else if (data[pos] == '=') {
+		/* application numpad?
+		 * ignore */
+	} else if (data[pos] == '>') {
+		/* normal numpad?
+		 * ignore */
 	} else {
 		cerr << "Unsupported escape sequence code at char " << pos << ": ";
 		cerr << &data[pos] << endl;
@@ -328,7 +340,7 @@ void World::update() {
 
 	fetchMessages();
 
-	//cout << data << endl;
+	cerr << data << endl;
 	//cout << "'" << messages << "'" << endl;
 
 	/* parse attribute & status rows */

@@ -385,9 +385,10 @@ void Saiph::updatePathMap() {
 				/* doors are special, no diagonal entrance/exit.
 				 * even if it seems this isn't needed, it is!
 				 * when there's a trap in front of a door the trap cost will make
-				 * it impossible to move any further. for example:
+				 * it impossible to move any further. as an example, let's say we're
+				 * in the corridor leading to this room and we want that wand:
 				 *  -----|
-				 *  |....|
+				 *  |.../|
 				 * #-^...|
 				 *  |....|
 				 *  -----|
@@ -397,14 +398,23 @@ void Saiph::updatePathMap() {
 				 * 0298ad|
 				 *  |579b|
 				 *  ------
-				 * once it's on the trap square every direction will cost less,
-				 * hence it can't move.
-				 * this if makes the cost map look like this instead:
+				 * the pathing works by looking at the cost on the square of the wand,
+				 * in this case the cost is "b" (11 in decimal (duh)). from that point it
+				 * will go towards the lowest cost, in this case "9" straight to the left.
+				 * further from "9" it will go to "7", to the left again, being the lowest cost.
+				 * then it will go to "5". however, on square with "2" there's a door,
+				 * and we can't move diagonally into that door, and every other direction cost
+				 * more. thus, it'll stop here.
+				 * if we make the cost map look like this instead:
 				 *  ------
 				 *  |bceg|
 				 * 029bdf|
 				 *  |bceg|
 				 *  ------
+				 * then it will move like this: g, d, b, 9, 2, 0
+				 * we'll still need to check for doors when backtracing, though:
+				 * let's say we're standing on either of the "b" instead, the cost for moving
+				 * diagonally into the door is lower than the cost of moving on the trap.
 				 */
 				if ((ds == OPEN_DOOR || branches[current_branch]->map[world->player.status.dungeon][r][c] == OPEN_DOOR) && r != row && c != col)
 					continue;

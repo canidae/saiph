@@ -1,4 +1,15 @@
 # configuration file for saiph.
+#
+# saiph is a bot playing nethack. the code is written in c++.
+# for more information about this and other bots, see:
+# http://sartak.org/nh/bots.html
+#
+# thanks to moomast3r and his bot april whom i borrowed some code from for
+# setting up pty & connecting to nethack.alt.org.
+#
+# saiph is GPLv2 licenced.
+
+##########################################
 
 # significant changes:
 # * monsters
@@ -7,7 +18,6 @@
 # * objects
 # - illegal object is now represented by 'm' (mimic?)
 # - boulders are represented by '0', not '`'
-# - statues are represented by '9', not '`'
 # - iron balls are represented by '`', not '0'
 # - chains are represented by '`', not '_'
 # - venom is representated by '`', not '.'
@@ -18,28 +28,11 @@
 # - raised drawbridges are represented by '8'. not '#'
 # * traps
 # - web is now represented by '^', not '"'
-
-# the following dungeon features collide:
-# - solid rock & air (same colour)
-# - walls & open doors (different colours)
-# - corridors, trees & iron bars (different colours)
-# - grave & throne (different colours)
-# - sink & fountain (different colours)
-# - water & lava (different colours)
-# - solid floor, ice & lowered drawbridge (different colours)
 OPTIONS=align:lawful
 OPTIONS=!autopickup
 OPTIONS=boulder:0
 OPTIONS=color
 OPTIONS=dungeon: |--------||.-|77##.##<><>_\\\\{{}.}..88 #}
-# graphics     : |--------||.-|++##.##<><>_ |\\#{}.}..## #}
-# 01-07: solid rock, vertical wall, horizontal wall, upper left corner, upper right corner, lower left corner, lower right corner
-# 08-13: cross wall, upward T wall, downward T wall, leftward T wall, rightward T wall, no door
-# 14-17: vertical open door, horizontal open door, vertical closed door, horizontal closed door
-# 18-26: iron bars, tree, floor of a room, dark corridor, lit corridor, stairs up, stairs down, ladder up, ladder down
-# 27-34: altar, grave, throne, kitchen sink, fountain, pool or moat, ice, lava
-# 35-38: vertical lowered drawbridge, horizontal lowered drawbridge, vertical raised drawbridge, horizontal raised drawbridge
-# 39-41: air, cloud, under water
 OPTIONS=fruit:byte
 OPTIONS=gender:random
 OPTIONS=hilite_pet
