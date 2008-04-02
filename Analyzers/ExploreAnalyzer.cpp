@@ -73,7 +73,11 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l))) {
 		score = EX_TURN;
 		/* hack to make it stop searching every turn when it passed the turn diagonally */
-		if (((h && j && hs == CORRIDOR && JS == CORRIDOR) || (h && k && hs == CORRIDOR && ks == CORRIDOR) || (j && l && js == CORRIDOR && ls == CORRIDOR) || (k && l && ks == CORRIDOR && ls == CORRIDOR))) {
+		bool hv = saiph->branches[branch]->search[dungeon][row][col - 1] >= MAX_SEARCH;
+		bool jv = saiph->branches[branch]->search[dungeon][row + 1][col] >= MAX_SEARCH;
+		bool kv = saiph->branches[branch]->search[dungeon][row - 1][col] >= MAX_SEARCH;
+		bool lv = saiph->branches[branch]->search[dungeon][row][col + 1] >= MAX_SEARCH;
+		if (((h && j && kv && lv) || (h && k && jv && lv) || (j && l && hv && kv) || (k && l && hv && jv))) {
 			saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
 			return;
 		}

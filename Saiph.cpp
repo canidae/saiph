@@ -439,7 +439,7 @@ void Saiph::updatePathMap() {
 
 /* main */
 int main() {
-	Saiph saiph(true);
+	Saiph saiph(false);
 	//for (int a = 0; a < 5 && saiph.run(); ++a)
 	//	;
 	while (saiph.run())

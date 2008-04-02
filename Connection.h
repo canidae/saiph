@@ -3,7 +3,7 @@
 #define CONNECTION_H
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
-#define LOCAL_USLEEP 0
+#define LOCAL_USLEEP 50000
 /* remote */
 #define REMOTE_NETHACK_URL "nethack.alt.org"
 #define REMOTE_NETHACK "/usr/bin/telnet"
