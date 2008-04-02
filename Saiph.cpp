@@ -263,7 +263,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 		int c = col;
 		char s = branches[current_branch]->map[world->player.status.dungeon][row][col];
 		antiloop = curcost; // if curcost doesn't change the loop will end
-		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && move == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row - 1][col - 1] != OPEN_DOOR))) {
+		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row - 1][col - 1] != OPEN_DOOR))) {
 			move = MOVE_SE;
 			r = row - 1;
 			c = col - 1;
@@ -275,7 +275,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && move == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row - 1][col + 1] != OPEN_DOOR))) {
+		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row - 1][col + 1] != OPEN_DOOR))) {
 			move = MOVE_SW;
 			r = row - 1;
 			c = col + 1;
@@ -293,7 +293,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col + 1;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && move == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row + 1][col - 1] != OPEN_DOOR))) {
+		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row + 1][col - 1] != OPEN_DOOR))) {
 			move = MOVE_NE;
 			r = row + 1;
 			c = col - 1;
@@ -305,7 +305,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && move == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row + 1][col + 1] != OPEN_DOOR))) {
+		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.status.dungeon][row + 1][col + 1] != OPEN_DOOR))) {
 			move = MOVE_NW;
 			r = row + 1;
 			c = col + 1;
@@ -439,7 +439,7 @@ void Saiph::updatePathMap() {
 
 /* main */
 int main() {
-	Saiph saiph(false);
+	Saiph saiph(true);
 	//for (int a = 0; a < 5 && saiph.run(); ++a)
 	//	;
 	while (saiph.run())

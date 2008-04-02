@@ -65,17 +65,21 @@ Connection::Connection(bool remote) {
 		ssize_t size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send("l");
-		sleep(1);
+		sleep(3);
+		size = retrieve(buffer, BUFFER_SIZE);
+		cerr << buffer << endl;
 		send(username);
 		send("\n");
-		sleep(1);
+		sleep(3);
+		size = retrieve(buffer, BUFFER_SIZE);
+		cerr << buffer << endl;
 		send(password);
 		send("\n");
-		sleep(1);
+		sleep(3);
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send("p");
-		sleep(1);
+		sleep(3);
 		cerr << "Done logging in, a game should appear for the bot now" << endl;
 	}
 }
@@ -86,15 +90,15 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 	ssize_t data_received = 0;
 	ssize_t data_received_total = 0;
 	int failed = 0;
-	//sleep(1);
-	while (data_received_total == 0 || data_received > 0 || failed < 5) {
+	while (data_received_total == 0 || data_received > 0 || ++failed < 5) {
+		if (usleep_time > 0)
+			usleep(usleep_time);
 		data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
-		if (data_received != -1)
+		if (data_received != -1) {
 			data_received_total += data_received;
-		else
-			++failed;
+			failed = 0;
+		}
 		cerr << "reading " << data_received_total << " | " << data_received << endl;
-		usleep(usleep_time);
 	}
 	if (data_received_total < (ssize_t) count)
 		buffer[data_received_total] = '\0';

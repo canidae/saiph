@@ -314,23 +314,23 @@ void World::update() {
 				}
 				/* remap ambigous symbols */
 				char symbol = data[pos];
-				if ((symbol == '|' || symbol == '-') && colour == 33)
+				if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && colour == 33)
 					symbol = OPEN_DOOR;
-				else if (symbol == '#' && colour == 32)
+				else if (symbol == CORRIDOR && colour == 32)
 					symbol = TREE;
-				else if (symbol == '#' && colour == 36)
+				else if (symbol == CORRIDOR && colour == 36)
 					symbol = IRON_BARS;
-				else if (symbol == '\\' && colour == 33)
+				else if (symbol == GRAVE && colour == 33)
 					symbol = THRONE;
-				else if (symbol == '{' && colour != 34) // if it's blue it's a fountain
+				else if (symbol == FOUNTAIN && colour != 34) // if it's blue it's a fountain
 					symbol = SINK;
-				else if (symbol == '}' && colour == 31)
+				else if (symbol == WATER && colour == 31)
 					symbol = LAVA;
-				else if (symbol == '.' && colour == 36)
+				else if (symbol == FLOOR && colour == 36)
 					symbol = ICE;
-				else if (symbol == '.' && colour == 33)
+				else if (symbol == FLOOR && colour == 33)
 					symbol = LOWERED_DRAWBRIDGE;
-				else if (colour == 7 && (symbol == '&' || symbol == '\'' || symbol == '6' || symbol == ':' || symbol == ';' || (symbol >= '@' && symbol <= 'Z') || (symbol >= 'a' && symbol <= 'z') || symbol == '~'))
+				else if (colour == 7)
 					symbol = PET;
 				map[row][col] = symbol;
 				col++;

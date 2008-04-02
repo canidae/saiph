@@ -28,13 +28,13 @@ void HealthAnalyzer::finish() {
 	/* hp */
 	int hp = saiph->world->player.status.hitpoints;
 	int hp_max = saiph->world->player.status.hitpoints_max;
-	if (hp < 6 || hp * 7 <= hp_max) {
+	if (hp > 0 && (hp < 6 || hp * 7 <= hp_max)) {
 		/* almost dead, find an urgent way to heal up.
 		 * spell, potion, (elbereth?), pray
 		 *
 		 * pray for now */
 		saiph->setNextCommand(HA_PRAY, 100);
-	} else if (hp * 2 < hp_max) {
+	} else if (hp > 0 && hp * 2 < hp_max) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options
 		 *

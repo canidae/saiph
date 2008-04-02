@@ -5,8 +5,9 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
 	place_count = 0;
 	symbols[symbol_count++] = FLOOR;
-	symbols[symbol_count++] = OPEN_DOOR;
 	symbols[symbol_count++] = CORRIDOR;
+	symbols[symbol_count++] = OPEN_DOOR;
+	symbols[symbol_count++] = CLOSED_DOOR;
 	symbols[symbol_count++] = STAIRS_UP;
 	symbols[symbol_count++] = STAIRS_DOWN;
 	symbols[symbol_count++] = ALTAR;
@@ -69,9 +70,14 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 		score = EX_UNLIT_ROOM;
 	else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l)))
 		score = EX_DEAD_END;
-	else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l)))
+	else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l))) {
 		score = EX_TURN;
-	else if (floor && (hunp || junp || kunp || lunp))
+		/* hack to make it stop searching every turn when it passed the turn diagonally */
+		if (((h && j && hs == CORRIDOR && JS == CORRIDOR) || (h && k && hs == CORRIDOR && ks == CORRIDOR) || (j && l && js == CORRIDOR && ls == CORRIDOR) || (k && l && ks == CORRIDOR && ls == CORRIDOR))) {
+			saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
+			return;
+		}
+	} else if (floor && (hunp || junp || kunp || lunp))
 		score = EX_EXTRA_SEARCH;
 
 	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && score < EX_DEAD_END) {
