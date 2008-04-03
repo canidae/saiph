@@ -66,11 +66,13 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	bool floor = (saiph->branches[branch]->map[dungeon][row][col] == FLOOR);
 	/* figure out score */
 	int score = 0;
-	if (floor && (hune || june || kune || lune))
+	bool dead_end = false;
+	if (floor && (hune || june || kune || lune)) {
 		score = EX_UNLIT_ROOM;
-	else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l)))
+	} else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))) {
 		score = EX_DEAD_END;
-	else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l))) {
+		dead_end = true;
+	} else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l))) {
 		score = EX_TURN;
 		/* hack to make it stop searching every turn when it passed the turn diagonally */
 		bool hv = saiph->branches[branch]->search[dungeon][row][col - 1] >= MAX_SEARCH;
@@ -81,10 +83,11 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 			saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
 			return;
 		}
-	} else if (floor && (hunp || junp || kunp || lunp))
+	} else if (floor && (hunp || junp || kunp || lunp)) {
 		score = EX_EXTRA_SEARCH;
+	}
 
-	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && score < EX_DEAD_END) {
+	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && !dead_end) {
 		/* don't search in corridors unless it's a dead end */
 		saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
 		return;

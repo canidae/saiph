@@ -231,8 +231,6 @@ void World::fetchMessages() {
 	}
 	if (!islist)
 		fetchMessagesHelper(0, 0);
-	messages[messages_pos] = '\0';
-	messages_pos = 0;
 }
 
 void World::fetchMessagesHelper(int row, int startcol) {
@@ -352,17 +350,20 @@ void World::update() {
 		map[row][col] = PLAYER;
 		player.row = row;
 		player.col = col;
-	} else if (row == 0) {
+	} else if (row == 0 && col > 0) {
 		/* cursor on first row? possibly a question? */
 		cerr << "POSSIBLY QUESTION" << endl;
 		cerr << data << endl;
 		/* answer "yes" & carry on */
 		command("y");
 	} else {
-		/* hmm, what else can it be? */
+		/* hmm, what else can it be?
+		 * could we be missing data? */
 		cerr << "CURSOR ON UNEXPECTED LOCATION: " << row << ", " << col << endl;
 		cerr << data << endl;
-		sleep(1000);
-		exit(42);
+		update();
+		return;
 	}
+	messages[messages_pos] = '\0';
+	messages_pos = 0;
 }

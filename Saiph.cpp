@@ -313,6 +313,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 		}
 		if (distance > 0 && prevmove != move)
 			direct_line = false;
+		prevmove = move;
 		++distance;
 		row = r;
 		col = c;

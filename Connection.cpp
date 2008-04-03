@@ -32,8 +32,6 @@ Connection::Connection(bool remote) {
 		/* fix plumbing */
 		link[0] = fd; // reading
 		link[1] = fd; // writing
-		/* make reading non-blocking */
-		fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
 	} else {
 		/* this is our pty, start nethack here */
 		int result;
@@ -60,22 +58,19 @@ Connection::Connection(bool remote) {
 		account >> username;
 		account >> password;
 		account.close();
-		sleep(3);
+		sleep(2);
 		char buffer[BUFFER_SIZE];
 		ssize_t size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send("l");
-		sleep(3);
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send(username);
 		send("\n");
-		sleep(3);
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send(password);
 		send("\n");
-		sleep(3);
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send("p");
@@ -89,17 +84,20 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 	/* retrieve data */
 	ssize_t data_received = 0;
 	ssize_t data_received_total = 0;
-	int failed = 0;
-	while (data_received_total == 0 || data_received > 0 || ++failed < 5) {
-		if (usleep_time > 0)
-			usleep(usleep_time);
-		data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
-		if (data_received != -1) {
-			data_received_total += data_received;
-			failed = 0;
-		}
-		cerr << "reading " << data_received_total << " | " << data_received << endl;
-	}
+	/* make reading blocking */
+	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
+	/* read 1 byte, this will block until there's data available */
+	++data_received_total;
+	data_received = read(link[0], buffer, data_received_total);
+	/* make reading non-blocking */
+	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
+	data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
+	if (data_received != -1)
+		data_received_total += data_received;
+	cerr << "reading " << data_received_total << " | " << data_received << endl;
+	for (int a = 0; a < data_received_total; ++a)
+		cerr << buffer[a];
+	cerr << endl;
 	if (data_received_total < (ssize_t) count)
 		buffer[data_received_total] = '\0';
 	return data_received_total;

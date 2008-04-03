@@ -4,9 +4,6 @@
 # for more information about this and other bots, see:
 # http://sartak.org/nh/bots.html
 #
-# thanks to moomast3r and his bot april whom i borrowed some code from for
-# setting up pty & connecting to nethack.alt.org.
-#
 # saiph is GPLv2 licenced.
 
 ##########################################
