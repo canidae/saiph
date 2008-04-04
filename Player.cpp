@@ -37,7 +37,7 @@ Player::Player() {
 }
 
 /* methods */
-void Player::parseAttributeRow(const char *attributerow) {
+bool Player::parseAttributeRow(const char *attributerow) {
 	/* fetch attributes */
 	char alignment[MAX_TEXT_LENGTH];
 	alignment[0] = '\0';
@@ -45,6 +45,7 @@ void Player::parseAttributeRow(const char *attributerow) {
 	if (matched < 7) {
 		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
 		cerr << attributerow << endl;
+		return false;
 	}
 	if (alignment[0] == 'L')
 		attributes.alignment = LAWFUL;
@@ -52,9 +53,10 @@ void Player::parseAttributeRow(const char *attributerow) {
 		attributes.alignment = NEUTRAL;
 	else    
 		attributes.alignment = CHAOTIC;
+	return true;
 }
 
-void Player::parseStatusRow(const char *statusrow) {
+bool Player::parseStatusRow(const char *statusrow) {
 	/* fetch status */
 	status.encumbrance = 0;
 	status.hunger = 0;
@@ -70,6 +72,7 @@ void Player::parseStatusRow(const char *statusrow) {
 	if (matched < 9) {
 		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
 		cerr << statusrow << endl;
+		return false;
 	}
 	int effects_found = matched - 9;
 	for (int a = 0; a < effects_found; ++a) {
@@ -109,4 +112,5 @@ void Player::parseStatusRow(const char *statusrow) {
 			status.stunned = true;
 		}
 	}
+	return true;
 }

@@ -66,11 +66,11 @@ Connection::Connection(bool remote) {
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send(username);
-		send("\n");
+		send("\r");
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send(password);
-		send("\n");
+		send("\r");
 		size = retrieve(buffer, BUFFER_SIZE);
 		cerr << buffer << endl;
 		send("p");
