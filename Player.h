@@ -79,7 +79,7 @@ class Player {
 		Player();
 
 		/* methods */
-		bool parseAttributeRow(const char *attributerow);
-		bool parseStatusRow(const char *statusrow);
+		void parseAttributeRow(const char *attributerow);
+		void parseStatusRow(const char *statusrow);
 };
 #endif

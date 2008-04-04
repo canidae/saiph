@@ -2,9 +2,9 @@
 /* defines */
 #define HEALTHANALYZER_H
 /* various */
-#define HA_ENGRAVE_ELBERETH "E-y Elbereth\r"
-#define HA_ENGRAVE_ELBERETH_FRESH "E-n Elbereth\r"
-#define HA_PRAY "#pray\r"
+#define HA_ENGRAVE_ELBERETH "E-y Elbereth\n"
+#define HA_ENGRAVE_ELBERETH_FRESH "E-n Elbereth\n"
+#define HA_PRAY "#pray\n"
 
 /* forward declare */
 class HealthAnalyzer;
