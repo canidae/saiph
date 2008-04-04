@@ -338,6 +338,9 @@ void World::update() {
 
 	fetchMessages();
 
+	/* print world */
+	cout << data << endl;
+
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(map[STATUS_ROW]);
@@ -347,9 +350,9 @@ void World::update() {
 		map[row][col] = PLAYER;
 		player.row = row;
 		player.col = col;
-	} else if (row == 0 && col > 0) {
+	} else if (row == 0 && col > 1) {
 		/* cursor on first row? possibly a question? */
-		cerr << "POSSIBLY QUESTION" << endl;
+		cerr << "POSSIBLY QUESTION: " << row << ", " << col << endl;
 		cerr << data << endl;
 		/* answer "yes" & carry on */
 		command("y\r");

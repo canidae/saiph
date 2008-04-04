@@ -87,7 +87,7 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void dumpScreens();
+		void dumpMaps();
 		void farlook(int row, int col);
 		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
 		bool run();

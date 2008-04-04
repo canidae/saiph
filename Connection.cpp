@@ -94,7 +94,7 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 	data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
 	if (data_received != -1)
 		data_received_total += data_received;
-	cerr << "reading " << data_received_total << " | " << data_received << endl;
+	cerr << "reading " << data_received << " | " << data_received_total << endl;
 	for (int a = 0; a < data_received_total; ++a)
 		cerr << buffer[a];
 	cerr << endl;

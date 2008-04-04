@@ -101,9 +101,7 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-void Saiph::dumpScreens() {
-	/* world map */
-	cout << world->data;
+void Saiph::dumpMaps() {
 	/* search map */
 	cout << (char) 27 << "[26;1H";
 	for (int r = 0; r < ROWS; ++r) {
@@ -193,7 +191,7 @@ bool Saiph::run() {
 	updatePathMap();
 
 	/* print stuff so we see what we're doing */
-	dumpScreens();
+	dumpMaps();
 
 	/* reset command */
 	memset(command.command, '\0', MAX_COMMAND_LENGTH);
@@ -441,10 +439,8 @@ void Saiph::updatePathMap() {
 /* main */
 int main() {
 	Saiph saiph(false);
-	//for (int a = 0; a < 5 && saiph.run(); ++a)
-	//	;
-	/* clear screen */
-	cerr << (char) 27 << "[2J" << endl;
-	while (saiph.run())
+	for (int a = 0; a < 5 && saiph.run(); ++a)
 		;
+	//while (saiph.run())
+	//	;
 }

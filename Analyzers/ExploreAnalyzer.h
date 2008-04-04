@@ -6,7 +6,7 @@
 
 #define EX_UNLIT_ROOM 20 // room where we haven't seen the floor
 #define EX_DEAD_END 15 // corridor that just ends
-#define EX_TURN 15 // corridor that turns
+#define EX_TURN 10 // corridor that turns
 #define EX_EXTRA_SEARCH 5 // frantic searching for door
 
 /* forward declare */

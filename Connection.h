@@ -3,11 +3,11 @@
 #define CONNECTION_H
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
-#define LOCAL_USLEEP 50000
+#define LOCAL_USLEEP 0
 /* remote */
 #define REMOTE_NETHACK_URL "nethack.alt.org"
 #define REMOTE_NETHACK "/usr/bin/telnet"
-#define REMOTE_USLEEP 5000
+#define REMOTE_USLEEP 200000
 
 /* forward declare */
 class Connection;
