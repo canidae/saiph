@@ -443,8 +443,6 @@ int main() {
 	Saiph saiph(false);
 	//for (int a = 0; a < 5 && saiph.run(); ++a)
 	//	;
-	/* clear screen */
-	cerr << (char) 27 << "[2J" << endl;
 	while (saiph.run())
 		;
 }

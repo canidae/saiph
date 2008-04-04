@@ -338,10 +338,13 @@ void World::update() {
 
 	fetchMessages();
 
+	cerr << data << endl;
+	//cout << "'" << messages << "'" << endl;
+
 	/* parse attribute & status rows */
-	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);
-	bool parsed_status = player.parseStatusRow(map[STATUS_ROW]);
-	if (parsed_attributes && parsed_status && row >= MAP_ROW_START && row <= MAP_ROW_END && col >= 0 && col < COLS) {
+	player.parseAttributeRow(map[ATTRIBUTES_ROW]);
+	player.parseStatusRow(map[STATUS_ROW]);
+	if (row >= MAP_ROW_START && row <= MAP_ROW_END && col >= 0 && col < COLS) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
 		map[row][col] = PLAYER;
@@ -352,7 +355,7 @@ void World::update() {
 		cerr << "POSSIBLY QUESTION" << endl;
 		cerr << data << endl;
 		/* answer "yes" & carry on */
-		command("y\r");
+		command("y");
 	} else {
 		/* hmm, what else can it be?
 		 * could we be missing data? */
