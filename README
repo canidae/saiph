@@ -1,7 +1,23 @@
+================================================================================
+About:
+================================================================================
+
 saiph - [Stupid|Silly|Smart|Superior]* AI Playing netHack
 * use a descriptive word beginning with "S"
 
-dungeon showing the structure of the code, ish:
+
+================================================================================
+Installation:
+================================================================================
+
+saiph is in a git repository. it's coded on and meant for linux.
+you can fetch the code this way:
+git clone http://exent.net/~canidae/saiph/.git
+
+
+================================================================================
+Code structure (outdated!)
+================================================================================
 
 --------------
 | Connection +################
