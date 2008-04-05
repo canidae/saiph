@@ -28,6 +28,8 @@ Player::Player() {
 	ill = false;
 	slimed = false;
 	stunned = false;
+	/* other */
+	last_pray_turn = 0;
 	/* position */
 	dungeon = 0;
 	col = 0;

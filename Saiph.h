@@ -62,6 +62,7 @@ struct Branch {
 	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (monsters, objects, etc)
 	char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
 	char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
+	char diagonally_unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // tiles we can't diagonally pass
 };
 
 /* a command to send to the game */

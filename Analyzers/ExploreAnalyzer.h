@@ -2,7 +2,7 @@
 /* defines */
 #define EXPLOREANALYZER_H
 /* various */
-#define EX_MAX_PLACES 128
+#define EX_MAX_PLACES 1024
 
 #define EX_UNLIT_ROOM 20 // room where we haven't seen the floor
 #define EX_DEAD_END 15 // corridor that just ends

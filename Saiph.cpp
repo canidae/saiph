@@ -106,8 +106,8 @@ void Saiph::dumpMaps() {
 	cout << (char) 27 << "[26;1H";
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			//cout << (char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
-			cout << (int) branches[current_branch]->unpassable[world->player.dungeon][r][c];
+			cout << (char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
+			//cout << (int) branches[current_branch]->unpassable[world->player.dungeon][r][c];
 		}
 		cout << endl;
 	}
@@ -262,7 +262,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 		int c = col;
 		char s = branches[current_branch]->map[world->player.dungeon][row][col];
 		antiloop = curcost; // if curcost doesn't change the loop will end
-		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row - 1][col - 1] != OPEN_DOOR && (branches[current_branch]->unpassable[world->player.dungeon][row - 1][col] == 0 || branches[current_branch]->unpassable[world->player.dungeon][row][col - 1] == 0)))) {
+		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row - 1][col - 1] != OPEN_DOOR && (branches[current_branch]->diagonally_unpassable[world->player.dungeon][row - 1][col] == 0 || branches[current_branch]->diagonally_unpassable[world->player.dungeon][row][col - 1] == 0)))) {
 			move = MOVE_SE;
 			r = row - 1;
 			c = col - 1;
@@ -274,7 +274,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row - 1][col + 1] != OPEN_DOOR && (branches[current_branch]->unpassable[world->player.dungeon][row - 1][col] == 0 || branches[current_branch]->unpassable[world->player.dungeon][row][col + 1] == 0)))) {
+		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row - 1][col + 1] != OPEN_DOOR && (branches[current_branch]->diagonally_unpassable[world->player.dungeon][row - 1][col] == 0 || branches[current_branch]->diagonally_unpassable[world->player.dungeon][row][col + 1] == 0)))) {
 			move = MOVE_SW;
 			r = row - 1;
 			c = col + 1;
@@ -292,7 +292,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col + 1;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row + 1][col - 1] != OPEN_DOOR && (branches[current_branch]->unpassable[world->player.dungeon][row + 1][col] == 0 || branches[current_branch]->unpassable[world->player.dungeon][row][col - 1] == 0)))) {
+		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row + 1][col - 1] != OPEN_DOOR && (branches[current_branch]->diagonally_unpassable[world->player.dungeon][row + 1][col] == 0 || branches[current_branch]->diagonally_unpassable[world->player.dungeon][row][col - 1] == 0)))) {
 			move = MOVE_NE;
 			r = row + 1;
 			c = col - 1;
@@ -304,7 +304,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row + 1][col + 1] != OPEN_DOOR && (branches[current_branch]->unpassable[world->player.dungeon][row + 1][col] == 0 || branches[current_branch]->unpassable[world->player.dungeon][row][col + 1] == 0)))) {
+		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || (s != OPEN_DOOR && branches[current_branch]->map[world->player.dungeon][row + 1][col + 1] != OPEN_DOOR && (branches[current_branch]->diagonally_unpassable[world->player.dungeon][row + 1][col] == 0 || branches[current_branch]->diagonally_unpassable[world->player.dungeon][row][col + 1] == 0)))) {
 			move = MOVE_NW;
 			r = row + 1;
 			c = col + 1;
@@ -372,7 +372,9 @@ void Saiph::updateMaps() {
 				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
 			}
 			/* unpassable map */
-			branches[current_branch]->unpassable[world->player.dungeon][r][c] = (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL || hs == CLOSED_DOOR || hs == IRON_BARS || hs == TREE || hs == RAISED_DRAWBRIDGE) ? 1 : 0;
+			branches[current_branch]->unpassable[world->player.dungeon][r][c] = (s == VERTICAL_WALL || s == HORIZONTAL_WALL || s == CLOSED_DOOR || s == IRON_BARS || s == TREE || s == RAISED_DRAWBRIDGE || s == BOULDER) ? 1 : 0;
+			/* diagonally unpassable map */
+			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (s == VERTICAL_WALL || s == HORIZONTAL_WALL || s == CLOSED_DOOR || s == IRON_BARS || s == TREE || s == RAISED_DRAWBRIDGE || s == OPEN_DOOR) ? 1 : 0;
 		}
 	}
 
@@ -445,7 +447,7 @@ void Saiph::updatePathMap() {
 				 */
 				else if ((ds == OPEN_DOOR || dt == OPEN_DOOR) && r != row && c != col)
 					continue;
-				else if ((branches[current_branch]->unpassable[world->player.dungeon][row][c] == 1 && branches[current_branch]->unpassable[world->player.dungeon][r][col] == 1))
+				else if ((branches[current_branch]->diagonally_unpassable[world->player.dungeon][row][c] == 1 && branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][col] == 1))
 					continue;
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)

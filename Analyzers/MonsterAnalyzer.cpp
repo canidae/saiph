@@ -3,7 +3,12 @@
 /* constructors */
 MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
-	monster_count = 0;
+	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
+		monsters[m].row = -1;
+		monsters[m].col = -1;
+		monsters[m].symbol = -1;
+		monsters[m].last_seen = -1;
+	}
 	symbols[symbol_count++] = MONSTER_a;
 	symbols[symbol_count++] = MONSTER_b;
 	symbols[symbol_count++] = MONSTER_c;
@@ -67,48 +72,59 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 
 /* methods */
 void MonsterAnalyzer::analyze(int row, int col, char symbol) {
-	cerr << "Found monster at " << row << ", " << col << " - " << symbol << endl;
-	if (monster_count >= MO_MAX_MONSTERS)
-		return; // tracking too many monsters
-	monsters[monster_count].row = row;
-	monsters[monster_count].col = col;
-	monsters[monster_count].threat = (int) symbol;
-	monsters[monster_count].no_melee = (symbol == 'e') ? true : false;
-	++monster_count;
+	cerr << "found monster at " << row << ", " << col << " - " << symbol << endl;
+	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
+		if (monsters[m].symbol == -1 || (monsters[m].symbol == symbol && monsters[m].last_seen != saiph->world->player.turn)) {
+			if (monsters[m].symbol == -1)
+				cerr << "this seems to be a new monster" << endl;
+			else
+				cerr << "seems to be a known monster. old pos: " << monsters[m].row << ", " << monsters[m].col << endl;
+			monsters[m].row = row;
+			monsters[m].col = col;
+			monsters[m].symbol = symbol;
+			monsters[m].last_seen = saiph->world->player.turn;
+			return;
+		}
+	}
+	/* we're tracking too many monsters, return */
+	return;
 }
 
 void MonsterAnalyzer::finish() {
 	/* figure out which monster to attack */
-	if (monster_count > 0 && saiph->world->player.hitpoints * 3 / 2 < saiph->world->player.hitpoints_max) {
-		/* we see a monster, but our hp is less than 2/3 so we'll engrave instead */
-		saiph->setNextCommand(HA_ENGRAVE_ELBERETH, 70);
-	}
-	for (int mc = 0; mc < monster_count; ++mc) {
-		int toughest = -1;
-		int threat = -1;
-		for (int m = 0; m < monster_count; ++m) {
-			if (monsters[m].threat > threat) {
-				toughest = m;
-				threat = monsters[m].threat;
-			}
-		}
-		if (toughest == -1) {
-			/* no threatening monster */
-			break;
-		}
-		cerr << "Fighting " << (char) monsters[toughest].threat << endl;
+	for (int mc = 0; mc < MO_MAX_MONSTERS; ++mc) {
+		if (monsters[mc].symbol == -1)
+			continue;
+		/* fight nearest monster */
+		int shortest_distance = 666;
+		int m = -1;
+		int best_move = -1;
 		int distance = 0;
 		bool direct_line = false;
-		char move = saiph->shortestPath(monsters[toughest].row, monsters[toughest].col, true, distance, direct_line);
-		if (move != -1) {
+		char move = -2;
+		for (int mc2 = 0; mc2 < MO_MAX_MONSTERS; ++mc2) {
+			if (monsters[mc2].symbol == -1)
+				continue;
+			move = saiph->shortestPath(monsters[mc2].row, monsters[mc2].col, true, distance, direct_line);
+			if (move == -1 || (distance <= 1 && saiph->world->map[monsters[mc2].row][monsters[mc2].col] != monsters[mc2].symbol)) {
+				/* can't find monster, forget it */
+				cerr << "unable to find monster " << monsters[mc2].symbol << ". monster forgotten" << endl;
+				monsters[mc2].symbol = -1;
+				continue;
+			}
+			if (distance < shortest_distance) {
+				shortest_distance = distance;
+				m = mc2;
+				best_move = move;
+			}
+		}
+		if (m != -1) {
+			cerr << "fighting " << monsters[m].symbol << endl;
 			char command[2];
-			command[0] = move;
+			command[0] = best_move;
 			command[1] = '\0';
 			saiph->setNextCommand(command, 70);
 			break;
-		} else {
-			monsters[toughest].threat = -1;
 		}
 	}
-	monster_count = 0;
 }

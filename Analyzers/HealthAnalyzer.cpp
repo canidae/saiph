@@ -33,7 +33,8 @@ void HealthAnalyzer::finish() {
 		 * spell, potion, (elbereth?), pray
 		 *
 		 * pray for now */
-		saiph->setNextCommand(HA_PRAY, 100);
+		//saiph->setNextCommand(HA_PRAY, 100);
+		saiph->setNextCommand(HA_ENGRAVE_ELBERETH, 90);
 	} else if (hp > 0 && hp * 2 < hp_max) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options

@@ -62,6 +62,8 @@ class Player {
 		bool ill;
 		bool slimed;
 		bool stunned;
+		/* other */
+		int last_pray_turn;
 		/* position */
 		int dungeon;
 		int row;

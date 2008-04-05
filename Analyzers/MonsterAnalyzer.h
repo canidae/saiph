@@ -9,7 +9,6 @@ class MonsterAnalyzer;
 
 /* includes */
 #include "../Saiph.h"
-#include "HealthAnalyzer.h" // needed for HA_ENGRAVE_ELBERETH
 
 /* namespace */
 using namespace std;
@@ -18,8 +17,8 @@ using namespace std;
 struct MO_Monster {
 	int row;
 	int col;
-	int threat;
-	bool no_melee;
+	int last_seen;
+	char symbol;
 };
 
 /* analyzer for fighting monsters */
@@ -35,7 +34,6 @@ class MonsterAnalyzer : public Analyzer {
 	private:
 		/* variables */
 		MO_Monster monsters[MO_MAX_MONSTERS];
-		int monster_count;
 		Saiph *saiph;
 };
 #endif
