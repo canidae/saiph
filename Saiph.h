@@ -48,12 +48,11 @@ class Saiph;
 #include "Player.h"
 #include "World.h"
 /* analyzers */
-#include "Analyzers/DungeonAnalyzer.h"
+#include "Analyzers/DoorAnalyzer.h"
 #include "Analyzers/ExploreAnalyzer.h"
-#include "Analyzers/FightAnalyzer.h"
 #include "Analyzers/HealthAnalyzer.h"
 #include "Analyzers/LevelAnalyzer.h"
-#include "Analyzers/DoorAnalyzer.h"
+#include "Analyzers/MonsterAnalyzer.h"
 
 /* namespace */
 using namespace std;
@@ -62,6 +61,7 @@ using namespace std;
 struct Branch {
 	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (monsters, objects, etc)
 	char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
+	char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
 };
 
 /* a command to send to the game */
@@ -106,6 +106,7 @@ class Saiph {
 
 		/* methods */
 		void inspect();
+		void updateMaps();
 		void updatePathMap();
 };
 #endif

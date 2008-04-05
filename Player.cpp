@@ -34,18 +34,6 @@ Player::Player() {
 	row = 0;
 	/* zorkmids */
 	zorkmids = 0;
-
-	/* used for parsing rows */
-	//effects = new char*[MAX_EFFECTS];
-	//for (int e = 0; e < MAX_EFFECTS; ++e)
-	//	effects[e] = new char[MAX_TEXT_LENGTH];
-}
-
-/* destructors */
-Player::~Player() {
-	for (int e = 0; e < MAX_EFFECTS; ++e)
-		delete [] effects[e];
-	delete [] effects;
 }
 
 /* methods */

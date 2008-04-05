@@ -1,7 +1,7 @@
-#include "FightAnalyzer.h"
+#include "MonsterAnalyzer.h"
 
 /* constructors */
-FightAnalyzer::FightAnalyzer(Saiph *saiph) {
+MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
 	monster_count = 0;
 	symbols[symbol_count++] = MONSTER_a;
@@ -66,9 +66,9 @@ FightAnalyzer::FightAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-void FightAnalyzer::analyze(int row, int col, char symbol) {
+void MonsterAnalyzer::analyze(int row, int col, char symbol) {
 	cerr << "Found monster at " << row << ", " << col << " - " << symbol << endl;
-	if (monster_count >= FI_MAX_MONSTERS)
+	if (monster_count >= MO_MAX_MONSTERS)
 		return; // tracking too many monsters
 	monsters[monster_count].row = row;
 	monsters[monster_count].col = col;
@@ -77,7 +77,7 @@ void FightAnalyzer::analyze(int row, int col, char symbol) {
 	++monster_count;
 }
 
-void FightAnalyzer::finish() {
+void MonsterAnalyzer::finish() {
 	/* figure out which monster to attack */
 	if (monster_count > 0 && saiph->world->player.hitpoints * 3 / 2 < saiph->world->player.hitpoints_max) {
 		/* we see a monster, but our hp is less than 2/3 so we'll engrave instead */

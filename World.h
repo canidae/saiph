@@ -37,6 +37,7 @@ class World: public Dungeon {
 		int col; // cursor position, col
 		Connection *connection;
 		int messages_pos; // used for concatenation multiple messages together
+		string msg_str; // used for fetching messages
 
 		/* methods */
 		void handleEscapeSequence(int &pos, int &colour);

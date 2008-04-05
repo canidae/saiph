@@ -209,8 +209,8 @@ void World::fetchMessages() {
 	/* this code is ugly :( */
 	bool islist = false;
 	for (int r = 0; r < ROWS; ++r) {
-		string str(map[r]);
-		string::size_type pos = str.find(MORE, 0);
+		msg_str = map[r];
+		string::size_type pos = msg_str.find(MORE, 0);
 		if (pos == string::npos)
 			continue;
 		/* "--More--" found */
@@ -240,22 +240,22 @@ void World::fetchMessagesHelper(int row, int startcol) {
 	 * eg. engravings. usually that is quoted. */
 	if (row < 0 || row > ROWS || startcol < 0)
 		return;
-	string str(&map[row][startcol]);
-	string::size_type pos = str.find(MORE, 0);
+	msg_str = &map[row][startcol];
+	string::size_type pos = msg_str.find(MORE, 0);
 	if (pos != string::npos) {
 		/* "--More--" found, remove it */
-		str = str.substr(0, pos);
+		msg_str = msg_str.substr(0, pos);
 	}
 	/* trim */
-	string::size_type ltpos = str.find_first_not_of(" ");
+	string::size_type ltpos = msg_str.find_first_not_of(" ");
 	if (ltpos == string::npos)
 		return; // no messages
-	str = str.substr(ltpos, str.find_last_not_of(" ") + 1);
+	msg_str = msg_str.substr(ltpos, msg_str.find_last_not_of(" ") + 1);
 	/* add two spaces at end */
-	str.append(2, ' ');
+	msg_str.append(2, ' ');
 	/* copy into messages */
-	str.copy(&messages[messages_pos], str.length());
-	messages_pos += str.length();
+	msg_str.copy(&messages[messages_pos], msg_str.length());
+	messages_pos += msg_str.length();
 }
 
 void World::update() {

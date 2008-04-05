@@ -1,11 +1,11 @@
-#ifndef FIGHTANALYZER_H
+#ifndef MONSTERANALYZER_H
 /* defines */
-#define FIGHTANALYZER_H
+#define MONSTERANALYZER_H
 /* various */
-#define FI_MAX_MONSTERS 64
+#define MO_MAX_MONSTERS 64
 
 /* forward declare */
-class FightAnalyzer;
+class MonsterAnalyzer;
 
 /* includes */
 #include "../Saiph.h"
@@ -15,7 +15,7 @@ class FightAnalyzer;
 using namespace std;
 
 /* keeping track of visible monsters */
-struct FI_Monster {
+struct MO_Monster {
 	int row;
 	int col;
 	int threat;
@@ -23,10 +23,10 @@ struct FI_Monster {
 };
 
 /* analyzer for fighting monsters */
-class FightAnalyzer : public Analyzer {
+class MonsterAnalyzer : public Analyzer {
 	public:
 		/* constructors */
-		FightAnalyzer(Saiph *saiph);
+		MonsterAnalyzer(Saiph *saiph);
 
 		/* methods */
 		virtual void analyze(int row, int col, char symbol);
@@ -34,7 +34,7 @@ class FightAnalyzer : public Analyzer {
 
 	private:
 		/* variables */
-		FI_Monster monsters[FI_MAX_MONSTERS];
+		MO_Monster monsters[MO_MAX_MONSTERS];
 		int monster_count;
 		Saiph *saiph;
 };

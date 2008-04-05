@@ -74,9 +74,6 @@ class Player {
 		/* constructors */
 		Player();
 
-		/* destructors */
-		~Player();
-
 		/* methods */
 		bool parseAttributeRow(const char *attributerow);
 		bool parseStatusRow(const char *statusrow);
