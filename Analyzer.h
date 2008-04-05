@@ -25,9 +25,10 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
-		virtual void start();
-		virtual void analyze(int row, int col, char symbol);
-		virtual void finish();
-		virtual void end();
+		virtual int parseMessages();
+		virtual int start();
+		virtual int analyze(int row, int col, char symbol);
+		virtual int finish();
+		virtual void command();
 };
 #endif

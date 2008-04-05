@@ -6,7 +6,7 @@ LevelAnalyzer::LevelAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-void LevelAnalyzer::end() {
+void LevelAnalyzer::finish() {
 	if (saiph->command.priority > LA_DESCEND_PRIORITY)
 		return;
 	/* time to descend */

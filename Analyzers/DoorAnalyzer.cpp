@@ -6,12 +6,11 @@ DoorAnalyzer::DoorAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-
-void DoorAnalyzer::finish() {
+int DoorAnalyzer::finish() {
 	int row = saiph->world->player.row;
 	int col = saiph->world->player.col;
 	if (row < MAP_ROW_START || row > MAP_ROW_END || col < 0 || col >= COLS)
-		return;
+		return 0;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	char kick = -1;
@@ -31,13 +30,14 @@ void DoorAnalyzer::finish() {
 		kick = MOVE_E;
 	else if (saiph->branches[branch]->map[dungeon][row][col - 1] == CLOSED_DOOR)
 		kick = MOVE_W;
-	if (kick != -1) {
-		/* what is this? a closed door right next to us?
-		 * kick it! */
-		char command[3];
-		command[0] = 4;
-		command[1] = kick;
-		command[2] = '\0';
-		saiph->setNextCommand(command, DO_KICK_DOOR);
-	}
+	if (kick != -1)
+		return DO_KICK_DOOR;
+}
+
+void DoorAnalyzer::command() {
+	char command[3];
+	command[0] = 4;
+	command[1] = kick;
+	command[2] = '\0';
+	saiph->world->command(command);
 }

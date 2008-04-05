@@ -33,8 +33,9 @@ class ExploreAnalyzer : public Analyzer {
 		ExploreAnalyzer(Saiph *saiph);
 
 		/* methods */
-		virtual void analyze(int row, int col, char symbol);
-		virtual void finish();
+		int analyze(int row, int col, char symbol);
+		int finish();
+		void command();
 
 	private:
 		/* variables */

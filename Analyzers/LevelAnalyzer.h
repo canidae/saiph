@@ -20,7 +20,8 @@ class LevelAnalyzer : public Analyzer {
 		LevelAnalyzer(Saiph *saiph);
 
 		/* methods */
-		virtual void end();
+		int finish();
+		void command();
 
 	private:
 		/* variables */

@@ -15,4 +15,4 @@ MonsterAnalyzer.o: MonsterAnalyzer.h MonsterAnalyzer.cpp
 
 .PHONY: clean
 clean:
-	$(RM) $(OBJECTS) *.gch
+	$(RM) *.o *.gch

@@ -25,6 +25,7 @@ class HealthAnalyzer : public Analyzer {
 		HealthAnalyzer(Saiph *saiph);
 
 		/* methods */
-		void finish();
+		int finish();
+		void command();
 };
 #endif

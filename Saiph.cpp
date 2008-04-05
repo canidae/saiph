@@ -6,7 +6,7 @@ Saiph::Saiph(bool remote) {
 	world = new World(connection);
 
 	/* next command */
-	memset(command.command, '\0', MAX_COMMAND_LENGTH);
+	command.analyzer = -1;
 	command.priority = 0;
 
 	/* pathing */
@@ -65,10 +65,11 @@ Saiph::Saiph(bool remote) {
 		memset(branches[b]->map, ' ', MAX_DUNGEON_DEPTH * ROWS * COLS);
 		memset(branches[b]->search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
 		memset(branches[b]->unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
+		memset(branches[b]->diagonally_unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
 	}
 
-	/* message parser */
-	parser = new MessageParser(this);
+	/* messages */
+	messages = "";
 
 	/* Analyzers */
 	analyzers = new Analyzer*[MAX_ANALYZERS];
@@ -95,7 +96,6 @@ Saiph::~Saiph() {
 		delete [] pathpos[p];
 	delete [] pathpos;
 	delete [] passable;
-	delete parser;
 	delete world;
 	delete connection;
 }
@@ -108,6 +108,7 @@ void Saiph::dumpMaps() {
 		for (int c = 0; c < COLS; ++c) {
 			cout << (char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
 			//cout << (int) branches[current_branch]->unpassable[world->player.dungeon][r][c];
+			//cout << (int) branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c];
 		}
 		cout << endl;
 	}
@@ -195,52 +196,49 @@ bool Saiph::run() {
 	dumpMaps();
 
 	/* reset command */
-	memset(command.command, '\0', MAX_COMMAND_LENGTH);
+	command.analyzer = -1;
 	command.priority = 0;
 
 	/* save dungeon in history */
 
 	/* deal with messages */
-	parser->parse();
+	messages = world->messages;
+	for (int a = 0; a < analyzer_count; ++a) {
+		int priority = analyzers[a]->parseMessages();
+		if (priority > command.priority) {
+			command.analyzer = a;
+			command.priority = priority;
+		}
+	}
 
 	/* call start() in analyzers */
-	for (int a = 0; a < analyzer_count; ++a)
-		analyzers[a]->start();
+	for (int a = 0; a < analyzer_count; ++a) {
+		int priority = analyzers[a]->start();
+		if (priority > command.priority) {
+			command.analyzer = a;
+			command.priority = priority;
+		}
+	}
 
 	/* inspect the dungeon */
 	inspect();
 
 	/* call finish() in analyzers */
-	for (int a = 0; a < analyzer_count; ++a)
-		analyzers[a]->finish();
-
-	/* call end() in analyzers */
-	for (int a = 0; a < analyzer_count; ++a)
-		analyzers[a]->end();
-
-	/* if no command, quit for now */
-	if (command.priority == 0) {
-		cout << (char) 27 << "[51;1H";
-		return false;
+	for (int a = 0; a < analyzer_count; ++a) {
+		int priority = analyzers[a]->finish();
+		if (priority > command.priority) {
+			command.analyzer = a;
+			command.priority = priority;
+		}
 	}
 
-	/* do the selected move */
-	cerr << "Command: " << command.command << " (priority: " << command.priority << ")" << endl;
-	world->command(command.command);
-	return true;
-}
+	/* check if we got a command */
+	if (command.analyzers == -1)
+		return false;
 
-void Saiph::setNextCommand(const char *command, int priority) {
-	/* priority range from 0 to 100.
-	 * each analyzer set their own priorities.
-	 * this is done so each analyzer may overrule another */
-	/* FIXME
-	 * no range check on the char array? tsk, tsk.
-	 * might be an idea to rethink this stuff anyways */
-	if (priority < this->command.priority)
-		return;
-	strcpy(this->command.command, command);
-	this->command.priority = priority;
+	/* let an analyzer do its command */
+	analyzers[command.analyzer]->command();
+	return true;
 }
 
 char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line) {

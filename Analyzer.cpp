@@ -11,14 +11,21 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
-void Analyzer::start() {
+int Analyzer::parseMessages() {
+	return 0;
 }
 
-void Analyzer::analyze(int row, int col, char symbol) {
+int Analyzer::start() {
+	return 0;
 }
 
-void Analyzer::finish() {
+int Analyzer::analyze(int row, int col, char symbol) {
+	return 0;
 }
 
-void Analyzer::end() {
+int Analyzer::finish() {
+	return 0;
+}
+
+void Analyzer::command() {
 }

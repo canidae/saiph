@@ -23,7 +23,8 @@ class DoorAnalyzer : public Analyzer {
 		DoorAnalyzer(Saiph *saiph);
 
 		/* methods */
-		virtual void finish();
+		int finish();
+		void command();
 
 	private:
 		/* variables */

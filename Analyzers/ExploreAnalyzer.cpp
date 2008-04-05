@@ -35,13 +35,13 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-void ExploreAnalyzer::analyze(int row, int col, char symbol) {
+int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
-		return;
+		return 0;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	if (saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH)
-		return; // we've been here and searched frantically
+		return 0; // we've been here and searched frantically
 	/* hjkl symbols */
 	char hs = saiph->branches[branch]->map[dungeon][row][col - 1];
 	char js = saiph->branches[branch]->map[dungeon][row + 1][col];
@@ -81,7 +81,7 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 		bool lv = saiph->branches[branch]->search[dungeon][row][col + 1] >= MAX_SEARCH;
 		if (((h && j && kv && lv) || (h && k && jv && lv) || (j && l && hv && kv) || (k && l && hv && jv))) {
 			saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
-			return;
+			return 0;
 		}
 	} else if (floor && (hunp || junp || kunp || lunp)) {
 		score = EX_EXTRA_SEARCH;
@@ -90,25 +90,27 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && !dead_end) {
 		/* don't search in corridors unless it's a dead end */
 		saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
-		return;
+		return 0;
 	}
 	if (score <= 0)
-		return; // this place isn't very exciting
+		return 0; // this place isn't very exciting
 	places[place_count].row = row;
 	places[place_count].col = col;
 	places[place_count].move = -1;
 	places[place_count].value = score;
 	++place_count;
+	return 0;
 }
 
-void ExploreAnalyzer::finish() {
+int ExploreAnalyzer::finish() {
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
+	int best = 0;
 	/* figure out which place to explore */
 	for (int pa = 0; pa < place_count; ++pa) {
 		int p = -1;
 		int nearest = ROWS * COLS;
-		int best = 0;
+		best = 0;
 		for (int pb = 0; pb < place_count; ++pb) {
 			if (places[pb].value < 0)
 				continue;
@@ -129,19 +131,15 @@ void ExploreAnalyzer::finish() {
 		if (saiph->world->player.row == places[p].row && saiph->world->player.col == places[p].col) {
 			/* no need to move, search instead */
 			++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
-			char command[2];
-			command[0] = 's';
-			command[1] = '\0';
-			saiph->setNextCommand(command, best);
 			break;
 		} else if (places[p].move != -1) {
-			char command[2];
-			command[0] = places[p].move;
-			command[1] = '\0';
-			saiph->setNextCommand(command, best);
 			break;
 		}
 		places[p].value = -1;
 	}
 	place_count = 0;
+	return best;
+}
+
+void ExploreAnalyzer::command() {
 }

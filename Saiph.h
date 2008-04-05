@@ -44,7 +44,6 @@ class Saiph;
 /* includes */
 #include "Analyzer.h"
 #include "Connection.h"
-#include "MessageParser.h"
 #include "Player.h"
 #include "World.h"
 /* analyzers */
@@ -67,7 +66,7 @@ struct Branch {
 
 /* a command to send to the game */
 struct Command {
-	char command[MAX_COMMAND_LENGTH];
+	int analyzer;
 	int priority;
 };
 
@@ -78,7 +77,7 @@ class Saiph {
 		Branch **branches;
 		int current_branch;
 		Command command;
-		MessageParser *parser;
+		string messages;
 		World *world;
 
 		/* constructors */
@@ -92,7 +91,6 @@ class Saiph {
 		void farlook(int row, int col);
 		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
 		bool run();
-		void setNextCommand(const char *command, int priority);
 		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
 
 	private:
