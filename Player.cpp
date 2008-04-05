@@ -2,114 +2,123 @@
 
 /* constructors */
 Player::Player() {
-	/* zero attributes */
-	attributes.strength = 0;
-	attributes.dexterity = 0;
-	attributes.constitution = 0;
-	attributes.intelligence = 0;
-	attributes.wisdom = 0;
-	attributes.charisma = 0;
-	attributes.alignment = 0;
-
-	/* zero status */
-	status.dungeon = 0;
-	status.zorkmids = 0;
-	status.hitpoints = 0;
-	status.hitpoints_max = 0;
-	status.power = 0;
-	status.power_max = 0;
-	status.armor_class = 0;
-	status.experience = 0;
-	status.turn = 0;
-	status.encumbrance = 0;
-	status.hunger = 0;
-	status.blind = false;
-	status.confused = false;
-	status.foodpoisoned = false;
-	status.hallucinating = false;
-	status.ill = false;
-	status.slimed = false;
-	status.stunned = false;
-
-	/* zero position */
+	/* attributes */
+	alignment = 0;
+	charisma = 0;
+	constitution = 0;
+	dexterity = 0;
+	intelligence = 0;
+	strength = 0;
+	wisdom = 0;
+	/* status */
+	armor_class = 0;
+	encumbrance = 0;
+	experience = 0;
+	hunger = 0;
+	hitpoints = 0;
+	hitpoints_max = 0;
+	power = 0;
+	power_max = 0;
+	turn = 0;
+	/* effects */
+	blind = false;
+	confused = false;
+	foodpoisoned = false;
+	hallucinating = false;
+	ill = false;
+	slimed = false;
+	stunned = false;
+	/* position */
+	dungeon = 0;
 	col = 0;
 	row = 0;
+	/* zorkmids */
+	zorkmids = 0;
+
+	/* used for parsing rows */
+	//effects = new char*[MAX_EFFECTS];
+	//for (int e = 0; e < MAX_EFFECTS; ++e)
+	//	effects[e] = new char[MAX_TEXT_LENGTH];
+}
+
+/* destructors */
+Player::~Player() {
+	for (int e = 0; e < MAX_EFFECTS; ++e)
+		delete [] effects[e];
+	delete [] effects;
 }
 
 /* methods */
 bool Player::parseAttributeRow(const char *attributerow) {
 	/* fetch attributes */
-	char alignment[MAX_TEXT_LENGTH];
-	alignment[0] = '\0';
-	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &attributes.strength, &attributes.dexterity, &attributes.constitution, &attributes.intelligence, &attributes.wisdom, &attributes.charisma, alignment);
+	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &strength, &dexterity, &constitution, &intelligence, &wisdom, &charisma, effects[0]);
 	if (matched < 7) {
 		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
 		cerr << attributerow << endl;
 		return false;
 	}
-	if (alignment[0] == 'L')
-		attributes.alignment = LAWFUL;
-	else if (alignment[0] == 'N')
-		attributes.alignment = NEUTRAL;
+	if (effects[0][0] == 'L')
+		alignment = LAWFUL;
+	else if (effects[0][0] == 'N')
+		alignment = NEUTRAL;
 	else    
-		attributes.alignment = CHAOTIC;
+		alignment = CHAOTIC;
 	return true;
 }
 
 bool Player::parseStatusRow(const char *statusrow) {
 	/* fetch status */
-	status.encumbrance = 0;
-	status.hunger = 0;
-	status.blind = false;
-	status.confused = false;
-	status.foodpoisoned = false;
-	status.hallucinating = false;
-	status.ill = false;
-	status.slimed = false;
-	status.stunned = false;
-	char effects[5][MAX_TEXT_LENGTH];
-	int matched = sscanf(statusrow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &status.dungeon, &status.zorkmids, &status.hitpoints, &status.hitpoints_max, &status.power, &status.power_max, &status.armor_class, &status.experience, &status.turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	encumbrance = 0;
+	hunger = 0;
+	blind = false;
+	confused = false;
+	foodpoisoned = false;
+	hallucinating = false;
+	ill = false;
+	slimed = false;
+	stunned = false;
+	int matched = sscanf(statusrow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &dungeon, &zorkmids, &hitpoints, &hitpoints_max, &power, &power_max, &armor_class, &experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
 	if (matched < 9) {
 		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
 		cerr << statusrow << endl;
 		return false;
 	}
 	int effects_found = matched - 9;
-	for (int a = 0; a < effects_found; ++a) {
-		if (strcmp(effects[a], "Burdened") == 0) {
-			status.encumbrance = BURDENED;
-		} else if (strcmp(effects[a], "Stressed") == 0) {
-			status.encumbrance = STRESSED;
-		} else if (strcmp(effects[a], "Strained") == 0) {
-			status.encumbrance = STRAINED;
-		} else if (strcmp(effects[a], "Overtaxed") == 0) {
-			status.encumbrance = OVERTAXED;
-		} else if (strcmp(effects[a], "Overloaded") == 0) {
-			status.encumbrance = OVERLOADED;
-		} else if (strcmp(effects[a], "Fainting") == 0) {
-			status.hunger = FAINTING;
-		} else if (strcmp(effects[a], "Weak") == 0) {
-			status.hunger = WEAK;
-		} else if (strcmp(effects[a], "Hungry") == 0) {
-			status.hunger = HUNGRY;
-		} else if (strcmp(effects[a], "Satiated") == 0) {
-			status.hunger = SATIATED;
-		} else if (strcmp(effects[a], "Oversatiated") == 0) {
-			status.hunger = OVERSATIATED;
-		} else if (strcmp(effects[a], "Blind") == 0) {
-			status.blind = true;
-		} else if (strcmp(effects[a], "Conf") == 0) {
-			status.confused = true;
-		} else if (strcmp(effects[a], "FoodPois") == 0) {
-			status.foodpoisoned = true;
-		} else if (strcmp(effects[a], "Hallu") == 0) {
-			status.hallucinating = true;
-		} else if (strcmp(effects[a], "Ill") == 0) {
-			status.ill = true;
-		} else if (strcmp(effects[a], "Slime") == 0) {
-			status.slimed = true;
-		} else if (strcmp(effects[a], "Stun") == 0) {
-			status.stunned = true;
+	for (int e = 0; e < effects_found; ++e) {
+		if (strcmp(effects[e], "Burdened") == 0) {
+			encumbrance = BURDENED;
+		} else if (strcmp(effects[e], "Stressed") == 0) {
+			encumbrance = STRESSED;
+		} else if (strcmp(effects[e], "Strained") == 0) {
+			encumbrance = STRAINED;
+		} else if (strcmp(effects[e], "Overtaxed") == 0) {
+			encumbrance = OVERTAXED;
+		} else if (strcmp(effects[e], "Overloaded") == 0) {
+			encumbrance = OVERLOADED;
+		} else if (strcmp(effects[e], "Fainting") == 0) {
+			hunger = FAINTING;
+		} else if (strcmp(effects[e], "Weak") == 0) {
+			hunger = WEAK;
+		} else if (strcmp(effects[e], "Hungry") == 0) {
+			hunger = HUNGRY;
+		} else if (strcmp(effects[e], "Satiated") == 0) {
+			hunger = SATIATED;
+		} else if (strcmp(effects[e], "Oversatiated") == 0) {
+			hunger = OVERSATIATED;
+		} else if (strcmp(effects[e], "Blind") == 0) {
+			blind = true;
+		} else if (strcmp(effects[e], "Conf") == 0) {
+			confused = true;
+		} else if (strcmp(effects[e], "FoodPois") == 0) {
+			foodpoisoned = true;
+		} else if (strcmp(effects[e], "Hallu") == 0) {
+			hallucinating = true;
+		} else if (strcmp(effects[e], "Ill") == 0) {
+			ill = true;
+		} else if (strcmp(effects[e], "Slime") == 0) {
+			slimed = true;
+		} else if (strcmp(effects[e], "Stun") == 0) {
+			stunned = true;
 		}
 	}
 	return true;

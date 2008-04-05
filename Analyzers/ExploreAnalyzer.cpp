@@ -39,7 +39,7 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	if (row <= MAP_ROW_START || row >= MAP_ROW_END - 1 || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
 		return;
 	int branch = saiph->current_branch;
-	int dungeon = saiph->world->player.status.dungeon;
+	int dungeon = saiph->world->player.dungeon;
 	if (saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH)
 		return; // we've been here and searched frantically
 	/* hjkl symbols */
@@ -103,7 +103,7 @@ void ExploreAnalyzer::analyze(int row, int col, char symbol) {
 
 void ExploreAnalyzer::finish() {
 	int branch = saiph->current_branch;
-	int dungeon = saiph->world->player.status.dungeon;
+	int dungeon = saiph->world->player.dungeon;
 	/* figure out which place to explore */
 	for (int pa = 0; pa < place_count; ++pa) {
 		int p = -1;

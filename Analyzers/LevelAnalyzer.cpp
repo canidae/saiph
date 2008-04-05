@@ -11,7 +11,7 @@ void LevelAnalyzer::end() {
 		return;
 	/* time to descend */
 	int branch = saiph->current_branch;
-	int dungeon = saiph->world->player.status.dungeon;
+	int dungeon = saiph->world->player.dungeon;
 	if (saiph->branches[branch]->map[dungeon][saiph->world->player.row][saiph->world->player.col] == STAIRS_DOWN) {
 		/* standing on downstairs, descend */
 		char command[2];

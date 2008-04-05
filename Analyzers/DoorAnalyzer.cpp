@@ -13,7 +13,7 @@ void DoorAnalyzer::finish() {
 	if (row < MAP_ROW_START || row > MAP_ROW_END || col < 0 || col >= COLS)
 		return;
 	int branch = saiph->current_branch;
-	int dungeon = saiph->world->player.status.dungeon;
+	int dungeon = saiph->world->player.dungeon;
 	char kick = -1;
 	if (saiph->branches[branch]->map[dungeon][row + 1][col + 1] == CLOSED_DOOR)
 		kick = MOVE_SE;

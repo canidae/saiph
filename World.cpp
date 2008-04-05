@@ -262,7 +262,8 @@ void World::update() {
 	/* update the map */
 	int colour = 0; // colour of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
-	cerr << data << endl;
+	/* print world */
+	cout << data << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:
@@ -337,9 +338,6 @@ void World::update() {
 	}
 
 	fetchMessages();
-
-	/* print world */
-	cout << data << endl;
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);

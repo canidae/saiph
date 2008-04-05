@@ -9,6 +9,7 @@ class FightAnalyzer;
 
 /* includes */
 #include "../Saiph.h"
+#include "HealthAnalyzer.h" // needed for HA_ENGRAVE_ELBERETH
 
 /* namespace */
 using namespace std;

@@ -2,6 +2,7 @@
 /* defines */
 #define PLAYER_H
 /* text length for reading textual attribute/status */
+#define MAX_EFFECTS 8
 #define MAX_TEXT_LENGTH 16
 /* alignment */
 #define CHAOTIC -1
@@ -31,52 +32,50 @@ class Player;
 /* namespace */
 using namespace std;
 
-/* all values found in the attribute row */
-struct Attributes {
-	/* numeric values */
-	int strength;
-	int dexterity;
-	int constitution;
-	int intelligence;
-	int wisdom;
-	int charisma;
-	int alignment; // see defined constants
-};
-
-/* all values found in the status row */
-struct Status {
-	/* numeric values */
-	int dungeon;
-	int zorkmids;
-	int hitpoints;
-	int hitpoints_max;
-	int power;
-	int power_max;
-	int armor_class;
-	int experience;
-	int turn;
-	int encumbrance; // see defined constants
-	int hunger; // see defined constants
-	bool blind;
-	bool confused;
-	bool foodpoisoned;
-	bool hallucinating;
-	bool ill;
-	bool slimed;
-	bool stunned;
-};
-
 /* the player class holds various info about the player */
 class Player {
 	public:
 		/* variables */
-		Attributes attributes;
-		Status status;
-		int row; // player position row
-		int col; // player position col
+		/* attributes */
+		int alignment; // see defined constants
+		int charisma;
+		int constitution;
+		int dexterity;
+		int intelligence;
+		int strength;
+		int wisdom;
+		/* status */
+		int armor_class;
+		int encumbrance; // see defined constants
+		int experience;
+		int hunger; // see defined constants
+		int hitpoints;
+		int hitpoints_max;
+		int power;
+		int power_max;
+		int turn;
+		/* effects */
+		bool blind;
+		bool confused;
+		bool foodpoisoned;
+		bool hallucinating;
+		bool ill;
+		bool slimed;
+		bool stunned;
+		/* position */
+		int dungeon;
+		int row;
+		int col;
+		/* zorkmids */
+		int zorkmids;
+		/* for parsing text */
+		char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 
 		/* constructors */
 		Player();
+
+		/* destructors */
+		~Player();
 
 		/* methods */
 		bool parseAttributeRow(const char *attributerow);

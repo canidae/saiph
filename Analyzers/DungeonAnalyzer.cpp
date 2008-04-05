@@ -12,7 +12,7 @@ void DungeonAnalyzer::start() {
 	 * sadly that means we'll have to make this one go through
 	 * all tiles now */
 	int branch = saiph->current_branch;
-	int dungeon = saiph->world->player.status.dungeon;
+	int dungeon = saiph->world->player.dungeon;
 
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {

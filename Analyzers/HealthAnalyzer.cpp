@@ -9,7 +9,7 @@ HealthAnalyzer::HealthAnalyzer(Saiph *saiph) {
 void HealthAnalyzer::finish() {
 	/* figure out if we're in danger of dying */
 	/* illness */
-	if (saiph->world->player.status.ill) {
+	if (saiph->world->player.ill) {
 		/* find out the best way to cure this
 		 * spell, potion, unihorn, pray
 		 *
@@ -17,17 +17,17 @@ void HealthAnalyzer::finish() {
 		saiph->setNextCommand(HA_PRAY, 100);
 	}
 	/* food */
-	if (saiph->world->player.status.hunger == FAINTING) {
+	if (saiph->world->player.hunger == FAINTING) {
 		saiph->setNextCommand(HA_PRAY, 100);
-	} else if (saiph->world->player.status.hunger == WEAK) {
+	} else if (saiph->world->player.hunger == WEAK) {
 		/* eat food, or pray */
 		//saiph->setNextCommand(HA_PRAY, 90);
-	} else if (saiph->world->player.status.hunger == HUNGRY) {
+	} else if (saiph->world->player.hunger == HUNGRY) {
 		/* eat food */
 	}
 	/* hp */
-	int hp = saiph->world->player.status.hitpoints;
-	int hp_max = saiph->world->player.status.hitpoints_max;
+	int hp = saiph->world->player.hitpoints;
+	int hp_max = saiph->world->player.hitpoints_max;
 	if (hp > 0 && (hp < 6 || hp * 7 <= hp_max)) {
 		/* almost dead, find an urgent way to heal up.
 		 * spell, potion, (elbereth?), pray

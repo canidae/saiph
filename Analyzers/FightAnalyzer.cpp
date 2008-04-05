@@ -79,6 +79,10 @@ void FightAnalyzer::analyze(int row, int col, char symbol) {
 
 void FightAnalyzer::finish() {
 	/* figure out which monster to attack */
+	if (monster_count > 0 && saiph->world->player.hitpoints * 3 / 2 < saiph->world->player.hitpoints_max) {
+		/* we see a monster, but our hp is less than 2/3 so we'll engrave instead */
+		saiph->setNextCommand(HA_ENGRAVE_ELBERETH, 70);
+	}
 	for (int mc = 0; mc < monster_count; ++mc) {
 		int toughest = -1;
 		int threat = -1;
