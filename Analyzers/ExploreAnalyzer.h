@@ -39,8 +39,9 @@ class ExploreAnalyzer : public Analyzer {
 
 	private:
 		/* variables */
+		Saiph *saiph;
 		EX_Place places[EX_MAX_PLACES];
 		int place_count;
-		Saiph *saiph;
+		int best_place;
 };
 #endif

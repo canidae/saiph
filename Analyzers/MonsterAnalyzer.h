@@ -34,7 +34,8 @@ class MonsterAnalyzer : public Analyzer {
 
 	private:
 		/* variables */
-		MO_Monster monsters[MO_MAX_MONSTERS];
 		Saiph *saiph;
+		MO_Monster monsters[MO_MAX_MONSTERS];
+		char action;
 };
 #endif

@@ -11,7 +11,7 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
-int Analyzer::parseMessages() {
+int Analyzer::parseMessages(string *messages) {
 	return 0;
 }
 

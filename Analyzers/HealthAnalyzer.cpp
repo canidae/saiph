@@ -6,7 +6,18 @@ HealthAnalyzer::HealthAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-void HealthAnalyzer::finish() {
+int HealthAnalyzer::parseMessages(string *messages) {
+	if (messages->find(HA_ENGRAVE_WITH, 0) != string::npos) {
+		action = HA_USE_HANDS;
+		return 100;
+	} else if (messages->find(HA_ENGRAVE_DUST, 0) != string::npos) {
+		action = HA_ENGRAVE_ELBERETH;
+		return 100;
+	}
+	return 0;
+}
+
+int HealthAnalyzer::finish() {
 	/* figure out if we're in danger of dying */
 	/* illness */
 	if (saiph->world->player.ill) {
@@ -14,16 +25,15 @@ void HealthAnalyzer::finish() {
 		 * spell, potion, unihorn, pray
 		 *
 		 * pray for now */
-		saiph->setNextCommand(HA_PRAY, 100);
+		action = HA_PRAY;
+		return 100;
 	}
 	/* food */
 	if (saiph->world->player.hunger == FAINTING) {
-		saiph->setNextCommand(HA_PRAY, 100);
-	} else if (saiph->world->player.hunger == WEAK) {
-		/* eat food, or pray */
-		//saiph->setNextCommand(HA_PRAY, 90);
-	} else if (saiph->world->player.hunger == HUNGRY) {
-		/* eat food */
+		action = HA_PRAY;
+		return 100;
+	//} else if (saiph->world->player.hunger == WEAK) {
+	//} else if (saiph->world->player.hunger == HUNGRY) {
 	}
 	/* hp */
 	int hp = saiph->world->player.hitpoints;
@@ -34,12 +44,45 @@ void HealthAnalyzer::finish() {
 		 *
 		 * pray for now */
 		//saiph->setNextCommand(HA_PRAY, 100);
-		saiph->setNextCommand(HA_ENGRAVE_ELBERETH, 90);
+		action = HA_ENGRAVE;
+		return 90;
 	} else if (hp > 0 && hp * 2 < hp_max) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options
 		 *
 		 * elbereth for now */
-		saiph->setNextCommand(HA_ENGRAVE_ELBERETH, 90);
+		action = HA_ENGRAVE;
+		return 90;
+	}
+	return 0;
+}
+
+void HealthAnalyzer::command() {
+	char command[2];
+	switch (action) {
+		case HA_ENGRAVE:
+			command[0] = ENGRAVE;
+			command[1] = '\0';
+			saiph->world->command(command);
+			break;
+
+		case HA_ENGRAVE_ELBERETH:
+			saiph->world->command(ELBERETH);
+			break;
+
+		case HA_PRAY:
+			saiph->world->command(PRAY);
+			break;
+
+		case HA_USE_HANDS:
+			command[0] = HANDS;
+			command[1] = '\0';
+			saiph->world->command(command);
+			break;
+
+		default:
+			cerr << "undefined action in DoorAnalyzer: " << action << endl;
+			exit(1);
+			break;
 	}
 }

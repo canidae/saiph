@@ -69,7 +69,7 @@ Saiph::Saiph(bool remote) {
 	}
 
 	/* messages */
-	messages = "";
+	messages = new string("");
 
 	/* Analyzers */
 	analyzers = new Analyzer*[MAX_ANALYZERS];
@@ -96,11 +96,57 @@ Saiph::~Saiph() {
 		delete [] pathpos[p];
 	delete [] pathpos;
 	delete [] passable;
+	delete messages;
 	delete world;
 	delete connection;
 }
 
 /* methods */
+void Saiph::directionToPos(char direction, int &to_row, int &to_col) {
+	/* return (by setting to_row & to_col) the position by the given direction */
+	switch (direction) {
+		case MOVE_NW:
+			--to_row;
+			--to_col;
+			break;
+
+		case MOVE_N:
+			--to_row;
+			break;
+
+		case MOVE_NE:
+			--to_row;
+			++to_col;
+			break;
+
+		case MOVE_W:
+			--to_col;
+			break;
+
+		case MOVE_E:
+			++to_col;
+			break;
+
+		case MOVE_SW:
+			++to_row;
+			--to_col;
+			break;
+
+		case MOVE_S:
+			++to_row;
+			break;
+
+		case MOVE_SE:
+			++to_row;
+			++to_col;
+			break;
+
+		default:
+			cerr << "invalid direction: " << direction << endl;
+			break;
+	}
+}
+
 void Saiph::dumpMaps() {
 	/* search map */
 	cout << (char) 27 << "[26;1H";
@@ -137,54 +183,36 @@ void Saiph::farlook(int row, int col) {
 	command[pos++] = ';';
 	int cursor_row = world->player.row;
 	int cursor_col = world->player.col;
-	while (cursor_row != row && cursor_col != col)
-		command[pos++] = findNextDirection(row, col, cursor_row, cursor_col);
+	while (cursor_row != row && cursor_col != col) {
+		char move = moveToDirection(row, col, cursor_row, cursor_col);
+		directionToPos(move, cursor_row, cursor_col);
+		command[pos++] = move;
+	}
 	command[pos++] = ',';
 	command[pos] = '\0';
 	cerr << command << endl;
 	world->command(command);
 }
 
-char Saiph::findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col) {
-	/* finds the next key we must press to move the cursor.
-	 * this ignores walls & such!
-	 * this will also change from_row/from_col! */
-	if (from_row < to_row && from_col < to_col) {
-		from_row++;
-		from_col++;
+char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) {
+	/* return the direction by the given move */
+	if (from_row < to_row && from_col < to_col)
 		return MOVE_SE;
-	}
-	if (from_row < to_row && from_col > to_col) {
-		from_row++;
-		from_col--;
+	if (from_row < to_row && from_col > to_col)
 		return MOVE_SW;
-	}
-	if (from_row > to_row && from_col < to_col) {
-		from_row--;
-		from_col++;
+	if (from_row > to_row && from_col < to_col)
 		return MOVE_NE;
-	}
-	if (from_row > to_row && from_col > to_col) {
-		from_row--;
-		from_col--;
+	if (from_row > to_row && from_col > to_col)
 		return MOVE_NW;
-	}
-	if (from_row < to_row) {
-		from_row++;
+	if (from_row < to_row)
 		return MOVE_S;
-	}
-	if (from_row > to_row) {
-		from_row--;
+	if (from_row > to_row)
 		return MOVE_N;
-	}
-	if (from_col < to_col) {
-		from_col++;
+	if (from_col < to_col)
 		return MOVE_E;
-	}
-	if (from_col > to_col) {
-		from_col--;
+	if (from_col > to_col)
 		return MOVE_W;
-	}
+	cerr << "invalid move: " << from_row << ", " << from_col << " -> " << to_row << ", " << to_col << endl;
 	return -1;
 }
 
@@ -202,9 +230,9 @@ bool Saiph::run() {
 	/* save dungeon in history */
 
 	/* deal with messages */
-	messages = world->messages;
+	*messages = world->messages;
 	for (int a = 0; a < analyzer_count; ++a) {
-		int priority = analyzers[a]->parseMessages();
+		int priority = analyzers[a]->parseMessages(messages);
 		if (priority > command.priority) {
 			command.analyzer = a;
 			command.priority = priority;
@@ -232,8 +260,10 @@ bool Saiph::run() {
 		}
 	}
 
+	cerr << "letting analyzer " << command.analyzer << " do its thing with priority " << command.priority << endl;
+
 	/* check if we got a command */
-	if (command.analyzers == -1)
+	if (command.analyzer == -1)
 		return false;
 
 	/* let an analyzer do its command */
@@ -252,6 +282,10 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 	if (row < MAP_ROW_START || row >= MAP_ROW_END || col < 1 || col > COLS - 1)
 		return -1;
 	unsigned int curcost = pathcost[row][col];
+	if (curcost == UINT_MAX && !allow_illegal_last_move)
+		return -1; // can't move here
+	if (curcost == 0)
+		return REST; // we're standing on the pos we're looking for?
 	unsigned int antiloop = curcost - 666; // any other value but curcost :)
 	char move = -1;
 	char prevmove = -1;

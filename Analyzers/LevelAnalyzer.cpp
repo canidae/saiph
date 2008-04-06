@@ -3,22 +3,19 @@
 /* constructors */
 LevelAnalyzer::LevelAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
+	action = -1;
 }
 
 /* methods */
-void LevelAnalyzer::finish() {
+int LevelAnalyzer::finish() {
 	if (saiph->command.priority > LA_DESCEND_PRIORITY)
-		return;
+		return 0;
 	/* time to descend */
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	if (saiph->branches[branch]->map[dungeon][saiph->world->player.row][saiph->world->player.col] == STAIRS_DOWN) {
 		/* standing on downstairs, descend */
-		char command[2];
-		command[0] = MOVE_DOWN;
-		command[1] = '\0';
-		saiph->setNextCommand(command, LA_DESCEND_PRIORITY);
-		return;
+		return LA_DESCEND_PRIORITY;
 	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
@@ -27,13 +24,18 @@ void LevelAnalyzer::finish() {
 				bool direct_line = false;
 				char move = saiph->shortestPath(r, c, false, distance, direct_line);
 				if (move != -1) {
-					char command[2];
-					command[0] = move;
-					command[1] = '\0';
-					saiph->setNextCommand(command, LA_DESCEND_PRIORITY);
-					return;
+					action = move;
+					return LA_DESCEND_PRIORITY;
 				}
 			}
 		}
 	}
+	return 0;
+}
+
+void LevelAnalyzer::command() {
+	char command[2];
+	command[0] = action;
+	command[1] = '\0';
+	saiph->world->command(command);
 }

@@ -4,10 +4,10 @@
 ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
 	place_count = 0;
+	best_place = -1;
 	symbols[symbol_count++] = FLOOR;
 	symbols[symbol_count++] = CORRIDOR;
 	symbols[symbol_count++] = OPEN_DOOR;
-	symbols[symbol_count++] = CLOSED_DOOR;
 	symbols[symbol_count++] = STAIRS_UP;
 	symbols[symbol_count++] = STAIRS_DOWN;
 	symbols[symbol_count++] = ALTAR;
@@ -103,43 +103,39 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 }
 
 int ExploreAnalyzer::finish() {
-	int branch = saiph->current_branch;
-	int dungeon = saiph->world->player.dungeon;
-	int best = 0;
 	/* figure out which place to explore */
-	for (int pa = 0; pa < place_count; ++pa) {
-		int p = -1;
-		int nearest = ROWS * COLS;
-		best = 0;
-		for (int pb = 0; pb < place_count; ++pb) {
-			if (places[pb].value < 0)
-				continue;
-			int distance = 0;
-			bool direct_line = false;
-			if (places[pb].value >= best) {
-				places[pb].move = saiph->shortestPath(places[pb].row, places[pb].col, false, distance, direct_line);
-				if (places[pb].value > best || distance < nearest) {
-					p = pb;
-					nearest = distance;
-					best = places[pb].value;
-				}
-			}
+	int best = 0;
+	int shortest_distance = -1;
+	best_place = -1;
+	for (int p = 0; p < place_count; ++p) {
+		if (places[p].value < best && shortest_distance != -1)
+			continue;
+		int distance = 0;
+		bool direct_line = false;
+		places[p].move = saiph->shortestPath(places[p].row, places[p].col, false, distance, direct_line);
+		if (places[p].move == -1)
+			continue;
+		if (places[p].value > best || (places[p].value == best && (shortest_distance == -1 || distance < shortest_distance))) {
+			shortest_distance = distance;
+			best = places[p].value;
+			best_place = p;
 		}
-		if (p == -1)
-			break; // found nowhere to go
-
-		if (saiph->world->player.row == places[p].row && saiph->world->player.col == places[p].col) {
-			/* no need to move, search instead */
-			++saiph->branches[branch]->search[dungeon][places[p].row][places[p].col];
-			break;
-		} else if (places[p].move != -1) {
-			break;
-		}
-		places[p].value = -1;
 	}
+
+	if (best_place == -1)
+		return best;
+
+	if (places[best_place].move == REST)
+		places[best_place].move = SEARCH; // search instead of rest
 	place_count = 0;
 	return best;
 }
 
 void ExploreAnalyzer::command() {
+	if (places[best_place].move == SEARCH)
+		++saiph->branches[saiph->current_branch]->search[saiph->world->player.dungeon][places[best_place].row][places[best_place].col];
+	char command[2];
+	command[0] = places[best_place].move;
+	command[1] = '\0';
+	saiph->world->command(command);
 }

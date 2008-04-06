@@ -8,6 +8,7 @@
 class World;
 
 /* includes */
+#include <string>
 #include "Connection.h"
 #include "Dungeon.h"
 #include "Player.h"

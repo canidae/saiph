@@ -25,6 +25,7 @@ Player::Player() {
 	confused = false;
 	foodpoisoned = false;
 	hallucinating = false;
+	hurt_foot = false;
 	ill = false;
 	slimed = false;
 	stunned = false;

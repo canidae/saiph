@@ -37,11 +37,27 @@
 #define MOVE_SE 'n'
 #define MOVE_UP '<'
 #define MOVE_DOWN '>'
+/* actions */
+#define CLOSE 'c'
+#define ENGRAVE 'E'
+#define KICK 4 // ctrl-d
+#define OPEN 'o'
+#define PRAY "#pray\n"
+#define REST '.'
+#define SEARCH 's'
+/* elbereth */
+#define ELBERETH "Elbereth\n"
+/* various */
+#define HANDS '-'
+#define NO 'n'
+#define SPACE ' '
+#define YES 'y'
 
 /* forward declare */
 class Saiph;
 
 /* includes */
+#include <string>
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Player.h"
@@ -77,7 +93,7 @@ class Saiph {
 		Branch **branches;
 		int current_branch;
 		Command command;
-		string messages;
+		string *messages;
 		World *world;
 
 		/* constructors */
@@ -87,9 +103,10 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
+		void directionToPos(char direction, int &to_row, int &to_col);
 		void dumpMaps();
 		void farlook(int row, int col);
-		char findNextDirection(const int to_row, const int to_col, int &from_row, int &from_col);
+		char moveToDirection(int to_row, int to_col, int from_row, int from_col);
 		bool run();
 		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
 

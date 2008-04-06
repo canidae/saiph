@@ -9,6 +9,7 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 		monsters[m].symbol = -1;
 		monsters[m].last_seen = -1;
 	}
+	action = -1;
 	symbols[symbol_count++] = MONSTER_a;
 	symbols[symbol_count++] = MONSTER_b;
 	symbols[symbol_count++] = MONSTER_c;
@@ -71,7 +72,7 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-void MonsterAnalyzer::analyze(int row, int col, char symbol) {
+int MonsterAnalyzer::analyze(int row, int col, char symbol) {
 	cerr << "found monster at " << row << ", " << col << " - " << symbol << endl;
 	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
 		if (monsters[m].symbol == -1 || (monsters[m].symbol == symbol && monsters[m].last_seen != saiph->world->player.turn)) {
@@ -83,48 +84,48 @@ void MonsterAnalyzer::analyze(int row, int col, char symbol) {
 			monsters[m].col = col;
 			monsters[m].symbol = symbol;
 			monsters[m].last_seen = saiph->world->player.turn;
-			return;
+			return 0;
 		}
 	}
 	/* we're tracking too many monsters, return */
-	return;
+	return 0;
 }
 
-void MonsterAnalyzer::finish() {
-	/* figure out which monster to attack */
-	for (int mc = 0; mc < MO_MAX_MONSTERS; ++mc) {
-		if (monsters[mc].symbol == -1)
+int MonsterAnalyzer::finish() {
+	/* fight nearest monster */
+	int shortest_distance = -1;
+	int m = -1;
+	int best_move = -1;
+	int distance = -1;
+	bool direct_line = false;
+	char move = -1;
+	for (int mc2 = 0; mc2 < MO_MAX_MONSTERS; ++mc2) {
+		if (monsters[mc2].symbol == -1)
 			continue;
-		/* fight nearest monster */
-		int shortest_distance = 666;
-		int m = -1;
-		int best_move = -1;
-		int distance = 0;
-		bool direct_line = false;
-		char move = -2;
-		for (int mc2 = 0; mc2 < MO_MAX_MONSTERS; ++mc2) {
-			if (monsters[mc2].symbol == -1)
-				continue;
-			move = saiph->shortestPath(monsters[mc2].row, monsters[mc2].col, true, distance, direct_line);
-			if (move == -1 || (distance <= 1 && saiph->world->map[monsters[mc2].row][monsters[mc2].col] != monsters[mc2].symbol)) {
-				/* can't find monster, forget it */
-				cerr << "unable to find monster " << monsters[mc2].symbol << ". monster forgotten" << endl;
-				monsters[mc2].symbol = -1;
-				continue;
-			}
-			if (distance < shortest_distance) {
-				shortest_distance = distance;
-				m = mc2;
-				best_move = move;
-			}
+		move = saiph->shortestPath(monsters[mc2].row, monsters[mc2].col, true, distance, direct_line);
+		if (move == -1 || (distance <= 1 && saiph->world->map[monsters[mc2].row][monsters[mc2].col] != monsters[mc2].symbol)) {
+			/* can't find monster, forget it */
+			cerr << "unable to find monster " << monsters[mc2].symbol << ". monster forgotten" << endl;
+			monsters[mc2].symbol = -1;
+			continue;
 		}
-		if (m != -1) {
-			cerr << "fighting " << monsters[m].symbol << endl;
-			char command[2];
-			command[0] = best_move;
-			command[1] = '\0';
-			saiph->setNextCommand(command, 70);
-			break;
+		if (m < 0 || distance < shortest_distance) {
+			shortest_distance = distance;
+			m = mc2;
+			best_move = move;
 		}
 	}
+	if (m != -1) {
+		cerr << "fighting " << monsters[m].symbol << endl;
+		action = best_move;
+		return 70;
+	}
+	return 0;
+}
+
+void MonsterAnalyzer::command() {
+	char command[2];
+	command[0] = action;
+	command[1] = '\0';
+	saiph->world->command(command);
 }
