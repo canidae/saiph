@@ -13,6 +13,12 @@ int HealthAnalyzer::parseMessages(string *messages) {
 	} else if (messages->find(HA_ENGRAVE_DUST, 0) != string::npos) {
 		action = HA_ENGRAVE_ELBERETH;
 		return 100;
+	} else if (messages->find(HA_ENGRAVE_DUST_ADD, 0) != string::npos) {
+		action = HA_ENGRAVE_ELBERETH;
+		return 100;
+	} else if (messages->find(HA_ENGRAVE_ADD, 0) != string::npos) {
+		action = HA_YES;
+		return 100;
 	}
 	return 0;
 }
@@ -76,6 +82,12 @@ void HealthAnalyzer::command() {
 
 		case HA_USE_HANDS:
 			command[0] = HANDS;
+			command[1] = '\0';
+			saiph->world->command(command);
+			break;
+
+		case HA_YES:
+			command[0] = YES;
 			command[1] = '\0';
 			saiph->world->command(command);
 			break;

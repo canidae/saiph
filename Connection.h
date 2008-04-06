@@ -1,6 +1,7 @@
 #ifndef CONNECTION_H
 /* defines */
 #define CONNECTION_H
+#define READ_LIMIT 4095
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
 #define LOCAL_USLEEP 0

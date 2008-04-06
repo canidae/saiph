@@ -15,6 +15,7 @@ int LevelAnalyzer::finish() {
 	int dungeon = saiph->world->player.dungeon;
 	if (saiph->branches[branch]->map[dungeon][saiph->world->player.row][saiph->world->player.col] == STAIRS_DOWN) {
 		/* standing on downstairs, descend */
+		action = MOVE_DOWN;
 		return LA_DESCEND_PRIORITY;
 	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {

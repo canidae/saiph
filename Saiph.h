@@ -106,6 +106,7 @@ class Saiph {
 		void directionToPos(char direction, int &to_row, int &to_col);
 		void dumpMaps();
 		void farlook(int row, int col);
+		bool isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col);
 		char moveToDirection(int to_row, int to_col, int from_row, int from_col);
 		bool run();
 		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);

@@ -342,6 +342,7 @@ void World::update() {
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(map[STATUS_ROW]);
+	question = false;
 	if (parsed_attributes && parsed_status && row >= MAP_ROW_START && row <= MAP_ROW_END && col >= 0 && col < COLS) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
@@ -352,8 +353,7 @@ void World::update() {
 		/* cursor on first row? possibly a question? */
 		cerr << "POSSIBLY QUESTION: " << row << ", " << col << endl;
 		cerr << data << endl;
-		/* answer "yes" & carry on */
-		command("y\r");
+		question = true;
 	} else {
 		/* hmm, what else can it be?
 		 * could we be missing data? */

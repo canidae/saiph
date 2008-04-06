@@ -22,9 +22,8 @@
 #define DO_SEEK_DOOR 5
 /* priorities */
 #define DO_KICK_PRIORITY 10
-#define DO_PICK_PRIORITY 30
-#define DO_OPEN_PRIORITY 40
-#define DO_SEEK_PRIORITY 20
+#define DO_PICK_PRIORITY 20
+#define DO_OPEN_PRIORITY 30
 
 /* forward declare */
 class DoorAnalyzer;
