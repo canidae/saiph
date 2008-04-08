@@ -36,6 +36,7 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 
 /* methods */
 int ExploreAnalyzer::analyze(int row, int col, char symbol) {
+	cerr << row << ", " << col << ": " << symbol << " - " << place_count << endl;
 	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
 		return 0;
 	int branch = saiph->current_branch;
@@ -67,6 +68,7 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	/* figure out score */
 	int score = 0;
 	bool dead_end = false;
+	cerr << row << ", " << col << ": " << symbol << " | " << floor << " - " << hune << " - " << june << " - " << kune << " - " << lune << endl;
 	if (floor && (hune || june || kune || lune)) {
 		score = EX_UNLIT_ROOM;
 	} else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))) {
@@ -121,13 +123,13 @@ int ExploreAnalyzer::finish() {
 			best_place = p;
 		}
 	}
+	place_count = 0;
 
 	if (best_place == -1)
 		return best;
 
 	if (places[best_place].move == REST)
 		places[best_place].move = SEARCH; // search instead of rest
-	place_count = 0;
 	return best;
 }
 

@@ -423,14 +423,14 @@ void Saiph::updateMaps() {
 				 * it's quite possible a monster opened the door */
 				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
 			} else if (hs == HORIZONTAL_WALL || hs == VERTICAL_WALL) {
-				/* there used to be a wall here, but isn't no longer.
+				/* there used to be a wall here, but isn't any longer.
 				 * make it an open door for the time being */
 				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
 			}
 			/* unpassable map */
 			branches[current_branch]->unpassable[world->player.dungeon][r][c] = (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL || hs == CLOSED_DOOR || hs == IRON_BARS || hs == TREE || hs == RAISED_DRAWBRIDGE || s == BOULDER) ? 1 : 0;
 			/* diagonally unpassable map */
-			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL || hs == CLOSED_DOOR || hs == IRON_BARS || hs == TREE || hs == RAISED_DRAWBRIDGE || hs == OPEN_DOOR) ? 1 : 0;
+			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL || hs == CLOSED_DOOR || hs == IRON_BARS || hs == TREE || hs == RAISED_DRAWBRIDGE) ? 1 : 0;
 		}
 	}
 
