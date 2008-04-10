@@ -36,7 +36,6 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 
 /* methods */
 int ExploreAnalyzer::analyze(int row, int col, char symbol) {
-	cerr << row << ", " << col << ": " << symbol << " - " << place_count << endl;
 	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
 		return 0;
 	int branch = saiph->current_branch;
@@ -68,7 +67,6 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	/* figure out score */
 	int score = 0;
 	bool dead_end = false;
-	cerr << row << ", " << col << ": " << symbol << " | " << floor << " - " << hune << " - " << june << " - " << kune << " - " << lune << endl;
 	if (floor && (hune || june || kune || lune)) {
 		score = EX_UNLIT_ROOM;
 	} else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))) {
@@ -76,15 +74,6 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 		dead_end = true;
 	} else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l))) {
 		score = EX_TURN;
-		/* hack to make it stop searching every turn when it passed the turn diagonally */
-		bool hv = saiph->branches[branch]->search[dungeon][row][col - 1] >= MAX_SEARCH;
-		bool jv = saiph->branches[branch]->search[dungeon][row + 1][col] >= MAX_SEARCH;
-		bool kv = saiph->branches[branch]->search[dungeon][row - 1][col] >= MAX_SEARCH;
-		bool lv = saiph->branches[branch]->search[dungeon][row][col + 1] >= MAX_SEARCH;
-		if (((h && j && kv && lv) || (h && k && jv && lv) || (j && l && hv && kv) || (k && l && hv && jv))) {
-			saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
-			return 0;
-		}
 	} else if (floor && (hunp || junp || kunp || lunp)) {
 		score = EX_EXTRA_SEARCH;
 	}

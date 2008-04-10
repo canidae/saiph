@@ -33,6 +33,16 @@
 #define LOWERED_DRAWBRIDGE -121
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
+/* colours & attributes */
+#define INVERSE 7
+#define BLACK 30
+#define RED 31
+#define GREEN 32
+#define YELLOW 33
+#define BLUE 34
+#define MAGENTA 35
+#define CYAN 36
+#define WHITE 37
 /* monsters */
 #define MONSTER_a 'a'
 #define MONSTER_b 'b'
@@ -131,6 +141,7 @@ class Dungeon {
 	public:
 		/* variables */
 		char map[ROWS][COLS + 1];
+		char colour[ROWS][COLS];
 		char messages[BUFFER_SIZE];
 		Player player;
 

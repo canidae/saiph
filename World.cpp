@@ -313,25 +313,26 @@ void World::update() {
 				}
 				/* remap ambigous symbols */
 				char symbol = data[pos];
-				if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && colour == 33)
+				if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && colour == YELLOW)
 					symbol = OPEN_DOOR;
-				else if (symbol == CORRIDOR && colour == 32)
+				else if (symbol == CORRIDOR && colour == GREEN)
 					symbol = TREE;
-				else if (symbol == CORRIDOR && colour == 36)
+				else if (symbol == CORRIDOR && colour == CYAN)
 					symbol = IRON_BARS;
-				else if (symbol == GRAVE && colour == 33)
+				else if (symbol == GRAVE && colour == YELLOW)
 					symbol = THRONE;
-				else if (symbol == FOUNTAIN && colour != 34) // if it's blue it's a fountain
+				else if (symbol == FOUNTAIN && colour != BLUE) // if it's blue it's a fountain
 					symbol = SINK;
-				else if (symbol == WATER && colour == 31)
+				else if (symbol == WATER && colour == RED)
 					symbol = LAVA;
-				else if (symbol == FLOOR && colour == 36)
+				else if (symbol == FLOOR && colour == CYAN)
 					symbol = ICE;
-				else if (symbol == FLOOR && colour == 33)
+				else if (symbol == FLOOR && colour == YELLOW) // is this right? doesn't matter now
 					symbol = LOWERED_DRAWBRIDGE;
-				else if (colour == 7)
+				else if (colour == INVERSE)
 					symbol = PET;
 				map[row][col] = symbol;
+				this->colour[row][col] = colour;
 				col++;
 				break;
 		}

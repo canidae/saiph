@@ -72,9 +72,9 @@ class Saiph;
 /* namespace */
 using namespace std;
 
-/* a branch holds a "static map" for all branches/dlvl's */
+/* a branch holds numerous "maps" for all dungeons in the given (visited) branch */
 struct Branch {
-	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (monsters, objects, etc)
+	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (no monsters, objects, etc)
 	char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
 	char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
 	char diagonally_unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // tiles we can't diagonally pass
@@ -107,6 +107,7 @@ class Saiph {
 		void dumpMaps();
 		void farlook(int row, int col);
 		bool isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col);
+		bool monsterOnSquare(int row, int col);
 		char moveToDirection(int to_row, int to_col, int from_row, int from_col);
 		bool run();
 		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);

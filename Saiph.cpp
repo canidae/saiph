@@ -212,6 +212,11 @@ bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int fro
 	return true;
 }
 
+bool Saiph::monsterOnSquare(int row, int col) {
+	char s = world->map[row][col];
+	return ((s >= '@' && s <= 'Z') || (s >= 'a' && s <= 'z') || s == '&' || s == '\'' || s == '6' || s == ':' || s == ';' || s == '~');
+}
+
 char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) {
 	/* return the direction by the given move */
 	if (from_row < to_row && from_col < to_col)
@@ -388,10 +393,11 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 /* private methods */
 void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
-	char symbol;
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			symbol = world->map[r][c];
+			char symbol = world->map[r][c];
+			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
+				symbol = branches[current_branch]->map[world->player.dungeon][r][c];
 			for (int a = 0; a < analyzer_count; ++a) {
 				for (int s = 0; s < analyzers[a]->symbol_count; ++s) {
 					if (analyzers[a]->symbols[s] == symbol)
@@ -464,7 +470,9 @@ void Saiph::updatePathMap() {
 					continue;
 				if (!isLegalMove(current_branch, world->player.dungeon, r, c, row, col))
 					continue;
-				char s = world->map[r][c];
+				if (monsterOnSquare(r, c))
+					continue; // can't path through monsters, for now
+				char s = branches[current_branch]->map[world->player.dungeon][r][c];
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
 					newpathcost += COST_LAVA;

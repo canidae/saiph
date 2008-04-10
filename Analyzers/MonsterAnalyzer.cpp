@@ -110,7 +110,10 @@ int MonsterAnalyzer::finish() {
 			continue;
 		}
 		if (m < 0 || distance < shortest_distance) {
-			shortest_distance = distance;
+			if (monsters[mc2].symbol == MONSTER_e || monsters[mc2].symbol == MONSTER_AT)
+				shortest_distance = 666; // hack, we don't want to attack these monsters unless we have to
+			else
+				shortest_distance = distance;
 			m = mc2;
 			best_move = move;
 		}
@@ -118,7 +121,10 @@ int MonsterAnalyzer::finish() {
 	if (m != -1) {
 		cerr << "fighting " << monsters[m].symbol << endl;
 		action = best_move;
-		return 70;
+		if (monsters[m].symbol == MONSTER_e || monsters[m].symbol == MONSTER_AT)
+			return 1; // don't fight these unless there's no way out
+		else
+			return 70;
 	}
 	return 0;
 }
