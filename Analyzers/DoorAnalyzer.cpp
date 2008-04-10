@@ -9,7 +9,6 @@ DoorAnalyzer::DoorAnalyzer(Saiph *saiph) {
 			for (int d = 0; d < DO_MAX_DOORS; ++d) {
 				doors[b][du][d].row = -1;
 				doors[b][du][d].col = -1;
-				doors[b][du][d].open = false;
 				doors[b][du][d].locked = false;
 				doors[b][du][d].shopkeeper = false;
 			}
@@ -56,12 +55,10 @@ int DoorAnalyzer::analyze(int row, int col, char symbol) {
 		if (doors[branch][dungeon][d].row == -1) {
 			doors[branch][dungeon][d].row = row;
 			doors[branch][dungeon][d].col = col;
-			doors[branch][dungeon][d].open = (symbol == OPEN_DOOR);
 			doors[branch][dungeon][d].locked = false;
 			doors[branch][dungeon][d].shopkeeper = false;
 			return 0;
 		} else if (doors[branch][dungeon][d].row == row && doors[branch][dungeon][d].col == col) {
-			doors[branch][dungeon][d].open = (symbol == OPEN_DOOR);
 			return 0;
 		}
 	}
@@ -86,7 +83,7 @@ int DoorAnalyzer::finish() {
 			doors[branch][dungeon][d].row = -1;
 			continue;
 		}
-		if (doors[branch][dungeon][d].open)
+		if (saiph->branches[branch]->map[dungeon][to_row][to_col] == OPEN_DOOR)
 			continue;
 		if (doors[branch][dungeon][d].locked && shop_on_level[branch][dungeon])
 			continue; // FIXME: currently ignoring all locked doors on levels there are shopkeepers on

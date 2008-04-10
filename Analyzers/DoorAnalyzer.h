@@ -38,7 +38,6 @@ using namespace std;
 struct DO_Door {
 	int row;
 	int col;
-	bool open;
 	bool locked;
 	bool shopkeeper;
 };

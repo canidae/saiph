@@ -38,5 +38,6 @@ class HealthAnalyzer : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		int action;
+		bool resting;
 };
 #endif

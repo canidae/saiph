@@ -29,6 +29,7 @@ OPTIONS=align:lawful
 OPTIONS=!autopickup
 OPTIONS=boulder:0
 OPTIONS=color
+OPTIONS=disclose:-i -a -v -g -c
 OPTIONS=dungeon: |--------||.-|77##.##<><>_\\\\{{}.}..88 #}
 OPTIONS=fruit:byte
 OPTIONS=gender:random

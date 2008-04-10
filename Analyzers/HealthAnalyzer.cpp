@@ -3,6 +3,7 @@
 /* constructors */
 HealthAnalyzer::HealthAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
+	this->resting = false;
 }
 
 /* methods */
@@ -49,15 +50,27 @@ int HealthAnalyzer::finish() {
 		 * spell, potion, (elbereth?), pray
 		 *
 		 * pray for now */
-		//saiph->setNextCommand(HA_PRAY, 100);
+		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned)
+			return 0;
 		action = HA_ENGRAVE;
+		resting = true;
 		return 90;
 	} else if (hp > 0 && hp * 2 < hp_max) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options
 		 *
 		 * elbereth for now */
+		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned)
+			return 0;
 		action = HA_ENGRAVE;
+		resting = true;
+		return 90;
+	} else if (resting) {
+		/* when hp drops below 50% then rest up to 80% or more */
+		if (hp > 0 && hp * 5 / 4 > hp_max)
+			resting = false;
+		else
+			action = HA_ENGRAVE;
 		return 90;
 	}
 	return 0;

@@ -80,10 +80,15 @@ int MonsterAnalyzer::analyze(int row, int col, char symbol) {
 				cerr << "this seems to be a new monster" << endl;
 			else
 				cerr << "seems to be a known monster. old pos: " << monsters[m].row << ", " << monsters[m].col << endl;
+			/* unblock path for pathing algorithm */
+			if (monsters[m].row != -1 && monsters[m].col != -1)
+				saiph->branches[saiph->current_branch]->monster_block[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] = 0;
 			monsters[m].row = row;
 			monsters[m].col = col;
 			monsters[m].symbol = symbol;
 			monsters[m].last_seen = saiph->world->player.turn;
+			/* block path for pathing algorithm */
+			saiph->branches[saiph->current_branch]->monster_block[saiph->world->player.dungeon][row][col] = 1;
 			return 0;
 		}
 	}
@@ -99,22 +104,24 @@ int MonsterAnalyzer::finish() {
 	int distance = -1;
 	bool direct_line = false;
 	char move = -1;
-	for (int mc2 = 0; mc2 < MO_MAX_MONSTERS; ++mc2) {
-		if (monsters[mc2].symbol == -1)
+	for (int mc = 0; mc < MO_MAX_MONSTERS; ++mc) {
+		if (monsters[mc].symbol == -1)
 			continue;
-		move = saiph->shortestPath(monsters[mc2].row, monsters[mc2].col, true, distance, direct_line);
-		if (move == -1 || (distance <= 1 && saiph->world->map[monsters[mc2].row][monsters[mc2].col] != monsters[mc2].symbol)) {
+		move = saiph->shortestPath(monsters[mc].row, monsters[mc].col, true, distance, direct_line);
+		if (move == -1 || (distance <= 1 && saiph->world->map[monsters[mc].row][monsters[mc].col] != monsters[mc].symbol)) {
 			/* can't find monster, forget it */
-			cerr << "unable to find monster " << monsters[mc2].symbol << ". monster forgotten" << endl;
-			monsters[mc2].symbol = -1;
+			cerr << "unable to find monster " << monsters[mc].symbol << ". monster forgotten" << endl;
+			monsters[mc].symbol = -1;
+			/* unblock path for pathing algorithm */
+			saiph->branches[saiph->current_branch]->monster_block[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = 0;
 			continue;
 		}
 		if (m < 0 || distance < shortest_distance) {
-			if (monsters[mc2].symbol == MONSTER_e || monsters[mc2].symbol == MONSTER_AT)
+			if (monsters[mc].symbol == MONSTER_e || monsters[mc].symbol == MONSTER_AT)
 				shortest_distance = 666; // hack, we don't want to attack these monsters unless we have to
 			else
 				shortest_distance = distance;
-			m = mc2;
+			m = mc;
 			best_move = move;
 		}
 	}

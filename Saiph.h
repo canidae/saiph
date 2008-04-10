@@ -8,7 +8,7 @@
 #define MAX_COMMAND_LENGTH 128
 #define MAX_DUNGEON_DEPTH 64
 #define MAX_EXPLORE 128
-#define MAX_SEARCH 16
+#define MAX_SEARCH 8 // triple the value in dead end corridors
 /* branches */
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
@@ -78,6 +78,7 @@ struct Branch {
 	char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
 	char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
 	char diagonally_unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // tiles we can't diagonally pass
+	char monster_block[MAX_DUNGEON_DEPTH][ROWS][COLS]; // monsters blocking a path
 };
 
 /* a command to send to the game */

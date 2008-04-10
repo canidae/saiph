@@ -40,7 +40,9 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 		return 0;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
-	if (saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH)
+	/* are we in a corridor? */
+	bool corridor = (saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR);
+	if ((!corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH) || (corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH * EX_DEAD_END_MULTIPLIER))
 		return 0; // we've been here and searched frantically
 	/* hjkl symbols */
 	char hs = saiph->branches[branch]->map[dungeon][row][col - 1];
@@ -62,25 +64,23 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	bool j = june || junp;
 	bool k = kune || kunp;
 	bool l = lune || lunp;
-	/* are we on floor? */
-	bool floor = (saiph->branches[branch]->map[dungeon][row][col] == FLOOR);
 	/* figure out score */
 	int score = 0;
 	bool dead_end = false;
-	if (floor && (hune || june || kune || lune)) {
+	if (!corridor && (hune || june || kune || lune)) {
 		score = EX_UNLIT_ROOM;
-	} else if (!floor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))) {
+	} else if (corridor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))) {
 		score = EX_DEAD_END;
 		dead_end = true;
-	} else if (!floor && ((h && j) || (h && k) || (j && l) || (k && l))) {
+	} else if (corridor && ((h && j) || (h && k) || (j && l) || (k && l))) {
 		score = EX_TURN;
-	} else if (floor && (hunp || junp || kunp || lunp)) {
+	} else if (!corridor && (hunp || junp || kunp || lunp)) {
 		score = EX_EXTRA_SEARCH;
 	}
 
 	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && !dead_end) {
 		/* don't search in corridors unless it's a dead end */
-		saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH;
+		saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH * EX_DEAD_END_MULTIPLIER;
 		return 0;
 	}
 	if (score <= 0)
