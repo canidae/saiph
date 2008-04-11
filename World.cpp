@@ -231,6 +231,9 @@ void World::fetchMessages() {
 	}
 	if (!islist)
 		fetchMessagesHelper(0, 0);
+	/* since there are no --More-- messages then set messages_pos to 0 for a new round */
+	messages[messages_pos] = '\0'; // probably not necessary
+	messages_pos = 0;
 }
 
 void World::fetchMessagesHelper(int row, int startcol) {
@@ -357,12 +360,11 @@ void World::update() {
 		question = true;
 	} else {
 		/* hmm, what else can it be?
-		 * could we be missing data? */
+		 * could we be missing data?
+		 * this is bad, we'll lose messages, this should never happen */
 		cerr << "CURSOR ON UNEXPECTED LOCATION: " << row << ", " << col << endl;
 		cerr << data << endl;
 		update();
 		return;
 	}
-	messages[messages_pos] = '\0';
-	messages_pos = 0;
 }

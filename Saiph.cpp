@@ -256,7 +256,6 @@ bool Saiph::run() {
 
 	/* deal with messages */
 	*messages = world->messages;
-	cerr << *messages << endl;
 	for (int a = 0; a < analyzer_count; ++a) {
 		int priority = analyzers[a]->parseMessages(messages);
 		if (priority > command.priority) {

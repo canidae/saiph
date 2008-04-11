@@ -28,12 +28,15 @@
 OPTIONS=align:lawful
 OPTIONS=!autopickup
 OPTIONS=boulder:0
+OPTIONS=catname:Sebbe
 OPTIONS=color
 OPTIONS=disclose:-i -a -v -g -c
+OPTIONS=dogname:Eidolos
 OPTIONS=dungeon: |--------||.-|77##.##<><>_\\\\{{}.}..88 #}
 OPTIONS=fruit:byte
 OPTIONS=gender:random
 OPTIONS=hilite_pet
+OPTIONS=horsename:futilius
 OPTIONS=!legacy
 OPTIONS=lit_corridor
 OPTIONS=!mail
@@ -42,7 +45,6 @@ OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~m
 OPTIONS=name:saiph
 OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*````
-OPTIONS=pettype:none
 OPTIONS=pickup_burden:Overtaxed
 OPTIONS=!prayconfirm
 OPTIONS=race:human
