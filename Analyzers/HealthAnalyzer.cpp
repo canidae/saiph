@@ -55,7 +55,7 @@ int HealthAnalyzer::finish() {
 		action = HA_ENGRAVE;
 		resting = true;
 		return 90;
-	} else if (hp > 0 && hp <= hp_max * 3 / 5) {
+	} else if (hp > 0 && hp < hp_max * 3 / 5) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options
 		 *
@@ -67,7 +67,7 @@ int HealthAnalyzer::finish() {
 		return 90;
 	} else if (resting) {
 		/* when hp drops below 60% then rest up to 80% or more */
-		if (hp > 0 && hp > hp_max * 4 / 5)
+		if (hp > 0 && hp >= hp_max * 4 / 5)
 			resting = false;
 		else
 			action = HA_ENGRAVE;

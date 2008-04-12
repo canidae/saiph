@@ -53,6 +53,10 @@ int DoorAnalyzer::analyze(int row, int col, char symbol) {
 	int dungeon = saiph->world->player.dungeon;
 	for (int d = 0; d < DO_MAX_DOORS; ++d) {
 		if (doors[branch][dungeon][d].row == -1) {
+			/* FIXME
+			 * when we kick down a door then other doors may be shifted in this list,
+			 * which makes them lose the "locked" status and saiph will attempt to open the door again.
+			 * not critical, just annoying */
 			doors[branch][dungeon][d].row = row;
 			doors[branch][dungeon][d].col = col;
 			doors[branch][dungeon][d].locked = false;
