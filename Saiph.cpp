@@ -9,6 +9,9 @@ Saiph::Saiph(bool remote) {
 	command.analyzer = -1;
 	command.priority = 0;
 
+	/* engulfed */
+	engulfed = false;
+
 	/* pathing */
 	pathcost = new unsigned int*[ROWS];
 	for (int r = 0; r < ROWS; ++r) {
@@ -242,7 +245,8 @@ char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) 
 
 bool Saiph::run() {
 	/* update maps */
-	updateMaps();
+	if (!world->question && !world->menu)
+		updateMaps();
 
 	/* print stuff so we see what we're doing */
 	dumpMaps();
@@ -250,6 +254,14 @@ bool Saiph::run() {
 	/* reset command */
 	command.analyzer = -1;
 	command.priority = 0;
+
+	/* check if we're engulfed */
+	int r = world->player.row;
+	int c = world->player.col;
+	if (r > MAP_ROW_START && r < MAP_ROW_END && c > 0 && c < COLS && world->map[r - 1][c] == '-' && world->map[r + 1][c] == '-' && world->map[r][c - 1] == '|' && world->map[r][c + 1] == '|')
+		engulfed = true;
+	else
+		engulfed = false;
 
 	/* save dungeon in history */
 
@@ -265,7 +277,7 @@ bool Saiph::run() {
 	}
 
 	/* call start() in analyzers */
-	if (!world->question) {
+	if (!world->question && !world->menu) {
 		for (int a = 0; a < analyzer_count; ++a) {
 			int priority = analyzers[a]->start();
 			if (priority > command.priority) {
@@ -276,11 +288,11 @@ bool Saiph::run() {
 	}
 
 	/* inspect the dungeon */
-	if (!world->question)
+	if (!world->question && !world->menu)
 		inspect();
 
 	/* call finish() in analyzers */
-	if (!world->question) {
+	if (!world->question && !world->menu) {
 		for (int a = 0; a < analyzer_count; ++a) {
 			int priority = analyzers[a]->finish();
 			if (priority > command.priority) {
@@ -292,13 +304,14 @@ bool Saiph::run() {
 
 	if (world->question && command.analyzer == -1) {
 		cerr << "Unhandled question: " << *messages << endl;
-		cerr << "Answering yes" << endl;
-		char command[2];
-		command[0] = YES;
-		command[1] = '\0';
-		world->command(command);
-		return true;
+		return false;
 	}
+
+	if (world->menu && command.analyzer == -1) {
+		cerr << "Unhandled menu: " << *messages << endl;
+		return false;
+	}
+
 	cerr << "letting analyzer " << command.analyzer << " do its thing with priority " << command.priority << endl;
 
 	/* check if we got a command */
@@ -412,6 +425,18 @@ void Saiph::inspect() {
 
 void Saiph::updateMaps() {
 	/* update the various maps */
+	/* this loop is a small hack.
+	 * it removes unseen monsters next to the player which we think are blocking the path */
+	for (int r = world->player.row - 1; r <= world->player.row + 1; ++r) {
+		if (r < MAP_ROW_START || r > MAP_ROW_END)
+			continue;
+		for (int c = world->player.col - 1; c <= world->player.col + 1; ++c) {
+			if (c < 0 || c > COLS)
+				continue;
+			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] == 2)
+				branches[current_branch]->unpassable[world->player.dungeon][r][c] = 0;
+		}
+	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
 			char s = world->map[r][c];
@@ -484,6 +509,8 @@ void Saiph::updatePathMap() {
 					newpathcost += COST_TRAP;
 				else if (s == WATER)
 					newpathcost += COST_WATER;
+				if (world->map[r][c] == PET)
+					newpathcost += COST_PET;
 				if (newpathcost < pathcost[r][c]) {
 					pathcost[r][c] = newpathcost;
 					pathpos[nodes][0] = r;

@@ -18,7 +18,10 @@ int HealthAnalyzer::parseMessages(string *messages) {
 		action = HA_ENGRAVE_ELBERETH;
 		return 100;
 	} else if (messages->find(HA_ENGRAVE_ADD, 0) != string::npos) {
-		action = HA_YES;
+		if (rand() % 25 == 0)
+			action = HA_NO;
+		else
+			action = HA_YES;
 		return 100;
 	}
 	return 0;
@@ -50,7 +53,7 @@ int HealthAnalyzer::finish() {
 		 * spell, potion, (elbereth?), pray
 		 *
 		 * pray for now */
-		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned)
+		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned || saiph->engulfed)
 			return 0;
 		action = HA_ENGRAVE;
 		resting = true;
@@ -60,18 +63,19 @@ int HealthAnalyzer::finish() {
 		 * elbereth, run, potion, lots of options
 		 *
 		 * elbereth for now */
-		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned)
+		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned || saiph->engulfed)
 			return 0;
 		action = HA_ENGRAVE;
 		resting = true;
 		return 90;
 	} else if (resting) {
 		/* when hp drops below 60% then rest up to 80% or more */
-		if (hp > 0 && hp >= hp_max * 4 / 5)
+		if (hp > 0 && hp >= hp_max * 4 / 5) {
 			resting = false;
-		else
+		} else {
 			action = HA_ENGRAVE;
-		return 80;
+			return 80;
+		}
 	}
 	return 0;
 }
@@ -101,6 +105,12 @@ void HealthAnalyzer::command() {
 
 		case HA_YES:
 			command[0] = YES;
+			command[1] = '\0';
+			saiph->world->command(command);
+			break;
+
+		case HA_NO:
+			command[0] = NO;
 			command[1] = '\0';
 			saiph->world->command(command);
 			break;

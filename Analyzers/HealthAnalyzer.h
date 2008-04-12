@@ -13,6 +13,7 @@
 #define HA_PRAY 3
 #define HA_USE_HANDS 4
 #define HA_YES 5
+#define HA_NO 6
 
 /* forward declare */
 class HealthAnalyzer;

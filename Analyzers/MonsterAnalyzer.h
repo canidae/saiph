@@ -3,6 +3,8 @@
 #define MONSTERANALYZER_H
 /* various */
 #define MO_MAX_MONSTERS 64
+/* messages */
+#define MO_REALLY_ATTACK "Really attack"
 
 /* forward declare */
 class MonsterAnalyzer;
@@ -28,6 +30,7 @@ class MonsterAnalyzer : public Analyzer {
 		MonsterAnalyzer(Saiph *saiph);
 
 		/* methods */
+		int parseMessages(string *messages);
 		int analyze(int row, int col, char symbol);
 		int finish();
 		void command();

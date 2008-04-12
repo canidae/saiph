@@ -3,6 +3,8 @@
 /* constructors */
 LootAnalyzer::LootAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
+	action = LO_NOTHING;
+	key = -1;
 	symbols[symbol_count++] = WEAPON;
 	symbols[symbol_count++] = ARMOR;
 	symbols[symbol_count++] = RING;
@@ -23,7 +25,28 @@ LootAnalyzer::LootAnalyzer(Saiph *saiph) {
 
 /* methods */
 int LootAnalyzer::parseMessages(string *messages) {
-	//} else if (messages->find(DO_KICK_OPEN, 0) != string::npos) {
+	if (messages->find(LO_THINGS_HERE, 0) != string::npos) {
+		/* multiple items here */
+		action = LO_LOOT;
+		return 100;
+	} else if (messages->find(LO_YOU_SEE, 0) != string::npos) {
+		/* single item here */
+		action = LO_LOOT;
+		return 100;
+	} else if (messages->find(LO_PICK_UP, 0) != string::npos) {
+		/* pick up menu */
+		action = LO_SELECT_ALL;
+		return 100;
+	} else if (messages->find(LO_LITTLE_LIFTING, 0) != string::npos) {
+		action = LO_NO_LOOT;
+		return 100;
+	} else if (messages->find(LO_EXTREME_LIFTING, 0) != string::npos) {
+		action = LO_NO_LOOT;
+		return 100;
+	} else if (messages->find(LO_MUCH_LIFTING, 0) != string::npos) {
+		action = LO_NO_LOOT;
+		return 100;
+	}
 	return 0;
 }
 
@@ -36,16 +59,28 @@ int LootAnalyzer::finish() {
 }
 
 void LootAnalyzer::command() {
-	char command[10];
-	command[0] = '#';
-	command[1] = 'e';
-	command[2] = 'n';
-	command[3] = 'h';
-	command[4] = 'a';
-	command[5] = 'n';
-	command[6] = 'c';
-	command[7] = 'e';
-	command[8] = '\n';
-	command[9] = '\0';
+	char command[3];
+	switch (action) {
+		case LO_LOOT:
+			command[0] = ',';
+			command[1] = '\0';
+			break;
+
+		case LO_SELECT_ALL:
+			command[0] = ',';
+			command[1] = ' ';
+			command[2] = '\0';
+			break;
+
+		case LO_NO_LOOT:
+			command[0] = NO;
+			command[1] = '\0';
+			break;
+
+		default:
+			cerr << "LootAnalyzer don't know what to do" << endl;
+			exit(1);
+			break;
+	}
 	saiph->world->command(command);
 }

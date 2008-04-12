@@ -72,6 +72,14 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
+int MonsterAnalyzer::parseMessages(string *messages) {
+	if (messages->find(MO_REALLY_ATTACK, 0) != string::npos) {
+		action = YES;
+		return 100;
+	}
+	return 0;
+}
+
 int MonsterAnalyzer::analyze(int row, int col, char symbol) {
 	cerr << "found monster at " << row << ", " << col << " - " << symbol << endl;
 	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
@@ -98,6 +106,11 @@ int MonsterAnalyzer::analyze(int row, int col, char symbol) {
 }
 
 int MonsterAnalyzer::finish() {
+	/* if engulfed try to fight our way out */
+	if (saiph->engulfed) {
+		action = MOVE_NW; // doesn't matter which direction
+		return 70;
+	}
 	/* fight nearest monster */
 	int shortest_distance = -1;
 	int m = -1;

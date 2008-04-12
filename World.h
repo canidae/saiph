@@ -9,6 +9,13 @@
 #define END_LENGTH 6 // seems to be a bug here, there's an space after; "(end) "
 #define PAGE " of "
 #define PAGE_LENGTH 6 // must add 2 because of "y)" in "(x of y)"
+/* and these for looking for questions */
+#define QUESTION_YN "[yn]"
+#define QUESTION_YNQ "[ynq]"
+#define QUESTION_DY "(y)"
+#define QUESTION_DN "(n)"
+#define QUESTION_DQ "(q)"
+#define QUESTION_LENGTH 20
 
 /* forward declare */
 class World;

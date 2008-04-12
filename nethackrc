@@ -45,7 +45,7 @@ OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~m
 OPTIONS=name:saiph
 OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*````
-OPTIONS=pickup_burden:Overtaxed
+OPTIONS=pickup_burden:Burdened
 OPTIONS=!prayconfirm
 OPTIONS=race:human
 OPTIONS=role:valkyrie

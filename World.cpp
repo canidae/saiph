@@ -7,6 +7,7 @@ World::World(Connection *connection) {
 	col = 0;
 	data = new char[BUFFER_SIZE];
 	memset(data, '\0', BUFFER_SIZE);
+	memset(messages, '\0', BUFFER_SIZE);
 	data_size = -1;
 	messages_pos = 0;
 	question = false;
@@ -240,6 +241,25 @@ void World::fetchMessages() {
 				c = col - PAGE_LENGTH - 2;
 				menu = true;
 			} else {
+				/* look for question */
+				msg_str = &data[data_size - QUESTION_LENGTH];
+				question = false;
+				if (row == 0) {
+					question = true;
+				} else {
+					if ((pos = msg_str.find(QUESTION_YN, 0)) == string::npos)
+						pos = msg_str.find(QUESTION_YNQ, 0);
+					if (pos != string::npos) {
+						if ((pos = msg_str.find(QUESTION_DY, 0)) == string::npos)
+							if ((pos = msg_str.find(QUESTION_DN, 0)) == string::npos)
+								pos = msg_str.find(QUESTION_DQ, 0);
+						if (pos != string::npos)
+							question = true;
+					}
+				}
+
+				/* look for messages.
+				 * only handles first line, but that should be enough */
 				msg_str = map[0];
 				string::size_type fns = msg_str.find_first_not_of(" ");
 				string::size_type lns = msg_str.find_last_not_of(" ");
@@ -248,6 +268,7 @@ void World::fetchMessages() {
 				else
 					msg_str = msg_str.substr(fns, lns - fns + 1);
 				msg_str.copy(&messages[messages_pos], msg_str.length());
+				messages[messages_pos + msg_str.length()] = '\0';
 				messages_pos = 0;
 				return; // no messages or messages on 1 line
 			}
@@ -261,6 +282,7 @@ void World::fetchMessages() {
 		msg_str.append(2, ' ');
 		msg_str.copy(&messages[messages_pos], msg_str.length());
 		messages_pos += msg_str.length();
+		messages[messages_pos] = '\0';
 	} else {
 		/* list, add all lines to msg_str, splitted by "  "
 		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
@@ -276,6 +298,7 @@ void World::fetchMessages() {
 			msg_str.append(2, ' ');
 			msg_str.copy(&messages[messages_pos], msg_str.length());
 			messages_pos += msg_str.length();
+			messages[messages_pos] = '\0';
 		}
 	}
 	if (more) {
@@ -308,12 +331,12 @@ void World::update() {
 				break;
 
 			case 10:
-				/* various control characters we'll ignore */
+				/* line feed */
+				++row;
 				break;
 
 			case 13:
-				/* carriage return.
-				 * make it go to beginning of line */
+				/* carriage return */
 				col = 0;
 				break;
 
@@ -371,19 +394,13 @@ void World::update() {
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(map[STATUS_ROW]);
-	question = false;
 	if (parsed_attributes && parsed_status && row >= MAP_ROW_START && row <= MAP_ROW_END && col >= 0 && col < COLS) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
 		map[row][col] = PLAYER;
 		player.row = row;
 		player.col = col;
-	} else if (row == 0 && col > 1) {
-		/* cursor on first row? possibly a question? */
-		cerr << "POSSIBLY QUESTION: " << row << ", " << col << endl;
-		cerr << data << endl;
-		question = true;
-	} else if (!menu) {
+	} else if (!menu && !question) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */

@@ -86,8 +86,8 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 	ssize_t data_received_total = 0;
 	/* make reading blocking */
 	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
-	/* read 1 byte, this will block until there's data available */
-	++data_received_total;
+	/* read 4 bytes, this will block until there's data available */
+	data_received_total += 4;
 	data_received = read(link[0], buffer, data_received_total);
 	/* make reading non-blocking */
 	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);

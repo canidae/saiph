@@ -20,12 +20,10 @@
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
 #define COST_LAVA 16384 // lava, hot!
+#define COST_PET 16 // try not to move onto pets
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 4096 // avoid water if possible
 #define MAX_PASSABLE 32 // stuff we can go through
-/* questions looks like this
- * ? [ynq] (n)
- */
 /* movement */
 #define MOVE_NW 'y'
 #define MOVE_N 'k'
@@ -96,6 +94,7 @@ class Saiph {
 		Command command;
 		string *messages;
 		World *world;
+		bool engulfed;
 
 		/* constructors */
 		Saiph(bool remote);
