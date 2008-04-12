@@ -17,8 +17,8 @@
 #define FLOOR '.'
 #define OPEN_DOOR -128
 #define CLOSED_DOOR '7'
-#define IRON_BARS -126
-#define TREE -127
+#define IRON_BARS -127
+#define TREE -126
 #define CORRIDOR '#'
 #define STAIRS_UP '<'
 #define STAIRS_DOWN '>'
@@ -28,8 +28,8 @@
 #define SINK -124
 #define FOUNTAIN '{'
 #define WATER '}'
-#define ICE -122
-#define LAVA -123
+#define ICE -123
+#define LAVA -122
 #define LOWERED_DRAWBRIDGE -121
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'

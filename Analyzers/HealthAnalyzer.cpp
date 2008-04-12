@@ -45,7 +45,7 @@ int HealthAnalyzer::finish() {
 	/* hp */
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;
-	if (hp > 0 && (hp < 6 || hp * 7 <= hp_max)) {
+	if (hp > 0 && (hp < 6 || hp <= hp_max / 7)) {
 		/* almost dead, find an urgent way to heal up.
 		 * spell, potion, (elbereth?), pray
 		 *
@@ -55,7 +55,7 @@ int HealthAnalyzer::finish() {
 		action = HA_ENGRAVE;
 		resting = true;
 		return 90;
-	} else if (hp > 0 && hp * 2 < hp_max) {
+	} else if (hp > 0 && hp <= hp_max * 3 / 5) {
 		/* health is going low.
 		 * elbereth, run, potion, lots of options
 		 *
@@ -66,12 +66,12 @@ int HealthAnalyzer::finish() {
 		resting = true;
 		return 90;
 	} else if (resting) {
-		/* when hp drops below 50% then rest up to 80% or more */
-		if (hp > 0 && hp * 5 / 4 > hp_max)
+		/* when hp drops below 60% then rest up to 80% or more */
+		if (hp > 0 && hp > hp_max * 4 / 5)
 			resting = false;
 		else
 			action = HA_ENGRAVE;
-		return 90;
+		return 80;
 	}
 	return 0;
 }

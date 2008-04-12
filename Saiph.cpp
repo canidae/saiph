@@ -66,7 +66,6 @@ Saiph::Saiph(bool remote) {
 		memset(branches[b]->search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
 		memset(branches[b]->unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
 		memset(branches[b]->diagonally_unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b]->monster_block, 0, MAX_DUNGEON_DEPTH * ROWS * COLS);
 	}
 
 	/* messages */
@@ -156,7 +155,6 @@ void Saiph::dumpMaps() {
 			cout << (char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
 			//cout << (int) branches[current_branch]->unpassable[world->player.dungeon][r][c];
 			//cout << (int) branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c];
-			//cout << (int) branches[current_branch]->monster_block[world->player.dungeon][r][c];
 		}
 		cout << endl;
 	}
@@ -202,13 +200,13 @@ bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int fro
 	int cd = abs(to_col - from_col);
 	if (rd > 1 || cd > 1)
 		return false; // moving more than 1 square
-	else if (branches[branch]->unpassable[dungeon][to_row][to_col] == 1)
+	else if (branches[branch]->unpassable[dungeon][to_row][to_col] != 0)
 		return false; // can't move to this square
 	else if (rd == 1 && cd == 1) {
 		/* diagonal move */
 		if (branches[branch]->map[dungeon][from_row][from_col] == OPEN_DOOR || branches[branch]->map[dungeon][to_row][to_col] == OPEN_DOOR)
 			return false; // can't move diagonally into or out of door
-		else if (branches[branch]->diagonally_unpassable[dungeon][to_row][from_col] == 1 && branches[branch]->diagonally_unpassable[dungeon][from_row][to_col] == 1)
+		else if (branches[branch]->diagonally_unpassable[dungeon][to_row][from_col] != 0 && branches[branch]->diagonally_unpassable[dungeon][from_row][to_col] != 0)
 			return false; // can't move diagonally when both sides are blocked
 	}
 	return true;
@@ -437,7 +435,8 @@ void Saiph::updateMaps() {
 				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
 			}
 			/* unpassable map */
-			branches[current_branch]->unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE || s == BOULDER) ? 1 : 0;
+			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] != 2) // 2 means it's blocked by eg. monster
+				branches[current_branch]->unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE || s == BOULDER) ? 1 : 0;
 			/* diagonally unpassable map */
 			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE) ? 1 : 0;
 		}
@@ -475,8 +474,6 @@ void Saiph::updatePathMap() {
 					continue;
 				if (monsterOnSquare(r, c))
 					continue; // can't path through monsters, for now
-				if (branches[current_branch]->monster_block[world->player.dungeon][r][c] != 0)
-					continue; // unseen monster blocking this tile
 				char s = branches[current_branch]->map[world->player.dungeon][r][c];
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)

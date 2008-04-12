@@ -81,14 +81,15 @@ int MonsterAnalyzer::analyze(int row, int col, char symbol) {
 			else
 				cerr << "seems to be a known monster. old pos: " << monsters[m].row << ", " << monsters[m].col << endl;
 			/* unblock path for pathing algorithm */
-			if (monsters[m].row != -1 && monsters[m].col != -1)
-				saiph->branches[saiph->current_branch]->monster_block[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] = 0;
+			if (monsters[m].row != -1 && monsters[m].col != -1 && saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] == 2)
+				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] = 0;
 			monsters[m].row = row;
 			monsters[m].col = col;
 			monsters[m].symbol = symbol;
 			monsters[m].last_seen = saiph->world->player.turn;
 			/* block path for pathing algorithm */
-			saiph->branches[saiph->current_branch]->monster_block[saiph->world->player.dungeon][row][col] = 1;
+			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][row][col] == 0)
+				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][row][col] = 2;
 			return 0;
 		}
 	}
@@ -113,7 +114,8 @@ int MonsterAnalyzer::finish() {
 			cerr << "unable to find monster " << monsters[mc].symbol << ". monster forgotten" << endl;
 			monsters[mc].symbol = -1;
 			/* unblock path for pathing algorithm */
-			saiph->branches[saiph->current_branch]->monster_block[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = 0;
+			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] == 2)
+				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = 0;
 			continue;
 		}
 		if (m < 0 || distance < shortest_distance) {
