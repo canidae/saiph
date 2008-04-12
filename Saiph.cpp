@@ -78,6 +78,7 @@ Saiph::Saiph(bool remote) {
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new ExploreAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new LevelAnalyzer(this));
+	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new LootAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new MonsterAnalyzer(this));
 }
 
@@ -254,6 +255,7 @@ bool Saiph::run() {
 
 	/* deal with messages */
 	*messages = world->messages;
+	cerr << *messages << endl;
 	for (int a = 0; a < analyzer_count; ++a) {
 		int priority = analyzers[a]->parseMessages(messages);
 		if (priority > command.priority) {

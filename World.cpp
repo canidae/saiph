@@ -9,6 +9,8 @@ World::World(Connection *connection) {
 	memset(data, '\0', BUFFER_SIZE);
 	data_size = -1;
 	messages_pos = 0;
+	question = false;
+	menu = false;
 	/* fetch the first "frame" */
 	update();
 }
@@ -204,61 +206,84 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 }
 
 void World::fetchMessages() {
-	/* fetch the messages currently displayed in map */
-	/* if there's a space before "--More--" we got a list */
-	/* this code is ugly :( */
-	bool islist = false;
-	for (int r = 0; r < ROWS; ++r) {
-		msg_str = map[r];
-		string::size_type pos = msg_str.find(MORE, 0);
-		if (pos == string::npos)
-			continue;
-		/* "--More--" found */
-		if (pos == 0 || map[r][pos - 1] == ' ')
-			islist = true;
-		if (islist) {
-			/* add from map[0][pos - 1] to map[r - 1][80] */
-			for (int r2 = 0; r2 < r; ++r2)
-				fetchMessagesHelper(r2, pos - 1);
+	/* new attempt on fetching messages.
+	 * this is much better, but still some hacks to get around bugs(?) in nethack.
+	 * what do we know?
+	 * - "--More--", "(end)" and "(x of y)" is the last chars in data.
+	 * - if only 1 line of messages, it's always on first line.
+	 * - cursor is always placed after "--More--", "(end)" or "(x of y)" */
+	msg_str = &data[data_size - MORE_LENGTH];
+	int r = row;
+	int c = col;
+	bool more = false;
+	menu = false;
+	string::size_type pos = string::npos;
+	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
+		/* "--More--" found, set c */
+		c = col - MORE_LENGTH;
+		more = true;
+	} else {
+		msg_str = &data[data_size - END_LENGTH];
+		if ((pos = msg_str.find(END, 0)) != string::npos) {
+			/* "(end)" found, set c.
+			 * since there (always?) is an extra space after "(end)",
+			 * we'll have to "+ pos" */
+			c = col - END_LENGTH + pos;
+			menu = true;
 		} else {
-			/* add from map[0][0] to map[r][80] */
-			for (int r2 = 0; r2 <= r; ++r2)
-				fetchMessagesHelper(r2, 0);
+			msg_str = &data[data_size - PAGE_LENGTH];
+			if ((pos = msg_str.find(PAGE, 0)) != string::npos) {
+				/* "(x of y)" found, set c.
+				 * this is special, we only search for " of ".
+				 * while PAGE_LENGTH covers "y)" we still haven't covered "x)",
+				 * so we'll have to move c 2 squares left */
+				c = col - PAGE_LENGTH - 2;
+				menu = true;
+			} else {
+				msg_str = map[0];
+				string::size_type fns = msg_str.find_first_not_of(" ");
+				string::size_type lns = msg_str.find_last_not_of(" ");
+				if (fns == string::npos || lns == string::npos || fns >= lns)
+					msg_str = "";
+				else
+					msg_str = msg_str.substr(fns, lns - fns + 1);
+				msg_str.copy(&messages[messages_pos], msg_str.length());
+				messages_pos = 0;
+				return; // no messages or messages on 1 line
+			}
 		}
-		/* request next "page" */
+	}
+	if (r == 0) {
+		/* not a menu, remove "--More--" from end of line */
+		msg_str = map[r];
+		msg_str = msg_str.substr(0, c);
+		/* append 2 spaces for later splitting */
+		msg_str.append(2, ' ');
+		msg_str.copy(&messages[messages_pos], msg_str.length());
+		messages_pos += msg_str.length();
+	} else {
+		/* list, add all lines to msg_str, splitted by "  "
+		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
+		for (int r2 = 0; r2 < r; ++r2) {
+			msg_str = &map[r2][c];
+			/* trim */
+			string::size_type fns = msg_str.find_first_not_of(" ");
+			string::size_type lns = msg_str.find_last_not_of(" ");
+			if (fns == string::npos || lns == string::npos || fns >= lns)
+				continue; // blank line?
+			msg_str = msg_str.substr(fns, lns - fns + 1);
+			/* append 2 spaces for later splitting */
+			msg_str.append(2, ' ');
+			msg_str.copy(&messages[messages_pos], msg_str.length());
+			messages_pos += msg_str.length();
+		}
+	}
+	if (more) {
+		/* there are "--More--" messages.
+		 * since this is not a menu we'll just ask for the rest of the messages */
 		command(" ");
 		return;
 	}
-	if (!islist)
-		fetchMessagesHelper(0, 0);
-	/* since there are no --More-- messages then set messages_pos to 0 for a new round */
-	messages[messages_pos] = '\0'; // probably not necessary
-	messages_pos = 0;
-}
-
-void World::fetchMessagesHelper(int row, int startcol) {
-	/* copy message into messages array, removing "--More--"
-	 * and keeping 2 spaces between messages.
-	 * player may encounter messages with 2 spaces in it,
-	 * eg. engravings. usually that is quoted. */
-	if (row < 0 || row > ROWS || startcol < 0)
-		return;
-	msg_str = &map[row][startcol];
-	string::size_type pos = msg_str.find(MORE, 0);
-	if (pos != string::npos) {
-		/* "--More--" found, remove it */
-		msg_str = msg_str.substr(0, pos);
-	}
-	/* trim */
-	string::size_type ltpos = msg_str.find_first_not_of(" ");
-	if (ltpos == string::npos)
-		return; // no messages
-	msg_str = msg_str.substr(ltpos, msg_str.find_last_not_of(" ") + 1);
-	/* add two spaces at end */
-	msg_str.append(2, ' ');
-	/* copy into messages */
-	msg_str.copy(&messages[messages_pos], msg_str.length());
-	messages_pos += msg_str.length();
 }
 
 void World::update() {
@@ -358,7 +383,7 @@ void World::update() {
 		cerr << "POSSIBLY QUESTION: " << row << ", " << col << endl;
 		cerr << data << endl;
 		question = true;
-	} else {
+	} else if (!menu) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */

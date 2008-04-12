@@ -67,6 +67,7 @@ class Saiph;
 #include "Analyzers/ExploreAnalyzer.h"
 #include "Analyzers/HealthAnalyzer.h"
 #include "Analyzers/LevelAnalyzer.h"
+#include "Analyzers/LootAnalyzer.h"
 #include "Analyzers/MonsterAnalyzer.h"
 
 /* namespace */
