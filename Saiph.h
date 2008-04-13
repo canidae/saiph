@@ -62,6 +62,7 @@ class Saiph;
 #include "World.h"
 /* analyzers */
 #include "Analyzers/DoorAnalyzer.h"
+#include "Analyzers/FoodAnalyzer.h"
 #include "Analyzers/ExploreAnalyzer.h"
 #include "Analyzers/HealthAnalyzer.h"
 #include "Analyzers/LevelAnalyzer.h"

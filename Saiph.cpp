@@ -78,6 +78,7 @@ Saiph::Saiph(bool remote) {
 	analyzers = new Analyzer*[MAX_ANALYZERS];
 	analyzer_count = 0;
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new DoorAnalyzer(this));
+	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new FoodAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new ExploreAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
 	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new LevelAnalyzer(this));
