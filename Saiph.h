@@ -55,9 +55,11 @@
 class Saiph;
 
 /* includes */
+#include <list>
 #include <string>
 #include "Analyzer.h"
 #include "Connection.h"
+#include "Dungeon.h"
 #include "Player.h"
 #include "World.h"
 /* analyzers */
@@ -96,6 +98,7 @@ class Saiph {
 		string *messages;
 		World *world;
 		bool engulfed;
+		list<Dungeon> history;
 
 		/* constructors */
 		Saiph(bool remote);

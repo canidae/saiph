@@ -143,6 +143,8 @@ class Dungeon {
 		char map[ROWS][COLS + 1];
 		char colour[ROWS][COLS];
 		char messages[BUFFER_SIZE];
+		bool menu;
+		bool question;
 		Player player;
 
 		/* constructors */

@@ -37,17 +37,17 @@ int FoodAnalyzer::finish() {
 	int nearest = 666;
 	char best_move = -1;
 	list<FO_Food>::iterator f = food.begin();
-	for (list<FO_Food>::iterator f = food.begin(); f != food.end(); ++f) {
+	for (list<FO_Food>::iterator f = food.begin(); f != food.end(); ) {
 		if (saiph->world->map[f->row][f->col] != FOOD) {
-			/* food is gone, remove from list.
-			 * must do f-- or the iterator will skip an entry */
-			food.erase(f--);
+			/* food is gone, remove from list */
+			food.erase(f++);
 			continue;
 		}
 		int distance = -1;
 		bool direct_line = false;
 		char move = saiph->shortestPath(f->row, f->col, false, distance, direct_line);
 		distance += saiph->world->player.turn - f->rots_turn;
+		++f;
 		if (distance > 0) {
 			/* it's gonna rot before we get there (most likely) */
 			continue;
@@ -60,6 +60,7 @@ int FoodAnalyzer::finish() {
 	if (best_move != -1) {
 		action = FO_EAT_CORPSE;
 		action_move = best_move;
+		return 62;
 	}
 
 	/* eat food ration/fruits/etc when we're weak */

@@ -35,8 +35,6 @@ class World: public Dungeon {
 		/* variables */
 		char *data;
 		ssize_t data_size;
-		bool question;
-		bool menu;
 
 		/* constructors */
 		World(Connection *connection);

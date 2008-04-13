@@ -19,5 +19,7 @@ void Dungeon::clone(const Dungeon *dungeon) {
 		map[r][80] = dungeon->map[r][80];
 	}
 	strcpy(messages, dungeon->messages);
+	menu = dungeon->menu;
+	question = dungeon->question;
 	player = dungeon->player;
 }
