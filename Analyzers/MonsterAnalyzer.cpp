@@ -10,65 +10,65 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 		monsters[m].last_seen = -1;
 	}
 	action = -1;
-	symbols[symbol_count++] = MONSTER_a;
-	symbols[symbol_count++] = MONSTER_b;
-	symbols[symbol_count++] = MONSTER_c;
-	symbols[symbol_count++] = MONSTER_d;
-	symbols[symbol_count++] = MONSTER_e;
-	symbols[symbol_count++] = MONSTER_f;
-	symbols[symbol_count++] = MONSTER_g;
-	symbols[symbol_count++] = MONSTER_h;
-	symbols[symbol_count++] = MONSTER_i;
-	symbols[symbol_count++] = MONSTER_j;
-	symbols[symbol_count++] = MONSTER_k;
-	symbols[symbol_count++] = MONSTER_l;
-	symbols[symbol_count++] = MONSTER_m;
-	symbols[symbol_count++] = MONSTER_n;
-	symbols[symbol_count++] = MONSTER_o;
-	symbols[symbol_count++] = MONSTER_p;
-	symbols[symbol_count++] = MONSTER_q;
-	symbols[symbol_count++] = MONSTER_r;
-	symbols[symbol_count++] = MONSTER_s;
-	symbols[symbol_count++] = MONSTER_t;
-	symbols[symbol_count++] = MONSTER_u;
-	symbols[symbol_count++] = MONSTER_v;
-	symbols[symbol_count++] = MONSTER_w;
-	symbols[symbol_count++] = MONSTER_x;
-	symbols[symbol_count++] = MONSTER_y;
-	symbols[symbol_count++] = MONSTER_z;
-	symbols[symbol_count++] = MONSTER_A;
-	symbols[symbol_count++] = MONSTER_B;
-	symbols[symbol_count++] = MONSTER_C;
-	symbols[symbol_count++] = MONSTER_D;
-	symbols[symbol_count++] = MONSTER_E;
-	symbols[symbol_count++] = MONSTER_F;
-	symbols[symbol_count++] = MONSTER_G;
-	symbols[symbol_count++] = MONSTER_H;
-	symbols[symbol_count++] = MONSTER_I;
-	symbols[symbol_count++] = MONSTER_J;
-	symbols[symbol_count++] = MONSTER_K;
-	symbols[symbol_count++] = MONSTER_L;
-	symbols[symbol_count++] = MONSTER_M;
-	symbols[symbol_count++] = MONSTER_N;
-	symbols[symbol_count++] = MONSTER_O;
-	symbols[symbol_count++] = MONSTER_P;
-	symbols[symbol_count++] = MONSTER_Q;
-	symbols[symbol_count++] = MONSTER_R;
-	symbols[symbol_count++] = MONSTER_S;
-	symbols[symbol_count++] = MONSTER_T;
-	symbols[symbol_count++] = MONSTER_U;
-	symbols[symbol_count++] = MONSTER_V;
-	symbols[symbol_count++] = MONSTER_W;
-	symbols[symbol_count++] = MONSTER_X;
-	symbols[symbol_count++] = MONSTER_Y;
-	symbols[symbol_count++] = MONSTER_Z;
-	symbols[symbol_count++] = MONSTER_AT;
-	symbols[symbol_count++] = MONSTER_6;
-	symbols[symbol_count++] = MONSTER_APOSTROPHE;
-	symbols[symbol_count++] = MONSTER_AND;
-	symbols[symbol_count++] = MONSTER_SEMICOLON;
-	symbols[symbol_count++] = MONSTER_COLON;
-	symbols[symbol_count++] = MONSTER_TILDE;
+	symbols[symbol_count++] = 'a';
+	symbols[symbol_count++] = 'b';
+	symbols[symbol_count++] = 'c';
+	symbols[symbol_count++] = 'd';
+	symbols[symbol_count++] = 'e';
+	symbols[symbol_count++] = 'f';
+	symbols[symbol_count++] = 'g';
+	symbols[symbol_count++] = 'h';
+	symbols[symbol_count++] = 'i';
+	symbols[symbol_count++] = 'j';
+	symbols[symbol_count++] = 'k';
+	symbols[symbol_count++] = 'l';
+	symbols[symbol_count++] = 'm';
+	symbols[symbol_count++] = 'n';
+	symbols[symbol_count++] = 'o';
+	symbols[symbol_count++] = 'p';
+	symbols[symbol_count++] = 'q';
+	symbols[symbol_count++] = 'r';
+	symbols[symbol_count++] = 's';
+	symbols[symbol_count++] = 't';
+	symbols[symbol_count++] = 'u';
+	symbols[symbol_count++] = 'v';
+	symbols[symbol_count++] = 'w';
+	symbols[symbol_count++] = 'x';
+	symbols[symbol_count++] = 'y';
+	symbols[symbol_count++] = 'z';
+	symbols[symbol_count++] = 'A';
+	symbols[symbol_count++] = 'B';
+	symbols[symbol_count++] = 'C';
+	symbols[symbol_count++] = 'D';
+	symbols[symbol_count++] = 'E';
+	symbols[symbol_count++] = 'F';
+	symbols[symbol_count++] = 'G';
+	symbols[symbol_count++] = 'H';
+	symbols[symbol_count++] = 'I';
+	symbols[symbol_count++] = 'J';
+	symbols[symbol_count++] = 'K';
+	symbols[symbol_count++] = 'L';
+	symbols[symbol_count++] = 'M';
+	symbols[symbol_count++] = 'N';
+	symbols[symbol_count++] = 'O';
+	symbols[symbol_count++] = 'P';
+	symbols[symbol_count++] = 'Q';
+	symbols[symbol_count++] = 'R';
+	symbols[symbol_count++] = 'S';
+	symbols[symbol_count++] = 'T';
+	symbols[symbol_count++] = 'U';
+	symbols[symbol_count++] = 'V';
+	symbols[symbol_count++] = 'W';
+	symbols[symbol_count++] = 'X';
+	symbols[symbol_count++] = 'Y';
+	symbols[symbol_count++] = 'Z';
+	symbols[symbol_count++] = '@';
+	symbols[symbol_count++] = '6';
+	symbols[symbol_count++] = '\'';
+	symbols[symbol_count++] = '&';
+	symbols[symbol_count++] = ';';
+	symbols[symbol_count++] = ':';
+	symbols[symbol_count++] = '~';
 }
 
 /* methods */
@@ -132,7 +132,7 @@ int MonsterAnalyzer::finish() {
 			continue;
 		}
 		if (m < 0 || distance < shortest_distance) {
-			if (monsters[mc].symbol == MONSTER_e || monsters[mc].symbol == MONSTER_AT)
+			if (monsters[mc].symbol == 'e' || monsters[mc].symbol == '@')
 				shortest_distance = 666; // hack, we don't want to attack these monsters unless we have to
 			else
 				shortest_distance = distance;
@@ -143,7 +143,7 @@ int MonsterAnalyzer::finish() {
 	if (m != -1) {
 		cerr << "fighting " << monsters[m].symbol << endl;
 		action = best_move;
-		if (monsters[m].symbol == MONSTER_e || monsters[m].symbol == MONSTER_AT)
+		if (monsters[m].symbol == 'e' || monsters[m].symbol == '@')
 			return 1; // don't fight these unless there's no way out
 		else
 			return 70;

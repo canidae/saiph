@@ -3,6 +3,7 @@
 #define FOODANALYZER_H
 /* general */
 #define FO_ROT_TIME 30
+#define FO_ROTTEN_MONSTER "MZ" // monsters always leaving rotten corpses
 /* actions */
 #define FO_DO_NOTHING 0
 #define FO_EAT_CORPSE 1
@@ -39,6 +40,7 @@ class FoodAnalyzer : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		list<FO_Food> food;
+		list<string> inedible;
 		int action;
 		char action_move;
 };

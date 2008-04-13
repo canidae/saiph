@@ -8,7 +8,8 @@
 #define MAX_COMMAND_LENGTH 128
 #define MAX_DUNGEON_DEPTH 64
 #define MAX_EXPLORE 128
-#define MAX_SEARCH 8 // triple the value in dead end corridors
+#define MAX_HISTORY 128
+#define MAX_SEARCH 10 // triple the value in dead end corridors
 /* branches */
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
@@ -98,7 +99,7 @@ class Saiph {
 		string *messages;
 		World *world;
 		bool engulfed;
-		list<Dungeon> history;
+		list<Dungeon> *history;
 
 		/* constructors */
 		Saiph(bool remote);

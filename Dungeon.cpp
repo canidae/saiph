@@ -7,19 +7,20 @@ Dungeon::Dungeon() {
 		map[r][COLS] = '\0';
 	memset(colour, 0, ROWS * COLS);
 	memset(messages, '\0', BUFFER_SIZE);
+	menu = false;
+	question = false;
 }
 
-/* methods */
-void Dungeon::clone(const Dungeon *dungeon) {
+Dungeon::Dungeon(const Dungeon &dungeon) {
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS + 1; ++c) {
-			map[r][c] = dungeon->map[r][c];
-			colour[r][c] = dungeon->colour[r][c];
+			map[r][c] = dungeon.map[r][c];
+			colour[r][c] = dungeon.colour[r][c];
 		}
-		map[r][80] = dungeon->map[r][80];
+		map[r][80] = dungeon.map[r][80];
 	}
-	strcpy(messages, dungeon->messages);
-	menu = dungeon->menu;
-	question = dungeon->question;
-	player = dungeon->player;
+	strcpy(messages, dungeon.messages);
+	menu = dungeon.menu;
+	question = dungeon.question;
+	player = dungeon.player;
 }

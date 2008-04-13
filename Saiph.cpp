@@ -12,6 +12,9 @@ Saiph::Saiph(bool remote) {
 	/* engulfed */
 	engulfed = false;
 
+	/* history */
+	history = new list<Dungeon>;
+
 	/* pathing */
 	pathcost = new unsigned int*[ROWS];
 	for (int r = 0; r < ROWS; ++r) {
@@ -77,13 +80,13 @@ Saiph::Saiph(bool remote) {
 	/* Analyzers */
 	analyzers = new Analyzer*[MAX_ANALYZERS];
 	analyzer_count = 0;
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new DoorAnalyzer(this));
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new FoodAnalyzer(this));
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new ExploreAnalyzer(this));
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new HealthAnalyzer(this));
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new LevelAnalyzer(this));
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new LootAnalyzer(this));
-	analyzers[analyzer_count++] = dynamic_cast<Analyzer*>(new MonsterAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new DoorAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new FoodAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new ExploreAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new HealthAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new LevelAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new LootAnalyzer(this));
+	analyzers[analyzer_count++] = static_cast<Analyzer*>(new MonsterAnalyzer(this));
 }
 
 /* destructors */
@@ -101,6 +104,7 @@ Saiph::~Saiph() {
 		delete [] pathpos[p];
 	delete [] pathpos;
 	delete [] passable;
+	delete history;
 	delete messages;
 	delete world;
 	delete connection;
@@ -265,6 +269,9 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* save dungeon in history */
+	history->push_front(*world);
+	while (history->size() > MAX_HISTORY)
+		history->pop_back();
 
 	/* deal with messages */
 	*messages = world->messages;
@@ -527,8 +534,8 @@ void Saiph::updatePathMap() {
 /* main */
 int main() {
 	Saiph saiph(false);
-	//for (int a = 0; a < 5 && saiph.run(); ++a)
-	//	;
-	while (saiph.run())
+	for (int a = 0; a < 200 && saiph.run(); ++a)
 		;
+	//while (saiph.run())
+	//	;
 }
