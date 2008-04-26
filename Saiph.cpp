@@ -80,13 +80,13 @@ Saiph::Saiph(bool remote) {
 	/* Analyzers */
 	analyzers = new Analyzer*[MAX_ANALYZERS];
 	analyzer_count = 0;
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new DoorAnalyzer(this));
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new FoodAnalyzer(this));
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new ExploreAnalyzer(this));
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new HealthAnalyzer(this));
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new LevelAnalyzer(this));
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new LootAnalyzer(this));
-	analyzers[analyzer_count++] = static_cast<Analyzer*>(new MonsterAnalyzer(this));
+	analyzers[analyzer_count++] = (Analyzer *) new DoorAnalyzer(this);
+	analyzers[analyzer_count++] = (Analyzer *) new FoodAnalyzer(this);
+	analyzers[analyzer_count++] = (Analyzer *) new ExploreAnalyzer(this);
+	analyzers[analyzer_count++] = (Analyzer *) new HealthAnalyzer(this);
+	analyzers[analyzer_count++] = (Analyzer *) new LevelAnalyzer(this);
+	analyzers[analyzer_count++] = (Analyzer *) new LootAnalyzer(this);
+	analyzers[analyzer_count++] = (Analyzer *) new MonsterAnalyzer(this);
 }
 
 /* destructors */
@@ -534,8 +534,8 @@ void Saiph::updatePathMap() {
 /* main */
 int main() {
 	Saiph saiph(false);
-	for (int a = 0; a < 200 && saiph.run(); ++a)
-		;
-	//while (saiph.run())
+	//for (int a = 0; a < 200 && saiph.run(); ++a)
 	//	;
+	while (saiph.run())
+		;
 }
