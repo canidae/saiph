@@ -69,11 +69,10 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	bool dead_end = false;
 	if (!corridor && (hune || june || kune || lune)) {
 		score = EX_UNLIT_ROOM;
-	} else if (corridor && ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))) {
-		score = EX_DEAD_END;
-		dead_end = true;
-	} else if (corridor && ((h && j) || (h && k) || (j && l) || (k && l))) {
-		score = EX_TURN;
+	} else if (corridor) {
+		score = EX_CORRIDOR;
+		if ((h && j && k) || (j && k && l) || (h && k && l) || (h && j && l))
+			dead_end = true;
 	} else if (!corridor && (hunp || junp || kunp || lunp)) {
 		score = EX_EXTRA_SEARCH;
 	}
