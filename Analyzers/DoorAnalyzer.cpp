@@ -48,7 +48,7 @@ int DoorAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int DoorAnalyzer::analyze(int row, int col, char symbol) {
+int DoorAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	for (int d = 0; d < DO_MAX_DOORS; ++d) {
@@ -93,8 +93,8 @@ int DoorAnalyzer::finish() {
 			continue; // FIXME: currently ignoring all locked doors on levels there are shopkeepers on
 		bool direct_line = false;
 		int distance = -1;
-		char move = saiph->shortestPath(to_row, to_col, true, distance, direct_line);
-		if (move == -1)
+		unsigned char move = saiph->shortestPath(to_row, to_col, true, distance, direct_line);
+		if (move == ILLEGAL_MOVE)
 			continue;
 		if (!doors[branch][dungeon][d].locked && DO_OPEN_PRIORITY > best_priority) {
 			/* [go to] open a door */

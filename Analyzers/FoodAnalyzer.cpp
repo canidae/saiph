@@ -4,7 +4,7 @@
 FoodAnalyzer::FoodAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
 	action = FO_DO_NOTHING;
-	action_move = -1;
+	action_move = ILLEGAL_MOVE;
 	/* inedible (corpses that give stuff we don't want; hallu, stun, mimic, lycantrophy, petrify, ...) */
 	inedible.push_back("abbot");
 	inedible.push_back("bat");
@@ -41,7 +41,7 @@ int FoodAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int FoodAnalyzer::analyze(int row, int col, char symbol) {
+int FoodAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	for (list<FO_Food>::iterator f = food.begin(); f != food.end(); ++f) {
 		if (f->row == row && f->col == col)
 			return 0;
@@ -70,7 +70,7 @@ int FoodAnalyzer::finish() {
 		return 0;
 	/* eat corpse unless it's too old */
 	int nearest = 666;
-	char best_move = -1;
+	unsigned char best_move = ILLEGAL_MOVE;
 	list<FO_Food>::iterator f = food.begin();
 	for (list<FO_Food>::iterator f = food.begin(); f != food.end(); ) {
 		if (saiph->world->map[f->row][f->col] != FOOD) {
@@ -80,7 +80,7 @@ int FoodAnalyzer::finish() {
 		}
 		int distance = -1;
 		bool direct_line = false;
-		char move = saiph->shortestPath(f->row, f->col, false, distance, direct_line);
+		unsigned char move = saiph->shortestPath(f->row, f->col, false, distance, direct_line);
 		distance += saiph->world->player.turn - f->rots_turn;
 		++f;
 		if (distance > 0) {
@@ -92,7 +92,7 @@ int FoodAnalyzer::finish() {
 			best_move = move;
 		}
 	}
-	if (best_move != -1) {
+	if (best_move != ILLEGAL_MOVE) {
 		action = FO_EAT_CORPSE;
 		action_move = best_move;
 		return 62;

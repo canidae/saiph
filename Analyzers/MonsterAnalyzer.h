@@ -20,7 +20,7 @@ struct MO_Monster {
 	int row;
 	int col;
 	int last_seen;
-	char symbol;
+	unsigned char symbol;
 };
 
 /* analyzer for fighting monsters */
@@ -31,7 +31,7 @@ class MonsterAnalyzer : public Analyzer {
 
 		/* methods */
 		int parseMessages(string *messages);
-		int analyze(int row, int col, char symbol);
+		int analyze(int row, int col, unsigned char symbol);
 		int finish();
 		void command();
 
@@ -39,6 +39,6 @@ class MonsterAnalyzer : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		MO_Monster monsters[MO_MAX_MONSTERS];
-		char action;
+		unsigned char action;
 };
 #endif

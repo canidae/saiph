@@ -69,7 +69,7 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-void Saiph::directionToPos(char direction, int &to_row, int &to_col) {
+void Saiph::directionToPos(unsigned char direction, int &to_row, int &to_col) {
 	/* return (by setting to_row & to_col) the position by the given direction */
 	switch (direction) {
 		case MOVE_NW:
@@ -116,10 +116,10 @@ void Saiph::directionToPos(char direction, int &to_row, int &to_col) {
 
 void Saiph::dumpMaps() {
 	/* search map */
-	cout << (char) 27 << "[26;1H";
+	cout << (unsigned char) 27 << "[26;1H";
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			cout << (char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
+			cout << (unsigned char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
 			//cout << (int) branches[current_branch]->unpassable[world->player.dungeon][r][c];
 			//cout << (int) branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c];
 		}
@@ -127,20 +127,20 @@ void Saiph::dumpMaps() {
 	}
 	/* world map as the bot sees it */
 	for (int r = 0; r < ROWS; ++r) {
-		cout << (char) 27 << "[" << r + 1 << ";82H";
+		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = 0; c < COLS; ++c) {
-			cout << (char) (branches[current_branch]->map[world->player.dungeon][r][c]);
+			cout << (unsigned char) (branches[current_branch]->map[world->player.dungeon][r][c]);
 		}
 	}
 	/* path map */
 	for (int r = 0; r < ROWS; ++r) {
-		cout << (char) 27 << "[" << r + 26 << ";82H";
+		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
 		for (int c = 0; c < COLS; ++c) {
-			cout << (char) (pathcost[r][c] % 96 + 32);
+			cout << (unsigned char) (pathcost[r][c] % 96 + 32);
 		}
 	}
 	/* return cursor back to player */
-	cout << (char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
+	cout << (unsigned char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
 }
 
 void Saiph::farlook(int row, int col) {
@@ -151,7 +151,7 @@ void Saiph::farlook(int row, int col) {
 	int cursor_row = world->player.row;
 	int cursor_col = world->player.col;
 	while (cursor_row != row && cursor_col != col) {
-		char move = moveToDirection(row, col, cursor_row, cursor_col);
+		unsigned char move = moveToDirection(row, col, cursor_row, cursor_col);
 		directionToPos(move, cursor_row, cursor_col);
 		command[pos++] = move;
 	}
@@ -179,7 +179,7 @@ bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int fro
 	return true;
 }
 
-char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) {
+unsigned char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) {
 	/* return the direction by the given move */
 	if (from_row < to_row && from_col < to_col)
 		return MOVE_SE;
@@ -198,7 +198,7 @@ char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) 
 	else if (from_col > to_col)
 		return MOVE_W;
 	cerr << "invalid move: " << from_row << ", " << from_col << " -> " << to_row << ", " << to_col << endl;
-	return -1;
+	return ILLEGAL_MOVE;
 }
 
 bool Saiph::run() {
@@ -284,29 +284,29 @@ bool Saiph::run() {
 	return true;
 }
 
-char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line) {
+unsigned char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line) {
 	/* attempt to find the shortest path to destination.
-	 * returns move or -1 if unable to find a path */
+	 * returns move or ILLEGAL_MOVE if unable to find a path */
 	/* allow_illegal_last_move:
 	 * if this is true we'll "move" diagonally through doors if it's the last move.
 	 * why? because monsters may stand in a door way, making it possible to attack them */
 	distance = 0;
 	direct_line = true;
 	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col < 1 || col > COLS - 1)
-		return -1; // this means we can't move to the edges of the map (hopefully "ok")
+		return ILLEGAL_MOVE; // this means we can't move to the edges of the map (hopefully "ok")
 	unsigned int curcost = pathcost[row][col];
 	if (curcost == UINT_MAX && !allow_illegal_last_move)
-		return -1; // can't move here
+		return ILLEGAL_MOVE; // can't move here
 	if (curcost == 0)
 		return REST; // we're standing on the pos we're looking for?
 	unsigned int antiloop = curcost - 666; // any other value but curcost :)
-	char move = -1;
-	char prevmove = -1;
+	unsigned char move = ILLEGAL_MOVE;
+	unsigned char prevmove = ILLEGAL_MOVE;
 	while (curcost > 0 && antiloop != curcost) {
 		int r = row;
 		int c = col;
 		antiloop = curcost; // if curcost doesn't change the loop will end
-		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || isLegalMove(current_branch, world->player.dungeon, row - 1, col - 1, row, col))) {
+		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row - 1, col - 1, row, col))) {
 			move = MOVE_SE;
 			r = row - 1;
 			c = col - 1;
@@ -318,7 +318,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || isLegalMove(current_branch, world->player.dungeon, row - 1, col + 1, row, col))) {
+		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row - 1, col + 1, row, col))) {
 			move = MOVE_SW;
 			r = row - 1;
 			c = col + 1;
@@ -336,7 +336,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col + 1;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || isLegalMove(current_branch, world->player.dungeon, row + 1, col - 1, row, col))) {
+		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row + 1, col - 1, row, col))) {
 			move = MOVE_NE;
 			r = row + 1;
 			c = col - 1;
@@ -348,7 +348,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 			c = col;
 			curcost = pathcost[r][c];
 		}
-		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == -1) || isLegalMove(current_branch, world->player.dungeon, row + 1, col + 1, row, col))) {
+		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row + 1, col + 1, row, col))) {
 			move = MOVE_NW;
 			r = row + 1;
 			c = col + 1;
@@ -362,7 +362,7 @@ char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &di
 		col = c;
 	}
 	if (curcost > 0)
-		return -1;
+		return ILLEGAL_MOVE;
 	return move;
 }
 
@@ -371,7 +371,7 @@ void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			char symbol = world->map[r][c];
+			unsigned char symbol = world->map[r][c];
 			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
 				symbol = branches[current_branch]->map[world->player.dungeon][r][c];
 			for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
@@ -400,11 +400,11 @@ void Saiph::updateMaps() {
 	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			char s = world->map[r][c];
+			unsigned char s = world->map[r][c];
 			if (s == SOLID_ROCK)
 				continue;
 			/* using pointer next as we need updated map for [diagonally_]unpassable */
-			char *hs = &branches[current_branch]->map[world->player.dungeon][r][c];
+			unsigned char *hs = &branches[current_branch]->map[world->player.dungeon][r][c];
 			if (s == VERTICAL_WALL || s == HORIZONTAL_WALL || s == FLOOR || s == OPEN_DOOR || s == CLOSED_DOOR || s == IRON_BARS || s == TREE || s == CORRIDOR || s == STAIRS_UP || s == STAIRS_DOWN || s == ALTAR || s == GRAVE || s == THRONE || s == SINK || s == FOUNTAIN || s == WATER || s == ICE || s == LAVA || s == LOWERED_DRAWBRIDGE || s == RAISED_DRAWBRIDGE || s == TRAP) {
 				/* "static" dungeon features (doors may be destroyed, though).
 				 * update the map showing static stuff */
@@ -457,13 +457,14 @@ void Saiph::updatePathMap() {
 			if (r < MAP_ROW_START || r > MAP_ROW_END)
 				continue;
 			for (int c = col - 1; c <= col + 1; ++c) {
+				unsigned char ws = world->map[r][c];
 				if (c < 0 || c >= COLS)
 					continue;
 				else if (!isLegalMove(current_branch, world->player.dungeon, r, c, row, col))
 					continue;
-				else if (ismonster[(unsigned char) world->map[r][c]])
+				else if (ismonster[ws])
 					continue; // can't path through monsters, for now
-				char s = branches[current_branch]->map[world->player.dungeon][r][c];
+				unsigned char s = branches[current_branch]->map[world->player.dungeon][r][c];
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
 					newpathcost += COST_LAVA;
@@ -471,7 +472,7 @@ void Saiph::updatePathMap() {
 					newpathcost += COST_TRAP;
 				else if (s == WATER)
 					newpathcost += COST_WATER;
-				if (world->map[r][c] == PET)
+				if (ws == PET)
 					newpathcost += COST_PET;
 				if (newpathcost < pathcost[r][c]) {
 					pathcost[r][c] = newpathcost;

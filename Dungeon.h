@@ -15,22 +15,22 @@
 #define VERTICAL_WALL '|'
 #define HORIZONTAL_WALL '-'
 #define FLOOR '.'
-#define OPEN_DOOR -128
+#define OPEN_DOOR 128
 #define CLOSED_DOOR '7'
-#define IRON_BARS -127
-#define TREE -126
+#define IRON_BARS 129
+#define TREE 130
 #define CORRIDOR '#'
 #define STAIRS_UP '<'
 #define STAIRS_DOWN '>'
 #define ALTAR '_'
 #define GRAVE '\\'
-#define THRONE -125
-#define SINK -124
+#define THRONE 131
+#define SINK 132
 #define FOUNTAIN '{'
 #define WATER '}'
-#define ICE -123
-#define LAVA -122
-#define LOWERED_DRAWBRIDGE -121
+#define ICE 133
+#define LAVA 134
+#define LOWERED_DRAWBRIDGE 135
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
 /* colours & attributes */
@@ -63,8 +63,9 @@
 #define CHAINS '`'
 #define VENOM '`'
 /* special "monsters" */
-#define PET -120
-#define PLAYER -119
+#define NOMONSTER 0
+#define PET 136
+#define PLAYER 137
 
 
 /* forward declare */
@@ -81,7 +82,7 @@ class Dungeon {
 	public:
 		/* variables */
 		char map[ROWS][COLS + 1];
-		char colour[ROWS][COLS];
+		unsigned char colour[ROWS][COLS];
 		char messages[BUFFER_SIZE];
 		bool menu;
 		bool question;

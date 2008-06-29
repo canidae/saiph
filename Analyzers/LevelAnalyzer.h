@@ -26,6 +26,6 @@ class LevelAnalyzer : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
-		char action;
+		unsigned char action;
 };
 #endif

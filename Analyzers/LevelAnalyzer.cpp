@@ -3,7 +3,7 @@
 /* constructors */
 LevelAnalyzer::LevelAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
-	action = -1;
+	action = ILLEGAL_MOVE;
 }
 
 /* methods */
@@ -23,8 +23,8 @@ int LevelAnalyzer::finish() {
 			if (saiph->branches[branch]->map[dungeon][r][c] == STAIRS_DOWN) {
 				int distance = 0;
 				bool direct_line = false;
-				char move = saiph->shortestPath(r, c, false, distance, direct_line);
-				if (move != -1) {
+				unsigned char move = saiph->shortestPath(r, c, false, distance, direct_line);
+				if (move != ILLEGAL_MOVE) {
 					action = move;
 					return LA_DESCEND_PRIORITY;
 				}

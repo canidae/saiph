@@ -21,7 +21,7 @@ using namespace std;
 struct EX_Place {
 	int row;
 	int col;
-	char move;
+	unsigned char move;
 	int value;
 };
 
@@ -32,7 +32,7 @@ class ExploreAnalyzer : public Analyzer {
 		ExploreAnalyzer(Saiph *saiph);
 
 		/* methods */
-		int analyze(int row, int col, char symbol);
+		int analyze(int row, int col, unsigned char symbol);
 		int finish();
 		void command();
 

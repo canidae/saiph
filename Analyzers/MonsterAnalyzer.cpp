@@ -6,10 +6,10 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
 		monsters[m].row = -1;
 		monsters[m].col = -1;
-		monsters[m].symbol = -1;
+		monsters[m].symbol = NOMONSTER;
 		monsters[m].last_seen = -1;
 	}
-	action = -1;
+	action = ILLEGAL_MOVE;
 	symbols[symbol_count++] = 'a';
 	symbols[symbol_count++] = 'b';
 	symbols[symbol_count++] = 'c';
@@ -80,11 +80,11 @@ int MonsterAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int MonsterAnalyzer::analyze(int row, int col, char symbol) {
+int MonsterAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	cerr << "found monster at " << row << ", " << col << " - " << symbol << endl;
 	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
-		if (monsters[m].symbol == -1 || (monsters[m].symbol == symbol && monsters[m].last_seen != saiph->world->player.turn)) {
-			if (monsters[m].symbol == -1)
+		if (monsters[m].symbol == NOMONSTER || (monsters[m].symbol == symbol && monsters[m].last_seen != saiph->world->player.turn)) {
+			if (monsters[m].symbol == NOMONSTER)
 				cerr << "this seems to be a new monster" << endl;
 			else
 				cerr << "seems to be a known monster. old pos: " << monsters[m].row << ", " << monsters[m].col << endl;
@@ -113,25 +113,25 @@ int MonsterAnalyzer::finish() {
 	}
 	/* fight nearest monster */
 	int shortest_distance = -1;
-	int m = -1;
-	int best_move = -1;
+	int m = NOMONSTER;
+	unsigned char best_move = ILLEGAL_MOVE;
 	int distance = -1;
 	bool direct_line = false;
-	char move = -1;
+	unsigned char move = ILLEGAL_MOVE;
 	for (int mc = 0; mc < MO_MAX_MONSTERS; ++mc) {
-		if (monsters[mc].symbol == -1)
+		if (monsters[mc].symbol == NOMONSTER)
 			continue;
 		move = saiph->shortestPath(monsters[mc].row, monsters[mc].col, true, distance, direct_line);
-		if (move == -1 || (distance <= 1 && saiph->world->map[monsters[mc].row][monsters[mc].col] != monsters[mc].symbol)) {
+		if (move == ILLEGAL_MOVE || (distance <= 1 && saiph->world->map[monsters[mc].row][monsters[mc].col] != monsters[mc].symbol)) {
 			/* can't find monster, forget it */
 			cerr << "unable to find monster " << monsters[mc].symbol << ". monster forgotten" << endl;
-			monsters[mc].symbol = -1;
+			monsters[mc].symbol = NOMONSTER;
 			/* unblock path for pathing algorithm */
 			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] == 2)
 				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = 0;
 			continue;
 		}
-		if (m < 0 || distance < shortest_distance) {
+		if (m == NOMONSTER || distance < shortest_distance) {
 			if (monsters[mc].symbol == 'e' || monsters[mc].symbol == '@')
 				shortest_distance = 666; // hack, we don't want to attack these monsters unless we have to
 			else
@@ -140,7 +140,7 @@ int MonsterAnalyzer::finish() {
 			best_move = move;
 		}
 	}
-	if (m != -1) {
+	if (m != NOMONSTER) {
 		cerr << "fighting " << monsters[m].symbol << endl;
 		action = best_move;
 		if (monsters[m].symbol == 'e' || monsters[m].symbol == '@')

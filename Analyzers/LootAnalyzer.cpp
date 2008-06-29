@@ -4,7 +4,6 @@
 LootAnalyzer::LootAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
 	action = LO_NOTHING;
-	key = -1;
 	symbols[symbol_count++] = WEAPON;
 	symbols[symbol_count++] = ARMOR;
 	symbols[symbol_count++] = RING;
@@ -50,7 +49,7 @@ int LootAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int LootAnalyzer::analyze(int row, int col, char symbol) {
+int LootAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	return 0;
 }
 

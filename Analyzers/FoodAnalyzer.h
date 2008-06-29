@@ -32,7 +32,7 @@ class FoodAnalyzer : public Analyzer {
 
 		/* methods */
 		int parseMessages(string *messages);
-		int analyze(int row, int col, char symbol);
+		int analyze(int row, int col, unsigned char symbol);
 		int finish();
 		void command();
 
@@ -42,6 +42,6 @@ class FoodAnalyzer : public Analyzer {
 		list<FO_Food> food;
 		list<string> inedible;
 		int action;
-		char action_move;
+		unsigned char action_move;
 };
 #endif

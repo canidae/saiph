@@ -22,7 +22,7 @@ class Analyzer {
 	public:
 		/* variables */
 		int max_priority;
-		char symbols[MAX_SYMBOLS];
+		unsigned char symbols[MAX_SYMBOLS];
 		int symbol_count;
 
 		/* constructors */
@@ -34,7 +34,7 @@ class Analyzer {
 		/* methods */
 		virtual int parseMessages(string *messages);
 		virtual int start();
-		virtual int analyze(int row, int col, char symbol);
+		virtual int analyze(int row, int col, unsigned char symbol);
 		virtual int finish();
 		virtual void command();
 };

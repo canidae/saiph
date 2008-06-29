@@ -32,7 +32,7 @@ class LootAnalyzer : public Analyzer {
 
 		/* methods */
 		int parseMessages(string *messages);
-		int analyze(int row, int col, char symbol);
+		int analyze(int row, int col, unsigned char symbol);
 		int finish();
 		void command();
 
@@ -40,6 +40,5 @@ class LootAnalyzer : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		int action;
-		char key;
 };
 #endif

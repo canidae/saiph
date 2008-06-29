@@ -35,7 +35,7 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-int ExploreAnalyzer::analyze(int row, int col, char symbol) {
+int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
 		return 0;
 	int branch = saiph->current_branch;
@@ -45,10 +45,10 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 	if ((!corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH) || (corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH * EX_DEAD_END_MULTIPLIER))
 		return 0; // we've been here and searched frantically
 	/* hjkl symbols */
-	char hs = saiph->branches[branch]->map[dungeon][row][col - 1];
-	char js = saiph->branches[branch]->map[dungeon][row + 1][col];
-	char ks = saiph->branches[branch]->map[dungeon][row - 1][col];
-	char ls = saiph->branches[branch]->map[dungeon][row][col + 1];
+	unsigned char hs = saiph->branches[branch]->map[dungeon][row][col - 1];
+	unsigned char js = saiph->branches[branch]->map[dungeon][row + 1][col];
+	unsigned char ks = saiph->branches[branch]->map[dungeon][row - 1][col];
+	unsigned char ls = saiph->branches[branch]->map[dungeon][row][col + 1];
 	/* hjkl unexplored */
 	bool hune = (hs == SOLID_ROCK);
 	bool june = (js == SOLID_ROCK);
@@ -86,7 +86,7 @@ int ExploreAnalyzer::analyze(int row, int col, char symbol) {
 		return 0; // this place isn't very exciting
 	places[place_count].row = row;
 	places[place_count].col = col;
-	places[place_count].move = -1;
+	places[place_count].move = ILLEGAL_MOVE;
 	places[place_count].value = score;
 	++place_count;
 	return 0;
@@ -103,7 +103,7 @@ int ExploreAnalyzer::finish() {
 		int distance = 0;
 		bool direct_line = false;
 		places[p].move = saiph->shortestPath(places[p].row, places[p].col, false, distance, direct_line);
-		if (places[p].move == -1)
+		if (places[p].move == ILLEGAL_MOVE)
 			continue;
 		if (places[p].value > best || (places[p].value == best && (shortest_distance == -1 || distance < shortest_distance))) {
 			shortest_distance = distance;

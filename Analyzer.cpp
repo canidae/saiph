@@ -19,7 +19,7 @@ int Analyzer::start() {
 	return 0;
 }
 
-int Analyzer::analyze(int row, int col, char symbol) {
+int Analyzer::analyze(int row, int col, unsigned char symbol) {
 	return 0;
 }
 

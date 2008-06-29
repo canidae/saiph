@@ -50,7 +50,7 @@ class DoorAnalyzer : public Analyzer {
 
 		/* methods */
 		int parseMessages(string *messages);
-		int analyze(int row, int col, char symbol);
+		int analyze(int row, int col, unsigned char symbol);
 		int finish();
 		void command();
 
@@ -60,7 +60,7 @@ class DoorAnalyzer : public Analyzer {
 		DO_Door doors[MAX_BRANCHES][MAX_DUNGEON_DEPTH][DO_MAX_DOORS];
 		bool shop_on_level[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		int action;
-		char action_direction;
+		unsigned char action_direction;
 		int action_door;
 };
 #endif

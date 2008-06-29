@@ -35,6 +35,7 @@
 #define MOVE_SE 'n'
 #define MOVE_UP '<'
 #define MOVE_DOWN '>'
+#define ILLEGAL_MOVE 0
 /* actions */
 #define CLOSE 'c'
 #define ENGRAVE 'E'
@@ -77,10 +78,10 @@ using namespace std;
 
 /* a branch holds numerous "maps" for all dungeons in the given (visited) branch */
 struct Branch {
-	char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (no monsters, objects, etc)
-	char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
-	char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
-	char diagonally_unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // tiles we can't diagonally pass
+	unsigned char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (no monsters, objects, etc)
+	unsigned char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
+	unsigned char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
+	unsigned char diagonally_unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // tiles we can't diagonally pass
 };
 
 /* a command to send to the game */
@@ -91,8 +92,8 @@ struct Command {
 
 /* just a location on the map */
 struct Point {
-	char row;
-	char col;
+	unsigned char row;
+	unsigned char col;
 };
 
 /* this is our AI */
@@ -114,13 +115,13 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void directionToPos(char direction, int &to_row, int &to_col);
+		void directionToPos(unsigned char direction, int &to_row, int &to_col);
 		void dumpMaps();
 		void farlook(int row, int col);
 		bool isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col);
-		char moveToDirection(int to_row, int to_col, int from_row, int from_col);
+		unsigned char moveToDirection(int to_row, int to_col, int from_row, int from_col);
 		bool run();
-		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
+		unsigned char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
 
 	private:
 		/* variables */
