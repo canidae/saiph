@@ -470,7 +470,7 @@ void Saiph::updatePathMap() {
 				if (s == LAVA)
 					newpathcost += COST_LAVA; // TODO: only if we levitate
 				else if (s == WATER)
-					newpathcost += COST_WATER; // TODO: only if we levitate/waterwalking
+					newpathcost += COST_WATER; // TODO: only if we levitate/waterwalk
 				else if (s == TRAP)
 					newpathcost += COST_TRAP;
 				if (ws == PET)
