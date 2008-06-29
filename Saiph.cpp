@@ -442,17 +442,14 @@ void Saiph::updatePathMap() {
 	int row = world->player.row;
 	int col = world->player.col;
 	pathcost[row][col] = 0;
-	Point p;
-	p.row = row;
-	p.col = col;
-	pathing_queue[0] = p;
+	pathing_queue[0].row = row;
+	pathing_queue[0].col = col;
 	int curcost = 0;
 	int curnode = 0;
 	int nodes = 1;
 	while (curnode < nodes) {
-		p = pathing_queue[curnode++];
-		row = p.row;
-		col = p.col;
+		row = pathing_queue[curnode].row;
+		col = pathing_queue[curnode].col;
 		curcost = pathcost[row][col];
 		for (int r = row - 1; r <= row + 1; ++r) {
 			if (r < MAP_ROW_START || r > MAP_ROW_END)
@@ -477,13 +474,13 @@ void Saiph::updatePathMap() {
 					newpathcost += COST_PET;
 				if (newpathcost < pathcost[r][c]) {
 					pathcost[r][c] = newpathcost;
-					p.row = r;
-					p.col = c;
-					pathing_queue[nodes] = p;
+					pathing_queue[nodes].row = r;
+					pathing_queue[nodes].col = c;
 					++nodes;
 				}
 			}
 		}
+		++curnode;
 	}
 }
 
