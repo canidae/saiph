@@ -23,6 +23,7 @@
 #define COST_PET 16 // try not to move onto pets
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 4096 // avoid water if possible
+#define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
 /* movement */
 #define MOVE_NW 'y'
 #define MOVE_N 'k'
@@ -125,7 +126,7 @@ class Saiph {
 		vector<Analyzer *> analyzers;
 		Connection *connection;
 		unsigned int pathcost[ROWS][COLS];
-		vector<Point> pathing_queue;
+		Point pathing_queue[PATHING_QUEUE_SIZE];
 		bool ismonster[UCHAR_MAX + 1];
 
 		/* methods */

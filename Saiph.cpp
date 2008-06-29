@@ -445,11 +445,12 @@ void Saiph::updatePathMap() {
 	Point p;
 	p.row = row;
 	p.col = col;
-	pathing_queue.push_back(p);
+	pathing_queue[0] = p;
 	int curcost = 0;
-	while (!pathing_queue.empty()) {
-		p = pathing_queue.back();
-		pathing_queue.pop_back();
+	int curnode = 0;
+	int nodes = 1;
+	while (curnode < nodes) {
+		p = pathing_queue[curnode++];
 		row = p.row;
 		col = p.col;
 		curcost = pathcost[row][col];
@@ -478,7 +479,8 @@ void Saiph::updatePathMap() {
 					pathcost[r][c] = newpathcost;
 					p.row = r;
 					p.col = c;
-					pathing_queue.push_back(p);
+					pathing_queue[nodes] = p;
+					++nodes;
 				}
 			}
 		}
@@ -488,9 +490,9 @@ void Saiph::updatePathMap() {
 /* main */
 int main() {
 	Saiph *saiph = new Saiph(false);
-	for (int a = 0; a < 200 && saiph->run(); ++a)
-		;
-	//while (saiph->run())
+	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
+	while (saiph->run())
+		;
 	delete saiph;
 }

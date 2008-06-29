@@ -40,8 +40,8 @@ int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
 		return 0;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
-	/* are we in a corridor? */
-	bool corridor = (saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR);
+	/* are we in a corridor or door? */
+	bool corridor = saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR || saiph->branches[branch]->map[dungeon][row][col] == OPEN_DOOR;
 	if ((!corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH) || (corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH * EX_DEAD_END_MULTIPLIER))
 		return 0; // we've been here and searched frantically
 	/* hjkl symbols */
