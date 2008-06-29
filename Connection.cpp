@@ -111,8 +111,8 @@ ssize_t Connection::retrieve(char *buffer, size_t count) {
 	return data_received_total;
 }
 
-ssize_t Connection::send(const char *buffer) {
+ssize_t Connection::send(const string &buffer) {
 	/* send data */
 	cerr << "writing: '" << buffer << "'" << endl;
-	return write(link[1], buffer, strlen(buffer));
+	return write(link[1], buffer.c_str(), strlen(buffer.c_str()));
 }

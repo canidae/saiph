@@ -31,10 +31,10 @@ class FoodAnalyzer : public Analyzer {
 		FoodAnalyzer(Saiph *saiph);
 
 		/* methods */
-		int parseMessages(string *messages);
 		int analyze(int row, int col, unsigned char symbol);
+		void command(string *command);
 		int finish();
-		void command();
+		int parseMessages(string *messages);
 
 	private:
 		/* variables */

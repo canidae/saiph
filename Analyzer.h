@@ -32,10 +32,10 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
+		virtual int analyze(int row, int col, unsigned char symbol);
+		virtual void command(string *command);
+		virtual int finish();
 		virtual int parseMessages(string *messages);
 		virtual int start();
-		virtual int analyze(int row, int col, unsigned char symbol);
-		virtual int finish();
-		virtual void command();
 };
 #endif

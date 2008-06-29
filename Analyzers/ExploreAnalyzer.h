@@ -33,8 +33,8 @@ class ExploreAnalyzer : public Analyzer {
 
 		/* methods */
 		int analyze(int row, int col, unsigned char symbol);
+		void command(string *command);
 		int finish();
-		void command();
 
 	private:
 		/* variables */

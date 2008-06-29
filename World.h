@@ -35,6 +35,7 @@ class World: public Dungeon {
 		/* variables */
 		char *data;
 		ssize_t data_size;
+		string command; // yes, i know. i'm hopeless. i save lots of allocations when all analyzers share this string
 
 		/* constructors */
 		World(Connection *connection);
@@ -43,7 +44,7 @@ class World: public Dungeon {
 		~World();
 
 		/* methods */
-		void command(const char *command);
+		bool executeCommand();
 
 	private:
 		/* variables */

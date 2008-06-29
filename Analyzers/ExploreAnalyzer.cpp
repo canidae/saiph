@@ -121,11 +121,8 @@ int ExploreAnalyzer::finish() {
 	return best;
 }
 
-void ExploreAnalyzer::command() {
+void ExploreAnalyzer::command(string *command) {
 	if (places[best_place].move == SEARCH)
 		++saiph->branches[saiph->current_branch]->search[saiph->world->player.dungeon][places[best_place].row][places[best_place].col];
-	char command[2];
-	command[0] = places[best_place].move;
-	command[1] = '\0';
-	saiph->world->command(command);
+	command->push_back(places[best_place].move);
 }

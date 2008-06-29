@@ -112,7 +112,7 @@ int FoodAnalyzer::finish() {
 	return 0;
 }
 
-void FoodAnalyzer::command() {
+void FoodAnalyzer::command(string *command) {
 	switch (action) {
 		case FO_EAT_CORPSE:
 			break;

@@ -31,9 +31,9 @@ class HealthAnalyzer : public Analyzer {
 		HealthAnalyzer(Saiph *saiph);
 
 		/* methods */
-		int parseMessages(string *messages);
+		void command(string *command);
 		int finish();
-		void command();
+		int parseMessages(string *messages);
 
 	private:
 		/* variables */

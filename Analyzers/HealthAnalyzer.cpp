@@ -80,39 +80,30 @@ int HealthAnalyzer::finish() {
 	return 0;
 }
 
-void HealthAnalyzer::command() {
-	char command[2];
+void HealthAnalyzer::command(string *command) {
 	switch (action) {
 		case HA_ENGRAVE:
-			command[0] = ENGRAVE;
-			command[1] = '\0';
-			saiph->world->command(command);
+			command->push_back(ENGRAVE);
 			break;
 
 		case HA_ENGRAVE_ELBERETH:
-			saiph->world->command(ELBERETH);
+			command->append(ELBERETH);
 			break;
 
 		case HA_PRAY:
-			saiph->world->command(PRAY);
+			command->append(PRAY);
 			break;
 
 		case HA_USE_HANDS:
-			command[0] = HANDS;
-			command[1] = '\0';
-			saiph->world->command(command);
+			command->push_back(HANDS);
 			break;
 
 		case HA_YES:
-			command[0] = YES;
-			command[1] = '\0';
-			saiph->world->command(command);
+			command->push_back(YES);
 			break;
 
 		case HA_NO:
-			command[0] = NO;
-			command[1] = '\0';
-			saiph->world->command(command);
+			command->push_back(NO);
 			break;
 
 		default:

@@ -145,20 +145,17 @@ void Saiph::dumpMaps() {
 
 void Saiph::farlook(int row, int col) {
 	/* look at something, eg. monster */
-	char command[ROWS + COLS + 3];
-	int pos = 0;
-	command[pos++] = ';';
+	world->command.push_back(';');
 	int cursor_row = world->player.row;
 	int cursor_col = world->player.col;
 	while (cursor_row != row && cursor_col != col) {
 		unsigned char move = moveToDirection(row, col, cursor_row, cursor_col);
 		directionToPos(move, cursor_row, cursor_col);
-		command[pos++] = move;
+		world->command.push_back(move);
 	}
-	command[pos++] = ',';
-	command[pos] = '\0';
-	cerr << command << endl;
-	world->command(command);
+	world->command.push_back(',');
+	cerr << world->command << endl;
+	world->executeCommand();
 }
 
 bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col) {
@@ -280,15 +277,18 @@ bool Saiph::run() {
 		return false;
 
 	/* let an analyzer do its command */
-	analyzers[command.analyzer]->command();
+	world->command.clear(); // just in case some analyzer messed with this string
+	analyzers[command.analyzer]->command(&world->command);
+	world->executeCommand();
 	return true;
 }
 
 unsigned char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line) {
 	/* attempt to find the shortest path to destination.
-	 * returns move or ILLEGAL_MOVE if unable to find a path */
+	 * returns ILLEGAL_MOVE if unable to find a path.
+	 * otherwise the character for the move is returned */
 	/* allow_illegal_last_move:
-	 * if this is true we'll "move" diagonally through doors if it's the last move.
+	 * if this is true we'll "move" towards spots we can't really move into.
 	 * why? because monsters may stand in a door way, making it possible to attack them */
 	distance = 0;
 	direct_line = true;

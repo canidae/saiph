@@ -57,23 +57,19 @@ int LootAnalyzer::finish() {
 	return 0;
 }
 
-void LootAnalyzer::command() {
-	char command[3];
+void LootAnalyzer::command(string *command) {
 	switch (action) {
 		case LO_LOOT:
-			command[0] = ',';
-			command[1] = '\0';
+			command->push_back(',');
 			break;
 
 		case LO_SELECT_ALL:
-			command[0] = ',';
-			command[1] = ' ';
-			command[2] = '\0';
+			command->push_back(',');
+			command->push_back(' ');
 			break;
 
 		case LO_NO_LOOT:
-			command[0] = NO;
-			command[1] = '\0';
+			command->push_back(NO);
 			break;
 
 		default:
@@ -81,5 +77,4 @@ void LootAnalyzer::command() {
 			exit(1);
 			break;
 	}
-	saiph->world->command(command);
 }

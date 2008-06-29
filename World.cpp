@@ -12,6 +12,7 @@ World::World(Connection *connection) {
 	messages_pos = 0;
 	question = false;
 	menu = false;
+	command.clear();
 	/* fetch the first "frame" */
 	update();
 }
@@ -22,10 +23,16 @@ World::~World() {
 }
 
 /* methods */
-void World::command(const char *command) {
+bool World::executeCommand() {
 	/* send a command to nethack */
+	if (command.size() <= 0) {
+		/* huh? no command? */
+		return false;
+	}
 	connection->send(command);
 	update();
+	command.clear();
+	return true;
 }
 
 /* private methods */
@@ -264,7 +271,7 @@ void World::fetchMessages() {
 				string::size_type fns = msg_str.find_first_not_of(" ");
 				string::size_type lns = msg_str.find_last_not_of(" ");
 				if (fns == string::npos || lns == string::npos || fns >= lns)
-					msg_str = "";
+					msg_str.clear();
 				else
 					msg_str = msg_str.substr(fns, lns - fns + 1);
 				msg_str.copy(&messages[messages_pos], msg_str.length());
@@ -304,7 +311,8 @@ void World::fetchMessages() {
 	if (more) {
 		/* there are "--More--" messages.
 		 * since this is not a menu we'll just ask for the rest of the messages */
-		command(" ");
+		command.push_back(' ');
+		executeCommand();
 		return;
 	}
 }

@@ -151,9 +151,6 @@ int MonsterAnalyzer::finish() {
 	return 0;
 }
 
-void MonsterAnalyzer::command() {
-	char command[2];
-	command[0] = action;
-	command[1] = '\0';
-	saiph->world->command(command);
+void MonsterAnalyzer::command(string *command) {
+	command->push_back(action);
 }

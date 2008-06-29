@@ -130,21 +130,19 @@ int DoorAnalyzer::finish() {
 	return best_priority;
 }
 
-void DoorAnalyzer::command() {
-	char command[2];
+void DoorAnalyzer::command(string *command) {
 	cerr << action << endl;
 	cerr << action_direction << endl;
 	switch (action) {
 		case DO_NOTHING:
 			return;
-			break;
 
 		case DO_CHOOSE_DIRECTION:
-			command[0] = action_direction;
+			command->push_back(action_direction);
 			break;
 
 		case DO_KICK_DOOR:
-			command[0] = KICK;
+			command->push_back(KICK);
 			break;
 
 		case DO_PICK_DOOR:
@@ -154,11 +152,11 @@ void DoorAnalyzer::command() {
 			break;
 
 		case DO_OPEN_DOOR:
-			command[0] = OPEN;
+			command->push_back(OPEN);
 			break;
 
 		case DO_SEEK_DOOR:
-			command[0] = action_direction;
+			command->push_back(action_direction);
 			break;
 
 		default:
@@ -166,6 +164,4 @@ void DoorAnalyzer::command() {
 			exit(1);
 			break;
 	}
-	command[1] = '\0';
-	saiph->world->command(command);
 }

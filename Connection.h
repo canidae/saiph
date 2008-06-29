@@ -17,6 +17,7 @@ class Connection;
 #include <fcntl.h>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <pty.h>
 #include "Dungeon.h"
 
@@ -34,7 +35,7 @@ class Connection {
 
 		/* methods */
 		ssize_t retrieve(char *buffer, size_t count);
-		ssize_t send(const char *buffer);
+		ssize_t send(const string &buffer);
 
 	private:
 		/* variables */
