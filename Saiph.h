@@ -3,10 +3,7 @@
 #define SAIPH_H
 /* general defines */
 #define MAX_BRANCHES 6
-#define MAX_BRANCH_DEPTH 64
-#define MAX_COMMAND_LENGTH 128
 #define MAX_DUNGEON_DEPTH 64
-#define MAX_EXPLORE 128
 #define MAX_HISTORY 128
 #define MAX_SEARCH 10 // triple the value in dead end corridors
 /* branches */
@@ -17,13 +14,15 @@
 #define BRANCH_WIZARD 4
 #define BRANCH_ASTRAL 5
 /* pathing */
+#define NOT_BLOCKED 0
+#define BLOCKED 1
+#define TEMPORARY_BLOCKED 2
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
 #define COST_LAVA 16384 // lava, hot!
 #define COST_PET 16 // try not to move onto pets
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 4096 // avoid water if possible
-#define MAX_PASSABLE 32 // stuff we can go through
 /* movement */
 #define MOVE_NW 'y'
 #define MOVE_N 'k'
@@ -37,7 +36,6 @@
 #define MOVE_DOWN '>'
 #define ILLEGAL_MOVE 0
 /* actions */
-#define CLOSE 'c'
 #define ENGRAVE 'E'
 #define KICK 4 // ctrl-d
 #define OPEN 'o'
@@ -49,7 +47,6 @@
 /* various */
 #define HANDS '-'
 #define NO 'n'
-#define SPACE ' '
 #define YES 'y'
 
 /* forward declare */
@@ -128,7 +125,7 @@ class Saiph {
 		vector<Analyzer *> analyzers;
 		Connection *connection;
 		unsigned int pathcost[ROWS][COLS];
-		list<Point> pathing_queue;
+		vector<Point> pathing_queue;
 		bool ismonster[UCHAR_MAX + 1];
 
 		/* methods */

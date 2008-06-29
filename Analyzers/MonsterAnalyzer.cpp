@@ -89,15 +89,15 @@ int MonsterAnalyzer::analyze(int row, int col, unsigned char symbol) {
 			else
 				cerr << "seems to be a known monster. old pos: " << monsters[m].row << ", " << monsters[m].col << endl;
 			/* unblock path for pathing algorithm */
-			if (monsters[m].row != -1 && monsters[m].col != -1 && saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] == 2)
-				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] = 0;
+			if (monsters[m].row != -1 && monsters[m].col != -1 && saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] == TEMPORARY_BLOCKED)
+				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[m].row][monsters[m].col] = NOT_BLOCKED;
 			monsters[m].row = row;
 			monsters[m].col = col;
 			monsters[m].symbol = symbol;
 			monsters[m].last_seen = saiph->world->player.turn;
 			/* block path for pathing algorithm */
-			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][row][col] == 0)
-				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][row][col] = 2;
+			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][row][col] == NOT_BLOCKED)
+				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][row][col] = TEMPORARY_BLOCKED;
 			return 0;
 		}
 	}
@@ -127,8 +127,8 @@ int MonsterAnalyzer::finish() {
 			cerr << "unable to find monster " << monsters[mc].symbol << ". monster forgotten" << endl;
 			monsters[mc].symbol = NOMONSTER;
 			/* unblock path for pathing algorithm */
-			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] == 2)
-				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = 0;
+			if (saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] == TEMPORARY_BLOCKED)
+				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = NOT_BLOCKED;
 			continue;
 		}
 		if (m == -1 || distance < shortest_distance) {

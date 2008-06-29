@@ -28,8 +28,8 @@ Saiph::Saiph(bool remote) {
 		branches[b] = new Branch;
 		memset(branches[b]->map, ' ', MAX_DUNGEON_DEPTH * ROWS * COLS);
 		memset(branches[b]->search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b]->unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b]->diagonally_unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
+		memset(branches[b]->unpassable, BLOCKED, MAX_DUNGEON_DEPTH * ROWS * COLS);
+		memset(branches[b]->diagonally_unpassable, BLOCKED, MAX_DUNGEON_DEPTH * ROWS * COLS);
 	}
 
 	/* monsters */
@@ -164,13 +164,13 @@ bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int fro
 	int cd = abs(to_col - from_col);
 	if (rd > 1 || cd > 1)
 		return false; // moving more than 1 square
-	else if (branches[branch]->unpassable[dungeon][to_row][to_col] != 0)
+	else if (branches[branch]->unpassable[dungeon][to_row][to_col] != NOT_BLOCKED)
 		return false; // can't move to this square
 	else if (rd == 1 && cd == 1) {
 		/* diagonal move */
 		if (branches[branch]->map[dungeon][from_row][from_col] == OPEN_DOOR || branches[branch]->map[dungeon][to_row][to_col] == OPEN_DOOR)
 			return false; // can't move diagonally into or out of door
-		else if (branches[branch]->diagonally_unpassable[dungeon][to_row][from_col] != 0 && branches[branch]->diagonally_unpassable[dungeon][from_row][to_col] != 0)
+		else if (branches[branch]->diagonally_unpassable[dungeon][to_row][from_col] != NOT_BLOCKED && branches[branch]->diagonally_unpassable[dungeon][from_row][to_col] != NOT_BLOCKED)
 			return false; // can't move diagonally when both sides are blocked
 	}
 	return true;
@@ -394,8 +394,8 @@ void Saiph::updateMaps() {
 		for (int c = world->player.col - 1; c <= world->player.col + 1; ++c) {
 			if (c < 0 || c > COLS)
 				continue;
-			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] == 2)
-				branches[current_branch]->unpassable[world->player.dungeon][r][c] = 0;
+			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] == TEMPORARY_BLOCKED)
+				branches[current_branch]->unpassable[world->player.dungeon][r][c] = NOT_BLOCKED;
 		}
 	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
@@ -423,10 +423,10 @@ void Saiph::updateMaps() {
 				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
 			}
 			/* unpassable map */
-			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] != 2) // 2 means it's blocked by eg. monster
-				branches[current_branch]->unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE || s == BOULDER) ? 1 : 0;
+			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] != TEMPORARY_BLOCKED)
+				branches[current_branch]->unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE || s == BOULDER) ? BLOCKED : NOT_BLOCKED;
 			/* diagonally unpassable map */
-			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE) ? 1 : 0;
+			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE) ? BLOCKED : NOT_BLOCKED;
 		}
 	}
 
@@ -448,8 +448,8 @@ void Saiph::updatePathMap() {
 	pathing_queue.push_back(p);
 	int curcost = 0;
 	while (!pathing_queue.empty()) {
-		p = pathing_queue.front();
-		pathing_queue.pop_front();
+		p = pathing_queue.back();
+		pathing_queue.pop_back();
 		row = p.row;
 		col = p.col;
 		curcost = pathcost[row][col];
@@ -467,11 +467,11 @@ void Saiph::updatePathMap() {
 				unsigned char s = branches[current_branch]->map[world->player.dungeon][r][c];
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
-					newpathcost += COST_LAVA;
+					newpathcost += COST_LAVA; // TODO: only if we levitate
+				else if (s == WATER)
+					newpathcost += COST_WATER; // TODO: only if we levitate/waterwalking
 				else if (s == TRAP)
 					newpathcost += COST_TRAP;
-				else if (s == WATER)
-					newpathcost += COST_WATER;
 				if (ws == PET)
 					newpathcost += COST_PET;
 				if (newpathcost < pathcost[r][c]) {
@@ -488,9 +488,9 @@ void Saiph::updatePathMap() {
 /* main */
 int main() {
 	Saiph *saiph = new Saiph(false);
-	//for (int a = 0; a < 200 && saiph.run(); ++a)
-	//	;
-	while (saiph->run())
+	for (int a = 0; a < 200 && saiph->run(); ++a)
 		;
+	//while (saiph->run())
+	//	;
 	delete saiph;
 }
