@@ -113,7 +113,7 @@ int MonsterAnalyzer::finish() {
 	}
 	/* fight nearest monster */
 	int shortest_distance = -1;
-	int m = NOMONSTER;
+	int m = -1;
 	unsigned char best_move = ILLEGAL_MOVE;
 	int distance = -1;
 	bool direct_line = false;
@@ -131,7 +131,7 @@ int MonsterAnalyzer::finish() {
 				saiph->branches[saiph->current_branch]->unpassable[saiph->world->player.dungeon][monsters[mc].row][monsters[mc].col] = 0;
 			continue;
 		}
-		if (m == NOMONSTER || distance < shortest_distance) {
+		if (m == -1 || distance < shortest_distance) {
 			if (monsters[mc].symbol == 'e' || monsters[mc].symbol == '@')
 				shortest_distance = 666; // hack, we don't want to attack these monsters unless we have to
 			else
@@ -140,7 +140,7 @@ int MonsterAnalyzer::finish() {
 			best_move = move;
 		}
 	}
-	if (m != NOMONSTER) {
+	if (m != -1) {
 		cerr << "fighting " << monsters[m].symbol << endl;
 		action = best_move;
 		if (monsters[m].symbol == 'e' || monsters[m].symbol == '@')
