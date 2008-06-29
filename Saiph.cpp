@@ -20,7 +20,7 @@ Saiph::Saiph(bool remote) {
 	for (int r = 0; r < ROWS; ++r) {
 		pathcost[r] = new unsigned int[COLS];
 		for (int c = 0; c < COLS; ++c)
-			pathcost[r][c] = 0xffff;
+			pathcost[r][c] = UINT_MAX;
 	}
 	pathpos = new char*[ROWS * COLS];
 	for (int r = 0; r < ROWS * COLS; ++r) {
@@ -28,40 +28,6 @@ Saiph::Saiph(bool remote) {
 		pathpos[r][0] = 0;
 		pathpos[r][1] = 0;
 	}
-	passable = new char[MAX_PASSABLE];
-	passable_count = 0;
-	/* most frequent features should be first */
-	passable[passable_count++] = FLOOR;
-	passable[passable_count++] = CORRIDOR;
-	passable[passable_count++] = WATER;
-	passable[passable_count++] = OPEN_DOOR;
-	passable[passable_count++] = STAIRS_UP;
-	passable[passable_count++] = STAIRS_DOWN;
-	passable[passable_count++] = FOUNTAIN;
-	passable[passable_count++] = ALTAR;
-	passable[passable_count++] = GRAVE;
-	passable[passable_count++] = TRAP;
-	passable[passable_count++] = SINK;
-	passable[passable_count++] = THRONE;
-	passable[passable_count++] = ICE;
-	passable[passable_count++] = LAVA;
-	passable[passable_count++] = LOWERED_DRAWBRIDGE;
-	passable[passable_count++] = WEAPON;
-	passable[passable_count++] = ARMOR;
-	passable[passable_count++] = RING;
-	passable[passable_count++] = AMULET;
-	passable[passable_count++] = TOOL;
-	passable[passable_count++] = FOOD;
-	passable[passable_count++] = POTION;
-	passable[passable_count++] = SCROLL;
-	passable[passable_count++] = SPELLBOOK;
-	passable[passable_count++] = WAND;
-	passable[passable_count++] = GOLD;
-	passable[passable_count++] = GEM;
-	passable[passable_count++] = STATUE;
-	passable[passable_count++] = IRON_BALL;
-	passable[passable_count++] = CHAINS;
-	passable[passable_count++] = VENOM;
 
 	/* branches */
 	branches = new Branch*[MAX_BRANCHES];
@@ -78,22 +44,19 @@ Saiph::Saiph(bool remote) {
 	messages = new string("");
 
 	/* Analyzers */
-	analyzers = new Analyzer*[MAX_ANALYZERS];
-	analyzer_count = 0;
-	analyzers[analyzer_count++] = (Analyzer *) new DoorAnalyzer(this);
-	analyzers[analyzer_count++] = (Analyzer *) new FoodAnalyzer(this);
-	analyzers[analyzer_count++] = (Analyzer *) new ExploreAnalyzer(this);
-	analyzers[analyzer_count++] = (Analyzer *) new HealthAnalyzer(this);
-	analyzers[analyzer_count++] = (Analyzer *) new LevelAnalyzer(this);
-	analyzers[analyzer_count++] = (Analyzer *) new LootAnalyzer(this);
-	analyzers[analyzer_count++] = (Analyzer *) new MonsterAnalyzer(this);
+	analyzers.push_back(DoorAnalyzer(this));
+	analyzers.push_back(DoorAnalyzer(this));
+	analyzers.push_back(FoodAnalyzer(this));
+	analyzers.push_back(ExploreAnalyzer(this));
+	analyzers.push_back(HealthAnalyzer(this));
+	analyzers.push_back(LevelAnalyzer(this));
+	analyzers.push_back(LootAnalyzer(this));
+	analyzers.push_back(MonsterAnalyzer(this));
 }
 
 /* destructors */
 Saiph::~Saiph() {
-	for (int a = 0; a < analyzer_count; ++a)
-		delete analyzers[a];
-	delete [] analyzers;
+	analyzers.clear();
 	for (int b = 0; b < MAX_BRANCHES; ++b)
 		delete branches[b];
 	delete [] branches;
@@ -103,7 +66,6 @@ Saiph::~Saiph() {
 	for (int p = 0; p < (ROWS * COLS); ++p)
 		delete [] pathpos[p];
 	delete [] pathpos;
-	delete [] passable;
 	delete history;
 	delete messages;
 	delete world;
@@ -230,19 +192,19 @@ char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) 
 	/* return the direction by the given move */
 	if (from_row < to_row && from_col < to_col)
 		return MOVE_SE;
-	if (from_row < to_row && from_col > to_col)
+	else if (from_row < to_row && from_col > to_col)
 		return MOVE_SW;
-	if (from_row > to_row && from_col < to_col)
+	else if (from_row > to_row && from_col < to_col)
 		return MOVE_NE;
-	if (from_row > to_row && from_col > to_col)
+	else if (from_row > to_row && from_col > to_col)
 		return MOVE_NW;
-	if (from_row < to_row)
+	else if (from_row < to_row)
 		return MOVE_S;
-	if (from_row > to_row)
+	else if (from_row > to_row)
 		return MOVE_N;
-	if (from_col < to_col)
+	else if (from_col < to_col)
 		return MOVE_E;
-	if (from_col > to_col)
+	else if (from_col > to_col)
 		return MOVE_W;
 	cerr << "invalid move: " << from_row << ", " << from_col << " -> " << to_row << ", " << to_col << endl;
 	return -1;
@@ -276,8 +238,8 @@ bool Saiph::run() {
 	/* deal with messages */
 	*messages = world->messages;
 	cerr << *messages << endl;
-	for (int a = 0; a < analyzer_count; ++a) {
-		int priority = analyzers[a]->parseMessages(messages);
+	for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+		int priority = analyzers[a].parseMessages(messages);
 		if (priority > command.priority) {
 			command.analyzer = a;
 			command.priority = priority;
@@ -286,8 +248,8 @@ bool Saiph::run() {
 
 	/* call start() in analyzers */
 	if (!world->question && !world->menu) {
-		for (int a = 0; a < analyzer_count; ++a) {
-			int priority = analyzers[a]->start();
+		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+			int priority = analyzers[a].start();
 			if (priority > command.priority) {
 				command.analyzer = a;
 				command.priority = priority;
@@ -301,8 +263,8 @@ bool Saiph::run() {
 
 	/* call finish() in analyzers */
 	if (!world->question && !world->menu) {
-		for (int a = 0; a < analyzer_count; ++a) {
-			int priority = analyzers[a]->finish();
+		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+			int priority = analyzers[a].finish();
 			if (priority > command.priority) {
 				command.analyzer = a;
 				command.priority = priority;
@@ -327,7 +289,7 @@ bool Saiph::run() {
 		return false;
 
 	/* let an analyzer do its command */
-	analyzers[command.analyzer]->command();
+	analyzers[command.analyzer].command();
 	return true;
 }
 
@@ -421,10 +383,10 @@ void Saiph::inspect() {
 			char symbol = world->map[r][c];
 			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
 				symbol = branches[current_branch]->map[world->player.dungeon][r][c];
-			for (int a = 0; a < analyzer_count; ++a) {
-				for (int s = 0; s < analyzers[a]->symbol_count; ++s) {
-					if (analyzers[a]->symbols[s] == symbol)
-						analyzers[a]->analyze(r, c, symbol);
+			for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+				for (int s = 0; s < analyzers[a].symbol_count; ++s) {
+					if (analyzers[a].symbols[s] == symbol)
+						analyzers[a].analyze(r, c, symbol);
 				}
 			}
 		}
@@ -505,9 +467,9 @@ void Saiph::updatePathMap() {
 			for (int c = col - 1; c <= col + 1; ++c) {
 				if (c < 0 || c >= COLS)
 					continue;
-				if (!isLegalMove(current_branch, world->player.dungeon, r, c, row, col))
+				else if (!isLegalMove(current_branch, world->player.dungeon, r, c, row, col))
 					continue;
-				if (monsterOnSquare(r, c))
+				else if (monsterOnSquare(r, c))
 					continue; // can't path through monsters, for now
 				char s = branches[current_branch]->map[world->player.dungeon][r][c];
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
@@ -533,9 +495,10 @@ void Saiph::updatePathMap() {
 
 /* main */
 int main() {
-	Saiph saiph(false);
+	Saiph *saiph = new Saiph(false);
 	//for (int a = 0; a < 200 && saiph.run(); ++a)
 	//	;
-	while (saiph.run())
+	while (saiph->run())
 		;
+	delete saiph;
 }

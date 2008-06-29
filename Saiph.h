@@ -58,6 +58,7 @@ class Saiph;
 /* includes */
 #include <list>
 #include <string>
+#include <vector>
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Dungeon.h"
@@ -119,13 +120,10 @@ class Saiph {
 
 	private:
 		/* variables */
-		Analyzer **analyzers;
-		int analyzer_count;
+		vector<Analyzer> analyzers;
 		Connection *connection;
 		unsigned int **pathcost;
 		char **pathpos;
-		char *passable;
-		int passable_count;
 
 		/* methods */
 		void inspect();
