@@ -2,7 +2,6 @@
 /* defines */
 #define SAIPH_H
 /* general defines */
-#define MAX_ANALYZERS 32
 #define MAX_BRANCHES 6
 #define MAX_BRANCH_DEPTH 64
 #define MAX_COMMAND_LENGTH 128
@@ -90,6 +89,12 @@ struct Command {
 	int priority;
 };
 
+/* just a location on the map */
+struct Point {
+	char row;
+	char col;
+};
+
 /* this is our AI */
 class Saiph {
 	public:
@@ -113,17 +118,17 @@ class Saiph {
 		void dumpMaps();
 		void farlook(int row, int col);
 		bool isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col);
-		bool monsterOnSquare(int row, int col);
 		char moveToDirection(int to_row, int to_col, int from_row, int from_col);
 		bool run();
 		char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
 
 	private:
 		/* variables */
-		vector<Analyzer> analyzers;
+		vector<Analyzer *> analyzers;
 		Connection *connection;
-		unsigned int **pathcost;
-		char **pathpos;
+		unsigned int pathcost[ROWS][COLS];
+		list<Point> pathing_queue;
+		bool ismonster[UCHAR_MAX + 1];
 
 		/* methods */
 		void inspect();

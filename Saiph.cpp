@@ -16,17 +16,9 @@ Saiph::Saiph(bool remote) {
 	history = new list<Dungeon>;
 
 	/* pathing */
-	pathcost = new unsigned int*[ROWS];
 	for (int r = 0; r < ROWS; ++r) {
-		pathcost[r] = new unsigned int[COLS];
 		for (int c = 0; c < COLS; ++c)
 			pathcost[r][c] = UINT_MAX;
-	}
-	pathpos = new char*[ROWS * COLS];
-	for (int r = 0; r < ROWS * COLS; ++r) {
-		pathpos[r] = new char[2];
-		pathpos[r][0] = 0;
-		pathpos[r][1] = 0;
 	}
 
 	/* branches */
@@ -40,32 +32,36 @@ Saiph::Saiph(bool remote) {
 		memset(branches[b]->diagonally_unpassable, 1, MAX_DUNGEON_DEPTH * ROWS * COLS);
 	}
 
+	/* monsters */
+	for (int m = 0; m <= UCHAR_MAX; ++m) {
+		if ((m >= '@' && m <= 'Z') || (m >= 'a' && m <= 'z') || m == '&' || m == '\'' || m == '6' || m == ':' || m == ';' || m == '~')
+			ismonster[m] = true;
+		else
+			ismonster[m] = false;
+	}
+
 	/* messages */
 	messages = new string("");
 
 	/* Analyzers */
-	analyzers.push_back(DoorAnalyzer(this));
-	analyzers.push_back(DoorAnalyzer(this));
-	analyzers.push_back(FoodAnalyzer(this));
-	analyzers.push_back(ExploreAnalyzer(this));
-	analyzers.push_back(HealthAnalyzer(this));
-	analyzers.push_back(LevelAnalyzer(this));
-	analyzers.push_back(LootAnalyzer(this));
-	analyzers.push_back(MonsterAnalyzer(this));
+	analyzers.push_back(new DoorAnalyzer(this));
+	analyzers.push_back(new DoorAnalyzer(this));
+	analyzers.push_back(new FoodAnalyzer(this));
+	analyzers.push_back(new ExploreAnalyzer(this));
+	analyzers.push_back(new HealthAnalyzer(this));
+	analyzers.push_back(new LevelAnalyzer(this));
+	analyzers.push_back(new LootAnalyzer(this));
+	analyzers.push_back(new MonsterAnalyzer(this));
 }
 
 /* destructors */
 Saiph::~Saiph() {
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		delete *a;
 	analyzers.clear();
 	for (int b = 0; b < MAX_BRANCHES; ++b)
 		delete branches[b];
 	delete [] branches;
-	for (int p = 0; p < ROWS; ++p)
-		delete [] pathcost[p];
-	delete [] pathcost;
-	for (int p = 0; p < (ROWS * COLS); ++p)
-		delete [] pathpos[p];
-	delete [] pathpos;
 	delete history;
 	delete messages;
 	delete world;
@@ -183,11 +179,6 @@ bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int fro
 	return true;
 }
 
-bool Saiph::monsterOnSquare(int row, int col) {
-	char s = world->map[row][col];
-	return ((s >= '@' && s <= 'Z') || (s >= 'a' && s <= 'z') || s == '&' || s == '\'' || s == '6' || s == ':' || s == ';' || s == '~');
-}
-
 char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) {
 	/* return the direction by the given move */
 	if (from_row < to_row && from_col < to_col)
@@ -239,7 +230,7 @@ bool Saiph::run() {
 	*messages = world->messages;
 	cerr << *messages << endl;
 	for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-		int priority = analyzers[a].parseMessages(messages);
+		int priority = analyzers[a]->parseMessages(messages);
 		if (priority > command.priority) {
 			command.analyzer = a;
 			command.priority = priority;
@@ -249,7 +240,7 @@ bool Saiph::run() {
 	/* call start() in analyzers */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-			int priority = analyzers[a].start();
+			int priority = analyzers[a]->start();
 			if (priority > command.priority) {
 				command.analyzer = a;
 				command.priority = priority;
@@ -264,7 +255,7 @@ bool Saiph::run() {
 	/* call finish() in analyzers */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-			int priority = analyzers[a].finish();
+			int priority = analyzers[a]->finish();
 			if (priority > command.priority) {
 				command.analyzer = a;
 				command.priority = priority;
@@ -289,7 +280,7 @@ bool Saiph::run() {
 		return false;
 
 	/* let an analyzer do its command */
-	analyzers[command.analyzer].command();
+	analyzers[command.analyzer]->command();
 	return true;
 }
 
@@ -384,9 +375,9 @@ void Saiph::inspect() {
 			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
 				symbol = branches[current_branch]->map[world->player.dungeon][r][c];
 			for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-				for (int s = 0; s < analyzers[a].symbol_count; ++s) {
-					if (analyzers[a].symbols[s] == symbol)
-						analyzers[a].analyze(r, c, symbol);
+				for (int s = 0; s < analyzers[a]->symbol_count; ++s) {
+					if (analyzers[a]->symbols[s] == symbol)
+						analyzers[a]->analyze(r, c, symbol);
 				}
 			}
 		}
@@ -444,7 +435,6 @@ void Saiph::updateMaps() {
 
 void Saiph::updatePathMap() {
 	/* create a path map used for finding shortest path */
-	/* is this dijkstra? */
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c)
 			pathcost[r][c] = UINT_MAX;
@@ -452,14 +442,16 @@ void Saiph::updatePathMap() {
 	int row = world->player.row;
 	int col = world->player.col;
 	pathcost[row][col] = 0;
-	int nextnode = 0;
-	int nodes = 1;
-	pathpos[nextnode][0] = row;
-	pathpos[nextnode][1] = col;
+	Point p;
+	p.row = row;
+	p.col = col;
+	pathing_queue.push_back(p);
 	int curcost = 0;
-	while (nextnode < nodes) {
-		row = pathpos[nextnode][0];
-		col = pathpos[nextnode][1];
+	while (!pathing_queue.empty()) {
+		p = pathing_queue.front();
+		pathing_queue.pop_front();
+		row = p.row;
+		col = p.col;
 		curcost = pathcost[row][col];
 		for (int r = row - 1; r <= row + 1; ++r) {
 			if (r < MAP_ROW_START || r > MAP_ROW_END)
@@ -469,7 +461,7 @@ void Saiph::updatePathMap() {
 					continue;
 				else if (!isLegalMove(current_branch, world->player.dungeon, r, c, row, col))
 					continue;
-				else if (monsterOnSquare(r, c))
+				else if (ismonster[(unsigned char) world->map[r][c]])
 					continue; // can't path through monsters, for now
 				char s = branches[current_branch]->map[world->player.dungeon][r][c];
 				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
@@ -483,13 +475,12 @@ void Saiph::updatePathMap() {
 					newpathcost += COST_PET;
 				if (newpathcost < pathcost[r][c]) {
 					pathcost[r][c] = newpathcost;
-					pathpos[nodes][0] = r;
-					pathpos[nodes][1] = c;
-					++nodes;
+					p.row = r;
+					p.col = c;
+					pathing_queue.push_back(p);
 				}
 			}
 		}
-		++nextnode;
 	}
 }
 
