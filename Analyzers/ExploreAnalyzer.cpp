@@ -43,14 +43,14 @@ int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	/* are we in a corridor? */
-	bool corridor = saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR;
-	if ((!corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH) || (corridor && saiph->branches[branch]->search[dungeon][row][col] >= MAX_SEARCH * EX_DEAD_END_MULTIPLIER))
+	bool corridor = saiph->map[branch][dungeon].dungeon[row][col] == CORRIDOR;
+	if ((!corridor && saiph->map[branch][dungeon].search[row][col] >= EX_MAX_SEARCH) || (corridor && saiph->map[branch][dungeon].search[row][col] >= EX_MAX_SEARCH * EX_DEAD_END_MULTIPLIER))
 		return 0; // we've been here and searched frantically
 	/* hjkl symbols */
-	unsigned char hs = saiph->branches[branch]->map[dungeon][row][col - 1];
-	unsigned char js = saiph->branches[branch]->map[dungeon][row + 1][col];
-	unsigned char ks = saiph->branches[branch]->map[dungeon][row - 1][col];
-	unsigned char ls = saiph->branches[branch]->map[dungeon][row][col + 1];
+	unsigned char hs = saiph->map[branch][dungeon].dungeon[row][col - 1];
+	unsigned char js = saiph->map[branch][dungeon].dungeon[row + 1][col];
+	unsigned char ks = saiph->map[branch][dungeon].dungeon[row - 1][col];
+	unsigned char ls = saiph->map[branch][dungeon].dungeon[row][col + 1];
 	/* hjkl unexplored */
 	bool hune = (hs == SOLID_ROCK);
 	bool june = (js == SOLID_ROCK);
@@ -79,9 +79,9 @@ int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
 		score = EX_EXTRA_SEARCH;
 	}
 
-	if (symbol == PLAYER && saiph->branches[branch]->map[dungeon][row][col] == CORRIDOR && !dead_end) {
+	if (symbol == PLAYER && saiph->map[branch][dungeon].dungeon[row][col] == CORRIDOR && !dead_end) {
 		/* don't search in corridors unless it's a dead end */
-		saiph->branches[branch]->search[dungeon][row][col] = MAX_SEARCH * EX_DEAD_END_MULTIPLIER;
+		saiph->map[branch][dungeon].search[row][col] = EX_MAX_SEARCH * EX_DEAD_END_MULTIPLIER;
 		return 0;
 	}
 	if (score <= 0)
@@ -128,6 +128,6 @@ int ExploreAnalyzer::finish() {
 
 void ExploreAnalyzer::command(string *command) {
 	if (places[best_place].move == SEARCH)
-		++saiph->branches[saiph->current_branch]->search[saiph->world->player.dungeon][places[best_place].row][places[best_place].col];
+		++saiph->map[saiph->current_branch][saiph->current_level].search[places[best_place].row][places[best_place].col];
 	command->push_back(places[best_place].move);
 }

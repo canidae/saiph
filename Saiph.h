@@ -4,8 +4,6 @@
 /* general defines */
 #define MAX_BRANCHES 6
 #define MAX_DUNGEON_DEPTH 64
-#define MAX_HISTORY 128
-#define MAX_SEARCH 10 // triple the value in dead end corridors
 /* branches */
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
@@ -14,9 +12,6 @@
 #define BRANCH_WIZARD 4
 #define BRANCH_ASTRAL 5
 /* pathing */
-#define NOT_BLOCKED 0
-#define BLOCKED 1
-#define TEMPORARY_BLOCKED 2
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
 #define COST_LAVA 16384 // lava, hot!
@@ -60,6 +55,7 @@ class Saiph;
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Dungeon.h"
+#include "Map.h"
 #include "Player.h"
 #include "Point.h"
 #include "World.h"
@@ -75,14 +71,6 @@ class Saiph;
 /* namespace */
 using namespace std;
 
-/* a branch holds numerous "maps" for all dungeons in the given (visited) branch */
-struct Branch {
-	unsigned char map[MAX_DUNGEON_DEPTH][ROWS][COLS]; // map of dungeon minus dynamic stuff (no monsters, objects, etc)
-	unsigned char search[MAX_DUNGEON_DEPTH][ROWS][COLS]; // how many times have we searched here?
-	unsigned char unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // unpassable tiles
-	unsigned char diagonally_unpassable[MAX_DUNGEON_DEPTH][ROWS][COLS]; // tiles we can't diagonally pass
-};
-
 /* a command to send to the game */
 struct Command {
 	int analyzer;
@@ -93,13 +81,13 @@ struct Command {
 class Saiph {
 	public:
 		/* variables */
-		Branch **branches;
+		Map map[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		int current_branch;
+		int current_level;
 		Command command;
 		string messages;
 		World *world;
 		bool engulfed;
-		list<Dungeon> *history;
 
 		/* constructors */
 		Saiph(bool remote);
@@ -122,6 +110,7 @@ class Saiph {
 		vector<Analyzer *> analyzer_symbols[UCHAR_MAX + 1];
 		Connection *connection;
 		bool ismonster[UCHAR_MAX + 1];
+		bool isitem[UCHAR_MAX + 1];
 		unsigned int pathcost[ROWS][COLS];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
 		bool passable[UCHAR_MAX + 1];

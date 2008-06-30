@@ -50,14 +50,16 @@ int FoodAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	}
 	/* new food */
 	int rots_turn = 1;
+	/*
 	for (list<Dungeon>::iterator d = saiph->history->begin(); d != saiph->history->end(); ) {
 		if (d->map[row][col] == 'M' || d->map[row][col] == 'Z') {
-			/* mummy/zombie, rotten */
+			// mummy/zombie, rotten
 			rots_turn = 1;
 			break;
 		}
 		++d;
 	}
+	*/
 	FO_Food f;
 	f.row = row;
 	f.col = col;

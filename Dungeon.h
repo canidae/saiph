@@ -10,6 +10,16 @@
 #define MAP_ROW_END 21 // and end
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
+/* colours & attributes */
+#define INVERSE 7
+#define BLACK 30
+#define RED 31
+#define GREEN 32
+#define YELLOW 33
+#define BLUE 34
+#define MAGENTA 35
+#define CYAN 36
+#define WHITE 37
 /* map symbols */
 #define SOLID_ROCK ' '
 #define VERTICAL_WALL '|'
@@ -33,17 +43,8 @@
 #define LOWERED_DRAWBRIDGE 135
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
-/* colours & attributes */
-#define INVERSE 7
-#define BLACK 30
-#define RED 31
-#define GREEN 32
-#define YELLOW 33
-#define BLUE 34
-#define MAGENTA 35
-#define CYAN 36
-#define WHITE 37
-/* objects */
+/* items */
+#define NOITEM 0
 #define ILLEGAL 'm'
 #define WEAPON ')'
 #define ARMOR '['

@@ -6,6 +6,7 @@
 #define EX_CORRIDOR 20 // corridor we haven't explored
 #define EX_UNLIT_ROOM 20 // room where we haven't seen the floor
 #define EX_EXTRA_SEARCH 5 // frantic searching for door
+#define EX_MAX_SEARCH 10 // how many times we should search a square
 #define EX_DEAD_END_MULTIPLIER 3 // search more frantically in dead ends
 
 /* forward declare */

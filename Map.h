@@ -3,6 +3,7 @@
 #define MAP_H
 
 /* includes */
+#include "Dungeon.h"
 
 /* namespace */
 using namespace std;
@@ -11,8 +12,10 @@ using namespace std;
 class Map {
 	public:
 		/* variables */
-		unsigned char dungeon[ROWS][COLS];
-		unsigned char search[ROWS][COLS];
+		unsigned char dungeon[ROWS][COLS]; // more "static" features (floors, doors, corridors, ...)
+		unsigned char search[ROWS][COLS]; // where we've searched
+		unsigned char monster[ROWS][COLS]; // monsters we've seen
+		unsigned char item[ROWS][COLS]; // items we've seen
 
 		/* constructors */
 		Map();

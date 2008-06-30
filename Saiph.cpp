@@ -12,47 +12,68 @@ Saiph::Saiph(bool remote) {
 	/* engulfed */
 	engulfed = false;
 
-	/* history */
-	history = new list<Dungeon>;
-
-	/* branches */
-	branches = new Branch*[MAX_BRANCHES];
-	current_branch = BRANCH_MAIN;
-	for (int b = 0; b < MAX_BRANCHES; ++b) {
-		branches[b] = new Branch;
-		memset(branches[b]->map, ' ', MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b]->search, '\0', MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b]->unpassable, BLOCKED, MAX_DUNGEON_DEPTH * ROWS * COLS);
-		memset(branches[b]->diagonally_unpassable, BLOCKED, MAX_DUNGEON_DEPTH * ROWS * COLS);
-	}
-
-	/* monsters */
-	for (int m = 0; m <= UCHAR_MAX; ++m) {
-		if ((m >= '@' && m <= 'Z') || (m >= 'a' && m <= 'z') || m == '&' || m == '\'' || m == '6' || m == ':' || m == ';' || m == '~')
-			ismonster[m] = true;
+	/* set certain values */
+	for (int a = 0; a <= UCHAR_MAX; ++a) {
+		/* monsters */
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || a == '&' || a == '\'' || a == '6' || a == ':' || a == ';' || a == '~')
+			ismonster[a] = true;
 		else
-			ismonster[m] = false;
+			ismonster[a] = false;
+		/* items */
+		isitem[a] = false;
+		/* pathing & maps */
+		passable[a] = false;
+		static_dungeon_symbol[a] = false;
 	}
-
-	/* pathing & maps */
-	for (int s = 0; s <= UCHAR_MAX; ++s) {
-		passable[s] = true;
-		diagonally_passable[s] = true;
-		static_dungeon_symbol[s] = false;
-	}
-	passable[(unsigned char) VERTICAL_WALL] = false;
-	passable[(unsigned char) HORIZONTAL_WALL] = false;
-	passable[(unsigned char) CLOSED_DOOR] = false;
-	passable[(unsigned char) IRON_BARS] = false;
-	passable[(unsigned char) TREE] = false;
-	passable[(unsigned char) RAISED_DRAWBRIDGE] = false;
-	passable[(unsigned char) BOULDER] = false;
-	diagonally_passable[(unsigned char) VERTICAL_WALL] = false;
-	diagonally_passable[(unsigned char) HORIZONTAL_WALL] = false;
-	diagonally_passable[(unsigned char) CLOSED_DOOR] = false;
-	diagonally_passable[(unsigned char) IRON_BARS] = false;
-	diagonally_passable[(unsigned char) TREE] = false;
-	diagonally_passable[(unsigned char) RAISED_DRAWBRIDGE] = false;
+	isitem[(unsigned char) WEAPON] = true;
+	isitem[(unsigned char) ARMOR] = true;
+	isitem[(unsigned char) RING] = true;
+	isitem[(unsigned char) AMULET] = true;
+	isitem[(unsigned char) TOOL] = true;
+	isitem[(unsigned char) FOOD] = true;
+	isitem[(unsigned char) POTION] = true;
+	isitem[(unsigned char) SCROLL] = true;
+	isitem[(unsigned char) SPELLBOOK] = true;
+	isitem[(unsigned char) WAND] = true;
+	isitem[(unsigned char) GOLD] = true;
+	isitem[(unsigned char) GEM] = true;
+	isitem[(unsigned char) STATUE] = true;
+	isitem[(unsigned char) BOULDER] = true;
+	isitem[(unsigned char) IRON_BALL] = true;
+	isitem[(unsigned char) CHAINS] = true;
+	isitem[(unsigned char) VENOM] = true;
+	passable[(unsigned char) FLOOR] = true;
+	passable[(unsigned char) OPEN_DOOR] = true;
+	passable[(unsigned char) CORRIDOR] = true;
+	passable[(unsigned char) STAIRS_UP] = true;
+	passable[(unsigned char) STAIRS_DOWN] = true;
+	passable[(unsigned char) ALTAR] = true;
+	passable[(unsigned char) GRAVE] = true;
+	passable[(unsigned char) THRONE] = true;
+	passable[(unsigned char) SINK] = true;
+	passable[(unsigned char) FOUNTAIN] = true;
+	passable[(unsigned char) WATER] = true;
+	passable[(unsigned char) ICE] = true;
+	passable[(unsigned char) LAVA] = true;
+	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	passable[(unsigned char) TRAP] = true;
+	passable[(unsigned char) WEAPON] = true;
+	passable[(unsigned char) ARMOR] = true;
+	passable[(unsigned char) RING] = true;
+	passable[(unsigned char) AMULET] = true;
+	passable[(unsigned char) TOOL] = true;
+	passable[(unsigned char) FOOD] = true;
+	passable[(unsigned char) POTION] = true;
+	passable[(unsigned char) SCROLL] = true;
+	passable[(unsigned char) SPELLBOOK] = true;
+	passable[(unsigned char) WAND] = true;
+	passable[(unsigned char) GOLD] = true;
+	passable[(unsigned char) GEM] = true;
+	passable[(unsigned char) STATUE] = true;
+	passable[(unsigned char) IRON_BALL] = true;
+	passable[(unsigned char) CHAINS] = true;
+	passable[(unsigned char) VENOM] = true;
+	passable[(unsigned char) PET] = true;
 	static_dungeon_symbol[(unsigned char) VERTICAL_WALL] = true;
 	static_dungeon_symbol[(unsigned char) HORIZONTAL_WALL] = true;
 	static_dungeon_symbol[(unsigned char) FLOOR] = true;
@@ -93,10 +114,6 @@ Saiph::Saiph(bool remote) {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
-	for (int b = 0; b < MAX_BRANCHES; ++b)
-		delete branches[b];
-	delete [] branches;
-	delete history;
 	delete world;
 	delete connection;
 }
@@ -153,9 +170,7 @@ void Saiph::dumpMaps() {
 	cout << (unsigned char) 27 << "[26;1H";
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (branches[current_branch]->search[world->player.dungeon][r][c] % 96 + 32);
-			//cout << (int) branches[current_branch]->unpassable[world->player.dungeon][r][c];
-			//cout << (int) branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c];
+			cout << (unsigned char) (map[current_branch][current_level].search[r][c] % 96 + 32);
 		}
 		cout << endl;
 	}
@@ -163,7 +178,7 @@ void Saiph::dumpMaps() {
 	for (int r = 0; r < ROWS; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (branches[current_branch]->map[world->player.dungeon][r][c]);
+			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
 	}
 	/* path map */
@@ -215,14 +230,14 @@ bool Saiph::isLegalMove(const Point &to, const Point &from) {
 	int cd = abs(to.col - from.col);
 	if (rd > 1 || cd > 1)
 		return false; // moving more than 1 square
-	else if (branches[current_branch]->unpassable[world->player.dungeon][to.row][to.col] != NOT_BLOCKED)
+	else if (!passable[map[current_branch][current_level].dungeon[to.row][to.col]])
 		return false; // can't move to this square
 	else if (rd == 1 && cd == 1) {
 		/* diagonal move */
-		if (branches[current_branch]->map[world->player.dungeon][from.row][from.col] == OPEN_DOOR || branches[current_branch]->map[world->player.dungeon][to.row][to.col] == OPEN_DOOR)
+		if (map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR)
 			return false; // can't move diagonally into or out of door
-		else if (branches[current_branch]->diagonally_unpassable[world->player.dungeon][to.row][from.col] != NOT_BLOCKED && branches[current_branch]->diagonally_unpassable[world->player.dungeon][from.row][to.col] != NOT_BLOCKED)
-			return false; // can't move diagonally when both sides are blocked
+		else if (!passable[map[current_branch][current_level].dungeon[to.row][from.col]] && !passable[map[current_branch][current_level].dungeon[from.row][to.col]] && map[current_branch][current_level].dungeon[to.row][from.col] != BOULDER && map[current_branch][current_level].dungeon[from.row][to.col] != BOULDER)
+			return false; // can't move diagonally when both sides are !passable, unless it's a boulder
 	}
 	return true;
 }
@@ -234,6 +249,9 @@ void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned ch
 }
 
 bool Saiph::run() {
+	/* figure out which map to use, FIXME */
+	current_level = world->player.dungeon;
+
 	/* update maps */
 	if (!world->question && !world->menu)
 		updateMaps();
@@ -252,11 +270,6 @@ bool Saiph::run() {
 		engulfed = true;
 	else
 		engulfed = false;
-
-	/* save dungeon in history */
-	history->push_front(*world);
-	while (history->size() > MAX_HISTORY)
-		history->pop_back();
 
 	/* deal with messages */
 	/* and again, we could make a map<string, Analyzer *> to speed things up.
@@ -409,7 +422,7 @@ void Saiph::inspect() {
 		for (int c = 0; c < COLS; ++c) {
 			unsigned char symbol = world->map[r][c];
 			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
-				symbol = branches[current_branch]->map[world->player.dungeon][r][c];
+				symbol = map[current_branch][current_level].dungeon[r][c];
 			for (vector<Analyzer *>::iterator a = analyzer_symbols[symbol].begin(); a != analyzer_symbols[symbol].end(); ++a)
 				(*a)->analyze(r, c, symbol);
 		}
@@ -418,7 +431,7 @@ void Saiph::inspect() {
 
 void Saiph::updateMaps() {
 	/* update the various maps */
-	/* this loop is a small hack.
+	/* this loop is a small hack. FIXME: make own monster tracker that does this
 	 * it removes unseen monsters next to the player which we think are blocking the path */
 	for (int r = world->player.row - 1; r <= world->player.row + 1; ++r) {
 		if (r < MAP_ROW_START || r > MAP_ROW_END)
@@ -426,39 +439,37 @@ void Saiph::updateMaps() {
 		for (int c = world->player.col - 1; c <= world->player.col + 1; ++c) {
 			if (c < 0 || c > COLS)
 				continue;
-			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] == TEMPORARY_BLOCKED)
-				branches[current_branch]->unpassable[world->player.dungeon][r][c] = NOT_BLOCKED;
+			if (map[current_branch][current_level].monster[r][c] != NOMONSTER)
+				map[current_branch][current_level].monster[r][c] = NOMONSTER;
 		}
 	}
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
 		for (int c = 0; c < COLS; ++c) {
 			unsigned char s = world->map[r][c];
 			if (s == SOLID_ROCK)
-				continue;
-			/* using pointer as we need updated map for [diagonally_]unpassable */
-			unsigned char *hs = &branches[current_branch]->map[world->player.dungeon][r][c];
+				continue; // not interesting (also mess up unlit rooms)
+			/* "static" dungean features */
 			if (static_dungeon_symbol[s]) {
-				/* "static" dungeon features (doors may be destroyed, though).
-				 * update the map showing static stuff */
-				branches[current_branch]->map[world->player.dungeon][r][c] = s;
-			} else if (*hs == SOLID_ROCK) {
-				/* "dynamic" stuff that can disappear on a spot we've never seen before.
-				 * pretend there's an open door here until we see otherwise */
-				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
-			} else if (*hs == CLOSED_DOOR) {
-				/* there used to be a door here, but now something else is here.
-				 * it's quite possible a monster opened the door */
-				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
-			} else if (*hs == HORIZONTAL_WALL || *hs == VERTICAL_WALL) {
-				/* there used to be a wall here, but isn't any longer.
-				 * make it an open door for the time being */
-				branches[current_branch]->map[world->player.dungeon][r][c] = OPEN_DOOR;
+				/* update the map showing static stuff */
+				map[current_branch][current_level].dungeon[r][c] = s;
+			} else {
+				/* if we see an item/monster (dynamic stuff) we'll pretend there's a door here.
+				 * this prevents saiph from getting stuck, but it should be improved later */
+				map[current_branch][current_level].dungeon[r][c] = OPEN_DOOR;
 			}
-			/* unpassable map */
-			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] != TEMPORARY_BLOCKED)
-				branches[current_branch]->unpassable[world->player.dungeon][r][c] = (passable[*hs] ? NOT_BLOCKED : BLOCKED);
-			/* diagonally unpassable map */
-			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (diagonally_passable[*hs] ? NOT_BLOCKED : BLOCKED);
+			if (isitem[s]) {
+				/* item here */
+				map[current_branch][current_level].item[r][c] = s;
+			} else if (map[current_branch][current_level].item[r][c] != NOITEM) {
+				/* item is gone? hmm, remove it */
+				map[current_branch][current_level].item[r][c] = NOITEM;
+			}
+			if (ismonster[s]) {
+				/* found a monster!
+				 * since monsters unlike items disappear we can't remove monsters like items above.
+				 * we'll have some dedicated code for fixing this */
+				map[current_branch][current_level].monster[r][c] = s;
+			}
 		}
 	}
 
@@ -494,7 +505,7 @@ void Saiph::updatePathMap() {
 					continue;
 				else if (ismonster[ws])
 					continue; // can't path through monsters, for now
-				unsigned char s = branches[current_branch]->map[world->player.dungeon][to.row][to.col];
+				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
 				unsigned int newpathcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
 					newpathcost += COST_LAVA; // TODO: only if we levitate

@@ -84,12 +84,12 @@ int DoorAnalyzer::finish() {
 		if (to_row == -1)
 			continue;
 		int to_col = doors[branch][dungeon][d].col;
-		if (saiph->branches[branch]->map[dungeon][to_row][to_col] != OPEN_DOOR && saiph->branches[branch]->map[dungeon][to_row][to_col] != CLOSED_DOOR) {
+		if (saiph->map[branch][dungeon].dungeon[to_row][to_col] != OPEN_DOOR && saiph->map[branch][dungeon].dungeon[to_row][to_col] != CLOSED_DOOR) {
 			/* this door seems to be gone */
 			doors[branch][dungeon][d].row = -1;
 			continue;
 		}
-		if (saiph->branches[branch]->map[dungeon][to_row][to_col] == OPEN_DOOR)
+		if (saiph->map[branch][dungeon].dungeon[to_row][to_col] == OPEN_DOOR)
 			continue;
 		if (doors[branch][dungeon][d].locked && shop_on_level[branch][dungeon])
 			continue; // FIXME: currently ignoring all locked doors on levels there are shopkeepers on
