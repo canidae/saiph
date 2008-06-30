@@ -250,6 +250,7 @@ void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned ch
 
 bool Saiph::run() {
 	/* figure out which map to use, FIXME */
+	current_branch = 0;
 	current_level = world->player.dungeon;
 
 	/* update maps */
@@ -452,7 +453,7 @@ void Saiph::updateMaps() {
 			if (static_dungeon_symbol[s]) {
 				/* update the map showing static stuff */
 				map[current_branch][current_level].dungeon[r][c] = s;
-			} else {
+			} else if (map[current_branch][current_level].dungeon[r][c] == SOLID_ROCK) {
 				/* if we see an item/monster (dynamic stuff) we'll pretend there's a door here.
 				 * this prevents saiph from getting stuck, but it should be improved later */
 				map[current_branch][current_level].dungeon[r][c] = OPEN_DOOR;
