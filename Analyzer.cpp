@@ -3,7 +3,6 @@
 /* constructors */
 Analyzer::Analyzer() {
 	max_priority = 0;
-	symbol_count = 0;
 }
 
 /* destructors */

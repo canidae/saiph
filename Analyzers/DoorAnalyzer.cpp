@@ -16,8 +16,10 @@ DoorAnalyzer::DoorAnalyzer(Saiph *saiph) {
 	}
 	action = DO_NOTHING;
 
-	symbols[symbol_count++] = OPEN_DOOR;
-	symbols[symbol_count++] = CLOSED_DOOR;
+	vector<unsigned char> symbols;
+	symbols.push_back(OPEN_DOOR);
+	symbols.push_back(CLOSED_DOOR);
+	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
 /* methods */

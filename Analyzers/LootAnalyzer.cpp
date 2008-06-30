@@ -4,22 +4,20 @@
 LootAnalyzer::LootAnalyzer(Saiph *saiph) {
 	this->saiph = saiph;
 	action = LO_NOTHING;
-	symbols[symbol_count++] = WEAPON;
-	symbols[symbol_count++] = ARMOR;
-	symbols[symbol_count++] = RING;
-	symbols[symbol_count++] = AMULET;
-	symbols[symbol_count++] = TOOL;
-	symbols[symbol_count++] = FOOD;
-	symbols[symbol_count++] = POTION;
-	symbols[symbol_count++] = SCROLL;
-	symbols[symbol_count++] = SPELLBOOK;
-	symbols[symbol_count++] = WAND;
-	symbols[symbol_count++] = GOLD;
-	symbols[symbol_count++] = GEM;
-	//symbols[symbol_count++] = STATUE;
-	//symbols[symbol_count++] = IRON_BALL;
-	//symbols[symbol_count++] = CHAINS;
-	//symbols[symbol_count++] = VENOM;
+	vector<unsigned char> symbols;
+	symbols.push_back(WEAPON);
+	symbols.push_back(ARMOR);
+	symbols.push_back(RING);
+	symbols.push_back(AMULET);
+	symbols.push_back(TOOL);
+	symbols.push_back(FOOD);
+	symbols.push_back(POTION);
+	symbols.push_back(SCROLL);
+	symbols.push_back(SPELLBOOK);
+	symbols.push_back(WAND);
+	symbols.push_back(GOLD);
+	symbols.push_back(GEM);
+	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
 /* methods */

@@ -31,7 +31,9 @@ FoodAnalyzer::FoodAnalyzer(Saiph *saiph) {
 	inedible.push_back("wererat");
 	inedible.push_back("werewolf");
 	/* symbols we'll analyze */
-	symbols[symbol_count++] = FOOD;
+	vector<unsigned char> symbols;
+	symbols.push_back(FOOD);
+	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
 /* methods */

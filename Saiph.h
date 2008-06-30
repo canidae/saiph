@@ -118,12 +118,14 @@ class Saiph {
 		void farlook(int row, int col);
 		bool isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col);
 		unsigned char moveToDirection(int to_row, int to_col, int from_row, int from_col);
+		void registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols);
 		bool run();
 		unsigned char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
 
 	private:
 		/* variables */
 		vector<Analyzer *> analyzers;
+		vector<Analyzer *> analyzer_symbols[UCHAR_MAX + 1];
 		Connection *connection;
 		unsigned int pathcost[ROWS][COLS];
 		Point pathing_queue[PATHING_QUEUE_SIZE];

@@ -191,6 +191,11 @@ unsigned char Saiph::moveToDirection(int to_row, int to_col, int from_row, int f
 	return ILLEGAL_MOVE;
 }
 
+void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols) {
+	for (vector<unsigned char>::const_iterator s = symbols.begin(); s != symbols.end(); ++s)
+		analyzer_symbols[*s].push_back(analyzer);
+}
+
 bool Saiph::run() {
 	/* update maps */
 	if (!world->question && !world->menu)
@@ -367,12 +372,8 @@ void Saiph::inspect() {
 			unsigned char symbol = world->map[r][c];
 			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
 				symbol = branches[current_branch]->map[world->player.dungeon][r][c];
-			for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-				for (int s = 0; s < analyzers[a]->symbol_count; ++s) {
-					if (analyzers[a]->symbols[s] == symbol)
-						analyzers[a]->analyze(r, c, symbol);
-				}
-			}
+			for (vector<Analyzer *>::iterator a = analyzer_symbols[symbol].begin(); a != analyzer_symbols[symbol].end(); ++a)
+				(*a)->analyze(r, c, symbol);
 		}
 	}
 }

@@ -22,8 +22,6 @@ class Analyzer {
 	public:
 		/* variables */
 		int max_priority;
-		unsigned char symbols[MAX_SYMBOLS];
-		int symbol_count;
 
 		/* constructors */
 		Analyzer();
