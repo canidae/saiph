@@ -91,6 +91,8 @@ Saiph::Saiph(bool remote) {
 
 /* destructors */
 Saiph::~Saiph() {
+	for (int a = 0; a <= UCHAR_MAX; ++a)
+		analyzer_symbols[a].clear();
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
 	analyzers.clear();
