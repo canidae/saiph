@@ -34,6 +34,47 @@ Saiph::Saiph(bool remote) {
 			ismonster[m] = false;
 	}
 
+	/* pathing */
+	for (int s = 0; s <= UCHAR_MAX; ++s) {
+		passable[s] = true;
+		diagonally_passable[s] = true;
+		static_dungeon_symbol[s] = false;
+	}
+	passable[(unsigned char) VERTICAL_WALL] = false;
+	passable[(unsigned char) HORIZONTAL_WALL] = false;
+	passable[(unsigned char) CLOSED_DOOR] = false;
+	passable[(unsigned char) IRON_BARS] = false;
+	passable[(unsigned char) TREE] = false;
+	passable[(unsigned char) RAISED_DRAWBRIDGE] = false;
+	passable[(unsigned char) BOULDER] = false;
+	diagonally_passable[(unsigned char) VERTICAL_WALL] = false;
+	diagonally_passable[(unsigned char) HORIZONTAL_WALL] = false;
+	diagonally_passable[(unsigned char) CLOSED_DOOR] = false;
+	diagonally_passable[(unsigned char) IRON_BARS] = false;
+	diagonally_passable[(unsigned char) TREE] = false;
+	diagonally_passable[(unsigned char) RAISED_DRAWBRIDGE] = false;
+	static_dungeon_symbol[(unsigned char) VERTICAL_WALL] = true;
+	static_dungeon_symbol[(unsigned char) HORIZONTAL_WALL] = true;
+	static_dungeon_symbol[(unsigned char) FLOOR] = true;
+	static_dungeon_symbol[(unsigned char) OPEN_DOOR] = true;
+	static_dungeon_symbol[(unsigned char) CLOSED_DOOR] = true;
+	static_dungeon_symbol[(unsigned char) IRON_BARS] = true;
+	static_dungeon_symbol[(unsigned char) TREE] = true;
+	static_dungeon_symbol[(unsigned char) CORRIDOR] = true;
+	static_dungeon_symbol[(unsigned char) STAIRS_UP] = true;
+	static_dungeon_symbol[(unsigned char) STAIRS_DOWN] = true;
+	static_dungeon_symbol[(unsigned char) ALTAR] = true;
+	static_dungeon_symbol[(unsigned char) GRAVE] = true;
+	static_dungeon_symbol[(unsigned char) THRONE] = true;
+	static_dungeon_symbol[(unsigned char) SINK] = true;
+	static_dungeon_symbol[(unsigned char) FOUNTAIN] = true;
+	static_dungeon_symbol[(unsigned char) WATER] = true;
+	static_dungeon_symbol[(unsigned char) ICE] = true;
+	static_dungeon_symbol[(unsigned char) LAVA] = true;
+	static_dungeon_symbol[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	static_dungeon_symbol[(unsigned char) RAISED_DRAWBRIDGE] = true;
+	static_dungeon_symbol[(unsigned char) TRAP] = true;
+
 	/* messages */
 	messages.clear();
 
@@ -398,9 +439,9 @@ void Saiph::updateMaps() {
 			unsigned char s = world->map[r][c];
 			if (s == SOLID_ROCK)
 				continue;
-			/* using pointer next as we need updated map for [diagonally_]unpassable */
+			/* using pointer as we need updated map for [diagonally_]unpassable */
 			unsigned char *hs = &branches[current_branch]->map[world->player.dungeon][r][c];
-			if (s == VERTICAL_WALL || s == HORIZONTAL_WALL || s == FLOOR || s == OPEN_DOOR || s == CLOSED_DOOR || s == IRON_BARS || s == TREE || s == CORRIDOR || s == STAIRS_UP || s == STAIRS_DOWN || s == ALTAR || s == GRAVE || s == THRONE || s == SINK || s == FOUNTAIN || s == WATER || s == ICE || s == LAVA || s == LOWERED_DRAWBRIDGE || s == RAISED_DRAWBRIDGE || s == TRAP) {
+			if (static_dungeon_symbol[s]) {
 				/* "static" dungeon features (doors may be destroyed, though).
 				 * update the map showing static stuff */
 				branches[current_branch]->map[world->player.dungeon][r][c] = s;
@@ -419,9 +460,9 @@ void Saiph::updateMaps() {
 			}
 			/* unpassable map */
 			if (branches[current_branch]->unpassable[world->player.dungeon][r][c] != TEMPORARY_BLOCKED)
-				branches[current_branch]->unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE || s == BOULDER) ? BLOCKED : NOT_BLOCKED;
+				branches[current_branch]->unpassable[world->player.dungeon][r][c] = (passable[*hs] ? NOT_BLOCKED : BLOCKED);
 			/* diagonally unpassable map */
-			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (*hs == VERTICAL_WALL || *hs == HORIZONTAL_WALL || *hs == CLOSED_DOOR || *hs == IRON_BARS || *hs == TREE || *hs == RAISED_DRAWBRIDGE) ? BLOCKED : NOT_BLOCKED;
+			branches[current_branch]->diagonally_unpassable[world->player.dungeon][r][c] = (diagonally_passable[*hs] ? NOT_BLOCKED : BLOCKED);
 		}
 	}
 

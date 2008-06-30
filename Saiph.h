@@ -127,9 +127,12 @@ class Saiph {
 		vector<Analyzer *> analyzers;
 		vector<Analyzer *> analyzer_symbols[UCHAR_MAX + 1];
 		Connection *connection;
+		bool ismonster[UCHAR_MAX + 1];
 		unsigned int pathcost[ROWS][COLS];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
-		bool ismonster[UCHAR_MAX + 1];
+		bool passable[UCHAR_MAX + 1];
+		bool diagonally_passable[UCHAR_MAX + 1];
+		bool static_dungeon_symbol[UCHAR_MAX + 1];
 
 		/* methods */
 		void inspect();
