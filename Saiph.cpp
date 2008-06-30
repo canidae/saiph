@@ -263,6 +263,9 @@ bool Saiph::run() {
 		history->pop_back();
 
 	/* deal with messages */
+	/* and again, we could make a map<string, Analyzer *> to speed things up.
+	 * the first string being the message.
+	 * then again, what about "you see here a %s corpse"? */
 	messages = world->messages;
 	cerr << messages << endl;
 	for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
