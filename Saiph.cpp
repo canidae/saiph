@@ -95,6 +95,7 @@ Saiph::Saiph(bool remote) {
 	static_dungeon_symbol[(unsigned char) LOWERED_DRAWBRIDGE] = true;
 	static_dungeon_symbol[(unsigned char) RAISED_DRAWBRIDGE] = true;
 	static_dungeon_symbol[(unsigned char) TRAP] = true;
+	static_dungeon_symbol[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
 
 	/* messages */
 	messages.clear();
@@ -467,7 +468,8 @@ void Saiph::updateMaps() {
 			}
 			if (ismonster[s]) {
 				/* found a monster!
-				 * since monsters unlike items disappear we can't remove monsters like items above.
+				 * since monsters unlike items disappear from map when we can't see them,
+				 * we can't remove monsters like we do with items above.
 				 * we'll have some dedicated code for fixing this */
 				map[current_branch][current_level].monster[r][c] = s;
 			}
