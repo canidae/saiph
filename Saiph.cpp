@@ -34,7 +34,7 @@ Saiph::Saiph(bool remote) {
 			ismonster[m] = false;
 	}
 
-	/* pathing */
+	/* pathing & maps */
 	for (int s = 0; s <= UCHAR_MAX; ++s) {
 		passable[s] = true;
 		diagonally_passable[s] = true;

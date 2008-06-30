@@ -89,6 +89,7 @@ struct Command {
 };
 
 /* just a location on the map */
+/* TODO: replace this with Coordinate */
 struct Point {
 	unsigned char row;
 	unsigned char col;
