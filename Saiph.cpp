@@ -184,7 +184,23 @@ void Saiph::farlook(const Point &target) {
 	cursor.row = world->player.row;
 	cursor.col = world->player.col;
 	while (cursor.row != target.row && cursor.col != target.col) {
-		unsigned char move = moveToDirection(target, cursor);
+		unsigned char move;
+		if (cursor.row < target.row && cursor.col < target.col)
+			move = MOVE_SE;
+		else if (cursor.row < target.row && cursor.col > target.col)
+			move = MOVE_SW;
+		else if (cursor.row > target.row && cursor.col < target.col)
+			move = MOVE_NE;
+		else if (cursor.row > target.row && cursor.col > target.col)
+			move = MOVE_NW;
+		else if (cursor.row < target.row)
+			move = MOVE_S;
+		else if (cursor.row > target.row)
+			move = MOVE_N;
+		else if (cursor.col < target.col)
+			move = MOVE_E;
+		else
+			move = MOVE_W;
 		cursor = directionToPos(move, cursor);
 		world->command.push_back(move);
 	}
@@ -209,28 +225,6 @@ bool Saiph::isLegalMove(const Point &to, const Point &from) {
 			return false; // can't move diagonally when both sides are blocked
 	}
 	return true;
-}
-
-unsigned char Saiph::moveToDirection(const Point &to, const Point &from) {
-	/* return the direction by the given move */
-	if (from.row < to.row && from.col < to.col)
-		return MOVE_SE;
-	else if (from.row < to.row && from.col > to.col)
-		return MOVE_SW;
-	else if (from.row > to.row && from.col < to.col)
-		return MOVE_NE;
-	else if (from.row > to.row && from.col > to.col)
-		return MOVE_NW;
-	else if (from.row < to.row)
-		return MOVE_S;
-	else if (from.row > to.row)
-		return MOVE_N;
-	else if (from.col < to.col)
-		return MOVE_E;
-	else if (from.col > to.col)
-		return MOVE_W;
-	cerr << "invalid move: " << from.row << ", " << from.col << " -> " << to.row << ", " << to.col << endl;
-	return ILLEGAL_MOVE;
 }
 
 void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols) {
@@ -344,7 +338,6 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 	unsigned char previous_move = ILLEGAL_MOVE; // used to determine straight_line
 	Point from = target;
 
-	//cerr << "moving from " << from.row << ", " << from.col << " to " << world->player.row << ", " << world->player.col << endl;
 	while (curcost > 0) {
 		Point next = from;
 		Point to = from;
