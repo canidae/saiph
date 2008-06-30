@@ -192,6 +192,7 @@ unsigned char Saiph::moveToDirection(int to_row, int to_col, int from_row, int f
 }
 
 void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols) {
+	/* register which symbols analyzers should analyze */
 	for (vector<unsigned char>::const_iterator s = symbols.begin(); s != symbols.end(); ++s)
 		analyzer_symbols[*s].push_back(analyzer);
 }
