@@ -15,12 +15,6 @@ Saiph::Saiph(bool remote) {
 	/* history */
 	history = new list<Dungeon>;
 
-	/* pathing */
-	for (int r = 0; r < ROWS; ++r) {
-		for (int c = 0; c < COLS; ++c)
-			pathcost[r][c] = UINT_MAX;
-	}
-
 	/* branches */
 	branches = new Branch*[MAX_BRANCHES];
 	current_branch = BRANCH_MAIN;
@@ -41,7 +35,7 @@ Saiph::Saiph(bool remote) {
 	}
 
 	/* messages */
-	messages = new string("");
+	messages.clear();
 
 	/* Analyzers */
 	analyzers.push_back(new DoorAnalyzer(this));
@@ -63,7 +57,6 @@ Saiph::~Saiph() {
 		delete branches[b];
 	delete [] branches;
 	delete history;
-	delete messages;
 	delete world;
 	delete connection;
 }
@@ -224,10 +217,10 @@ bool Saiph::run() {
 		history->pop_back();
 
 	/* deal with messages */
-	*messages = world->messages;
-	cerr << *messages << endl;
+	messages = world->messages;
+	cerr << messages << endl;
 	for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-		int priority = analyzers[a]->parseMessages(messages);
+		int priority = analyzers[a]->parseMessages(&messages);
 		if (priority > command.priority) {
 			command.analyzer = a;
 			command.priority = priority;
@@ -261,12 +254,12 @@ bool Saiph::run() {
 	}
 
 	if (world->question && command.analyzer == -1) {
-		cerr << "Unhandled question: " << *messages << endl;
+		cerr << "Unhandled question: " << messages << endl;
 		return false;
 	}
 
 	if (world->menu && command.analyzer == -1) {
-		cerr << "Unhandled menu: " << *messages << endl;
+		cerr << "Unhandled menu: " << messages << endl;
 		return false;
 	}
 

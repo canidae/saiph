@@ -101,7 +101,7 @@ class Saiph {
 		Branch **branches;
 		int current_branch;
 		Command command;
-		string *messages;
+		string messages;
 		World *world;
 		bool engulfed;
 		list<Dungeon> *history;
