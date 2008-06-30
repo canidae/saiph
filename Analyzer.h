@@ -21,7 +21,6 @@ using namespace std;
 class Analyzer {
 	public:
 		/* variables */
-		int max_priority;
 
 		/* constructors */
 		Analyzer();

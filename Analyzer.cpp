@@ -2,7 +2,6 @@
 
 /* constructors */
 Analyzer::Analyzer() {
-	max_priority = 0;
 }
 
 /* destructors */
