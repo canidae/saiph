@@ -4,7 +4,7 @@
 /* various */
 #define EX_MAX_PLACES 1024
 #define EX_CORRIDOR 20 // corridor we haven't explored
-#define EX_UNLIT_ROOM 15 // room where we haven't seen the floor
+#define EX_UNLIT_ROOM 20 // room where we haven't seen the floor
 #define EX_EXTRA_SEARCH 5 // frantic searching for door
 #define EX_DEAD_END_MULTIPLIER 3 // search more frantically in dead ends
 
