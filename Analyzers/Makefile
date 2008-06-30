@@ -3,13 +3,13 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g
-OBJECTS = DoorAnalyzer.o FoodAnalyzer.o ExploreAnalyzer.o HealthAnalyzer.o LevelAnalyzer.o LootAnalyzer.o MonsterAnalyzer.o
+OBJECTS = DoorAnalyzer.o ExploreAnalyzer.o FoodAnalyzer.o HealthAnalyzer.o LevelAnalyzer.o LootAnalyzer.o MonsterAnalyzer.o
 
 analyzers: $(OBJECTS)
 
 DoorAnalyzer.o: DoorAnalyzer.h DoorAnalyzer.cpp
-FoodAnalyzer.o: FoodAnalyzer.h FoodAnalyzer.cpp
 ExploreAnalyzer.o: ExploreAnalyzer.h ExploreAnalyzer.cpp
+FoodAnalyzer.o: FoodAnalyzer.h FoodAnalyzer.cpp
 HealthAnalyzer.o: HealthAnalyzer.h HealthAnalyzer.cpp
 LevelAnalyzer.o: LevelAnalyzer.h LevelAnalyzer.cpp
 LootAnalyzer.o: LootAnalyzer.h LootAnalyzer.cpp

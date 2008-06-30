@@ -82,7 +82,10 @@ int FoodAnalyzer::finish() {
 		}
 		int distance = -1;
 		bool direct_line = false;
-		unsigned char move = saiph->shortestPath(f->row, f->col, false, distance, direct_line);
+		Point tmp;
+		tmp.row = f->row;
+		tmp.col = f->col;
+		unsigned char move = saiph->shortestPath(tmp, false, &distance, &direct_line);
 		distance += saiph->world->player.turn - f->rots_turn;
 		++f;
 		if (distance > 0) {

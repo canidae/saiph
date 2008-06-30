@@ -93,9 +93,12 @@ int DoorAnalyzer::finish() {
 			continue;
 		if (doors[branch][dungeon][d].locked && shop_on_level[branch][dungeon])
 			continue; // FIXME: currently ignoring all locked doors on levels there are shopkeepers on
-		bool direct_line = false;
+		bool straight_line = false;
 		int distance = -1;
-		unsigned char move = saiph->shortestPath(to_row, to_col, true, distance, direct_line);
+		Point tmp;
+		tmp.row = to_row;
+		tmp.col = to_col;
+		unsigned char move = saiph->shortestPath(tmp, true, &distance, &straight_line);
 		if (move == ILLEGAL_MOVE)
 			continue;
 		if (!doors[branch][dungeon][d].locked && DO_OPEN_PRIORITY > best_priority) {

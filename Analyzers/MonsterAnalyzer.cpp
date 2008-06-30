@@ -123,7 +123,10 @@ int MonsterAnalyzer::finish() {
 	for (int mc = 0; mc < MO_MAX_MONSTERS; ++mc) {
 		if (monsters[mc].symbol == NOMONSTER)
 			continue;
-		move = saiph->shortestPath(monsters[mc].row, monsters[mc].col, true, distance, direct_line);
+		Point tmp;
+		tmp.row = monsters[mc].row;
+		tmp.col = monsters[mc].col;
+		move = saiph->shortestPath(tmp, true, &distance, &direct_line);
 		if (move == ILLEGAL_MOVE || (distance <= 1 && saiph->world->map[monsters[mc].row][monsters[mc].col] != monsters[mc].symbol)) {
 			/* can't find monster, forget it */
 			cerr << "unable to find monster " << monsters[mc].symbol << ". monster forgotten" << endl;

@@ -102,49 +102,50 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-void Saiph::directionToPos(unsigned char direction, int &to_row, int &to_col) {
-	/* return (by setting to_row & to_col) the position by the given direction */
+Point Saiph::directionToPos(unsigned char direction, Point target) {
+	/* return the new position after moving given direction */
 	switch (direction) {
 		case MOVE_NW:
-			--to_row;
-			--to_col;
+			--target.row;
+			--target.col;
 			break;
 
 		case MOVE_N:
-			--to_row;
+			--target.row;
 			break;
 
 		case MOVE_NE:
-			--to_row;
-			++to_col;
+			--target.row;
+			++target.col;
 			break;
 
 		case MOVE_W:
-			--to_col;
+			--target.col;
 			break;
 
 		case MOVE_E:
-			++to_col;
+			++target.col;
 			break;
 
 		case MOVE_SW:
-			++to_row;
-			--to_col;
+			++target.row;
+			--target.col;
 			break;
 
 		case MOVE_S:
-			++to_row;
+			++target.row;
 			break;
 
 		case MOVE_SE:
-			++to_row;
-			++to_col;
+			++target.row;
+			++target.col;
 			break;
 
 		default:
 			cerr << "invalid direction: " << direction << endl;
 			break;
 	}
+	return target;
 }
 
 void Saiph::dumpMaps() {
@@ -176,14 +177,15 @@ void Saiph::dumpMaps() {
 	cout << (unsigned char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
 }
 
-void Saiph::farlook(int row, int col) {
+void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	world->command.push_back(';');
-	int cursor_row = world->player.row;
-	int cursor_col = world->player.col;
-	while (cursor_row != row && cursor_col != col) {
-		unsigned char move = moveToDirection(row, col, cursor_row, cursor_col);
-		directionToPos(move, cursor_row, cursor_col);
+	Point cursor;
+	cursor.row = world->player.row;
+	cursor.col = world->player.col;
+	while (cursor.row != target.row && cursor.col != target.col) {
+		unsigned char move = moveToDirection(target, cursor);
+		cursor = directionToPos(move, cursor);
 		world->command.push_back(move);
 	}
 	world->command.push_back(',');
@@ -191,43 +193,43 @@ void Saiph::farlook(int row, int col) {
 	world->executeCommand();
 }
 
-bool Saiph::isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col) {
+bool Saiph::isLegalMove(const Point &to, const Point &from) {
 	/* check if the move is legal */
-	int rd = abs(to_row - from_row);
-	int cd = abs(to_col - from_col);
+	int rd = abs(to.row - from.row);
+	int cd = abs(to.col - from.col);
 	if (rd > 1 || cd > 1)
 		return false; // moving more than 1 square
-	else if (branches[branch]->unpassable[dungeon][to_row][to_col] != NOT_BLOCKED)
+	else if (branches[current_branch]->unpassable[world->player.dungeon][to.row][to.col] != NOT_BLOCKED)
 		return false; // can't move to this square
 	else if (rd == 1 && cd == 1) {
 		/* diagonal move */
-		if (branches[branch]->map[dungeon][from_row][from_col] == OPEN_DOOR || branches[branch]->map[dungeon][to_row][to_col] == OPEN_DOOR)
+		if (branches[current_branch]->map[world->player.dungeon][from.row][from.col] == OPEN_DOOR || branches[current_branch]->map[world->player.dungeon][to.row][to.col] == OPEN_DOOR)
 			return false; // can't move diagonally into or out of door
-		else if (branches[branch]->diagonally_unpassable[dungeon][to_row][from_col] != NOT_BLOCKED && branches[branch]->diagonally_unpassable[dungeon][from_row][to_col] != NOT_BLOCKED)
+		else if (branches[current_branch]->diagonally_unpassable[world->player.dungeon][to.row][from.col] != NOT_BLOCKED && branches[current_branch]->diagonally_unpassable[world->player.dungeon][from.row][to.col] != NOT_BLOCKED)
 			return false; // can't move diagonally when both sides are blocked
 	}
 	return true;
 }
 
-unsigned char Saiph::moveToDirection(int to_row, int to_col, int from_row, int from_col) {
+unsigned char Saiph::moveToDirection(const Point &to, const Point &from) {
 	/* return the direction by the given move */
-	if (from_row < to_row && from_col < to_col)
+	if (from.row < to.row && from.col < to.col)
 		return MOVE_SE;
-	else if (from_row < to_row && from_col > to_col)
+	else if (from.row < to.row && from.col > to.col)
 		return MOVE_SW;
-	else if (from_row > to_row && from_col < to_col)
+	else if (from.row > to.row && from.col < to.col)
 		return MOVE_NE;
-	else if (from_row > to_row && from_col > to_col)
+	else if (from.row > to.row && from.col > to.col)
 		return MOVE_NW;
-	else if (from_row < to_row)
+	else if (from.row < to.row)
 		return MOVE_S;
-	else if (from_row > to_row)
+	else if (from.row > to.row)
 		return MOVE_N;
-	else if (from_col < to_col)
+	else if (from.col < to.col)
 		return MOVE_E;
-	else if (from_col > to_col)
+	else if (from.col > to.col)
 		return MOVE_W;
-	cerr << "invalid move: " << from_row << ", " << from_col << " -> " << to_row << ", " << to_col << endl;
+	cerr << "invalid move: " << from.row << ", " << from.col << " -> " << to.row << ", " << to.col << endl;
 	return ILLEGAL_MOVE;
 }
 
@@ -325,86 +327,85 @@ bool Saiph::run() {
 	return true;
 }
 
-unsigned char Saiph::shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line) {
-	/* attempt to find the shortest path to destination.
-	 * returns ILLEGAL_MOVE if unable to find a path.
-	 * otherwise the character for the move is returned */
-	/* allow_illegal_last_move:
-	 * if this is true we'll "move" towards spots we can't really move into.
-	 * why? because monsters may stand in a door way, making it possible to attack them */
-	distance = 0;
-	direct_line = true;
-	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col < 1 || col > COLS - 1)
+unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line) {
+	/* returns next move in shortest path from player to target.
+	 * also sets "distance" and "straight_line" to target */
+	if (target.row <= MAP_ROW_START || target.row >= MAP_ROW_END || target.col < 1 || target.col > COLS - 1)
 		return ILLEGAL_MOVE; // this means we can't move to the edges of the map (hopefully "ok")
-	unsigned int curcost = pathcost[row][col];
+	unsigned int curcost = pathcost[target.row][target.col];
 	if (curcost == UINT_MAX && !allow_illegal_last_move)
 		return ILLEGAL_MOVE; // can't move here
 	if (curcost == 0)
 		return REST; // we're standing on the pos we're looking for?
-	unsigned int antiloop = curcost - 666; // any other value but curcost :)
+	*distance = 0;
+	*straight_line = true;
+
 	unsigned char move = ILLEGAL_MOVE;
-	unsigned char prevmove = ILLEGAL_MOVE;
-	while (curcost > 0 && antiloop != curcost) {
-		int r = row;
-		int c = col;
-		antiloop = curcost; // if curcost doesn't change the loop will end
-		if (pathcost[row - 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row - 1, col - 1, row, col))) {
+	unsigned char previous_move = ILLEGAL_MOVE; // used to determine straight_line
+	Point from = target;
+
+	//cerr << "moving from " << from.row << ", " << from.col << " to " << world->player.row << ", " << world->player.col << endl;
+	while (curcost > 0) {
+		Point next = from;
+		Point to = from;
+		--to.row;
+		--to.col;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
 			move = MOVE_SE;
-			r = row - 1;
-			c = col - 1;
-			curcost = pathcost[r][c];
+			curcost = pathcost[to.row][to.col];
+			next = to;
 		}
-		if (pathcost[row - 1][col] < curcost) {
+		++to.col;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
 			move = MOVE_S;
-			r = row - 1;
-			c = col;
-			curcost = pathcost[r][c];
+			curcost = pathcost[to.row][to.col];
+			next = to;
 		}
-		if (pathcost[row - 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row - 1, col + 1, row, col))) {
+		++to.col;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
 			move = MOVE_SW;
-			r = row - 1;
-			c = col + 1;
-			curcost = pathcost[r][c];
+			curcost = pathcost[to.row][to.col];
+			next = to;
 		}
-		if (pathcost[row][col - 1] < curcost) {
-			move = MOVE_E;
-			r = row;
-			c = col - 1;
-			curcost = pathcost[r][c];
-		}
-		if (pathcost[row][col + 1] < curcost) {
+		++to.row;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
 			move = MOVE_W;
-			r = row;
-			c = col + 1;
-			curcost = pathcost[r][c];
+			curcost = pathcost[to.row][to.col];
+			next = to;
 		}
-		if (pathcost[row + 1][col - 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row + 1, col - 1, row, col))) {
-			move = MOVE_NE;
-			r = row + 1;
-			c = col - 1;
-			curcost = pathcost[r][c];
-		}
-		if (pathcost[row + 1][col] < curcost) {
-			move = MOVE_N;
-			r = row + 1;
-			c = col;
-			curcost = pathcost[r][c];
-		}
-		if (pathcost[row + 1][col + 1] < curcost && ((allow_illegal_last_move && prevmove == ILLEGAL_MOVE) || isLegalMove(current_branch, world->player.dungeon, row + 1, col + 1, row, col))) {
+		++to.row;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
 			move = MOVE_NW;
-			r = row + 1;
-			c = col + 1;
-			curcost = pathcost[r][c];
+			curcost = pathcost[to.row][to.col];
+			next = to;
 		}
-		if (distance > 0 && prevmove != move)
-			direct_line = false;
-		prevmove = move;
-		++distance;
-		row = r;
-		col = c;
+		--to.col;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+			move = MOVE_N;
+			curcost = pathcost[to.row][to.col];
+			next = to;
+		}
+		--to.col;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+			move = MOVE_NE;
+			curcost = pathcost[to.row][to.col];
+			next = to;
+		}
+		--to.row;
+		if (pathcost[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+			move = MOVE_E;
+			curcost = pathcost[to.row][to.col];
+			next = to;
+		}
+		if (from.row == next.row && from.col == next.col)
+			return ILLEGAL_MOVE;
+		from = next;
+		if (*distance > 0 && previous_move != move)
+			*straight_line = false;
+		previous_move = move;
+		++*distance;
+		allow_illegal_last_move = false;
 	}
-	if (curcost > 0)
-		return ILLEGAL_MOVE;
 	return move;
 }
 
@@ -477,31 +478,31 @@ void Saiph::updatePathMap() {
 		for (int c = 0; c < COLS; ++c)
 			pathcost[r][c] = UINT_MAX;
 	}
-	int row = world->player.row;
-	int col = world->player.col;
-	pathcost[row][col] = 0;
-	pathing_queue[0].row = row;
-	pathing_queue[0].col = col;
+	Point from;
+	from.row = world->player.row;
+	from.col = world->player.col;
+	pathing_queue[0] = from;
+	pathcost[from.row][from.col] = 0;
 	int curcost = 0;
 	int curnode = 0;
 	int nodes = 1;
 	while (curnode < nodes) {
-		row = pathing_queue[curnode].row;
-		col = pathing_queue[curnode].col;
-		curcost = pathcost[row][col];
-		for (int r = row - 1; r <= row + 1; ++r) {
-			if (r < MAP_ROW_START || r > MAP_ROW_END)
+		from = pathing_queue[curnode];
+		curcost = pathcost[from.row][from.col];
+		Point to;
+		for (to.row = from.row - 1; to.row <= from.row + 1; ++to.row) {
+			if (to.row < MAP_ROW_START || to.row > MAP_ROW_END)
 				continue;
-			for (int c = col - 1; c <= col + 1; ++c) {
-				unsigned char ws = world->map[r][c];
-				if (c < 0 || c >= COLS)
+			for (to.col = from.col - 1; to.col <= from.col + 1; ++to.col) {
+				unsigned char ws = world->map[to.row][to.col];
+				if (to.col < 0 || to.col >= COLS)
 					continue;
-				else if (!isLegalMove(current_branch, world->player.dungeon, r, c, row, col))
+				else if (!isLegalMove(to, from))
 					continue;
 				else if (ismonster[ws])
 					continue; // can't path through monsters, for now
-				unsigned char s = branches[current_branch]->map[world->player.dungeon][r][c];
-				unsigned int newpathcost = curcost + ((r == row || c == col) ? COST_CARDINAL : COST_DIAGONAL);
+				unsigned char s = branches[current_branch]->map[world->player.dungeon][to.row][to.col];
+				unsigned int newpathcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
 					newpathcost += COST_LAVA; // TODO: only if we levitate
 				else if (s == WATER)
@@ -510,10 +511,9 @@ void Saiph::updatePathMap() {
 					newpathcost += COST_TRAP;
 				if (ws == PET)
 					newpathcost += COST_PET;
-				if (newpathcost < pathcost[r][c]) {
-					pathcost[r][c] = newpathcost;
-					pathing_queue[nodes].row = r;
-					pathing_queue[nodes].col = c;
+				if (newpathcost < pathcost[to.row][to.col]) {
+					pathcost[to.row][to.col] = newpathcost;
+					pathing_queue[nodes] = to;
 					++nodes;
 				}
 			}

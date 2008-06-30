@@ -104,7 +104,10 @@ int ExploreAnalyzer::finish() {
 			continue;
 		int distance = 0;
 		bool direct_line = false;
-		places[p].move = saiph->shortestPath(places[p].row, places[p].col, false, distance, direct_line);
+		Point tmp;
+		tmp.row = places[p].row;
+		tmp.col = places[p].col;
+		places[p].move = saiph->shortestPath(tmp, false, &distance, &direct_line);
 		if (places[p].move == ILLEGAL_MOVE)
 			continue;
 		if (places[p].value > best || (places[p].value == best && (shortest_distance == -1 || distance < shortest_distance))) {

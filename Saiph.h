@@ -61,6 +61,7 @@ class Saiph;
 #include "Connection.h"
 #include "Dungeon.h"
 #include "Player.h"
+#include "Point.h"
 #include "World.h"
 /* analyzers */
 #include "Analyzers/DoorAnalyzer.h"
@@ -88,13 +89,6 @@ struct Command {
 	int priority;
 };
 
-/* just a location on the map */
-/* TODO: replace this with Coordinate */
-struct Point {
-	unsigned char row;
-	unsigned char col;
-};
-
 /* this is our AI */
 class Saiph {
 	public:
@@ -114,14 +108,14 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void directionToPos(unsigned char direction, int &to_row, int &to_col);
+		Point directionToPos(unsigned char direction, Point target);
 		void dumpMaps();
-		void farlook(int row, int col);
-		bool isLegalMove(int branch, int dungeon, int to_row, int to_col, int from_row, int from_col);
-		unsigned char moveToDirection(int to_row, int to_col, int from_row, int from_col);
+		void farlook(const Point &target);
+		bool isLegalMove(const Point &to, const Point &from);
+		unsigned char moveToDirection(const Point &to, const Point &from);
 		void registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols);
 		bool run();
-		unsigned char shortestPath(int row, int col, bool allow_illegal_last_move, int &distance, bool &direct_line);
+		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
 
 	private:
 		/* variables */
