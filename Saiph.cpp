@@ -99,6 +99,7 @@ Saiph::~Saiph() {
 	for (int b = 0; b < MAX_BRANCHES; ++b)
 		delete branches[b];
 	delete [] branches;
+	history->clear();
 	delete history;
 	delete world;
 	delete connection;
