@@ -76,13 +76,13 @@ using namespace std;
 class Saiph {
 	public:
 		/* variables */
+		World *world;
 		Map map[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		int current_branch;
 		int current_level;
 		string command;
-		string messages;
-		World *world;
-		bool engulfed;
+		string messages; // this should be in World
+		bool engulfed; // should this be in World?
 
 		/* constructors */
 		Saiph(bool remote);
