@@ -481,7 +481,7 @@ void Saiph::updatePathMap() {
 				unsigned char ws = world->map[to.row][to.col];
 				if (to.col < 0 || to.col >= COLS)
 					continue;
-				else if (!passable[ws])
+				else if (!passable[ws] && ws != SOLID_ROCK)
 					continue;
 				else if (monster[ws])
 					continue; // can't path through monsters, for now
