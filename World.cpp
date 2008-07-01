@@ -10,8 +10,13 @@ World::World(Connection *connection) {
 	memset(messages, '\0', BUFFER_SIZE);
 	data_size = -1;
 	messages_pos = 0;
-	question = false;
+	memset(map, ' ', ROWS * (COLS + 1));
+	for (int r = 0; r < ROWS; ++r)
+		map[r][COLS] = '\0';
+	memset(color, 0, ROWS * COLS);
+	memset(messages, '\0', BUFFER_SIZE);
 	menu = false;
+	question = false;
 	command.clear();
 	/* fetch the first "frame" */
 	update();
@@ -36,7 +41,7 @@ bool World::executeCommand() {
 }
 
 /* private methods */
-void World::handleEscapeSequence(int &pos, int &colour) {
+void World::handleEscapeSequence(int &pos, int &color) {
 	if (data[pos] == 27) {
 		/* sometimes we get 2 escape chars in a row,
 		 * just return in those cases */
@@ -106,7 +111,7 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 					}
 					row = 0;
 					col = 0;
-					colour = 0;
+					color = 0;
 				} else {
 					cerr << "Unhandled sequence: " << endl;
 					cerr << &data[pos] << endl;
@@ -141,14 +146,14 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 				/* DEC Private Mode Reset? :s */
 				break;
 			} else if (data[pos] == 'm') {
-				/* character attribute (bold, inverted, colour, etc) */
+				/* character attribute (bold, inverted, color, etc) */
 				if (divider > 0) {
-					cerr << "Unsupported character colour" << endl;
+					cerr << "Unsupported character color" << endl;
 					cerr << &data[pos] << endl;
 					exit(15);
 					break;
 				}
-				colour = 0;
+				color = 0;
 				if (pos == start + 1)
 					break;
 				int value = 0;
@@ -158,7 +163,7 @@ void World::handleEscapeSequence(int &pos, int &colour) {
 					cerr << &data[pos] << endl;
 					exit(14);
 				}
-				colour = value;
+				color = value;
 				break;
 			} else if (data[pos] == 'r') {
 				/* this is some scrolling crap, ignore it */
@@ -319,7 +324,7 @@ void World::fetchMessages() {
 
 void World::update() {
 	/* update the map */
-	int colour = 0; // colour of the char
+	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	/* print world */
 	cout << data << endl;
@@ -358,7 +363,7 @@ void World::update() {
 
 			case 27:
 				/* escape sequence coming up */
-				handleEscapeSequence(++pos, colour);
+				handleEscapeSequence(++pos, color);
 				break;
 
 			default:
@@ -372,26 +377,26 @@ void World::update() {
 				}
 				/* remap ambigous symbols */
 				char symbol = data[pos];
-				if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && colour == YELLOW)
+				if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && color == YELLOW)
 					symbol = OPEN_DOOR;
-				else if (symbol == CORRIDOR && colour == GREEN)
+				else if (symbol == CORRIDOR && color == GREEN)
 					symbol = TREE;
-				else if (symbol == CORRIDOR && colour == CYAN)
+				else if (symbol == CORRIDOR && color == CYAN)
 					symbol = IRON_BARS;
-				else if (symbol == GRAVE && colour == YELLOW)
+				else if (symbol == GRAVE && color == YELLOW)
 					symbol = THRONE;
-				else if (symbol == FOUNTAIN && colour != BLUE) // if it's blue it's a fountain
+				else if (symbol == FOUNTAIN && color != BLUE) // if it's blue it's a fountain
 					symbol = SINK;
-				else if (symbol == WATER && colour == RED)
+				else if (symbol == WATER && color == RED)
 					symbol = LAVA;
-				else if (symbol == FLOOR && colour == CYAN)
+				else if (symbol == FLOOR && color == CYAN)
 					symbol = ICE;
-				else if (symbol == FLOOR && colour == YELLOW) // is this right? doesn't matter now
+				else if (symbol == FLOOR && color == YELLOW) // is this right? doesn't matter now
 					symbol = LOWERED_DRAWBRIDGE;
-				else if (colour == INVERSE)
+				else if (color == INVERSE)
 					symbol = PET;
 				map[row][col] = symbol;
-				this->colour[row][col] = colour;
+				this->color[row][col] = color;
 				col++;
 				break;
 		}

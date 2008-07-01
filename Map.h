@@ -3,7 +3,8 @@
 #define MAP_H
 
 /* includes */
-#include "Dungeon.h"
+#include <string>
+#include "Globals.h"
 
 /* namespace */
 using namespace std;

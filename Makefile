@@ -5,7 +5,7 @@ CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g
 LDFLAGS = -lutil
-OBJECTS = Analyzer.o Connection.o Dungeon.o Map.o Player.o Saiph.o World.o
+OBJECTS = Analyzer.o Connection.o Map.o Player.o Saiph.o World.o
 
 saiph: $(OBJECTS)
 	$(MAKE) -C Analyzers
@@ -13,7 +13,6 @@ saiph: $(OBJECTS)
 
 Analyzer.o: Analyzer.h Analyzer.cpp
 Connection.o: Connection.h Connection.cpp
-Dungeon.o: Dungeon.h Dungeon.cpp
 Map.o: Map.h Map.cpp
 Player.o: Player.h Player.cpp
 Saiph.o: Saiph.h Saiph.cpp

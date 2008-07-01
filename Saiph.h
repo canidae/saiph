@@ -55,7 +55,7 @@ class Saiph;
 #include <vector>
 #include "Analyzer.h"
 #include "Connection.h"
-#include "Dungeon.h"
+#include "Globals.h"
 #include "Map.h"
 #include "Player.h"
 #include "Point.h"

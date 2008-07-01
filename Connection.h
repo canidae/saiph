@@ -1,7 +1,9 @@
 #ifndef CONNECTION_H
 /* defines */
 #define CONNECTION_H
+/* buffer */
 #define READ_LIMIT 4095
+#define BUFFER_SIZE 65536
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
 #define LOCAL_USLEEP 0
@@ -19,7 +21,7 @@ class Connection;
 #include <iostream>
 #include <string>
 #include <pty.h>
-#include "Dungeon.h"
+#include "Globals.h"
 
 /* namespace */
 using namespace std;

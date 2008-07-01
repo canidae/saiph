@@ -1,8 +1,6 @@
-#ifndef DUNGEON_H
+#ifndef GLOBALS_H
 /* defines */
-#define DUNGEON_H
-/* buffer for various stuff */
-#define BUFFER_SIZE 65536
+#define GLOBALS_H
 /* dungeon limits */
 #define ROWS 24
 #define COLS 80
@@ -10,7 +8,7 @@
 #define MAP_ROW_END 21 // and end
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
-/* colours & attributes */
+/* colors & attributes */
 #define INVERSE 7
 #define BLACK 30
 #define RED 31
@@ -68,29 +66,4 @@
 #define PET 136
 #define PLAYER 137
 
-
-/* forward declare */
-class Dungeon;
-
-/* includes */
-#include "Player.h"
-
-/* namespace */
-using namespace std;
-
-/* a dungeon represents a map, including attribute/status rows */
-class Dungeon {
-	public:
-		/* variables */
-		char map[ROWS][COLS + 1];
-		unsigned char colour[ROWS][COLS];
-		char messages[BUFFER_SIZE];
-		bool menu;
-		bool question;
-		Player player;
-
-		/* constructors */
-		Dungeon();
-		Dungeon(const Dungeon &dungeon);
-};
 #endif

@@ -1,6 +1,8 @@
 #ifndef WORLD_H
 /* defines */
 #define WORLD_H
+/* buffer */
+#define BUFFER_SIZE 65536
 /* text telling us there are more messages */
 #define MORE "--More--"
 #define MORE_LENGTH 8
@@ -23,16 +25,22 @@ class World;
 /* includes */
 #include <string>
 #include "Connection.h"
-#include "Dungeon.h"
+#include "Globals.h"
 #include "Player.h"
 
 /* namespace */
 using namespace std;
 
 /* the world in our eyes */
-class World: public Dungeon {
+class World {
 	public:
 		/* variables */
+		char map[ROWS][COLS + 1];
+		unsigned char color[ROWS][COLS];
+		char messages[BUFFER_SIZE];
+		bool menu;
+		bool question;
+		Player player;
 		int row; // cursor position, row
 		int col; // cursor position, col
 		char *data;
@@ -55,7 +63,7 @@ class World: public Dungeon {
 		string msg_str; // used for fetching messages
 
 		/* methods */
-		void handleEscapeSequence(int &pos, int &colour);
+		void handleEscapeSequence(int &pos, int &color);
 		void fetchMessages();
 		void fetchMessagesHelper(int row, int startcol);
 		void update();
