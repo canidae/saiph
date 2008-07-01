@@ -431,8 +431,13 @@ void Saiph::updateMaps() {
 			if (static_dungeon_symbol[s]) {
 				/* update the map showing static stuff */
 				map[current_branch][current_level].dungeon[r][c] = s;
-			} else if (!passable[map[current_branch][current_level].dungeon[r][c]]) {
-				/* we previously thought this place was unpassable.
+			} else if (!static_dungeon_symbol[map[current_branch][current_level].dungeon[r][c]]) {
+				/* hmm... this place isn't solid rock,
+				 * nor can we see which "static dungeon symbol" should be here.
+				 * most likely some item is in the way.
+				 * this happens for example when:
+				 * - monster opens door and we kill the monster in the doorway
+				 * - monster digging out level, leaving stuff on squares
 				 * let's place an open door here */
 				map[current_branch][current_level].dungeon[r][c] = OPEN_DOOR;
 			}
