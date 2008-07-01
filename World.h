@@ -43,7 +43,7 @@ class World {
 		Player player;
 		int row; // cursor position, row
 		int col; // cursor position, col
-		char *data;
+		char data[BUFFER_SIZE];
 		ssize_t data_size;
 		string command; // yes, i know. i'm hopeless. i save lots of allocations when all analyzers share this string
 

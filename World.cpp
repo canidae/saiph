@@ -5,7 +5,6 @@ World::World(Connection *connection) {
 	this->connection = connection;
 	row = 0;
 	col = 0;
-	data = new char[BUFFER_SIZE];
 	memset(data, '\0', BUFFER_SIZE);
 	memset(messages, '\0', BUFFER_SIZE);
 	data_size = -1;
@@ -24,7 +23,6 @@ World::World(Connection *connection) {
 
 /* destructors */
 World::~World() {
-	delete [] data;
 }
 
 /* methods */
