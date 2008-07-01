@@ -35,17 +35,15 @@ using namespace std;
 class World {
 	public:
 		/* variables */
-		char map[ROWS][COLS + 1];
-		unsigned char color[ROWS][COLS];
+		char map[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
+		int color[ROWS][COLS]; // not used for string reading, no need for + 1
+		int row; // cursor position, row
+		int col; // cursor position, col
+		Player player;
 		char messages[BUFFER_SIZE];
 		bool menu;
 		bool question;
-		Player player;
-		int row; // cursor position, row
-		int col; // cursor position, col
 		char data[BUFFER_SIZE];
-		ssize_t data_size;
-		string command; // yes, i know. i'm hopeless. i save lots of allocations when all analyzers share this string
 
 		/* constructors */
 		World(Connection *connection);
@@ -54,11 +52,12 @@ class World {
 		~World();
 
 		/* methods */
-		bool executeCommand();
+		bool executeCommand(const string &command);
 
 	private:
 		/* variables */
 		Connection *connection;
+		ssize_t data_size;
 		int messages_pos; // used for concatenation multiple messages together
 		string msg_str; // used for fetching messages
 

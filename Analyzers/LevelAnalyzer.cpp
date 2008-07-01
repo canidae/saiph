@@ -8,8 +8,6 @@ LevelAnalyzer::LevelAnalyzer(Saiph *saiph) {
 
 /* methods */
 int LevelAnalyzer::finish() {
-	if (saiph->command.priority > LA_DESCEND_PRIORITY)
-		return 0;
 	/* time to descend */
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;

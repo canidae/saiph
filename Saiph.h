@@ -72,12 +72,6 @@ class Saiph;
 /* namespace */
 using namespace std;
 
-/* a command to send to the game */
-struct Command {
-	int analyzer;
-	int priority;
-};
-
 /* this is our AI */
 class Saiph {
 	public:
@@ -85,7 +79,7 @@ class Saiph {
 		Map map[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		int current_branch;
 		int current_level;
-		Command command;
+		string command;
 		string messages;
 		World *world;
 		bool engulfed;

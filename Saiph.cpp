@@ -5,10 +5,6 @@ Saiph::Saiph(bool remote) {
 	connection = new Connection(remote);
 	world = new World(connection);
 
-	/* next command */
-	command.analyzer = -1;
-	command.priority = 0;
-
 	/* engulfed */
 	engulfed = false;
 
@@ -122,7 +118,7 @@ Saiph::~Saiph() {
 /* methods */
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
-	world->command.push_back(';');
+	command.push_back(';');
 	Point cursor;
 	cursor.row = world->player.row;
 	cursor.col = world->player.col;
@@ -157,11 +153,11 @@ void Saiph::farlook(const Point &target) {
 			move = MOVE_W;
 			--cursor.col;
 		}
-		world->command.push_back(move);
+		command.push_back(move);
 	}
-	world->command.push_back(',');
-	cerr << world->command << endl;
-	world->executeCommand();
+	command.push_back(',');
+	cerr << command << endl;
+	world->executeCommand(command);
 }
 
 void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols) {
@@ -183,8 +179,8 @@ bool Saiph::run() {
 	dumpMaps();
 
 	/* reset command */
-	command.analyzer = -1;
-	command.priority = 0;
+	int best_analyzer = -1;
+	int best_priority = 0;
 
 	/* check if we're engulfed */
 	int r = world->player.row;
@@ -202,9 +198,9 @@ bool Saiph::run() {
 	cerr << messages << endl;
 	for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
 		int priority = analyzers[a]->parseMessages(&messages);
-		if (priority > command.priority) {
-			command.analyzer = a;
-			command.priority = priority;
+		if (priority > best_priority) {
+			best_analyzer = a;
+			best_priority = priority;
 		}
 	}
 
@@ -212,9 +208,9 @@ bool Saiph::run() {
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
 			int priority = analyzers[a]->start();
-			if (priority > command.priority) {
-				command.analyzer = a;
-				command.priority = priority;
+			if (priority > best_priority) {
+				best_analyzer = a;
+				best_priority = priority;
 			}
 		}
 	}
@@ -227,33 +223,33 @@ bool Saiph::run() {
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
 			int priority = analyzers[a]->finish();
-			if (priority > command.priority) {
-				command.analyzer = a;
-				command.priority = priority;
+			if (priority > best_priority) {
+				best_analyzer = a;
+				best_priority = priority;
 			}
 		}
 	}
 
-	if (world->question && command.analyzer == -1) {
+	if (world->question && best_analyzer == -1) {
 		cerr << "Unhandled question: " << messages << endl;
 		return false;
 	}
 
-	if (world->menu && command.analyzer == -1) {
+	if (world->menu && best_analyzer == -1) {
 		cerr << "Unhandled menu: " << messages << endl;
 		return false;
 	}
 
-	cerr << "letting analyzer " << command.analyzer << " do its thing with priority " << command.priority << endl;
+	cerr << "letting analyzer " << best_analyzer << " do its thing with priority " << best_priority << endl;
 
 	/* check if we got a command */
-	if (command.analyzer == -1)
+	if (best_analyzer == -1)
 		return false;
 
 	/* let an analyzer do its command */
-	world->command.clear(); // just in case some analyzer messed with this string
-	analyzers[command.analyzer]->command(&world->command);
-	world->executeCommand();
+	command.clear(); // just in case some analyzer messed with this string
+	analyzers[best_analyzer]->command(&command);
+	world->executeCommand(command);
 	return true;
 }
 

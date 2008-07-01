@@ -16,7 +16,6 @@ World::World(Connection *connection) {
 	memset(messages, '\0', BUFFER_SIZE);
 	menu = false;
 	question = false;
-	command.clear();
 	/* fetch the first "frame" */
 	update();
 }
@@ -26,7 +25,7 @@ World::~World() {
 }
 
 /* methods */
-bool World::executeCommand() {
+bool World::executeCommand(const string &command) {
 	/* send a command to nethack */
 	if (command.size() <= 0) {
 		/* huh? no command? */
@@ -34,7 +33,6 @@ bool World::executeCommand() {
 	}
 	connection->send(command);
 	update();
-	command.clear();
 	return true;
 }
 
@@ -314,8 +312,7 @@ void World::fetchMessages() {
 	if (more) {
 		/* there are "--More--" messages.
 		 * since this is not a menu we'll just ask for the rest of the messages */
-		command.push_back(' ');
-		executeCommand();
+		executeCommand(" ");
 		return;
 	}
 }

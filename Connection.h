@@ -37,7 +37,7 @@ class Connection {
 
 		/* methods */
 		ssize_t retrieve(char *buffer, size_t count);
-		ssize_t send(const string &buffer);
+		ssize_t send(const string &data);
 
 	private:
 		/* variables */
