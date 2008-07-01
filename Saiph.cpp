@@ -393,7 +393,7 @@ bool Saiph::isLegalMove(const Point &to, const Point &from) {
 	 */
 	// TODO: if (blacklisted_move) return false;
 	if (to.row == from.row || to.col == from.col)
-		return true; // cardinal moves are legal
+		return true; // all cardinal moves are legal
 	if (map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR)
 		return false; // in/out of door 
 	// TODO: if (polymorphed_to_grid_bug) return false;
@@ -431,9 +431,9 @@ void Saiph::updateMaps() {
 			if (static_dungeon_symbol[s]) {
 				/* update the map showing static stuff */
 				map[current_branch][current_level].dungeon[r][c] = s;
-			} else if (map[current_branch][current_level].dungeon[r][c] == SOLID_ROCK) {
-				/* if we see an item/monster (dynamic stuff) we'll pretend there's a door here.
-				 * this prevents saiph from getting stuck, but it should be improved later */
+			} else if (!passable[map[current_branch][current_level].dungeon[r][c]]) {
+				/* we previously thought this place was unpassable.
+				 * let's place an open door here */
 				map[current_branch][current_level].dungeon[r][c] = OPEN_DOOR;
 			}
 			if (item[s]) {
@@ -479,7 +479,10 @@ void Saiph::updatePathMap() {
 				continue;
 			for (to.col = from.col - 1; to.col <= from.col + 1; ++to.col) {
 				unsigned char ws = world->map[to.row][to.col];
+				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
 				if (to.col < 0 || to.col >= COLS)
+					continue;
+				else if (!passable[s])
 					continue;
 				else if (!passable[ws] && ws != SOLID_ROCK)
 					continue;
@@ -487,9 +490,6 @@ void Saiph::updatePathMap() {
 					continue; // can't path through monsters, for now
 				else if (!isLegalMove(to, from))
 					continue; // illegal diagonal move
-				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
-				if (!passable[s])
-					continue;
 				unsigned int newcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
 					newcost += COST_LAVA; // TODO: only if we levitate
