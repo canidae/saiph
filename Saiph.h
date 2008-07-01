@@ -109,14 +109,15 @@ class Saiph {
 		Connection *connection;
 		unsigned int pathmap[ROWS][COLS];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
-		bool isitem[UCHAR_MAX + 1];
-		bool ismonster[UCHAR_MAX + 1];
-		bool ispassable[UCHAR_MAX + 1];
+		bool item[UCHAR_MAX + 1];
+		bool monster[UCHAR_MAX + 1];
+		bool passable[UCHAR_MAX + 1];
 		bool static_dungeon_symbol[UCHAR_MAX + 1];
 
 		/* methods */
 		void dumpMaps();
 		void inspect();
+		bool isLegalDiagonalMove(const Point &to, const Point &from);
 		bool isLegalMove(const Point &to, const Point &from);
 		void updateMaps();
 		void updatePathMap();

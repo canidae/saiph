@@ -16,64 +16,64 @@ Saiph::Saiph(bool remote) {
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		/* monsters */
 		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || a == '&' || a == '\'' || a == '6' || a == ':' || a == ';' || a == '~')
-			ismonster[a] = true;
+			monster[a] = true;
 		else
-			ismonster[a] = false;
+			monster[a] = false;
 		/* items */
-		isitem[a] = false;
+		item[a] = false;
 		/* pathing & maps */
-		ispassable[a] = false;
+		passable[a] = false;
 		static_dungeon_symbol[a] = false;
 	}
-	isitem[(unsigned char) WEAPON] = true;
-	isitem[(unsigned char) ARMOR] = true;
-	isitem[(unsigned char) RING] = true;
-	isitem[(unsigned char) AMULET] = true;
-	isitem[(unsigned char) TOOL] = true;
-	isitem[(unsigned char) FOOD] = true;
-	isitem[(unsigned char) POTION] = true;
-	isitem[(unsigned char) SCROLL] = true;
-	isitem[(unsigned char) SPELLBOOK] = true;
-	isitem[(unsigned char) WAND] = true;
-	isitem[(unsigned char) GOLD] = true;
-	isitem[(unsigned char) GEM] = true;
-	isitem[(unsigned char) STATUE] = true;
-	isitem[(unsigned char) BOULDER] = true;
-	isitem[(unsigned char) IRON_BALL] = true;
-	isitem[(unsigned char) CHAINS] = true;
-	isitem[(unsigned char) VENOM] = true;
-	ispassable[(unsigned char) FLOOR] = true;
-	ispassable[(unsigned char) OPEN_DOOR] = true;
-	ispassable[(unsigned char) CORRIDOR] = true;
-	ispassable[(unsigned char) STAIRS_UP] = true;
-	ispassable[(unsigned char) STAIRS_DOWN] = true;
-	ispassable[(unsigned char) ALTAR] = true;
-	ispassable[(unsigned char) GRAVE] = true;
-	ispassable[(unsigned char) THRONE] = true;
-	ispassable[(unsigned char) SINK] = true;
-	ispassable[(unsigned char) FOUNTAIN] = true;
-	ispassable[(unsigned char) WATER] = true;
-	ispassable[(unsigned char) ICE] = true;
-	ispassable[(unsigned char) LAVA] = true;
-	ispassable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	ispassable[(unsigned char) TRAP] = true;
-	ispassable[(unsigned char) WEAPON] = true;
-	ispassable[(unsigned char) ARMOR] = true;
-	ispassable[(unsigned char) RING] = true;
-	ispassable[(unsigned char) AMULET] = true;
-	ispassable[(unsigned char) TOOL] = true;
-	ispassable[(unsigned char) FOOD] = true;
-	ispassable[(unsigned char) POTION] = true;
-	ispassable[(unsigned char) SCROLL] = true;
-	ispassable[(unsigned char) SPELLBOOK] = true;
-	ispassable[(unsigned char) WAND] = true;
-	ispassable[(unsigned char) GOLD] = true;
-	ispassable[(unsigned char) GEM] = true;
-	ispassable[(unsigned char) STATUE] = true;
-	ispassable[(unsigned char) IRON_BALL] = true;
-	ispassable[(unsigned char) CHAINS] = true;
-	ispassable[(unsigned char) VENOM] = true;
-	ispassable[(unsigned char) PET] = true;
+	item[(unsigned char) WEAPON] = true;
+	item[(unsigned char) ARMOR] = true;
+	item[(unsigned char) RING] = true;
+	item[(unsigned char) AMULET] = true;
+	item[(unsigned char) TOOL] = true;
+	item[(unsigned char) FOOD] = true;
+	item[(unsigned char) POTION] = true;
+	item[(unsigned char) SCROLL] = true;
+	item[(unsigned char) SPELLBOOK] = true;
+	item[(unsigned char) WAND] = true;
+	item[(unsigned char) GOLD] = true;
+	item[(unsigned char) GEM] = true;
+	item[(unsigned char) STATUE] = true;
+	item[(unsigned char) BOULDER] = true;
+	item[(unsigned char) IRON_BALL] = true;
+	item[(unsigned char) CHAINS] = true;
+	item[(unsigned char) VENOM] = true;
+	passable[(unsigned char) FLOOR] = true;
+	passable[(unsigned char) OPEN_DOOR] = true;
+	passable[(unsigned char) CORRIDOR] = true;
+	passable[(unsigned char) STAIRS_UP] = true;
+	passable[(unsigned char) STAIRS_DOWN] = true;
+	passable[(unsigned char) ALTAR] = true;
+	passable[(unsigned char) GRAVE] = true;
+	passable[(unsigned char) THRONE] = true;
+	passable[(unsigned char) SINK] = true;
+	passable[(unsigned char) FOUNTAIN] = true;
+	passable[(unsigned char) WATER] = true;
+	passable[(unsigned char) ICE] = true;
+	passable[(unsigned char) LAVA] = true;
+	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	passable[(unsigned char) TRAP] = true;
+	passable[(unsigned char) WEAPON] = true;
+	passable[(unsigned char) ARMOR] = true;
+	passable[(unsigned char) RING] = true;
+	passable[(unsigned char) AMULET] = true;
+	passable[(unsigned char) TOOL] = true;
+	passable[(unsigned char) FOOD] = true;
+	passable[(unsigned char) POTION] = true;
+	passable[(unsigned char) SCROLL] = true;
+	passable[(unsigned char) SPELLBOOK] = true;
+	passable[(unsigned char) WAND] = true;
+	passable[(unsigned char) GOLD] = true;
+	passable[(unsigned char) GEM] = true;
+	passable[(unsigned char) STATUE] = true;
+	passable[(unsigned char) IRON_BALL] = true;
+	passable[(unsigned char) CHAINS] = true;
+	passable[(unsigned char) VENOM] = true;
+	passable[(unsigned char) PET] = true;
 	static_dungeon_symbol[(unsigned char) VERTICAL_WALL] = true;
 	static_dungeon_symbol[(unsigned char) HORIZONTAL_WALL] = true;
 	static_dungeon_symbol[(unsigned char) FLOOR] = true;
@@ -279,49 +279,49 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 		Point to = from;
 		--to.row;
 		--to.col;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
 			move = MOVE_SE;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.col;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost) {
 			move = MOVE_S;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.col;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
 			move = MOVE_SW;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.row;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost) {
 			move = MOVE_W;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.row;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
 			move = MOVE_NW;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		--to.col;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost) {
 			move = MOVE_N;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		--to.col;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
 			move = MOVE_NE;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		--to.row;
-		if (pathmap[to.row][to.col] < curcost && (allow_illegal_last_move || isLegalMove(to, from))) {
+		if (pathmap[to.row][to.col] < curcost) {
 			move = MOVE_E;
 			curcost = pathmap[to.row][to.col];
 			next = to;
@@ -379,20 +379,24 @@ void Saiph::inspect() {
 	}
 }
 
-bool Saiph::isLegalMove(const Point &to, const Point &from) {
-	/* when we're backtracking the pathmap there are some rules we must follow.
-	 * there are certain things we can't check when building the pathmap:
-	 * - moving in/out of doors
-	 * - moving diagonally past boulders? */
-	if (to.row != from.row && to.col != from.col) {
-		/* diagonal move */
-		if (map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR) {
-			/* into/out of door */
-			return false;
-		} else if (!ispassable[map[current_branch][current_level].dungeon[to.row][from.col]] && !ispassable[map[current_branch][current_level].dungeon[from.row][to.col]] && map[current_branch][current_level].dungeon[to.row][from.col] != BOULDER && map[current_branch][current_level].dungeon[from.row][to.col] != BOULDER) {
-			/* between two unpassable symbols */
-			return false;
-		}
+bool Saiph::isLegalDiagonalMove(const Point &to, const Point &from) {
+	/* diagonal moves follows some special rules,
+	 * we need to check this when creating and backtracking the pathmap:
+	 * - can't move diagonally in/out of doors
+	 * - can't move diagonally through tight fits
+	 *   + if one corner is a boulder then it's ok
+	 *     * unless we're in sokoban
+	 *   + if we're not carrying too much then it's also ok
+	 * - can't move diagonally when polymorphed to a grid bug */
+	if (map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR)
+		return false; // in/out of door 
+	if (!passable[map[current_branch][current_level].dungeon[to.row][from.col]] && !passable[map[current_branch][current_level].dungeon[from.row][to.col]]) {
+		/* tight fit */
+		// TODO: if (in_sokoban) return false;
+		if (map[current_branch][current_level].dungeon[to.row][from.col] == BOULDER || map[current_branch][current_level].dungeon[from.row][to.col] == BOULDER)
+			return true; // at least one corner is a boulder, we may pass
+		// TODO? if (not_carrying_too_much) return true;
+		return false;
 	}
 	return true;
 }
@@ -425,14 +429,14 @@ void Saiph::updateMaps() {
 				 * this prevents saiph from getting stuck, but it should be improved later */
 				map[current_branch][current_level].dungeon[r][c] = OPEN_DOOR;
 			}
-			if (isitem[s]) {
+			if (item[s]) {
 				/* item here */
 				map[current_branch][current_level].item[r][c] = s;
 			} else if (map[current_branch][current_level].item[r][c] != NOITEM) {
 				/* item is gone? hmm, remove it */
 				map[current_branch][current_level].item[r][c] = NOITEM;
 			}
-			if (ismonster[s]) {
+			if (monster[s]) {
 				/* found a monster!
 				 * since monsters unlike items disappear from map when we can't see them,
 				 * we can't remove monsters like we do with items above.
@@ -470,14 +474,14 @@ void Saiph::updatePathMap() {
 				unsigned char ws = world->map[to.row][to.col];
 				if (to.col < 0 || to.col >= COLS)
 					continue;
-				else if (!ispassable[ws])
+				else if (!passable[ws])
 					continue;
-				else if (ismonster[ws])
+				else if (monster[ws])
 					continue; // can't path through monsters, for now
-				else if (!isLegalMove(to, from))
-					continue;
+				else if ((to.row != from.row && to.col != from.col) && !isLegalDiagonalMove(to, from))
+					continue; // illegal diagonal move
 				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
-				if (!ispassable[s])
+				if (!passable[s])
 					continue;
 				unsigned int newcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
