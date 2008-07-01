@@ -120,52 +120,6 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-Point Saiph::directionToPos(unsigned char direction, Point target) {
-	/* return the new position after moving given direction */
-	switch (direction) {
-		case MOVE_NW:
-			--target.row;
-			--target.col;
-			break;
-
-		case MOVE_N:
-			--target.row;
-			break;
-
-		case MOVE_NE:
-			--target.row;
-			++target.col;
-			break;
-
-		case MOVE_W:
-			--target.col;
-			break;
-
-		case MOVE_E:
-			++target.col;
-			break;
-
-		case MOVE_SW:
-			++target.row;
-			--target.col;
-			break;
-
-		case MOVE_S:
-			++target.row;
-			break;
-
-		case MOVE_SE:
-			++target.row;
-			++target.col;
-			break;
-
-		default:
-			cerr << "invalid direction: " << direction << endl;
-			break;
-	}
-	return target;
-}
-
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	world->command.push_back(';');
@@ -174,23 +128,35 @@ void Saiph::farlook(const Point &target) {
 	cursor.col = world->player.col;
 	while (cursor.row != target.row && cursor.col != target.col) {
 		unsigned char move;
-		if (cursor.row < target.row && cursor.col < target.col)
+		if (cursor.row < target.row && cursor.col < target.col) {
 			move = MOVE_SE;
-		else if (cursor.row < target.row && cursor.col > target.col)
+			++cursor.row;
+			++cursor.col;
+		} else if (cursor.row < target.row && cursor.col > target.col) {
 			move = MOVE_SW;
-		else if (cursor.row > target.row && cursor.col < target.col)
+			++cursor.row;
+			--cursor.col;
+		} else if (cursor.row > target.row && cursor.col < target.col) {
 			move = MOVE_NE;
-		else if (cursor.row > target.row && cursor.col > target.col)
+			--cursor.row;
+			++cursor.col;
+		} else if (cursor.row > target.row && cursor.col > target.col) {
 			move = MOVE_NW;
-		else if (cursor.row < target.row)
+			--cursor.row;
+			--cursor.col;
+		} else if (cursor.row < target.row) {
 			move = MOVE_S;
-		else if (cursor.row > target.row)
+			++cursor.row;
+		} else if (cursor.row > target.row) {
 			move = MOVE_N;
-		else if (cursor.col < target.col)
+			--cursor.row;
+		} else if (cursor.col < target.col) {
 			move = MOVE_E;
-		else
+			++cursor.col;
+		} else {
 			move = MOVE_W;
-		cursor = directionToPos(move, cursor);
+			--cursor.col;
+		}
 		world->command.push_back(move);
 	}
 	world->command.push_back(',');

@@ -97,7 +97,6 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		Point directionToPos(unsigned char direction, Point target);
 		void farlook(const Point &target);
 		void registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols);
 		bool run();
