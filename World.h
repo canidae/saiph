@@ -63,7 +63,7 @@ class World {
 		string msg_str; // used for fetching messages
 
 		/* methods */
-		void handleEscapeSequence(int &pos, int &color);
+		void handleEscapeSequence(int *pos, int *color);
 		void fetchMessages();
 		void fetchMessagesHelper(int row, int startcol);
 		void update();

@@ -41,39 +41,39 @@ bool World::executeCommand() {
 }
 
 /* private methods */
-void World::handleEscapeSequence(int &pos, int &color) {
-	if (data[pos] == 27) {
+void World::handleEscapeSequence(int *pos, int *color) {
+	if (data[*pos] == 27) {
 		/* sometimes we get 2 escape chars in a row,
 		 * just return in those cases */
 		return;
-	} else if (data[pos] == '[') {
+	} else if (data[*pos] == '[') {
 		int divider = -1;
-		int start = pos;
-		for (; pos < data_size; ++pos) {
-			if (data[pos] == ';') {
+		int start = *pos;
+		for (; *pos < data_size; ++*pos) {
+			if (data[*pos] == ';') {
 				/* divider for values */
-				divider = pos;
-			} else if (data[pos] == 'A') {
+				divider = *pos;
+			} else if (data[*pos] == 'A') {
 				/* move cursor up */
 				if (row > 0)
 					--row;
 				break;
-			} else if (data[pos] == 'B') {
+			} else if (data[*pos] == 'B') {
 				/* move cursor down */
 				if (row < ROWS)
 					++row;
 				break;
-			} else if (data[pos] == 'C') {
+			} else if (data[*pos] == 'C') {
 				/* move cursor right */
 				if (col < COLS)
 					++col;
 				break;
-			} else if (data[pos] == 'D') {
+			} else if (data[*pos] == 'D') {
 				/* move cursor left */
 				if (col > 0)
 					--col;
 				break;
-			} else if (data[pos] == 'H') {
+			} else if (data[*pos] == 'H') {
 				/* set cursor position */
 				row = 0;
 				col = 0;
@@ -89,21 +89,21 @@ void World::handleEscapeSequence(int &pos, int &color) {
 					exit(13);
 				}
 				break;
-			} else if (data[pos] == 'J') {
+			} else if (data[*pos] == 'J') {
 				/* erase in display */
-				if (data[pos - 1] == '[') {
+				if (data[*pos - 1] == '[') {
 					/* erase everything below current position */
 					for (int r = row + 1; r < ROWS; ++r) {
 						for (int c = 0; c < COLS; ++c)
 							map[r][c] = ' ';
 					}
-				} else if (data[pos - 1] == '1') {
+				} else if (data[*pos - 1] == '1') {
 					/* erase everything aboce current position */
 					for (int r = row - 1; r >= 0; --r) {
 						for (int c = 0; c < COLS; ++c)
 							map[r][c] = ' ';
 					}
-				} else if (data[pos - 1] == '2') {
+				} else if (data[*pos - 1] == '2') {
 					/* erase entire display */
 					for (int r = 0; r < ROWS; ++r) {
 						for (int c = 0; c < COLS; ++c)
@@ -111,109 +111,109 @@ void World::handleEscapeSequence(int &pos, int &color) {
 					}
 					row = 0;
 					col = 0;
-					color = 0;
+					*color = 0;
 				} else {
 					cerr << "Unhandled sequence: " << endl;
-					cerr << &data[pos] << endl;
+					cerr << &data[*pos] << endl;
 					exit(9);
 				}
 				break;
-			} else if (data[pos] == 'K') {
+			} else if (data[*pos] == 'K') {
 				/* erase in line */
-				if (data[pos - 1] == '[') {
+				if (data[*pos - 1] == '[') {
 					/* erase everything to the right */
 					for (int c = col; c < COLS; ++c)
 						map[row][c] = ' ';
-				} else if (data[pos - 1] == '1') {
+				} else if (data[*pos - 1] == '1') {
 					/* erase everything to the left */
 					for (int c = 0; c < col; ++c)
 						map[row][c] = ' ';
-				} else if (data[pos - 1] == '2') {
+				} else if (data[*pos - 1] == '2') {
 					/* erase entire line */
 					for (int c = 0; c < COLS; ++c)
 						map[row][c] = ' ';
 				} else {
 					cerr << "Unhandled sequence: " << endl;
-					cerr << &data[pos] << endl;
+					cerr << &data[*pos] << endl;
 					exit(9);
 				}
 				break;
-			} else if (data[pos] == 'h') {
+			} else if (data[*pos] == 'h') {
 				/* can possibly be ignored */
 				/* probably [?1049h */
 				break;
-			} else if (data[pos] == 'l') {
+			} else if (data[*pos] == 'l') {
 				/* DEC Private Mode Reset? :s */
 				break;
-			} else if (data[pos] == 'm') {
+			} else if (data[*pos] == 'm') {
 				/* character attribute (bold, inverted, color, etc) */
 				if (divider > 0) {
 					cerr << "Unsupported character color" << endl;
-					cerr << &data[pos] << endl;
+					cerr << &data[*pos] << endl;
 					exit(15);
 					break;
 				}
-				color = 0;
-				if (pos == start + 1)
+				*color = 0;
+				if (*pos == start + 1)
 					break;
 				int value = 0;
 				int matched = sscanf(&data[start + 1], "%d", &value);
 				if (matched < 1) {
 					cerr << "Expected numeric value for character attribute" << endl;
-					cerr << &data[pos] << endl;
+					cerr << &data[*pos] << endl;
 					exit(14);
 				}
-				color = value;
+				*color = value;
 				break;
-			} else if (data[pos] == 'r') {
+			} else if (data[*pos] == 'r') {
 				/* this is some scrolling crap, ignore it */
 				break;
-			} else if (data[pos] == 27) {
+			} else if (data[*pos] == 27) {
 				/* escape char found, that shouldn't happen */
 				cerr << "Escape character found in sequence: " << endl;
-				for (int a = start; a <= pos; ++a)
+				for (int a = start; a <= *pos; ++a)
 					cerr << (int) data[a] << " - ";
 				cerr << endl;
 				cerr << &data[start] << endl;
 				cerr << data << endl;
 				exit(7);
-			} else if (pos - start > 7) {
+			} else if (*pos - start > 7) {
 				/* too long escape sequence? */
 				cerr << "Suspiciously long sequence: " << endl;
-				cerr << &data[pos] << endl;
+				cerr << &data[*pos] << endl;
 				exit(8);
 			}
 		}
-		if (pos >= data_size) {
+		if (*pos >= data_size) {
 			cerr << "Did not find stop char for sequence" << endl;
 			cerr << data << endl;
 			exit(6);
 		}
-	} else if (data[pos] == '(') {
+	} else if (data[*pos] == '(') {
 		/* designate character set, ignore */
-		++pos;
-	} else if (data[pos] == ')') {
+		++*pos;
+	} else if (data[*pos] == ')') {
 		/* designate character set, ignore */
-		++pos;
-	} else if (data[pos] == '*') {
+		++*pos;
+	} else if (data[*pos] == '*') {
 		/* designate character set, ignore */
-		++pos;
-	} else if (data[pos] == '+') {
+		++*pos;
+	} else if (data[*pos] == '+') {
 		/* designate character set, ignore */
-		++pos;
-	} else if (data[pos] == 'M') {
+		++*pos;
+	} else if (data[*pos] == 'M') {
 		/* reverse linefeed? */
 		if (row > 0)
 			--row;
-	} else if (data[pos] == '=') {
+	} else if (data[*pos] == '=') {
 		/* application numpad?
 		 * ignore */
-	} else if (data[pos] == '>') {
+	} else if (data[*pos] == '>') {
 		/* normal numpad?
 		 * ignore */
 	} else {
-		cerr << "Unsupported escape sequence code at char " << pos << ": ";
-		cerr << &data[pos] << endl;
+		cerr << "Unsupported escape sequence code at char " << *pos << ": ";
+		cerr << &data[*pos] << endl;
 		exit(5);
 	}
 }
@@ -363,7 +363,8 @@ void World::update() {
 
 			case 27:
 				/* escape sequence coming up */
-				handleEscapeSequence(++pos, color);
+				++pos;
+				handleEscapeSequence(&pos, &color);
 				break;
 
 			default:
