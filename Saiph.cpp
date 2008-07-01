@@ -15,7 +15,7 @@ Saiph::Saiph(bool remote) {
 	/* set certain values */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		/* monsters */
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || a == '&' || a == '\'' || a == '6' || a == ':' || a == ';' || a == '~')
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || a == '&' || a == '\'' || a == '6' || a == ':' || a == ';' || a == '~' || a == PET)
 			monster[a] = true;
 		else
 			monster[a] = false;
@@ -362,8 +362,8 @@ void Saiph::dumpMaps() {
 			cout << (unsigned char) (pathmap[r][c] % 96 + 32);
 		}
 	}
-	/* return cursor back to player */
-	cout << (unsigned char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
+	/* return cursor back to where it was */
+	cout << (unsigned char) 27 << "[" << world->row + 1 << ";" << world->col + 1 << "H";
 }
 
 void Saiph::inspect() {
@@ -483,18 +483,16 @@ void Saiph::updatePathMap() {
 			if (to.row < MAP_ROW_START || to.row > MAP_ROW_END)
 				continue;
 			for (to.col = from.col - 1; to.col <= from.col + 1; ++to.col) {
-				unsigned char ws = world->map[to.row][to.col];
 				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
+				unsigned char m = map[current_branch][current_level].monster[to.row][to.col];
 				if (to.col < 0 || to.col >= COLS)
 					continue;
 				else if (!passable[s])
 					continue;
-				else if (!passable[ws] && ws != SOLID_ROCK)
-					continue;
-				else if (monster[ws])
-					continue; // can't path through monsters, for now
+				else if (monster[m] && m != PET)
+					continue; // can't path through monsters (except pets)
 				else if (!isLegalMove(to, from))
-					continue; // illegal diagonal move
+					continue;
 				unsigned int newcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
 					newcost += COST_LAVA; // TODO: only if we levitate
@@ -504,7 +502,7 @@ void Saiph::updatePathMap() {
 					newcost += COST_TRAP;
 				else if (s == ICE)
 					newcost += COST_ICE;
-				if (ws == PET)
+				if (m == PET)
 					newcost += COST_PET;
 				if (newcost < pathmap[to.row][to.col]) {
 					pathmap[to.row][to.col] = newcost;

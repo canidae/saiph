@@ -33,6 +33,8 @@ using namespace std;
 class World: public Dungeon {
 	public:
 		/* variables */
+		int row; // cursor position, row
+		int col; // cursor position, col
 		char *data;
 		ssize_t data_size;
 		string command; // yes, i know. i'm hopeless. i save lots of allocations when all analyzers share this string
@@ -48,8 +50,6 @@ class World: public Dungeon {
 
 	private:
 		/* variables */
-		int row; // cursor position, row
-		int col; // cursor position, col
 		Connection *connection;
 		int messages_pos; // used for concatenation multiple messages together
 		string msg_str; // used for fetching messages
