@@ -98,9 +98,7 @@ class Saiph {
 
 		/* methods */
 		Point directionToPos(unsigned char direction, Point target);
-		void dumpMaps();
 		void farlook(const Point &target);
-		bool isLegalMove(const Point &to, const Point &from);
 		void registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols);
 		bool run();
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
@@ -110,16 +108,17 @@ class Saiph {
 		vector<Analyzer *> analyzers;
 		vector<Analyzer *> analyzer_symbols[UCHAR_MAX + 1];
 		Connection *connection;
-		bool ismonster[UCHAR_MAX + 1];
-		bool isitem[UCHAR_MAX + 1];
 		unsigned int pathmap[ROWS][COLS];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
-		bool passable[UCHAR_MAX + 1];
-		bool diagonally_passable[UCHAR_MAX + 1];
+		bool isitem[UCHAR_MAX + 1];
+		bool ismonster[UCHAR_MAX + 1];
+		bool ispassable[UCHAR_MAX + 1];
 		bool static_dungeon_symbol[UCHAR_MAX + 1];
 
 		/* methods */
+		void dumpMaps();
 		void inspect();
+		bool isLegalMove(const Point &to, const Point &from);
 		void updateMaps();
 		void updatePathMap();
 };

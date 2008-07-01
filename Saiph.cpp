@@ -22,7 +22,7 @@ Saiph::Saiph(bool remote) {
 		/* items */
 		isitem[a] = false;
 		/* pathing & maps */
-		passable[a] = false;
+		ispassable[a] = false;
 		static_dungeon_symbol[a] = false;
 	}
 	isitem[(unsigned char) WEAPON] = true;
@@ -42,38 +42,38 @@ Saiph::Saiph(bool remote) {
 	isitem[(unsigned char) IRON_BALL] = true;
 	isitem[(unsigned char) CHAINS] = true;
 	isitem[(unsigned char) VENOM] = true;
-	passable[(unsigned char) FLOOR] = true;
-	passable[(unsigned char) OPEN_DOOR] = true;
-	passable[(unsigned char) CORRIDOR] = true;
-	passable[(unsigned char) STAIRS_UP] = true;
-	passable[(unsigned char) STAIRS_DOWN] = true;
-	passable[(unsigned char) ALTAR] = true;
-	passable[(unsigned char) GRAVE] = true;
-	passable[(unsigned char) THRONE] = true;
-	passable[(unsigned char) SINK] = true;
-	passable[(unsigned char) FOUNTAIN] = true;
-	passable[(unsigned char) WATER] = true;
-	passable[(unsigned char) ICE] = true;
-	passable[(unsigned char) LAVA] = true;
-	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	passable[(unsigned char) TRAP] = true;
-	passable[(unsigned char) WEAPON] = true;
-	passable[(unsigned char) ARMOR] = true;
-	passable[(unsigned char) RING] = true;
-	passable[(unsigned char) AMULET] = true;
-	passable[(unsigned char) TOOL] = true;
-	passable[(unsigned char) FOOD] = true;
-	passable[(unsigned char) POTION] = true;
-	passable[(unsigned char) SCROLL] = true;
-	passable[(unsigned char) SPELLBOOK] = true;
-	passable[(unsigned char) WAND] = true;
-	passable[(unsigned char) GOLD] = true;
-	passable[(unsigned char) GEM] = true;
-	passable[(unsigned char) STATUE] = true;
-	passable[(unsigned char) IRON_BALL] = true;
-	passable[(unsigned char) CHAINS] = true;
-	passable[(unsigned char) VENOM] = true;
-	passable[(unsigned char) PET] = true;
+	ispassable[(unsigned char) FLOOR] = true;
+	ispassable[(unsigned char) OPEN_DOOR] = true;
+	ispassable[(unsigned char) CORRIDOR] = true;
+	ispassable[(unsigned char) STAIRS_UP] = true;
+	ispassable[(unsigned char) STAIRS_DOWN] = true;
+	ispassable[(unsigned char) ALTAR] = true;
+	ispassable[(unsigned char) GRAVE] = true;
+	ispassable[(unsigned char) THRONE] = true;
+	ispassable[(unsigned char) SINK] = true;
+	ispassable[(unsigned char) FOUNTAIN] = true;
+	ispassable[(unsigned char) WATER] = true;
+	ispassable[(unsigned char) ICE] = true;
+	ispassable[(unsigned char) LAVA] = true;
+	ispassable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	ispassable[(unsigned char) TRAP] = true;
+	ispassable[(unsigned char) WEAPON] = true;
+	ispassable[(unsigned char) ARMOR] = true;
+	ispassable[(unsigned char) RING] = true;
+	ispassable[(unsigned char) AMULET] = true;
+	ispassable[(unsigned char) TOOL] = true;
+	ispassable[(unsigned char) FOOD] = true;
+	ispassable[(unsigned char) POTION] = true;
+	ispassable[(unsigned char) SCROLL] = true;
+	ispassable[(unsigned char) SPELLBOOK] = true;
+	ispassable[(unsigned char) WAND] = true;
+	ispassable[(unsigned char) GOLD] = true;
+	ispassable[(unsigned char) GEM] = true;
+	ispassable[(unsigned char) STATUE] = true;
+	ispassable[(unsigned char) IRON_BALL] = true;
+	ispassable[(unsigned char) CHAINS] = true;
+	ispassable[(unsigned char) VENOM] = true;
+	ispassable[(unsigned char) PET] = true;
 	static_dungeon_symbol[(unsigned char) VERTICAL_WALL] = true;
 	static_dungeon_symbol[(unsigned char) HORIZONTAL_WALL] = true;
 	static_dungeon_symbol[(unsigned char) FLOOR] = true;
@@ -166,33 +166,6 @@ Point Saiph::directionToPos(unsigned char direction, Point target) {
 	return target;
 }
 
-void Saiph::dumpMaps() {
-	/* search map */
-	cout << (unsigned char) 27 << "[26;1H";
-	for (int r = 0; r < ROWS; ++r) {
-		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (map[current_branch][current_level].search[r][c] % 96 + 32);
-		}
-		cout << endl;
-	}
-	/* world map as the bot sees it */
-	for (int r = 0; r < ROWS; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
-		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
-		}
-	}
-	/* path map */
-	for (int r = 0; r < ROWS; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
-		for (int c = 0; c < COLS; ++c) {
-			cout << (unsigned char) (pathmap[r][c] % 96 + 32);
-		}
-	}
-	/* return cursor back to player */
-	cout << (unsigned char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
-}
-
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	world->command.push_back(';');
@@ -223,24 +196,6 @@ void Saiph::farlook(const Point &target) {
 	world->command.push_back(',');
 	cerr << world->command << endl;
 	world->executeCommand();
-}
-
-bool Saiph::isLegalMove(const Point &to, const Point &from) {
-	/* when we're backtracking the pathmap there are some rules we must follow.
-	 * there are certain things we can't check when building the pathmap:
-	 * - moving in/out of doors
-	 * - moving diagonally past boulders? */
-	if (to.row != from.row && to.col != from.col) {
-		/* diagonal move */
-		if (map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR) {
-			/* into/out of door */
-			return false;
-		} else if (!passable[map[current_branch][current_level].dungeon[to.row][from.col]] && !passable[map[current_branch][current_level].dungeon[from.row][to.col]] && map[current_branch][current_level].dungeon[to.row][from.col] != BOULDER && map[current_branch][current_level].dungeon[from.row][to.col] != BOULDER) {
-			/* between two unpassable symbols */
-			return false;
-		}
-	}
-	return true;
 }
 
 void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols) {
@@ -418,6 +373,33 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 }
 
 /* private methods */
+void Saiph::dumpMaps() {
+	/* search map */
+	cout << (unsigned char) 27 << "[26;1H";
+	for (int r = 0; r < ROWS; ++r) {
+		for (int c = 0; c < COLS; ++c) {
+			cout << (unsigned char) (map[current_branch][current_level].search[r][c] % 96 + 32);
+		}
+		cout << endl;
+	}
+	/* world map as the bot sees it */
+	for (int r = 0; r < ROWS; ++r) {
+		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
+		for (int c = 0; c < COLS; ++c) {
+			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+		}
+	}
+	/* path map */
+	for (int r = 0; r < ROWS; ++r) {
+		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
+		for (int c = 0; c < COLS; ++c) {
+			cout << (unsigned char) (pathmap[r][c] % 96 + 32);
+		}
+	}
+	/* return cursor back to player */
+	cout << (unsigned char) 27 << "[" << world->player.row + 1 << ";" << world->player.col + 1 << "H";
+}
+
 void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
 	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
@@ -429,6 +411,24 @@ void Saiph::inspect() {
 				(*a)->analyze(r, c, symbol);
 		}
 	}
+}
+
+bool Saiph::isLegalMove(const Point &to, const Point &from) {
+	/* when we're backtracking the pathmap there are some rules we must follow.
+	 * there are certain things we can't check when building the pathmap:
+	 * - moving in/out of doors
+	 * - moving diagonally past boulders? */
+	if (to.row != from.row && to.col != from.col) {
+		/* diagonal move */
+		if (map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR) {
+			/* into/out of door */
+			return false;
+		} else if (!ispassable[map[current_branch][current_level].dungeon[to.row][from.col]] && !ispassable[map[current_branch][current_level].dungeon[from.row][to.col]] && map[current_branch][current_level].dungeon[to.row][from.col] != BOULDER && map[current_branch][current_level].dungeon[from.row][to.col] != BOULDER) {
+			/* between two unpassable symbols */
+			return false;
+		}
+	}
+	return true;
 }
 
 void Saiph::updateMaps() {
@@ -504,14 +504,14 @@ void Saiph::updatePathMap() {
 				unsigned char ws = world->map[to.row][to.col];
 				if (to.col < 0 || to.col >= COLS)
 					continue;
-				else if (!passable[ws])
+				else if (!ispassable[ws])
 					continue;
 				else if (ismonster[ws])
 					continue; // can't path through monsters, for now
 				else if (!isLegalMove(to, from))
 					continue;
 				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
-				if (!passable[s])
+				if (!ispassable[s])
 					continue;
 				unsigned int newcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
 				if (s == LAVA)
