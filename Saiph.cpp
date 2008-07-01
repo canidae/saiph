@@ -510,6 +510,7 @@ void Saiph::updatePathMap() {
 					continue; // can't path through monsters, for now
 				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
 				unsigned int newpathcost = curcost + ((to.row == from.row || to.col == from.col) ? COST_CARDINAL : COST_DIAGONAL);
+				/* TODO: we can make an "int cost[UCHAR_MAX + 1]" instead of all these if's */
 				if (s == LAVA)
 					newpathcost += COST_LAVA; // TODO: only if we levitate
 				else if (s == WATER)
