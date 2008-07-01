@@ -279,49 +279,49 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 		Point to = from;
 		--to.row;
 		--to.col;
-		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_SE;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.col;
-		if (pathmap[to.row][to.col] < curcost) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_S;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.col;
-		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_SW;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.row;
-		if (pathmap[to.row][to.col] < curcost) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_W;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		++to.row;
-		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_NW;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		--to.col;
-		if (pathmap[to.row][to.col] < curcost) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_N;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		--to.col;
-		if (pathmap[to.row][to.col] < curcost && isLegalDiagonalMove(to, from)) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_NE;
 			curcost = pathmap[to.row][to.col];
 			next = to;
 		}
 		--to.row;
-		if (pathmap[to.row][to.col] < curcost) {
+		if (pathmap[to.row][to.col] < curcost && isLegalMove(to, from)) {
 			move = MOVE_E;
 			curcost = pathmap[to.row][to.col];
 			next = to;
@@ -379,19 +379,26 @@ void Saiph::inspect() {
 	}
 }
 
-bool Saiph::isLegalDiagonalMove(const Point &to, const Point &from) {
-	/* diagonal moves follows some special rules,
-	 * we need to check this when creating and backtracking the pathmap:
-	 * - can't move diagonally in/out of doors
-	 * - can't move diagonally through tight fits
-	 *   + if one corner is a boulder then it's ok
-	 *     * unless we're in sokoban
-	 *   + if we're not carrying too much then it's also ok
-	 * - can't move diagonally when polymorphed to a grid bug */
+bool Saiph::isLegalMove(const Point &to, const Point &from) {
+	/* we need to check this when creating and backtracking the pathmap:
+	 * 1. if move is blacklisted, return false
+	 * 2. if move is cardinal, return true (no special rules)
+	 * 3. moving in/out of doors, return false
+	 * 4. polymorphed to grid bug, return false
+	 * 5. moving past two corners:
+	 *    - in sokoban, return false
+	 *    - at least one corner is a boulder, return true
+	 *    - not carrying much, return true
+	 *    - otherwise, return false
+	 */
+	// TODO: if (blacklisted_move) return false;
+	if (to.row == from.row || to.col == from.col)
+		return true; // cardinal moves are legal
 	if (map[current_branch][current_level].dungeon[to.row][to.col] == OPEN_DOOR || map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR)
 		return false; // in/out of door 
+	// TODO: if (polymorphed_to_grid_bug) return false;
 	if (!passable[map[current_branch][current_level].dungeon[to.row][from.col]] && !passable[map[current_branch][current_level].dungeon[from.row][to.col]]) {
-		/* tight fit */
+		/* moving past two corners */
 		// TODO: if (in_sokoban) return false;
 		if (map[current_branch][current_level].dungeon[to.row][from.col] == BOULDER || map[current_branch][current_level].dungeon[from.row][to.col] == BOULDER)
 			return true; // at least one corner is a boulder, we may pass
@@ -478,7 +485,7 @@ void Saiph::updatePathMap() {
 					continue;
 				else if (monster[ws])
 					continue; // can't path through monsters, for now
-				else if ((to.row != from.row && to.col != from.col) && !isLegalDiagonalMove(to, from))
+				else if (!isLegalMove(to, from))
 					continue; // illegal diagonal move
 				unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
 				if (!passable[s])

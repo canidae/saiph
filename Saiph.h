@@ -117,7 +117,6 @@ class Saiph {
 		/* methods */
 		void dumpMaps();
 		void inspect();
-		bool isLegalDiagonalMove(const Point &to, const Point &from);
 		bool isLegalMove(const Point &to, const Point &from);
 		void updateMaps();
 		void updatePathMap();
