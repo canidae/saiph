@@ -112,7 +112,7 @@ class Saiph {
 		Connection *connection;
 		bool ismonster[UCHAR_MAX + 1];
 		bool isitem[UCHAR_MAX + 1];
-		unsigned int pathcost[ROWS][COLS];
+		unsigned int pathmap[ROWS][COLS];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
 		bool passable[UCHAR_MAX + 1];
 		bool diagonally_passable[UCHAR_MAX + 1];
