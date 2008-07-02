@@ -463,6 +463,16 @@ void Saiph::updateMaps() {
 
 void Saiph::updatePathMap() {
 	/* create a path map used for finding shortest path */
+	/* TODO: we can improve this further
+	 * - instead of "backtracking" by "searching adjacent squares",
+	 *   make a linked list, something like:
+	 *   struct PathNode {
+	 *       Point nextnode;
+	 *       unsigned char move;
+	 *   };
+	 *   PathNode pathnodes[ROWS][COLS];
+	 *
+	 *   i'll get the idea when i read this later... */
 	for (int r = 0; r < ROWS; ++r) {
 		for (int c = 0; c < COLS; ++c)
 			pathmap[r][c] = UINT_MAX;
