@@ -74,7 +74,7 @@ int DoorAnalyzer::analyze(int row, int col, unsigned char symbol) {
 int DoorAnalyzer::finish() {
 	int row = saiph->world->player.row;
 	int col = saiph->world->player.col;
-	if (row < MAP_ROW_START || row > MAP_ROW_END || col < 0 || col >= COLS)
+	if (row < MAP_ROW_BEGIN || row > MAP_ROW_END || col < MAP_COL_BEGIN || col > MAP_COL_END)
 		return 0;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;

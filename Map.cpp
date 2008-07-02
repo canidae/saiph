@@ -2,10 +2,10 @@
 
 /* constructors */
 Map::Map() {
-	memset(dungeon, SOLID_ROCK, ROWS * COLS);
-	memset(search, 0, ROWS * COLS);
-	memset(monster, NOMONSTER, ROWS * COLS);
-	memset(item, NOITEM, ROWS * COLS);
+	memset(dungeon, SOLID_ROCK, sizeof(dungeon));
+	memset(search, 0, sizeof(search));
+	memset(monster, NOMONSTER, sizeof(monster));
+	memset(item, NOITEM, sizeof(item));
 }
 
 /* destructors */

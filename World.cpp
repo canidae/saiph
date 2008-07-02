@@ -3,16 +3,16 @@
 /* constructors */
 World::World(Connection *connection) {
 	this->connection = connection;
-	memset(map, ' ', ROWS * (COLS + 1));
+	memset(map, ' ', sizeof(map));
 	for (int r = 0; r < ROWS; ++r)
 		map[r][COLS] = '\0';
-	memset(color, 0, ROWS * COLS);
+	memset(color, 0, sizeof(color));
 	row = 0;
 	col = 0;
 	menu = false;
 	question = false;
-	memset(messages, '\0', BUFFER_SIZE);
-	memset(data, '\0', BUFFER_SIZE);
+	memset(messages, '\0', sizeof(messages));
+	memset(data, '\0', sizeof(data));
 	messages_pos = 0;
 	data_size = -1;
 	/* fetch the first "frame" */
@@ -100,10 +100,9 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					}
 				} else if (data[*pos - 1] == '2') {
 					/* erase entire display */
-					for (int r = 0; r < ROWS; ++r) {
-						for (int c = 0; c < COLS; ++c)
-							map[r][c] = ' ';
-					}
+					memset(map, ' ', sizeof(map));
+					for (int r = 0; r < ROWS; ++r)
+						map[r][COLS] = '\0';
 					row = 0;
 					col = 0;
 					*color = 0;
@@ -402,7 +401,7 @@ void World::update() {
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(map[STATUS_ROW]);
-	if (parsed_attributes && parsed_status && row >= MAP_ROW_START && row <= MAP_ROW_END && col >= 0 && col < COLS) {
+	if (parsed_attributes && parsed_status && row >= MAP_ROW_BEGIN && row <= MAP_ROW_END && col >= MAP_COL_BEGIN && col <= MAP_COL_END) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
 		map[row][col] = PLAYER;

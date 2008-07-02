@@ -38,7 +38,7 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 
 /* methods */
 int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
-	if (row <= MAP_ROW_START || row >= MAP_ROW_END || col <= 0 || col >= COLS - 1 || place_count >= EX_MAX_PLACES)
+	if (row <= MAP_ROW_BEGIN || row >= MAP_ROW_END || col <= MAP_COL_BEGIN || col >= MAP_COL_END || place_count >= EX_MAX_PLACES)
 		return 0;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;

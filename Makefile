@@ -1,5 +1,5 @@
 # run it like this:
-# make clean && make && export NETHACKOPTIONS=@/home/canidae/projects/saiph/nethackrc && ./saiph
+# make clean && make && export NETHACKOPTIONS=@/home/canidae/projects/saiph/nethackrc && ./saiph 2>err.log
 
 CXX = g++
 RM = rm -f

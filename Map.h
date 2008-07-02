@@ -13,10 +13,10 @@ using namespace std;
 class Map {
 	public:
 		/* variables */
-		unsigned char dungeon[ROWS][COLS]; // more "static" features (floors, doors, corridors, ...)
-		unsigned char search[ROWS][COLS]; // where we've searched
-		unsigned char monster[ROWS][COLS]; // monsters we've seen
-		unsigned char item[ROWS][COLS]; // items we've seen
+		unsigned char dungeon[MAP_ROW_END + 1][MAP_COL_END + 1]; // more "static" features (floors, doors, corridors, ...)
+		unsigned char search[MAP_ROW_END + 1][MAP_COL_END + 1]; // where we've searched
+		unsigned char monster[MAP_ROW_END + 1][MAP_COL_END + 1]; // monsters we've seen
+		unsigned char item[MAP_ROW_END + 1][MAP_COL_END + 1]; // items we've seen
 
 		/* constructors */
 		Map();

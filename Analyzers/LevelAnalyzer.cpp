@@ -16,8 +16,8 @@ int LevelAnalyzer::finish() {
 		action = MOVE_DOWN;
 		return LA_DESCEND_PRIORITY;
 	}
-	for (int r = MAP_ROW_START; r <= MAP_ROW_END; ++r) {
-		for (int c = 0; c < COLS; ++c) {
+	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
+		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (saiph->map[branch][dungeon].dungeon[r][c] == STAIRS_DOWN) {
 				int distance = 0;
 				bool direct_line = false;

@@ -72,6 +72,14 @@ class Saiph;
 /* namespace */
 using namespace std;
 
+/* struct used for pathing */
+struct PathNode {
+	PathNode *nextnode;
+	Point loc;
+	unsigned int cost;
+	unsigned char move;
+};
+
 /* this is our AI */
 class Saiph {
 	public:
@@ -101,7 +109,7 @@ class Saiph {
 		vector<Analyzer *> analyzers;
 		vector<Analyzer *> analyzer_symbols[UCHAR_MAX + 1];
 		Connection *connection;
-		unsigned int pathmap[ROWS][COLS];
+		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
 		bool item[UCHAR_MAX + 1];
 		bool monster[UCHAR_MAX + 1];
@@ -111,8 +119,8 @@ class Saiph {
 		/* methods */
 		void dumpMaps();
 		void inspect();
-		bool isLegalMove(const Point &to, const Point &from);
 		void updateMaps();
 		void updatePathMap();
+		bool updatePathMapHelper(const Point &to, const Point &from);
 };
 #endif
