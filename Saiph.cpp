@@ -15,7 +15,7 @@ Saiph::Saiph(bool remote) {
 	/* set certain values */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		/* monsters */
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || a == '&' || a == '\'' || a == '6' || a == ':' || a == ';' || a == '~')
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '6')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~')
 			monster[a] = true;
 		else
 			monster[a] = false;
