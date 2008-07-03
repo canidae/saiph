@@ -263,6 +263,7 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 	*straight_line = true;
 	if (node->cost == 0)
 		return REST; // pathing to player?
+	++*distance;
 	unsigned char move = node->move;
 	unsigned char previous_move = ILLEGAL_MOVE; // used to determine straight_line
 	if (allow_illegal_last_move && node->nextnode == NULL) {
@@ -327,10 +328,10 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
-		++*distance;
 		previous_move = move;
 		if (node->cost == 0)
 			return move; // found the player
+		++*distance;
 	}
 	if (node->nextnode == NULL)
 		return ILLEGAL_MOVE; // couldn't find path
