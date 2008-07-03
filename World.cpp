@@ -319,8 +319,9 @@ void World::update() {
 	/* update the map */
 	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
-	/* print world */
-	cout << data << endl;
+	/* print world
+	 * this must be done here because if we get --More-- messages we'll update again */
+	cout << data;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:

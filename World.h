@@ -43,7 +43,6 @@ class World {
 		char messages[BUFFER_SIZE];
 		bool menu;
 		bool question;
-		char data[BUFFER_SIZE];
 
 		/* constructors */
 		World(Connection *connection);
@@ -57,6 +56,7 @@ class World {
 	private:
 		/* variables */
 		Connection *connection;
+		char data[BUFFER_SIZE];
 		ssize_t data_size;
 		int messages_pos; // used for concatenation multiple messages together
 		string msg_str; // used for fetching messages
