@@ -6,7 +6,7 @@
 #define COLS 80
 #define MAP_COL_BEGIN 0 // where the actual map width start
 #define MAP_COL_END 79 // where the actual map width end
-#define MAP_ROW_BEGIN 2 // where the actual map height begin
+#define MAP_ROW_BEGIN 1 // where the actual map height begin
 #define MAP_ROW_END 21 // where the actual map height end
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
