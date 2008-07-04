@@ -110,6 +110,7 @@ class Saiph {
 		Connection *connection;
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
+		int pathcost[UCHAR_MAX + 1];
 		bool item[UCHAR_MAX + 1];
 		bool monster[UCHAR_MAX + 1];
 		bool passable[UCHAR_MAX + 1];

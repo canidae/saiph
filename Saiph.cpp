@@ -20,7 +20,9 @@ Saiph::Saiph(bool remote) {
 		/* pathing & maps */
 		passable[a] = false;
 		static_dungeon_symbol[a] = false;
+		pathcost[a] = 0;
 	}
+	/* items */
 	item[(unsigned char) WEAPON] = true;
 	item[(unsigned char) ARMOR] = true;
 	item[(unsigned char) RING] = true;
@@ -38,6 +40,7 @@ Saiph::Saiph(bool remote) {
 	item[(unsigned char) IRON_BALL] = true;
 	item[(unsigned char) CHAINS] = true;
 	item[(unsigned char) VENOM] = true;
+	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
 	passable[(unsigned char) CORRIDOR] = true;
@@ -92,6 +95,11 @@ Saiph::Saiph(bool remote) {
 	static_dungeon_symbol[(unsigned char) RAISED_DRAWBRIDGE] = true;
 	static_dungeon_symbol[(unsigned char) TRAP] = true;
 	static_dungeon_symbol[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
+	pathcost[ICE] = COST_ICE;
+	pathcost[LAVA] = COST_LAVA;
+	pathcost[PET] = COST_PET;
+	pathcost[TRAP] = COST_TRAP;
+	pathcost[WATER] = COST_WATER;
 
 	/* messages */
 	messages.clear();
@@ -548,19 +556,11 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	//	return false;
 	//if (s == LAVA && !levitating)
 	//	return false;
-	//if (s == WATER && !levitating && !waterwalk)
+	//if (s == WATER && (!levitating || !waterwalk))
 	//	return false;
 	unsigned int newcost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
-	if (s == LAVA)
-		newcost += COST_LAVA;
-	else if (s == WATER)
-		newcost += COST_WATER;
-	else if (s == TRAP)
-		newcost += COST_TRAP;
-	else if (s == ICE)
-		newcost += COST_ICE;
-	if (m == PET)
-		newcost += COST_PET;
+	newcost += pathcost[s];
+	newcost += pathcost[m];
 	if (newcost < pathmap[to.row][to.col].cost) {
 		pathmap[to.row][to.col].nextnode = &pathmap[from.row][from.col];
 		pathmap[to.row][to.col].cost = newcost;
