@@ -98,7 +98,6 @@ Saiph::Saiph(bool remote) {
 
 	/* Analyzers */
 	analyzers.push_back(new DoorAnalyzer(this));
-	analyzers.push_back(new DoorAnalyzer(this));
 	analyzers.push_back(new FoodAnalyzer(this));
 	analyzers.push_back(new ExploreAnalyzer(this));
 	analyzers.push_back(new HealthAnalyzer(this));
@@ -264,7 +263,7 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 	if (node->cost == 0)
 		return REST; // pathing to player?
 	++*distance;
-	unsigned char move = node->move;
+	unsigned char move = ILLEGAL_MOVE;
 	unsigned char previous_move = ILLEGAL_MOVE; // used to determine straight_line
 	if (allow_illegal_last_move && node->nextnode == NULL) {
 		/* sometimes we wish to move somewhere we really can't move to.
@@ -329,20 +328,20 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 			lowest_cost = node->cost;
 		}
 		previous_move = move;
-		if (node->cost == 0)
+		if (lowest_cost == 0)
 			return move; // found the player
 		++*distance;
 	}
 	if (node->nextnode == NULL)
 		return ILLEGAL_MOVE; // couldn't find path
 
-	while (node->nextnode->nextnode != NULL) {
-		node = node->nextnode;
-		move = node->move;
-		if (*distance > 0 && previous_move != move)
-			*straight_line = false;
+	while (node->nextnode != NULL) {
 		previous_move = move;
+		move = node->move;
+		if (*distance > 1 && previous_move != move)
+			*straight_line = false;
 		++*distance;
+		node = node->nextnode;
 	}
 	return move;
 }
@@ -416,10 +415,9 @@ void Saiph::updateMaps() {
 			if (static_dungeon_symbol[s]) {
 				/* update the map showing static stuff */
 				map[current_branch][current_level].dungeon[r][c] = s;
-			} else if (!static_dungeon_symbol[map[current_branch][current_level].dungeon[r][c]]) {
-				/* hmm... this place isn't solid rock,
-				 * nor can we see which "static dungeon symbol" should be here.
-				 * most likely some item is in the way.
+			} else if (!passable[map[current_branch][current_level].dungeon[r][c]]) {
+				/* hmm, this tile used to be unpassable,
+				 * but now it isn't...
 				 * this happens for example when:
 				 * - monster opens door and we kill the monster in the doorway
 				 * - monster digging out level, leaving stuff on squares
@@ -566,6 +564,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	if (m == PET)
 		newcost += COST_PET;
 	if (newcost < pathmap[to.row][to.col].cost) {
+		cerr << to.row << ", " << to.col << " | " << from.row << ", " << from.col << endl;
 		pathmap[to.row][to.col].nextnode = &pathmap[from.row][from.col];
 		pathmap[to.row][to.col].cost = newcost;
 		return true;
