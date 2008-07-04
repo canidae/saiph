@@ -448,8 +448,6 @@ void Saiph::updatePathMap() {
 	/* first reset nextnode pointer, cost & move */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			pathmap[r][c].loc.row = r; // FIXME (do this in constructor)
-			pathmap[r][c].loc.col = c; // FIXME (do this in constructor)
 			pathmap[r][c].nextnode = NULL;
 			pathmap[r][c].cost = UINT_MAX;
 			pathmap[r][c].move = ILLEGAL_MOVE;
@@ -564,7 +562,6 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	if (m == PET)
 		newcost += COST_PET;
 	if (newcost < pathmap[to.row][to.col].cost) {
-		cerr << to.row << ", " << to.col << " | " << from.row << ", " << from.col << endl;
 		pathmap[to.row][to.col].nextnode = &pathmap[from.row][from.col];
 		pathmap[to.row][to.col].cost = newcost;
 		return true;
@@ -580,5 +577,4 @@ int main() {
 	while (saiph->run())
 		;
 	delete saiph;
-	sleep(50);
 }

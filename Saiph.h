@@ -75,7 +75,6 @@ using namespace std;
 /* struct used for pathing */
 struct PathNode {
 	PathNode *nextnode;
-	Point loc;
 	unsigned int cost;
 	unsigned char move;
 };
