@@ -10,7 +10,7 @@ class Item;
 /* namespace */
 using namespace std;
 
-/* TODO? */
+/* Item */
 class Item {
 	public:
 		/* variables */

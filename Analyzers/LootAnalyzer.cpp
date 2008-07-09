@@ -47,8 +47,8 @@ int LootAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int LootAnalyzer::analyze(int row, int col, unsigned char symbol) {
-	return 0;
+void LootAnalyzer::analyze(int row, int col, unsigned char symbol) {
+	return;
 }
 
 int LootAnalyzer::finish() {

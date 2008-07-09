@@ -82,7 +82,7 @@ int MonsterAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int MonsterAnalyzer::analyze(int row, int col, unsigned char symbol) {
+void MonsterAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	cerr << "found monster at " << row << ", " << col << " - " << symbol << endl;
 	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
 		if (monsters[m].symbol == NOMONSTER || (monsters[m].symbol == symbol && monsters[m].last_seen != saiph->world->player.turn)) {
@@ -98,11 +98,11 @@ int MonsterAnalyzer::analyze(int row, int col, unsigned char symbol) {
 			monsters[m].last_seen = saiph->world->player.turn;
 			/* block path for pathing algorithm */
 			saiph->map[saiph->current_branch][saiph->current_level].monster[row][col] = symbol;
-			return 0;
+			return;
 		}
 	}
 	/* we're tracking too many monsters, return */
-	return 0;
+	return;
 }
 
 int MonsterAnalyzer::finish() {

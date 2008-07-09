@@ -14,7 +14,6 @@ class Map {
 	public:
 		/* variables */
 		unsigned char dungeon[MAP_ROW_END + 1][MAP_COL_END + 1]; // more "static" features (floors, doors, corridors, ...)
-		unsigned char search[MAP_ROW_END + 1][MAP_COL_END + 1]; // where we've searched
 		unsigned char monster[MAP_ROW_END + 1][MAP_COL_END + 1]; // monsters we've seen
 		unsigned char item[MAP_ROW_END + 1][MAP_COL_END + 1]; // items we've seen
 

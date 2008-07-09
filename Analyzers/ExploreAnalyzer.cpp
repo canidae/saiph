@@ -37,15 +37,15 @@ ExploreAnalyzer::ExploreAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
+void ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	if (row <= MAP_ROW_BEGIN || row >= MAP_ROW_END || col <= MAP_COL_BEGIN || col >= MAP_COL_END || place_count >= EX_MAX_PLACES)
-		return 0;
+		return;
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	/* are we in a corridor? */
 	bool corridor = saiph->map[branch][dungeon].dungeon[row][col] == CORRIDOR;
 	if ((!corridor && saiph->map[branch][dungeon].search[row][col] >= EX_MAX_SEARCH) || (corridor && saiph->map[branch][dungeon].search[row][col] >= EX_MAX_SEARCH * EX_DEAD_END_MULTIPLIER))
-		return 0; // we've been here and searched frantically
+		return; // we've been here and searched frantically
 	/* hjkl symbols */
 	unsigned char hs = saiph->map[branch][dungeon].dungeon[row][col - 1];
 	unsigned char js = saiph->map[branch][dungeon].dungeon[row + 1][col];
@@ -82,16 +82,16 @@ int ExploreAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	if (symbol == PLAYER && saiph->map[branch][dungeon].dungeon[row][col] == CORRIDOR && !dead_end) {
 		/* don't search in corridors unless it's a dead end */
 		saiph->map[branch][dungeon].search[row][col] = EX_MAX_SEARCH * EX_DEAD_END_MULTIPLIER;
-		return 0;
+		return;
 	}
 	if (score <= 0)
-		return 0; // this place isn't very exciting
+		return; // this place isn't very exciting
 	places[place_count].row = row;
 	places[place_count].col = col;
 	places[place_count].move = ILLEGAL_MOVE;
 	places[place_count].value = score;
 	++place_count;
-	return 0;
+	return;
 }
 
 int ExploreAnalyzer::finish() {

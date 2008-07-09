@@ -17,7 +17,7 @@ Connection::Connection(bool remote) {
 	/* set up pty */
 	int fd = 0;
 	char slave[256];
-	memset(slave, '\0', sizeof(slave));
+	memset(slave, '\0', sizeof (slave));
 	winsize wsize;
 	wsize.ws_row = ROWS;
 	wsize.ws_col = COLS;

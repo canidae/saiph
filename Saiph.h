@@ -63,7 +63,7 @@ class Saiph;
 /* analyzers */
 #include "Analyzers/DoorAnalyzer.h"
 #include "Analyzers/FoodAnalyzer.h"
-#include "Analyzers/ExploreAnalyzer.h"
+#include "Analyzers/Explore.h"
 #include "Analyzers/HealthAnalyzer.h"
 #include "Analyzers/LevelAnalyzer.h"
 #include "Analyzers/LootAnalyzer.h"
@@ -88,8 +88,8 @@ class Saiph {
 		int current_branch;
 		int current_level;
 		string command;
-		string messages; // this should be in World
-		bool engulfed; // should this be in World?
+		string messages;
+		bool engulfed;
 
 		/* constructors */
 		Saiph(bool remote);

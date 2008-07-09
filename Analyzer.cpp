@@ -9,8 +9,7 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
-int Analyzer::analyze(int row, int col, unsigned char symbol) {
-	return 0;
+void Analyzer::analyze(int row, int col, unsigned char symbol) {
 }
 
 void Analyzer::command(string *command) {

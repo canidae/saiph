@@ -3,16 +3,16 @@
 /* constructors */
 World::World(Connection *connection) {
 	this->connection = connection;
-	memset(map, ' ', sizeof(map));
+	memset(map, ' ', sizeof (map));
 	for (int r = 0; r < ROWS; ++r)
 		map[r][COLS] = '\0';
-	memset(color, 0, sizeof(color));
+	memset(color, 0, sizeof (color));
 	row = 0;
 	col = 0;
 	menu = false;
 	question = false;
-	memset(messages, '\0', sizeof(messages));
-	memset(data, '\0', sizeof(data));
+	memset(messages, '\0', sizeof (messages));
+	memset(data, '\0', sizeof (data));
 	messages_pos = 0;
 	data_size = -1;
 	/* fetch the first "frame" */
@@ -100,7 +100,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					}
 				} else if (data[*pos - 1] == '2') {
 					/* erase entire display */
-					memset(map, ' ', sizeof(map));
+					memset(map, ' ', sizeof (map));
 					for (int r = 0; r < ROWS; ++r)
 						map[r][COLS] = '\0';
 					row = 0;

@@ -50,7 +50,7 @@ int DoorAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int DoorAnalyzer::analyze(int row, int col, unsigned char symbol) {
+void DoorAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	int branch = saiph->current_branch;
 	int dungeon = saiph->world->player.dungeon;
 	for (int d = 0; d < DO_MAX_DOORS; ++d) {
@@ -63,12 +63,12 @@ int DoorAnalyzer::analyze(int row, int col, unsigned char symbol) {
 			doors[branch][dungeon][d].col = col;
 			doors[branch][dungeon][d].locked = false;
 			doors[branch][dungeon][d].shopkeeper = false;
-			return 0;
+			return;
 		} else if (doors[branch][dungeon][d].row == row && doors[branch][dungeon][d].col == col) {
-			return 0;
+			return;
 		}
 	}
-	return 0;
+	return;
 }
 
 int DoorAnalyzer::finish() {

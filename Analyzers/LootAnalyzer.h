@@ -31,7 +31,7 @@ class LootAnalyzer : public Analyzer {
 		LootAnalyzer(Saiph *saiph);
 
 		/* methods */
-		int analyze(int row, int col, unsigned char symbol);
+		void analyze(int row, int col, unsigned char symbol);
 		void command(string *command);
 		int finish();
 		int parseMessages(string *messages);

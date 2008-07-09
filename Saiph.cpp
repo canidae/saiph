@@ -11,7 +11,7 @@ Saiph::Saiph(bool remote) {
 	/* set certain values */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		/* monsters */
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '6')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '6')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET || a == PLAYER)
 			monster[a] = true;
 		else
 			monster[a] = false;
@@ -107,7 +107,7 @@ Saiph::Saiph(bool remote) {
 	/* Analyzers */
 	analyzers.push_back(new DoorAnalyzer(this));
 	analyzers.push_back(new FoodAnalyzer(this));
-	analyzers.push_back(new ExploreAnalyzer(this));
+	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new HealthAnalyzer(this));
 	analyzers.push_back(new LevelAnalyzer(this));
 	analyzers.push_back(new LootAnalyzer(this));
@@ -357,17 +357,24 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 /* private methods */
 void Saiph::dumpMaps() {
 	/* search map */
+	/*
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			cout << (unsigned char) (map[current_branch][current_level].search[r][c] % 96 + 32);
 		}
 	}
+	*/
 	/* world map as the bot sees it */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+			if (map[current_branch][current_level].monster[r][c] != NOMONSTER)
+				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
+			else if (map[current_branch][current_level].item[r][c] != NOITEM)
+				cout << (unsigned char) (map[current_branch][current_level].item[r][c]);
+			else
+				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
 	}
 	/* path map */
@@ -391,11 +398,15 @@ void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			unsigned char symbol = world->map[r][c];
-			if (symbol == SOLID_ROCK) // unlit rooms makes floor go back to SOLID_ROCK
-				symbol = map[current_branch][current_level].dungeon[r][c];
-			for (vector<Analyzer *>::iterator a = analyzer_symbols[symbol].begin(); a != analyzer_symbols[symbol].end(); ++a)
-				(*a)->analyze(r, c, symbol);
+			unsigned char ds = map[current_branch][current_level].dungeon[r][c];
+			unsigned char is = map[current_branch][current_level].item[r][c];
+			unsigned char ms = map[current_branch][current_level].monster[r][c];
+			for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
+				(*a)->analyze(r, c, ds);
+			for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
+				(*a)->analyze(r, c, is);
+			for (vector<Analyzer *>::iterator a = analyzer_symbols[ms].begin(); a != analyzer_symbols[ms].end(); ++a)
+				(*a)->analyze(r, c, ms);
 		}
 	}
 }
@@ -466,6 +477,7 @@ void Saiph::updatePathMap() {
 	from.col = world->player.col;
 	pathing_queue[0] = from;
 	pathmap[from.row][from.col].cost = 0;
+	pathmap[from.row][from.col].move = REST;
 	int curnode = 0;
 	int nodes = 1;
 	while (curnode < nodes) {

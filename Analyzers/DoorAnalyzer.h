@@ -49,7 +49,7 @@ class DoorAnalyzer : public Analyzer {
 		DoorAnalyzer(Saiph *saiph);
 
 		/* methods */
-		int analyze(int row, int col, unsigned char symbol);
+		void analyze(int row, int col, unsigned char symbol);
 		void command(string *command);
 		int finish();
 		int parseMessages(string *messages);

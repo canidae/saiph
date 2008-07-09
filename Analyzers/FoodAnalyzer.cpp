@@ -43,10 +43,10 @@ int FoodAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-int FoodAnalyzer::analyze(int row, int col, unsigned char symbol) {
+void FoodAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	for (list<FO_Food>::iterator f = food.begin(); f != food.end(); ++f) {
 		if (f->row == row && f->col == col)
-			return 0;
+			return;
 	}
 	/* new food */
 	int rots_turn = 1;
@@ -65,7 +65,7 @@ int FoodAnalyzer::analyze(int row, int col, unsigned char symbol) {
 	f.col = col;
 	f.rots_turn = rots_turn;
 	food.push_back(f);
-	return 0;
+	return;
 }
 
 int FoodAnalyzer::finish() {
