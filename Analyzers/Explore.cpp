@@ -8,6 +8,7 @@ Explore::Explore(Saiph *saiph) {
 	explore_priority[0] = EXPLORE_PRIORITY0;
 	explore_priority[1] = EXPLORE_PRIORITY1;
 	explore_priority[2] = EXPLORE_PRIORITY2;
+	memset(search, 0, sizeof (search));
 	symbols.push_back(FLOOR);
 	symbols.push_back(CORRIDOR);
 	symbols.push_back(OPEN_DOOR);
