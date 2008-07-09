@@ -411,6 +411,30 @@ void Saiph::inspect() {
 	}
 }
 
+unsigned char Saiph::uniqueSymbol(unsigned char symbol, int color) {
+	/* there are lots of overlapping symbols in nethack.
+	 * however, we can distinguish a lot using color information */
+	if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && color == YELLOW)
+		return OPEN_DOOR;
+	else if (symbol == CORRIDOR && color == GREEN)
+		return TREE;
+	else if (symbol == CORRIDOR && color == CYAN)
+		return IRON_BARS;
+	else if (symbol == GRAVE && color == YELLOW)
+		return THRONE;
+	else if (symbol == FOUNTAIN && color != BLUE) // if it's blue it's a fountain
+		return SINK;
+	else if (symbol == WATER && color == RED)
+		return LAVA;
+	else if (symbol == FLOOR && color == CYAN)
+		return ICE;
+	else if (symbol == FLOOR && color == YELLOW) // is this right? doesn't matter now
+		return LOWERED_DRAWBRIDGE;
+	else if (color == INVERSE)
+		return PET;
+	return symbol;
+}
+
 void Saiph::updateMaps() {
 	/* update the various maps */
 	/* this loop is a small hack. FIXME: make own monster tracker that does this
@@ -427,7 +451,7 @@ void Saiph::updateMaps() {
 	}
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			unsigned char s = world->map[r][c];
+			unsigned char s = uniqueSymbol(world->map[r][c], world->color[r][c]);
 			if (s == SOLID_ROCK)
 				continue; // not interesting (also mess up unlit rooms)
 			/* "static" dungean features */

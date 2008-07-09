@@ -119,6 +119,7 @@ class Saiph {
 		/* methods */
 		void dumpMaps();
 		void inspect();
+		unsigned char uniqueSymbol(unsigned char symbol, int color);
 		void updateMaps();
 		void updatePathMap();
 		bool updatePathMapHelper(const Point &to, const Point &from);

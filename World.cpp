@@ -370,27 +370,7 @@ void World::update() {
 					cerr << data << endl;
 					break;
 				}
-				/* remap ambigous symbols */
-				char symbol = data[pos];
-				if ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL) && color == YELLOW)
-					symbol = OPEN_DOOR;
-				else if (symbol == CORRIDOR && color == GREEN)
-					symbol = TREE;
-				else if (symbol == CORRIDOR && color == CYAN)
-					symbol = IRON_BARS;
-				else if (symbol == GRAVE && color == YELLOW)
-					symbol = THRONE;
-				else if (symbol == FOUNTAIN && color != BLUE) // if it's blue it's a fountain
-					symbol = SINK;
-				else if (symbol == WATER && color == RED)
-					symbol = LAVA;
-				else if (symbol == FLOOR && color == CYAN)
-					symbol = ICE;
-				else if (symbol == FLOOR && color == YELLOW) // is this right? doesn't matter now
-					symbol = LOWERED_DRAWBRIDGE;
-				else if (color == INVERSE)
-					symbol = PET;
-				map[row][col] = symbol;
+				map[row][col] = data[pos];
 				this->color[row][col] = color;
 				col++;
 				break;
