@@ -35,10 +35,11 @@ Connection::Connection(bool remote) {
 	} else {
 		/* this is our pty, start nethack here */
 		int result;
+		setenv("TERM", "xterm", 1);
 		if (remote)
 			result = execl(REMOTE_NETHACK, REMOTE_NETHACK, REMOTE_NETHACK_URL, NULL);
 		else
-			result = execl(LOCAL_NETHACK, LOCAL_NETHACK, NULL);
+			result = execl(LOCAL_NETHACK, LOCAL_NETHACK, "TERM=xterm", NULL);
 		if (result < 0) {
 			cerr << "Unable to enter the dungeon" << endl;
 			exit(3);
