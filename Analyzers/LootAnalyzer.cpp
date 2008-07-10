@@ -22,6 +22,7 @@ LootAnalyzer::LootAnalyzer(Saiph *saiph) {
 
 /* methods */
 int LootAnalyzer::parseMessages(string *messages) {
+	return 0;
 	if (messages->find(LO_THINGS_HERE, 0) != string::npos) {
 		/* multiple items here */
 		action = LO_LOOT;

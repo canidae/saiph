@@ -6,7 +6,7 @@ World::World(Connection *connection) {
 	memset(map, ' ', sizeof (map));
 	for (int r = 0; r < ROWS; ++r)
 		map[r][COLS] = '\0';
-	memset(color, 0, sizeof (color));
+	memset(color, NOCOLOR, sizeof (color));
 	row = 0;
 	col = 0;
 	menu = false;

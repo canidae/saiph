@@ -115,11 +115,11 @@ class Saiph {
 		bool monster[UCHAR_MAX + 1];
 		bool passable[UCHAR_MAX + 1];
 		bool static_dungeon_symbol[UCHAR_MAX + 1];
+		unsigned char uniquemap[UCHAR_MAX + 1][UCHAR_MAX + 1];
 
 		/* methods */
 		void dumpMaps();
 		void inspect();
-		unsigned char uniqueSymbol(unsigned char symbol, int color);
 		void updateMaps();
 		void updatePathMap();
 		bool updatePathMapHelper(const Point &to, const Point &from);
