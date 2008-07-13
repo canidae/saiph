@@ -190,7 +190,8 @@ void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned ch
 }
 
 bool Saiph::run() {
-	/* figure out which map to use, FIXME */
+	/* figure out which map to use.
+	 * TODO: we need some branch detection & stuff here */
 	current_branch = 0;
 	current_level = world->player.dungeon;
 
@@ -414,21 +415,16 @@ void Saiph::dumpMaps() {
 
 void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
-	/* TODO:
-	 * we could speed this significantly up by only inspecting changes.
-	 * this does however mean that analyzers need to remember a bit more */
-	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			unsigned char ds = map[current_branch][current_level].dungeon[r][c];
-			unsigned char is = map[current_branch][current_level].item[r][c];
-			unsigned char ms = map[current_branch][current_level].monster[r][c];
-			for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
-				(*a)->analyze(r, c, ds);
-			for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
-				(*a)->analyze(r, c, is);
-			for (vector<Analyzer *>::iterator a = analyzer_symbols[ms].begin(); a != analyzer_symbols[ms].end(); ++a)
-				(*a)->analyze(r, c, ms);
-		}
+	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
+		unsigned char ds = map[current_branch][current_level].dungeon[c->row][c->col];
+		unsigned char is = map[current_branch][current_level].item[c->row][c->col];
+		unsigned char ms = map[current_branch][current_level].monster[c->row][c->col];
+		for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
+			(*a)->analyze(c->row, c->col, ds);
+		for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
+			(*a)->analyze(c->row, c->col, is);
+		for (vector<Analyzer *>::iterator a = analyzer_symbols[ms].begin(); a != analyzer_symbols[ms].end(); ++a)
+			(*a)->analyze(c->row, c->col, ms);
 	}
 }
 
