@@ -11,13 +11,17 @@ Door::Door(Saiph *saiph) {
 
 /* methods */
 void Door::command(string *command) {
-	*command = action;
-	action = "OK";
+	if (da.action == ILLEGAL_ACTION)
+		*command = da.direction;
+	else
+		*command = da.action;
 }
 
 int Door::finish() {
 	/* open closed doors */
-	action = "";
+	da.action = ILLEGAL_ACTION;
+	da.direction = ILLEGAL_MOVE;
+	da.dp = NULL;
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	int best_priority = 0;
@@ -55,13 +59,12 @@ int Door::finish() {
 				continue;
 			}
 			best_priority = DOOR_OPEN_PRIORITY;
-			if (distance == 1) {
-				/* standing next to door */
-				action = "o";
-				next_action = move;
-			} else {
-				action = move;
-			}
+			da.direction = move;
+			da.dp = &(*d);
+			if (distance == 1)
+				da.action = DOOR_OPEN; // standing next to door
+			else
+				da.action = ILLEGAL_ACTION;
 		/* TODO:
 		} else if (d->locked && can_lockpick && DOOR_PICK_PRIORITY >= best_priority) {
 		*/
@@ -84,13 +87,12 @@ int Door::finish() {
 				continue;
 			}
 			best_priority = DOOR_KICK_PRIORITY;
-			if (distance == 1) {
-				/* standing next to door */
-				action = (char) 4;
-				next_action = move;
-			} else {
-				action = move;
-			}
+			da.direction = move;
+			da.dp = &(*d);
+			if (distance == 1)
+				da.action = DOOR_KICK; // standing next to door
+			else
+				da.action = ILLEGAL_ACTION;
 		}
 		++d;
 	}
@@ -113,20 +115,18 @@ void Door::inspect(int row, int col, unsigned char symbol) {
 }
 
 int Door::parseMessages(string *messages) {
-	if (action != "OK")
-		return 0; // we didn't do anything
-	if (messages->find(CHOOSE_DIRECTION, 0) != string::npos) {
-		action = next_action;
+	if (da.action != ILLEGAL_ACTION && messages->find(CHOOSE_DIRECTION, 0) != string::npos) {
+		da.action = ILLEGAL_ACTION;
 		return DOOR_CONTINUE_ACTION;
 	//} else if (messages->find(DOOR_CLOSES, 0) != string::npos) {
 	//} else if (messages->find(DOOR_KICK_FAIL, 0) != string::npos) {
 	//} else if (messages->find(DOOR_KICK_OPEN, 0) != string::npos) {
-	} else if (messages->find(DOOR_LOCKED, 0) != string::npos) {
-		doors[saiph->current_branch][saiph->current_level][action_door].locked = true;
+	} else if (messages->find(DOOR_LOCKED, 0) != string::npos && da.dp != NULL) {
+		da.dp->locked = true;
 	//} else if (messages->find(DOOR_NO_DOOR, 0) != string::npos) {
 	//} else if (messages->find(DOOR_OPENS, 0) != string::npos) {
 	//} else if (messages->find(DOOR_RESISTS, 0) != string::npos) {
-	} else if (messages->find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages->find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages->find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
+	} else if (!shop_on_level[saiph->current_branch][saiph->current_level] && messages->find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages->find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages->find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
 		/* TODO
 		 * this will not be specific for doors(?) */
 		shop_on_level[saiph->current_branch][saiph->current_level] = true;

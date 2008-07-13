@@ -45,8 +45,7 @@
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
 /* items */
-#define NOITEM 0
-#define ILLEGAL 'm'
+#define ILLEGAL_ITEM 0
 #define WEAPON ')'
 #define ARMOR '['
 #define RING '='
@@ -65,7 +64,7 @@
 #define CHAINS '`'
 #define VENOM '`'
 /* special "monsters" */
-#define NOMONSTER 0
+#define ILLEGAL_MONSTER 0
 #define PET 136
 #define PLAYER 137
 

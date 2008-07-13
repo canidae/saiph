@@ -17,6 +17,9 @@
 #define DOOR_KICK_PRIORITY 25
 #define DOOR_OPEN_PRIORITY 45
 #define DOOR_PICK_PRIORITY 35
+/* actions */
+#define DOOR_KICK 4 // ctrl-d
+#define DOOR_OPEN 'o'
 
 /* forward declare */
 class Door;
@@ -36,6 +39,14 @@ class DoorPoint : public Point {
 		bool locked;
 };
 
+/* opening/picking/kicking doors is a multi turn affair.
+ * we'll need a more complex way of storing an action */
+struct DoorAction {
+	unsigned char direction;
+	unsigned char action;
+	DoorPoint *dp;
+};
+
 /* analyzes the map and finds somewhere to explore */
 class Door : public Analyzer {
 	public:
@@ -53,9 +64,6 @@ class Door : public Analyzer {
 		Saiph *saiph;
 		vector<DoorPoint> doors[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		bool shop_on_level[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
-		string action;
-		string next_action;
-		unsigned char action_direction;
-		int action_door;
+		DoorAction da;
 };
 #endif

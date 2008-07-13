@@ -33,15 +33,14 @@
 #define MOVE_DOWN '>'
 #define ILLEGAL_MOVE 0
 /* actions */
-#define ENGRAVE 'E'
-#define KICK 4 // ctrl-d
-#define OPEN 'o'
-#define PRAY "#pray\n"
 #define REST '.'
-#define SEARCH 's'
-/* elbereth */
+#define ILLEGAL_ACTION 0
+/* actions that will be moved somewhere else */
 #define ELBERETH "Elbereth\n"
-/* various */
+#define ENGRAVE 'E'
+#define PRAY "#pray\n"
+#define SEARCH 's'
+/* common answers to questions */
 #define HANDS '-'
 #define NO 'n'
 #define YES 'y'

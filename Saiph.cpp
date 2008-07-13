@@ -385,9 +385,9 @@ void Saiph::dumpMaps() {
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			if (map[current_branch][current_level].monster[r][c] != NOMONSTER)
+			if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
-			else if (map[current_branch][current_level].item[r][c] != NOITEM)
+			else if (map[current_branch][current_level].item[r][c] != ILLEGAL_ITEM)
 				cout << (unsigned char) (map[current_branch][current_level].item[r][c]);
 			else
 				cout << ' ';
@@ -454,9 +454,9 @@ void Saiph::updateMaps() {
 		if (item[s]) {
 			/* item here */
 			map[current_branch][current_level].item[c->row][c->col] = s;
-		} else if (map[current_branch][current_level].item[c->row][c->col] != NOITEM) {
+		} else if (map[current_branch][current_level].item[c->row][c->col] != ILLEGAL_ITEM) {
 			/* item is gone? hmm, remove it */
-			map[current_branch][current_level].item[c->row][c->col] = NOITEM;
+			map[current_branch][current_level].item[c->row][c->col] = ILLEGAL_ITEM;
 		}
 		if (monster[s]) {
 			/* found a monster!
@@ -483,7 +483,7 @@ void Saiph::updateMaps() {
 			} else {
 				/* found a monster with same symbol nearby.
 				 * remove monster from monstermap */
-				map[current_branch][current_level].monster[move->row][move->col] = NOMONSTER;
+				map[current_branch][current_level].monster[move->row][move->col] = ILLEGAL_MONSTER;
 				/* update position of monster */
 				move->row = c->row;
 				move->col = c->col;
@@ -500,7 +500,7 @@ void Saiph::updateMaps() {
 			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
 				continue;
 			unsigned char ms = map[current_branch][current_level].monster[r][c];
-			if (ms != NOMONSTER && !monster[(unsigned char) world->view[r][c]]) {
+			if (ms != ILLEGAL_MONSTER && !monster[(unsigned char) world->view[r][c]]) {
 				/* find nearest monster of this symbol */
 				int min_distance = INT_MAX;
 				list<Point>::iterator erase = map[current_branch][current_level].monsterpos[ms].end();
@@ -514,7 +514,7 @@ void Saiph::updateMaps() {
 				if (erase != map[current_branch][current_level].monsterpos[ms].end())
 					map[current_branch][current_level].monsterpos[ms].erase(erase);
 				/* remove monster at this location */
-				map[current_branch][current_level].monster[r][c] = NOMONSTER;
+				map[current_branch][current_level].monster[r][c] = ILLEGAL_MONSTER;
 			}
 		}
 	}
