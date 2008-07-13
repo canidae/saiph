@@ -24,9 +24,11 @@ class World;
 
 /* includes */
 #include <string>
+#include <vector>
 #include "Connection.h"
 #include "Globals.h"
 #include "Player.h"
+#include "Point.h"
 
 /* namespace */
 using namespace std;
@@ -35,7 +37,8 @@ using namespace std;
 class World {
 	public:
 		/* variables */
-		char map[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
+		vector<Point> changes; // list of locations changed since last "frame"
+		char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 		int color[ROWS][COLS]; // not used for string reading, no need for + 1
 		int row; // cursor position, row
 		int col; // cursor position, col
@@ -56,15 +59,16 @@ class World {
 	private:
 		/* variables */
 		Connection *connection;
+		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
 		ssize_t data_size;
 		int messages_pos; // used for concatenation multiple messages together
 		string msg_str; // used for fetching messages
 
 		/* methods */
-		void handleEscapeSequence(int *pos, int *color);
+		void addChangedLocation(int row, int col);
 		void fetchMessages();
-		void fetchMessagesHelper(int row, int startcol);
+		void handleEscapeSequence(int *pos, int *color);
 		void update();
 };
 #endif

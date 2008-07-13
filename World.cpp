@@ -3,10 +3,11 @@
 /* constructors */
 World::World(Connection *connection) {
 	this->connection = connection;
-	memset(map, ' ', sizeof (map));
+	memset(view, ' ', sizeof (view));
 	for (int r = 0; r < ROWS; ++r)
-		map[r][COLS] = '\0';
+		view[r][COLS] = '\0';
 	memset(color, NOCOLOR, sizeof (color));
+	memset(changed, false, sizeof (changed));
 	row = 0;
 	col = 0;
 	menu = false;
@@ -36,6 +37,119 @@ bool World::executeCommand(const string &command) {
 }
 
 /* private methods */
+void World::addChangedLocation(int row, int col) {
+	/* add a location changed since last frame unless it's already added */
+	if (changed[row][col] || row > MAP_ROW_END || row < MAP_ROW_BEGIN || col > MAP_COL_END || col < MAP_COL_BEGIN)
+		return;
+	Point p;
+	p.row = row;
+	p.col = col;
+	changes.push_back(p);
+}
+
+void World::fetchMessages() {
+	/* new attempt on fetching messages.
+	 * this is much better, but still some hacks to get around bugs(?) in nethack.
+	 * what do we know?
+	 * - "--More--", "(end)" and "(x of y)" is the last chars in data.
+	 * - if only 1 line of messages, it's always on first line.
+	 * - cursor is always placed after "--More--", "(end)" or "(x of y)" */
+	msg_str = &data[data_size - MORE_LENGTH];
+	int r = row;
+	int c = col;
+	bool more = false;
+	menu = false;
+	string::size_type pos = string::npos;
+	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
+		/* "--More--" found, set c */
+		c = col - MORE_LENGTH;
+		more = true;
+	} else {
+		msg_str = &data[data_size - END_LENGTH];
+		if ((pos = msg_str.find(END, 0)) != string::npos) {
+			/* "(end)" found, set c.
+			 * since there (always?) is an extra space after "(end)",
+			 * we'll have to "+ pos" */
+			c = col - END_LENGTH + pos;
+			menu = true;
+		} else {
+			msg_str = &data[data_size - PAGE_LENGTH];
+			if ((pos = msg_str.find(PAGE, 0)) != string::npos) {
+				/* "(x of y)" found, set c.
+				 * this is special, we only search for " of ".
+				 * while PAGE_LENGTH covers "y)" we still haven't covered "x)",
+				 * so we'll have to move c 2 squares left */
+				c = col - PAGE_LENGTH - 2;
+				menu = true;
+			} else {
+				/* look for question */
+				msg_str = &data[data_size - QUESTION_LENGTH];
+				question = false;
+				if (row == 0) {
+					question = true;
+				} else {
+					if ((pos = msg_str.find(QUESTION_YN, 0)) == string::npos)
+						pos = msg_str.find(QUESTION_YNQ, 0);
+					if (pos != string::npos) {
+						if ((pos = msg_str.find(QUESTION_DY, 0)) == string::npos)
+							if ((pos = msg_str.find(QUESTION_DN, 0)) == string::npos)
+								pos = msg_str.find(QUESTION_DQ, 0);
+						if (pos != string::npos)
+							question = true;
+					}
+				}
+
+				/* look for messages.
+				 * only handles first line, but that should be enough */
+				msg_str = view[0];
+				string::size_type fns = msg_str.find_first_not_of(" ");
+				string::size_type lns = msg_str.find_last_not_of(" ");
+				if (fns == string::npos || lns == string::npos || fns >= lns)
+					msg_str.clear();
+				else
+					msg_str = msg_str.substr(fns, lns - fns + 1);
+				msg_str.copy(&messages[messages_pos], msg_str.length());
+				messages[messages_pos + msg_str.length()] = '\0';
+				messages_pos = 0;
+				return; // no messages or messages on 1 line
+			}
+		}
+	}
+	if (r == 0) {
+		/* not a menu, remove "--More--" from end of line */
+		msg_str = view[r];
+		msg_str = msg_str.substr(0, c);
+		/* append 2 spaces for later splitting */
+		msg_str.append(2, ' ');
+		msg_str.copy(&messages[messages_pos], msg_str.length());
+		messages_pos += msg_str.length();
+		messages[messages_pos] = '\0';
+	} else {
+		/* list, add all lines to msg_str, splitted by "  "
+		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
+		for (int r2 = 0; r2 < r; ++r2) {
+			msg_str = &view[r2][c];
+			/* trim */
+			string::size_type fns = msg_str.find_first_not_of(" ");
+			string::size_type lns = msg_str.find_last_not_of(" ");
+			if (fns == string::npos || lns == string::npos || fns >= lns)
+				continue; // blank line?
+			msg_str = msg_str.substr(fns, lns - fns + 1);
+			/* append 2 spaces for later splitting */
+			msg_str.append(2, ' ');
+			msg_str.copy(&messages[messages_pos], msg_str.length());
+			messages_pos += msg_str.length();
+			messages[messages_pos] = '\0';
+		}
+	}
+	if (more) {
+		/* there are "--More--" messages.
+		 * since this is not a menu we'll just ask for the rest of the messages */
+		executeCommand(" ");
+		return;
+	}
+}
+
 void World::handleEscapeSequence(int *pos, int *color) {
 	if (data[*pos] == 27) {
 		/* sometimes we get 2 escape chars in a row,
@@ -90,19 +204,19 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					/* erase everything below current position */
 					for (int r = row + 1; r < ROWS; ++r) {
 						for (int c = 0; c < COLS; ++c)
-							map[r][c] = ' ';
+							view[r][c] = ' ';
 					}
 				} else if (data[*pos - 1] == '1') {
-					/* erase everything aboce current position */
+					/* erase everything above current position */
 					for (int r = row - 1; r >= 0; --r) {
 						for (int c = 0; c < COLS; ++c)
-							map[r][c] = ' ';
+							view[r][c] = ' ';
 					}
 				} else if (data[*pos - 1] == '2') {
 					/* erase entire display */
-					memset(map, ' ', sizeof (map));
+					memset(view, ' ', sizeof (view));
 					for (int r = 0; r < ROWS; ++r)
-						map[r][COLS] = '\0';
+						view[r][COLS] = '\0';
 					row = 0;
 					col = 0;
 					*color = 0;
@@ -117,15 +231,15 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				if (data[*pos - 1] == '[') {
 					/* erase everything to the right */
 					for (int c = col; c < COLS; ++c)
-						map[row][c] = ' ';
+						view[row][c] = ' ';
 				} else if (data[*pos - 1] == '1') {
 					/* erase everything to the left */
 					for (int c = 0; c < col; ++c)
-						map[row][c] = ' ';
+						view[row][c] = ' ';
 				} else if (data[*pos - 1] == '2') {
 					/* erase entire line */
 					for (int c = 0; c < COLS; ++c)
-						map[row][c] = ' ';
+						view[row][c] = ' ';
 				} else {
 					cerr << "Unhandled sequence: " << endl;
 					cerr << &data[*pos] << endl;
@@ -212,111 +326,11 @@ void World::handleEscapeSequence(int *pos, int *color) {
 	}
 }
 
-void World::fetchMessages() {
-	/* new attempt on fetching messages.
-	 * this is much better, but still some hacks to get around bugs(?) in nethack.
-	 * what do we know?
-	 * - "--More--", "(end)" and "(x of y)" is the last chars in data.
-	 * - if only 1 line of messages, it's always on first line.
-	 * - cursor is always placed after "--More--", "(end)" or "(x of y)" */
-	msg_str = &data[data_size - MORE_LENGTH];
-	int r = row;
-	int c = col;
-	bool more = false;
-	menu = false;
-	string::size_type pos = string::npos;
-	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
-		/* "--More--" found, set c */
-		c = col - MORE_LENGTH;
-		more = true;
-	} else {
-		msg_str = &data[data_size - END_LENGTH];
-		if ((pos = msg_str.find(END, 0)) != string::npos) {
-			/* "(end)" found, set c.
-			 * since there (always?) is an extra space after "(end)",
-			 * we'll have to "+ pos" */
-			c = col - END_LENGTH + pos;
-			menu = true;
-		} else {
-			msg_str = &data[data_size - PAGE_LENGTH];
-			if ((pos = msg_str.find(PAGE, 0)) != string::npos) {
-				/* "(x of y)" found, set c.
-				 * this is special, we only search for " of ".
-				 * while PAGE_LENGTH covers "y)" we still haven't covered "x)",
-				 * so we'll have to move c 2 squares left */
-				c = col - PAGE_LENGTH - 2;
-				menu = true;
-			} else {
-				/* look for question */
-				msg_str = &data[data_size - QUESTION_LENGTH];
-				question = false;
-				if (row == 0) {
-					question = true;
-				} else {
-					if ((pos = msg_str.find(QUESTION_YN, 0)) == string::npos)
-						pos = msg_str.find(QUESTION_YNQ, 0);
-					if (pos != string::npos) {
-						if ((pos = msg_str.find(QUESTION_DY, 0)) == string::npos)
-							if ((pos = msg_str.find(QUESTION_DN, 0)) == string::npos)
-								pos = msg_str.find(QUESTION_DQ, 0);
-						if (pos != string::npos)
-							question = true;
-					}
-				}
-
-				/* look for messages.
-				 * only handles first line, but that should be enough */
-				msg_str = map[0];
-				string::size_type fns = msg_str.find_first_not_of(" ");
-				string::size_type lns = msg_str.find_last_not_of(" ");
-				if (fns == string::npos || lns == string::npos || fns >= lns)
-					msg_str.clear();
-				else
-					msg_str = msg_str.substr(fns, lns - fns + 1);
-				msg_str.copy(&messages[messages_pos], msg_str.length());
-				messages[messages_pos + msg_str.length()] = '\0';
-				messages_pos = 0;
-				return; // no messages or messages on 1 line
-			}
-		}
-	}
-	if (r == 0) {
-		/* not a menu, remove "--More--" from end of line */
-		msg_str = map[r];
-		msg_str = msg_str.substr(0, c);
-		/* append 2 spaces for later splitting */
-		msg_str.append(2, ' ');
-		msg_str.copy(&messages[messages_pos], msg_str.length());
-		messages_pos += msg_str.length();
-		messages[messages_pos] = '\0';
-	} else {
-		/* list, add all lines to msg_str, splitted by "  "
-		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
-		for (int r2 = 0; r2 < r; ++r2) {
-			msg_str = &map[r2][c];
-			/* trim */
-			string::size_type fns = msg_str.find_first_not_of(" ");
-			string::size_type lns = msg_str.find_last_not_of(" ");
-			if (fns == string::npos || lns == string::npos || fns >= lns)
-				continue; // blank line?
-			msg_str = msg_str.substr(fns, lns - fns + 1);
-			/* append 2 spaces for later splitting */
-			msg_str.append(2, ' ');
-			msg_str.copy(&messages[messages_pos], msg_str.length());
-			messages_pos += msg_str.length();
-			messages[messages_pos] = '\0';
-		}
-	}
-	if (more) {
-		/* there are "--More--" messages.
-		 * since this is not a menu we'll just ask for the rest of the messages */
-		executeCommand(" ");
-		return;
-	}
-}
-
 void World::update() {
-	/* update the map */
+	/* update the view */
+	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
+		changed[c->row][c->col] = false;
+	changes.clear();
 	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	/* print world
@@ -362,7 +376,7 @@ void World::update() {
 				break;
 
 			default:
-				/* add this char to the map */
+				/* add this char to the view */
 				if (col >= COLS || row >= ROWS || col < 0 || row < 0) {
 					cerr << "Fell out of the dungeon: " << row << ", " << col << endl;
 					cerr << data_size << endl;
@@ -370,7 +384,8 @@ void World::update() {
 					cerr << data << endl;
 					break;
 				}
-				map[row][col] = data[pos];
+				view[row][col] = data[pos];
+				addChangedLocation(row, col);
 				this->color[row][col] = color;
 				col++;
 				break;
@@ -380,12 +395,12 @@ void World::update() {
 	fetchMessages();
 
 	/* parse attribute & status rows */
-	bool parsed_attributes = player.parseAttributeRow(map[ATTRIBUTES_ROW]);
-	bool parsed_status = player.parseStatusRow(map[STATUS_ROW]);
+	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
+	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
 	if (parsed_attributes && parsed_status && row >= MAP_ROW_BEGIN && row <= MAP_ROW_END && col >= MAP_COL_BEGIN && col <= MAP_COL_END) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
-		map[row][col] = PLAYER;
+		view[row][col] = PLAYER;
 		player.row = row;
 		player.col = col;
 	} else if (!menu && !question) {
@@ -397,4 +412,8 @@ void World::update() {
 		update();
 		return;
 	}
+	cerr << "CHANGED LOCATIONS:" << endl;
+	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
+		cerr << c->row << ", " << c->col << " | ";
+	cerr << endl;
 }

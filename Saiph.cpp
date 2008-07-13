@@ -208,7 +208,7 @@ bool Saiph::run() {
 	/* check if we're engulfed */
 	int r = world->player.row;
 	int c = world->player.col;
-	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->map[r - 1][c] == '-' && world->map[r + 1][c] == '-' && world->map[r][c - 1] == '|' && world->map[r][c + 1] == '|')
+	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->view[r - 1][c] == '-' && world->view[r + 1][c] == '-' && world->view[r][c - 1] == '|' && world->view[r][c + 1] == '|')
 		engulfed = true;
 	else
 		engulfed = false;
@@ -414,6 +414,9 @@ void Saiph::dumpMaps() {
 
 void Saiph::inspect() {
 	/* inspect the dungeon for interesting monsters/objects/places */
+	/* TODO:
+	 * we could speed this significantly up by only inspecting changes.
+	 * this does however mean that analyzers need to remember a bit more */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			unsigned char ds = map[current_branch][current_level].dungeon[r][c];
@@ -433,7 +436,7 @@ void Saiph::updateMaps() {
 	/* update the various maps */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			unsigned char s = uniquemap[(unsigned char) world->map[r][c]][(unsigned char) world->color[r][c]];
+			unsigned char s = uniquemap[(unsigned char) world->view[r][c]][(unsigned char) world->color[r][c]];
 			if (s == SOLID_ROCK)
 				continue; // not interesting (also mess up unlit rooms)
 			/* "static" dungean features */
@@ -474,7 +477,6 @@ void Saiph::updateMaps() {
 				}
 				if (move == map[current_branch][current_level].monsterpos[s].end()) {
 					/* didn't find a monster with same symbol, add monster to list */
-					cerr << "Monster '" << s << "' not seen before, adding" << endl;
 					Point p;
 					p.row = r;
 					p.col = c;
@@ -482,7 +484,6 @@ void Saiph::updateMaps() {
 				} else {
 					/* found a monster with same symbol nearby.
 					 * remove monster from monstermap */
-					cerr << "Monster '" << s << "' seen before at location " << move->row << ", " << move->col << ". Moving monster to location " << r << ", " << c << endl;
 					map[current_branch][current_level].monster[move->row][move->col] = NOMONSTER;
 					/* update position of monster */
 					move->row = r;
@@ -501,7 +502,7 @@ void Saiph::updateMaps() {
 			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
 				continue;
 			unsigned char ms = map[current_branch][current_level].monster[r][c];
-			if (ms != NOMONSTER && !monster[(unsigned char) world->map[r][c]]) {
+			if (ms != NOMONSTER && !monster[(unsigned char) world->view[r][c]]) {
 				/* find nearest monster of this symbol */
 				int min_distance = INT_MAX;
 				list<Point>::iterator erase = map[current_branch][current_level].monsterpos[ms].end();
@@ -512,12 +513,8 @@ void Saiph::updateMaps() {
 						erase = m;
 					}
 				}
-				cerr << "Expected to find monster '" << ms << "' at location " << r << ", " << c << ", but didn't so we removed it" << endl;
-				if (erase != map[current_branch][current_level].monsterpos[ms].end()) {
+				if (erase != map[current_branch][current_level].monsterpos[ms].end())
 					map[current_branch][current_level].monsterpos[ms].erase(erase);
-				} else {
-					cerr << "ERROR! monster was in monstermap, but not in monsterlist. This shouldn't happen!" << endl;
-				}
 				/* remove monster at this location */
 				map[current_branch][current_level].monster[r][c] = NOMONSTER;
 			}

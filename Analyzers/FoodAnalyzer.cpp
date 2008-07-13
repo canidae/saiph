@@ -77,7 +77,7 @@ int FoodAnalyzer::finish() {
 	unsigned char best_move = ILLEGAL_MOVE;
 	list<FO_Food>::iterator f = food.begin();
 	for (list<FO_Food>::iterator f = food.begin(); f != food.end(); ) {
-		if (saiph->world->map[f->row][f->col] != FOOD) {
+		if (saiph->world->view[f->row][f->col] != FOOD) {
 			/* food is gone, remove from list */
 			food.erase(f++);
 			continue;
