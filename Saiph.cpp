@@ -434,64 +434,62 @@ void Saiph::inspect() {
 
 void Saiph::updateMaps() {
 	/* update the various maps */
-	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			unsigned char s = uniquemap[(unsigned char) world->view[r][c]][(unsigned char) world->color[r][c]];
-			if (s == SOLID_ROCK)
-				continue; // not interesting (also mess up unlit rooms)
-			/* "static" dungean features */
-			if (static_dungeon_symbol[s]) {
-				/* update the map showing static stuff */
-				map[current_branch][current_level].dungeon[r][c] = s;
-			} else if (!passable[map[current_branch][current_level].dungeon[r][c]]) {
-				/* hmm, this tile used to be unpassable,
-				 * but now it isn't...
-				 * this happens for example when:
-				 * - monster opens door and we kill the monster in the doorway
-				 * - monster digging out level, leaving stuff on squares
-				 * let's place an open door here */
-				map[current_branch][current_level].dungeon[r][c] = OPEN_DOOR;
-			}
-			if (item[s]) {
-				/* item here */
-				map[current_branch][current_level].item[r][c] = s;
-			} else if (map[current_branch][current_level].item[r][c] != NOITEM) {
-				/* item is gone? hmm, remove it */
-				map[current_branch][current_level].item[r][c] = NOITEM;
-			}
-			if (monster[s]) {
-				/* found a monster!
-				 * since monsters unlike items disappear from map when we can't see them,
-				 * we can't remove monsters like we do with items above.
-				 * we'll need to locate the nearest monster of same symbol (if any),
-				 * and update the position */
-				/* find nearest monster of this symbol */
-				int min_distance = INT_MAX;
-				list<Point>::iterator move = map[current_branch][current_level].monsterpos[s].end();
-				for (list<Point>::iterator m = map[current_branch][current_level].monsterpos[s].begin(); m != map[current_branch][current_level].monsterpos[s].end(); ++m) {
-					int distance = max(abs(r - m->row), abs(c - m->col));
-					if (distance < min_distance) {
-						min_distance = distance;
-						move = m;
-					}
+	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
+		unsigned char s = uniquemap[(unsigned char) world->view[c->row][c->col]][(unsigned char) world->color[c->row][c->col]];
+		if (s == SOLID_ROCK)
+			continue; // not interesting (also mess up unlit rooms)
+		/* "static" dungean features */
+		if (static_dungeon_symbol[s]) {
+			/* update the map showing static stuff */
+			map[current_branch][current_level].dungeon[c->row][c->col] = s;
+		} else if (!passable[map[current_branch][current_level].dungeon[c->row][c->col]]) {
+			/* hmm, this tile used to be unpassable,
+			 * but now it isn't...
+			 * this happens for example when:
+			 * - monster opens door and we kill the monster in the doorway
+			 * - monster digging out level, leaving stuff on squares
+			 * let's place an open door here */
+			map[current_branch][current_level].dungeon[c->row][c->col] = OPEN_DOOR;
+		}
+		if (item[s]) {
+			/* item here */
+			map[current_branch][current_level].item[c->row][c->col] = s;
+		} else if (map[current_branch][current_level].item[c->row][c->col] != NOITEM) {
+			/* item is gone? hmm, remove it */
+			map[current_branch][current_level].item[c->row][c->col] = NOITEM;
+		}
+		if (monster[s]) {
+			/* found a monster!
+			 * since monsters unlike items disappear from map when we can't see them,
+			 * we can't remove monsters like we do with items above.
+			 * we'll need to locate the nearest monster of same symbol (if any),
+			 * and update the position */
+			/* find nearest monster of this symbol */
+			int min_distance = INT_MAX;
+			list<Point>::iterator move = map[current_branch][current_level].monsterpos[s].end();
+			for (list<Point>::iterator m = map[current_branch][current_level].monsterpos[s].begin(); m != map[current_branch][current_level].monsterpos[s].end(); ++m) {
+				int distance = max(abs(c->row - m->row), abs(c->col - m->col));
+				if (distance < min_distance) {
+					min_distance = distance;
+					move = m;
 				}
-				if (move == map[current_branch][current_level].monsterpos[s].end()) {
-					/* didn't find a monster with same symbol, add monster to list */
-					Point p;
-					p.row = r;
-					p.col = c;
-					map[current_branch][current_level].monsterpos[s].push_back(p);
-				} else {
-					/* found a monster with same symbol nearby.
-					 * remove monster from monstermap */
-					map[current_branch][current_level].monster[move->row][move->col] = NOMONSTER;
-					/* update position of monster */
-					move->row = r;
-					move->col = c;
-				}
-				/* update monstermap */
-				map[current_branch][current_level].monster[r][c] = s;
 			}
+			if (move == map[current_branch][current_level].monsterpos[s].end()) {
+				/* didn't find a monster with same symbol, add monster to list */
+				Point p;
+				p.row = c->row;
+				p.col = c->col;
+				map[current_branch][current_level].monsterpos[s].push_back(p);
+			} else {
+				/* found a monster with same symbol nearby.
+				 * remove monster from monstermap */
+				map[current_branch][current_level].monster[move->row][move->col] = NOMONSTER;
+				/* update position of monster */
+				move->row = c->row;
+				move->col = c->col;
+			}
+			/* update monstermap */
+			map[current_branch][current_level].monster[c->row][c->col] = s;
 		}
 	}
 	/* remove monsters next to the player as they're obviously gone */
