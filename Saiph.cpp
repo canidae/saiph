@@ -121,7 +121,9 @@ Saiph::Saiph(bool remote) {
 	messages.clear();
 
 	/* Analyzers */
+	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Explore(this));
+	analyzers.push_back(new Health(this));
 }
 
 /* destructors */
@@ -379,25 +381,23 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 
 /* private methods */
 void Saiph::dumpMaps() {
-	/* search map */
-	/*
+	/* items/monsters */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
-		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			cout << (unsigned char) (map[current_branch][current_level].search[r][c] % 96 + 32);
-		}
-	}
-	*/
-	/* world map as the bot sees it */
-	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (map[current_branch][current_level].monster[r][c] != NOMONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
 			else if (map[current_branch][current_level].item[r][c] != NOITEM)
 				cout << (unsigned char) (map[current_branch][current_level].item[r][c]);
 			else
-				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+				cout << ' ';
+		}
+	}
+	/* world map as the bot sees it */
+	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
+		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
+		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
+			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
 	}
 	/* path map */

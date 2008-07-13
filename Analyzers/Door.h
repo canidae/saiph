@@ -1,0 +1,61 @@
+#ifndef DOOR_H
+/* defines */
+#define DOOR_H
+/* messages */
+#define DOOR_CLOSES "The door closes."
+#define DOOR_KICK_FAIL "WHAMMM!!!"
+#define DOOR_KICK_OPEN "As you kick the door, it crashes open!"
+#define DOOR_LOCKED "This door is locked."
+#define DOOR_NO_DOOR "You see no door there."
+#define DOOR_OPENS "The door opens."
+#define DOOR_SHOP_ON_LEVEL1 "You hear someone cursing shoplifters."
+#define DOOR_SHOP_ON_LEVEL2 "You hear the chime of a cash register."
+#define DOOR_SHOP_ON_LEVEL3 "You hear Neiman and Marcus arguing!"
+#define DOOR_RESISTS "The door resists!"
+/* priorities */
+#define DOOR_CONTINUE_ACTION 1000
+#define DOOR_KICK_PRIORITY 25
+#define DOOR_OPEN_PRIORITY 45
+#define DOOR_PICK_PRIORITY 35
+
+/* forward declare */
+class Door;
+
+/* includes */
+#include <string>
+#include "../Point.h"
+#include "../Saiph.h"
+
+/* namespace */
+using namespace std;
+
+/* a DoorPoint. just a point with some more info */
+class DoorPoint : public Point {
+	public:
+		/* variables */
+		bool locked;
+};
+
+/* analyzes the map and finds somewhere to explore */
+class Door : public Analyzer {
+	public:
+		/* constructors */
+		Door(Saiph *saiph);
+
+		/* methods */
+		void command(string *command);
+		int finish();
+		void inspect(int row, int col, unsigned char symbol);
+		int parseMessages(string *messages);
+
+	private:
+		/* variables */
+		Saiph *saiph;
+		vector<DoorPoint> doors[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
+		bool shop_on_level[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
+		string action;
+		string next_action;
+		unsigned char action_direction;
+		int action_door;
+};
+#endif

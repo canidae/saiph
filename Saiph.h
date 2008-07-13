@@ -62,7 +62,9 @@ class Saiph;
 #include "Request.h"
 #include "World.h"
 /* analyzers */
+#include "Analyzers/Door.h"
 #include "Analyzers/Explore.h"
+#include "Analyzers/Health.h"
 
 /* namespace */
 using namespace std;

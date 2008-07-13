@@ -7,22 +7,14 @@ Health::Health(Saiph *saiph) {
 }
 
 /* methods */
-int Health::parseMessages(string *messages) {
-	if (messages->find(HA_ENGRAVE_WITH, 0) != string::npos)
-		action = HANDS;
-	else if (messages->find(HA_ENGRAVE_DUST, 0) != string::npos)
-		action = ELBERETH;
-	else if (messages->find(HA_ENGRAVE_DUST_ADD, 0) != string::npos)
-		action = ELBERETH;
-	else if (messages->find(HA_ENGRAVE_ADD, 0) != string::npos)
-		action = YES;
-	else
-		return 0;
-	return HEALTH_CONTINUE_ACTION;
+void Health::command(string *command) {
+	*command = action;
+	action = "OK";
 }
 
 int Health::finish() {
 	/* figure out if we're in danger of dying */
+	action = "";
 	/* food */
 	if (saiph->world->player.hunger == FAINTING) {
 		action = PRAY;
@@ -63,6 +55,18 @@ int Health::finish() {
 	return 0;
 }
 
-void Health::command(string *command) {
-	*command = action;
+int Health::parseMessages(string *messages) {
+	if (action != "OK")
+		return 0; // we didn't do anything
+	if (messages->find(HA_ENGRAVE_WITH, 0) != string::npos)
+		action = HANDS;
+	else if (messages->find(HA_ENGRAVE_DUST, 0) != string::npos)
+		action = ELBERETH;
+	else if (messages->find(HA_ENGRAVE_DUST_ADD, 0) != string::npos)
+		action = ELBERETH;
+	else if (messages->find(HA_ENGRAVE_ADD, 0) != string::npos)
+		action = YES;
+	else
+		return 0;
+	return HEALTH_CONTINUE_ACTION;
 }

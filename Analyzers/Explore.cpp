@@ -29,10 +29,10 @@ int Explore::finish() {
 	int best_priority = -1;
 	int best_distance = INT_MAX;
 	move = ILLEGAL_MOVE;
-	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ++e) {
+	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
 		if (search[b][l][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 			/* this place is fully searched out. remove it from the list */
-			explore.erase(e);
+			e = explore.erase(e);
 			continue;
 		}
 		unsigned char hs = saiph->map[b][l].dungeon[e->row][e->col - 1];
@@ -63,7 +63,7 @@ int Explore::finish() {
 					priority = EXPLORE_SEARCH_CORRIDOR_CORNER;
 				} else {
 					/* this place is of no interest to us */
-					explore.erase(e);
+					e = explore.erase(e);
 					continue;
 				}
 				break;
@@ -78,7 +78,7 @@ int Explore::finish() {
 					priority = EXPLORE_SEARCH_DOOR_DEAD_END;
 				} else {
 					/* door with exit, uninteresting */
-					explore.erase(e);
+					e = explore.erase(e);
 					continue;
 				}
 				break;
@@ -86,7 +86,7 @@ int Explore::finish() {
 			case FLOOR:
 				if (visited[b][l][e->row][e->col] && search[b][l][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 					/* been here & searched, uninteresting place */
-					explore.erase(e);
+					e = explore.erase(e);
 					continue;
 				}
 				if (hs == SOLID_ROCK || js == SOLID_ROCK || ks == SOLID_ROCK || ls == SOLID_ROCK) {
@@ -103,14 +103,17 @@ int Explore::finish() {
 
 			default:
 				/* this never happens */
-				explore.erase(e);
+				e = explore.erase(e);
 				continue;
 		}
-		if (priority < best_priority)
+		if (priority < best_priority) {
+			++e;
 			continue;
+		}
 		int distance = 0;
 		bool straight_line = false;
 		unsigned char nextmove = saiph->shortestPath(*e, false, &distance, &straight_line);
+		++e;
 		if (priority == best_priority && distance > best_distance)
 			continue;
 		if (nextmove == ILLEGAL_MOVE)
