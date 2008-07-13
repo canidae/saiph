@@ -9,9 +9,6 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
-void Analyzer::analyze(int row, int col, unsigned char symbol) {
-}
-
 void Analyzer::command(string *command) {
 }
 
@@ -19,8 +16,15 @@ int Analyzer::finish() {
 	return 0;
 }
 
+void Analyzer::inspect(int row, int col, unsigned char symbol) {
+}
+
 int Analyzer::parseMessages(string *messages) {
 	return 0;
+}
+
+bool Analyzer::requestAction(const Request &request) {
+	return false;
 }
 
 int Analyzer::start() {

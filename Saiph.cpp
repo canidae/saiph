@@ -121,13 +121,7 @@ Saiph::Saiph(bool remote) {
 	messages.clear();
 
 	/* Analyzers */
-	analyzers.push_back(new DoorAnalyzer(this));
-	analyzers.push_back(new FoodAnalyzer(this));
 	analyzers.push_back(new Explore(this));
-	analyzers.push_back(new HealthAnalyzer(this));
-	analyzers.push_back(new LevelAnalyzer(this));
-	analyzers.push_back(new LootAnalyzer(this));
-	analyzers.push_back(new MonsterAnalyzer(this));
 }
 
 /* destructors */
@@ -189,6 +183,16 @@ void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned ch
 		analyzer_symbols[*s].push_back(analyzer);
 }
 
+bool Saiph::requestAction(const Request &request) {
+	/* request an action from any analyzer */
+	bool status = false;
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if ((*a)->requestAction(request) && !status)
+			status = true;
+	}
+	return status;
+}
+
 bool Saiph::run() {
 	/* figure out which map to use.
 	 * TODO: we need some branch detection & stuff here */
@@ -221,7 +225,7 @@ bool Saiph::run() {
 	messages = world->messages;
 	if (messages.size() > 0) {
 		cerr << "MESSAGES: " << messages << endl;
-		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
 			int priority = analyzers[a]->parseMessages(&messages);
 			if (priority > best_priority) {
 				best_analyzer = a;
@@ -232,7 +236,7 @@ bool Saiph::run() {
 
 	/* call start() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
 			int priority = analyzers[a]->start();
 			if (priority > best_priority) {
 				best_analyzer = a;
@@ -247,7 +251,7 @@ bool Saiph::run() {
 
 	/* call finish() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
 			int priority = analyzers[a]->finish();
 			if (priority > best_priority) {
 				best_analyzer = a;
@@ -420,11 +424,11 @@ void Saiph::inspect() {
 		unsigned char is = map[current_branch][current_level].item[c->row][c->col];
 		unsigned char ms = map[current_branch][current_level].monster[c->row][c->col];
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
-			(*a)->analyze(c->row, c->col, ds);
+			(*a)->inspect(c->row, c->col, ds);
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
-			(*a)->analyze(c->row, c->col, is);
+			(*a)->inspect(c->row, c->col, is);
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[ms].begin(); a != analyzer_symbols[ms].end(); ++a)
-			(*a)->analyze(c->row, c->col, ms);
+			(*a)->inspect(c->row, c->col, ms);
 	}
 }
 

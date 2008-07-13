@@ -13,6 +13,7 @@ class Analyzer;
 
 /* includes */
 #include <string>
+#include "Request.h"
 
 /* namespace */
 using namespace std;
@@ -29,10 +30,11 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
-		virtual void analyze(int row, int col, unsigned char symbol);
 		virtual void command(string *command);
 		virtual int finish();
+		virtual void inspect(int row, int col, unsigned char symbol);
 		virtual int parseMessages(string *messages);
+		virtual bool requestAction(const Request &request);
 		virtual int start();
 };
 #endif
