@@ -3,20 +3,15 @@
 #define EXPLORE_H
 /* various */
 #define EXPLORE_SEARCH_COUNT 24 // how many times we should search a square
-#define EXPLORE_VISIT_CORRIDOR 49
-#define EXPLORE_VISIT_OPEN_DOOR 49
-#define EXPLORE_VISIT_UNLIT_AREA 49
-#define EXPLORE_SEARCH_CORRIDOR_DEAD_END 46
-#define EXPLORE_SEARCH_DOOR_DEAD_END 46
-#define EXPLORE_SEARCH_ROOM_CORNER 45
-#define EXPLORE_SEARCH_CORRIDOR_CORNER 45
-#define EXPLORE_SEARCH_WALL 44
-
-/* priorities:
- * 1. unlit rooms
- * 2. dead end corridors and doors
- * 3. turning corridor
- * 4. find hidden doors in rooms */
+/* priorities */
+#define EXPLORE_VISIT_CORRIDOR 40
+#define EXPLORE_VISIT_OPEN_DOOR 40
+#define EXPLORE_VISIT_UNLIT_AREA 40
+#define EXPLORE_SEARCH_CORRIDOR_DEAD_END 30
+#define EXPLORE_SEARCH_DOOR_DEAD_END 30
+#define EXPLORE_SEARCH_CORRIDOR_CORNER 20
+#define EXPLORE_SEARCH_ROOM_CORNER 20
+#define EXPLORE_SEARCH_WALL 10
 
 /* forward declare */
 class Explore;

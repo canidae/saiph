@@ -1,22 +1,19 @@
-#ifndef HEALTHANALYZER_H
+#ifndef HEALTH_H
 /* defines */
-#define HEALTHANALYZER_H
+#define HEALTH_H
 /* messages */
 #define HA_ENGRAVE_ADD "Do you want to add to the current engraving?" // should be global
 #define HA_ENGRAVE_DUST "What do you want to write in the dust here?" // should be global
 #define HA_ENGRAVE_DUST_ADD "What do you want to add to the writing in the dust here?" // should be global
 #define HA_ENGRAVE_WITH "What do you want to write with?" // should be global
-/* actions */
-#define HA_NOTHING 0
-#define HA_ENGRAVE 1
-#define HA_ENGRAVE_ELBERETH 2
-#define HA_PRAY 3
-#define HA_USE_HANDS 4
-#define HA_YES 5
-#define HA_NO 6
+/* priorities */
+#define HEALTH_CONTINUE_ACTION 1000
+#define HEALTH_PRAY_FOR_FOOD 1000
+#define HEALTH_ENGRAVE_FOR_HP 900
+#define HEALTH_REST_FOR_HP 800
 
 /* forward declare */
-class HealthAnalyzer;
+class Health;
 
 /* includes */
 #include "../Saiph.h"
@@ -25,10 +22,10 @@ class HealthAnalyzer;
 using namespace std;
 
 /* monitors health */
-class HealthAnalyzer : public Analyzer {
+class Health : public Analyzer {
 	public:
 		/* constructors */
-		HealthAnalyzer(Saiph *saiph);
+		Health(Saiph *saiph);
 
 		/* methods */
 		void command(string *command);
@@ -38,7 +35,7 @@ class HealthAnalyzer : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
-		int action;
+		string action;
 		bool resting;
 };
 #endif
