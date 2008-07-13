@@ -27,6 +27,9 @@ World::~World() {
 /* methods */
 bool World::executeCommand(const string &command) {
 	/* send a command to nethack */
+	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
+		changed[c->row][c->col] = false;
+	changes.clear();
 	if (command.size() <= 0) {
 		/* huh? no command? */
 		return false;
@@ -144,8 +147,10 @@ void World::fetchMessages() {
 	}
 	if (more) {
 		/* there are "--More--" messages.
-		 * since this is not a menu we'll just ask for the rest of the messages */
-		executeCommand(" ");
+		 * since this is not a menu we'll just ask for the rest of the messages.
+		 * also, don't call executeCommand(), because that clears the "changes" vector */
+		connection->send(" ");
+		update();
 		return;
 	}
 }
@@ -328,9 +333,6 @@ void World::handleEscapeSequence(int *pos, int *color) {
 
 void World::update() {
 	/* update the view */
-	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
-		changed[c->row][c->col] = false;
-	changes.clear();
 	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	/* print world
