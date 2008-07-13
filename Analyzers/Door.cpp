@@ -3,6 +3,10 @@
 /* constructors */
 Door::Door(Saiph *saiph) {
 	this->saiph = saiph;
+	da.action = ILLEGAL_ACTION;
+	da.direction = ILLEGAL_MOVE;
+	da.dp = NULL;
+	memset(shop_on_level, false, sizeof (shop_on_level));
 	vector<unsigned char> symbols;
 	symbols.push_back(OPEN_DOOR);
 	symbols.push_back(CLOSED_DOOR);
