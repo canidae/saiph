@@ -11,7 +11,7 @@ Saiph::Saiph(bool remote) {
 	/* set certain values */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		/* monsters */
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '6')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET || a == PLAYER)
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET || a == PLAYER)
 			monster[a] = true;
 		else
 			monster[a] = false;
@@ -105,7 +105,7 @@ Saiph::Saiph(bool remote) {
 	for (int s = 0; s <= UCHAR_MAX; ++s) {
 		for (int c = 0; c <= UCHAR_MAX; ++c)
 			uniquemap[s][c] = s;
-		uniquemap[s][INVERSE] = PET; // unique, all pets are inversed
+		uniquemap[s][INVERSE] = PET; // unique, pets are the only thing that's inversed(?)
 	}
 	uniquemap[CORRIDOR][CYAN] = IRON_BARS;
 	uniquemap[CORRIDOR][GREEN] = TREE;
@@ -218,12 +218,14 @@ bool Saiph::run() {
 	 * the first string being the message.
 	 * then again, what about "you see here a %s corpse"? */
 	messages = world->messages;
-	cerr << messages << endl;
-	for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
-		int priority = analyzers[a]->parseMessages(&messages);
-		if (priority > best_priority) {
-			best_analyzer = a;
-			best_priority = priority;
+	if (messages.size() > 0) {
+		cerr << "MESSAGES: " << messages << endl;
+		for (vector<Analyzer>::size_type a = 0; a < analyzers.size(); ++a) {
+			int priority = analyzers[a]->parseMessages(&messages);
+			if (priority > best_priority) {
+				best_analyzer = a;
+				best_priority = priority;
+			}
 		}
 	}
 
@@ -429,18 +431,6 @@ void Saiph::inspect() {
 
 void Saiph::updateMaps() {
 	/* update the various maps */
-	/* this loop is a small hack. FIXME: make own monster tracker that does this
-	 * it removes unseen monsters next to the player which we think are blocking the path */
-	for (int r = world->player.row - 1; r <= world->player.row + 1; ++r) {
-		if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
-			continue;
-		for (int c = world->player.col - 1; c <= world->player.col + 1; ++c) {
-			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
-				continue;
-			if (map[current_branch][current_level].monster[r][c] != NOMONSTER)
-				map[current_branch][current_level].monster[r][c] = NOMONSTER;
-		}
-	}
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			unsigned char s = uniquemap[(unsigned char) world->map[r][c]][(unsigned char) world->color[r][c]];
@@ -470,8 +460,66 @@ void Saiph::updateMaps() {
 				/* found a monster!
 				 * since monsters unlike items disappear from map when we can't see them,
 				 * we can't remove monsters like we do with items above.
-				 * we'll have some dedicated code for fixing this */
+				 * we'll need to locate the nearest monster of same symbol (if any),
+				 * and update the position */
+				/* find nearest monster of this symbol */
+				int min_distance = INT_MAX;
+				list<Point>::iterator move = map[current_branch][current_level].monsterpos[s].end();
+				for (list<Point>::iterator m = map[current_branch][current_level].monsterpos[s].begin(); m != map[current_branch][current_level].monsterpos[s].end(); ++m) {
+					int distance = max(abs(r - m->row), abs(c - m->col));
+					if (distance < min_distance) {
+						min_distance = distance;
+						move = m;
+					}
+				}
+				if (move == map[current_branch][current_level].monsterpos[s].end()) {
+					/* didn't find a monster with same symbol, add monster to list */
+					cerr << "Monster '" << s << "' not seen before, adding" << endl;
+					Point p;
+					p.row = r;
+					p.col = c;
+					map[current_branch][current_level].monsterpos[s].push_back(p);
+				} else {
+					/* found a monster with same symbol nearby.
+					 * remove monster from monstermap */
+					cerr << "Monster '" << s << "' seen before at location " << move->row << ", " << move->col << ". Moving monster to location " << r << ", " << c << endl;
+					map[current_branch][current_level].monster[move->row][move->col] = NOMONSTER;
+					/* update position of monster */
+					move->row = r;
+					move->col = c;
+				}
+				/* update monstermap */
 				map[current_branch][current_level].monster[r][c] = s;
+			}
+		}
+	}
+	/* remove monsters next to the player as they're obviously gone */
+	for (int r = world->player.row - 1; r <= world->player.row + 1; ++r) {
+		if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
+			continue;
+		for (int c = world->player.col - 1; c <= world->player.col + 1; ++c) {
+			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
+				continue;
+			unsigned char ms = map[current_branch][current_level].monster[r][c];
+			if (ms != NOMONSTER && !monster[(unsigned char) world->map[r][c]]) {
+				/* find nearest monster of this symbol */
+				int min_distance = INT_MAX;
+				list<Point>::iterator erase = map[current_branch][current_level].monsterpos[ms].end();
+				for (list<Point>::iterator m = map[current_branch][current_level].monsterpos[ms].begin(); m != map[current_branch][current_level].monsterpos[ms].end(); ++m) {
+					int distance = max(abs(r - m->row), abs(c - m->col));
+					if (distance < min_distance) {
+						min_distance = distance;
+						erase = m;
+					}
+				}
+				cerr << "Expected to find monster '" << ms << "' at location " << r << ", " << c << ", but didn't so we removed it" << endl;
+				if (erase != map[current_branch][current_level].monsterpos[ms].end()) {
+					map[current_branch][current_level].monsterpos[ms].erase(erase);
+				} else {
+					cerr << "ERROR! monster was in monstermap, but not in monsterlist. This shouldn't happen!" << endl;
+				}
+				/* remove monster at this location */
+				map[current_branch][current_level].monster[r][c] = NOMONSTER;
 			}
 		}
 	}

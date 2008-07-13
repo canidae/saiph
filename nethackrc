@@ -10,7 +10,7 @@
 
 # significant changes:
 # * monsters
-# - ghosts/shades are represented by '6', not ' '
+# - ghosts/shades are represented by 'X', not ' '
 # - the ']' for mimic is now 'm', if that makes a difference
 # * objects
 # - illegal object is now represented by 'm' (mimic?)
@@ -41,7 +41,7 @@ OPTIONS=!legacy
 OPTIONS=lit_corridor
 OPTIONS=!mail
 OPTIONS=menustyle:partial
-OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@6'&;:~m
+OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@X'&;:~m
 OPTIONS=name:saiph
 OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*````

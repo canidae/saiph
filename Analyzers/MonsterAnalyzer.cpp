@@ -64,7 +64,6 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 	symbols.push_back('Y');
 	symbols.push_back('Z');
 	symbols.push_back('@');
-	symbols.push_back('6');
 	symbols.push_back('\'');
 	symbols.push_back('&');
 	symbols.push_back(';');
