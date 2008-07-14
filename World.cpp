@@ -1,8 +1,7 @@
 #include "World.h"
 
 /* constructors */
-World::World(Connection *connection) {
-	this->connection = connection;
+World::World(Connection *connection) : connection(connection) {
 	memset(view, ' ', sizeof (view));
 	for (int r = 0; r < ROWS; ++r)
 		view[r][COLS] = '\0';

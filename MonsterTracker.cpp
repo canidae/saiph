@@ -1,8 +1,7 @@
 #include "MonsterTracker.h"
 
 /* constructors */
-MonsterTracker::MonsterTracker(Saiph *saiph) {
-	this->saiph = saiph;
+MonsterTracker::MonsterTracker(Saiph *saiph) : saiph(saiph) {
 }
 
 /* methods */

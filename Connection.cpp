@@ -1,9 +1,7 @@
 #include "Connection.h"
 
 /* constructors */
-Connection::Connection(bool remote) {
-	this->remote = remote;
-
+Connection::Connection(bool remote) : remote(remote) {
 	/* set up pipes */
 	if (pipe(link) < 0) {
 		cerr << "Plumbing failed" << endl;
