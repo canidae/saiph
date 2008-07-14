@@ -128,19 +128,16 @@ int Explore::finish() {
 	return best_priority;
 }
 
-void Explore::inspect(int row, int col, unsigned char symbol) {
+void Explore::inspect(const Point &point, unsigned char symbol) {
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	if (symbol == PLAYER) {
 		/* make this place "visited" */
-		visited[b][l][row][col] = true;
+		visited[b][l][point.row][point.col] = true;
 		return;
 	}
-	if (ep_added[b][l][row][col])
+	if (ep_added[b][l][point.row][point.col])
 		return; // already added this place
-	ep_added[b][l][row][col] = true;
-	Point p;
-	p.row = row;
-	p.col = col;
-	explore.push_back(p);
+	ep_added[b][l][point.row][point.col] = true;
+	explore.push_back(point);
 }

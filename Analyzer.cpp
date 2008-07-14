@@ -16,7 +16,7 @@ int Analyzer::finish() {
 	return 0;
 }
 
-void Analyzer::inspect(int row, int col, unsigned char symbol) {
+void Analyzer::inspect(const Point &point, unsigned char symbol) {
 }
 
 int Analyzer::parseMessages(string *messages) {

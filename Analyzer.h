@@ -9,6 +9,7 @@ class Analyzer;
 
 /* includes */
 #include <string>
+#include "Point.h"
 
 /* namespace */
 using namespace std;
@@ -27,7 +28,7 @@ class Analyzer {
 		/* methods */
 		virtual void command(string *command);
 		virtual int finish();
-		virtual void inspect(int row, int col, unsigned char symbol);
+		virtual void inspect(const Point &point, unsigned char symbol);
 		virtual int parseMessages(string *messages);
 		virtual bool requestAction(int request);
 		virtual int start();

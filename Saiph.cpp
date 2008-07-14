@@ -424,11 +424,11 @@ void Saiph::inspect() {
 		unsigned char is = map[current_branch][current_level].item[c->row][c->col];
 		unsigned char ms = map[current_branch][current_level].monster[c->row][c->col];
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
-			(*a)->inspect(c->row, c->col, ds);
+			(*a)->inspect(*c, ds);
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
-			(*a)->inspect(c->row, c->col, is);
+			(*a)->inspect(*c, is);
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[ms].begin(); a != analyzer_symbols[ms].end(); ++a)
-			(*a)->inspect(c->row, c->col, ms);
+			(*a)->inspect(*c, ms);
 	}
 }
 

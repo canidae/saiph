@@ -8,7 +8,7 @@
 #include "Globals.h"
 #include "Point.h"
 
-/* namespace */
+/* namespaces */
 using namespace std;
 
 /* Map */
@@ -28,12 +28,5 @@ class Map {
 
 		/* destructors */
 		~Map();
-
-		/* methods */
-
-	private:
-		/* variables */
-
-		/* methods */
 };
 #endif
