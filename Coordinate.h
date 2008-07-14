@@ -16,6 +16,8 @@ class Coordinate : public Point {
 		int level;
 
 		/* constructors */
-		Coordinate(int branch = 0, int level = 0, const Point &point = Point());
+		Coordinate(int branch, int level, int row = 0, int col = 0);
+		Coordinate(int branch, int level, const Point &point = Point());
+		Coordinate(const Point &point = Point());
 };
 #endif
