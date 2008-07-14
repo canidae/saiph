@@ -1,12 +1,8 @@
 #ifndef ANALYZER_H
 /* defines */
 #define ANALYZER_H
-/* max symbols an analyzer can track */
-#define MAX_SYMBOLS 64
 /* various ambigous messages */
 #define CHOOSE_DIRECTION "In what direction?"
-#define FOOT_HURT "Your right leg is in no shape for kicking."
-#define FOOT_UNHURT "Your leg feels somewhat better."
 
 /* forward declare */
 class Analyzer;
