@@ -590,9 +590,9 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 /* main */
 int main() {
 	Saiph *saiph = new Saiph(false);
-	for (int a = 0; a < 200 && saiph->run(); ++a)
-		;
-	//while (saiph->run())
+	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
+	while (saiph->run())
+		;
 	delete saiph;
 }
