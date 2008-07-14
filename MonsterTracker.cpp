@@ -21,7 +21,10 @@ void MonsterTracker::removeMonsters() {
 			++m;
 			continue;
 		}
-		if (saiph->world->view[m->row][m->col] == m->symbol && saiph->world->color[m->row][m->col] == m->color) {
+		unsigned char symbol = saiph->world->view[m->row][m->col];
+		if (saiph->world->color[m->row][m->col] == INVERSE)
+			symbol = PET; // pets are a bit unique
+		if (symbol == m->symbol && saiph->world->color[m->row][m->col] == m->color) {
 			/* we can still see the monster */
 			++m;
 			continue;
@@ -39,6 +42,8 @@ void MonsterTracker::updateMonster(const Point &point) {
 	int l = saiph->current_level;
 	unsigned char symbol = saiph->world->view[point.row][point.col];
 	int color = saiph->world->color[point.row][point.col];
+	if (color == INVERSE)
+		symbol = PET; // pets are a bit unique
 	/* set monster on monstermap */
 	saiph->map[b][l].monster[point.row][point.col] = symbol;
 	/* find nearest monster and update position */

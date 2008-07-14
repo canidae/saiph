@@ -106,7 +106,6 @@ Saiph::Saiph(bool remote) {
 	for (int s = 0; s <= UCHAR_MAX; ++s) {
 		for (int c = 0; c <= UCHAR_MAX; ++c)
 			uniquemap[s][c] = s;
-		uniquemap[s][INVERSE] = PET; // unique, pets are the only thing that's inversed(?)
 	}
 	uniquemap[CORRIDOR][CYAN] = IRON_BARS;
 	uniquemap[CORRIDOR][GREEN] = TREE;
