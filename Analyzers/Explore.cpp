@@ -11,7 +11,6 @@ Explore::Explore(Saiph *saiph) {
 	symbols.push_back(CORRIDOR);
 	symbols.push_back(FLOOR);
 	symbols.push_back(OPEN_DOOR);
-	symbols.push_back(PLAYER);
 	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
@@ -26,6 +25,8 @@ int Explore::finish() {
 	/* figure out which place to explore */
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
+	/* make the place the player stands on "visited" */
+	visited[b][l][saiph->world->player.row][saiph->world->player.col] = true;
 	int best_priority = -1;
 	int best_distance = INT_MAX;
 	move = ILLEGAL_MOVE;
@@ -131,11 +132,6 @@ int Explore::finish() {
 void Explore::inspect(const Point &point, unsigned char symbol) {
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
-	if (symbol == PLAYER) {
-		/* make this place "visited" */
-		visited[b][l][point.row][point.col] = true;
-		return;
-	}
 	if (ep_added[b][l][point.row][point.col])
 		return; // already added this place
 	ep_added[b][l][point.row][point.col] = true;

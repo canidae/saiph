@@ -130,6 +130,7 @@ Saiph::Saiph(bool remote) {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
+	delete monstertracker;
 	delete world;
 	delete connection;
 }
