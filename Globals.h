@@ -44,6 +44,7 @@
 #define LOWERED_DRAWBRIDGE 135
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
+#define UNKNOWN_TILE 136
 /* items */
 #define ILLEGAL_ITEM 0
 #define WEAPON ')'
@@ -65,7 +66,7 @@
 #define VENOM '`'
 /* special "monsters" */
 #define ILLEGAL_MONSTER 0
-#define PET 136
-#define PLAYER 137
+#define PET 137
+#define PLAYER 138
 
 #endif

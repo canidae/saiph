@@ -57,6 +57,7 @@ Saiph::Saiph(bool remote) {
 	passable[(unsigned char) LAVA] = true;
 	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
 	passable[(unsigned char) TRAP] = true;
+	passable[(unsigned char) UNKNOWN_TILE] = true;
 	passable[(unsigned char) WEAPON] = true;
 	passable[(unsigned char) ARMOR] = true;
 	passable[(unsigned char) RING] = true;
@@ -452,8 +453,8 @@ void Saiph::updateMaps() {
 			 * this happens for example when:
 			 * - monster opens door and we kill the monster in the doorway
 			 * - monster digging out level, leaving stuff on squares
-			 * let's place an open door here */
-			map[current_branch][current_level].dungeon[c->row][c->col] = OPEN_DOOR;
+			 * let's place an unknown tile here */
+			map[current_branch][current_level].dungeon[c->row][c->col] = UNKNOWN_TILE;
 		}
 		if (item[s]) {
 			/* item here */
@@ -563,6 +564,8 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	if (!cardinal_move) {
 		if (s == OPEN_DOOR || map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR)
 			return false; // diagonally in/out of door
+		if (s == UNKNOWN_TILE || map[current_branch][current_level].dungeon[from.row][from.col] == UNKNOWN_TILE)
+			return false; // don't know what tile this is, it may be a door. no diagonal movement
 		unsigned char sc1 = map[current_branch][current_level].dungeon[to.row][from.col];
 		unsigned char sc2 = map[current_branch][current_level].dungeon[from.row][to.col];
 		if (!passable[sc1] && !passable[sc2]) {
