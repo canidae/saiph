@@ -1,13 +1,5 @@
 #include "Analyzer.h"
 
-/* constructors */
-Analyzer::Analyzer() {
-}
-
-/* destructors */
-Analyzer::~Analyzer() {
-}
-
 /* methods */
 void Analyzer::command(string *command) {
 }
