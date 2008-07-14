@@ -17,7 +17,7 @@ Explore::Explore(Saiph *saiph) : saiph(saiph) {
 void Explore::command(string *command) {
 	if (move == SEARCH)
 		++search[saiph->current_branch][saiph->current_level][saiph->world->player.row][saiph->world->player.col];
-	command->push_back(move);
+	*command = move;
 }
 
 int Explore::finish() {
