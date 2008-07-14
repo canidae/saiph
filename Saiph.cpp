@@ -185,7 +185,7 @@ void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned ch
 		analyzer_symbols[*s].push_back(analyzer);
 }
 
-bool Saiph::requestAction(const Request &request) {
+bool Saiph::requestAction(int request) {
 	/* request an action from any analyzer */
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {

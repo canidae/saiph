@@ -58,7 +58,6 @@ class Saiph;
 #include "Map.h"
 #include "Player.h"
 #include "Point.h"
-#include "Request.h"
 #include "World.h"
 /* analyzers */
 #include "Analyzers/Door.h"
@@ -96,7 +95,7 @@ class Saiph {
 		/* methods */
 		void farlook(const Point &target);
 		void registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols);
-		bool requestAction(const Request &request);
+		bool requestAction(int request);
 		bool run();
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
 
