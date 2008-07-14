@@ -217,7 +217,7 @@ bool Saiph::run() {
 	/* check if we're engulfed */
 	int r = world->player.row;
 	int c = world->player.col;
-	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->view[r - 1][c] == '-' && world->view[r + 1][c] == '-' && world->view[r][c - 1] == '|' && world->view[r][c + 1] == '|')
+	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->view[r - 1][c - 1] == '/' && world->view[r - 1][c + 1] == '\\' && world->view[r + 1][c - 1] == '\\' && world->view[r + 1][c + 1] == '/')
 		engulfed = true;
 	else
 		engulfed = false;
@@ -495,8 +495,6 @@ void Saiph::updatePathMap() {
 	int nodes = 1;
 	while (curnode < nodes) {
 		from = pathing_queue[curnode++];
-		if (from.row <= MAP_ROW_BEGIN || from.row >= MAP_ROW_END || from.col <= MAP_COL_BEGIN || from.col >= MAP_COL_END)
-			continue; // too close to the edge
 		Point to;
 		/* check northwest node */
 		to.row = from.row - 1;
@@ -553,6 +551,8 @@ void Saiph::updatePathMap() {
 bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	/* helper method for updatePathMap()
 	 * return true if the move is legal and we should path further from this node */
+	if (to.row < MAP_ROW_BEGIN || to.row > MAP_ROW_END || to.col < MAP_COL_BEGIN || to.col > MAP_COL_END)
+		return false; // outside map
 	unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
 	if (!passable[s])
 		return false;
@@ -601,5 +601,6 @@ int main() {
 	//	;
 	while (saiph->run())
 		;
+	sleep(10);
 	delete saiph;
 }

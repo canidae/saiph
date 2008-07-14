@@ -42,7 +42,7 @@ bool World::executeCommand(const string &command) {
 /* private methods */
 void World::addChangedLocation(const Point &point) {
 	/* add a location changed since last frame unless it's already added */
-	if (changed[point.row][point.col] || point.row > MAP_ROW_END || point.row < MAP_ROW_BEGIN || point.col > MAP_COL_END || point.col < MAP_COL_BEGIN)
+	if (changed[point.row][point.col] || point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
 		return;
 	changes.push_back(point);
 }
