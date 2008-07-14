@@ -28,12 +28,13 @@ class Player;
 
 /* includes */
 #include <iostream>
+#include "Point.h"
 
 /* namespace */
 using namespace std;
 
 /* the player class holds various info about the player */
-class Player {
+class Player : public Point {
 	public:
 		/* variables */
 		/* attributes */
@@ -67,8 +68,6 @@ class Player {
 		int last_pray_turn;
 		/* position */
 		int dungeon;
-		int row;
-		int col;
 		/* zorkmids */
 		int zorkmids;
 		/* for parsing text */
