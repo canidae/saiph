@@ -1,8 +1,7 @@
 #include "Health.h"
 
 /* constructors */
-Health::Health(Saiph *saiph) {
-	this->saiph = saiph;
+Health::Health(Saiph *saiph) : saiph(saiph) {
 	this->resting = false;
 }
 

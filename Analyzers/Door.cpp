@@ -1,8 +1,7 @@
 #include "Door.h"
 
 /* constructors */
-Door::Door(Saiph *saiph) {
-	this->saiph = saiph;
+Door::Door(Saiph *saiph) : saiph(saiph) {
 	da.action = ILLEGAL_ACTION;
 	da.direction = ILLEGAL_MOVE;
 	da.dp = NULL;

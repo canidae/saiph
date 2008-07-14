@@ -1,9 +1,7 @@
 #include "Fight.h"
 
 /* constructors */
-Fight::Fight(Saiph *saiph) {
-	this->saiph = saiph;
-	action = "";
+Fight::Fight(Saiph *saiph) : saiph(saiph), action("") {
 }
 
 /* methods */

@@ -1,8 +1,7 @@
 #include "Explore.h"
 
 /* constructors */
-Explore::Explore(Saiph *saiph) {
-	this->saiph = saiph;
+Explore::Explore(Saiph *saiph) : saiph(saiph) {
 	memset(search, 0, sizeof (search));
 	memset(ep_added, false, sizeof (ep_added));
 	memset(visited, false, sizeof (visited));
