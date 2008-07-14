@@ -14,5 +14,8 @@ class Monster : public Point {
 		/* variables */
 		unsigned char symbol;
 		int color;
+
+		/* constructors */
+		Monster(const Point &point, unsigned char symbol, int color);
 };
 #endif

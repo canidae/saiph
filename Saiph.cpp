@@ -141,9 +141,7 @@ Saiph::~Saiph() {
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	command.push_back(';');
-	Point cursor;
-	cursor.row = world->player.row;
-	cursor.col = world->player.col;
+	Point cursor(world->player.row, world->player.col);
 	while (cursor.row != target.row && cursor.col != target.col) {
 		unsigned char move;
 		if (cursor.row < target.row && cursor.col < target.col) {
@@ -486,9 +484,7 @@ void Saiph::updatePathMap() {
 			pathmap[r][c].move = ILLEGAL_MOVE;
 		}
 	}
-	Point from;
-	from.row = world->player.row;
-	from.col = world->player.col;
+	Point from(world->player.row, world->player.col);
 	pathing_queue[0] = from;
 	pathmap[from.row][from.col].cost = 0;
 	pathmap[from.row][from.col].move = REST;
@@ -496,10 +492,8 @@ void Saiph::updatePathMap() {
 	int nodes = 1;
 	while (curnode < nodes) {
 		from = pathing_queue[curnode++];
-		Point to;
 		/* check northwest node */
-		to.row = from.row - 1;
-		to.col = from.col - 1;
+		Point to(from.row - 1, from.col - 1);
 		if (updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = MOVE_NW;
 			pathing_queue[nodes++] = to;

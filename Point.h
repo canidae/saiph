@@ -8,5 +8,9 @@ class Point {
 		/* variables */
 		int row;
 		int col;
+
+		/* constructors */
+		Point(int row, int col);
+		Point();
 };
 #endif

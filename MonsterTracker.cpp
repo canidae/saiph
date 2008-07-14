@@ -71,10 +71,5 @@ void MonsterTracker::updateMonster(const Point &point) {
 		return;
 	}
 	/* add monster */
-	Monster m;
-	m.row = point.row;
-	m.col = point.col;
-	m.symbol = symbol;
-	m.color = color;
-	monsters[b][l].push_back(m);
+	monsters[b][l].push_back(Monster(point, symbol, color));
 }
