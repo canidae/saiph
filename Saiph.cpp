@@ -414,7 +414,7 @@ void Saiph::dumpMaps() {
 		}
 	}
 	/* return cursor back to where it was */
-	cout << (unsigned char) 27 << "[" << world->row + 1 << ";" << world->col + 1 << "H";
+	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 }
 
 void Saiph::inspect() {

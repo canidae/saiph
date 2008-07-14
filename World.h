@@ -40,8 +40,7 @@ class World {
 		vector<Point> changes; // list of locations changed since last "frame"
 		char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 		int color[ROWS][COLS]; // not used for string reading, no need for + 1
-		int row; // cursor position, row
-		int col; // cursor position, col
+		Point cursor; // cursor position
 		Player player;
 		char messages[BUFFER_SIZE];
 		bool menu;
@@ -66,7 +65,7 @@ class World {
 		string msg_str; // used for fetching messages
 
 		/* methods */
-		void addChangedLocation(int row, int col);
+		void addChangedLocation(const Point &point);
 		void fetchMessages();
 		void handleEscapeSequence(int *pos, int *color);
 		void update();

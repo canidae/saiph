@@ -8,8 +8,8 @@ World::World(Connection *connection) {
 		view[r][COLS] = '\0';
 	memset(color, NOCOLOR, sizeof (color));
 	memset(changed, false, sizeof (changed));
-	row = 0;
-	col = 0;
+	cursor.row = 0;
+	cursor.col = 0;
 	menu = false;
 	question = false;
 	memset(messages, '\0', sizeof (messages));
@@ -40,14 +40,11 @@ bool World::executeCommand(const string &command) {
 }
 
 /* private methods */
-void World::addChangedLocation(int row, int col) {
+void World::addChangedLocation(const Point &point) {
 	/* add a location changed since last frame unless it's already added */
-	if (changed[row][col] || row > MAP_ROW_END || row < MAP_ROW_BEGIN || col > MAP_COL_END || col < MAP_COL_BEGIN)
+	if (changed[point.row][point.col] || point.row > MAP_ROW_END || point.row < MAP_ROW_BEGIN || point.col > MAP_COL_END || point.col < MAP_COL_BEGIN)
 		return;
-	Point p;
-	p.row = row;
-	p.col = col;
-	changes.push_back(p);
+	changes.push_back(point);
 }
 
 void World::fetchMessages() {
@@ -58,14 +55,14 @@ void World::fetchMessages() {
 	 * - if only 1 line of messages, it's always on first line.
 	 * - cursor is always placed after "--More--", "(end)" or "(x of y)" */
 	msg_str = &data[data_size - MORE_LENGTH];
-	int r = row;
-	int c = col;
+	int r = cursor.row;
+	int c = cursor.col;
 	bool more = false;
 	menu = false;
 	string::size_type pos = string::npos;
 	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
 		/* "--More--" found, set c */
-		c = col - MORE_LENGTH;
+		c = cursor.col - MORE_LENGTH;
 		more = true;
 	} else {
 		msg_str = &data[data_size - END_LENGTH];
@@ -73,7 +70,7 @@ void World::fetchMessages() {
 			/* "(end)" found, set c.
 			 * since there (always?) is an extra space after "(end)",
 			 * we'll have to "+ pos" */
-			c = col - END_LENGTH + pos;
+			c = cursor.col - END_LENGTH + pos;
 			menu = true;
 		} else {
 			msg_str = &data[data_size - PAGE_LENGTH];
@@ -82,13 +79,13 @@ void World::fetchMessages() {
 				 * this is special, we only search for " of ".
 				 * while PAGE_LENGTH covers "y)" we still haven't covered "x)",
 				 * so we'll have to move c 2 squares left */
-				c = col - PAGE_LENGTH - 2;
+				c = cursor.col - PAGE_LENGTH - 2;
 				menu = true;
 			} else {
 				/* look for question */
 				msg_str = &data[data_size - QUESTION_LENGTH];
 				question = false;
-				if (row == 0) {
+				if (cursor.row == 0) {
 					question = true;
 				} else {
 					if ((pos = msg_str.find(QUESTION_YN, 0)) == string::npos)
@@ -169,34 +166,34 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				divider = *pos;
 			} else if (data[*pos] == 'A') {
 				/* move cursor up */
-				if (row > 0)
-					--row;
+				if (cursor.row > 0)
+					--cursor.row;
 				break;
 			} else if (data[*pos] == 'B') {
 				/* move cursor down */
-				if (row < ROWS)
-					++row;
+				if (cursor.row < ROWS)
+					++cursor.row;
 				break;
 			} else if (data[*pos] == 'C') {
 				/* move cursor right */
-				if (col < COLS)
-					++col;
+				if (cursor.col < COLS)
+					++cursor.col;
 				break;
 			} else if (data[*pos] == 'D') {
 				/* move cursor left */
-				if (col > 0)
-					--col;
+				if (cursor.col > 0)
+					--cursor.col;
 				break;
 			} else if (data[*pos] == 'H') {
 				/* set cursor position */
-				row = 0;
-				col = 0;
+				cursor.row = 0;
+				cursor.col = 0;
 				if (divider < 0)
 					break;
 				/* we got a position */
-				int matched = sscanf(&data[start + 1], "%d;%d", &row, &col);
-				--row; // terminal starts counting from 1
-				--col; // ditto ^^
+				int matched = sscanf(&data[start + 1], "%d;%d", &cursor.row, &cursor.col);
+				--cursor.row; // terminal starts counting from 1
+				--cursor.col; // ditto ^^
 				if (matched < 2) {
 					cerr << "Unable to place cursor" << endl;
 					cerr << &data[start] << endl;
@@ -207,13 +204,13 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				/* erase in display */
 				if (data[*pos - 1] == '[') {
 					/* erase everything below current position */
-					for (int r = row + 1; r < ROWS; ++r) {
+					for (int r = cursor.row + 1; r < ROWS; ++r) {
 						for (int c = 0; c < COLS; ++c)
 							view[r][c] = ' ';
 					}
 				} else if (data[*pos - 1] == '1') {
 					/* erase everything above current position */
-					for (int r = row - 1; r >= 0; --r) {
+					for (int r = cursor.row - 1; r >= 0; --r) {
 						for (int c = 0; c < COLS; ++c)
 							view[r][c] = ' ';
 					}
@@ -222,8 +219,8 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					memset(view, ' ', sizeof (view));
 					for (int r = 0; r < ROWS; ++r)
 						view[r][COLS] = '\0';
-					row = 0;
-					col = 0;
+					cursor.row = 0;
+					cursor.col = 0;
 					*color = 0;
 				} else {
 					cerr << "Unhandled sequence: " << endl;
@@ -235,16 +232,16 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				/* erase in line */
 				if (data[*pos - 1] == '[') {
 					/* erase everything to the right */
-					for (int c = col; c < COLS; ++c)
-						view[row][c] = ' ';
+					for (int c = cursor.col; c < COLS; ++c)
+						view[cursor.row][c] = ' ';
 				} else if (data[*pos - 1] == '1') {
 					/* erase everything to the left */
-					for (int c = 0; c < col; ++c)
-						view[row][c] = ' ';
+					for (int c = 0; c < cursor.col; ++c)
+						view[cursor.row][c] = ' ';
 				} else if (data[*pos - 1] == '2') {
 					/* erase entire line */
 					for (int c = 0; c < COLS; ++c)
-						view[row][c] = ' ';
+						view[cursor.row][c] = ' ';
 				} else {
 					cerr << "Unhandled sequence: " << endl;
 					cerr << &data[*pos] << endl;
@@ -316,8 +313,8 @@ void World::handleEscapeSequence(int *pos, int *color) {
 		++*pos;
 	} else if (data[*pos] == 'M') {
 		/* reverse linefeed? */
-		if (row > 0)
-			--row;
+		if (cursor.row > 0)
+			--cursor.row;
 	} else if (data[*pos] == '=') {
 		/* application numpad?
 		 * ignore */
@@ -349,18 +346,18 @@ void World::update() {
 			case 8:
 				/* backspace.
 				 * make it go 1 char left */
-				if (col > 0)
-					--col;
+				if (cursor.col > 0)
+					--cursor.col;
 				break;
 
 			case 10:
 				/* line feed */
-				++row;
+				++cursor.row;
 				break;
 
 			case 13:
 				/* carriage return */
-				col = 0;
+				cursor.col = 0;
 				break;
 
 			case 14:
@@ -379,17 +376,17 @@ void World::update() {
 
 			default:
 				/* add this char to the view */
-				if (col >= COLS || row >= ROWS || col < 0 || row < 0) {
-					cerr << "Fell out of the dungeon: " << row << ", " << col << endl;
+				if (cursor.col >= COLS || cursor.row >= ROWS || cursor.col < 0 || cursor.row < 0) {
+					cerr << "Fell out of the dungeon: " << cursor.row << ", " << cursor.col << endl;
 					cerr << data_size << endl;
 					cerr << pos << endl;
 					cerr << data << endl;
 					break;
 				}
-				view[row][col] = data[pos];
-				addChangedLocation(row, col);
-				this->color[row][col] = color;
-				col++;
+				view[cursor.row][cursor.col] = data[pos];
+				addChangedLocation(cursor);
+				this->color[cursor.row][cursor.col] = color;
+				cursor.col++;
 				break;
 		}
 	}
@@ -399,17 +396,17 @@ void World::update() {
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
-	if (parsed_attributes && parsed_status && row >= MAP_ROW_BEGIN && row <= MAP_ROW_END && col >= MAP_COL_BEGIN && col <= MAP_COL_END) {
+	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
-		view[row][col] = PLAYER;
-		player.row = row;
-		player.col = col;
+		view[cursor.row][cursor.col] = PLAYER;
+		player.row = cursor.row;
+		player.col = cursor.col;
 	} else if (!menu && !question) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
-		cerr << "CURSOR ON UNEXPECTED LOCATION: " << row << ", " << col << endl;
+		cerr << "CURSOR ON UNEXPECTED LOCATION: " << cursor.row << ", " << cursor.col << endl;
 		cerr << data << endl;
 		update();
 		return;
