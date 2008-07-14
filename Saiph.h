@@ -63,6 +63,7 @@ class Saiph;
 /* analyzers */
 #include "Analyzers/Door.h"
 #include "Analyzers/Explore.h"
+#include "Analyzers/Fight.h"
 #include "Analyzers/Health.h"
 
 /* namespace */

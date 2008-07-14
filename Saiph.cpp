@@ -111,7 +111,7 @@ Saiph::Saiph(bool remote) {
 	uniquemap[CORRIDOR][GREEN] = TREE;
 	uniquemap[FLOOR][CYAN] = ICE;
 	uniquemap[FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
-	uniquemap[FOUNTAIN][NOCOLOR] = SINK;
+	uniquemap[FOUNTAIN][NO_COLOR] = SINK;
 	uniquemap[GRAVE][YELLOW] = THRONE;
 	uniquemap[HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
 	uniquemap[VERTICAL_WALL][YELLOW] = OPEN_DOOR;
@@ -123,6 +123,7 @@ Saiph::Saiph(bool remote) {
 	/* Analyzers */
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Explore(this));
+	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Health(this));
 }
 
@@ -424,17 +425,14 @@ void Saiph::dumpMaps() {
 }
 
 void Saiph::inspect() {
-	/* inspect the dungeon for interesting monsters/objects/places */
+	/* notify the analyzers when we discover dungeon tiles or items */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 		unsigned char ds = map[current_branch][current_level].dungeon[c->row][c->col];
 		unsigned char is = map[current_branch][current_level].item[c->row][c->col];
-		unsigned char ms = map[current_branch][current_level].monster[c->row][c->col];
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
 			(*a)->inspect(*c, ds);
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
 			(*a)->inspect(*c, is);
-		for (vector<Analyzer *>::iterator a = analyzer_symbols[ms].begin(); a != analyzer_symbols[ms].end(); ++a)
-			(*a)->inspect(*c, ms);
 	}
 }
 

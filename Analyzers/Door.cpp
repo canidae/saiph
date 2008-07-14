@@ -103,17 +103,17 @@ int Door::finish() {
 	return best_priority;
 }
 
-void Door::inspect(int row, int col, unsigned char symbol) {
+void Door::inspect(const Point &point, unsigned char symbol) {
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	for (vector<DoorPoint>::iterator d = doors[b][l].begin(); d != doors[b][l].end(); ++d) {
-		if (d->row == row && d->col == col)
+		if (d->row == point.row && d->col == point.col)
 			return; // we already know about this door
 	}
 	/* add this door to the list */
 	DoorPoint dp;
-	dp.row = row;
-	dp.col = col;
+	dp.row = point.row;
+	dp.col = point.col;
 	dp.locked = false;
 	doors[b][l].push_back(dp);
 }

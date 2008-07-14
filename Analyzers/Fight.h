@@ -6,13 +6,17 @@
 /* priorities */
 #define FIGHT_CONTINUE_ACTION 1000
 #define FIGHT_ATTACK_MONSTER 70
+#define FIGHT_ATTACK_BLUE_E 2
+#define FIGHT_ATTACK_WHITE_AT 1
 
 /* forward declare */
 class Fight;
 
 /* includes */
+#include <list>
 #include <string>
-#include <vector>
+#include "../Monster.h"
+#include "../MonsterTracker.h"
 #include "../Saiph.h"
 
 /* namespace */
@@ -27,13 +31,11 @@ class Fight : public Analyzer {
 		/* methods */
 		void command(string *command);
 		int finish();
-		void inspect(const Point &point, unsigned char symbol);
 		int parseMessages(string *messages);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		vector<unsigned char> monsterlist[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		string action;
 };
 #endif

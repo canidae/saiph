@@ -11,7 +11,7 @@
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
 /* colors & attributes */
-#define NOCOLOR 0
+#define NO_COLOR 0
 #define INVERSE 7
 #define BLACK 30
 #define RED 31

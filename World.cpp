@@ -6,7 +6,7 @@ World::World(Connection *connection) {
 	memset(view, ' ', sizeof (view));
 	for (int r = 0; r < ROWS; ++r)
 		view[r][COLS] = '\0';
-	memset(color, NOCOLOR, sizeof (color));
+	memset(color, NO_COLOR, sizeof (color));
 	memset(changed, false, sizeof (changed));
 	cursor.row = 0;
 	cursor.col = 0;
@@ -411,8 +411,4 @@ void World::update() {
 		update();
 		return;
 	}
-	cerr << "CHANGED LOCATIONS:" << endl;
-	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
-		cerr << c->row << ", " << c->col << " | ";
-	cerr << endl;
 }
