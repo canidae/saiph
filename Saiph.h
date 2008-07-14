@@ -92,7 +92,7 @@ class Saiph {
 		/* constructors */
 		Saiph(bool remote);
 
-		/* destructors */
+		/* destructor */
 		~Saiph();
 
 		/* methods */

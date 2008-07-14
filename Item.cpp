@@ -4,6 +4,6 @@
 Item::Item() {
 }
 
-/* destructors */
+/* destructor */
 Item::~Item() {
 }

@@ -1,5 +1,12 @@
 #include "Analyzer.h"
 
+/* destructor */
+Analyzer::~Analyzer() {
+	/* we must have a virtual destructor.
+	 * if we don't then the destructor of classes inheriting
+	 * this class won't be called upon destruction */
+}
+
 /* methods */
 void Analyzer::command(string *command) {
 }

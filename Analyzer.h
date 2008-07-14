@@ -17,6 +17,9 @@ using namespace std;
 /* analyze every tile of type and/or do whatever you want in finish() */
 class Analyzer {
 	public:
+		/* destructor */
+		virtual ~Analyzer();
+
 		/* methods */
 		virtual void command(string *command);
 		virtual int finish();

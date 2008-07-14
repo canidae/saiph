@@ -128,7 +128,7 @@ Saiph::Saiph(bool remote) {
 	analyzers.push_back(new Health(this));
 }
 
-/* destructors */
+/* destructor */
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
@@ -590,10 +590,9 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 /* main */
 int main() {
 	Saiph *saiph = new Saiph(false);
-	//for (int a = 0; a < 200 && saiph->run(); ++a)
-	//	;
-	while (saiph->run())
+	for (int a = 0; a < 200 && saiph->run(); ++a)
 		;
-	sleep(10);
+	//while (saiph->run())
+	//	;
 	delete saiph;
 }

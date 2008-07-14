@@ -23,7 +23,7 @@ class Stash {
 		/* constructors */
 		Stash();
 
-		/* destructors */
+		/* destructor */
 		~Stash();
 
 		/* methods */

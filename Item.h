@@ -18,7 +18,7 @@ class Item {
 		/* constructors */
 		Item();
 
-		/* destructors */
+		/* destructor */
 		~Item();
 
 		/* methods */
