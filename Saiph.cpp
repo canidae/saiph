@@ -446,12 +446,8 @@ void Saiph::updateMaps() {
 			/* update the map showing static stuff */
 			map[current_branch][current_level].dungeon[c->row][c->col] = s;
 		} else if (!passable[map[current_branch][current_level].dungeon[c->row][c->col]]) {
-			/* hmm, this tile used to be unpassable,
-			 * but now it isn't...
-			 * this happens for example when:
-			 * - monster opens door and we kill the monster in the doorway
-			 * - monster digging out level, leaving stuff on squares
-			 * let's place an unknown tile here */
+			/* we can't see the floor here, but we believe we can pass this tile.
+			 * place an UNKNOWN_TILE here */
 			map[current_branch][current_level].dungeon[c->row][c->col] = UNKNOWN_TILE;
 		}
 		if (item[s]) {

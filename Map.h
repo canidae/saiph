@@ -25,8 +25,5 @@ class Map {
 
 		/* constructors */
 		Map();
-
-		/* destructors */
-		~Map();
 };
 #endif

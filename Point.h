@@ -10,7 +10,6 @@ class Point {
 		int col;
 
 		/* constructors */
-		Point(int row, int col);
-		Point();
+		Point(int row = 0, int col = 0);
 };
 #endif

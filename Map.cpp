@@ -6,7 +6,3 @@ Map::Map() {
 	memset(item, ILLEGAL_ITEM, sizeof (item));
 	memset(monster, ILLEGAL_MONSTER, sizeof (monster));
 }
-
-/* destructors */
-Map::~Map() {
-}

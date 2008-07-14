@@ -20,10 +20,6 @@ World::World(Connection *connection) {
 	update();
 }
 
-/* destructors */
-World::~World() {
-}
-
 /* methods */
 bool World::executeCommand(const string &command) {
 	/* send a command to nethack */

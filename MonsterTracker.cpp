@@ -5,10 +5,6 @@ MonsterTracker::MonsterTracker(Saiph *saiph) {
 	this->saiph = saiph;
 }
 
-/* destructors */
-MonsterTracker::~MonsterTracker() {
-}
-
 /* methods */
 void MonsterTracker::removeMonsters() {
 	/* when we're standing next to where a monster used to be

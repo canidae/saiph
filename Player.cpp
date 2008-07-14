@@ -1,7 +1,7 @@
 #include "Player.h"
 
 /* constructors */
-Player::Player() : Point(0, 0) {
+Player::Player() {
 	/* attributes */
 	alignment = 0;
 	charisma = 0;

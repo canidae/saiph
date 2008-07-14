@@ -14,5 +14,9 @@ class Coordinate : public Point {
 		/* variables */
 		int branch;
 		int level;
+
+		/* constructors */
+		Coordinate(int branch = 0, int level = 0, int row = 0, int col = 0);
+		Coordinate(const Point &point, int branch = 0, int level = 0);
 };
 #endif

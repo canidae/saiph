@@ -24,9 +24,6 @@ class MonsterTracker {
 		/* constructors */
 		MonsterTracker(Saiph *saiph);
 
-		/* destructors */
-		~MonsterTracker();
-
 		/* methods */
 		void removeMonsters();
 		void updateMonster(const Point &point);

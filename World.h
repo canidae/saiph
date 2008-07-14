@@ -49,9 +49,6 @@ class World {
 		/* constructors */
 		World(Connection *connection);
 
-		/* destructors */
-		~World();
-
 		/* methods */
 		bool executeCommand(const string &command);
 
