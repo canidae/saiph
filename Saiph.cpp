@@ -4,6 +4,7 @@
 Saiph::Saiph(bool remote) {
 	connection = new Connection(remote);
 	world = new World(connection);
+	monstertracker = new MonsterTracker(this);
 
 	/* engulfed */
 	engulfed = false;
@@ -462,63 +463,13 @@ void Saiph::updateMaps() {
 			/* found a monster!
 			 * since monsters unlike items disappear from map when we can't see them,
 			 * we can't remove monsters like we do with items above.
-			 * we'll need to locate the nearest monster of same symbol (if any),
-			 * and update the position */
-			/* find nearest monster of this symbol */
-			int min_distance = INT_MAX;
-			list<Point>::iterator move = map[current_branch][current_level].monsterpos[s].end();
-			for (list<Point>::iterator m = map[current_branch][current_level].monsterpos[s].begin(); m != map[current_branch][current_level].monsterpos[s].end(); ++m) {
-				int distance = max(abs(c->row - m->row), abs(c->col - m->col));
-				if (distance < min_distance) {
-					min_distance = distance;
-					move = m;
-				}
-			}
-			if (move == map[current_branch][current_level].monsterpos[s].end()) {
-				/* didn't find a monster with same symbol, add monster to list */
-				Point p;
-				p.row = c->row;
-				p.col = c->col;
-				map[current_branch][current_level].monsterpos[s].push_back(p);
-			} else {
-				/* found a monster with same symbol nearby.
-				 * remove monster from monstermap */
-				map[current_branch][current_level].monster[move->row][move->col] = ILLEGAL_MONSTER;
-				/* update position of monster */
-				move->row = c->row;
-				move->col = c->col;
-			}
-			/* update monstermap */
-			map[current_branch][current_level].monster[c->row][c->col] = s;
+			 * that's what MonsterTracker is for */
+			monstertracker->updateMonster(*c);
 		}
 	}
-	/* remove monsters next to the player as they're obviously gone */
-	for (int r = world->player.row - 1; r <= world->player.row + 1; ++r) {
-		if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
-			continue;
-		for (int c = world->player.col - 1; c <= world->player.col + 1; ++c) {
-			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
-				continue;
-			unsigned char ms = map[current_branch][current_level].monster[r][c];
-			if (ms != ILLEGAL_MONSTER && !monster[(unsigned char) world->view[r][c]]) {
-				/* find nearest monster of this symbol */
-				int min_distance = INT_MAX;
-				list<Point>::iterator erase = map[current_branch][current_level].monsterpos[ms].end();
-				for (list<Point>::iterator m = map[current_branch][current_level].monsterpos[ms].begin(); m != map[current_branch][current_level].monsterpos[ms].end(); ++m) {
-					int distance = max(abs(r - m->row), abs(c - m->col));
-					if (distance < min_distance) {
-						min_distance = distance;
-						erase = m;
-					}
-				}
-				if (erase != map[current_branch][current_level].monsterpos[ms].end())
-					map[current_branch][current_level].monsterpos[ms].erase(erase);
-				/* remove monster at this location */
-				map[current_branch][current_level].monster[r][c] = ILLEGAL_MONSTER;
-			}
-		}
-	}
-
+	/* remove monsters that seems to be gone */
+	monstertracker->removeMonsters();
+	/* update map used for pathing */
 	updatePathMap();
 }
 

@@ -1,14 +1,8 @@
-#include "MonsterAnalyzer.h"
+#include "Fight.h"
 
 /* constructors */
-MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
+Fight::Fight(Saiph *saiph) {
 	this->saiph = saiph;
-	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
-		monsters[m].row = -1;
-		monsters[m].col = -1;
-		monsters[m].symbol = NOMONSTER;
-		monsters[m].last_seen = -1;
-	}
 	action = ILLEGAL_MOVE;
 	vector<unsigned char> symbols;
 	symbols.push_back('a');
@@ -73,44 +67,22 @@ MonsterAnalyzer::MonsterAnalyzer(Saiph *saiph) {
 }
 
 /* methods */
-int MonsterAnalyzer::parseMessages(string *messages) {
-	if (messages->find(MO_REALLY_ATTACK, 0) != string::npos) {
-		action = YES;
-		return 100;
-	}
-	return 0;
+void Fight::command(string *command) {
+	command = action;
 }
 
-void MonsterAnalyzer::analyze(int row, int col, unsigned char symbol) {
-	cerr << "found monster at " << row << ", " << col << " - " << symbol << endl;
-	for (int m = 0; m < MO_MAX_MONSTERS; ++m) {
-		if (monsters[m].symbol == NOMONSTER || (monsters[m].symbol == symbol && monsters[m].last_seen != saiph->world->player.turn)) {
-			if (monsters[m].symbol == NOMONSTER)
-				cerr << "this seems to be a new monster" << endl;
-			else
-				cerr << "seems to be a known monster. old pos: " << monsters[m].row << ", " << monsters[m].col << endl;
-			/* unblock path for pathing algorithm */
-			saiph->map[saiph->current_branch][saiph->current_level].monster[monsters[m].row][monsters[m].col] = NOMONSTER;
-			monsters[m].row = row;
-			monsters[m].col = col;
-			monsters[m].symbol = symbol;
-			monsters[m].last_seen = saiph->world->player.turn;
-			/* block path for pathing algorithm */
-			saiph->map[saiph->current_branch][saiph->current_level].monster[row][col] = symbol;
-			return;
-		}
-	}
-	/* we're tracking too many monsters, return */
-	return;
-}
-
-int MonsterAnalyzer::finish() {
+int Fight::finish() {
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
 		action = MOVE_NW; // doesn't matter which direction
-		return 70;
+		return FIGHT_ATTACK_MONSTER;
 	}
 	/* fight nearest monster */
+	int b = saiph->current_branch;
+	int l = saiph->current_level;
+	for (vector<unsigned char>::iterator m = monsterlist[b][l].begin(); m != monsterlist[b][l].end(); ++m) {
+	}
+	/* old */
 	int shortest_distance = -1;
 	int m = -1;
 	unsigned char best_move = ILLEGAL_MOVE;
@@ -147,11 +119,24 @@ int MonsterAnalyzer::finish() {
 		if (monsters[m].symbol == 'e' || monsters[m].symbol == '@')
 			return 1; // don't fight these unless there's no way out
 		else
-			return 70;
+			return FIGHT_ATTACK_MONSTER;
 	}
 	return 0;
 }
 
-void MonsterAnalyzer::command(string *command) {
-	command->push_back(action);
+void Fight::inspect(const Point &point, unsigned char symbol) {
+	/* we already got monster tracking in saiph.
+	 * all we need to do is keep track of what monsters are on the level */
+	int b = saiph->current_branch;
+	int l = saiph->current_level;
+	if (saiph->map[b][l].monsterpos[symbol].size() <= 0)
+		monsterlist[saiph->current_branch][saiph->current_level].push_back(symbol);
+}
+
+int Fight::parseMessages(string *messages) {
+	if (messages->find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
+		action = YES;
+		return FIGHT_CONTINUE_ACTION;
+	}
+	return 0;
 }

@@ -56,6 +56,7 @@ class Saiph;
 #include "Connection.h"
 #include "Globals.h"
 #include "Map.h"
+#include "MonsterTracker.h"
 #include "Player.h"
 #include "Point.h"
 #include "World.h"
@@ -78,6 +79,7 @@ struct PathNode {
 class Saiph {
 	public:
 		/* variables */
+		MonsterTracker *monstertracker;
 		World *world;
 		Map map[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		int current_branch;
