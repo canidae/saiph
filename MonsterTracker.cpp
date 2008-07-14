@@ -16,11 +16,13 @@ void MonsterTracker::removeMonsters() {
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	for (list<Monster>::iterator m = monsters[b][l].begin(); m != monsters[b][l].end(); ) {
-		if (abs(m->row - saiph->world->player.row) > 1 || abs(m->col - saiph->world->player.col) > 1) {
+		if (abs(saiph->world->player.row - m->row) > 1 || abs(saiph->world->player.col - m->col) > 1) {
+			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
 		}
-		if (saiph->world->view[m->row][m->col] != m->symbol || saiph->world->color[m->row][m->col] != m->color) {
+		if (saiph->world->view[m->row][m->col] == m->symbol && saiph->world->color[m->row][m->col] == m->color) {
+			/* we can still see the monster */
 			++m;
 			continue;
 		}
