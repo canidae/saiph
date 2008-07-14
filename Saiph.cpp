@@ -12,7 +12,7 @@ Saiph::Saiph(bool remote) {
 	/* set certain values */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		/* monsters */
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET || a == PLAYER)
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
 			monster[a] = true;
 		else
 			monster[a] = false;
@@ -385,19 +385,24 @@ void Saiph::dumpMaps() {
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
+			if (r == world->player.row && c == world->player.col)
+				cout << '@';
+			else if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
 			else if (map[current_branch][current_level].item[r][c] != ILLEGAL_ITEM)
 				cout << (unsigned char) (map[current_branch][current_level].item[r][c]);
 			else
-				cout << ' ';
+				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
 	}
 	/* world map as the bot sees it */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+			if (r == world->player.row && c == world->player.col)
+				cout << '@';
+			else
+				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
 	}
 	/* path map */
@@ -410,7 +415,7 @@ void Saiph::dumpMaps() {
 			else if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
 				cout << (unsigned char) pathmap[r][c].move;
 			else
-				cout << ' ';
+				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
 	}
 	/* return cursor back to where it was */
