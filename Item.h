@@ -21,6 +21,6 @@ class Item {
 		int buc_status;
 
 		/* constructors */
-		Item(string name, int count = 1);
+		Item(const string &name, int count = 1);
 };
 #endif

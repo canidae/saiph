@@ -125,12 +125,12 @@
 #define PET 138
 #define PLAYER 139
 /* messages */
-#define MESSAGE_STAIRCASE_UP "There is a staircase up here."
-#define MESSAGE_STAIRCASE_DOWN "There is a staircase down here."
-#define MESSAGE_OPEN_DOOR "There is an open door here."
-#define MESSAGE_CHOOSE_DIRECTION "In what direction?"
-#define MESSAGE_YOU_SEE_HERE "You see here "
-#define MESSAGE_THINGS_THAT_ARE_HERE "Things that are here:"
-#define MESSAGE_PICK_UP_WHAT "Pick up what?"
+#define MESSAGE_STAIRCASE_UP "There is a staircase up here.  "
+#define MESSAGE_STAIRCASE_DOWN "There is a staircase down here.  "
+#define MESSAGE_OPEN_DOOR "There is an open door here.  "
+#define MESSAGE_CHOOSE_DIRECTION "In what direction?  "
+#define MESSAGE_YOU_SEE_HERE "You see here " // not two spaces here as it's followed by eg. "an lichen corpse"
+#define MESSAGE_THINGS_THAT_ARE_HERE "Things that are here:  "
+#define MESSAGE_PICK_UP_WHAT "Pick up what?  "
 
 #endif

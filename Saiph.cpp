@@ -447,6 +447,29 @@ void Saiph::parseMessages() {
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
 	if (messages.find(MESSAGE_YOU_SEE_HERE, 0) != string::npos) {
 		/* one item on the floor */
+		char amount[16];
+		char name[512];
+		int matched = sscanf(messages.c_str(), GET_SINGLE_ITEM, amount, name);
+		if (matched != 2) {
+			cerr << "ERROR: matched " << matched << ", expected 2" << endl;
+			exit(1);
+		}
+		/* remove last "." */
+		int a;
+		for (a = 0; a < 512 && name[a] != '\0'; ++a)
+			;
+		--a;
+		if (a > 0)
+			name[a] = '\0';
+		/* figure out amount of items */
+		int count;
+		if (amount[0] < '0' || amount[0] > '9')
+			count = 1; // "a", "an" or "the" <item>
+		else
+			count = atoi(amount);
+		/* add item to vector */
+		on_ground.push_back(Item(name, count));
+		cerr << "Found " << count << " " << name << endl;
 	} else if (messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0) != string::npos) {
 		/* multiple items on the floor */
 	} else if (messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
