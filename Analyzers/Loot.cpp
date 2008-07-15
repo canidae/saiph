@@ -2,24 +2,6 @@
 
 /* constructors */
 Loot::Loot(Saiph *saiph) : saiph(saiph) {
-	memset(check_item, false, sizeof (check_item));
-	check_item[WEAPON] = true;
-	check_item[ARMOR] = true;
-	check_item[RING] = true;
-	check_item[AMULET] = true;
-	check_item[TOOL] = true;
-	check_item[FOOD] = true;
-	check_item[POTION] = true;
-	check_item[SCROLL] = true;
-	check_item[SPELLBOOK] = true;
-	check_item[WAND] = true;
-	check_item[GOLD] = true;
-	check_item[GEM] = true;
-	check_item[STATUE] = true;
-	// skipping boulder as that's a special item
-	check_item[IRON_BALL] = true;
-	check_item[CHAINS] = true;
-	check_item[VENOM] = true;
 }
 
 /* methods */
@@ -32,32 +14,25 @@ int Loot::finish() {
 }
 
 void Loot::inspect(const Point &point) {
-	unsigned char s = saiph->world->view[point.row][point.col];
-	if (check_item[s]) {
-		/* we're interested in this symbol */
-		if (stashes[saiph->current_branch][saiph->current_level][point.row][point.col].items.size() > 0) {
-			/* we know of a stash here already */
-			if (stashes[saiph->current_branch][saiph->current_level][point.row][point.col].top_item == s) {
-				/* top item is the same as last time we checked.
-				 * FIXME: is there any point checking the place again? */
-				return;
-			} else {
-				/* top item changed, we should check this stash again */
-			}
-		} else {
-			/* we've not seen a stash here before, we should check */
-		}
-	} else if (stashes[saiph->current_branch][saiph->current_level][point.row][point.col].items.size() > 0) {
-		/* there used to be a stash here, but now it's gone */
-		stashes[saiph->current_branch][saiph->current_level][point.row][point.col].items.clear();
-		for (list<Coordinate>::iterator sl = stash_locations.begin(); sl != stash_locations.end(); ++sl) {
-			if (sl->branch == saiph->current_branch && sl->level == saiph->current_level && sl->row == point.row && sl->col == point.col) {
-				/* found the stash, erase it */
-				stash_locations.erase(sl);
-				break;
-			}
-		}
-	}
+	/*
+	symbols.push_back(WEAPON);
+	symbols.push_back(ARMOR);
+	symbols.push_back(RING);
+	symbols.push_back(AMULET);
+	symbols.push_back(TOOL);
+	symbols.push_back(FOOD);
+	symbols.push_back(POTION);
+	symbols.push_back(SCROLL);
+	symbols.push_back(SPELLBOOK);
+	symbols.push_back(WAND);
+	symbols.push_back(GOLD);
+	symbols.push_back(GEM);
+	symbols.push_back(STATUE);
+	// skipping boulder as that's a special item
+	symbols.push_back(IRON_BALL);
+	symbols.push_back(CHAINS);
+	symbols.push_back(VENOM);
+	*/
 	return;
 }
 

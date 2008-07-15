@@ -10,9 +10,7 @@
 class Loot;
 
 /* includes */
-#include <list>
 #include <string>
-#include <vector>
 #include "../Analyzer.h"
 #include "../Coordinate.h"
 #include "../Globals.h"
@@ -45,9 +43,8 @@ class Loot : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string action;
-		bool check_item[UCHAR_MAX + 1];
 		Stash stashes[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		list<Coordinate> stash_locations;
+		vector<Coordinate> stash_locations;
 
 		/* methods */
 		void parseMessageItem(const string &message, vector<Item> *stash);
