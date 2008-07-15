@@ -16,31 +16,11 @@ Saiph::Saiph(bool remote) {
 			monster[a] = true;
 		else
 			monster[a] = false;
-		/* items */
-		item[a] = false;
 		/* pathing & maps */
 		passable[a] = false;
 		static_dungeon_symbol[a] = false;
 		pathcost[a] = 0;
 	}
-	/* items */
-	item[(unsigned char) WEAPON] = true;
-	item[(unsigned char) ARMOR] = true;
-	item[(unsigned char) RING] = true;
-	item[(unsigned char) AMULET] = true;
-	item[(unsigned char) TOOL] = true;
-	item[(unsigned char) FOOD] = true;
-	item[(unsigned char) POTION] = true;
-	item[(unsigned char) SCROLL] = true;
-	item[(unsigned char) SPELLBOOK] = true;
-	item[(unsigned char) WAND] = true;
-	item[(unsigned char) GOLD] = true;
-	item[(unsigned char) GEM] = true;
-	item[(unsigned char) STATUE] = true;
-	item[(unsigned char) BOULDER] = true;
-	item[(unsigned char) IRON_BALL] = true;
-	item[(unsigned char) CHAINS] = true;
-	item[(unsigned char) VENOM] = true;
 	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
@@ -379,7 +359,7 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 
 /* private methods */
 void Saiph::dumpMaps() {
-	/* items/monsters */
+	/* monsters */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
@@ -387,8 +367,6 @@ void Saiph::dumpMaps() {
 				cout << '@';
 			else if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
-			else if (map[current_branch][current_level].item[r][c] != ILLEGAL_ITEM)
-				cout << (unsigned char) (map[current_branch][current_level].item[r][c]);
 			else
 				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 		}
@@ -421,7 +399,7 @@ void Saiph::dumpMaps() {
 }
 
 void Saiph::inspect() {
-	/* notify the analyzers when we discover dungeon tiles or items */
+	/* notify the analyzers about changes */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 		unsigned char s = world->view[c->row][c->col];
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[s].begin(); a != analyzer_symbols[s].end(); ++a)
@@ -500,13 +478,6 @@ void Saiph::updateMaps() {
 			 * then every tile a monster steps on or drops an item on will become UNKNOWN_TILE,
 			 * even if we already know what's beneath the monster/item. */
 			map[current_branch][current_level].dungeon[c->row][c->col] = UNKNOWN_TILE;
-		}
-		if (item[s]) {
-			/* item here */
-			map[current_branch][current_level].item[c->row][c->col] = s;
-		} else if (map[current_branch][current_level].item[c->row][c->col] != ILLEGAL_ITEM) {
-			/* item is gone? hmm, remove it */
-			map[current_branch][current_level].item[c->row][c->col] = ILLEGAL_ITEM;
 		}
 		if (monster[s]) {
 			/* found a monster!
