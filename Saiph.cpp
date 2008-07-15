@@ -445,11 +445,12 @@ void Saiph::parseMessages() {
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
 	if (messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
-	if (messages.find(MESSAGE_YOU_SEE_HERE, 0) != string::npos) {
+	string::size_type pos = messages.find(MESSAGE_YOU_SEE_HERE, 0);
+	if (pos != string::npos) {
 		/* one item on the floor */
 		char amount[16];
 		char name[512];
-		int matched = sscanf(messages.c_str(), GET_SINGLE_ITEM, amount, name);
+		int matched = sscanf(messages.substr(pos).c_str(), GET_SINGLE_ITEM, amount, name);
 		if (matched != 2) {
 			cerr << "ERROR: matched " << matched << ", expected 2" << endl;
 			exit(1);
