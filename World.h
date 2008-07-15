@@ -42,7 +42,7 @@ class World {
 		int color[ROWS][COLS]; // not used for string reading, no need for + 1
 		Point cursor; // cursor position
 		Player player;
-		char messages[BUFFER_SIZE];
+		string messages;
 		bool menu;
 		bool question;
 
@@ -58,8 +58,7 @@ class World {
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
 		ssize_t data_size;
-		int messages_pos; // used for concatenation multiple messages together
-		string msg_str; // used for fetching messages
+		string msg_str; // helps fetching messages
 
 		/* methods */
 		void addChangedLocation(const Point &point);

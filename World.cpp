@@ -11,9 +11,7 @@ World::World(Connection *connection) : connection(connection) {
 	cursor.col = 0;
 	menu = false;
 	question = false;
-	memset(messages, '\0', sizeof (messages));
 	memset(data, '\0', sizeof (data));
-	messages_pos = 0;
 	data_size = -1;
 	/* fetch the first "frame" */
 	update();
@@ -25,6 +23,7 @@ bool World::executeCommand(const string &command) {
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
 		changed[c->row][c->col] = false;
 	changes.clear();
+	messages.clear();
 	if (command.size() <= 0) {
 		/* huh? no command? */
 		return false;
@@ -53,6 +52,7 @@ void World::fetchMessages() {
 	int r = cursor.row;
 	int c = cursor.col;
 	bool more = false;
+	bool one_line = false;
 	menu = false;
 	string::size_type pos = string::npos;
 	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
@@ -106,10 +106,8 @@ void World::fetchMessages() {
 					/* append 2 spaces for later splitting */
 					msg_str.append(2, ' ');
 				}
-				msg_str.copy(&messages[messages_pos], msg_str.length());
-				messages[messages_pos + msg_str.length()] = '\0';
-				messages_pos = 0;
-				return; // no messages or messages on 1 line
+				messages.append(msg_str);
+				one_line = true;
 			}
 		}
 	}
@@ -119,10 +117,8 @@ void World::fetchMessages() {
 		msg_str = msg_str.substr(0, c);
 		/* append 2 spaces for later splitting */
 		msg_str.append(2, ' ');
-		msg_str.copy(&messages[messages_pos], msg_str.length());
-		messages_pos += msg_str.length();
-		messages[messages_pos] = '\0';
-	} else {
+		messages.append(msg_str);
+	} else if (!one_line) {
 		/* list, add all lines to msg_str, splitted by "  "
 		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
 		for (int r2 = 0; r2 < r; ++r2) {
@@ -135,9 +131,7 @@ void World::fetchMessages() {
 			msg_str = msg_str.substr(fns, lns - fns + 1);
 			/* append 2 spaces for later splitting */
 			msg_str.append(2, ' ');
-			msg_str.copy(&messages[messages_pos], msg_str.length());
-			messages_pos += msg_str.length();
-			messages[messages_pos] = '\0';
+			messages.append(msg_str);
 		}
 	}
 	if (more) {
@@ -145,6 +139,38 @@ void World::fetchMessages() {
 		 * since this is not a menu we'll just ask for the rest of the messages.
 		 * also, don't call executeCommand(), because that clears the "changes" vector */
 		connection->send(" ");
+		update();
+		return;
+	}
+	/* this one is a bit tricky.
+	 * we currently don't have a good way of looking on the ground,
+	 * but we need to do this when we get "there are several/many items here".
+	 * this probably shouldn't be done here, but oh well.
+	 * we'll have to remove "there are several/many objects here", otherwise we'll get a loop */
+	bool ask_for_more = false;
+	pos = messages.find(MESSAGE_MANY_OBJECTS_HERE, 0);
+	if (pos != string::npos) {
+		string::size_type length = messages.find(".  ", pos);
+		if (length != string::npos) {
+			length = length - pos + 3; // we want to remove ".  " too
+			messages.erase(pos, length);
+			ask_for_more = true;
+		}
+	}
+	if (!ask_for_more) {
+		pos = messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0);
+		if (pos != string::npos) {
+			string::size_type length = messages.find(".  ", pos);
+			if (length != string::npos) {
+				length = length - pos + 3; // we want to remove ".  " too
+				messages.erase(pos, length);
+				ask_for_more = true;
+			}
+		}
+	}
+	if (ask_for_more) {
+		cerr << "ASKING FOR MORE" << endl;
+		connection->send(":");
 		update();
 		return;
 	}

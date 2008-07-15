@@ -119,9 +119,6 @@ Saiph::Saiph(bool remote) {
 	uniquemap[VERTICAL_WALL][YELLOW] = OPEN_DOOR;
 	uniquemap[WATER][RED] = LAVA;
 
-	/* messages */
-	messages.clear();
-
 	/* Analyzers */
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Explore(this));
@@ -223,14 +220,13 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* deal with messages */
-	messages = world->messages;
-	if (messages.size() > 0) {
-		cerr << "MESSAGES: " << messages << endl;
+	if (world->messages.size() > 0) {
+		cerr << "MESSAGES: " << world->messages << endl;
 		/* global parsing */
 		parseMessages();
 		/* then analyzer parsing */
 		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-			int priority = analyzers[a]->parseMessages(&messages);
+			int priority = analyzers[a]->parseMessages(&world->messages);
 			if (priority > best_priority) {
 				best_analyzer = a;
 				best_priority = priority;
@@ -265,12 +261,12 @@ bool Saiph::run() {
 	}
 
 	if (world->question && best_analyzer == -1) {
-		cerr << "Unhandled question: " << messages << endl;
+		cerr << "Unhandled question: " << world->messages << endl;
 		return false;
 	}
 
 	if (world->menu && best_analyzer == -1) {
-		cerr << "Unhandled menu: " << messages << endl;
+		cerr << "Unhandled menu: " << world->messages << endl;
 		return false;
 	}
 
@@ -436,44 +432,61 @@ void Saiph::inspect() {
 	}
 }
 
+void Saiph::parseMessageItem(const string &message) {
+	char amount[16];
+	char name[512];
+	int matched = sscanf(message.c_str(), GET_SINGLE_ITEM, amount, name);
+	if (matched != 2) {
+		cerr << "ERROR: matched " << matched << ", expected 2" << endl;
+		exit(1);
+	}
+	/* figure out amount of items */
+	int count;
+	if (amount[0] < '0' || amount[0] > '9')
+		count = 1; // "a", "an" or "the" <item>
+	else
+		count = atoi(amount);
+	/* add item to vector */
+	on_ground.push_back(Item(name, count));
+}
+
 void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc.
 	 * we'll also make a list of items on the ground here, if any */
-	if (messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
+	if (world->messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
-	if (messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
+	if (world->messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
-	if (messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
+	if (world->messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
-	string::size_type pos = messages.find(MESSAGE_YOU_SEE_HERE, 0);
+	/* clear items on ground */
+	on_ground.clear();
+	string::size_type pos = world->messages.find(MESSAGE_YOU_SEE_HERE, 0);
 	if (pos != string::npos) {
 		/* one item on the floor */
-		char amount[16];
-		char name[512];
-		int matched = sscanf(messages.substr(pos).c_str(), GET_SINGLE_ITEM, amount, name);
-		if (matched != 2) {
-			cerr << "ERROR: matched " << matched << ", expected 2" << endl;
-			exit(1);
+		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
+		string::size_type length = world->messages.find(".  ", pos);
+		if (length != string::npos) {
+			length = length - pos;
+			parseMessageItem(world->messages.substr(pos, length));
 		}
-		/* remove last "." */
-		int a;
-		for (a = 0; a < 512 && name[a] != '\0'; ++a)
-			;
-		--a;
-		if (a > 0)
-			name[a] = '\0';
-		/* figure out amount of items */
-		int count;
-		if (amount[0] < '0' || amount[0] > '9')
-			count = 1; // "a", "an" or "the" <item>
-		else
-			count = atoi(amount);
-		/* add item to vector */
-		on_ground.push_back(Item(name, count));
-		cerr << "Found " << count << " " << name << endl;
-	} else if (messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0) != string::npos) {
+	}
+	pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
+	if (pos != string::npos) {
 		/* multiple items on the floor */
-	} else if (messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+		pos = world->messages.find("  ", pos);
+		while (pos != string::npos) {
+			pos += 2;
+			string::size_type length = world->messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			parseMessageItem(world->messages.substr(pos, length));
+			pos += length;
+		}
+	}
+	pos = world->messages.find(MESSAGE_PICK_UP_WHAT, 0);
+	if (pos != string::npos) {
 		/* attempting to pick up items */
 	}
 }

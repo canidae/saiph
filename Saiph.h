@@ -11,7 +11,7 @@
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
 /* used to help pick up a single item */
-#define GET_SINGLE_ITEM MESSAGE_YOU_SEE_HERE "%s %[^\t\n]  "
+#define GET_SINGLE_ITEM "%s %[^\t\n]"
 
 /* forward declare */
 class Saiph;
@@ -56,7 +56,6 @@ class Saiph {
 		int current_branch;
 		int current_level;
 		string command;
-		string messages;
 		bool engulfed;
 		vector<Item> inventory;
 		vector<Item> on_ground;
@@ -91,6 +90,7 @@ class Saiph {
 		/* methods */
 		void dumpMaps();
 		void inspect();
+		void parseMessageItem(const string &message);
 		void parseMessages();
 		void updateMaps();
 		void updatePathMap();
