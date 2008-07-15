@@ -423,12 +423,9 @@ void Saiph::dumpMaps() {
 void Saiph::inspect() {
 	/* notify the analyzers when we discover dungeon tiles or items */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
-		unsigned char ds = map[current_branch][current_level].dungeon[c->row][c->col];
-		unsigned char is = map[current_branch][current_level].item[c->row][c->col];
-		for (vector<Analyzer *>::iterator a = analyzer_symbols[ds].begin(); a != analyzer_symbols[ds].end(); ++a)
-			(*a)->inspect(*c, ds);
-		for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
-			(*a)->inspect(*c, is);
+		unsigned char s = world->view[c->row][c->col];
+		for (vector<Analyzer *>::iterator a = analyzer_symbols[s].begin(); a != analyzer_symbols[s].end(); ++a)
+			(*a)->inspect(*c, s);
 	}
 }
 
@@ -485,10 +482,6 @@ void Saiph::parseMessages() {
 			pos += length;
 		}
 	}
-	pos = world->messages.find(MESSAGE_PICK_UP_WHAT, 0);
-	if (pos != string::npos) {
-		/* attempting to pick up items */
-	}
 }
 
 void Saiph::updateMaps() {
@@ -502,7 +495,10 @@ void Saiph::updateMaps() {
 			map[current_branch][current_level].dungeon[c->row][c->col] = s;
 		} else if (!passable[map[current_branch][current_level].dungeon[c->row][c->col]]) {
 			/* we can't see the floor here, but we believe we can pass this tile.
-			 * place an UNKNOWN_TILE here */
+			 * place an UNKNOWN_TILE here.
+			 * the reason we check if stored tile is !passable is because if we don't,
+			 * then every tile a monster steps on or drops an item on will become UNKNOWN_TILE,
+			 * even if we already know what's beneath the monster/item. */
 			map[current_branch][current_level].dungeon[c->row][c->col] = UNKNOWN_TILE;
 		}
 		if (item[s]) {

@@ -16,6 +16,8 @@
 class Health;
 
 /* includes */
+#include "../Analyzer.h"
+#include "../Globals.h"
 #include "../Saiph.h"
 
 /* namespace */

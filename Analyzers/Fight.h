@@ -15,6 +15,8 @@ class Fight;
 /* includes */
 #include <list>
 #include <string>
+#include "../Analyzer.h"
+#include "../Globals.h"
 #include "../Monster.h"
 #include "../MonsterTracker.h"
 #include "../Saiph.h"

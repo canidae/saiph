@@ -18,6 +18,7 @@ class Explore;
 
 /* includes */
 #include <list>
+#include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Point.h"
 #include "../Saiph.h"

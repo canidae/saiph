@@ -9,6 +9,7 @@
 class Request;
 
 /* includes */
+#include <string>
 #include "Coordinate.h"
 
 /* namespace */
@@ -20,9 +21,12 @@ class Request : public Coordinate {
 		/* variables */
 		int request;
 		int priority;
+		string data;
 
 		/* constructors */
-		Request(int request, int priority, const Coordinate &coordinate = Coordinate());
-		Request(int request, int priority, const Point &point = Point());
+		Request(int request, int priority = 0, const string &data = "", const Coordinate &coordinate = Coordinate());
+		Request(int request, int priority = 0, const string &data = "", const Point &point = Point());
+		Request(int request, int priority = 0, const Coordinate &coordinate = Coordinate());
+		Request(int request, int priority = 0, const Point &point = Point());
 };
 #endif

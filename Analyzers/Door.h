@@ -26,6 +26,8 @@ class Door;
 
 /* includes */
 #include <string>
+#include "../Analyzer.h"
+#include "../Globals.h"
 #include "../Point.h"
 #include "../Saiph.h"
 

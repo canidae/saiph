@@ -1,9 +1,8 @@
-#include "LootAnalyzer.h"
+#include "Loot.h"
 
 /* constructors */
-LootAnalyzer::LootAnalyzer(Saiph *saiph) {
+Loot::Loot(Saiph *saiph) {
 	this->saiph = saiph;
-	action = LO_NOTHING;
 	vector<unsigned char> symbols;
 	symbols.push_back(WEAPON);
 	symbols.push_back(ARMOR);
@@ -17,11 +16,16 @@ LootAnalyzer::LootAnalyzer(Saiph *saiph) {
 	symbols.push_back(WAND);
 	symbols.push_back(GOLD);
 	symbols.push_back(GEM);
-	saiph->registerAnalyzerSymbols(this, symbols);
+	symbols.push_back(STATUE);
+	/* skipping boulder as that's a special item */
+	symbols.push_back(IRON_BALL);
+	symbols.push_back(CHAINS);
+	symbols.push_back(VENOM);
+	saiph->registerSymbols(this, symbols);
 }
 
 /* methods */
-int LootAnalyzer::parseMessages(string *messages) {
+int Loot::parseMessages(string *messages) {
 	return 0;
 	if (messages->find(LO_THINGS_HERE, 0) != string::npos) {
 		/* multiple items here */
@@ -48,15 +52,15 @@ int LootAnalyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-void LootAnalyzer::analyze(int row, int col, unsigned char symbol) {
+void Loot::analyze(int row, int col, unsigned char symbol) {
 	return;
 }
 
-int LootAnalyzer::finish() {
+int Loot::finish() {
 	return 0;
 }
 
-void LootAnalyzer::command(string *command) {
+void Loot::command(string *command) {
 	switch (action) {
 		case LO_LOOT:
 			command->push_back(',');
@@ -72,7 +76,7 @@ void LootAnalyzer::command(string *command) {
 			break;
 
 		default:
-			cerr << "LootAnalyzer don't know what to do" << endl;
+			cerr << "Loot don't know what to do" << endl;
 			exit(1);
 			break;
 	}
