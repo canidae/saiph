@@ -186,7 +186,7 @@ void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned ch
 		analyzer_symbols[*s].push_back(analyzer);
 }
 
-bool Saiph::requestAction(int request) {
+bool Saiph::requestAction(const Request &request) {
 	/* request an action from any analyzer */
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
@@ -441,7 +441,6 @@ void Saiph::updateMaps() {
 		unsigned char s = uniquemap[(unsigned char) world->view[c->row][c->col]][(unsigned char) world->color[c->row][c->col]];
 		if (s == SOLID_ROCK)
 			continue; // not interesting (also mess up unlit rooms)
-		/* "static" dungean features */
 		if (static_dungeon_symbol[s]) {
 			/* update the map showing static stuff */
 			map[current_branch][current_level].dungeon[c->row][c->col] = s;
@@ -567,10 +566,10 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 			//else if (in_sokoban)
 			//	return false;
 		}
+		//if (polymorphed_to_grid_bug)
+		//	return false;
 	}
 	//if (blacklisted_move)
-	//	return false;
-	//if (polymorphed_to_grid_bug)
 	//	return false;
 	//if (s == LAVA && !levitating)
 	//	return false;
