@@ -1,8 +1,7 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) {
-	this->saiph = saiph;
+Loot::Loot(Saiph *saiph) : saiph(saiph) {
 }
 
 /* methods */
