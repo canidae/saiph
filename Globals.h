@@ -10,6 +10,14 @@
 #define MAP_ROW_END 21 // where the actual map height end
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
+#define MAX_BRANCHES 6
+#define MAX_DUNGEON_DEPTH 64
+#define BRANCH_MAIN 0
+#define BRANCH_MINES 1
+#define BRANCH_SOKOBAN 2
+#define BRANCH_VLAD 3
+#define BRANCH_WIZARD 4
+#define BRANCH_ASTRAL 5
 /* colors & attributes */
 #define NO_COLOR 0
 #define INVERSE 7
@@ -21,7 +29,49 @@
 #define MAGENTA 35
 #define CYAN 36
 #define WHITE 37
-/* map symbols */
+/* alignment */
+#define CHAOTIC -1
+#define NEUTRAL 0
+#define LAWFUL 1
+/* encumbrance */
+#define UNENCUMBERED 0
+#define BURDENED 1
+#define STRESSED 2
+#define STRAINED 3
+#define OVERTAXED 4
+#define OVERLOADED 5
+/* hunger */
+#define FAINTING -3
+#define WEAK -2
+#define HUNGRY -1
+#define CONTENT 0
+#define SATIATED 1
+#define OVERSATIATED 2
+/* movement */
+#define MOVE_NW 'y'
+#define MOVE_N 'k'
+#define MOVE_NE 'u'
+#define MOVE_W 'h'
+#define MOVE_E 'l'
+#define MOVE_SW 'b'
+#define MOVE_S 'j'
+#define MOVE_SE 'n'
+#define MOVE_UP '<'
+#define MOVE_DOWN '>'
+#define ILLEGAL_MOVE 0
+/* actions */
+#define REST '.'
+#define ILLEGAL_ACTION 0
+#define ENGRAVE 'E'
+#define PRAY "#pray\n"
+#define SEARCH 's'
+/* common answers */
+#define HANDS '-'
+#define NO 'n'
+#define YES 'y'
+/* elbereth */
+#define ELBERETH "Elbereth\n"
+/* dungeon symbols */
 #define SOLID_ROCK ' '
 #define VERTICAL_WALL '|'
 #define HORIZONTAL_WALL '-'
@@ -45,7 +95,8 @@
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
 #define UNKNOWN_TILE 136
-/* items */
+#define UNKNOWN_TILE_DIAGONALLY_PASSABLE 137
+/* item symbols */
 #define ILLEGAL_ITEM 0
 #define WEAPON ')'
 #define ARMOR '['
@@ -64,9 +115,14 @@
 #define IRON_BALL '`'
 #define CHAINS '`'
 #define VENOM '`'
-/* special "monsters" */
+/* special monster symbols */
 #define ILLEGAL_MONSTER 0
-#define PET 137
-#define PLAYER 138
+#define PET 138
+#define PLAYER 139
+/* messages */
+#define MESSAGE_STAIRCASE_UP "There is a staircase up here."
+#define MESSAGE_STAIRCASE_DOWN "There is a staircase down here."
+#define MESSAGE_OPEN_DOOR "There is an open door here."
+#define MESSAGE_CHOOSE_DIRECTION "In what direction?"
 
 #endif

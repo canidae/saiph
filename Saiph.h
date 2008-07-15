@@ -1,16 +1,6 @@
 #ifndef SAIPH_H
 /* defines */
 #define SAIPH_H
-/* general defines */
-#define MAX_BRANCHES 6
-#define MAX_DUNGEON_DEPTH 64
-/* branches */
-#define BRANCH_MAIN 0
-#define BRANCH_MINES 1
-#define BRANCH_SOKOBAN 2
-#define BRANCH_VLAD 3
-#define BRANCH_WIZARD 4
-#define BRANCH_ASTRAL 5
 /* pathing */
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
@@ -20,30 +10,6 @@
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
-/* movement */
-#define MOVE_NW 'y'
-#define MOVE_N 'k'
-#define MOVE_NE 'u'
-#define MOVE_W 'h'
-#define MOVE_E 'l'
-#define MOVE_SW 'b'
-#define MOVE_S 'j'
-#define MOVE_SE 'n'
-#define MOVE_UP '<'
-#define MOVE_DOWN '>'
-#define ILLEGAL_MOVE 0
-/* actions */
-#define REST '.'
-#define ILLEGAL_ACTION 0
-/* actions that will be moved somewhere else */
-#define ELBERETH "Elbereth\n"
-#define ENGRAVE 'E'
-#define PRAY "#pray\n"
-#define SEARCH 's'
-/* common answers to questions */
-#define HANDS '-'
-#define NO 'n'
-#define YES 'y'
 
 /* forward declare */
 class Saiph;
@@ -120,6 +86,7 @@ class Saiph {
 		/* methods */
 		void dumpMaps();
 		void inspect();
+		void parseMessages();
 		void updateMaps();
 		void updatePathMap();
 		bool updatePathMapHelper(const Point &to, const Point &from);

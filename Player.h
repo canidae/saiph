@@ -4,30 +4,13 @@
 /* text length for reading textual attribute/status */
 #define MAX_EFFECTS 8
 #define MAX_TEXT_LENGTH 16
-/* alignment */
-#define CHAOTIC -1
-#define NEUTRAL 0
-#define LAWFUL 1
-/* encumbrance */
-#define UNENCUMBERED 0
-#define BURDENED 1
-#define STRESSED 2
-#define STRAINED 3
-#define OVERTAXED 4
-#define OVERLOADED 5
-/* hunger */
-#define FAINTING -3
-#define WEAK -2
-#define HUNGRY -1
-#define CONTENT 0
-#define SATIATED 1
-#define OVERSATIATED 2
 
 /* forward declare */
 class Player;
 
 /* includes */
 #include <iostream>
+#include "Globals.h"
 #include "Point.h"
 
 /* namespace */

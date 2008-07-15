@@ -2,8 +2,8 @@
 /* defines */
 #define REQUEST_H
 /* requests */
-#define DESCEND_DUNGEON 1
-#define ASCEND_DUNGEON 2
+#define REQUEST_DESCEND_DUNGEON 1
+#define REQUEST_ASCEND_DUNGEON 2
 
 /* forward declare */
 class Request;

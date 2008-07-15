@@ -1,8 +1,6 @@
 #ifndef ANALYZER_H
 /* defines */
 #define ANALYZER_H
-/* various ambigous messages */
-#define CHOOSE_DIRECTION "In what direction?"
 
 /* forward declare */
 class Analyzer;

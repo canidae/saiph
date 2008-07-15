@@ -58,6 +58,7 @@ Saiph::Saiph(bool remote) {
 	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
 	passable[(unsigned char) TRAP] = true;
 	passable[(unsigned char) UNKNOWN_TILE] = true;
+	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_PASSABLE] = true;
 	passable[(unsigned char) WEAPON] = true;
 	passable[(unsigned char) ARMOR] = true;
 	passable[(unsigned char) RING] = true;
@@ -222,12 +223,12 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* deal with messages */
-	/* and again, we could make a map<string, Analyzer *> to speed things up.
-	 * the first string being the message.
-	 * then again, what about "you see here a %s corpse"? */
 	messages = world->messages;
 	if (messages.size() > 0) {
 		cerr << "MESSAGES: " << messages << endl;
+		/* global parsing */
+		parseMessages();
+		/* then analyzer parsing */
 		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
 			int priority = analyzers[a]->parseMessages(&messages);
 			if (priority > best_priority) {
@@ -433,6 +434,17 @@ void Saiph::inspect() {
 		for (vector<Analyzer *>::iterator a = analyzer_symbols[is].begin(); a != analyzer_symbols[is].end(); ++a)
 			(*a)->inspect(*c, is);
 	}
+}
+
+void Saiph::parseMessages() {
+	/* parse messages that can help us find doors/staircases/etc.
+	 * we'll also make a list of items on the ground here, if any */
+	if (messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
+		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
+	if (messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
+		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
+	if (messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
+		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
 }
 
 void Saiph::updateMaps() {
