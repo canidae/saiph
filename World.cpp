@@ -94,7 +94,7 @@ void World::fetchMessages() {
 					}
 				}
 
-				/* look for messages.
+				/* look for messages without "--More--".
 				 * only handles first line, but that should be enough */
 				msg_str = view[0];
 				string::size_type fns = msg_str.find_first_not_of(" ");
@@ -102,11 +102,9 @@ void World::fetchMessages() {
 				if (fns == string::npos || lns == string::npos || fns >= lns) {
 					msg_str.clear();
 				} else {
-					if (messages_pos > 0) {
-						/* append 2 spaces for later splitting */
-						msg_str.append(2, ' ');
-					}
 					msg_str = msg_str.substr(fns, lns - fns + 1);
+					/* append 2 spaces for later splitting */
+					msg_str.append(2, ' ');
 				}
 				msg_str.copy(&messages[messages_pos], msg_str.length());
 				messages[messages_pos + msg_str.length()] = '\0';
