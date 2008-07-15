@@ -21,6 +21,7 @@ class Saiph;
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Globals.h"
+#include "Item.h"
 #include "Map.h"
 #include "MonsterTracker.h"
 #include "Player.h"
@@ -55,6 +56,8 @@ class Saiph {
 		string command;
 		string messages;
 		bool engulfed;
+		vector<Item> inventory;
+		vector<Item> on_ground;
 
 		/* constructors */
 		Saiph(bool remote);

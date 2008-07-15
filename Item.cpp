@@ -1,9 +1,7 @@
 #include "Item.h"
 
 /* constructors */
-Item::Item() {
-}
-
-/* destructor */
-Item::~Item() {
+Item::Item(string name, int count) : name(name) {
+	this->count = count;
+	buc_status = BUC_UNKNOWN;
 }

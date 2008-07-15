@@ -29,6 +29,11 @@
 #define MAGENTA 35
 #define CYAN 36
 #define WHITE 37
+/* buc status */
+#define CURSED -1
+#define UNCURSED 0
+#define BLESSED 1
+#define BUC_UNKNOWN 2
 /* alignment */
 #define CHAOTIC -1
 #define NEUTRAL 0
@@ -124,5 +129,8 @@
 #define MESSAGE_STAIRCASE_DOWN "There is a staircase down here."
 #define MESSAGE_OPEN_DOOR "There is an open door here."
 #define MESSAGE_CHOOSE_DIRECTION "In what direction?"
+#define MESSAGE_YOU_SEE_HERE "You see here "
+#define MESSAGE_THINGS_THAT_ARE_HERE "Things that are here:"
+#define MESSAGE_PICK_UP_WHAT "Pick up what?"
 
 #endif

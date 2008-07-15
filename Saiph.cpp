@@ -445,6 +445,13 @@ void Saiph::parseMessages() {
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
 	if (messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
+	if (messages.find(MESSAGE_YOU_SEE_HERE, 0) != string::npos) {
+		/* one item on the floor */
+	} else if (messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0) != string::npos) {
+		/* multiple items on the floor */
+	} else if (messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+		/* attempting to pick up items */
+	}
 }
 
 void Saiph::updateMaps() {

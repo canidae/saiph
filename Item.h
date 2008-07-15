@@ -6,6 +6,8 @@
 class Item;
 
 /* includes */
+#include <string>
+#include "Globals.h"
 
 /* namespace */
 using namespace std;
@@ -14,15 +16,11 @@ using namespace std;
 class Item {
 	public:
 		/* variables */
+		string name;
+		int count;
+		int buc_status;
 
 		/* constructors */
-		Item();
-
-		/* destructor */
-		~Item();
-
-		/* methods */
-
-	private:
+		Item(string name, int count = 1);
 };
 #endif
