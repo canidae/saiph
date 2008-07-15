@@ -57,8 +57,6 @@ class Saiph {
 		int current_level;
 		string command;
 		bool engulfed;
-		vector<Item> inventory;
-		vector<Item> on_ground;
 
 		/* constructors */
 		Saiph(bool remote);

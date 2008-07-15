@@ -407,24 +407,6 @@ void Saiph::inspect() {
 	}
 }
 
-void Saiph::parseMessageItem(const string &message) {
-	char amount[16];
-	char name[512];
-	int matched = sscanf(message.c_str(), GET_SINGLE_ITEM, amount, name);
-	if (matched != 2) {
-		cerr << "ERROR: matched " << matched << ", expected 2" << endl;
-		exit(1);
-	}
-	/* figure out amount of items */
-	int count;
-	if (amount[0] < '0' || amount[0] > '9')
-		count = 1; // "a", "an" or "the" <item>
-	else
-		count = atoi(amount);
-	/* add item to vector */
-	on_ground.push_back(Item(name, count));
-}
-
 void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc.
 	 * we'll also make a list of items on the ground here, if any */
@@ -434,32 +416,6 @@ void Saiph::parseMessages() {
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
 	if (world->messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
-	/* clear items on ground */
-	on_ground.clear();
-	string::size_type pos = world->messages.find(MESSAGE_YOU_SEE_HERE, 0);
-	if (pos != string::npos) {
-		/* one item on the floor */
-		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
-		string::size_type length = world->messages.find(".  ", pos);
-		if (length != string::npos) {
-			length = length - pos;
-			parseMessageItem(world->messages.substr(pos, length));
-		}
-	}
-	pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
-	if (pos != string::npos) {
-		/* multiple items on the floor */
-		pos = world->messages.find("  ", pos);
-		while (pos != string::npos) {
-			pos += 2;
-			string::size_type length = world->messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			parseMessageItem(world->messages.substr(pos, length));
-			pos += length;
-		}
-	}
 }
 
 void Saiph::updateMaps() {

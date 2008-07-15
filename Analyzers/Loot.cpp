@@ -21,63 +21,91 @@ Loot::Loot(Saiph *saiph) {
 	symbols.push_back(IRON_BALL);
 	symbols.push_back(CHAINS);
 	symbols.push_back(VENOM);
-	saiph->registerSymbols(this, symbols);
+	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
 /* methods */
-int Loot::parseMessages(string *messages) {
-	return 0;
-	if (messages->find(LO_THINGS_HERE, 0) != string::npos) {
-		/* multiple items here */
-		action = LO_LOOT;
-		return 100;
-	} else if (messages->find(LO_YOU_SEE, 0) != string::npos) {
-		/* single item here */
-		action = LO_LOOT;
-		return 100;
-	} else if (messages->find(LO_PICK_UP, 0) != string::npos) {
-		/* pick up menu */
-		action = LO_SELECT_ALL;
-		return 100;
-	} else if (messages->find(LO_LITTLE_LIFTING, 0) != string::npos) {
-		action = LO_NO_LOOT;
-		return 100;
-	} else if (messages->find(LO_EXTREME_LIFTING, 0) != string::npos) {
-		action = LO_NO_LOOT;
-		return 100;
-	} else if (messages->find(LO_MUCH_LIFTING, 0) != string::npos) {
-		action = LO_NO_LOOT;
-		return 100;
-	}
-	return 0;
-}
-
-void Loot::analyze(int row, int col, unsigned char symbol) {
-	return;
+void Loot::command(string *command) {
+	*command = action;
 }
 
 int Loot::finish() {
 	return 0;
 }
 
-void Loot::command(string *command) {
-	switch (action) {
-		case LO_LOOT:
-			command->push_back(',');
-			break;
+void Loot::inspect(const Point &point, unsigned char symbol) {
+	return;
+}
 
-		case LO_SELECT_ALL:
-			command->push_back(',');
-			command->push_back(' ');
-			break;
-
-		case LO_NO_LOOT:
-			command->push_back(NO);
-			break;
-
-		default:
-			cerr << "Loot don't know what to do" << endl;
-			exit(1);
-			break;
+int Loot::parseMessages(string *messages) {
+	string::size_type pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
+	if (pos != string::npos) {
+		/* one item on the floor */
+		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
+		string::size_type length = messages->find(".  ", pos);                                                                           
+		if (length != string::npos) {                                                                                                          
+			length = length - pos;
+			int b = saiph->current_branch;
+			int l = saiph->current_level;
+			int r = saiph->world->player.row;
+			int c = saiph->world->player.col;
+			vector<Item> *stash = &stashes[b][l][r][c].items;
+			if (stash->size() > 0) {
+				/* we know about this stash already.
+				 * ditch the previous content of this stash */
+				stash->clear();
+			} else {
+				/* new stash, add it to stash_locations */
+				stash_locations.push_back(Coordinate(b, l, r, c));
+			}
+			parseMessageItem(messages->substr(pos, length), stash);
+		}
 	}
+	pos = messages->find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
+	if (pos != string::npos) {
+		/* multiple items on the floor */
+		int b = saiph->current_branch;
+		int l = saiph->current_level;
+		int r = saiph->world->player.row;
+		int c = saiph->world->player.col;
+		vector<Item> *stash = &stashes[b][l][r][c].items;
+		if (stash->size() > 0) {
+			/* we know about this stash already.
+			 * ditch the previous content of this stash */
+			stash->clear();
+		} else {
+			/* new stash, add it to stash_locations */
+			stash_locations.push_back(Coordinate(b, l, r, c));
+		}
+		pos = messages->find("  ", pos);
+		while (pos != string::npos) {
+			pos += 2;
+			string::size_type length = messages->find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			parseMessageItem(messages->substr(pos, length), stash);
+			pos += length;
+		}
+	}
+	return 0;
+}
+
+/* private methods */
+void Loot::parseMessageItem(const string &message, vector<Item> *stash) {
+	char amount[16];
+	char name[512];
+	int matched = sscanf(message.c_str(), GET_SINGLE_ITEM, amount, name);
+	if (matched != 2) {
+		cerr << "ERROR: matched " << matched << ", expected 2" << endl;
+		exit(1);
+	}
+	/* figure out amount of items */
+	int count;
+	if (amount[0] < '0' || amount[0] > '9')
+		count = 1; // "a", "an" or "the" <item>
+	else    
+		count = atoi(amount);
+	/* add item to stash */
+	stash->push_back(Item(name, count));
 }
