@@ -22,7 +22,7 @@ class Analyzer {
 		/* methods */
 		virtual void command(string *command);
 		virtual int finish();
-		virtual void inspect(const Point &point, unsigned char symbol);
+		virtual void inspect(const Point &point);
 		virtual int parseMessages(string *messages);
 		virtual bool requestAction(const Request &request);
 		virtual int start();

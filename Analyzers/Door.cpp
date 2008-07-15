@@ -6,10 +6,6 @@ Door::Door(Saiph *saiph) : saiph(saiph) {
 	da.direction = ILLEGAL_MOVE;
 	da.dp = NULL;
 	memset(shop_on_level, false, sizeof (shop_on_level));
-	vector<unsigned char> symbols;
-	symbols.push_back(OPEN_DOOR);
-	symbols.push_back(CLOSED_DOOR);
-	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
 /* methods */
@@ -102,7 +98,9 @@ int Door::finish() {
 	return best_priority;
 }
 
-void Door::inspect(const Point &point, unsigned char symbol) {
+void Door::inspect(const Point &point) {
+	if ((unsigned char) saiph->world->view[point.row][point.col] != OPEN_DOOR && (unsigned char) saiph->world->view[point.row][point.col] != CLOSED_DOOR)
+		return; // we only care about doors
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	for (vector<DoorPoint>::iterator d = doors[b][l].begin(); d != doors[b][l].end(); ++d) {

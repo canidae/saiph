@@ -6,11 +6,6 @@ Explore::Explore(Saiph *saiph) : saiph(saiph) {
 	memset(ep_added, false, sizeof (ep_added));
 	memset(visited, false, sizeof (visited));
 	move = ILLEGAL_MOVE;
-	vector<unsigned char> symbols;
-	symbols.push_back(CORRIDOR);
-	symbols.push_back(FLOOR);
-	symbols.push_back(OPEN_DOOR);
-	saiph->registerAnalyzerSymbols(this, symbols);
 }
 
 /* methods */
@@ -128,7 +123,10 @@ int Explore::finish() {
 	return best_priority;
 }
 
-void Explore::inspect(const Point &point, unsigned char symbol) {
+void Explore::inspect(const Point &point) {
+	unsigned char s = saiph->world->view[point.row][point.col];
+	if (s != CORRIDOR && s != FLOOR && s != OPEN_DOOR)
+		return; // we only care about CORRIDOR, FLOOR and OPEN_DOOR
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	if (ep_added[b][l][point.row][point.col])

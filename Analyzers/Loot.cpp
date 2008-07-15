@@ -3,7 +3,19 @@
 /* constructors */
 Loot::Loot(Saiph *saiph) {
 	this->saiph = saiph;
-	vector<unsigned char> symbols;
+}
+
+/* methods */
+void Loot::command(string *command) {
+	*command = action;
+}
+
+int Loot::finish() {
+	return 0;
+}
+
+void Loot::inspect(const Point &point) {
+	/*
 	symbols.push_back(WEAPON);
 	symbols.push_back(ARMOR);
 	symbols.push_back(RING);
@@ -17,23 +29,11 @@ Loot::Loot(Saiph *saiph) {
 	symbols.push_back(GOLD);
 	symbols.push_back(GEM);
 	symbols.push_back(STATUE);
-	/* skipping boulder as that's a special item */
+	// skipping boulder as that's a special item
 	symbols.push_back(IRON_BALL);
 	symbols.push_back(CHAINS);
 	symbols.push_back(VENOM);
-	saiph->registerAnalyzerSymbols(this, symbols);
-}
-
-/* methods */
-void Loot::command(string *command) {
-	*command = action;
-}
-
-int Loot::finish() {
-	return 0;
-}
-
-void Loot::inspect(const Point &point, unsigned char symbol) {
+	*/
 	return;
 }
 

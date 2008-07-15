@@ -158,12 +158,6 @@ void Saiph::farlook(const Point &target) {
 	world->executeCommand(command);
 }
 
-void Saiph::registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols) {
-	/* register which symbols analyzers should analyze */
-	for (vector<unsigned char>::const_iterator s = symbols.begin(); s != symbols.end(); ++s)
-		analyzer_symbols[*s].push_back(analyzer);
-}
-
 bool Saiph::requestAction(const Request &request) {
 	/* request an action from any analyzer */
 	bool status = false;
@@ -401,9 +395,8 @@ void Saiph::dumpMaps() {
 void Saiph::inspect() {
 	/* notify the analyzers about changes */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
-		unsigned char s = world->view[c->row][c->col];
-		for (vector<Analyzer *>::iterator a = analyzer_symbols[s].begin(); a != analyzer_symbols[s].end(); ++a)
-			(*a)->inspect(*c, s);
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+			(*a)->inspect(*c);
 	}
 }
 

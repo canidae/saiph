@@ -66,7 +66,6 @@ class Saiph {
 
 		/* methods */
 		void farlook(const Point &target);
-		void registerAnalyzerSymbols(Analyzer *analyzer, const vector<unsigned char> &symbols);
 		bool requestAction(const Request &request);
 		bool run();
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
@@ -74,7 +73,6 @@ class Saiph {
 	private:
 		/* variables */
 		vector<Analyzer *> analyzers;
-		vector<Analyzer *> analyzer_symbols[UCHAR_MAX + 1];
 		Connection *connection;
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
