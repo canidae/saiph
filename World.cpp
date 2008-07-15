@@ -52,7 +52,6 @@ void World::fetchMessages() {
 	int r = cursor.row;
 	int c = cursor.col;
 	bool more = false;
-	bool one_line = false;
 	menu = false;
 	string::size_type pos = string::npos;
 	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
@@ -107,7 +106,7 @@ void World::fetchMessages() {
 					msg_str.append(2, ' ');
 				}
 				messages.append(msg_str);
-				one_line = true;
+				return; // no messages or messages on 1 line
 			}
 		}
 	}
@@ -118,7 +117,7 @@ void World::fetchMessages() {
 		/* append 2 spaces for later splitting */
 		msg_str.append(2, ' ');
 		messages.append(msg_str);
-	} else if (!one_line) {
+	} else {
 		/* list, add all lines to msg_str, splitted by "  "
 		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
 		for (int r2 = 0; r2 < r; ++r2) {
@@ -139,38 +138,6 @@ void World::fetchMessages() {
 		 * since this is not a menu we'll just ask for the rest of the messages.
 		 * also, don't call executeCommand(), because that clears the "changes" vector */
 		connection->send(" ");
-		update();
-		return;
-	}
-	/* this one is a bit tricky.
-	 * we currently don't have a good way of looking on the ground,
-	 * but we need to do this when we get "there are several/many items here".
-	 * this probably shouldn't be done here, but oh well.
-	 * we'll have to remove "there are several/many objects here", otherwise we'll get a loop */
-	bool ask_for_more = false;
-	pos = messages.find(MESSAGE_MANY_OBJECTS_HERE, 0);
-	if (pos != string::npos) {
-		string::size_type length = messages.find(".  ", pos);
-		if (length != string::npos) {
-			length = length - pos + 3; // we want to remove ".  " too
-			messages.erase(pos, length);
-			ask_for_more = true;
-		}
-	}
-	if (!ask_for_more) {
-		pos = messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0);
-		if (pos != string::npos) {
-			string::size_type length = messages.find(".  ", pos);
-			if (length != string::npos) {
-				length = length - pos + 3; // we want to remove ".  " too
-				messages.erase(pos, length);
-				ask_for_more = true;
-			}
-		}
-	}
-	if (ask_for_more) {
-		cerr << "ASKING FOR MORE" << endl;
-		connection->send(":");
 		update();
 		return;
 	}
