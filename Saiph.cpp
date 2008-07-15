@@ -84,26 +84,12 @@ Saiph::Saiph(bool remote) {
 	pathcost[TRAP] = COST_TRAP;
 	pathcost[WATER] = COST_WATER;
 
-	/* remapping of unique symbols */
-	for (int s = 0; s <= UCHAR_MAX; ++s) {
-		for (int c = 0; c <= UCHAR_MAX; ++c)
-			uniquemap[s][c] = s;
-	}
-	uniquemap[CORRIDOR][CYAN] = IRON_BARS;
-	uniquemap[CORRIDOR][GREEN] = TREE;
-	uniquemap[FLOOR][CYAN] = ICE;
-	uniquemap[FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
-	uniquemap[FOUNTAIN][NO_COLOR] = SINK;
-	uniquemap[GRAVE][YELLOW] = THRONE;
-	uniquemap[HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
-	uniquemap[VERTICAL_WALL][YELLOW] = OPEN_DOOR;
-	uniquemap[WATER][RED] = LAVA;
-
 	/* Analyzers */
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Health(this));
+	analyzers.push_back(new Loot(this));
 }
 
 /* destructor */
@@ -401,8 +387,7 @@ void Saiph::inspect() {
 }
 
 void Saiph::parseMessages() {
-	/* parse messages that can help us find doors/staircases/etc.
-	 * we'll also make a list of items on the ground here, if any */
+	/* parse messages that can help us find doors/staircases/etc. */
 	if (world->messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
 	if (world->messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
@@ -414,7 +399,7 @@ void Saiph::parseMessages() {
 void Saiph::updateMaps() {
 	/* update the various maps */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
-		unsigned char s = uniquemap[(unsigned char) world->view[c->row][c->col]][(unsigned char) world->color[c->row][c->col]];
+		unsigned char s = world->view[c->row][c->col];
 		if (s == SOLID_ROCK)
 			continue; // not interesting (also mess up unlit rooms)
 		if (static_dungeon_symbol[s]) {

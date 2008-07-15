@@ -35,6 +35,7 @@ class Saiph;
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Health.h"
+#include "Analyzers/Loot.h"
 
 /* namespace */
 using namespace std;
@@ -80,7 +81,6 @@ class Saiph {
 		bool monster[UCHAR_MAX + 1];
 		bool passable[UCHAR_MAX + 1];
 		bool static_dungeon_symbol[UCHAR_MAX + 1];
-		unsigned char uniquemap[UCHAR_MAX + 1][UCHAR_MAX + 1];
 
 		/* methods */
 		void dumpMaps();

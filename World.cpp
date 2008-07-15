@@ -13,6 +13,20 @@ World::World(Connection *connection) : connection(connection) {
 	question = false;
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
+        /* remapping of unique symbols */
+        for (int s = 0; s <= UCHAR_MAX; ++s) {
+                for (int c = 0; c <= CHAR_MAX; ++c)
+                        uniquemap[s][c] = s;
+        }
+        uniquemap[CORRIDOR][CYAN] = IRON_BARS;
+        uniquemap[CORRIDOR][GREEN] = TREE;
+        uniquemap[FLOOR][CYAN] = ICE;
+        uniquemap[FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
+        uniquemap[FOUNTAIN][NO_COLOR] = SINK;
+        uniquemap[GRAVE][YELLOW] = THRONE;
+        uniquemap[HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
+        uniquemap[VERTICAL_WALL][YELLOW] = OPEN_DOOR;
+        uniquemap[WATER][RED] = LAVA;
 	/* fetch the first "frame" */
 	update();
 }
@@ -374,9 +388,9 @@ void World::update() {
 					cerr << data << endl;
 					break;
 				}
-				view[cursor.row][cursor.col] = data[pos];
-				addChangedLocation(cursor);
+				view[cursor.row][cursor.col] = uniquemap[(unsigned char) data[pos]][color];
 				this->color[cursor.row][cursor.col] = color;
+				addChangedLocation(cursor);
 				cursor.col++;
 				break;
 		}
