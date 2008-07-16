@@ -28,9 +28,9 @@ int Fight::finish() {
 		if (m->symbol == PET)
 			continue; // we're not fighting pets :)
 		int priority;
-		if (best_symbol == 'e' && best_color == BLUE)
+		if (m->symbol == 'e' && m->color == BLUE)
 			priority = FIGHT_ATTACK_BLUE_E;
-		else if (best_symbol == '@' && best_color == WHITE)
+		else if (m->symbol == '@' && m->color == WHITE)
 			priority = FIGHT_ATTACK_WHITE_AT;
 		else
 			priority = FIGHT_ATTACK_MONSTER;
