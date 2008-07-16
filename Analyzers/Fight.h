@@ -8,6 +8,7 @@
 #define FIGHT_ATTACK_MONSTER 70
 #define FIGHT_ATTACK_BLUE_E 2
 #define FIGHT_ATTACK_WHITE_AT 1
+#define FIGHT_ATTACK_BLUE_AT 1
 
 /* forward declare */
 class Fight;
