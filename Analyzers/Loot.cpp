@@ -155,12 +155,13 @@ int Loot::parseMessages(string *messages) {
 
 /* private methods */
 void Loot::parseMessageItem(const string &message, vector<Item> *stash) {
-	char amount[16];
-	char name[512];
+	char amount[8];
+	char name[128];
 	int matched = sscanf(message.c_str(), GET_SINGLE_ITEM, amount, name);
 	if (matched != 2) {
-		cerr << "ERROR: matched " << matched << ", expected 2" << endl;
-		exit(1);
+		/* this may happen when:
+		 * "Things that are here:  a rothe corpse  16 gold pieces  Something is written here in the dust." */
+		return;
 	}
 	/* figure out amount of items */
 	int count;

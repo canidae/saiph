@@ -1,6 +1,8 @@
 #ifndef LOOT_H
 /* defines */
 #define LOOT_H
+/* used to help pick up a single item */
+#define GET_SINGLE_ITEM "%7s %127[^\t\n]"
 /* messages */
 #define LOOT_LITTLE_LIFTING "You have a little trouble lifting"
 #define LOOT_EXTREME_LIFTING "You have extreme difficulty lifting"

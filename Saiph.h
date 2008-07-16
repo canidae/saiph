@@ -10,8 +10,6 @@
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
-/* used to help pick up a single item */
-#define GET_SINGLE_ITEM "%s %[^\t\n]"
 
 /* forward declare */
 class Saiph;
