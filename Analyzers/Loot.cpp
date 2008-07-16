@@ -29,6 +29,8 @@ void Loot::command(string *command) {
 
 int Loot::finish() {
 	/* figure out which stash to visit, if any */
+	if (action == ":")
+		return 0; // we've already requested ":"
 	int best_distance = INT_MAX;
 	action = "";
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
@@ -140,6 +142,13 @@ int Loot::parseMessages(string *messages) {
 			parseMessageItem(messages->substr(pos, length), stash);
 			pos += length;
 		}
+	}
+	/* if we get "there are several/many objects here" we need to ":".
+	 * if we don't, we'll get an endless loop.
+	 * it's a zero turn action anyways, so we're cool */
+	if (messages->find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos || messages->find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos) {
+		action = ":";
+		return PRIORITY_LOOK;
 	}
 	return 0;
 }

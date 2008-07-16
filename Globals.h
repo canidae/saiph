@@ -124,6 +124,9 @@
 #define ILLEGAL_MONSTER 0
 #define PET 138
 #define PLAYER 139
+/* priorities */
+#define PRIORITY_MAX 1000
+#define PRIORITY_LOOK 1001
 /* messages */
 #define MESSAGE_STAIRCASE_UP "There is a staircase up here.  "
 #define MESSAGE_STAIRCASE_DOWN "There is a staircase down here.  "

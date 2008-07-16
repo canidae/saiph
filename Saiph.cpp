@@ -390,10 +390,16 @@ void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc. */
 	if (world->messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
-	if (world->messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
+	else if (world->messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
-	if (world->messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
+	else if (world->messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
 		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
+
+	/* finally:
+	 * if player is standing on an UNKNOWN_TILE and we didn't get "there's an open door here",
+	 * then it's highly likely we can move diagonally to/from this point */
+	if (map[current_branch][current_level].dungeon[world->player.row][world->player.col] == UNKNOWN_TILE)
+		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
 }
 
 void Saiph::updateMaps() {
