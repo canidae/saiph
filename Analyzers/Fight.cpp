@@ -20,32 +20,37 @@ int Fight::finish() {
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	int best_distance = INT_MAX;
+	int best_priority = -1;
 	unsigned char best_move = ILLEGAL_MOVE;
 	unsigned char best_symbol = ILLEGAL_MONSTER;
 	int best_color = NO_COLOR;
 	for (list<Monster>::iterator m = saiph->monstertracker->monsters[b][l].begin(); m!= saiph->monstertracker->monsters[b][l].end(); ++m) {
 		if (m->symbol == PET)
 			continue; // we're not fighting pets :)
+		int priority;
+		if (best_symbol == 'e' && best_color == BLUE)
+			priority = FIGHT_ATTACK_BLUE_E;
+		else if (best_symbol == '@' && best_color == WHITE)
+			priority = FIGHT_ATTACK_WHITE_AT;
+		else
+			priority = FIGHT_ATTACK_MONSTER;
+		if (priority < best_priority)
+			continue; // we've already found another monster with higher priority
 		int distance = -1;
 		bool straight_line = false;
 		unsigned char move = saiph->shortestPath(*m, true, &distance, &straight_line);
 		if (move == ILLEGAL_MOVE)
 			continue; // can't path to this monster
 		if (distance >= best_distance)
-			continue; // currently we'll fight the nearest monster
+			continue; // we know of a monster closer to us
+		best_priority = priority;
 		best_distance = distance;
 		best_move = move;
 		best_symbol = m->symbol;
 		best_color = m->color;
 	}
-	if (best_move == ILLEGAL_MOVE)
-		return 0; // nothing to fight
 	action = best_move;
-	if (best_symbol == 'e' && best_color == BLUE)
-		return FIGHT_ATTACK_BLUE_E;
-	else if (best_symbol == '@' && best_color == WHITE)
-		return FIGHT_ATTACK_WHITE_AT;
-	return FIGHT_ATTACK_MONSTER;
+	return best_priority;
 }
 
 int Fight::parseMessages(string *messages) {
