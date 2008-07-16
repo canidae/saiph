@@ -42,13 +42,13 @@ int Explore::finish() {
 					priority = EXPLORE_VISIT_CORRIDOR;
 					break;
 				}
-				if (hs == SOLID_ROCK)
+				if (hs == SOLID_ROCK || hs == VERTICAL_WALL || hs == HORIZONTAL_WALL)
 					++count;
-				if (js == SOLID_ROCK)
+				if (js == SOLID_ROCK || js == VERTICAL_WALL || js == HORIZONTAL_WALL)
 					++count;
-				if (ks == SOLID_ROCK)
+				if (ks == SOLID_ROCK || ks == VERTICAL_WALL || ks == HORIZONTAL_WALL)
 					++count;
-				if (ls == SOLID_ROCK)
+				if (ls == SOLID_ROCK || ls == VERTICAL_WALL || ls == HORIZONTAL_WALL)
 					++count;
 				if (count == 3) {
 					/* dead end */
