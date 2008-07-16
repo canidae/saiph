@@ -35,6 +35,7 @@ class Saiph;
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Health.h"
+#include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"
 
 /* namespace */

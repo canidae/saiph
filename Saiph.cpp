@@ -89,6 +89,7 @@ Saiph::Saiph(bool remote) {
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Health(this));
+	analyzers.push_back(new Level(this));
 	analyzers.push_back(new Loot(this));
 }
 
