@@ -5,6 +5,8 @@
 # http://sartak.org/nh/bots.html
 #
 # saiph is GPLv2 licenced.
+#
+# author: Vidar Wahlberg, canidae@exent.net
 
 ##########################################
 
@@ -13,7 +15,7 @@
 # - ghosts/shades are represented by 'X', not ' '
 # - the ']' for mimic is now 'm', if that makes a difference
 # * objects
-# - illegal object is now represented by 'm' (mimic?)
+# - illegal object is represented by 'm'
 # - boulders are represented by '0', not '`'
 # - iron balls are represented by '`', not '0'
 # - chains are represented by '`', not '_'
@@ -24,7 +26,7 @@
 # - sinks are represented by '{', not '#'
 # - raised drawbridges are represented by '8'. not '#'
 # * traps
-# - web is now represented by '^', not '"'
+# - web is represented by '^', not '"'
 OPTIONS=align:lawful
 OPTIONS=!autopickup
 OPTIONS=boulder:0
