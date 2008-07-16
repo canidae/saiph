@@ -32,6 +32,8 @@ int Fight::finish() {
 			priority = FIGHT_ATTACK_BLUE_E;
 		else if (m->symbol == '@' && m->color == WHITE)
 			priority = FIGHT_ATTACK_WHITE_AT;
+		else if (m->symbol == '@' && m->color == BLUE)
+			priority = FIGHT_ATTACK_BLUE_AT;
 		else
 			priority = FIGHT_ATTACK_MONSTER;
 		if (priority < best_priority)
