@@ -28,18 +28,39 @@ void Loot::command(string *command) {
 }
 
 int Loot::finish() {
+	/* figure out which stash to visit, if any */
+	int best_distance = INT_MAX;
+	action = "";
+	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
+		if (v->row == saiph->world->player.row && v->col == saiph->world->player.col) {
+			/* we're on the stash, remove it from visit list */
+			v = visit.erase(v);
+			continue;
+		}
+		int distance = -1;
+		bool straight_line = false;
+		unsigned char move = saiph->shortestPath(*v, false, &distance, &straight_line);
+		if (distance < best_distance) {
+			best_distance = distance;
+			action = move;
+		}
+		++v;
+	}
+	if (best_distance < INT_MAX)
+		return 50;
 	return 0;
 }
 
 void Loot::inspect(const Point &point) {
 	unsigned char s = saiph->world->view[point.row][point.col];
+	int b = saiph->current_branch;
+	int l = saiph->current_level;
 	if (check_item[s]) {
 		/* we're interested in this symbol */
-		if (stashes[saiph->current_branch][saiph->current_level][point.row][point.col].items.size() > 0) {
+		if (stashes[b][l][point.row][point.col].items.size() > 0) {
 			/* we know of a stash here already */
-			if (stashes[saiph->current_branch][saiph->current_level][point.row][point.col].top_item == s) {
-				/* top item is the same as last time we checked.
-				 * FIXME: is there any point checking the place again? */
+			if (stashes[b][l][point.row][point.col].top_item == s) {
+				/* top item is the same as last time we checked. */
 				return;
 			} else {
 				/* top item changed, we should check this stash again */
@@ -47,17 +68,25 @@ void Loot::inspect(const Point &point) {
 		} else {
 			/* we've not seen a stash here before, we should check */
 		}
-	} else if (stashes[saiph->current_branch][saiph->current_level][point.row][point.col].items.size() > 0) {
+	} else if (s == saiph->map[b][l].dungeon[point.row][point.col] && stashes[b][l][point.row][point.col].items.size() > 0) {
 		/* there used to be a stash here, but now it's gone */
-		stashes[saiph->current_branch][saiph->current_level][point.row][point.col].items.clear();
+		stashes[b][l][point.row][point.col].items.clear();
 		for (list<Coordinate>::iterator sl = stash_locations.begin(); sl != stash_locations.end(); ++sl) {
-			if (sl->branch == saiph->current_branch && sl->level == saiph->current_level && sl->row == point.row && sl->col == point.col) {
+			if (sl->branch == b && sl->level == l && sl->row == point.row && sl->col == point.col) {
 				/* found the stash, erase it */
 				stash_locations.erase(sl);
-				break;
+				return;
 			}
 		}
+		/* this never happens */
+		return;
+	} else {
+		/* we neither check this item, nor have we seen a stash here before */
+		return;
 	}
+	/* visit stash (again) */
+	stashes[b][l][point.row][point.col].top_item = s;
+	visit.push_back(point);
 	return;
 }
 
