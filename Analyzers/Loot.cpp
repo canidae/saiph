@@ -42,7 +42,7 @@ int Loot::finish() {
 		int distance = -1;
 		bool straight_line = false;
 		unsigned char move = saiph->shortestPath(*v, false, &distance, &straight_line);
-		if (distance < best_distance) {
+		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
 			action = move;
 		}
