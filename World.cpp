@@ -42,7 +42,7 @@ bool World::executeCommand(const string &command) {
 		/* huh? no command? */
 		return false;
 	}
-	connection->send(command);
+	connection->transmit(command);
 	update();
 	return true;
 }
@@ -151,7 +151,7 @@ void World::fetchMessages() {
 		/* there are "--More--" messages.
 		 * since this is not a menu we'll just ask for the rest of the messages.
 		 * also, don't call executeCommand(), because that clears the "changes" vector */
-		connection->send(" ");
+		connection->transmit(" ");
 		update();
 		return;
 	}
@@ -337,6 +337,10 @@ void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
+	cerr << "WORLD: ";
+	for (int a = 0; a < data_size; ++a)
+		cerr << data[a];
+	cerr << endl;
 	/* print world
 	 * this must be done here because if we get --More-- messages we'll update again */
 	cout << data;

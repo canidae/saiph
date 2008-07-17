@@ -59,7 +59,7 @@ class Saiph {
 		bool engulfed;
 
 		/* constructors */
-		Saiph(bool remote);
+		Saiph(int interface);
 
 		/* destructor */
 		~Saiph();

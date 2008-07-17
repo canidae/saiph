@@ -1,8 +1,12 @@
 #include "Saiph.h"
 
 /* constructors */
-Saiph::Saiph(bool remote) {
-	connection = new Connection(remote);
+Saiph::Saiph(int interface) {
+	connection = Connection::create(interface);
+	if (connection == NULL) {
+		cout << "ERROR: Don't know what interface this is: " << interface << endl;
+		exit(1);
+	}
 	world = new World(connection);
 	monstertracker = new MonsterTracker(this);
 
@@ -161,8 +165,16 @@ bool Saiph::run() {
 	current_branch = 0;
 	current_level = world->player.dungeon;
 
+	/* check if we're engulfed */
+	int r = world->player.row;
+	int c = world->player.col;
+	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->view[r - 1][c - 1] == '/' && world->view[r - 1][c + 1] == '\\' && world->view[r + 1][c - 1] == '\\' && world->view[r + 1][c + 1] == '/')
+		engulfed = true;
+	else
+		engulfed = false;
+
 	/* update maps */
-	if (!world->question && !world->menu)
+	if (!world->question && !world->menu && !engulfed)
 		updateMaps();
 
 	/* print stuff so we see what we're doing */
@@ -171,14 +183,6 @@ bool Saiph::run() {
 	/* reset command */
 	int best_analyzer = -1;
 	int best_priority = 0;
-
-	/* check if we're engulfed */
-	int r = world->player.row;
-	int c = world->player.col;
-	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->view[r - 1][c - 1] == '/' && world->view[r - 1][c + 1] == '\\' && world->view[r + 1][c - 1] == '\\' && world->view[r + 1][c + 1] == '/')
-		engulfed = true;
-	else
-		engulfed = false;
 
 	/* deal with messages */
 	if (world->messages.size() > 0) {
@@ -552,7 +556,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(false);
+	Saiph *saiph = new Saiph(CONNECTION_TELNET);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

@@ -57,7 +57,7 @@ class World {
 		Connection *connection;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
-		ssize_t data_size;
+		int data_size;
 		string msg_str; // helps fetching messages
 		unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1]; // remapping ambigous symbols
 
