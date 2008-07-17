@@ -531,8 +531,8 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 			 * it's bound to cause issues */
 			if (sc1 != BOULDER && sc2 != BOULDER)
 				return false; // neither corner is a boulder, we may not pass
-			//else if (in_sokoban)
-			//	return false;
+			else if (current_branch == BRANCH_SOKOBAN)
+				return false;
 		}
 		//if (polymorphed_to_grid_bug)
 		//	return false;
