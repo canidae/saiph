@@ -135,6 +135,6 @@ void Telnet::stop() {
 int Telnet::transmit(const char *data, int length) {
 	cerr << "Sending: ";
 	for (int a = 0; a < length; ++a)
-		cerr << data[a] << endl;
+		cerr << data[a];
 	return send(sock, data, length, 0);
 }
