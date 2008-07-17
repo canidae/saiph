@@ -13,9 +13,9 @@
 #define DOOR_SHOP_ON_LEVEL3 "You hear Neiman and Marcus arguing!"
 #define DOOR_RESISTS "The door resists!"
 /* priorities */
-#define DOOR_KICK_PRIORITY 25
+#define DOOR_KICK_PRIORITY 35
 #define DOOR_OPEN_PRIORITY 45
-#define DOOR_PICK_PRIORITY 35
+#define DOOR_PICK_PRIORITY 40
 /* actions */
 #define DOOR_KICK 4 // ctrl-d
 #define DOOR_OPEN 'o'
