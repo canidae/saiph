@@ -118,7 +118,7 @@ void Door::inspect(const Point &point) {
 int Door::parseMessages(string *messages) {
 	if (da.action != ILLEGAL_ACTION && messages->find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		da.action = ILLEGAL_ACTION;
-		return DOOR_CONTINUE_ACTION;
+		return PRIORITY_CONTINUE_ACTION;
 	//} else if (messages->find(DOOR_CLOSES, 0) != string::npos) {
 	//} else if (messages->find(DOOR_KICK_FAIL, 0) != string::npos) {
 	//} else if (messages->find(DOOR_KICK_OPEN, 0) != string::npos) {

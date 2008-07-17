@@ -7,7 +7,6 @@
 #define HA_ENGRAVE_DUST_ADD "What do you want to add to the writing in the dust here?" // should be global
 #define HA_ENGRAVE_WITH "What do you want to write with?" // should be global
 /* priorities */
-#define HEALTH_CONTINUE_ACTION 1000
 #define HEALTH_PRAY_FOR_FOOD 1000
 #define HEALTH_ENGRAVE_FOR_HP 900
 #define HEALTH_REST_FOR_HP 800

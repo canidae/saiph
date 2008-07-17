@@ -67,5 +67,5 @@ int Health::parseMessages(string *messages) {
 		action = YES;
 	else
 		return 0;
-	return HEALTH_CONTINUE_ACTION;
+	return PRIORITY_CONTINUE_ACTION;
 }

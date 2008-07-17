@@ -4,7 +4,6 @@
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
 /* priorities */
-#define FIGHT_CONTINUE_ACTION 1000
 #define FIGHT_ATTACK_MONSTER 70
 #define FIGHT_ATTACK_BLUE_E 2
 #define FIGHT_ATTACK_WHITE_AT 1

@@ -58,7 +58,7 @@ int Fight::finish() {
 int Fight::parseMessages(string *messages) {
 	if (messages->find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
 		action = YES;
-		return FIGHT_CONTINUE_ACTION;
+		return PRIORITY_CONTINUE_ACTION;
 	}
 	return 0;
 }
