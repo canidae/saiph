@@ -36,7 +36,6 @@ Telnet::Telnet() {
 	/* that last command we sent to will send us data back.
 	 * let's discard it */
 	char discard[4096];
-	cerr << "REQUESTING DISCARDED DATA" << endl;
 	retrieve(discard, 4096);
 
 	/* and let's log in */
@@ -60,11 +59,6 @@ int Telnet::retrieve(char *buffer, int count) {
 	int tries = 5;
 	while (more_data && tries >= 0) {
 		retrieved += recv(sock, &buffer[retrieved], count, 0);
-		cerr << "received " << retrieved << " bytes" << endl;
-		cerr << "DATA: ";
-		for (int a = 0; a < retrieved; ++a)
-			cerr << buffer[a];
-		cerr << endl;
 		for (int a = retrieved - 3; a >= 0; --a) {
 			/* search for pong backwards (we're expecting pong to be last).
 			 * we do it like this because if we find it somewhere else than
@@ -76,7 +70,6 @@ int Telnet::retrieve(char *buffer, int count) {
 					 * however, did we receive something else than the pong? */
 					if (retrieved > 3) {
 						/* yes, we did, good! */
-						cerr << "YES IT IS" << endl;
 						more_data = false;
 						/* remove pong */
 						buffer[--retrieved] = '\0';
@@ -84,7 +77,6 @@ int Telnet::retrieve(char *buffer, int count) {
 						buffer[--retrieved] = '\0';
 					} else {
 						/* no, we didn't. hmmm */
-						cerr << "ONLY PONG!" << endl;
 						retrieved = 0;
 						transmit(ping, 3);
 						--tries; // also decrease this, in case we're not getting any data */
@@ -92,7 +84,6 @@ int Telnet::retrieve(char *buffer, int count) {
 				} else {
 					/* no, it isn't.
 					 * we should send a new ping */
-					cerr << "NO IT ISN'T" << endl;
 					transmit(ping, 3);
 					/* and we'll have to remove the pong reply, gah */
 					for (int b = a; b < retrieved - 3; ++b)
@@ -102,7 +93,6 @@ int Telnet::retrieve(char *buffer, int count) {
 				}
 			}
 		}
-		cerr << "more_data: " << more_data << endl;
 	}
 	if (tries < 0)
 		cerr << "WARNING: We were expecting data, but got none. Fix this bug, please!" << endl;
@@ -143,6 +133,8 @@ void Telnet::stop() {
 
 /* private methods */
 int Telnet::transmit(const char *data, int length) {
-	cerr << "Sending: " << data << endl;
+	cerr << "Sending: ";
+	for (int a = 0; a < length; ++a)
+		cerr << data[a] << endl;
 	return send(sock, data, length, 0);
 }

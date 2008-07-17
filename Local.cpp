@@ -60,7 +60,6 @@ int Local::retrieve(char *buffer, int count) {
 	data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
 	if (data_received != -1)
 		data_received_total += data_received;
-	cerr << "reading " << data_received << " | " << data_received_total << endl;
 	while (data_received_total % READ_LIMIT == 0 && data_received != -1) {
 		/* it seems to return max 4095 chars */
 		usleep(100000);
@@ -69,9 +68,6 @@ int Local::retrieve(char *buffer, int count) {
 			data_received_total += data_received;
 		cerr << "trying to continue reading stream: " << data_received << " | " << data_received_total << endl;
 	}
-	for (int a = 0; a < data_received_total; ++a)
-		cerr << buffer[a];
-	cerr << endl;
 	if (data_received_total < (ssize_t) count)
 		buffer[data_received_total] = '\0';
 	return (int) data_received_total;

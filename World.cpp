@@ -337,13 +337,10 @@ void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
-	cerr << "WORLD: ";
-	for (int a = 0; a < data_size; ++a)
-		cerr << data[a];
-	cerr << endl;
 	/* print world
 	 * this must be done here because if we get --More-- messages we'll update again */
-	cout << data;
+	for (int a = 0; a < data_size; ++a)
+		cout << data[a];
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:
