@@ -96,6 +96,14 @@ int Explore::finish() {
 				}
 				break;
 
+			case UNKNOWN_TILE:
+			case UNKNOWN_TILE_DIAGONALLY_PASSABLE:
+				if (!visited[b][l][e->row][e->col]) {
+					/* visit this place */
+					priority = EXPLORE_VISIT_UNKNOWN_TILE;
+					break;;
+				}
+
 			default:
 				/* this never happens */
 				e = explore.erase(e);
@@ -125,8 +133,8 @@ int Explore::finish() {
 
 void Explore::inspect(const Point &point) {
 	unsigned char s = saiph->world->view[point.row][point.col];
-	if (s != CORRIDOR && s != FLOOR && s != OPEN_DOOR)
-		return; // we only care about CORRIDOR, FLOOR and OPEN_DOOR
+	if (s != CORRIDOR && s != FLOOR && s != OPEN_DOOR && s != UNKNOWN_TILE && s != UNKNOWN_TILE_DIAGONALLY_PASSABLE)
+		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	if (ep_added[b][l][point.row][point.col])

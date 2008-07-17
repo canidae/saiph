@@ -349,11 +349,13 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << '@';
-			else if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
+				cout << (unsigned char) 27 << "[35m";
+			if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
 			else
 				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+			if (r == world->player.row && c == world->player.col)
+				cout << (unsigned char) 27 << "[m";
 		}
 	}
 	/* world map as the bot sees it */
@@ -361,9 +363,10 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << '@';
-			else
-				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+				cout << (unsigned char) 27 << "[35m";
+			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+			if (r == world->player.row && c == world->player.col)
+				cout << (unsigned char) 27 << "[m";
 		}
 	}
 	/* path map */
@@ -372,11 +375,13 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			//cout << (unsigned char) (pathmap[r][c].cost % 96 + 32);
 			if (r == world->player.row && c == world->player.col)
-				cout << '@';
-			else if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
+				cout << (unsigned char) 27 << "[35m";
+			if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
 				cout << (unsigned char) pathmap[r][c].move;
 			else
 				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+			if (r == world->player.row && c == world->player.col)
+				cout << (unsigned char) 27 << "[m";
 		}
 	}
 	/* return cursor back to where it was */
@@ -532,7 +537,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 			if (sc1 != BOULDER && sc2 != BOULDER)
 				return false; // neither corner is a boulder, we may not pass
 			else if (current_branch == BRANCH_SOKOBAN)
-				return false;
+				return false; // in sokoban we can't pass by boulders diagonally
 		}
 		//if (polymorphed_to_grid_bug)
 		//	return false;
