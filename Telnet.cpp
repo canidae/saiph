@@ -79,7 +79,9 @@ int Telnet::retrieve(char *buffer, int count) {
 						cerr << "YES IT IS" << endl;
 						more_data = false;
 						/* remove pong */
-						retrieved -= 3;
+						buffer[--retrieved] = '\0';
+						buffer[--retrieved] = '\0';
+						buffer[--retrieved] = '\0';
 					} else {
 						/* no, we didn't. hmmm */
 						cerr << "ONLY PONG!" << endl;
