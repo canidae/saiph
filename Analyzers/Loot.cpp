@@ -100,6 +100,7 @@ void Loot::parseMessages(string *messages) {
 	string::size_type pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
 	if (pos != string::npos) {
 		/* one item on the floor */
+		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
 		string::size_type length = messages->find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
@@ -125,7 +126,7 @@ void Loot::parseMessages(string *messages) {
 			/* new stash, add it to stash_locations */
 			stash_locations.push_back(Coordinate(b, l, r, c));
 		}
-		pos = messages->find("  ", pos);
+		pos = messages->find("  ", pos + 1);
 		while (pos != string::npos) {
 			pos += 2;
 			string::size_type length = messages->find("  ", pos);
@@ -147,6 +148,7 @@ void Loot::parseMessages(string *messages) {
 	if (stash->size() > 0) {
 		/* announce what's on the ground to the other analyzers */
 		for (vector<Item>::iterator i = stash->begin(); i != stash->end(); ++i) {
+			announce.announce = ANNOUNCE_ITEM_ON_GROUND;
 			announce.data = i->name;
 			announce.value1 = i->count;
 			saiph->announce(announce);
