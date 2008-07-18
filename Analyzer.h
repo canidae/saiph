@@ -24,7 +24,7 @@ class Analyzer {
 		virtual int finish();
 		virtual void inspect(const Point &point);
 		virtual int parseMessages(string *messages);
-		virtual bool requestAction(Request *request);
+		virtual bool requestAction(const Request &request);
 		virtual int start();
 };
 #endif

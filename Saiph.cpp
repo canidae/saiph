@@ -148,7 +148,7 @@ void Saiph::farlook(const Point &target) {
 	world->executeCommand(command);
 }
 
-bool Saiph::requestAction(Request *request) {
+bool Saiph::requestAction(const Request &request) {
 	/* request an action from any analyzer */
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {

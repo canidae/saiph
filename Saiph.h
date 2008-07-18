@@ -66,7 +66,7 @@ class Saiph {
 
 		/* methods */
 		void farlook(const Point &target);
-		bool requestAction(Request *request);
+		bool requestAction(const Request &request);
 		bool run();
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
 
