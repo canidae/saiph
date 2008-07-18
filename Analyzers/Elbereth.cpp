@@ -77,7 +77,7 @@ bool Elbereth::requestAction(const Request &request) {
 			/* we know what's here */
 			if (((burned || digged) && elbereth_count > 0) || (dusted && elbereth_count >= 3)) {
 				/* we should rest */
-				action = "10.";
+				action = "20.";
 				priority = request.priority;
 				return true;
 			} else if (!burned && !digged && elbereth_count < 3) {

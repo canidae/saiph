@@ -92,18 +92,17 @@ void Loot::inspect(const Point &point) {
 }
 
 void Loot::parseMessages(string *messages) {
+	int b = saiph->current_branch;
+	int l = saiph->current_level;
+	int r = saiph->world->player.row;
+	int c = saiph->world->player.col;
+	vector<Item> *stash = &stashes[b][l][r][c].items;
 	string::size_type pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
 	if (pos != string::npos) {
 		/* one item on the floor */
-		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
-		string::size_type length = messages->find(".  ", pos);                                                                           
-		if (length != string::npos) {                                                                                                          
+		string::size_type length = messages->find(".  ", pos);
+		if (length != string::npos) {
 			length = length - pos;
-			int b = saiph->current_branch;
-			int l = saiph->current_level;
-			int r = saiph->world->player.row;
-			int c = saiph->world->player.col;
-			vector<Item> *stash = &stashes[b][l][r][c].items;
 			if (stash->size() > 0) {
 				/* we know about this stash already.
 				 * ditch the previous content of this stash */
@@ -118,11 +117,6 @@ void Loot::parseMessages(string *messages) {
 	pos = messages->find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
 	if (pos != string::npos) {
 		/* multiple items on the floor */
-		int b = saiph->current_branch;
-		int l = saiph->current_level;
-		int r = saiph->world->player.row;
-		int c = saiph->world->player.col;
-		vector<Item> *stash = &stashes[b][l][r][c].items;
 		if (stash->size() > 0) {
 			/* we know about this stash already.
 			 * ditch the previous content of this stash */
@@ -148,8 +142,11 @@ void Loot::parseMessages(string *messages) {
 	if (messages->find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos || messages->find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos) {
 		action = ":";
 		priority = PRIORITY_LOOK;
+		return;
 	}
-	return;
+	if (stash->size() > 0) {
+		/* we should ask other analyzers if they want the stuff in this stash */
+	}
 }
 
 /* private methods */
@@ -166,7 +163,7 @@ void Loot::parseMessageItem(const string &message, vector<Item> *stash) {
 	int count;
 	if (amount[0] < '0' || amount[0] > '9')
 		count = 1; // "a", "an" or "the" <item>
-	else    
+	else
 		count = atoi(amount);
 	/* add item to stash */
 	stash->push_back(Item(name, count));
