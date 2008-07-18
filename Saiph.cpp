@@ -184,17 +184,15 @@ bool Saiph::run() {
 	int best_priority = 0;
 
 	/* deal with messages */
-	if (world->messages.size() > 0) {
-		cerr << "MESSAGES: '" << world->messages << "'" << endl;
-		/* global parsing */
-		parseMessages();
-		/* then analyzer parsing */
-		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-			int priority = analyzers[a]->parseMessages(&world->messages);
-			if (priority > best_priority) {
-				best_analyzer = a;
-				best_priority = priority;
-			}
+	cerr << "MESSAGES: '" << world->messages << "'" << endl;
+	/* global parsing */
+	parseMessages();
+	/* then analyzer parsing */
+	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
+		int priority = analyzers[a]->parseMessages(&world->messages);
+		if (priority > best_priority) {
+			best_analyzer = a;
+			best_priority = priority;
 		}
 	}
 
@@ -348,7 +346,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[36m@" << (unsigned char) 27 << "[m";
+				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
 			else
@@ -360,7 +358,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[36m";
+				cout << (unsigned char) 27 << "[35m";
 			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[m";
@@ -371,7 +369,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[36m@" << (unsigned char) 27 << "[m";
+				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
 				cout << (unsigned char) pathmap[r][c].move;
 			else
