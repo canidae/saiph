@@ -159,6 +159,8 @@ void World::fetchMessages() {
 				msg_str.append(1, ' '); // this is crack to make <You read:"> into <You read: ">
 			messages.append(msg_str);
 		}
+		if (!add_spaces)
+			messages.append(2, ' '); // <You read: "....".You hear a slow drip.  > fix, adds spaces before "You hear..."
 	}
 	if (more) {
 		/* there are "--More--" messages.
