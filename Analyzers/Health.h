@@ -15,6 +15,7 @@
 class Health;
 
 /* includes */
+#include <string>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Saiph.h"

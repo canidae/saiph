@@ -22,7 +22,7 @@ int Analyzer::parseMessages(string *messages) {
 	return 0;
 }
 
-bool Analyzer::requestAction(const Request &request) {
+bool Analyzer::requestAction(Request *request) {
 	return false;
 }
 

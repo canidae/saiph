@@ -145,11 +145,10 @@ void Saiph::farlook(const Point &target) {
 		command.push_back(move);
 	}
 	command.push_back(',');
-	cerr << command << endl;
 	world->executeCommand(command);
 }
 
-bool Saiph::requestAction(const Request &request) {
+bool Saiph::requestAction(Request *request) {
 	/* request an action from any analyzer */
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
@@ -186,7 +185,7 @@ bool Saiph::run() {
 
 	/* deal with messages */
 	if (world->messages.size() > 0) {
-		cerr << "MESSAGES: " << world->messages << endl;
+		cerr << "MESSAGES: '" << world->messages << "'" << endl;
 		/* global parsing */
 		parseMessages();
 		/* then analyzer parsing */
@@ -349,7 +348,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[32m@" << (unsigned char) 27 << "[m";
+				cout << (unsigned char) 27 << "[31m@" << (unsigned char) 27 << "[m";
 			else if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
 				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
 			else
@@ -361,7 +360,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[32m";
+				cout << (unsigned char) 27 << "[31m";
 			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[m";
@@ -372,7 +371,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[32m@" << (unsigned char) 27 << "[m";
+				cout << (unsigned char) 27 << "[31m@" << (unsigned char) 27 << "[m";
 			else if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
 				cout << (unsigned char) pathmap[r][c].move;
 			else

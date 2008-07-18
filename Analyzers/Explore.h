@@ -19,6 +19,7 @@ class Explore;
 
 /* includes */
 #include <list>
+#include <string>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Point.h"
