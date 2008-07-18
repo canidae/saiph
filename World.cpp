@@ -132,9 +132,17 @@ void World::fetchMessages() {
 		msg_str.append(2, ' ');
 		messages.append(msg_str);
 	} else {
-		/* list, add all lines to msg_str, splitted by "  "
-		 * no point adding last row, it just contain "--More--", "(end)" or "(1 of 2)" */
-		for (int r2 = 0; r2 < r; ++r2) {
+		/* if there's something else than ' ' before "--More--",
+		 * then we may have a line that's wrapped.
+		 * otherwise it's a list */
+		bool add_spaces = true;
+		if (more && view[r][c] != ' ') {
+			/* text wrapped over more than one line.
+			 * set c to 0, don't add spaces and parse like a list */
+			c = 0;
+			add_spaces = false;
+		}
+		for (int r2 = 0; r2 <= r; ++r2) {
 			msg_str = &view[r2][c];
 			/* trim */
 			string::size_type fns = msg_str.find_first_not_of(" ");
@@ -142,8 +150,13 @@ void World::fetchMessages() {
 			if (fns == string::npos || lns == string::npos || fns >= lns)
 				continue; // blank line?
 			msg_str = msg_str.substr(fns, lns - fns + 1);
-			/* append 2 spaces for later splitting */
-			msg_str.append(2, ' ');
+			/* remove "--More--" if last line */
+			if (!add_spaces && r == r2 && msg_str.size() >= MORE_LENGTH)
+				msg_str.erase(msg_str.size() - MORE_LENGTH);
+			if (add_spaces)
+				msg_str.append(2, ' '); // append 2 spaces for later splitting
+			else if (r2 == 0)
+				msg_str.append(1, ' '); // this is crack to make <You read:"> into <You read: ">
 			messages.append(msg_str);
 		}
 	}
@@ -339,11 +352,12 @@ void World::update() {
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
-	cerr << "[DATA    ] ";
-	for (int a = 0; a < data_size; ++a) {
+	/* also, we do this in two loops because otherwise it flickers a lot */
+	for (int a = 0; a < data_size; ++a)
 		cout << data[a];
+	cerr << "[DATA    ] ";
+	for (int a = 0; a < data_size; ++a)
 		cerr << data[a];
-	}
 	cerr << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
