@@ -60,9 +60,9 @@ int Health::parseMessages(string *messages) {
 	if (messages->find(HA_ENGRAVE_WITH, 0) != string::npos)
 		action = HANDS;
 	else if (messages->find(HA_ENGRAVE_DUST, 0) != string::npos)
-		action = ELBERETH;
+		action = ELBERETH "\n";
 	else if (messages->find(HA_ENGRAVE_DUST_ADD, 0) != string::npos)
-		action = ELBERETH;
+		action = ELBERETH "\n";
 	else if (messages->find(HA_ENGRAVE_ADD, 0) != string::npos)
 		action = YES;
 	else
