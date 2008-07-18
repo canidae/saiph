@@ -37,7 +37,7 @@ bool World::executeCommand(const string &command) {
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
 		changed[c->row][c->col] = false;
 	changes.clear();
-	messages.clear();
+	messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */
 		return false;
@@ -398,6 +398,9 @@ void World::update() {
 	}
 
 	fetchMessages();
+
+	if (messages == "  ")
+		messages.clear(); // no messages
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
