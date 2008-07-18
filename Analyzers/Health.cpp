@@ -27,7 +27,7 @@ void Health::finish() {
 		request.request = REQUEST_ELBERETH_OR_REST;
 		request.priority = HEALTH_REST_FOR_HP;
 		resting = true;
-		if (!saiph->requestAction(request)) {
+		if (!saiph->request(request)) {
 			/* noone would handle our request.
 			 * we're bones */
 		}
@@ -38,7 +38,7 @@ void Health::finish() {
 		} else {
 			request.request = REQUEST_ELBERETH_OR_REST;
 			request.priority = HEALTH_REST_FOR_HP;
-			if (!saiph->requestAction(request)) {
+			if (!saiph->request(request)) {
 				/* noone would handle our request.
 				 * we're bones */
 			}

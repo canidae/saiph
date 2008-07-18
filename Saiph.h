@@ -19,6 +19,7 @@ class Saiph;
 #include <string>
 #include <vector>
 #include "Analyzer.h"
+#include "Announce.h"
 #include "Connection.h"
 #include "Globals.h"
 #include "Item.h"
@@ -66,8 +67,9 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
+		void announce (const Announce &announce);
 		void farlook(const Point &target);
-		bool requestAction(const Request &request);
+		bool request(const Request &request);
 		bool run();
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
 

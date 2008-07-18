@@ -108,6 +108,12 @@ Saiph::~Saiph() {
 }
 
 /* methods */
+void Saiph::announce(const Announce &announce) {
+	/* announce something to other analyzers */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->announce(announce);
+}
+
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	command.push_back(';');
@@ -149,11 +155,11 @@ void Saiph::farlook(const Point &target) {
 	world->executeCommand(command);
 }
 
-bool Saiph::requestAction(const Request &request) {
+bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->requestAction(request) && !status)
+		if ((*a)->request(request) && !status)
 			status = true;
 	}
 	return status;

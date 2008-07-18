@@ -66,7 +66,7 @@ void Elbereth::parseMessages(string *messages) {
 	}
 }
 
-bool Elbereth::requestAction(const Request &request) {
+bool Elbereth::request(const Request &request) {
 	if (request.request == REQUEST_ELBERETH_OR_REST) {
 		if (!did_look && !burned && !digged && !dusted) {
 			/* we'll need to look first, which means set action & priority and return true */

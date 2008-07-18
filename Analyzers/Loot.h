@@ -56,6 +56,7 @@ class Loot : public Analyzer {
 		Stash stashes[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		list<Coordinate> stash_locations;
 		list<Point> visit;
+		Announce announce;
 
 		/* methods */
 		void parseMessageItem(const string &message, vector<Item> *stash);

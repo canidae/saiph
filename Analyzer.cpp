@@ -12,6 +12,9 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
+void Analyzer::announce(const Announce &announce) {
+}
+
 void Analyzer::command(string *command) {
 }
 
@@ -24,7 +27,7 @@ void Analyzer::inspect(const Point &point) {
 void Analyzer::parseMessages(string *messages) {
 }
 
-bool Analyzer::requestAction(const Request &request) {
+bool Analyzer::request(const Request &request) {
 	return false;
 }
 

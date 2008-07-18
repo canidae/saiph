@@ -145,7 +145,12 @@ void Loot::parseMessages(string *messages) {
 		return;
 	}
 	if (stash->size() > 0) {
-		/* we should ask other analyzers if they want the stuff in this stash */
+		/* announce what's on the ground to the other analyzers */
+		for (vector<Item>::iterator i = stash->begin(); i != stash->end(); ++i) {
+			announce.data = i->name;
+			announce.value1 = i->count;
+			saiph->announce(announce);
+		}
 	}
 }
 
