@@ -20,9 +20,6 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph) {
 	check_item[IRON_BALL] = true;
 	check_item[CHAINS] = true;
 	check_item[VENOM] = true;
-
-	/* FIXME
-	 * top_item must be reset */
 }
 
 /* methods */
