@@ -90,6 +90,7 @@ Saiph::Saiph(int interface) {
 
 	/* Analyzers */
 	analyzers.push_back(new Door(this));
+	analyzers.push_back(new Elbereth(this));
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Health(this));
@@ -179,32 +180,22 @@ bool Saiph::run() {
 	/* print stuff so we see what we're doing */
 	dumpMaps();
 
-	/* reset command */
-	int best_analyzer = -1;
-	int best_priority = 0;
+	/* clear analyzers priority */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* deal with messages */
-	cerr << "MESSAGES: '" << world->messages << "'" << endl;
+	cerr << "[MESSAGES] '" << world->messages << "'" << endl;
 	/* global parsing */
 	parseMessages();
 	/* then analyzer parsing */
-	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-		int priority = analyzers[a]->parseMessages(&world->messages);
-		if (priority > best_priority) {
-			best_analyzer = a;
-			best_priority = priority;
-		}
-	}
+	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
+		analyzers[a]->parseMessages(&world->messages);
 
 	/* call start() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-			int priority = analyzers[a]->start();
-			if (priority > best_priority) {
-				best_analyzer = a;
-				best_priority = priority;
-			}
-		}
+		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
+			analyzers[a]->start();
 	}
 
 	/* inspect the dungeon */
@@ -213,12 +204,17 @@ bool Saiph::run() {
 
 	/* call finish() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-			int priority = analyzers[a]->finish();
-			if (priority > best_priority) {
-				best_analyzer = a;
-				best_priority = priority;
-			}
+		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
+			analyzers[a]->finish();
+	}
+
+	/* check if we got a command */
+	int best_analyzer = -1;
+	int best_priority = ILLEGAL_PRIORITY;
+	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
+		if (analyzers[a]->priority > best_priority) {
+			best_priority = analyzers[a]->priority;
+			best_analyzer = a;
 		}
 	}
 
@@ -232,15 +228,13 @@ bool Saiph::run() {
 		return false;
 	}
 
-	cerr << "letting analyzer " << best_analyzer << " do its thing with priority " << best_priority << endl;
-
-	/* check if we got a command */
 	if (best_analyzer == -1)
 		return false;
 
 	/* let an analyzer do its command */
 	command.clear(); // just in case some analyzer messed with this string
 	analyzers[best_analyzer]->command(&command);
+	cerr << "[COMMAND ] '" << command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
 	world->executeCommand(command);
 	return true;
 }
@@ -553,7 +547,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

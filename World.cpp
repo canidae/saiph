@@ -339,10 +339,12 @@ void World::update() {
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
+	cerr << "[DATA    ] ";
 	for (int a = 0; a < data_size; ++a) {
 		cout << data[a];
 		cerr << data[a];
 	}
+	cerr << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:

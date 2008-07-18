@@ -32,8 +32,8 @@ class Fight : public Analyzer {
 
 		/* methods */
 		void command(string *command);
-		int finish();
-		int parseMessages(string *messages);
+		void finish();
+		void parseMessages(string *messages);
 
 	private:
 		/* variables */

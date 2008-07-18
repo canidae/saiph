@@ -1,5 +1,9 @@
 #include "Analyzer.h"
 
+/* constructor */
+Analyzer::Analyzer(string name) : name(name) {
+}
+
 /* destructor */
 Analyzer::~Analyzer() {
 	/* we must have a virtual destructor.
@@ -11,21 +15,18 @@ Analyzer::~Analyzer() {
 void Analyzer::command(string *command) {
 }
 
-int Analyzer::finish() {
-	return 0;
+void Analyzer::finish() {
 }
 
 void Analyzer::inspect(const Point &point) {
 }
 
-int Analyzer::parseMessages(string *messages) {
-	return 0;
+void Analyzer::parseMessages(string *messages) {
 }
 
 bool Analyzer::requestAction(const Request &request) {
 	return false;
 }
 
-int Analyzer::start() {
-	return 0;
+void Analyzer::start() {
 }

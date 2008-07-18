@@ -66,7 +66,6 @@ int Local::retrieve(char *buffer, int count) {
 		data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
 		if (data_received != -1)
 			data_received_total += data_received;
-		cerr << "trying to continue reading stream: " << data_received << " | " << data_received_total << endl;
 	}
 	if (data_received_total < (ssize_t) count)
 		buffer[data_received_total] = '\0';
@@ -75,7 +74,6 @@ int Local::retrieve(char *buffer, int count) {
 
 int Local::transmit(const string &data) {
 	/* send data */
-	cerr << "writing: '" << data << "'" << endl;
 	return (int) write(link[1], data.c_str(), data.size());
 }
 

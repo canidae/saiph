@@ -1,7 +1,7 @@
 #include "Fight.h"
 
 /* constructors */
-Fight::Fight(Saiph *saiph) : saiph(saiph), action("") {
+Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph), action("") {
 }
 
 /* methods */
@@ -9,34 +9,34 @@ void Fight::command(string *command) {
 	*command = action;
 }
 
-int Fight::finish() {
+void Fight::finish() {
 	action = "";
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
 		action = MOVE_NW; // doesn't matter which direction
-		return FIGHT_ATTACK_MONSTER;
+		priority = FIGHT_ATTACK_MONSTER;
+		return;
 	}
 	/* fight nearest monster */
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	int best_distance = INT_MAX;
-	int best_priority = -1;
 	unsigned char best_move = ILLEGAL_MOVE;
 	unsigned char best_symbol = ILLEGAL_MONSTER;
 	int best_color = NO_COLOR;
 	for (list<Monster>::iterator m = saiph->monstertracker->monsters[b][l].begin(); m!= saiph->monstertracker->monsters[b][l].end(); ++m) {
 		if (m->symbol == PET)
 			continue; // we're not fighting pets :)
-		int priority;
+		int cur_priority;
 		if (m->symbol == 'e' && m->color == BLUE)
-			priority = FIGHT_ATTACK_BLUE_E;
+			cur_priority = FIGHT_ATTACK_BLUE_E;
 		else if (m->symbol == '@' && m->color == WHITE)
-			priority = FIGHT_ATTACK_WHITE_AT;
+			cur_priority = FIGHT_ATTACK_WHITE_AT;
 		else if (m->symbol == '@' && m->color == BLUE)
-			priority = FIGHT_ATTACK_BLUE_AT;
+			cur_priority = FIGHT_ATTACK_BLUE_AT;
 		else
-			priority = FIGHT_ATTACK_MONSTER;
-		if (priority < best_priority)
+			cur_priority = FIGHT_ATTACK_MONSTER;
+		if (cur_priority < priority)
 			continue; // we've already found another monster with higher priority
 		int distance = -1;
 		bool straight_line = false;
@@ -45,20 +45,18 @@ int Fight::finish() {
 			continue; // can't path to this monster
 		if (distance >= best_distance)
 			continue; // we know of a monster closer to us
-		best_priority = priority;
+		priority = cur_priority;
 		best_distance = distance;
 		best_move = move;
 		best_symbol = m->symbol;
 		best_color = m->color;
 	}
 	action = best_move;
-	return best_priority;
 }
 
-int Fight::parseMessages(string *messages) {
+void Fight::parseMessages(string *messages) {
 	if (messages->find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
 		action = YES;
-		return PRIORITY_CONTINUE_ACTION;
+		priority = PRIORITY_CONTINUE_ACTION;
 	}
-	return 0;
 }

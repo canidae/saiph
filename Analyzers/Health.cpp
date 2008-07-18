@@ -1,71 +1,47 @@
 #include "Health.h"
 
 /* constructors */
-Health::Health(Saiph *saiph) : saiph(saiph) {
+Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph) {
 	this->resting = false;
 }
 
 /* methods */
 void Health::command(string *command) {
 	*command = action;
-	action = "OK";
 }
 
-int Health::finish() {
+void Health::finish() {
 	/* figure out if we're in danger of dying */
 	action = "";
 	/* food */
 	if (saiph->world->player.hunger == FAINTING) {
 		action = PRAY;
-		return HEALTH_PRAY_FOR_FOOD;
+		priority = HEALTH_PRAY_FOR_FOOD;
+		return;
 	}
 	/* hp */
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;
-	if (hp > 0 && (hp < 6 || hp <= hp_max / 7)) {
-		/* almost dead, find an urgent way to heal up.
-		 * spell, potion, (elbereth?), pray
-		 *
-		 * pray for now */
-		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned || saiph->engulfed)
-			return 0;
-		action = ENGRAVE;
+	if (hp > 0 && hp < hp_max * 3 / 5) {
+		/* hp below 60%. heal up */
+		request.request = REQUEST_ELBERETH_OR_REST;
+		request.priority = HEALTH_REST_FOR_HP;
 		resting = true;
-		return HEALTH_ENGRAVE_FOR_HP;
-	} else if (hp > 0 && hp < hp_max * 3 / 5) {
-		/* health is going low.
-		 * elbereth, run, potion, lots of options
-		 *
-		 * elbereth for now */
-		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.stunned || saiph->engulfed)
-			return 0;
-		action = ENGRAVE;
-		resting = true;
-		return HEALTH_ENGRAVE_FOR_HP;
+		if (!saiph->requestAction(request)) {
+			/* noone would handle our request.
+			 * we're bones */
+		}
 	} else if (resting) {
-		/* when hp drops below 60% then rest up to 80% or more */
-		if (hp > 0 && hp >= hp_max * 4 / 5) {
-			resting = false;
+		/* still resting */
+		if (hp > hp_max * 9 / 10) {
+			resting = false; // enough hp (>90%) to continue our journey
 		} else {
-			action = ENGRAVE;
-			return HEALTH_REST_FOR_HP;
+			request.request = REQUEST_ELBERETH_OR_REST;
+			request.priority = HEALTH_REST_FOR_HP;
+			if (!saiph->requestAction(request)) {
+				/* noone would handle our request.
+				 * we're bones */
+			}
 		}
 	}
-	return 0;
-}
-
-int Health::parseMessages(string *messages) {
-	if (action != "OK")
-		return 0; // we didn't do anything
-	if (messages->find(HA_ENGRAVE_WITH, 0) != string::npos)
-		action = HANDS;
-	else if (messages->find(HA_ENGRAVE_DUST, 0) != string::npos)
-		action = ELBERETH "\n";
-	else if (messages->find(HA_ENGRAVE_DUST_ADD, 0) != string::npos)
-		action = ELBERETH "\n";
-	else if (messages->find(HA_ENGRAVE_ADD, 0) != string::npos)
-		action = YES;
-	else
-		return 0;
-	return PRIORITY_CONTINUE_ACTION;
 }

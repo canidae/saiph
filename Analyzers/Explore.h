@@ -36,7 +36,7 @@ class Explore : public Analyzer {
 
 		/* methods */
 		void command(string *command);
-		int finish();
+		void finish();
 		void inspect(const Point &point);
 
 	private:

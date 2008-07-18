@@ -125,7 +125,6 @@ void Telnet::start() {
 	transmit(password);
 	size = retrieve(buffer, TELNET_BUFFER_SIZE);
 	transmit("p");
-	cerr << "Done logging in, a game should appear for the bot now" << endl;
 }
 
 void Telnet::stop() {
@@ -133,9 +132,5 @@ void Telnet::stop() {
 
 /* private methods */
 int Telnet::transmit(const char *data, int length) {
-	cerr << "Sending: ";
-	for (int a = 0; a < length; ++a)
-		cerr << data[a];
-	cerr << endl;
 	return send(sock, data, length, 0);
 }

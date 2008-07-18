@@ -1,7 +1,7 @@
 #include "Door.h"
 
 /* constructors */
-Door::Door(Saiph *saiph) : saiph(saiph) {
+Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph) {
 	da.action = ILLEGAL_ACTION;
 	da.direction = ILLEGAL_MOVE;
 	da.dp = NULL;
@@ -16,14 +16,13 @@ void Door::command(string *command) {
 		*command = da.action;
 }
 
-int Door::finish() {
+void Door::finish() {
 	/* open closed doors */
 	da.action = ILLEGAL_ACTION;
 	da.direction = ILLEGAL_MOVE;
 	da.dp = NULL;
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
-	int best_priority = 0;
 	int best_distance = INT_MAX;
 	for (vector<DoorPoint>::iterator d = doors[b][l].begin(); d != doors[b][l].end(); ) {
 		/* check if door still is there */
@@ -37,11 +36,12 @@ int Door::finish() {
 			++d;
 			continue;
 		}
+		/*
 		if (d->locked && shop_on_level[b][l]) {
-			/* currently we'll ignore every locked door on levels with shops */
 			++d;
 			continue;
 		}
+		*/
 		bool straight_line = false;
 		int distance = -1;
 		unsigned char move = saiph->shortestPath(*d, true, &distance, &straight_line);
@@ -50,14 +50,14 @@ int Door::finish() {
 			++d;
 			continue;
 		}
-		if (!d->locked && DOOR_OPEN_PRIORITY >= best_priority) {
+		if (!d->locked && DOOR_OPEN_PRIORITY >= priority) {
 			/* [go to] open a door */
-			if (DOOR_OPEN_PRIORITY == best_priority && distance >= best_distance) {
+			if (DOOR_OPEN_PRIORITY == priority && distance >= best_distance) {
 				/* another door we want to open is nearer */
 				++d;
 				continue;
 			}
-			best_priority = DOOR_OPEN_PRIORITY;
+			priority = DOOR_OPEN_PRIORITY;
 			da.direction = move;
 			da.dp = &(*d);
 			if (distance == 1)
@@ -65,27 +65,27 @@ int Door::finish() {
 			else
 				da.action = ILLEGAL_ACTION;
 		/* TODO:
-		} else if (d->locked && can_lockpick && DOOR_PICK_PRIORITY >= best_priority) {
+		} else if (d->locked && can_lockpick && DOOR_PICK_PRIORITY >= priority) {
 		*/
 			/* [go to] pick a door */
 			/*
-			if (DOOR_PICK_PRIORITY == best_priority && distance >= best_distance) {
+			if (DOOR_PICK_PRIORITY == priority && distance >= best_distance) {
 			*/
 				/* another door we want to pick is nearer */
 				/*
 				++d;
 				continue;
 			}
-			best_priority = DOOR_PICK_PRIORITY;
+			priority = DOOR_PICK_PRIORITY;
 		*/
-		} else if (d->locked && DOOR_KICK_PRIORITY >= best_priority) {
+		} else if (d->locked && DOOR_KICK_PRIORITY >= priority) {
 			/* [go to] kick a door */
-			if (DOOR_KICK_PRIORITY == best_priority && distance >= best_distance) {
+			if (DOOR_KICK_PRIORITY == priority && distance >= best_distance) {
 				/* another door we want to kick is nearer */
 				++d;
 				continue;
 			}
-			best_priority = DOOR_KICK_PRIORITY;
+			priority = DOOR_KICK_PRIORITY;
 			da.direction = move;
 			da.dp = &(*d);
 			if (distance == 1)
@@ -95,7 +95,6 @@ int Door::finish() {
 		}
 		++d;
 	}
-	return best_priority;
 }
 
 void Door::inspect(const Point &point) {
@@ -115,10 +114,11 @@ void Door::inspect(const Point &point) {
 	doors[b][l].push_back(dp);
 }
 
-int Door::parseMessages(string *messages) {
+void Door::parseMessages(string *messages) {
 	if (da.action != ILLEGAL_ACTION && messages->find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		da.action = ILLEGAL_ACTION;
-		return PRIORITY_CONTINUE_ACTION;
+		priority = PRIORITY_CONTINUE_ACTION;
+		return;
 	//} else if (messages->find(DOOR_CLOSES, 0) != string::npos) {
 	//} else if (messages->find(DOOR_KICK_FAIL, 0) != string::npos) {
 	//} else if (messages->find(DOOR_KICK_OPEN, 0) != string::npos) {
@@ -132,5 +132,4 @@ int Door::parseMessages(string *messages) {
 		 * this will not be specific for doors(?) */
 		shop_on_level[saiph->current_branch][saiph->current_level] = true;
 	}
-	return 0;
 }

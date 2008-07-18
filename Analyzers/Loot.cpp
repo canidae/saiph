@@ -1,7 +1,7 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) : saiph(saiph) {
+Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph) {
 	memset(check_item, false, sizeof (check_item));
 	check_item[WEAPON] = true;
 	check_item[ARMOR] = true;
@@ -20,6 +20,9 @@ Loot::Loot(Saiph *saiph) : saiph(saiph) {
 	check_item[IRON_BALL] = true;
 	check_item[CHAINS] = true;
 	check_item[VENOM] = true;
+
+	/* FIXME
+	 * top_item must be reset */
 }
 
 /* methods */
@@ -27,10 +30,10 @@ void Loot::command(string *command) {
 	*command = action;
 }
 
-int Loot::finish() {
+void Loot::finish() {
 	/* figure out which stash to visit, if any */
 	if (action == ":")
-		return 0; // we've already requested ":"
+		return;
 	int best_distance = INT_MAX;
 	action = "";
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
@@ -49,8 +52,7 @@ int Loot::finish() {
 		++v;
 	}
 	if (best_distance < INT_MAX)
-		return 50;
-	return 0;
+		priority = 50;
 }
 
 void Loot::inspect(const Point &point) {
@@ -92,7 +94,7 @@ void Loot::inspect(const Point &point) {
 	return;
 }
 
-int Loot::parseMessages(string *messages) {
+void Loot::parseMessages(string *messages) {
 	string::size_type pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
 	if (pos != string::npos) {
 		/* one item on the floor */
@@ -148,9 +150,9 @@ int Loot::parseMessages(string *messages) {
 	 * it's a zero turn action anyways, so we're cool */
 	if (messages->find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos || messages->find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos) {
 		action = ":";
-		return PRIORITY_LOOK;
+		priority = PRIORITY_LOOK;
 	}
-	return 0;
+	return;
 }
 
 /* private methods */

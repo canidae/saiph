@@ -30,6 +30,7 @@ class Saiph;
 #include "World.h"
 /* analyzers */
 #include "Analyzers/Door.h"
+#include "Analyzers/Elbereth.h"
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Health.h"

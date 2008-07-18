@@ -4,6 +4,7 @@
 /* requests */
 #define REQUEST_DESCEND_DUNGEON 1
 #define REQUEST_ASCEND_DUNGEON 2
+#define REQUEST_ELBERETH_OR_REST 3
 
 /* forward declare */
 class Request;
@@ -24,9 +25,6 @@ class Request : public Coordinate {
 		string data;
 
 		/* constructors */
-		Request(int request, int priority = 0, const string &data = "", const Coordinate &coordinate = Coordinate());
-		Request(int request, int priority = 0, const string &data = "", const Point &point = Point());
-		Request(int request, int priority = 0, const Coordinate &coordinate = Coordinate());
-		Request(int request, int priority = 0, const Point &point = Point());
+		Request();
 };
 #endif

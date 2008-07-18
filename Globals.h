@@ -125,11 +125,15 @@
 #define PET 138
 #define PLAYER 139
 /* priorities */
+#define ILLEGAL_PRIORITY -1
 #define PRIORITY_CONTINUE_ACTION 1002
 #define PRIORITY_LOOK 1001
 #define PRIORITY_MAX 1000
 /* messages */
+#define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
+#define MESSAGE_DIGGED_TEXT "  Something is engraved here on the floor.  "
+#define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? " // followed by "[ynq] (y)" or something
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
@@ -142,8 +146,8 @@
 #define MESSAGE_STAIRCASE_DOWN "  There is a staircase down here.  "
 #define MESSAGE_STAIRCASE_UP "  There is a staircase up here.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
-#define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
-#define MESSAGE_WRITTEN_IN_DUST "  Something is written here in the dust.  "
 #define MESSAGE_YOU_READ "  You read: " // followed by the text
+#define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
+#define MESSAGE_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 
 #endif

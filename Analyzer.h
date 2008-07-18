@@ -16,15 +16,22 @@ using namespace std;
 /* analyze every tile of type and/or do whatever you want in finish() */
 class Analyzer {
 	public:
+		/* variables */
+		string name;
+		int priority;
+	
+		/* constructor */
+		Analyzer(string name);
+
 		/* destructor */
 		virtual ~Analyzer();
 
 		/* methods */
 		virtual void command(string *command);
-		virtual int finish();
+		virtual void finish();
 		virtual void inspect(const Point &point);
-		virtual int parseMessages(string *messages);
+		virtual void parseMessages(string *messages);
 		virtual bool requestAction(const Request &request);
-		virtual int start();
+		virtual void start();
 };
 #endif

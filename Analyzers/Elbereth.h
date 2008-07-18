@@ -1,12 +1,9 @@
-#ifndef HEALTH_H
+#ifndef ELBERETH_H
 /* defines */
-#define HEALTH_H
-/* priorities */
-#define HEALTH_PRAY_FOR_FOOD 1000
-#define HEALTH_REST_FOR_HP 800
+#define ELBERETH_H
 
 /* forward declare */
-class Health;
+class Elbereth;
 
 /* includes */
 #include <string>
@@ -19,20 +16,25 @@ class Health;
 using namespace std;
 
 /* monitors health */
-class Health : public Analyzer {
+class Elbereth : public Analyzer {
 	public:
 		/* constructors */
-		Health(Saiph *saiph);
+		Elbereth(Saiph *saiph);
 
 		/* methods */
 		void command(string *command);
-		void finish();
+		void parseMessages(string *messages);
+		bool requestAction(const Request &request);
 
 	private:
 		/* variables */
 		Saiph *saiph;
 		string action;
-		bool resting;
-		Request request;
+		int elbereth_count;
+		bool burned;
+		bool digged;
+		bool dusted;
+		bool did_look;
+		bool append;
 };
 #endif
