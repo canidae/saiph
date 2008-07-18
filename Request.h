@@ -6,12 +6,14 @@
 #define REQUEST_DESCEND_DUNGEON 1
 #define REQUEST_ASCEND_DUNGEON 2
 #define REQUEST_ELBERETH_OR_REST 3
+#define REQUEST_PICK_UP_ITEM 4
 
 /* forward declare */
 class Request;
 
 /* includes */
 #include <string>
+#include "Coordinate.h"
 #include "Globals.h"
 
 /* namespace */
@@ -25,6 +27,7 @@ class Request {
 		int priority;
 		int value1;
 		string data;
+		Coordinate coordinate;
 
 		/* constructors */
 		Request();

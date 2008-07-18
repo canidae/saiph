@@ -49,7 +49,7 @@ void Loot::finish() {
 		++v;
 	}
 	if (best_distance < INT_MAX)
-		priority = 50;
+		priority = LOOT_VISIT_STASH_PRIORITY;
 }
 
 void Loot::inspect(const Point &point) {
@@ -147,6 +147,10 @@ void Loot::parseMessages(string *messages) {
 	}
 	if (stash->size() > 0) {
 		/* announce what's on the ground to the other analyzers */
+		announce.coordinate.branch = b;
+		announce.coordinate.level = l;
+		announce.coordinate.row = r;
+		announce.coordinate.col = c;
 		for (vector<Item>::iterator i = stash->begin(); i != stash->end(); ++i) {
 			announce.announce = ANNOUNCE_ITEM_ON_GROUND;
 			announce.data = i->name;
@@ -154,6 +158,15 @@ void Loot::parseMessages(string *messages) {
 			saiph->announce(announce);
 		}
 	}
+}
+
+bool Loot::request(const Request &request) {
+	if (request.request == REQUEST_PICK_UP_ITEM) {
+		/* add it to pickup list */
+		pickup.push_back(request);
+		return true;
+	}
+	return false;
 }
 
 /* private methods */

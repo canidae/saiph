@@ -10,6 +10,7 @@ class Announce;
 
 /* includes */
 #include <string>
+#include "Coordinate.h"
 #include "Globals.h"
 
 /* namespace */
@@ -23,6 +24,7 @@ class Announce {
 		int priority;
 		int value1;
 		string data;
+		Coordinate coordinate;
 
 		/* constructors */
 		Announce();

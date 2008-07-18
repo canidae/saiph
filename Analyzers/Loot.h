@@ -3,6 +3,8 @@
 #define LOOT_H
 /* used to help pick up a single item */
 #define GET_SINGLE_ITEM "%7s %127[^\t\n]"
+/* priorities */
+#define LOOT_VISIT_STASH_PRIORITY 50
 /* messages */
 #define LOOT_LITTLE_LIFTING "You have a little trouble lifting"
 #define LOOT_EXTREME_LIFTING "You have extreme difficulty lifting"
@@ -20,6 +22,7 @@ class Loot;
 #include "../Globals.h"
 #include "../Item.h"
 #include "../Point.h"
+#include "../Request.h"
 #include "../Saiph.h"
 
 /* namespace */
@@ -47,6 +50,7 @@ class Loot : public Analyzer {
 		void finish();
 		void inspect(const Point &point);
 		void parseMessages(string *messages);
+		bool request(const Request &request);
 
 	private:
 		/* variables */
@@ -56,6 +60,7 @@ class Loot : public Analyzer {
 		Stash stashes[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		list<Coordinate> stash_locations;
 		list<Point> visit;
+		list<Request> pickup;
 		Announce announce;
 
 		/* methods */

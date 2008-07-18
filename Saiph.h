@@ -34,6 +34,7 @@ class Saiph;
 #include "Analyzers/Elbereth.h"
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
+#include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"
