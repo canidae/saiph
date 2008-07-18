@@ -136,13 +136,15 @@ void World::fetchMessages() {
 		 * then we may have a line that's wrapped.
 		 * otherwise it's a list */
 		bool add_spaces = true;
-		if (more && view[r][c] != ' ') {
+		if (more && c > 0 && view[r][c - 1] != ' ') {
 			/* text wrapped over more than one line.
 			 * set c to 0, don't add spaces and parse like a list */
 			c = 0;
 			add_spaces = false;
 		}
 		for (int r2 = 0; r2 <= r; ++r2) {
+			if (add_spaces && r2 == r)
+				break; // a list, don't add --More--
 			msg_str = &view[r2][c];
 			/* trim */
 			string::size_type fns = msg_str.find_first_not_of(" ");
