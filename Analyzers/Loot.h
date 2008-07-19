@@ -32,10 +32,12 @@ class Loot;
 using namespace std;
 
 /* Stash */
+/*
 struct Stash {
 	unsigned char top_item;
 	vector<Item> items;
 };
+*/
 
 /* analyzes the map and finds somewhere to explore */
 class Loot : public Analyzer {

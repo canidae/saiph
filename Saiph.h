@@ -37,7 +37,7 @@ class Saiph;
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
-#include "Analyzers/Loot.h"
+//#include "Analyzers/Loot.h"
 
 /* namespace */
 using namespace std;
