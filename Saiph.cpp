@@ -199,7 +199,7 @@ bool Saiph::run() {
 	parseMessages();
 	/* then analyzer parsing */
 	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
-		analyzers[a]->parseMessages(&world->messages);
+		analyzers[a]->parseMessages(world->messages);
 
 	/* call start() in analyzers */
 	if (!world->question && !world->menu) {

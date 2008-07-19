@@ -88,7 +88,6 @@ class Saiph {
 		/* methods */
 		void dumpMaps();
 		void inspect();
-		void parseMessageItem(const string &message);
 		void parseMessages();
 		void updateMaps();
 		void updatePathMap();

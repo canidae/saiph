@@ -31,7 +31,7 @@ class Food : public Analyzer {
 		void announce(const Announce &announce);
 		void command(string *command);
 		void finish();
-		void parseMessages(string *messages);
+		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
 	private:

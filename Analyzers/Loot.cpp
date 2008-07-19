@@ -138,22 +138,22 @@ void Loot::inspect(const Point &point) {
 	}
 }
 
-void Loot::parseMessages(string *messages) {
+void Loot::parseMessages(const string &messages) {
 	if (last_turn_inventory_check == saiph->world->player.turn && saiph->world->menu) {
 		/* we requested the inventory to be listed, and it was.
 		 * now parse it */
 		inventory.clear();
-		string::size_type pos = messages->find("  ");
+		string::size_type pos = messages.find("  ");
 		announce.announce = ANNOUNCE_ITEM_IN_INVENTORY;
-		while (pos != string::npos && messages->size() > pos + 6) {
+		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
-			string::size_type length = messages->find("  ", pos);
+			string::size_type length = messages.find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			if ((*messages)[pos - 2] == '-') {
-				unsigned char key = (*messages)[pos - 4];
-				Item item = parseMessageItem(messages->substr(pos, length));
+			if (messages[pos - 2] == '-') {
+				unsigned char key = messages[pos - 4];
+				Item item = parseMessageItem(messages.substr(pos, length));
 				if (item.count > 0)
 					inventory[key] = item;
 				announce.data = item.name;
@@ -172,7 +172,7 @@ void Loot::parseMessages(string *messages) {
 	int r = saiph->world->player.row;
 	int c = saiph->world->player.col;
 	vector<Item> *stash = &stashes[b][l][r][c].items;
-	string::size_type pos = messages->find(MESSAGE_PICK_UP_WHAT, 0);
+	string::size_type pos = messages.find(MESSAGE_PICK_UP_WHAT, 0);
 	if (pos != string::npos) {
 		/* we're trying to pick up something */
 		if (stash->size() > 0) {
@@ -184,15 +184,15 @@ void Loot::parseMessages(string *messages) {
 			stash_locations.push_back(Coordinate(b, l, r, c));
 		}
 		action = "";
-		pos = messages->find("  ", pos + 1);
-		while (pos != string::npos && messages->size() > pos + 6) {
+		pos = messages.find("  ", pos + 1);
+		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
-			string::size_type length = messages->find("  ", pos);
+			string::size_type length = messages.find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			if ((*messages)[pos - 2] == '-') {
-				Item item = parseMessageItem(messages->substr(pos, length));
+			if (messages[pos - 2] == '-') {
+				Item item = parseMessageItem(messages.substr(pos, length));
 				if (item.count > 0) {
 					for (list<Request>::iterator p = pickup.begin(); p != pickup.end(); ) {
 						if (p->coordinate.branch != b || p->coordinate.level != l || p->coordinate.row != r || p->coordinate.col != c || p->data != item.name) {
@@ -207,7 +207,7 @@ void Loot::parseMessages(string *messages) {
 							/* only add to the stash what we're not picking up */
 							stash->push_back(item);
 						}
-						action.append(1, (*messages)[pos - 4]); // the key before the item
+						action.append(1, messages[pos - 4]); // the key before the item
 						/* remove from pickup list */
 						p = pickup.erase(p);
 
@@ -220,11 +220,11 @@ void Loot::parseMessages(string *messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
 	}
-	pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
+	pos = messages.find(MESSAGE_YOU_SEE_HERE, 0);
 	if (pos != string::npos) {
 		/* one item on the floor */
 		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
-		string::size_type length = messages->find(".  ", pos);
+		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			if (stash->size() > 0) {
@@ -235,12 +235,12 @@ void Loot::parseMessages(string *messages) {
 				/* new stash, add it to stash_locations */
 				stash_locations.push_back(Coordinate(b, l, r, c));
 			}
-			Item item = parseMessageItem(messages->substr(pos, length));
+			Item item = parseMessageItem(messages.substr(pos, length));
 			if (item.count > 0)
 				stash->push_back(item);
 		}
 	}
-	pos = messages->find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
+	pos = messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
 	if (pos != string::npos) {
 		/* multiple items on the floor */
 		if (stash->size() > 0) {
@@ -251,14 +251,14 @@ void Loot::parseMessages(string *messages) {
 			/* new stash, add it to stash_locations */
 			stash_locations.push_back(Coordinate(b, l, r, c));
 		}
-		pos = messages->find("  ", pos + 1);
-		while (pos != string::npos && messages->size() > pos + 2) {
+		pos = messages.find("  ", pos + 1);
+		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
-			string::size_type length = messages->find("  ", pos);
+			string::size_type length = messages.find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			Item item = parseMessageItem(messages->substr(pos, length));
+			Item item = parseMessageItem(messages.substr(pos, length));
 			if (item.count > 0)
 				stash->push_back(item);
 			pos += length;
@@ -267,7 +267,7 @@ void Loot::parseMessages(string *messages) {
 	/* if we get "there are several/many objects here" we need to ":".
 	 * if we don't, we'll get an endless loop.
 	 * it's a zero turn action anyways, so we're cool */
-	if (messages->find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos || messages->find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos) {
+	if (messages.find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos || messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos) {
 		action = ":";
 		priority = PRIORITY_LOOK;
 		return;
@@ -289,15 +289,15 @@ void Loot::parseMessages(string *messages) {
 	 * we need to parse this too... meh */
 	pos = 0;
 	announce.announce = ANNOUNCE_ITEM_IN_INVENTORY;
-	while ((pos = messages->find(" - ", pos)) != string::npos) {
-		if (pos > 2 && (*messages)[pos - 3] == ' ' && (*messages)[pos - 2] == ' ') {
-			unsigned char key = (*messages)[pos - 1];
+	while ((pos = messages.find(" - ", pos)) != string::npos) {
+		if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
+			unsigned char key = messages[pos - 1];
 			pos += 3;
-			string::size_type length = messages->find(".  ", pos);
+			string::size_type length = messages.find(".  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			Item item = parseMessageItem(messages->substr(pos, length));
+			Item item = parseMessageItem(messages.substr(pos, length));
 			if (item.count > 0) {
 				map<unsigned char, Item>::iterator existing = inventory.find(key);
 				if (existing != inventory.end()) {

@@ -58,7 +58,7 @@ class Door : public Analyzer {
 		void command(string *command);
 		void finish();
 		void inspect(const Point &point);
-		void parseMessages(string *messages);
+		void parseMessages(const string &messages);
 
 	private:
 		/* variables */

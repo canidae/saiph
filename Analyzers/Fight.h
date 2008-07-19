@@ -33,7 +33,7 @@ class Fight : public Analyzer {
 		/* methods */
 		void command(string *command);
 		void finish();
-		void parseMessages(string *messages);
+		void parseMessages(const string &messages);
 
 	private:
 		/* variables */

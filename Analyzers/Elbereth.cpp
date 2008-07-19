@@ -17,7 +17,7 @@ void Elbereth::command(string *command) {
 	*command = action;
 }
 
-void Elbereth::parseMessages(string *messages) {
+void Elbereth::parseMessages(const string &messages) {
 	/* reset these each time */
 	dusted = false;
 	burned = false;
@@ -30,37 +30,37 @@ void Elbereth::parseMessages(string *messages) {
 		did_look = false;
 	}
 	/* set up next command */
-	if (action.size() > 0 && action[0] == ENGRAVE && messages->find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
+	if (action.size() > 0 && action[0] == ENGRAVE && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		action = HANDS;
-	} else if (action.size() > 0 && action[0] == HANDS && messages->find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
+	} else if (action.size() > 0 && action[0] == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		action = append ? YES : NO;
-	} else if (action.size() > 0 && (action[0] == YES || action[0] == NO || action[0] == HANDS) && (messages->find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages->find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
+	} else if (action.size() > 0 && (action[0] == YES || action[0] == NO || action[0] == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		action = ELBERETH "\n";
 	}
 	/* figure out if something is engraved here */
-	string::size_type pos = messages->find(MESSAGE_YOU_READ, 0);
+	string::size_type pos = messages.find(MESSAGE_YOU_READ, 0);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
 		return;
 	}
 	/* is it written in dust, burned or digged? */
-	if (messages->find(MESSAGE_DUSTED_TEXT, 0) != string::npos) {
+	if (messages.find(MESSAGE_DUSTED_TEXT, 0) != string::npos) {
 		/* it's dusted. */
 		dusted = true;
-	} else if (messages->find(MESSAGE_BURNED_TEXT, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_BURNED_TEXT, 0) != string::npos) {
 		/* it's burned */
 		burned = true;
-	} else if (messages->find(MESSAGE_DIGGED_TEXT, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DIGGED_TEXT, 0) != string::npos) {
 		/* it's digged */
 		digged = true;
 	} else {
 		/* it's unexpected */
 		return;
 	}
-	while ((pos = messages->find(ELBERETH, pos + 1)) != string::npos) {
+	while ((pos = messages.find(ELBERETH, pos + 1)) != string::npos) {
 		/* found another elbereth */
 		++elbereth_count;
 	}

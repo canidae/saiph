@@ -24,7 +24,7 @@ void Analyzer::finish() {
 void Analyzer::inspect(const Point &point) {
 }
 
-void Analyzer::parseMessages(string *messages) {
+void Analyzer::parseMessages(const string &messages) {
 }
 
 bool Analyzer::request(const Request &request) {

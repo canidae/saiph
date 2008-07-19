@@ -23,7 +23,7 @@ class Elbereth : public Analyzer {
 
 		/* methods */
 		void command(string *command);
-		void parseMessages(string *messages);
+		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
 	private:

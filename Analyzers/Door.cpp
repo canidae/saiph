@@ -114,20 +114,20 @@ void Door::inspect(const Point &point) {
 	doors[b][l].push_back(dp);
 }
 
-void Door::parseMessages(string *messages) {
-	if (da.action != ILLEGAL_ACTION && messages->find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+void Door::parseMessages(const string &messages) {
+	if (da.action != ILLEGAL_ACTION && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		da.action = ILLEGAL_ACTION;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
-	//} else if (messages->find(DOOR_CLOSES, 0) != string::npos) {
-	//} else if (messages->find(DOOR_KICK_FAIL, 0) != string::npos) {
-	//} else if (messages->find(DOOR_KICK_OPEN, 0) != string::npos) {
-	} else if (messages->find(DOOR_LOCKED, 0) != string::npos && da.dp != NULL) {
+	//} else if (messages.find(DOOR_CLOSES, 0) != string::npos) {
+	//} else if (messages.find(DOOR_KICK_FAIL, 0) != string::npos) {
+	//} else if (messages.find(DOOR_KICK_OPEN, 0) != string::npos) {
+	} else if (messages.find(DOOR_LOCKED, 0) != string::npos && da.dp != NULL) {
 		da.dp->locked = true;
-	//} else if (messages->find(DOOR_NO_DOOR, 0) != string::npos) {
-	//} else if (messages->find(DOOR_OPENS, 0) != string::npos) {
-	//} else if (messages->find(DOOR_RESISTS, 0) != string::npos) {
-	} else if (!shop_on_level[saiph->current_branch][saiph->current_level] && messages->find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages->find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages->find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
+	//} else if (messages.find(DOOR_NO_DOOR, 0) != string::npos) {
+	//} else if (messages.find(DOOR_OPENS, 0) != string::npos) {
+	//} else if (messages.find(DOOR_RESISTS, 0) != string::npos) {
+	} else if (!shop_on_level[saiph->current_branch][saiph->current_level] && messages.find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
 		/* TODO
 		 * this will not be specific for doors(?) */
 		shop_on_level[saiph->current_branch][saiph->current_level] = true;

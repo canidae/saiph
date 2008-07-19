@@ -90,8 +90,8 @@ void Food::finish() {
 	}
 }
 
-void Food::parseMessages(string *messages) {
-	if (saiph->world->question && messages->find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
+void Food::parseMessages(const string &messages) {
+	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
 		action = eat_key;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;

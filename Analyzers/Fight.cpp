@@ -54,8 +54,8 @@ void Fight::finish() {
 	action = best_move;
 }
 
-void Fight::parseMessages(string *messages) {
-	if (messages->find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
+void Fight::parseMessages(const string &messages) {
+	if (messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
 		action = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
 	}

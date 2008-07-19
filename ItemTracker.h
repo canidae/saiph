@@ -32,6 +32,7 @@ class ItemTracker {
 		void addItemToStash(const Item &item);
 		void moveItemFromStashToInventory(const Item &item);
 		void moveItemFromInventoryToStash(const Item &item);
+		void parseMessages(string *messages);
 		void removeItemFromInventory(const Item &item);
 		void removeItemFromStash(const Item &item);
 
