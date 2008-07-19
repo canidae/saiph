@@ -9,6 +9,7 @@ World::World(Connection *connection) : connection(connection) {
 	memset(changed, false, sizeof (changed));
 	cursor.row = 0;
 	cursor.col = 0;
+	messages = "  ";
 	menu = false;
 	question = false;
 	memset(data, '\0', sizeof (data));
@@ -421,9 +422,6 @@ void World::update() {
 
 	fetchMessages();
 
-	if (messages == "  ")
-		messages.clear(); // no messages
-
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
@@ -442,4 +440,6 @@ void World::update() {
 		update();
 		return;
 	}
+	if (messages == "  ")
+		messages.clear(); // no messages
 }

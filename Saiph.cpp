@@ -268,58 +268,63 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 		/* note:
 		 * since we're moving from target to player,
 		 * we're moving the opposite direction of the node we're checking */
-		/* northwest node */
+		/* also, to make her move more cardinally in corridors check cardinal moves first */
+
+		/* north node */
 		int row = target.row - 1;
-		int col = target.col - 1;
-		move = MOVE_SE;
+		int col = target.col;
 		node = &pathmap[row][col];
 		unsigned int lowest_cost = node->cost;
-		/* north node */
-		++col;
-		if (pathmap[row][col].cost < lowest_cost) {
-			move = MOVE_S;
-			node = &pathmap[row][col];
-			lowest_cost = node->cost;
-		}
-		/* northeast node */
-		++col;
-		if (pathmap[row][col].cost < lowest_cost) {
-			move = MOVE_SW;
-			node = &pathmap[row][col];
-			lowest_cost = node->cost;
-		}
+		move = MOVE_S;
 		/* east node */
 		++row;
+		++col;
 		if (pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_W;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
-		/* southeast node */
-		++row;
-		if (pathmap[row][col].cost < lowest_cost) {
-			move = MOVE_NW;
-			node = &pathmap[row][col];
-			lowest_cost = node->cost;
-		}
 		/* south node */
+		++row;
 		--col;
 		if (pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_N;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
-		/* southwest node */
+		/* west node */
+		--row;
 		--col;
 		if (pathmap[row][col].cost < lowest_cost) {
-			move = MOVE_NE;
+			move = MOVE_E;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
-		/* west node */
+		/* northwest node */
 		--row;
 		if (pathmap[row][col].cost < lowest_cost) {
-			move = MOVE_E;
+			move = MOVE_SE;
+			node = &pathmap[row][col];
+			lowest_cost = node->cost;
+		}
+		/* northeast node */
+		col += 2;
+		if (pathmap[row][col].cost < lowest_cost) {
+			move = MOVE_SW;
+			node = &pathmap[row][col];
+			lowest_cost = node->cost;
+		}
+		/* southeast node */
+		row += 2;
+		if (pathmap[row][col].cost < lowest_cost) {
+			move = MOVE_NW;
+			node = &pathmap[row][col];
+			lowest_cost = node->cost;
+		}
+		/* southwest node */
+		col -= 2;
+		if (pathmap[row][col].cost < lowest_cost) {
+			move = MOVE_NE;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
@@ -556,7 +561,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
+	Saiph *saiph = new Saiph(CONNECTION_TELNET);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

@@ -144,6 +144,7 @@ void Loot::parseMessages(string *messages) {
 		 * now parse it */
 		inventory.clear();
 		string::size_type pos = messages->find("  ");
+		announce.announce = ANNOUNCE_ITEM_IN_INVENTORY;
 		while (pos != string::npos && messages->size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages->find("  ", pos);
@@ -155,6 +156,10 @@ void Loot::parseMessages(string *messages) {
 				Item item = parseMessageItem(messages->substr(pos, length));
 				if (item.count > 0)
 					inventory[key] = item;
+				announce.data = item.name;
+				announce.key = key;
+				announce.value1 = item.count;
+				saiph->announce(announce);
 			}
 			pos += length;
 		}
@@ -273,11 +278,40 @@ void Loot::parseMessages(string *messages) {
 		announce.coordinate.level = l;
 		announce.coordinate.row = r;
 		announce.coordinate.col = c;
+		announce.announce = ANNOUNCE_ITEM_ON_GROUND;
 		for (vector<Item>::iterator i = stash->begin(); i != stash->end(); ++i) {
-			announce.announce = ANNOUNCE_ITEM_ON_GROUND;
 			announce.data = i->name;
 			announce.value1 = i->count;
 			saiph->announce(announce);
+		}
+	}
+	/* when we've picked up stuff we get eg. "f - a lichen corpse".
+	 * we need to parse this too... meh */
+	pos = 0;
+	announce.announce = ANNOUNCE_ITEM_IN_INVENTORY;
+	while ((pos = messages->find(" - ", pos)) != string::npos) {
+		if (pos > 2 && (*messages)[pos - 3] == ' ' && (*messages)[pos - 2] == ' ') {
+			unsigned char key = (*messages)[pos - 1];
+			pos += 3;
+			string::size_type length = messages->find(".  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			Item item = parseMessageItem(messages->substr(pos, length));
+			if (item.count > 0) {
+				map<unsigned char, Item>::iterator existing = inventory.find(key);
+				if (existing != inventory.end()) {
+					existing->second.count += item.count;
+					item.count = existing->second.count;
+				} else {
+					inventory[key] = item;
+				}
+				announce.data = item.name;
+				announce.key = key;
+				announce.value1 = item.count;
+				saiph->announce(announce);
+			}
+			pos += length;
 		}
 	}
 }

@@ -3,12 +3,14 @@
 #define FOOD_H
 /* priorities */
 #define FOOD_PICK_UP_PRIORITY 60
+#define FOOD_EAT_PRIORITY 60
 
 /* forward declare */
 class Food;
 
 /* includes */
 #include <list>
+#include <map>
 #include <string>
 #include "../Analyzer.h"
 #include "../Announce.h"
@@ -36,7 +38,9 @@ class Food : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string action;
+		unsigned char eat_key;
 		list<string> eat_order;
+		map<unsigned char, string> food;
 		Request req;
 };
 #endif

@@ -24,6 +24,7 @@ class Announce {
 		int announce;
 		int priority;
 		int value1;
+		unsigned char key;
 		string data;
 		Coordinate coordinate;
 

@@ -65,11 +65,12 @@
 #define MOVE_DOWN '>'
 #define ILLEGAL_MOVE 0
 /* actions */
-#define PICKUP ','
-#define REST '.'
 #define ILLEGAL_ACTION 0
+#define EAT 'e'
 #define ENGRAVE 'E'
+#define PICKUP ','
 #define PRAY "#pray\n"
+#define REST '.'
 #define SEARCH 's'
 /* common answers */
 #define HANDS '-'
@@ -140,6 +141,7 @@
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
+#define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
 #define MESSAGE_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define MESSAGE_OPEN_DOOR "  There is an open door here.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
@@ -147,6 +149,7 @@
 #define MESSAGE_STAIRCASE_DOWN "  There is a staircase down here.  "
 #define MESSAGE_STAIRCASE_UP "  There is a staircase up here.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
+#define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
 #define MESSAGE_YOU_READ "  You read: " // followed by the text
 #define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define MESSAGE_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
