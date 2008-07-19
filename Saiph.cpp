@@ -9,6 +9,7 @@ Saiph::Saiph(int interface) {
 	}
 	world = new World(connection);
 	monstertracker = new MonsterTracker(this);
+	itemtracker = new ItemTracker(this);
 
 	/* engulfed */
 	engulfed = false;
@@ -103,6 +104,7 @@ Saiph::Saiph(int interface) {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
+	delete itemtracker;
 	delete monstertracker;
 	delete world;
 	delete connection;
@@ -171,13 +173,13 @@ bool Saiph::request(const Request &request) {
 bool Saiph::run() {
 	/* figure out which map to use.
 	 * TODO: we need some branch detection & stuff here */
-	current_branch = 0;
-	current_level = world->player.dungeon;
+	position.branch = 0;
+	position.level = world->player.dungeon;
+	position.row = world->player.row;
+	position.col = world->player.col;
 
 	/* check if we're engulfed */
-	int r = world->player.row;
-	int c = world->player.col;
-	if (r > MAP_ROW_BEGIN && r < MAP_ROW_END && c > MAP_COL_BEGIN && c < MAP_COL_END && world->view[r - 1][c - 1] == '/' && world->view[r - 1][c + 1] == '\\' && world->view[r + 1][c - 1] == '\\' && world->view[r + 1][c + 1] == '/')
+	if (position.row > MAP_ROW_BEGIN && position.row < MAP_ROW_END && position.col > MAP_COL_BEGIN && position.col < MAP_COL_END && world->view[position.row - 1][position.col - 1] == '/' && world->view[position.row - 1][position.col + 1] == '\\' && world->view[position.row + 1][position.col - 1] == '\\' && world->view[position.row + 1][position.col + 1] == '/')
 		engulfed = true;
 	else
 		engulfed = false;
@@ -350,10 +352,10 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (map[current_branch][current_level].monster[r][c] != ILLEGAL_MONSTER)
-				cout << (unsigned char) (map[current_branch][current_level].monster[r][c]);
+			else if (map[position.branch][position.level].monster[r][c] != ILLEGAL_MONSTER)
+				cout << (unsigned char) (map[position.branch][position.level].monster[r][c]);
 			else
-				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+				cout << (unsigned char) (map[position.branch][position.level].dungeon[r][c]);
 		}
 	}
 	/* world map as the bot sees it */
@@ -362,7 +364,7 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[35m";
-			cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+			cout << (unsigned char) (map[position.branch][position.level].dungeon[r][c]);
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[m";
 		}
@@ -376,7 +378,7 @@ void Saiph::dumpMaps() {
 			else if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
 				cout << (unsigned char) pathmap[r][c].move;
 			else
-				cout << (unsigned char) (map[current_branch][current_level].dungeon[r][c]);
+				cout << (unsigned char) (map[position.branch][position.level].dungeon[r][c]);
 		}
 	}
 	/* return cursor back to where it was */
@@ -394,17 +396,18 @@ void Saiph::inspect() {
 void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc. */
 	if (world->messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
-		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
+		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
 	else if (world->messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
-		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
+		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
 	else if (world->messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
-		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
+		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
+	/* when we've checked messages for static dungeon features and not found anything,
+	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
+	else if (map[position.branch][position.level].dungeon[world->player.row][world->player.col] == UNKNOWN_TILE)
+		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
 
-	/* finally:
-	 * if player is standing on an UNKNOWN_TILE and we didn't get "there's an open door here",
-	 * then it's highly likely we can move diagonally to/from this point */
-	if (map[current_branch][current_level].dungeon[world->player.row][world->player.col] == UNKNOWN_TILE)
-		map[current_branch][current_level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
+	/* the ItemTracker needs to parse the messages to */
+	itemtracker->parseMessages(world->messages);
 }
 
 void Saiph::updateMaps() {
@@ -415,14 +418,14 @@ void Saiph::updateMaps() {
 			continue; // not interesting (also mess up unlit rooms)
 		if (static_dungeon_symbol[s]) {
 			/* update the map showing static stuff */
-			map[current_branch][current_level].dungeon[c->row][c->col] = s;
-		} else if (!passable[map[current_branch][current_level].dungeon[c->row][c->col]]) {
+			map[position.branch][position.level].dungeon[c->row][c->col] = s;
+		} else if (!passable[map[position.branch][position.level].dungeon[c->row][c->col]]) {
 			/* we can't see the floor here, but we believe we can pass this tile.
 			 * place an UNKNOWN_TILE here.
 			 * the reason we check if stored tile is !passable is because if we don't,
 			 * then every tile a monster steps on or drops an item on will become UNKNOWN_TILE,
 			 * even if we already know what's beneath the monster/item. */
-			map[current_branch][current_level].dungeon[c->row][c->col] = UNKNOWN_TILE;
+			map[position.branch][position.level].dungeon[c->row][c->col] = UNKNOWN_TILE;
 		}
 		if (monster[s]) {
 			/* found a monster!
@@ -511,27 +514,27 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	 * return true if the move is legal and we should path further from this node */
 	if (to.row < MAP_ROW_BEGIN || to.row > MAP_ROW_END || to.col < MAP_COL_BEGIN || to.col > MAP_COL_END)
 		return false; // outside map
-	unsigned char s = map[current_branch][current_level].dungeon[to.row][to.col];
+	unsigned char s = map[position.branch][position.level].dungeon[to.row][to.col];
 	if (!passable[s])
 		return false;
-	unsigned char m = map[current_branch][current_level].monster[to.row][to.col];
+	unsigned char m = map[position.branch][position.level].monster[to.row][to.col];
 	if (monster[m] && m != PET)
 		return false; // can't path through monsters (except pets)
 	bool cardinal_move = (to.row == from.row || to.col == from.col);
 	if (!cardinal_move) {
-		if (s == OPEN_DOOR || map[current_branch][current_level].dungeon[from.row][from.col] == OPEN_DOOR)
+		if (s == OPEN_DOOR || map[position.branch][position.level].dungeon[from.row][from.col] == OPEN_DOOR)
 			return false; // diagonally in/out of door
-		if (s == UNKNOWN_TILE || map[current_branch][current_level].dungeon[from.row][from.col] == UNKNOWN_TILE)
+		if (s == UNKNOWN_TILE || map[position.branch][position.level].dungeon[from.row][from.col] == UNKNOWN_TILE)
 			return false; // don't know what tile this is, it may be a door. no diagonal movement
-		unsigned char sc1 = map[current_branch][current_level].dungeon[to.row][from.col];
-		unsigned char sc2 = map[current_branch][current_level].dungeon[from.row][to.col];
+		unsigned char sc1 = map[position.branch][position.level].dungeon[to.row][from.col];
+		unsigned char sc2 = map[position.branch][position.level].dungeon[from.row][to.col];
 		if (!passable[sc1] && !passable[sc2]) {
 			/* moving past two corners
 			 * while we may pass two corners if we're not carrying too much we'll just ignore this.
 			 * it's bound to cause issues */
 			if (sc1 != BOULDER && sc2 != BOULDER)
 				return false; // neither corner is a boulder, we may not pass
-			else if (current_branch == BRANCH_SOKOBAN)
+			else if (position.branch == BRANCH_SOKOBAN)
 				return false; // in sokoban we can't pass by boulders diagonally
 		}
 		//if (polymorphed_to_grid_bug)

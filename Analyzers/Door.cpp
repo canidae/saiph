@@ -21,23 +21,21 @@ void Door::finish() {
 	da.action = ILLEGAL_ACTION;
 	da.direction = ILLEGAL_MOVE;
 	da.dp = NULL;
-	int b = saiph->current_branch;
-	int l = saiph->current_level;
 	int best_distance = INT_MAX;
-	for (vector<DoorPoint>::iterator d = doors[b][l].begin(); d != doors[b][l].end(); ) {
+	for (vector<DoorPoint>::iterator d = doors[saiph->position.branch][saiph->position.level].begin(); d != doors[saiph->position.branch][saiph->position.level].end(); ) {
 		/* check if door still is there */
-		if (saiph->map[b][l].dungeon[d->row][d->col] != OPEN_DOOR && saiph->map[b][l].dungeon[d->row][d->col] != CLOSED_DOOR) {
+		if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[d->row][d->col] != OPEN_DOOR && saiph->map[saiph->position.branch][saiph->position.level].dungeon[d->row][d->col] != CLOSED_DOOR) {
 			/* it isn't, remove it from the list */
-			d = doors[b][l].erase(d);
+			d = doors[saiph->position.branch][saiph->position.level].erase(d);
 			continue;
 		}
-		if (saiph->map[b][l].dungeon[d->row][d->col] == OPEN_DOOR) {
+		if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[d->row][d->col] == OPEN_DOOR) {
 			/* door is open, currently uninteresting */
 			++d;
 			continue;
 		}
 		/*
-		if (d->locked && shop_on_level[b][l]) {
+		if (d->locked && shop_on_level[saiph->position.branch][saiph->position.level]) {
 			++d;
 			continue;
 		}
@@ -100,9 +98,7 @@ void Door::finish() {
 void Door::inspect(const Point &point) {
 	if ((unsigned char) saiph->world->view[point.row][point.col] != OPEN_DOOR && (unsigned char) saiph->world->view[point.row][point.col] != CLOSED_DOOR)
 		return; // we only care about doors
-	int b = saiph->current_branch;
-	int l = saiph->current_level;
-	for (vector<DoorPoint>::iterator d = doors[b][l].begin(); d != doors[b][l].end(); ++d) {
+	for (vector<DoorPoint>::iterator d = doors[saiph->position.branch][saiph->position.level].begin(); d != doors[saiph->position.branch][saiph->position.level].end(); ++d) {
 		if (d->row == point.row && d->col == point.col)
 			return; // we already know about this door
 	}
@@ -111,7 +107,7 @@ void Door::inspect(const Point &point) {
 	dp.row = point.row;
 	dp.col = point.col;
 	dp.locked = false;
-	doors[b][l].push_back(dp);
+	doors[saiph->position.branch][saiph->position.level].push_back(dp);
 }
 
 void Door::parseMessages(const string &messages) {
@@ -127,9 +123,9 @@ void Door::parseMessages(const string &messages) {
 	//} else if (messages.find(DOOR_NO_DOOR, 0) != string::npos) {
 	//} else if (messages.find(DOOR_OPENS, 0) != string::npos) {
 	//} else if (messages.find(DOOR_RESISTS, 0) != string::npos) {
-	} else if (!shop_on_level[saiph->current_branch][saiph->current_level] && messages.find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
+	} else if (!shop_on_level[saiph->position.branch][saiph->position.level] && messages.find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
 		/* TODO
 		 * this will not be specific for doors(?) */
-		shop_on_level[saiph->current_branch][saiph->current_level] = true;
+		shop_on_level[saiph->position.branch][saiph->position.level] = true;
 	}
 }

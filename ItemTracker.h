@@ -1,6 +1,8 @@
 #ifndef ITEMTRACKER_H
 /* defines */
 #define ITEMTRACKER_H
+/* parsing help */
+#define GET_SINGLE_ITEM "%7s %127[^\t\n]"
 
 /* forward declare */
 class ItemTracker;
@@ -32,7 +34,7 @@ class ItemTracker {
 		void addItemToStash(const Item &item);
 		void moveItemFromStashToInventory(const Item &item);
 		void moveItemFromInventoryToStash(const Item &item);
-		void parseMessages(string *messages);
+		void parseMessages(const string &messages);
 		void removeItemFromInventory(const Item &item);
 		void removeItemFromStash(const Item &item);
 
@@ -42,6 +44,8 @@ class ItemTracker {
 
 		/* methods */
 		void addItemToStash(const Coordinate &coordinate, const Item &item);
+		void clearStash(const Coordinate &coordinate);
+		Item parseItemText(const string &text);
 		void removeItemFromStash(const Coordinate &coordinate, const Item &item);
 };
 #endif

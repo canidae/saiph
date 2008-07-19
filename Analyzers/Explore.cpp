@@ -11,33 +11,31 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 /* methods */
 void Explore::command(string *command) {
 	if (move == SEARCH)
-		++search[saiph->current_branch][saiph->current_level][saiph->world->player.row][saiph->world->player.col];
+		++search[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col];
 	*command = move;
 }
 
 void Explore::finish() {
 	/* figure out which place to explore */
-	int b = saiph->current_branch;
-	int l = saiph->current_level;
 	/* make the place the player stands on "visited" */
-	visited[b][l][saiph->world->player.row][saiph->world->player.col] = true;
+	visited[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
 	int best_distance = INT_MAX;
 	move = ILLEGAL_MOVE;
 	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
-		if (search[b][l][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
+		if (search[saiph->position.branch][saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 			/* this place is fully searched out. remove it from the list */
 			e = explore.erase(e);
 			continue;
 		}
-		unsigned char hs = saiph->map[b][l].dungeon[e->row][e->col - 1];
-		unsigned char js = saiph->map[b][l].dungeon[e->row + 1][e->col];
-		unsigned char ks = saiph->map[b][l].dungeon[e->row - 1][e->col];
-		unsigned char ls = saiph->map[b][l].dungeon[e->row][e->col + 1];
+		unsigned char hs = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row][e->col - 1];
+		unsigned char js = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row + 1][e->col];
+		unsigned char ks = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row - 1][e->col];
+		unsigned char ls = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row][e->col + 1];
 		int cur_priority = 1;
 		int count = 0;
-		switch (saiph->map[b][l].dungeon[e->row][e->col]) {
+		switch (saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row][e->col]) {
 			case CORRIDOR:
-				if (!visited[b][l][e->row][e->col]) {
+				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
 					cur_priority = EXPLORE_VISIT_CORRIDOR;
 					break;
 				}
@@ -63,7 +61,7 @@ void Explore::finish() {
 				break;
 
 			case OPEN_DOOR:
-				if (!visited[b][l][e->row][e->col]) {
+				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
 					cur_priority = EXPLORE_VISIT_OPEN_DOOR;
 					break;
 				}
@@ -78,7 +76,7 @@ void Explore::finish() {
 				break;
 
 			case FLOOR:
-				if (visited[b][l][e->row][e->col] && search[b][l][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
+				if (visited[saiph->position.branch][saiph->position.level][e->row][e->col] && search[saiph->position.branch][saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 					/* been here & searched, uninteresting place */
 					e = explore.erase(e);
 					continue;
@@ -97,7 +95,7 @@ void Explore::finish() {
 
 			case UNKNOWN_TILE:
 			case UNKNOWN_TILE_DIAGONALLY_PASSABLE:
-				if (!visited[b][l][e->row][e->col]) {
+				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
 					/* visit this place */
 					cur_priority = EXPLORE_VISIT_UNKNOWN_TILE;
 					break;;
@@ -130,13 +128,11 @@ void Explore::finish() {
 }
 
 void Explore::inspect(const Point &point) {
-	int b = saiph->current_branch;
-	int l = saiph->current_level;
-	unsigned char ds = saiph->map[b][l].dungeon[point.row][point.col];
+	unsigned char ds = saiph->map[saiph->position.branch][saiph->position.level].dungeon[point.row][point.col];
 	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_PASSABLE)
 		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
-	if (ep_added[b][l][point.row][point.col])
+	if (ep_added[saiph->position.branch][saiph->position.level][point.row][point.col])
 		return; // already added this place
-	ep_added[b][l][point.row][point.col] = true;
+	ep_added[saiph->position.branch][saiph->position.level][point.row][point.col] = true;
 	explore.push_back(point);
 }

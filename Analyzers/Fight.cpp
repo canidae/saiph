@@ -18,13 +18,11 @@ void Fight::finish() {
 		return;
 	}
 	/* fight nearest monster */
-	int b = saiph->current_branch;
-	int l = saiph->current_level;
 	int best_distance = INT_MAX;
 	unsigned char best_move = ILLEGAL_MOVE;
 	unsigned char best_symbol = ILLEGAL_MONSTER;
 	int best_color = NO_COLOR;
-	for (list<Monster>::iterator m = saiph->monstertracker->monsters[b][l].begin(); m!= saiph->monstertracker->monsters[b][l].end(); ++m) {
+	for (list<Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->symbol == PET)
 			continue; // we're not fighting pets :)
 		int cur_priority;

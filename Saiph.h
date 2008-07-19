@@ -23,6 +23,7 @@ class Saiph;
 #include "Connection.h"
 #include "Globals.h"
 #include "Item.h"
+#include "ItemTracker.h"
 #include "Map.h"
 #include "MonsterTracker.h"
 #include "Player.h"
@@ -54,10 +55,10 @@ class Saiph {
 	public:
 		/* variables */
 		MonsterTracker *monstertracker;
+		ItemTracker *itemtracker;
 		World *world;
 		Map map[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
-		int current_branch;
-		int current_level;
+		Coordinate position;
 		string command;
 		bool engulfed;
 
