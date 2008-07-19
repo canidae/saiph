@@ -4,6 +4,7 @@
 /* announces */
 #define ILLEGAL_ANNOUNCE 0
 #define ANNOUNCE_ITEM_ON_GROUND 1
+#define ANNOUNCE_ITEM_IN_INVENTORY 2
 
 /* forward declare */
 class Announce;

@@ -29,14 +29,9 @@ class Loot;
 using namespace std;
 
 /* Stash */
-class Stash {
-	public:
-		/* variables */
-		vector<Item> items;
-		unsigned char top_item;
-
-		/* constructors */
-		Stash() { top_item = ILLEGAL_ITEM; }
+struct Stash {
+	unsigned char top_item;
+	vector<Item> items;
 };
 
 /* analyzes the map and finds somewhere to explore */

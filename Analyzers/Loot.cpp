@@ -20,6 +20,16 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph) {
 	check_item[IRON_BALL] = true;
 	check_item[CHAINS] = true;
 	check_item[VENOM] = true;
+
+	/* set top_item to ILLEGAL_ITEM */
+	for (int b = 0; b < MAX_BRANCHES; ++b) {
+		for (int l = 0; l < MAX_DUNGEON_DEPTH; ++l) {
+			for (int r = 0; r <= MAP_ROW_END; ++r) {
+				for (int c = 0; c <= MAP_COL_END; ++c)
+					stashes[b][l][r][c].top_item = ILLEGAL_ITEM;
+			}
+		}
+	}
 }
 
 /* methods */
@@ -69,6 +79,9 @@ void Loot::inspect(const Point &point) {
 		} else {
 			/* we've not seen a stash here before, we should check */
 		}
+		/* visit stash (again) */
+		stashes[b][l][point.row][point.col].top_item = s;
+		visit.push_back(point);
 	} else if (s == saiph->map[b][l].dungeon[point.row][point.col] && stashes[b][l][point.row][point.col].items.size() > 0) {
 		/* there used to be a stash here, but now it's gone */
 		stashes[b][l][point.row][point.col].items.clear();
@@ -79,16 +92,7 @@ void Loot::inspect(const Point &point) {
 				return;
 			}
 		}
-		/* this never happens */
-		return;
-	} else {
-		/* we neither check this item, nor have we seen a stash here before */
-		return;
 	}
-	/* visit stash (again) */
-	stashes[b][l][point.row][point.col].top_item = s;
-	visit.push_back(point);
-	return;
 }
 
 void Loot::parseMessages(string *messages) {
@@ -181,10 +185,12 @@ void Loot::parseMessageItem(const string &message, vector<Item> *stash) {
 	}
 	/* figure out amount of items */
 	int count;
-	if (amount[0] < '0' || amount[0] > '9')
+	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || (amount[0] == 't' && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))
 		count = 1; // "a", "an" or "the" <item>
-	else
+	else if (amount[0] >= '0' || amount[0] <= '9')
 		count = atoi(amount);
+	else
+		return; // hmm, unable to parse this
 	/* add item to stash */
 	stash->push_back(Item(name, count));
 }
