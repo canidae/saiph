@@ -41,6 +41,18 @@ void Loot::command(string *command) {
 		/* checking inventory, set last_turn_inventory_check */
 		last_turn_inventory_check = saiph->world->player.turn;
 	}
+	if (action.size() > 0 && action[0] == PICKUP) {
+		/* picking up items */
+		int b = saiph->current_branch;
+		int l = saiph->current_level;
+		int r = saiph->world->player.row;
+		int c = saiph->world->player.col;
+		if (stashes[b][l][r][c].items.size() == 1) {
+			/* only 1 item here which we'll pick up.
+			 * erase stash & pickup orders for this stash */
+			removeStash(b, l, r, c);
+		}
+	}
 }
 
 void Loot::finish() {
@@ -53,6 +65,33 @@ void Loot::finish() {
 		return;
 	}
 	int best_distance = INT_MAX;
+	int best_priority = -1;
+	action = "";
+	/* pickup items */
+	for (list<Request>::iterator p = pickup.begin(); p != pickup.end(); ++p) {
+		if (p->coordinate.branch != saiph->current_branch || p->coordinate.level != saiph->current_level)
+			continue;
+		if (p->priority < best_priority)
+			continue;
+		int distance = -1;
+		bool straight_line = false;
+		unsigned char move = saiph->shortestPath(p->coordinate, false, &distance, &straight_line);
+		if (move != ILLEGAL_MOVE && distance < best_distance) {
+			best_distance = distance;
+			best_priority = p->priority;
+			action = move;
+		}
+	}
+	if (best_priority >= LOOT_VISIT_STASH_PRIORITY && action.size() > 0) {
+		/* we should pick up something */
+		if (action[0] == REST) {
+			/* infact, we should pick up something _here_ */
+			action = PICKUP;
+		}
+		priority = best_priority;
+		return;
+	}
+	best_distance = INT_MAX;
 	action = "";
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
 		if (v->row == saiph->world->player.row && v->col == saiph->world->player.col) {
@@ -95,14 +134,7 @@ void Loot::inspect(const Point &point) {
 		visit.push_back(point);
 	} else if (s == saiph->map[b][l].dungeon[point.row][point.col] && stashes[b][l][point.row][point.col].items.size() > 0) {
 		/* there used to be a stash here, but now it's gone */
-		stashes[b][l][point.row][point.col].items.clear();
-		for (list<Coordinate>::iterator sl = stash_locations.begin(); sl != stash_locations.end(); ++sl) {
-			if (sl->branch == b && sl->level == l && sl->row == point.row && sl->col == point.col) {
-				/* found the stash, erase it */
-				stash_locations.erase(sl);
-				return;
-			}
-		}
+		removeStash(b, l, point.row, point.col);
 	}
 }
 
@@ -135,7 +167,55 @@ void Loot::parseMessages(string *messages) {
 	int r = saiph->world->player.row;
 	int c = saiph->world->player.col;
 	vector<Item> *stash = &stashes[b][l][r][c].items;
-	string::size_type pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
+	string::size_type pos = messages->find(MESSAGE_PICK_UP_WHAT, 0);
+	if (pos != string::npos) {
+		/* we're trying to pick up something */
+		if (stash->size() > 0) {
+			/* we know about this stash already.
+			 * ditch the previous content of this stash */
+			stash->clear();
+		} else {
+			/* new stash, add it to stash_locations */
+			stash_locations.push_back(Coordinate(b, l, r, c));
+		}
+		action = "";
+		pos = messages->find("  ", pos + 1);
+		while (pos != string::npos && messages->size() > pos + 6) {
+			pos += 6;
+			string::size_type length = messages->find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if ((*messages)[pos - 2] == '-') {
+				Item item = parseMessageItem(messages->substr(pos, length));
+				if (item.count > 0) {
+					for (list<Request>::iterator p = pickup.begin(); p != pickup.end(); ) {
+						if (p->coordinate.branch != b || p->coordinate.level != l || p->coordinate.row != r || p->coordinate.col != c || p->data != item.name) {
+							++p;
+							continue;
+						}
+						/* pick up */
+						if (p->value1 < item.count) {
+							/* only some of them */
+							action.append(1, (unsigned char) p->value1);
+							item.count = item.count - p->value1;
+							/* only add to the stash what we're not picking up */
+							stash->push_back(item);
+						}
+						action.append(1, (*messages)[pos - 4]); // the key before the item
+						/* remove from pickup list */
+						p = pickup.erase(p);
+
+					}
+				}
+			}
+			pos += length;
+		}
+		action.append(" ");
+		priority = PRIORITY_CONTINUE_ACTION;
+		return;
+	}
+	pos = messages->find(MESSAGE_YOU_SEE_HERE, 0);
 	if (pos != string::npos) {
 		/* one item on the floor */
 		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
@@ -233,4 +313,23 @@ Item Loot::parseMessageItem(const string &message) {
 	item.name = name;
 	item.count = count;
 	return item;
+}
+
+void Loot::removeStash(int branch, int level, int row, int col) {
+	stashes[branch][level][row][col].items.clear();
+	stashes[branch][level][row][col].top_item = ILLEGAL_ITEM;
+	for (list<Request>::iterator p = pickup.begin(); p != pickup.end(); ) {
+		if (p->coordinate.branch == branch && p->coordinate.level == level && p->coordinate.row == row && p->coordinate.col == col) {
+			p = pickup.erase(p);
+			continue;
+		}
+		++p;
+	}
+	for (list<Coordinate>::iterator sl = stash_locations.begin(); sl != stash_locations.end(); ++sl) {
+		if (sl->branch == branch && sl->level == level && sl->row == row && sl->col == col) {
+			/* found the stash, erase it */
+			stash_locations.erase(sl);
+			return;
+		}
+	}
 }

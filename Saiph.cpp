@@ -111,6 +111,7 @@ Saiph::~Saiph() {
 /* methods */
 void Saiph::announce(const Announce &announce) {
 	/* announce something to other analyzers */
+	cerr << "[ANNOUNCE] " << announce.announce << ", " << announce.priority << ", " << announce.value1 << ", " << announce.data << ", (" << announce.coordinate.branch << ", " << announce.coordinate.level << ", " << announce.coordinate.row << ", " << announce.coordinate.col << ")" << endl;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->announce(announce);
 }
@@ -158,6 +159,7 @@ void Saiph::farlook(const Point &target) {
 
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
+	cerr << "[REQUEST ] " << request.request << ", " << request.priority << ", " << request.value1 << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->request(request) && !status)

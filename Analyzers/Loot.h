@@ -65,5 +65,6 @@ class Loot : public Analyzer {
 
 		/* methods */
 		Item parseMessageItem(const string &message);
+		void removeStash(int branch, int level, int row, int col);
 };
 #endif

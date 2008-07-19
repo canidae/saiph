@@ -41,17 +41,14 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 void Food::announce(const Announce &announce) {
 	if (announce.announce == ANNOUNCE_ITEM_ON_GROUND) {
 		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			if (announce.data == *f) {
+			if (announce.data.find(*f, 0) != string::npos) {
 				/* yummy, food!
 				 * request that someone pick it up for us */
 				req.request = REQUEST_PICK_UP_ITEM;
 				req.priority = FOOD_PICK_UP_PRIORITY;
 				req.data = announce.data;
 				req.value1 = announce.value1; // pick up all there is
-				req.coordinate.branch = announce.coordinate.branch;
-				req.coordinate.level = announce.coordinate.level;
-				req.coordinate.row = announce.coordinate.row;
-				req.coordinate.col = announce.coordinate.col;
+				req.coordinate = announce.coordinate;
 				saiph->request(req); // no need to check for outcome of this
 			}
 		}

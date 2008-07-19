@@ -65,6 +65,7 @@
 #define MOVE_DOWN '>'
 #define ILLEGAL_MOVE 0
 /* actions */
+#define PICKUP ','
 #define REST '.'
 #define ILLEGAL_ACTION 0
 #define ENGRAVE 'E'
