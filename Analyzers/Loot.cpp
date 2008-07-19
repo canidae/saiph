@@ -30,17 +30,28 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph) {
 			}
 		}
 	}
+
+	last_turn_inventory_check = INT_MIN;
 }
 
 /* methods */
 void Loot::command(string *command) {
 	*command = action;
+	if (action == "i") {
+		/* checking inventory, set last_turn_inventory_check */
+		last_turn_inventory_check = saiph->world->player.turn;
+	}
 }
 
 void Loot::finish() {
 	/* figure out which stash to visit, if any */
 	if (action == ":")
 		return;
+	if (saiph->world->player.turn > last_turn_inventory_check + LOOT_CHECK_INVENTORY_INTERVAL) {
+		action = "i";
+		priority = PRIORITY_LOOK;
+		return;
+	}
 	int best_distance = INT_MAX;
 	action = "";
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
@@ -96,6 +107,29 @@ void Loot::inspect(const Point &point) {
 }
 
 void Loot::parseMessages(string *messages) {
+	if (last_turn_inventory_check == saiph->world->player.turn && saiph->world->menu) {
+		/* we requested the inventory to be listed, and it was.
+		 * now parse it */
+		inventory.clear();
+		string::size_type pos = messages->find("  ");
+		while (pos != string::npos && messages->size() > pos + 6) {
+			pos += 6;
+			string::size_type length = messages->find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if ((*messages)[pos - 2] == '-') {
+				unsigned char key = (*messages)[pos - 4];
+				Item item = parseMessageItem(messages->substr(pos, length));
+				if (item.count > 0)
+					inventory[key] = item;
+			}
+			pos += length;
+		}
+		priority = PRIORITY_CONTINUE_ACTION;
+		action = " ";
+		return;
+	}
 	int b = saiph->current_branch;
 	int l = saiph->current_level;
 	int r = saiph->world->player.row;
@@ -116,7 +150,9 @@ void Loot::parseMessages(string *messages) {
 				/* new stash, add it to stash_locations */
 				stash_locations.push_back(Coordinate(b, l, r, c));
 			}
-			parseMessageItem(messages->substr(pos, length), stash);
+			Item item = parseMessageItem(messages->substr(pos, length));
+			if (item.count > 0)
+				stash->push_back(item);
 		}
 	}
 	pos = messages->find(MESSAGE_THINGS_THAT_ARE_HERE, 0);
@@ -131,13 +167,15 @@ void Loot::parseMessages(string *messages) {
 			stash_locations.push_back(Coordinate(b, l, r, c));
 		}
 		pos = messages->find("  ", pos + 1);
-		while (pos != string::npos) {
+		while (pos != string::npos && messages->size() > pos + 2) {
 			pos += 2;
 			string::size_type length = messages->find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			parseMessageItem(messages->substr(pos, length), stash);
+			Item item = parseMessageItem(messages->substr(pos, length));
+			if (item.count > 0)
+				stash->push_back(item);
 			pos += length;
 		}
 	}
@@ -174,14 +212,15 @@ bool Loot::request(const Request &request) {
 }
 
 /* private methods */
-void Loot::parseMessageItem(const string &message, vector<Item> *stash) {
+Item Loot::parseMessageItem(const string &message) {
+	Item item("", -1);
 	char amount[8];
 	char name[128];
 	int matched = sscanf(message.c_str(), GET_SINGLE_ITEM, amount, name);
 	if (matched != 2) {
 		/* this may happen when:
 		 * "Things that are here:  a rothe corpse  16 gold pieces  Something is written here in the dust." */
-		return;
+		return item;
 	}
 	/* figure out amount of items */
 	int count;
@@ -190,7 +229,8 @@ void Loot::parseMessageItem(const string &message, vector<Item> *stash) {
 	else if (amount[0] >= '0' || amount[0] <= '9')
 		count = atoi(amount);
 	else
-		return; // hmm, unable to parse this
-	/* add item to stash */
-	stash->push_back(Item(name, count));
+		return item; // hmm, unable to parse this
+	item.name = name;
+	item.count = count;
+	return item;
 }

@@ -19,7 +19,6 @@ Player::Player() {
 	hitpoints_max = 0;
 	power = 0;
 	power_max = 0;
-	turn = 0;
 	/* effects */
 	blind = false;
 	confused = false;
@@ -29,14 +28,14 @@ Player::Player() {
 	ill = false;
 	slimed = false;
 	stunned = false;
-	/* other */
-	last_pray_turn = 0;
 	/* position */
 	dungeon = 0;
 	col = 0;
 	row = 0;
 	/* zorkmids */
 	zorkmids = 0;
+	/* turn */
+	turn = 0;
 }
 
 /* methods */

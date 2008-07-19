@@ -5,6 +5,8 @@
 #define GET_SINGLE_ITEM "%7s %127[^\t\n]"
 /* priorities */
 #define LOOT_VISIT_STASH_PRIORITY 50
+/* how often we should check inventory */
+#define LOOT_CHECK_INVENTORY_INTERVAL 1000
 /* messages */
 #define LOOT_LITTLE_LIFTING "You have a little trouble lifting"
 #define LOOT_EXTREME_LIFTING "You have extreme difficulty lifting"
@@ -15,6 +17,7 @@ class Loot;
 
 /* includes */
 #include <list>
+#include <map>
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
@@ -56,9 +59,11 @@ class Loot : public Analyzer {
 		list<Coordinate> stash_locations;
 		list<Point> visit;
 		list<Request> pickup;
+		map<unsigned char, Item> inventory;
+		int last_turn_inventory_check;
 		Announce announce;
 
 		/* methods */
-		void parseMessageItem(const string &message, vector<Item> *stash);
+		Item parseMessageItem(const string &message);
 };
 #endif

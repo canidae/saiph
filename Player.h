@@ -37,7 +37,6 @@ class Player : public Point {
 		int hitpoints_max;
 		int power;
 		int power_max;
-		int turn;
 		/* effects */
 		bool blind;
 		bool confused;
@@ -47,12 +46,12 @@ class Player : public Point {
 		bool ill;
 		bool slimed;
 		bool stunned;
-		/* other */
-		int last_pray_turn;
 		/* position */
 		int dungeon;
 		/* zorkmids */
 		int zorkmids;
+		/* turn */
+		int turn;
 		/* for parsing text */
 		char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 
