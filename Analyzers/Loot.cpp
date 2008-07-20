@@ -11,6 +11,9 @@ void Loot::command(string *command) {
 	if (action == "i") {
 		/* checking inventory, set last_turn_inventory_check */
 		last_turn_inventory_check = saiph->world->player.turn;
+		action = " ";
+	} else if (action == " ") {
+		/* closing inventory listing */
 		action = "";
 	}
 }
@@ -68,6 +71,14 @@ void Loot::finish() {
 	}
 	if (best_distance < INT_MAX)
 		priority = LOOT_VISIT_STASH_PRIORITY;
+}
+
+void Loot::parseMessages(const string &messages) {
+	if (action == " ") {
+		/* we've listed the inventory, close the meny */
+		priority = PRIORITY_CONTINUE_ACTION;
+		return;
+	}
 }
 
 bool Loot::request(const Request &request) {

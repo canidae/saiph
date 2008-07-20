@@ -41,6 +41,7 @@ class Loot : public Analyzer {
 		/* methods */
 		void command(string *command);
 		void finish();
+		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
 	private:
