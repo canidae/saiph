@@ -111,6 +111,7 @@ void World::fetchMessages() {
 		 * we might want to significantly improve this later,
 		 * as we sometimes get partial data */
 		question = true;
+		menu = false; // no menu when we got a question
 	} else {
 		/* --More-- not found, but we might have a menu.
 		 * this is pain */
@@ -118,7 +119,7 @@ void World::fetchMessages() {
 			/* we had a menu last frame, check if we still do */
 			msg_str = &view[last_menu.row][last_menu.col];
 			int x, y;
-			if (msg_str.find(END, 0) == string::npos || sscanf(&view[last_menu.row][last_menu.col], PAGE, &x, &y) != 2) {
+			if (msg_str.find(END, 0) == string::npos && sscanf(&view[last_menu.row][last_menu.col], PAGE, &x, &y) != 2) {
 				/* nah, last menu is gone */
 				menu = false;
 				last_menu.row = -1;
