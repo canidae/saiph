@@ -559,5 +559,6 @@ int main() {
 	//	;
 	while (saiph->run())
 		;
+	cerr << "Quitting gracefully" << endl;
 	delete saiph;
 }

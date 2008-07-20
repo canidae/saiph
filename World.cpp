@@ -12,6 +12,7 @@ World::World(Connection *connection) : connection(connection) {
 	messages = "  ";
 	menu = false;
 	question = false;
+	last_menu_text = Point(-1, -1);
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
         /* remapping of unique symbols */
@@ -81,6 +82,8 @@ void World::fetchMessages() {
 			 * we'll have to "+ pos" */
 			c = cursor.col - END_LENGTH + pos;
 			menu = true;
+			last_menu_text.row = r;
+			last_menu_text.col = c;
 		} else {
 			msg_str = &data[data_size - PAGE_LENGTH];
 			if ((pos = msg_str.find(PAGE, 0)) != string::npos) {
@@ -90,6 +93,8 @@ void World::fetchMessages() {
 				 * so we'll have to move c 2 squares left */
 				c = cursor.col - PAGE_LENGTH - 2;
 				menu = true;
+				last_menu_text.row = r;
+				last_menu_text.col = c;
 			} else {
 				/* look for question */
 				msg_str = &data[data_size - QUESTION_LENGTH];
@@ -421,6 +426,21 @@ void World::update() {
 	}
 
 	fetchMessages();
+
+	if (!menu && last_menu_text.row != -1 && last_menu_text.col != -1) {
+		/* are we really sure there isn't a menu? */
+		if (view[last_menu_text.row][last_menu_text.col] == '(' && view[last_menu_text.row][last_menu_text.col + 1] == 'e' && view[last_menu_text.row][last_menu_text.col + 2] == 'n' && view[last_menu_text.row][last_menu_text.col + 3] == 'd' && view[last_menu_text.row][last_menu_text.col + 4] == ')') {
+			/* it really is a menu here :) */
+			menu = true;
+			/* also, it won't remove "Pick up what?" from messages,
+			 * as that is on first line. we'll have to clear messages too */
+			messages = "";
+		} else {
+			/* nopes, no menu */
+			last_menu_text.row = -1;
+			last_menu_text.col = -1;
+		}
+	}
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);

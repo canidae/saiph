@@ -24,30 +24,29 @@ void Loot::finish() {
 	for (vector<Point>::iterator s = saiph->itemtracker->changed.begin(); s != saiph->itemtracker->changed.end(); ++s)
 		visit.push_back(*s);
 	/* check inventory */
-	if (saiph->world->player.turn > last_turn_inventory_check + LOOT_CHECK_INVENTORY_INTERVAL) {
+	if (PRIORITY_LOOK > priority && saiph->world->player.turn > last_turn_inventory_check + LOOT_CHECK_INVENTORY_INTERVAL) {
 		action = "i";
 		priority = PRIORITY_LOOK;
 		return;
 	}
 	int best_distance = INT_MAX;
 	int best_priority = ILLEGAL_PRIORITY;
-	action = "";
 	/* loot items */
-	for (list<LootStash>::iterator l = loot.begin(); l != loot.end(); ++l) {
-		if (l->branch != saiph->position.branch || l->level != saiph->position.level)
+	for (map<Coordinate, int>::iterator l = loot.begin(); l != loot.end(); ++l) {
+		if (l->first.branch != saiph->position.branch || l->first.level != saiph->position.level)
 			continue;
-		if (l->priority < best_priority)
+		if (l->second < best_priority)
 			continue;
 		int distance = -1;
 		bool straight_line = false;
-		unsigned char move = saiph->shortestPath(*l, false, &distance, &straight_line);
+		unsigned char move = saiph->shortestPath(l->first, false, &distance, &straight_line);
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
-			best_priority = l->priority;
+			best_priority = l->second;
 			action = move;
 		}
 	}
-	if (best_priority > ILLEGAL_PRIORITY) {
+	if (best_priority > priority && best_priority > ILLEGAL_PRIORITY) {
 		/* we should pick up something */
 		if (action[0] == REST) {
 			/* infact, we should pick up something _here_ */
@@ -55,6 +54,8 @@ void Loot::finish() {
 		}
 		priority = best_priority;
 	}
+	if (LOOT_VISIT_STASH_PRIORITY < priority)
+		return;
 	/* visit stashes */
 	best_distance = INT_MAX;
 	unsigned char best_action = ILLEGAL_ACTION;
@@ -89,6 +90,8 @@ void Loot::parseMessages(const string &messages) {
 		 * analyzers will by themselves decide what to pick up, so we just try to close it */
 		action = " ";
 		priority = PRIORITY_PICKUP_STASH;
+		/* and remember to remove this stash from "loot" */
+		loot.erase(saiph->position);
 	} else if (saiph->world->menu && action == " ") {
 		/* probably listing the inventory, close the menu */
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -98,7 +101,16 @@ void Loot::parseMessages(const string &messages) {
 bool Loot::request(const Request &request) {
 	if (request.request == REQUEST_LOOT_STASH) {
 		/* someone wants loot */
-		loot.push_back(LootStash(request.coordinate, request.priority));
+		map<Coordinate, int>::iterator l = loot.find(request.coordinate);
+		if (l != loot.end()) {
+			/* this stash has already been requested by someone else.
+			 * check if priority is higher */
+			if (l->second < request.priority)
+				l->second = request.priority;
+		} else {
+			/* this stash has not been requested looted before */
+			loot[request.coordinate] = request.priority;
+		}
 		return true;
 	}
 	return false;

@@ -52,7 +52,7 @@ class ItemTracker {
 		void clearStash(const Coordinate &coordinate);
 		Item parseItemText(const string &text);
 		void removeItemFromInventory(unsigned char key, const Item &item);
-		void removeItemFromPickup(unsigned char key, const Item &item);
+		void removeItemFromPickup(const Item &item);
 		void removeItemFromStash(const Coordinate &coordinate, const Item &item);
 };
 #endif

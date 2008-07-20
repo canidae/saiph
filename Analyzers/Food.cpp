@@ -72,14 +72,15 @@ void Food::finish() {
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FOOD_LOOT_PRIORITY;
 		req.coordinate = saiph->position;
-		for (list<Item>::iterator i = saiph->itemtracker->on_ground->items.begin(); i != saiph->itemtracker->on_ground->items.end(); ++i) {
+		bool die = false;
+		for (list<Item>::iterator i = saiph->itemtracker->on_ground->items.begin(); !die && i != saiph->itemtracker->on_ground->items.end(); ++i) {
 			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 				if (i->name.find(*f, 0) != string::npos) {
 					/* wooo, foood!
 					 * request that someone loot this stash */
 					saiph->request(req);
 					/* and break loops */
-					i = saiph->itemtracker->on_ground->items.end();
+					die = true;
 					break;
 				}
 			}
@@ -100,7 +101,7 @@ void Food::parseMessages(const string &messages) {
 					/* we should pick up this */
 					action = p->first;
 					priority = PRIORITY_PICKUP_ITEM;
-					return;
+					continue;
 				}
 			}
 		}

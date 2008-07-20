@@ -60,6 +60,7 @@ class World {
 		int data_size;
 		string msg_str; // helps fetching messages
 		unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1]; // remapping ambigous symbols
+		Point last_menu_text; // needed to help detect menus that persist over turns
 
 		/* methods */
 		void addChangedLocation(const Point &point);

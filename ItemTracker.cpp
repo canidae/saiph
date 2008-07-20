@@ -65,7 +65,6 @@ void ItemTracker::parseMessages(const string &messages) {
 	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos) {
 		/* picking up stuff.
 		 * we should clear the stash here too and update it */
-		cerr << "[ITEMTRACKER] picking up stuff" << endl;
 		clearStash(saiph->position);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 6) {
@@ -90,6 +89,8 @@ void ItemTracker::parseMessages(const string &messages) {
 		 * we're searching for ".  " as we won't get that when we're listing inventory.
 		 * also, this won't detect gold, but we might not need to detect that,
 		 * well, it's gonna be a bit buggy when picking up gold from stashes */
+		/* additionally, we'll assume we're picking up from the stash at this location.
+		 * this will also trigger on wishes, but meh, probably not gonna be an issue */
 		pos = 0;
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
@@ -102,6 +103,7 @@ void ItemTracker::parseMessages(const string &messages) {
 				Item item = parseItemText(messages.substr(pos, length));
 				addItemToInventory(key, item);
 				removeItemFromStash(saiph->position, item);
+				removeItemFromPickup(item);
 				pos += length;
 			}
 		}
@@ -162,6 +164,7 @@ void ItemTracker::updateStash(const Point &point) {
 
 /* private methods */
 void ItemTracker::addItemToInventory(unsigned char key, const Item &item) {
+	cerr << "[ITEMTRACKER] Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (item.count < 0)
 		return;
 	if (inventory.find(key) != inventory.end()) {
@@ -174,12 +177,14 @@ void ItemTracker::addItemToInventory(unsigned char key, const Item &item) {
 }
 
 void ItemTracker::addItemToPickup(unsigned char key, const Item &item) {
+	cerr << "[ITEMTRACKER] Adding " << item.count << " " << item.name << " to pickup slot " << key << endl;
 	if (item.count < 0)
 		return;
-	inventory[key] = item;
+	pickup[key] = item;
 }
 
 void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item) {
+	cerr << "[ITEMTRACKER] Adding " << item.count << " " << item.name << " to stash at " << coordinate.branch << ", " << coordinate.level << ", " << coordinate.row << ", " << coordinate.col << endl;
 	if (item.count < 0)
 		return;
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(coordinate);
@@ -188,12 +193,14 @@ void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item)
 		return;
 	}
 	/* new stash */
+	cerr << "NEW STASH OMGWTFBBQ" << endl;
 	Stash stash(coordinate);
 	stash.items.push_back(item);
 	stashes[coordinate.branch][coordinate.level][coordinate] = stash;
 }
 
 void ItemTracker::clearStash(const Coordinate &coordinate) {
+	cerr << "[ITEMTRACKER] Clearing stash at " << coordinate.branch << ", " << coordinate.level << ", " << coordinate.row << ", " << coordinate.col << endl;
 	/* clear the contents of a stash */
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(coordinate);
 	if (s != stashes[saiph->position.branch][saiph->position.level].end())
@@ -219,36 +226,40 @@ Item ItemTracker::parseItemText(const string &text) {
 }
 
 void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
+	cerr << "[ITEMTRACKER] Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (item.count < 0)
 		return;
-	if (inventory.find(key) != inventory.end()) {
-		Item &inv = inventory[key];
-		if (inv.count > item.count) {
-			/* we got more than we remove */
-			inv.count -= item.count;
-		} else {
-			/* removing all we got */
-			inventory.erase(key);
-		}
-	}
+	map<unsigned char, Item>::iterator i = inventory.find(key);
+	if (i == inventory.end())
+		return;
+	if (i->second.count > item.count)
+		i->second.count -= item.count; // we got more than we remove
+	else
+		inventory.erase(i); // removing all we got
 }
 
-void ItemTracker::removeItemFromPickup(unsigned char key, const Item &item) {
+void ItemTracker::removeItemFromPickup(const Item &item) {
+	/* we currently don't have a way to tell exactly which item we removed.
+	 * we'll have to search and remove the best match */
+	cerr << "[ITEMTRACKER] Removing " << item.count << " " << item.name << " from pickup" << endl;
 	if (item.count < 0)
 		return;
-	if (pickup.find(key) != pickup.end()) {
-		Item &pick = pickup[key];
-		if (pick.count > item.count) {
+	for (map<unsigned char, Item>::iterator p = pickup.begin(); p != pickup.end(); ++p) {
+		if (p->second.name != item.name)
+			continue;
+		if (p->second.count > item.count) {
 			/* we got more than we remove */
-			pick.count -= item.count;
+			p->second.count -= item.count;
 		} else {
 			/* removing all we got */
-			pickup.erase(key);
+			pickup.erase(p);
 		}
+		return;
 	}
 }
 
 void ItemTracker::removeItemFromStash(const Coordinate &coordinate, const Item &item) {
+	cerr << "[ITEMTRACKER] Removing " << item.count << " " << item.name << " from stash at " << coordinate.branch << ", " << coordinate.level << ", " << coordinate.row << ", " << coordinate.col << endl;
 	if (item.count < 0)
 		return;
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(coordinate);
