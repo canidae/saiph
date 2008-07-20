@@ -3,6 +3,7 @@
 #define MONSTER_H
 
 /* includes */
+#include "Globals.h"
 #include "Point.h"
 
 /* namespaces */
@@ -16,6 +17,6 @@ class Monster : public Point {
 		int color;
 
 		/* constructors */
-		Monster(const Point &point, unsigned char symbol, int color);
+		Monster(const Point &point = Point(), unsigned char symbol = ILLEGAL_MONSTER, int color = 0);
 };
 #endif

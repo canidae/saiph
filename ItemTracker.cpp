@@ -121,36 +121,36 @@ void ItemTracker::parseMessages(const string &messages) {
 
 void ItemTracker::removeStashes() {
 	/* remove stashes that seems to be gone. */
-	for (list<Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ) {
-		if (saiph->world->view[s->row][s->col] == s->top_symbol) {
+	for (map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ) {
+		if (saiph->world->view[s->second.row][s->second.col] == s->second.top_symbol) {
 			++s;
 			continue; // same top_symbol
 		}
-		if (saiph->world->view[s->row][s->col] == saiph->map[s->branch][s->level].dungeon[s->row][s->col]) {
+		if (saiph->world->view[s->second.row][s->second.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[s->second.row][s->second.col]) {
 			/* stash seems to be gone */
-			changed.push_back(*s);
-			s = stashes[saiph->position.branch][saiph->position.level].erase(s);
+			changed.push_back(s->second);
+			stashes[saiph->position.branch][saiph->position.level].erase(s++);
 			continue;
 		}
 		/* if we're here, the stash is changed */
-		changed.push_back(*s);
+		changed.push_back(s->second);
 		++s;
 	}
 }
 
 void ItemTracker::updateStash(const Point &point) {
 	unsigned char symbol = saiph->world->view[point.row][point.col];
-	for (list<Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
-		if (s->row != point.row || s->col != point.col)
+	for (map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
+		if (s->second.row != point.row || s->second.col != point.col)
 			continue;
-		if (s->top_symbol == symbol)
+		if (s->second.top_symbol == symbol)
 			continue;
 		/* this stash has changed somehow */
 		changed.push_back(point);
 		return;
 	}
 	/* new stash */
-	stashes[saiph->position.branch][saiph->position.level].push_back(Stash(Coordinate(saiph->position.branch, saiph->position.level, point), symbol));
+	stashes[saiph->position.branch][saiph->position.level][point] = Stash(Coordinate(saiph->position.branch, saiph->position.level, point), symbol);
 	changed.push_back(point);
 }
 
@@ -176,21 +176,21 @@ void ItemTracker::addItemToPickup(unsigned char key, const Item &item) {
 void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item) {
 	if (item.count < 0)
 		return;
-	for (list<Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
-		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
+	for (map<Point, Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
+		if (s->second.row != coordinate.row || s->second.col != coordinate.col)
 			continue;
-		s->addItem(item);
+		s->second.addItem(item);
 		return;
 	}
 	/* new stash */
 	Stash stash(coordinate);
 	stash.items.push_back(item);
-	stashes[coordinate.branch][coordinate.level].push_back(stash);
+	stashes[coordinate.branch][coordinate.level][coordinate] = stash;
 }
 
 void ItemTracker::clearStash(const Coordinate &coordinate) {
-	for (list<Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
-		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
+	for (map<Point, Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
+		if (s->second.row != coordinate.row || s->second.col != coordinate.col)
 			continue;
 		stashes[coordinate.branch][coordinate.level].erase(s);
 		return;
@@ -248,11 +248,11 @@ void ItemTracker::removeItemFromPickup(unsigned char key, const Item &item) {
 void ItemTracker::removeItemFromStash(const Coordinate &coordinate, const Item &item) {
 	if (item.count < 0)
 		return;
-	for (list<Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
-		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
+	for (map<Point, Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
+		if (s->second.row != coordinate.row || s->second.col != coordinate.col)
 			continue;
-		s->removeItem(item);
-		if (s->items.size() <= 0)
+		s->second.removeItem(item);
+		if (s->second.items.size() <= 0)
 			stashes[coordinate.branch][coordinate.level].erase(s);
 		return;
 	}

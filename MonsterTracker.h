@@ -7,6 +7,7 @@ class MonsterTracker;
 
 /* includes */
 #include <list>
+#include <map>
 #include "Globals.h"
 #include "Monster.h"
 #include "Point.h"
@@ -20,7 +21,7 @@ class MonsterTracker {
 	public:
 		/* variables */
 		bool monster[UCHAR_MAX + 1];
-		list<Monster> monsters[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
+		map<int, map<int, map<Point, Monster> > > monsters;
 
 		/* constructors */
 		MonsterTracker(Saiph *saiph);

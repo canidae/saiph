@@ -28,7 +28,7 @@ class ItemTracker {
 		bool item[UCHAR_MAX + 1];
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
-		list<Stash> stashes[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
+		map<int, map<int, map<Point, Stash> > > stashes;
 		vector<Point> changed;
 		Stash *on_ground;
 

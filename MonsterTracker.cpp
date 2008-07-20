@@ -15,24 +15,24 @@ MonsterTracker::MonsterTracker(Saiph *saiph) : saiph(saiph) {
 void MonsterTracker::removeMonsters() {
 	/* when we're standing next to where a monster used to be
 	 * we'll remove the monster if we can't see it */
-	for (list<Monster>::iterator m = monsters[saiph->position.branch][saiph->position.level].begin(); m != monsters[saiph->position.branch][saiph->position.level].end(); ) {
-		if (abs(saiph->position.row - m->row) > 1 || abs(saiph->position.col - m->col) > 1) {
+	for (map<Point, Monster>::iterator m = monsters[saiph->position.branch][saiph->position.level].begin(); m != monsters[saiph->position.branch][saiph->position.level].end(); ) {
+		if (abs(saiph->position.row - m->second.row) > 1 || abs(saiph->position.col - m->second.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
 		}
-		unsigned char symbol = saiph->world->view[m->row][m->col];
-		if (saiph->world->color[m->row][m->col] == INVERSE)
+		unsigned char symbol = saiph->world->view[m->second.row][m->second.col];
+		if (saiph->world->color[m->second.row][m->second.col] == INVERSE)
 			symbol = PET; // pets are a bit unique
-		if (symbol == m->symbol && saiph->world->color[m->row][m->col] == m->color) {
+		if (symbol == m->second.symbol && saiph->world->color[m->second.row][m->second.col] == m->second.color) {
 			/* we can still see the monster */
 			++m;
 			continue;
 		}
 		/* remove monster from monstermap */
-		saiph->map[saiph->position.branch][saiph->position.level].monster[m->row][m->col] = ILLEGAL_MONSTER;
+		saiph->map[saiph->position.branch][saiph->position.level].monster[m->second.row][m->second.col] = ILLEGAL_MONSTER;
 		/* remove monster from list */
-		m = monsters[saiph->position.branch][saiph->position.level].erase(m);
+		monsters[saiph->position.branch][saiph->position.level].erase(m++);
 	}
 }
 
@@ -47,18 +47,18 @@ void MonsterTracker::updateMonster(const Point &point) {
 	/* find nearest monster and update position */
 	int best_distance = INT_MAX;
 	Monster *best_monster = NULL;
-	for (list<Monster>::iterator m = monsters[saiph->position.branch][saiph->position.level].begin(); m != monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
-		if (m->symbol != symbol || m->color != color)
+	for (map<Point, Monster>::iterator m = monsters[saiph->position.branch][saiph->position.level].begin(); m != monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+		if (m->second.symbol != symbol || m->second.color != color)
 			continue; // not the same monster
-		if (saiph->world->view[m->row][m->col] == m->symbol && saiph->world->color[m->row][m->col] == m->color)
+		if (saiph->world->view[m->second.row][m->second.col] == m->second.symbol && saiph->world->color[m->second.row][m->second.col] == m->second.color)
 			continue; // this monster already is on its square
 		/* see if this monster is closer than the last found monster */
-		int distance = max(abs(m->row - point.row), abs(m->col - point.col));
+		int distance = max(abs(m->second.row - point.row), abs(m->second.col - point.col));
 		if (distance >= best_distance)
 			continue;
 		/* it is */
 		best_distance = distance;
-		best_monster = &(*m);
+		best_monster = &m->second;
 	}
 	if (best_monster != NULL) {
 		/* remove monster from monstermap */
@@ -69,5 +69,5 @@ void MonsterTracker::updateMonster(const Point &point) {
 		return;
 	}
 	/* add monster */
-	monsters[saiph->position.branch][saiph->position.level].push_back(Monster(point, symbol, color));
+	monsters[saiph->position.branch][saiph->position.level][point] = Monster(point, symbol, color);
 }
