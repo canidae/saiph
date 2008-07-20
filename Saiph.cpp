@@ -170,6 +170,10 @@ bool Saiph::run() {
 	else
 		engulfed = false;
 
+	/* call begin() in itemtracker & monstertracker */
+	itemtracker->begin();
+	monstertracker->begin();
+
 	/* update maps */
 	if (!world->question && !world->menu && !engulfed)
 		updateMaps();
@@ -398,7 +402,6 @@ void Saiph::parseMessages() {
 
 void Saiph::updateMaps() {
 	/* update the various maps */
-	itemtracker->changed.clear(); // clear the vector of changed stashes on this level
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 		unsigned char s = world->view[c->row][c->col];
 		if (s == SOLID_ROCK)

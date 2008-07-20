@@ -22,15 +22,15 @@ void Fight::finish() {
 	unsigned char best_move = ILLEGAL_MOVE;
 	unsigned char best_symbol = ILLEGAL_MONSTER;
 	int best_color = NO_COLOR;
-	for (list<Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
-		if (m->symbol == PET)
+	for (map<Point, Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
 		int cur_priority;
-		if (m->symbol == 'e' && m->color == BLUE)
+		if (m->second.symbol == 'e' && m->second.color == BLUE)
 			cur_priority = FIGHT_ATTACK_BLUE_E;
-		else if (m->symbol == '@' && m->color == WHITE)
+		else if (m->second.symbol == '@' && m->second.color == WHITE)
 			cur_priority = FIGHT_ATTACK_WHITE_AT;
-		else if (m->symbol == '@' && m->color == BLUE)
+		else if (m->second.symbol == '@' && m->second.color == BLUE)
 			cur_priority = FIGHT_ATTACK_BLUE_AT;
 		else
 			cur_priority = FIGHT_ATTACK_MONSTER;
@@ -38,7 +38,7 @@ void Fight::finish() {
 			continue; // we've already found another monster with higher priority
 		int distance = -1;
 		bool straight_line = false;
-		unsigned char move = saiph->shortestPath(*m, true, &distance, &straight_line);
+		unsigned char move = saiph->shortestPath(m->first, true, &distance, &straight_line);
 		if (move == ILLEGAL_MOVE)
 			continue; // can't path to this monster
 		if (distance >= best_distance)
@@ -46,8 +46,8 @@ void Fight::finish() {
 		priority = cur_priority;
 		best_distance = distance;
 		best_move = move;
-		best_symbol = m->symbol;
-		best_color = m->color;
+		best_symbol = m->second.symbol;
+		best_color = m->second.color;
 	}
 	action = best_move;
 }

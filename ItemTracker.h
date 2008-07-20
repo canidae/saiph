@@ -36,6 +36,7 @@ class ItemTracker {
 		ItemTracker(Saiph *saiph);
 
 		/* methods */
+		void begin();
 		void parseMessages(const string &messages);
 		void removeStashes();
 		void updateStash(const Point &point);

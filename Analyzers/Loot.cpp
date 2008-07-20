@@ -20,13 +20,17 @@ void Loot::command(string *command) {
 
 void Loot::finish() {
 	/* check inventory, loot or visit stash */
+	/* first check if some stashes have changed since last time */
+	for (vector<Point>::iterator s = saiph->itemtracker->changed.begin(); s != saiph->itemtracker->changed.end(); ++s)
+		visit.push_back(*s);
+	/* check inventory */
 	if (saiph->world->player.turn > last_turn_inventory_check + LOOT_CHECK_INVENTORY_INTERVAL) {
 		action = "i";
 		priority = PRIORITY_LOOK;
 		return;
 	}
 	int best_distance = INT_MAX;
-	int best_priority = -1;
+	int best_priority = ILLEGAL_PRIORITY;
 	action = "";
 	/* loot items */
 	for (list<LootStash>::iterator l = loot.begin(); l != loot.end(); ++l) {
@@ -43,17 +47,17 @@ void Loot::finish() {
 			action = move;
 		}
 	}
-	if (best_priority >= LOOT_VISIT_STASH_PRIORITY && action.size() > 0) {
+	if (best_priority > ILLEGAL_PRIORITY) {
 		/* we should pick up something */
 		if (action[0] == REST) {
 			/* infact, we should pick up something _here_ */
 			action = PICKUP;
 		}
 		priority = best_priority;
-		return;
 	}
+	/* visit stashes */
 	best_distance = INT_MAX;
-	action = "";
+	unsigned char best_action = ILLEGAL_ACTION;
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
 		if (v->row == saiph->world->player.row && v->col == saiph->world->player.col) {
 			/* we're on the stash, remove it from visit list */
@@ -65,12 +69,14 @@ void Loot::finish() {
 		unsigned char move = saiph->shortestPath(*v, false, &distance, &straight_line);
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
-			action = move;
+			best_action = move;
 		}
 		++v;
 	}
-	if (best_distance < INT_MAX)
+	if (best_distance < INT_MAX && LOOT_VISIT_STASH_PRIORITY > best_priority) {
 		priority = LOOT_VISIT_STASH_PRIORITY;
+		action = best_action;
+	}
 }
 
 void Loot::parseMessages(const string &messages) {

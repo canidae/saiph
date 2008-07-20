@@ -12,6 +12,9 @@ MonsterTracker::MonsterTracker(Saiph *saiph) : saiph(saiph) {
 }
 
 /* methods */
+void MonsterTracker::begin() {
+}
+
 void MonsterTracker::removeMonsters() {
 	/* when we're standing next to where a monster used to be
 	 * we'll remove the monster if we can't see it */
