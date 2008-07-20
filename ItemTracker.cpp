@@ -194,11 +194,10 @@ void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item)
 }
 
 void ItemTracker::clearStash(const Coordinate &coordinate) {
+	/* clear the contents of a stash */
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(coordinate);
-	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
-		stashes[coordinate.branch][coordinate.level].erase(s);
-		return;
-	}
+	if (s != stashes[saiph->position.branch][saiph->position.level].end())
+		s->second.items.clear();
 }
 
 Item ItemTracker::parseItemText(const string &text) {
@@ -253,10 +252,6 @@ void ItemTracker::removeItemFromStash(const Coordinate &coordinate, const Item &
 	if (item.count < 0)
 		return;
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(coordinate);
-	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
+	if (s != stashes[saiph->position.branch][saiph->position.level].end())
 		s->second.removeItem(item);
-		if (s->second.items.size() <= 0)
-			stashes[coordinate.branch][coordinate.level].erase(s);
-		return;
-	}
 }
