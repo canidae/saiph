@@ -19,6 +19,16 @@ class Loot;
 #include "../Request.h"
 #include "../Saiph.h"
 
+/* LootStash */
+class LootStash : public Coordinate {
+	public:
+		/* variables */
+		int priority;
+
+		/* constructors */
+		LootStash(const Coordinate &coordinate, int priority) : Coordinate(coordinate), priority(priority) {}
+};
+
 /* namespace */
 using namespace std;
 
@@ -39,6 +49,6 @@ class Loot : public Analyzer {
 		string action;
 		int last_turn_inventory_check;
 		list<Point> visit;
-		list<Coordinate> loot;
+		list<LootStash> loot;
 };
 #endif

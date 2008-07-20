@@ -26,14 +26,14 @@ void Loot::finish() {
 	int best_priority = -1;
 	action = "";
 	/* loot items */
-	for (list<Coordinate>::iterator l = loot.begin(); l != loot.end(); ++l) {
-		if (l->coordinate.branch != saiph->current_branch || l->coordinate.level != saiph->current_level)
+	for (list<LootStash>::iterator l = loot.begin(); l != loot.end(); ++l) {
+		if (l->branch != saiph->position.branch || l->level != saiph->position.level)
 			continue;
 		if (l->priority < best_priority)
 			continue;
 		int distance = -1;
 		bool straight_line = false;
-		unsigned char move = saiph->shortestPath(l->coordinate, false, &distance, &straight_line);
+		unsigned char move = saiph->shortestPath(*l, false, &distance, &straight_line);
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
 			best_priority = l->priority;
@@ -73,7 +73,7 @@ void Loot::finish() {
 bool Loot::request(const Request &request) {
 	if (request.request == REQUEST_LOOT_STASH) {
 		/* someone wants loot */
-		loot.push_back(request.coordinate);
+		loot.push_back(LootStash(request.coordinate, request.priority));
 		return true;
 	}
 	return false;
