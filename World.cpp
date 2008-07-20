@@ -12,7 +12,7 @@ World::World(Connection *connection) : connection(connection) {
 	messages = "  ";
 	menu = false;
 	question = false;
-	last_menu_text = Point(-1, -1);
+	last_menu = Point(-1, -1);
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
         /* remapping of unique symbols */
@@ -57,126 +57,106 @@ void World::addChangedLocation(const Point &point) {
 	changes.push_back(point);
 }
 
+void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
+	/* fetch text from a menu */
+	for (int r = 0; r <= stoprow; ++r) {
+		msg_str = &view[r][startcol];
+		/* trim */
+		string::size_type fns = msg_str.find_first_not_of(" ");
+		string::size_type lns = msg_str.find_last_not_of(" ");
+		if (fns == string::npos || lns == string::npos || fns >= lns)
+			continue; // blank line?
+		msg_str = msg_str.substr(fns, lns - fns + 1);
+		if (addspaces)
+			msg_str.append(2, ' '); // append 2 spaces for later splitting
+		messages.append(msg_str);
+	}
+}
+
 void World::fetchMessages() {
-	/* new attempt on fetching messages.
-	 * this is much better, but still some hacks to get around bugs(?) in nethack.
-	 * what do we know?
-	 * - "--More--", "(end)" and "(x of y)" is the last chars in data.
-	 * - if only 1 line of messages, it's always on first line.
-	 * - cursor is always placed after "--More--", "(end)" or "(x of y)" */
-	msg_str = &data[data_size - MORE_LENGTH];
-	int r = cursor.row;
-	int c = cursor.col;
-	bool more = false;
-	menu = false;
+	/* even yet a try on fetching messages sanely */
+	msg_str = &data[data_size - sizeof (MORE)];
 	string::size_type pos = string::npos;
 	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
-		/* "--More--" found, set c */
-		c = cursor.col - MORE_LENGTH;
-		more = true;
-	} else {
-		msg_str = &data[data_size - END_LENGTH];
-		if ((pos = msg_str.find(END, 0)) != string::npos) {
-			/* "(end)" found, set c.
-			 * since there (always?) is an extra space after "(end)",
-			 * we'll have to "+ pos" */
-			c = cursor.col - END_LENGTH + pos;
-			menu = true;
-			last_menu_text.row = r;
-			last_menu_text.col = c;
+		/* "--More--" found */
+		menu = false; // we don't have a menu then
+		int r = cursor.row;
+		int c = cursor.col - sizeof (MORE) + 1; // +1 because sizeof (MORE) is 9, not 8
+		if (r == 0) {
+			/* only one line, remove "--More--" from end of line */
+			msg_str = view[r];
+			msg_str = msg_str.substr(0, c);
+			/* append 2 spaces for later splitting */
+			msg_str.append(2, ' ');
+			messages.append(msg_str);
 		} else {
-			msg_str = &data[data_size - PAGE_LENGTH];
-			if ((pos = msg_str.find(PAGE, 0)) != string::npos) {
-				/* "(x of y)" found, set c.
-				 * this is special, we only search for " of ".
-				 * while PAGE_LENGTH covers "y)" we still haven't covered "x)",
-				 * so we'll have to move c 2 squares left */
-				c = cursor.col - PAGE_LENGTH - 2;
-				menu = true;
-				last_menu_text.row = r;
-				last_menu_text.col = c;
+			/* more than 1 line */
+			if (c > 0 && view[r][c - 1] != ' ') {
+				/* this is just a very long line, not a list */
+				c = 0;
+				fetchMenuText(r, c, false);
+				messages.erase(messages.size() - sizeof (MORE) + 1); // remove "--More--"
+				messages.append(2, ' '); // add two spaces
 			} else {
-				/* look for question */
-				msg_str = &data[data_size - QUESTION_LENGTH];
-				question = false;
-				if (cursor.row == 0) {
-					question = true;
-				} else {
-					if ((pos = msg_str.find(QUESTION_YN, 0)) == string::npos)
-						pos = msg_str.find(QUESTION_YNQ, 0);
-					if (pos != string::npos) {
-						if ((pos = msg_str.find(QUESTION_DY, 0)) == string::npos)
-							if ((pos = msg_str.find(QUESTION_DN, 0)) == string::npos)
-								pos = msg_str.find(QUESTION_DQ, 0);
-						if (pos != string::npos)
-							question = true;
-					}
-				}
-
-				/* look for messages without "--More--".
-				 * only handles first line, but that should be enough */
-				msg_str = view[0];
-				string::size_type fns = msg_str.find_first_not_of(" ");
-				string::size_type lns = msg_str.find_last_not_of(" ");
-				if (fns == string::npos || lns == string::npos || fns >= lns) {
-					msg_str.clear();
-				} else {
-					msg_str = msg_str.substr(fns, lns - fns + 1);
-					/* append 2 spaces for later splitting */
-					msg_str.append(2, ' ');
-				}
-				messages.append(msg_str);
-				return; // no messages or messages on 1 line
+				/* this is a list */
+				fetchMenuText(r - 1, c, true); // "r - 1" to avoid the last "--More--"
 			}
 		}
-	}
-	if (r == 0) {
-		/* not a menu, remove "--More--" from end of line */
-		msg_str = view[r];
-		msg_str = msg_str.substr(0, c);
-		/* append 2 spaces for later splitting */
-		msg_str.append(2, ' ');
-		messages.append(msg_str);
-	} else {
-		/* if there's something else than ' ' before "--More--",
-		 * then we may have a line that's wrapped.
-		 * otherwise it's a list */
-		bool add_spaces = true;
-		if (more && c > 0 && view[r][c - 1] != ' ') {
-			/* text wrapped over more than one line.
-			 * set c to 0, don't add spaces and parse like a list */
-			c = 0;
-			add_spaces = false;
-		}
-		for (int r2 = 0; r2 <= r; ++r2) {
-			if (add_spaces && r2 == r)
-				break; // a list, don't add --More--
-			msg_str = &view[r2][c];
-			/* trim */
-			string::size_type fns = msg_str.find_first_not_of(" ");
-			string::size_type lns = msg_str.find_last_not_of(" ");
-			if (fns == string::npos || lns == string::npos || fns >= lns)
-				continue; // blank line?
-			msg_str = msg_str.substr(fns, lns - fns + 1);
-			/* remove "--More--" if last line */
-			if (!add_spaces && r == r2 && msg_str.size() >= MORE_LENGTH)
-				msg_str.erase(msg_str.size() - MORE_LENGTH);
-			if (add_spaces)
-				msg_str.append(2, ' '); // append 2 spaces for later splitting
-			else if (r2 == 0)
-				msg_str.append(1, ' '); // this is crack to make <You read:"> into <You read: ">
-			messages.append(msg_str);
-		}
-		if (!add_spaces)
-			messages.append(2, ' '); // <You read: "....".You hear a slow drip.  > fix, adds spaces before "You hear..."
-	}
-	if (more) {
-		/* there are "--More--" messages.
-		 * since this is not a menu we'll just ask for the rest of the messages.
-		 * also, don't call executeCommand(), because that clears the "changes" vector */
+		/* request the remaining messages */
 		connection->transmit(" ");
 		update();
 		return;
+	} else if (cursor.row == 0) {
+		/* looks like we got a question.
+		 * we might want to significantly improve this later,
+		 * as we sometimes get partial data */
+		question = true;
+	} else {
+		/* --More-- not found, but we might have a menu.
+		 * this is pain */
+		if (menu) {
+			/* we had a menu last frame, check if we still do */
+			msg_str = &view[last_menu.row][last_menu.col];
+			int x, y;
+			if (msg_str.find(END, 0) == string::npos || sscanf(&view[last_menu.row][last_menu.col], PAGE, &x, &y) != 2) {
+				/* nah, last menu is gone */
+				menu = false;
+				last_menu.row = -1;
+				last_menu.col = -1;
+			}
+		}
+		if (!menu) {
+			/* check if we got a new menu */
+			msg_str = &data[data_size - sizeof (PAGE)];
+			int x, y;
+			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE, &x, &y) == 2) {
+				/* hot jiggity! we got a list */
+				/* now find the "(" in "(end) " of "(x of y)" */
+				int c;
+				for (c = cursor.col; c >= 0 && view[cursor.row][c] != '('; --c)
+					;
+				menu = true;
+				last_menu.row = cursor.row;
+				last_menu.col = c;
+			}
+		}
+		if (menu) {
+			/* finally parse the menu */
+			fetchMenuText(last_menu.row - 1, last_menu.col, true); // "r - 1" to avoid the last "(end) " or "(x of y)"
+		}
+	}
+	if (!menu) {
+		/* no "--More--", no question and no menu?
+		 * well, it gotta be no messages or the message is on 1 line, then */
+		msg_str = view[0];
+		/* trim */
+		string::size_type fns = msg_str.find_first_not_of(" ");
+		string::size_type lns = msg_str.find_last_not_of(" ");
+		if (fns == string::npos || lns == string::npos || fns >= lns)
+			return; // blank line?
+		msg_str = msg_str.substr(fns, lns - fns + 1);
+		messages.append(msg_str);
+		messages.append(2, ' ');
 	}
 }
 
@@ -426,21 +406,6 @@ void World::update() {
 	}
 
 	fetchMessages();
-
-	if (!menu && last_menu_text.row != -1 && last_menu_text.col != -1) {
-		/* are we really sure there isn't a menu? */
-		if (view[last_menu_text.row][last_menu_text.col] == '(' && view[last_menu_text.row][last_menu_text.col + 1] == 'e' && view[last_menu_text.row][last_menu_text.col + 2] == 'n' && view[last_menu_text.row][last_menu_text.col + 3] == 'd' && view[last_menu_text.row][last_menu_text.col + 4] == ')') {
-			/* it really is a menu here :) */
-			menu = true;
-			/* also, it won't remove "Pick up what?" from messages,
-			 * as that is on first line. we'll have to clear messages too */
-			messages = "";
-		} else {
-			/* nopes, no menu */
-			last_menu_text.row = -1;
-			last_menu_text.col = -1;
-		}
-	}
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);

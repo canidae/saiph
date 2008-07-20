@@ -3,21 +3,10 @@
 #define WORLD_H
 /* buffer */
 #define BUFFER_SIZE 65536
-/* text telling us there are more messages */
+/* text used to identify --More-- and menus */
 #define MORE "--More--"
-#define MORE_LENGTH 8
-/* we need these to determine if we're looking at a menu */
-#define END "(end)"
-#define END_LENGTH 6 // seems to be a bug here, there's an space after; "(end) "
-#define PAGE " of "
-#define PAGE_LENGTH 6 // must add 2 because of "y)" in "(x of y)"
-/* and these for looking for questions */
-#define QUESTION_YN "[yn]"
-#define QUESTION_YNQ "[ynq]"
-#define QUESTION_DY "(y)"
-#define QUESTION_DN "(n)"
-#define QUESTION_DQ "(q)"
-#define QUESTION_LENGTH 20
+#define END "(end) " // yeah, space should be there
+#define PAGE "(%d of %d)"
 
 /* forward declare */
 class World;
@@ -60,10 +49,12 @@ class World {
 		int data_size;
 		string msg_str; // helps fetching messages
 		unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1]; // remapping ambigous symbols
-		Point last_menu_text; // needed to help detect menus that persist over turns
+		Point last_menu; // needed to help detect menus that persist over turns
 
 		/* methods */
 		void addChangedLocation(const Point &point);
+		void fetchMenu();
+		void fetchMenuText(int stoprow, int startcol, bool addspaces);
 		void fetchMessages();
 		void handleEscapeSequence(int *pos, int *color);
 		void update();
