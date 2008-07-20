@@ -24,28 +24,27 @@ class ItemTracker {
 	public:
 		/* variables */
 		map<unsigned char, Item> inventory;
+		map<unsigned char, Item> pickup;
 		list<Stash> stashes;
 
 		/* constructors */
 		ItemTracker(Saiph *saiph);
 
 		/* methods */
-		void addItemToInventory(const Item &item);
-		void addItemToStash(const Item &item);
-		void moveItemFromStashToInventory(const Item &item);
-		void moveItemFromInventoryToStash(const Item &item);
 		void parseMessages(const string &messages);
-		void removeItemFromInventory(const Item &item);
-		void removeItemFromStash(const Item &item);
 
 	private:
 		/* variables */
 		Saiph *saiph;
 
 		/* methods */
+		void addItemToInventory(unsigned char key, const Item &item);
+		void addItemToPickup(unsigned char key, const Item &item);
 		void addItemToStash(const Coordinate &coordinate, const Item &item);
 		void clearStash(const Coordinate &coordinate);
 		Item parseItemText(const string &text);
+		void removeItemFromInventory(unsigned char key, const Item &item);
+		void removeItemFromPickup(unsigned char key, const Item &item);
 		void removeItemFromStash(const Coordinate &coordinate, const Item &item);
 };
 #endif

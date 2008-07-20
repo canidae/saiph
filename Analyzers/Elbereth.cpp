@@ -68,6 +68,12 @@ void Elbereth::parseMessages(const string &messages) {
 
 bool Elbereth::request(const Request &request) {
 	if (request.request == REQUEST_ELBERETH_OR_REST) {
+		/* check for ill effects */
+		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
+			return false;
+		/* check that we're not engulfed */
+		if (saiph->engulfed)
+			return false;
 		if (!did_look && !burned && !digged && !dusted) {
 			/* we'll need to look first, which means set action & priority and return true */
 			action = ":";
