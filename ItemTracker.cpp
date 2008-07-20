@@ -166,13 +166,15 @@ void ItemTracker::updateStash(const Point &point) {
 	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
 		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
 			continue;
-		if (s->top_symbol != symbol) {
-			/* this stash has changed somehow */
-		}
+		if (s->top_symbol == symbol)
+			continue;
+		/* this stash has changed somehow */
+		changed.push_back(point);
 		return;
 	}
 	/* new stash */
 	stashes.push_back(Stash(coordinate, symbol));
+	changed.push_back(point);
 }
 
 /* private methods */
