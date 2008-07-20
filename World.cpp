@@ -75,6 +75,7 @@ void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 
 void World::fetchMessages() {
 	/* even yet a try on fetching messages sanely */
+	question = false; // we can do this as a question max last 1 turn
 	msg_str = &data[data_size - sizeof (MORE)];
 	string::size_type pos = string::npos;
 	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
