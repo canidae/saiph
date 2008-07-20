@@ -139,7 +139,6 @@ void ItemTracker::removeStashes() {
 		}
 		if (saiph->world->view[s->second.row][s->second.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[s->second.row][s->second.col]) {
 			/* stash seems to be gone */
-			changed.push_back(s->second);
 			stashes[saiph->position.branch][saiph->position.level].erase(s++);
 			continue;
 		}
