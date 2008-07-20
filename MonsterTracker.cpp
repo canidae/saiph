@@ -49,7 +49,7 @@ void MonsterTracker::updateMonster(const Point &point) {
 	saiph->map[saiph->position.branch][saiph->position.level].monster[point.row][point.col] = symbol;
 	/* find nearest monster and update position */
 	int best_distance = INT_MAX;
-	Monster *best_monster = NULL;
+	map<Point, Monster>::iterator best_monster = monsters[saiph->position.branch][saiph->position.level].end();
 	for (map<Point, Monster>::iterator m = monsters[saiph->position.branch][saiph->position.level].begin(); m != monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->second.symbol != symbol || m->second.color != color)
 			continue; // not the same monster
@@ -61,14 +61,16 @@ void MonsterTracker::updateMonster(const Point &point) {
 			continue;
 		/* it is */
 		best_distance = distance;
-		best_monster = &m->second;
+		best_monster = m;
 	}
-	if (best_monster != NULL) {
+	if (best_monster != monsters[saiph->position.branch][saiph->position.level].end()) {
 		/* remove monster from monstermap */
-		saiph->map[saiph->position.branch][saiph->position.level].monster[best_monster->row][best_monster->col] = ILLEGAL_MONSTER;
+		saiph->map[saiph->position.branch][saiph->position.level].monster[best_monster->second.row][best_monster->second.col] = ILLEGAL_MONSTER;
 		/* update monster */
-		best_monster->row = point.row;
-		best_monster->col = point.col;
+		best_monster->second.row = point.row;
+		best_monster->second.col = point.col;
+		monsters[saiph->position.branch][saiph->position.level][point] = best_monster->second;
+		monsters[saiph->position.branch][saiph->position.level].erase(best_monster);
 		return;
 	}
 	/* add monster */
