@@ -2,6 +2,26 @@
 
 /* constructors */
 ItemTracker::ItemTracker(Saiph *saiph) : saiph(saiph) {
+	/* set which items we track */
+	for (int a = 0; a <= UCHAR_MAX; ++a)
+		item[a] = false;
+	item[(unsigned char) WEAPON] = true;
+	item[(unsigned char) ARMOR] = true;
+	item[(unsigned char) RING] = true;
+	item[(unsigned char) AMULET] = true;
+	item[(unsigned char) TOOL] = true;
+	item[(unsigned char) FOOD] = true;
+	item[(unsigned char) POTION] = true;
+	item[(unsigned char) SCROLL] = true;
+	item[(unsigned char) SPELLBOOK] = true;
+	item[(unsigned char) WAND] = true;
+	item[(unsigned char) GOLD] = true;
+	item[(unsigned char) GEM] = true;
+	item[(unsigned char) STATUE] = true;
+	// skipping boulder as that's a special item
+	item[(unsigned char) IRON_BALL] = true;
+	item[(unsigned char) CHAINS] = true;
+	item[(unsigned char) VENOM] = true;
 }
 
 /* methods */
@@ -116,6 +136,43 @@ void ItemTracker::parseMessages(const string &messages) {
 	for (map<unsigned char, Item>::iterator p = pickup.begin(); p != pickup.end(); ++p)
 		cerr << p->first << " - " << p->second.count << " " << p->second.name << endl;
 	cerr << endl;
+}
+
+void ItemTracker::removeStashes() {
+	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ) {
+		if (s->branch != saiph->position.branch || s->level != saiph->position.level) {
+			++s;
+			continue;
+		}
+		if (saiph->world->view[s->row][s->col] == s->top_symbol) {
+			++s;
+			continue; // same top_symbol
+		}
+		if (saiph->world->view[s->row][s->col] == saiph->map[s->branch][s->level].dungeon[s->row][s->col]) {
+			/* stash seems to be gone */
+			changed.push_back(*s);
+			s = stashes.erase(s);
+			continue;
+		}
+		/* if we're here, the stash is changed */
+		changed.push_back(*s);
+		++s;
+	}
+}
+
+void ItemTracker::updateStash(const Point &point) {
+	Coordinate coordinate = Coordinate(saiph->position.branch, saiph->position.level, point);
+	unsigned char symbol = saiph->world->view[point.row][point.col];
+	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
+		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
+			continue;
+		if (s->top_symbol != symbol) {
+			/* this stash has changed somehow */
+		}
+		return;
+	}
+	/* new stash */
+	stashes.push_back(Stash(coordinate, symbol));
 }
 
 /* private methods */

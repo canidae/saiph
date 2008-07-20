@@ -14,19 +14,12 @@ Saiph::Saiph(int interface) {
 	/* engulfed */
 	engulfed = false;
 
-	/* set certain values */
+	/* pathing & maps */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
-		/* monsters */
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
-			monster[a] = true;
-		else
-			monster[a] = false;
-		/* pathing & maps */
 		passable[a] = false;
 		static_dungeon_symbol[a] = false;
 		pathcost[a] = 0;
 	}
-	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
 	passable[(unsigned char) CORRIDOR] = true;
@@ -412,6 +405,7 @@ void Saiph::parseMessages() {
 
 void Saiph::updateMaps() {
 	/* update the various maps */
+	itemtracker->changed.clear(); // clear the vector of changed stashes on this level
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 		unsigned char s = world->view[c->row][c->col];
 		if (s == SOLID_ROCK)
@@ -427,14 +421,19 @@ void Saiph::updateMaps() {
 			 * even if we already know what's beneath the monster/item. */
 			map[position.branch][position.level].dungeon[c->row][c->col] = UNKNOWN_TILE;
 		}
-		if (monster[s]) {
+		if (itemtracker->item[s]) {
+			/* found an item!
+			 * tell it to the item tracker */
+			itemtracker->updateStash(*c);
+		}
+		if (monstertracker->monster[s]) {
 			/* found a monster!
-			 * since monsters unlike items disappear from map when we can't see them,
-			 * we can't remove monsters like we do with items above.
-			 * that's what MonsterTracker is for */
+			 * let the monster tracker know */
 			monstertracker->updateMonster(*c);
 		}
 	}
+	/* remove stashes that seems to be gone */
+	itemtracker->removeStashes();
 	/* remove monsters that seems to be gone */
 	monstertracker->removeMonsters();
 	/* update map used for pathing */
@@ -518,7 +517,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	if (!passable[s])
 		return false;
 	unsigned char m = map[position.branch][position.level].monster[to.row][to.col];
-	if (monster[m] && m != PET)
+	if (monstertracker->monster[m] && m != PET)
 		return false; // can't path through monsters (except pets)
 	bool cardinal_move = (to.row == from.row || to.col == from.col);
 	if (!cardinal_move) {

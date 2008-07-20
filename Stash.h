@@ -18,12 +18,12 @@ using namespace std;
 class Stash : public Coordinate {
 	public:
 		/* variables */
-		unsigned char top_item;
+		unsigned char top_symbol;
 		list<Item> items;
 
 		/* constructors */
-		Stash(const Coordinate &coordinate, unsigned char top_item = ILLEGAL_ITEM);
-		Stash(unsigned char top_item = ILLEGAL_ITEM);
+		Stash(const Coordinate &coordinate, unsigned char top_symbol = ILLEGAL_ITEM);
+		Stash(unsigned char top_symbol = ILLEGAL_ITEM);
 
 		/* methods */
 		void addItem(const Item &item);

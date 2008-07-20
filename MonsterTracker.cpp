@@ -2,6 +2,13 @@
 
 /* constructors */
 MonsterTracker::MonsterTracker(Saiph *saiph) : saiph(saiph) {
+	/* set which monsters we track */
+	for (int a = 0; a <= UCHAR_MAX; ++a) {
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
+			monster[a] = true;
+		else    
+			monster[a] = false;
+	}
 }
 
 /* methods */

@@ -44,7 +44,7 @@ void Food::announce(const Announce &announce) {
 			if (announce.data.find(*f, 0) != string::npos) {
 				/* yummy, food!
 				 * request that someone pick it up for us */
-				req.request = REQUEST_PICK_UP_ITEM;
+				req.request = REQUEST_LOOT_STASH;
 				req.priority = FOOD_PICK_UP_PRIORITY;
 				req.data = announce.data;
 				req.value1 = announce.value1; // pick up all there is

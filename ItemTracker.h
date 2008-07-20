@@ -10,9 +10,11 @@ class ItemTracker;
 /* includes */
 #include <list>
 #include <map>
+#include <vector>
 #include "Coordinate.h"
 #include "Globals.h"
 #include "Item.h"
+#include "Point.h"
 #include "Saiph.h"
 #include "Stash.h"
 
@@ -23,15 +25,19 @@ using namespace std;
 class ItemTracker {
 	public:
 		/* variables */
+		bool item[UCHAR_MAX + 1];
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
-		list<Stash> stashes;
+		list<Stash> stashes; // should be a map, much faster. also [branches][level] for more speed?
+		vector<Point> changed;
 
 		/* constructors */
 		ItemTracker(Saiph *saiph);
 
 		/* methods */
 		void parseMessages(const string &messages);
+		void removeStashes();
+		void updateStash(const Point &point);
 
 	private:
 		/* variables */

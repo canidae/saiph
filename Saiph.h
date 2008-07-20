@@ -82,7 +82,6 @@ class Saiph {
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
 		int pathcost[UCHAR_MAX + 1];
-		bool monster[UCHAR_MAX + 1];
 		bool passable[UCHAR_MAX + 1];
 		bool static_dungeon_symbol[UCHAR_MAX + 1];
 

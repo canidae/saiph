@@ -19,6 +19,7 @@ using namespace std;
 class MonsterTracker {
 	public:
 		/* variables */
+		bool monster[UCHAR_MAX + 1];
 		list<Monster> monsters[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 
 		/* constructors */
