@@ -25,7 +25,7 @@ class Request {
 		/* variables */
 		int request;
 		int priority;
-		int value1;
+		int value;
 		string data;
 		Coordinate coordinate;
 

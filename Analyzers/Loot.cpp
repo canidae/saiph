@@ -13,7 +13,7 @@ void Loot::command(string *command) {
 		last_turn_inventory_check = saiph->world->player.turn;
 		action = " ";
 	} else if (action == " ") {
-		/* closing inventory listing */
+		/* closing inventory/pickup list */
 		action = "";
 	}
 }
@@ -74,10 +74,18 @@ void Loot::finish() {
 }
 
 void Loot::parseMessages(const string &messages) {
-	if (action == " ") {
-		/* we've listed the inventory, close the meny */
+	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos) {
+		/* several/many objects here. we should look */
+		action = ":";
+		priority = PRIORITY_LOOK;
+	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+		/* we're picking up stuff.
+		 * analyzers will by themselves decide what to pick up, so we just try to close it */
+		action = " ";
+		priority = PRIORITY_PICKUP_STASH;
+	} else if (saiph->world->menu && action == " ") {
+		/* probably listing the inventory, close the menu */
 		priority = PRIORITY_CONTINUE_ACTION;
-		return;
 	}
 }
 

@@ -22,6 +22,7 @@ ItemTracker::ItemTracker(Saiph *saiph) : saiph(saiph) {
 	item[(unsigned char) IRON_BALL] = true;
 	item[(unsigned char) CHAINS] = true;
 	item[(unsigned char) VENOM] = true;
+	on_ground = NULL;
 }
 
 /* methods */
@@ -76,7 +77,6 @@ void ItemTracker::parseMessages(const string &messages) {
 		}
 	} else if ((pos = messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0)) != string::npos) {
 		/* our inventory is empty. how did that happen? */
-		cerr << "[ITEMTRACKER] checked inventory and we're not carrying anything" << endl;
 		inventory.clear();
 	} else if ((pos = messages.find(".  ", 0)) != string::npos) {
 		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
@@ -84,7 +84,6 @@ void ItemTracker::parseMessages(const string &messages) {
 		 * we're searching for ".  " as we won't get that when we're listing inventory.
 		 * also, this won't detect gold, but we might not need to detect that,
 		 * well, it's gonna be a bit buggy when picking up gold from stashes */
-		cerr << "[ITEMTRACKER] possibly picked up stuff, adding to inventory" << endl;
 		pos = 0;
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
@@ -102,7 +101,6 @@ void ItemTracker::parseMessages(const string &messages) {
 		}
 	} else if ((pos = messages.find(" - ", 0)) != string::npos) {
 		/* we probably listed our inventory */
-		cerr << "[ITEMTRACKER] possibly listing inventory" << endl;
 		inventory.clear();
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
@@ -119,31 +117,11 @@ void ItemTracker::parseMessages(const string &messages) {
 			}
 		}
 	}
-	cerr << "[INVENTORY] ";
-	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end(); ++i)
-		cerr << i->first << " - " << i->second.count << " " << i->second.name << endl;
-	cerr << endl;
-	cerr << "[ON GROUND] ";
-	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
-		if (s->branch != saiph->position.branch || s->level != saiph->position.level || s->row != saiph->position.row || s->col != saiph->position.col)
-			continue;
-		for (list<Item>::iterator i = s->items.begin(); i != s->items.end(); ++i)
-			cerr << i->count << " " << i->name;
-		break;
-	}
-	cerr << endl;
-	cerr << "[PICKUP] ";
-	for (map<unsigned char, Item>::iterator p = pickup.begin(); p != pickup.end(); ++p)
-		cerr << p->first << " - " << p->second.count << " " << p->second.name << endl;
-	cerr << endl;
 }
 
 void ItemTracker::removeStashes() {
-	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ) {
-		if (s->branch != saiph->position.branch || s->level != saiph->position.level) {
-			++s;
-			continue;
-		}
+	/* remove stashes that seems to be gone. */
+	for (list<Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ) {
 		if (saiph->world->view[s->row][s->col] == s->top_symbol) {
 			++s;
 			continue; // same top_symbol
@@ -151,7 +129,7 @@ void ItemTracker::removeStashes() {
 		if (saiph->world->view[s->row][s->col] == saiph->map[s->branch][s->level].dungeon[s->row][s->col]) {
 			/* stash seems to be gone */
 			changed.push_back(*s);
-			s = stashes.erase(s);
+			s = stashes[saiph->position.branch][saiph->position.level].erase(s);
 			continue;
 		}
 		/* if we're here, the stash is changed */
@@ -161,10 +139,9 @@ void ItemTracker::removeStashes() {
 }
 
 void ItemTracker::updateStash(const Point &point) {
-	Coordinate coordinate = Coordinate(saiph->position.branch, saiph->position.level, point);
 	unsigned char symbol = saiph->world->view[point.row][point.col];
-	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
-		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
+	for (list<Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
+		if (s->row != point.row || s->col != point.col)
 			continue;
 		if (s->top_symbol == symbol)
 			continue;
@@ -173,7 +150,7 @@ void ItemTracker::updateStash(const Point &point) {
 		return;
 	}
 	/* new stash */
-	stashes.push_back(Stash(coordinate, symbol));
+	stashes[saiph->position.branch][saiph->position.level].push_back(Stash(Coordinate(saiph->position.branch, saiph->position.level, point), symbol));
 	changed.push_back(point);
 }
 
@@ -199,7 +176,7 @@ void ItemTracker::addItemToPickup(unsigned char key, const Item &item) {
 void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item) {
 	if (item.count < 0)
 		return;
-	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
+	for (list<Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
 		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
 			continue;
 		s->addItem(item);
@@ -208,20 +185,19 @@ void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item)
 	/* new stash */
 	Stash stash(coordinate);
 	stash.items.push_back(item);
-	stashes.push_back(stash);
+	stashes[coordinate.branch][coordinate.level].push_back(stash);
 }
 
 void ItemTracker::clearStash(const Coordinate &coordinate) {
-	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
+	for (list<Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
 		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
 			continue;
-		stashes.erase(s);
+		stashes[coordinate.branch][coordinate.level].erase(s);
 		return;
 	}
 }
 
 Item ItemTracker::parseItemText(const string &text) {
-	cerr << "[PARSING ITEM] " << text << endl;
 	Item item("", -1);
 	char amount[8];
 	char name[128];
@@ -236,7 +212,6 @@ Item ItemTracker::parseItemText(const string &text) {
 	else    
 		return item; // unable to parse text as item
 	item.name = name;
-	cerr << "[ITEM PARSED] " << item.count << " " << item.name << endl;
 	return item;
 }
 
@@ -273,12 +248,12 @@ void ItemTracker::removeItemFromPickup(unsigned char key, const Item &item) {
 void ItemTracker::removeItemFromStash(const Coordinate &coordinate, const Item &item) {
 	if (item.count < 0)
 		return;
-	for (list<Stash>::iterator s = stashes.begin(); s != stashes.end(); ++s) {
+	for (list<Stash>::iterator s = stashes[coordinate.branch][coordinate.level].begin(); s != stashes[coordinate.branch][coordinate.level].end(); ++s) {
 		if (s->branch != coordinate.branch || s->level != coordinate.level || s->row != coordinate.row || s->col != coordinate.col)
 			continue;
 		s->removeItem(item);
 		if (s->items.size() <= 0)
-			stashes.erase(s);
+			stashes[coordinate.branch][coordinate.level].erase(s);
 		return;
 	}
 }

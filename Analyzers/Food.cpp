@@ -47,19 +47,43 @@ void Food::finish() {
 	if (saiph->world->player.hunger < HUNGRY) {
 		/* yes, we are */
 		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			for (map<unsigned char, string>::iterator e = food.begin(); e != food.end(); ++e) {
-				if (e->second == *f) {
+			for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
+				if (i->second.name.find(*f, 0) != string::npos) {
 					/* and we got something to eat */
-					eat_key = e->first;
+					eat_key = i->first;
 					action = EAT;
 					priority = FOOD_EAT_PRIORITY;
 					return;
 				}
 			}
 		}
-	}
-	/* "easter egg" */
-	if (saiph->world->player.hunger > CONTENT) {
+	} else if (saiph->world->player.hunger > CONTENT) {
+		for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
+			if (i->second.name.find("byte", 0) != string::npos) {
+				/* easter egg: eat bytes when [over]satiated */
+				eat_key = i->first;
+				action = EAT;
+				priority = FOOD_EAT_PRIORITY;
+				return;
+			}
+		}
+	} else if (saiph->itemtracker->on_ground != NULL) {
+		/* there are items here, we should look for food */
+		req.request = REQUEST_LOOT_STASH;
+		req.priority = FOOD_LOOT_PRIORITY;
+		req.coordinate = saiph->position;
+		for (list<Item>::iterator i = saiph->itemtracker->on_ground->items.begin(); i != saiph->itemtracker->on_ground->items.end(); ++i) {
+			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
+				if (i->name.find(*f, 0) != string::npos) {
+					/* wooo, foood!
+					 * request that someone loot this stash */
+					saiph->request(req);
+					/* and break loops */
+					i = saiph->itemtracker->on_ground->items.end();
+					break;
+				}
+			}
+		}
 	}
 }
 
@@ -68,6 +92,18 @@ void Food::parseMessages(const string &messages) {
 		action = eat_key;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
+	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+		/* select what to pick up */
+		for (map<unsigned char, Item>::iterator p = saiph->itemtracker->pickup.begin(); p != saiph->itemtracker->pickup.end(); ++p) {
+			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
+				if (p->second.name.find(*f, 0) != string::npos) {
+					/* we should pick up this */
+					action = p->first;
+					priority = PRIORITY_PICKUP_ITEM;
+					return;
+				}
+			}
+		}
 	}
 }
 

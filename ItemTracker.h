@@ -28,8 +28,9 @@ class ItemTracker {
 		bool item[UCHAR_MAX + 1];
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
-		list<Stash> stashes; // should be a map, much faster. also [branches][level] for more speed? maybe list will suffice then
+		list<Stash> stashes[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		vector<Point> changed;
+		Stash *on_ground;
 
 		/* constructors */
 		ItemTracker(Saiph *saiph);

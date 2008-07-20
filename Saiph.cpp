@@ -147,7 +147,7 @@ void Saiph::farlook(const Point &target) {
 
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
-	cerr << "[REQUEST ] " << request.request << ", " << request.priority << ", " << request.value1 << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
+	cerr << "[REQUEST ] " << request.request << ", " << request.priority << ", " << request.value << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->request(request) && !status)
