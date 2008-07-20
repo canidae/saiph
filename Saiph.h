@@ -19,7 +19,6 @@ class Saiph;
 #include <string>
 #include <vector>
 #include "Analyzer.h"
-#include "Announce.h"
 #include "Connection.h"
 #include "Globals.h"
 #include "Item.h"
@@ -38,7 +37,7 @@ class Saiph;
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
-//#include "Analyzers/Loot.h"
+#include "Analyzers/Loot.h"
 
 /* namespace */
 using namespace std;
@@ -69,7 +68,6 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void announce (const Announce &announce);
 		void farlook(const Point &target);
 		bool request(const Request &request);
 		bool run();

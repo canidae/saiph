@@ -90,7 +90,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Food(this));
 	analyzers.push_back(new Health(this));
 	analyzers.push_back(new Level(this));
-	//analyzers.push_back(new Loot(this));
+	analyzers.push_back(new Loot(this));
 }
 
 /* destructor */
@@ -104,13 +104,6 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-void Saiph::announce(const Announce &announce) {
-	/* announce something to other analyzers */
-	cerr << "[ANNOUNCE] " << announce.announce << ", " << announce.priority << ", " << announce.value1 << ", " << announce.data << ", (" << announce.coordinate.branch << ", " << announce.coordinate.level << ", " << announce.coordinate.row << ", " << announce.coordinate.col << ")" << endl;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->announce(announce);
-}
-
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	command.push_back(';');

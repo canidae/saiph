@@ -13,7 +13,6 @@ class Food;
 #include <map>
 #include <string>
 #include "../Analyzer.h"
-#include "../Announce.h"
 #include "../Globals.h"
 #include "../Request.h"
 #include "../Saiph.h"
@@ -28,7 +27,6 @@ class Food : public Analyzer {
 		Food(Saiph *saiph);
 
 		/* methods */
-		void announce(const Announce &announce);
 		void command(string *command);
 		void finish();
 		void parseMessages(const string &messages);

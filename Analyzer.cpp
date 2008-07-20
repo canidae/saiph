@@ -12,9 +12,6 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
-void Analyzer::announce(const Announce &announce) {
-}
-
 void Analyzer::command(string *command) {
 }
 

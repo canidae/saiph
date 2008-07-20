@@ -7,7 +7,6 @@ class Analyzer;
 
 /* includes */
 #include <string>
-#include "Announce.h"
 #include "Point.h"
 #include "Request.h"
 
@@ -28,7 +27,6 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
-		virtual void announce(const Announce &announce);
 		virtual void command(string *command);
 		virtual void finish();
 		virtual void inspect(const Point &point);

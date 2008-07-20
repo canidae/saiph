@@ -28,7 +28,7 @@ class ItemTracker {
 		bool item[UCHAR_MAX + 1];
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
-		list<Stash> stashes; // should be a map, much faster. also [branches][level] for more speed?
+		list<Stash> stashes; // should be a map, much faster. also [branches][level] for more speed? maybe list will suffice then
 		vector<Point> changed;
 
 		/* constructors */

@@ -38,33 +38,6 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 }
 
 /* methods */
-void Food::announce(const Announce &announce) {
-	if (announce.announce == ANNOUNCE_ITEM_ON_GROUND) {
-		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			if (announce.data.find(*f, 0) != string::npos) {
-				/* yummy, food!
-				 * request that someone pick it up for us */
-				req.request = REQUEST_LOOT_STASH;
-				req.priority = FOOD_PICK_UP_PRIORITY;
-				req.data = announce.data;
-				req.value1 = announce.value1; // pick up all there is
-				req.coordinate = announce.coordinate;
-				saiph->request(req); // no need to check for outcome of this
-			}
-		}
-	} else if (announce.announce == ANNOUNCE_ITEM_IN_INVENTORY) {
-		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			if (announce.data.find(*f, 0) != string::npos) {
-				/* hey, we can eat this. update map */
-				if (announce.value1 > 0)
-					food[announce.key] = announce.data;
-				else
-					food.erase(announce.key);
-			}
-		}
-	}
-}
-
 void Food::command(string *command) {
 	*command = action;
 }

@@ -31,14 +31,12 @@ class Loot : public Analyzer {
 		/* methods */
 		void command(string *command);
 		void finish();
-		void inspect(const Point &point);
 		bool request(const Request &request);
 
 	private:
 		/* variables */
 		Saiph *saiph;
 		string action;
-		bool check_item[UCHAR_MAX + 1];
 		int last_turn_inventory_check;
 		list<Point> visit;
 		list<Coordinate> loot;
