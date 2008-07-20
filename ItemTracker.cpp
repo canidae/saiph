@@ -102,8 +102,8 @@ void ItemTracker::parseMessages(const string &messages) {
 				length = length - pos;
 				Item item = parseItemText(messages.substr(pos, length));
 				addItemToInventory(key, item);
-				removeItemFromStash(saiph->position, item);
 				removeItemFromPickup(item);
+				removeItemFromStash(saiph->position, item);
 				pos += length;
 			}
 		}

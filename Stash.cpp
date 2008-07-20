@@ -21,5 +21,6 @@ void Stash::removeItem(const Item &item) {
 				i = items.erase(i);
 			return;
 		}
+		++i;
 	}
 }
