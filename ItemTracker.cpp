@@ -133,11 +133,11 @@ void ItemTracker::parseMessages(const string &messages) {
 void ItemTracker::removeStashes() {
 	/* remove stashes that seems to be gone. */
 	for (map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ) {
-		if (saiph->world->view[s->second.row][s->second.col] == s->second.top_symbol) {
+		if (saiph->world->view[s->first.row][s->first.col] == s->second.top_symbol) {
 			++s;
 			continue; // same top_symbol
 		}
-		if (saiph->world->view[s->second.row][s->second.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[s->second.row][s->second.col]) {
+		if (saiph->world->view[s->first.row][s->first.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[s->first.row][s->first.col]) {
 			/* stash seems to be gone */
 			stashes[saiph->position.branch][saiph->position.level].erase(s++);
 			continue;
@@ -157,7 +157,7 @@ void ItemTracker::updateStash(const Point &point) {
 		return;
 	}
 	/* new stash */
-	stashes[saiph->position.branch][saiph->position.level][point] = Stash(Coordinate(saiph->position.branch, saiph->position.level, point), symbol);
+	stashes[saiph->position.branch][saiph->position.level][point] = Stash(symbol);
 	changed.push_back(point);
 }
 
@@ -193,7 +193,7 @@ void ItemTracker::addItemToStash(const Coordinate &coordinate, const Item &item)
 	}
 	/* new stash */
 	cerr << "NEW STASH OMGWTFBBQ" << endl;
-	Stash stash(coordinate);
+	Stash stash;
 	stash.items.push_back(item);
 	stashes[coordinate.branch][coordinate.level][coordinate] = stash;
 }

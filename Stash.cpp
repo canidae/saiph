@@ -1,9 +1,6 @@
 #include "Stash.h"
 
 /* constructors */
-Stash::Stash(const Coordinate &coordinate, unsigned char top_symbol) : Coordinate(coordinate), top_symbol(top_symbol) {
-}
-
 Stash::Stash(unsigned char top_symbol) : top_symbol(top_symbol) {
 }
 
