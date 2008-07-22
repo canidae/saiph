@@ -8,7 +8,6 @@ Local::Local(ofstream *debugfile) : Connection(debugfile) {
 		exit(1);
 	}
 
-	usleep_time = LOCAL_USLEEP;
 	/* set up pty */
 	int fd = 0;
 	char slave[256];
@@ -48,23 +47,17 @@ Local::~Local() {
 /* methods */
 int Local::retrieve(char *buffer, int count) {
 	/* retrieve data */
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = LOCAL_USLEEP;
-	fd_set rfds;
-	FD_ZERO(&rfds);
-	FD_SET(link[0], &rfds);
-
-	/* see if there is any data for us */
-	int retval = select(link[0] + 1, &rfds, NULL, NULL, NULL);
-	if (retval <= 0)
-		return 0;
-	/* read data if any */
-	int data_read = (int) read(link[0], buffer, count);
-	/* we need to set the last char to '\0',
-	 * or we'll get issue when we string it later */
-	buffer[data_read] = '\0';
-	return data_read;
+	ssize_t data_received = 0;
+	/* make reading blocking */
+	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
+	/* read 4 bytes, this will block until there's data available */
+	data_received += read(link[0], buffer, 4);
+	/* make reading non-blocking */
+	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
+	data_received += read(link[0], &buffer[data_received], count - data_received - 2);
+	if (data_received < (ssize_t) count)
+		buffer[data_received] = '\0';
+	return (int) data_received;
 }
 
 int Local::transmit(const string &data) {

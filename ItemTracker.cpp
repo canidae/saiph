@@ -105,6 +105,9 @@ void ItemTracker::parseMessages(const string &messages) {
 				removeItemFromPickup(item);
 				removeItemFromStash(saiph->position, item);
 				pos += length;
+			} else {
+				/* "Yak - dog food!" mess things up */
+				++pos;
 			}
 		}
 	} else if ((pos = messages.find(" - ", 0)) != string::npos) {
