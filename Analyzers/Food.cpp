@@ -14,7 +14,7 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("tripe ration");
 	eat_order.push_back("melon");
 	eat_order.push_back("apple");
-	eat_order.push_back("pear");
+	//eat_order.push_back("pear"); // temporary removed because of "spear"
 	eat_order.push_back("kelp frond");
 	eat_order.push_back("C-ration");
 	eat_order.push_back("cram ration");

@@ -15,6 +15,9 @@ void Loot::command(string *command) {
 	} else if (action == " ") {
 		/* closing inventory/pickup list */
 		action = "";
+	} else if (action == "," && loot.find(saiph->position) != loot.end()) {
+		/* we're looting a place, remove it from list */
+		loot.erase(saiph->position);
 	}
 }
 
@@ -90,8 +93,6 @@ void Loot::parseMessages(const string &messages) {
 		 * analyzers will by themselves decide what to pick up, so we just try to close it */
 		action = " ";
 		priority = PRIORITY_PICKUP_STASH;
-		/* and remember to remove this stash from "loot" */
-		loot.erase(saiph->position);
 	} else if (saiph->world->menu && action == " ") {
 		/* probably listing the inventory, close the menu */
 		priority = PRIORITY_CONTINUE_ACTION;
