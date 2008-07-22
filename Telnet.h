@@ -2,7 +2,7 @@
 /* defines */
 #define TELNET_H
 /* debug */
-#define TELNET_DEBUG_NAME "[     Telnet] "
+#define TELNET_DEBUG_NAME "[Telnet     ] "
 /* buffer for login */
 #define TELNET_BUFFER_SIZE 4096
 /* host */
