@@ -2,7 +2,7 @@
 
 /* constructors */
 Saiph::Saiph(int interface) {
-	debugfile.open("saiph.log", ios::app);
+	debugfile.open("saiph.log", ios::trunc);
 	connection = Connection::create(interface, &debugfile);
 	if (connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << interface << endl;

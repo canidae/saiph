@@ -8,7 +8,7 @@
 #define BUFFER_SIZE 65536
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
-#define LOCAL_USLEEP 0
+#define LOCAL_USLEEP 500000
 
 /* forward declare */
 class Local;

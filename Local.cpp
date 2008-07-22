@@ -48,28 +48,25 @@ Local::~Local() {
 /* methods */
 int Local::retrieve(char *buffer, int count) {
 	/* retrieve data */
-	ssize_t data_received = 0;
-	ssize_t data_received_total = 0;
-	/* make reading blocking */
-	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
-	/* read 4 bytes, this will block until there's data available */
-	data_received_total += 4;
-	data_received = read(link[0], buffer, data_received_total);
-	/* make reading non-blocking */
-	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
-	data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
-	if (data_received != -1)
-		data_received_total += data_received;
-	while (data_received_total % READ_LIMIT == 0 && data_received != -1) {
-		/* it seems to return max 4095 chars */
-		usleep(100000);
-		data_received = read(link[0], &buffer[data_received_total], count - data_received_total);
-		if (data_received != -1)
-			data_received_total += data_received;
-	}
-	if (data_received_total < (ssize_t) count)
-		buffer[data_received_total] = '\0';
-	return (int) data_received_total;
+	struct timeval tv;
+	tv.tv_sec = 0;
+	tv.tv_usec = LOCAL_USLEEP;
+	fd_set rfds;
+	FD_ZERO(&rfds);
+	FD_SET(link[0], &rfds);
+
+	*debugfile << LOCAL_DEBUG_NAME << link[0] << endl;
+	/* see if there is any data for us */
+	int retval = select(link[0] + 1, &rfds, NULL, NULL, NULL);
+	*debugfile << LOCAL_DEBUG_NAME << retval << endl;
+	if (retval <= 0)
+		return 0;
+	/* read data if any */
+	int data_read = (int) read(link[0], buffer, count);
+	/* we need to set the last char to '\0',
+	 * or we'll get issue when we string it later */
+	buffer[data_read] = '\0';
+	return data_read;
 }
 
 int Local::transmit(const string &data) {
