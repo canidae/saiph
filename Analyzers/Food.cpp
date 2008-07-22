@@ -25,10 +25,10 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("clove of garlic");
 	eat_order.push_back("fortune cookie");
 	eat_order.push_back("banana");
-	eat_order.push_back("orange");
+	//eat_order.push_back("orange"); // "orange gem"
 	eat_order.push_back("candy bar");
 	eat_order.push_back("byte");
-	eat_order.push_back("egg");
+	//eat_order.push_back("egg"); // just makes her sick
 	eat_order.push_back("lump of royal jelly");
 	eat_order.push_back("pancake");
 	eat_order.push_back("lembas wafer");
