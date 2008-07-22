@@ -2,6 +2,7 @@
 
 /* constructors */
 Saiph::Saiph(int interface) {
+	debugfile = new ofstream("saiph.log", ios::app);
 	connection = Connection::create(interface);
 	if (connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << interface << endl;
@@ -101,9 +102,21 @@ Saiph::~Saiph() {
 	delete monstertracker;
 	delete world;
 	delete connection;
+	debugfile->close();
+	delete debugfile;
 }
 
 /* methods */
+void Saiph::debug(const string &component, const string &text) {
+	debugfile->put('[');
+	*debugfile << component;
+	for (int a = component.size(); a < 15; ++a)
+		debugfile->put(' ');
+	debugfile->put(']');
+	debugfile->put(' ');
+	*debugfile << text << endl;
+}
+
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	command.push_back(';');

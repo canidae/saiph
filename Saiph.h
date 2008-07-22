@@ -15,6 +15,7 @@
 class Saiph;
 
 /* includes */
+#include <fstream>
 #include <list>
 #include <string>
 #include <vector>
@@ -68,6 +69,7 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
+		void debug(const string &component, const string &text);
 		void farlook(const Point &target);
 		bool request(const Request &request);
 		bool run();
@@ -75,6 +77,7 @@ class Saiph {
 
 	private:
 		/* variables */
+		ofstream *debugfile;
 		vector<Analyzer *> analyzers;
 		Connection *connection;
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
