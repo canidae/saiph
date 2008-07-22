@@ -7,6 +7,7 @@
 #define REQUEST_ASCEND_DUNGEON 2
 #define REQUEST_ELBERETH_OR_REST 3
 #define REQUEST_LOOT_STASH 4
+#define REQUEST_LIST_INVENTORY 5
 
 /* forward declare */
 class Request;

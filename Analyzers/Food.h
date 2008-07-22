@@ -35,7 +35,7 @@ class Food : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string action;
-		unsigned char eat_key;
+		string action2;
 		list<string> eat_order;
 		Request req;
 };

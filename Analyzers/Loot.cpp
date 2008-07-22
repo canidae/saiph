@@ -1,16 +1,15 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph) {
-	last_turn_inventory_check = INT_MIN;
+Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), update_inventory(true) {
 }
 
 /* methods */
 void Loot::command(string *command) {
 	*command = action;
 	if (action == "i") {
-		/* checking inventory, set last_turn_inventory_check */
-		last_turn_inventory_check = saiph->world->player.turn;
+		/* checking inventory, set update_inventory to false */
+		update_inventory = false;
 		action = " ";
 	} else if (action == " ") {
 		/* closing inventory/pickup list */
@@ -27,7 +26,7 @@ void Loot::finish() {
 	for (vector<Point>::iterator s = saiph->itemtracker->changed.begin(); s != saiph->itemtracker->changed.end(); ++s)
 		visit.push_back(*s);
 	/* check inventory */
-	if (PRIORITY_LOOK > priority && saiph->world->player.turn > last_turn_inventory_check + LOOT_CHECK_INVENTORY_INTERVAL) {
+	if (PRIORITY_LOOK > priority && update_inventory) {
 		action = "i";
 		priority = PRIORITY_LOOK;
 		return;
@@ -93,6 +92,9 @@ void Loot::parseMessages(const string &messages) {
 		 * analyzers will by themselves decide what to pick up, so we just try to close it */
 		action = " ";
 		priority = PRIORITY_PICKUP_STASH;
+		/* and remember to remove this stash from "loot" */
+		if (loot.find(saiph->position) != loot.end())
+			loot.erase(saiph->position);
 	} else if (saiph->world->menu && action == " ") {
 		/* probably listing the inventory, close the menu */
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -112,6 +114,10 @@ bool Loot::request(const Request &request) {
 			/* this stash has not been requested looted before */
 			loot[request.coordinate] = request.priority;
 		}
+		return true;
+	} else if (request.request == REQUEST_LIST_INVENTORY) {
+		/* someone needs to check our inventory */
+		update_inventory = true;
 		return true;
 	}
 	return false;

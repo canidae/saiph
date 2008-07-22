@@ -3,6 +3,7 @@
 /* constructors */
 Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	action = "";
+	action2 = "";
 	priority = ILLEGAL_PRIORITY;
 	//eat_order.push_back("tin");
 	eat_order.push_back("meatball");
@@ -50,8 +51,8 @@ void Food::finish() {
 			for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
 				if (i->second.name.find(*f, 0) != string::npos) {
 					/* and we got something to eat */
-					eat_key = i->first;
 					action = EAT;
+					action2 = i->first;
 					priority = FOOD_EAT_PRIORITY;
 					return;
 				}
@@ -61,7 +62,7 @@ void Food::finish() {
 		for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
 			if (i->second.name.find("byte", 0) != string::npos) {
 				/* easter egg: eat bytes when [over]satiated */
-				eat_key = i->first;
+				action2 = i->first;
 				action = EAT;
 				priority = FOOD_EAT_PRIORITY;
 				return;
@@ -90,8 +91,11 @@ void Food::finish() {
 
 void Food::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
-		action = eat_key;
+		action = action2;
 		priority = PRIORITY_CONTINUE_ACTION;
+		/* request inventory listing */
+		req.request = REQUEST_LIST_INVENTORY;
+		saiph->request(req);
 		return;
 	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
 		/* select what to pick up */

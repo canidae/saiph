@@ -3,8 +3,6 @@
 #define LOOT_H
 /* priorities */
 #define LOOT_VISIT_STASH_PRIORITY 50
-/* how often we should check inventory */
-#define LOOT_CHECK_INVENTORY_INTERVAL 1000
 
 /* forward declare */
 class Loot;
@@ -39,7 +37,7 @@ class Loot : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string action;
-		int last_turn_inventory_check;
+		bool update_inventory;
 		list<Point> visit;
 		map<Coordinate, int> loot;
 };
