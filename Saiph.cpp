@@ -188,7 +188,7 @@ bool Saiph::run() {
 		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* deal with messages */
-	debugfile << "'" << world->messages << "'" << endl;
+	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	/* global parsing */
 	parseMessages();
 	/* then analyzer parsing */
