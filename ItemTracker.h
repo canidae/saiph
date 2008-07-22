@@ -1,6 +1,8 @@
 #ifndef ITEMTRACKER_H
 /* defines */
 #define ITEMTRACKER_H
+/* debug */
+#define ITEMTRACKER_DEBUG_NAME "[ItemTracker] "
 /* parsing help */
 #define GET_SINGLE_ITEM "%7s %127[^\t\n]"
 
@@ -28,7 +30,7 @@ class ItemTracker {
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
 		map<int, map<int, map<Point, Stash> > > stashes;
-		vector<Point> changed;
+		vector<Point> updated_stashes;
 		Stash *on_ground;
 
 		/* constructors */

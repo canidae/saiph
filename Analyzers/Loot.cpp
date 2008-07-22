@@ -23,8 +23,8 @@ void Loot::command(string *command) {
 void Loot::finish() {
 	/* check inventory, loot or visit stash */
 	/* first check if some stashes have changed since last time */
-	for (vector<Point>::iterator s = saiph->itemtracker->changed.begin(); s != saiph->itemtracker->changed.end(); ++s)
-		visit.push_back(*s);
+	for (vector<Point>::iterator u = saiph->itemtracker->updated_stashes.begin(); u != saiph->itemtracker->updated_stashes.end(); ++u)
+		visit.push_back(*u);
 	/* check inventory */
 	if (PRIORITY_LOOK > priority && update_inventory) {
 		action = "i";
@@ -64,6 +64,11 @@ void Loot::finish() {
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
 		if (v->row == saiph->world->player.row && v->col == saiph->world->player.col) {
 			/* we're on the stash, remove it from visit list */
+			v = visit.erase(v);
+			continue;
+		}
+		if (saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level][*v].items.size() <= 0) {
+			/* hmm, stash is gone */
 			v = visit.erase(v);
 			continue;
 		}
