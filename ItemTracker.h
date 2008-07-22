@@ -11,7 +11,6 @@ class ItemTracker;
 #include <list>
 #include <map>
 #include <vector>
-#include "Coordinate.h"
 #include "Globals.h"
 #include "Item.h"
 #include "Point.h"
@@ -48,11 +47,11 @@ class ItemTracker {
 		/* methods */
 		void addItemToInventory(unsigned char key, const Item &item);
 		void addItemToPickup(unsigned char key, const Item &item);
-		void addItemToStash(const Coordinate &coordinate, const Item &item);
-		void clearStash(const Coordinate &coordinate);
+		void addItemToStash(const Point &point, const Item &item);
+		void clearStash(const Point &point);
 		Item parseItemText(const string &text);
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		void removeItemFromPickup(const Item &item);
-		void removeItemFromStash(const Coordinate &coordinate, const Item &item);
+		void removeItemFromStash(const Point &point, const Item &item);
 };
 #endif
