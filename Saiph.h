@@ -1,6 +1,11 @@
 #ifndef SAIPH_H
 /* defines */
 #define SAIPH_H
+/* debug */
+#define COMMAND_DEBUG_NAME "[Command    ] "
+#define MESSAGES_DEBUG_NAME "[Messages   ] "
+#define REQUEST_DEBUG_NAME "[Request    ] "
+#define SAIPH_DEBUG_NAME "[Saiph      ] "
 /* pathing */
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
@@ -54,6 +59,7 @@ struct PathNode {
 class Saiph {
 	public:
 		/* variables */
+		ofstream debugfile;
 		MonsterTracker *monstertracker;
 		ItemTracker *itemtracker;
 		World *world;
@@ -77,7 +83,6 @@ class Saiph {
 
 	private:
 		/* variables */
-		ofstream *debugfile;
 		vector<Analyzer *> analyzers;
 		Connection *connection;
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];

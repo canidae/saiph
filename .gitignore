@@ -1,4 +1,4 @@
 *.o
 .*
 saiph
-err.log
+saiph.log

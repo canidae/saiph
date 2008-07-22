@@ -1,10 +1,10 @@
 #include "Local.h"
 
 /* constructors */
-Local::Local() {
+Local::Local(ofstream *debugfile) : Connection(debugfile) {
 	/* set up pipes */
 	if (pipe(link) < 0) {
-		cerr << "Plumbing failed" << endl;
+		*debugfile << LOCAL_DEBUG_NAME << "Plumbing failed" << endl;
 		exit(1);
 	}
 
@@ -20,7 +20,7 @@ Local::Local() {
 	wsize.ws_ypixel = 480;
 	pid_t pid = forkpty(&fd, slave, NULL, &wsize);
 	if (pid == -1) {
-		cerr << "There is no fork" << endl;
+		*debugfile << LOCAL_DEBUG_NAME << "There is no fork" << endl;
 		exit(1);
 	} else if (pid) {
 		/* main thread */
@@ -33,7 +33,7 @@ Local::Local() {
 		setenv("TERM", "xterm", 1);
 		result = execl(LOCAL_NETHACK, LOCAL_NETHACK, "TERM=xterm", NULL);
 		if (result < 0) {
-			cerr << "Unable to enter the dungeon" << endl;
+			*debugfile << LOCAL_DEBUG_NAME << "Unable to enter the dungeon" << endl;
 			exit(3);
 		}
 		return;

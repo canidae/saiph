@@ -1,7 +1,7 @@
 #include "World.h"
 
 /* constructors */
-World::World(Connection *connection) : connection(connection) {
+World::World(Connection *connection, ofstream *debugfile) : connection(connection), debugfile(debugfile) {
 	memset(view, ' ', sizeof (view));
 	for (int r = 0; r < ROWS; ++r)
 		view[r][COLS] = '\0';
@@ -205,8 +205,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				--cursor.row; // terminal starts counting from 1
 				--cursor.col; // ditto ^^
 				if (matched < 2) {
-					cerr << "Unable to place cursor" << endl;
-					cerr << &data[start] << endl;
+					*debugfile << WORLD_DEBUG_NAME << "Unable to place cursor: " << &data[start] << endl;
 					exit(13);
 				}
 				break;
@@ -233,8 +232,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					cursor.col = 0;
 					*color = 0;
 				} else {
-					cerr << "Unhandled sequence: " << endl;
-					cerr << &data[*pos] << endl;
+					*debugfile << WORLD_DEBUG_NAME << "Unhandled sequence: " << &data[*pos] << endl;
 					exit(9);
 				}
 				break;
@@ -253,8 +251,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					for (int c = 0; c < COLS; ++c)
 						view[cursor.row][c] = ' ';
 				} else {
-					cerr << "Unhandled sequence: " << endl;
-					cerr << &data[*pos] << endl;
+					*debugfile << WORLD_DEBUG_NAME << "Unhandled sequence: " << &data[*pos] << endl;
 					exit(9);
 				}
 				break;
@@ -268,8 +265,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 			} else if (data[*pos] == 'm') {
 				/* character attribute (bold, inverted, color, etc) */
 				if (divider > 0) {
-					cerr << "Unsupported character color" << endl;
-					cerr << &data[*pos] << endl;
+					*debugfile << WORLD_DEBUG_NAME << "Unsupported character color" << &data[*pos] << endl;
 					exit(15);
 					break;
 				}
@@ -279,8 +275,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				int value = 0;
 				int matched = sscanf(&data[start + 1], "%d", &value);
 				if (matched < 1) {
-					cerr << "Expected numeric value for character attribute" << endl;
-					cerr << &data[*pos] << endl;
+					*debugfile << WORLD_DEBUG_NAME << "Expected numeric value for character attribute: " << &data[*pos] << endl;
 					exit(14);
 				}
 				*color = value;
@@ -290,23 +285,19 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				break;
 			} else if (data[*pos] == 27) {
 				/* escape char found, that shouldn't happen */
-				cerr << "Escape character found in sequence: " << endl;
+				*debugfile << WORLD_DEBUG_NAME << "Escape character found in sequence: ";
 				for (int a = start; a <= *pos; ++a)
-					cerr << (int) data[a] << " - ";
-				cerr << endl;
-				cerr << &data[start] << endl;
-				cerr << data << endl;
+					*debugfile << (int) data[a] << " - ";
+				*debugfile << endl;
 				exit(7);
 			} else if (*pos - start > 7) {
 				/* too long escape sequence? */
-				cerr << "Suspiciously long sequence: " << endl;
-				cerr << &data[*pos] << endl;
+				*debugfile << WORLD_DEBUG_NAME << "Suspiciously long sequence: " << &data[*pos] << endl;
 				exit(8);
 			}
 		}
 		if (*pos >= data_size) {
-			cerr << "Did not find stop char for sequence" << endl;
-			cerr << data << endl;
+			*debugfile << WORLD_DEBUG_NAME << "Did not find stop char for sequence: " << data << endl;
 			exit(6);
 		}
 	} else if (data[*pos] == '(') {
@@ -332,8 +323,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 		/* normal numpad?
 		 * ignore */
 	} else {
-		cerr << "Unsupported escape sequence code at char " << *pos << ": ";
-		cerr << &data[*pos] << endl;
+		*debugfile << WORLD_DEBUG_NAME << "Unsupported escape sequence code at char " << *pos << ": " << &data[*pos] << endl;
 		exit(5);
 	}
 }
@@ -347,10 +337,10 @@ void World::update() {
 	/* also, we do this in two loops because otherwise it flickers a lot */
 	for (int a = 0; a < data_size; ++a)
 		cout << data[a];
-	cerr << "[DATA    ] ";
+	*debugfile << DATA_DEBUG_NAME;
 	for (int a = 0; a < data_size; ++a)
-		cerr << data[a];
-	cerr << endl;
+		*debugfile << data[a];
+	*debugfile << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:
@@ -393,10 +383,7 @@ void World::update() {
 			default:
 				/* add this char to the view */
 				if (cursor.col >= COLS || cursor.row >= ROWS || cursor.col < 0 || cursor.row < 0) {
-					cerr << "Fell out of the dungeon: " << cursor.row << ", " << cursor.col << endl;
-					cerr << data_size << endl;
-					cerr << pos << endl;
-					cerr << data << endl;
+					*debugfile << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << cursor.row << ", " << cursor.col << endl;
 					break;
 				}
 				view[cursor.row][cursor.col] = uniquemap[(unsigned char) data[pos]][color];
@@ -422,8 +409,7 @@ void World::update() {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
-		cerr << "CURSOR ON UNEXPECTED LOCATION: " << cursor.row << ", " << cursor.col << endl;
-		cerr << data << endl;
+		*debugfile << WORLD_DEBUG_NAME << "CURSOR ON UNEXPECTED LOCATION: " << cursor.row << ", " << cursor.col << endl;
 		update();
 		return;
 	}

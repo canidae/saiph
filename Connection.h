@@ -9,6 +9,7 @@
 class Connection;
 
 /* includes */
+#include <fstream>
 #include <string>
 
 /* namespace */
@@ -18,18 +19,22 @@ using namespace std;
 class Connection {
 	public:
 		/* constructors */
-		Connection();
+		Connection(ofstream *debugfile);
 
 		/* destructor */
 		virtual ~Connection();
 
 		/* static methods */
-		static Connection *create(int interface);
+		static Connection *create(int interface, ofstream *debugfile);
 
 		/* methods */
 		virtual int retrieve(char *buffer, int count);
 		virtual int transmit(const string &data);
 		virtual void start();
 		virtual void stop();
+
+	protected:
+		/* variables */
+		ofstream *debugfile;
 };
 #endif

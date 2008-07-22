@@ -2,13 +2,13 @@
 
 /* constructors */
 Saiph::Saiph(int interface) {
-	debugfile = new ofstream("saiph.log", ios::app);
-	connection = Connection::create(interface);
+	debugfile.open("saiph.log", ios::app);
+	connection = Connection::create(interface, &debugfile);
 	if (connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << interface << endl;
 		exit(1);
 	}
-	world = new World(connection);
+	world = new World(connection, &debugfile);
 	monstertracker = new MonsterTracker(this);
 	itemtracker = new ItemTracker(this);
 
@@ -102,21 +102,10 @@ Saiph::~Saiph() {
 	delete monstertracker;
 	delete world;
 	delete connection;
-	debugfile->close();
-	delete debugfile;
+	debugfile.close();
 }
 
 /* methods */
-void Saiph::debug(const string &component, const string &text) {
-	debugfile->put('[');
-	*debugfile << component;
-	for (int a = component.size(); a < 15; ++a)
-		debugfile->put(' ');
-	debugfile->put(']');
-	debugfile->put(' ');
-	*debugfile << text << endl;
-}
-
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	command.push_back(';');
@@ -160,7 +149,7 @@ void Saiph::farlook(const Point &target) {
 
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
-	cerr << "[REQUEST ] " << request.request << ", " << request.priority << ", " << request.value << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
+	debugfile << REQUEST_DEBUG_NAME << request.request << ", " << request.priority << ", " << request.value << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->request(request) && !status)
@@ -199,7 +188,7 @@ bool Saiph::run() {
 		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* deal with messages */
-	cerr << "[MESSAGES] '" << world->messages << "'" << endl;
+	debugfile << "'" << world->messages << "'" << endl;
 	/* global parsing */
 	parseMessages();
 	/* then analyzer parsing */
@@ -233,12 +222,12 @@ bool Saiph::run() {
 	}
 
 	if (world->question && best_analyzer == -1) {
-		cerr << "Unhandled question: " << world->messages << endl;
+		debugfile << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		return false;
 	}
 
 	if (world->menu && best_analyzer == -1) {
-		cerr << "Unhandled menu: " << world->messages << endl;
+		debugfile << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
 	}
 
@@ -248,7 +237,7 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	command.clear(); // just in case some analyzer messed with this string
 	analyzers[best_analyzer]->command(&command);
-	cerr << "[COMMAND ] '" << command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
+	debugfile << COMMAND_DEBUG_NAME << "'" << command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
 	world->executeCommand(command);
 	return true;
 }
@@ -572,6 +561,6 @@ int main() {
 	//	;
 	while (saiph->run())
 		;
-	cerr << "Quitting gracefully" << endl;
+	saiph->debugfile << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
 	delete saiph;
 }

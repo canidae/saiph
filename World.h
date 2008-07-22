@@ -1,6 +1,9 @@
 #ifndef WORLD_H
 /* defines */
 #define WORLD_H
+/* debug */
+#define WORLD_DEBUG_NAME "[World      ] "
+#define DATA_DEBUG_NAME "[Data       ] " // data from game, give that an unique name
 /* buffer */
 #define BUFFER_SIZE 65536
 /* text used to identify --More-- and menus */
@@ -12,6 +15,7 @@
 class World;
 
 /* includes */
+#include <fstream>
 #include <string>
 #include <vector>
 #include "Connection.h"
@@ -36,7 +40,7 @@ class World {
 		bool question;
 
 		/* constructors */
-		World(Connection *connection);
+		World(Connection *connection, ofstream *debugfile);
 
 		/* methods */
 		bool executeCommand(const string &command);
@@ -44,6 +48,7 @@ class World {
 	private:
 		/* variables */
 		Connection *connection;
+		ofstream *debugfile;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
 		int data_size;

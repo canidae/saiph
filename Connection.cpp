@@ -3,7 +3,7 @@
 #include "Telnet.h"
 
 /* constructors */
-Connection::Connection() {
+Connection::Connection(ofstream *debugfile) : debugfile(debugfile) {
 }
 
 /* destructor */
@@ -11,14 +11,14 @@ Connection::~Connection() {
 }
 
 /* static methods */
-Connection *Connection::create(int interface) {
+Connection *Connection::create(int interface, ofstream *debugfile) {
 	switch (interface) {
 		case CONNECTION_LOCAL:
-			return new Local();
+			return new Local(debugfile);
 			break;
 
 		case CONNECTION_TELNET:
-			return new Telnet();
+			return new Telnet(debugfile);
 			break;
 
 		default:

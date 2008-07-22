@@ -1,6 +1,8 @@
 #ifndef LOCAL_H
 /* defines */
 #define LOCAL_H
+/* debug */
+#define LOCAL_DEBUG_NAME "[      Local] "
 /* buffer */
 #define READ_LIMIT 4095
 #define BUFFER_SIZE 65536
@@ -26,10 +28,10 @@ using namespace std;
 class Local : public Connection {
 	public:
 		/* constructors */
-		Local();
+		Local(ofstream *debugfile);
 
 		/* destructor */
-		virtual ~Local();
+		~Local();
 
 		/* methods */
 		virtual int retrieve(char *buffer, int count);

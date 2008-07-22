@@ -1,6 +1,8 @@
 #ifndef TELNET_H
 /* defines */
 #define TELNET_H
+/* debug */
+#define TELNET_DEBUG_NAME "[     Telnet] "
 /* buffer for login */
 #define TELNET_BUFFER_SIZE 4096
 /* host */
@@ -11,7 +13,6 @@
 class Telnet;
 
 /* includes */
-#include <fstream>
 #include <iostream>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -29,7 +30,7 @@ using namespace std;
 class Telnet : public Connection {
 	public:
 		/* constructors */
-		Telnet();
+		Telnet(ofstream *debugfile);
 
 		/* destructor */
 		~Telnet();

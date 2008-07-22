@@ -42,11 +42,8 @@ Player::Player() {
 bool Player::parseAttributeRow(const char *attributerow) {
 	/* fetch attributes */
 	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &strength, &dexterity, &constitution, &intelligence, &wisdom, &charisma, effects[0]);
-	if (matched < 7) {
-		cerr << "Error parsing attribute line, expected 7 values, found " << matched << endl;
-		cerr << attributerow << endl;
+	if (matched < 7)
 		return false;
-	}
 	if (effects[0][0] == 'L')
 		alignment = LAWFUL;
 	else if (effects[0][0] == 'N')
@@ -68,11 +65,8 @@ bool Player::parseStatusRow(const char *statusrow) {
 	slimed = false;
 	stunned = false;
 	int matched = sscanf(statusrow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &dungeon, &zorkmids, &hitpoints, &hitpoints_max, &power, &power_max, &armor_class, &experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
-	if (matched < 9) {
-		cerr << "Error parsing status line, expected at least 9 values, found " << matched << endl;
-		cerr << statusrow << endl;
+	if (matched < 9)
 		return false;
-	}
 	int effects_found = matched - 9;
 	for (int e = 0; e < effects_found; ++e) {
 		if (strcmp(effects[e], "Burdened") == 0) {

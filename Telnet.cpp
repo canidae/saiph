@@ -1,7 +1,7 @@
 #include "Telnet.h"
 
 /* constructors */
-Telnet::Telnet() {
+Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 	/* connect to host using telnet */
 	struct hostent *he = gethostbyname(TELNET_NETHACK_URL);
 	if (he == NULL) {
@@ -95,7 +95,7 @@ int Telnet::retrieve(char *buffer, int count) {
 		}
 	}
 	if (tries < 0)
-		cerr << "WARNING: We were expecting data, but got none. Fix this bug, please!" << endl;
+		*debugfile << TELNET_DEBUG_NAME << "We were expecting data, but got none. Fix this bug, please!" << endl;
 	return retrieved;
 }
 
@@ -107,7 +107,7 @@ void Telnet::start() {
 	ifstream account;
 	account.open(".account");
 	if (!account) {
-		cerr << "Unable to read .account (which should contain username and password on separate lines)" << endl;
+		*debugfile << TELNET_DEBUG_NAME << "Unable to read .account (which should contain username and password on separate lines)" << endl;
 		exit(1);
 	}
 	string username;
