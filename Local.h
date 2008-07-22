@@ -2,7 +2,7 @@
 /* defines */
 #define LOCAL_H
 /* debug */
-#define LOCAL_DEBUG_NAME "[      Local] "
+#define LOCAL_DEBUG_NAME "[Local      ] "
 /* buffer */
 #define READ_LIMIT 4095
 #define BUFFER_SIZE 65536

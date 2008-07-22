@@ -67,7 +67,7 @@ void Loot::finish() {
 			v = visit.erase(v);
 			continue;
 		}
-		if (saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level][*v].items.size() <= 0) {
+		if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[v->row][v->col] == saiph->world->view[v->row][v->col]) {
 			/* hmm, stash is gone */
 			v = visit.erase(v);
 			continue;

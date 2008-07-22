@@ -55,10 +55,8 @@ int Local::retrieve(char *buffer, int count) {
 	FD_ZERO(&rfds);
 	FD_SET(link[0], &rfds);
 
-	*debugfile << LOCAL_DEBUG_NAME << link[0] << endl;
 	/* see if there is any data for us */
 	int retval = select(link[0] + 1, &rfds, NULL, NULL, NULL);
-	*debugfile << LOCAL_DEBUG_NAME << retval << endl;
 	if (retval <= 0)
 		return 0;
 	/* read data if any */
