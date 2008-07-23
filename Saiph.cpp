@@ -2,7 +2,7 @@
 
 /* constructors */
 Saiph::Saiph(int interface) {
-	debugfile.open("saiph.log", ios::trunc);
+	debugfile.open("debug.log", ios::trunc);
 	connection = Connection::create(interface, &debugfile);
 	if (connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << interface << endl;
@@ -375,6 +375,8 @@ void Saiph::dumpMaps() {
 	}
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
+	/* and flush cout. if we don't do this our output looks like garbage */
+	cout.flush();
 }
 
 void Saiph::inspect() {
