@@ -44,8 +44,8 @@ void Food::command(string *command) {
 }
 
 void Food::finish() {
-	/* are we weak or fainting? */
-	if (saiph->world->player.hunger < HUNGRY) {
+	/* are we hungry? */
+	if (saiph->world->player.hunger <= HUNGRY) {
 		/* yes, we are */
 		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 			for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
@@ -57,6 +57,14 @@ void Food::finish() {
 					return;
 				}
 			}
+		}
+		/* hmm, nothing to eat, how bad is it? */
+		if (saiph->world->player.hunger <= FAINTING) {
+			/* quite, quite bad.
+			 * pray for food, but if this doesn't work... help! */
+			req.request = REQUEST_PRAY;
+			req.priority = FOOD_PRAY_FOR_FOOD;
+			saiph->request(req);
 		}
 	} else if (saiph->world->player.hunger > CONTENT) {
 		for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
@@ -110,8 +118,4 @@ void Food::parseMessages(const string &messages) {
 			}
 		}
 	}
-}
-
-bool Food::request(const Request &request) {
-	return false;
 }

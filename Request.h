@@ -8,6 +8,7 @@
 #define REQUEST_ELBERETH_OR_REST 3
 #define REQUEST_LOOT_STASH 4
 #define REQUEST_LIST_INVENTORY 5
+#define REQUEST_PRAY 6
 
 /* forward declare */
 class Request;

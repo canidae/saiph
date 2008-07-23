@@ -146,6 +146,7 @@
 #define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
 #define MESSAGE_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
+#define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_OPEN_DOOR "  There is an open door here.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "

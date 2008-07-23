@@ -51,7 +51,6 @@ class ItemTracker {
 		void addItemToPickup(unsigned char key, const Item &item);
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
-		Item parseItemText(const string &text);
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		void removeItemFromPickup(const Item &item);
 		void removeItemFromStash(const Point &point, const Item &item);

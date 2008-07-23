@@ -1,12 +1,11 @@
-#ifndef HEALTH_H
+#ifndef PRAY_H
 /* defines */
-#define HEALTH_H
-/* priorities */
-#define HEALTH_REST_FOR_HP 800
-#define HEALTH_PRAY_FOR_HP 800
+#define PRAY_H
+/* turns between safe to pray */
+#define PRAY_PRAYER_TIMEOUT 1000
 
 /* forward declare */
-class Health;
+class Pray;
 
 /* includes */
 #include <string>
@@ -19,18 +18,20 @@ class Health;
 using namespace std;
 
 /* monitors health */
-class Health : public Analyzer {
+class Pray : public Analyzer {
 	public:
 		/* constructors */
-		Health(Saiph *saiph);
+		Pray(Saiph *saiph);
 
 		/* methods */
-		void finish();
+		void command(string *command);
+		void parseMessages(const string &messages);
+		bool request(const Request &request);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		bool resting;
-		Request req;
+		string action;
+		int last_pray_turn;
 };
 #endif

@@ -44,7 +44,8 @@ void ItemTracker::parseMessages(const string &messages) {
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
-			addItemToStash(saiph->position, parseItemText(messages.substr(pos, length)));
+			Item item(messages.substr(pos, length));
+			addItemToStash(saiph->position, item);
 		}
 	} else if ((pos = messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
@@ -56,7 +57,8 @@ void ItemTracker::parseMessages(const string &messages) {
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			addItemToStash(saiph->position, parseItemText(messages.substr(pos, length)));
+			Item item(messages.substr(pos, length));
+			addItemToStash(saiph->position, item);
 			pos += length;
 		}
 	} else if ((pos = messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0)) != string::npos) {
@@ -74,13 +76,13 @@ void ItemTracker::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			if (messages[pos - 2] == '-') {
-				Item item = parseItemText(messages.substr(pos, length));
+				Item item(messages.substr(pos, length));
 				addItemToPickup(messages[pos - 4], item);
 				addItemToStash(saiph->position, item);
 			}
 			pos += length;
 		}
-	} else if ((pos = messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0)) != string::npos) {
+	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* our inventory is empty. how did that happen? */
 		inventory.clear();
 	} else if ((pos = messages.find(".  ", 0)) != string::npos) {
@@ -100,7 +102,7 @@ void ItemTracker::parseMessages(const string &messages) {
 				if (length == string::npos)
 					break;
 				length = length - pos;
-				Item item = parseItemText(messages.substr(pos, length));
+				Item item(messages.substr(pos, length));
 				addItemToInventory(key, item);
 				removeItemFromPickup(item);
 				removeItemFromStash(saiph->position, item);
@@ -121,7 +123,7 @@ void ItemTracker::parseMessages(const string &messages) {
 				if (length == string::npos)
 					break;
 				length = length - pos;
-				Item item = parseItemText(messages.substr(pos, length));
+				Item item(messages.substr(pos, length));
 				addItemToInventory(key, item);
 				removeItemFromStash(saiph->position, item);
 				pos += length;
@@ -208,24 +210,6 @@ void ItemTracker::clearStash(const Point &point) {
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
 	if (s != stashes[saiph->position.branch][saiph->position.level].end())
 		s->second.items.clear();
-}
-
-Item ItemTracker::parseItemText(const string &text) {
-	Item item("", -1);
-	char amount[8];
-	char name[128];
-	int matched = sscanf(text.c_str(), GET_SINGLE_ITEM, amount, name);
-	if (matched != 2)
-		return item; // unable to parse text as item
-	/* figure out amount of items */
-	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || (amount[0] == 't' && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))     
-		item.count = 1; // "a", "an" or "the" <item>
-	else if (amount[0] >= '0' || amount[0] <= '9')
-		item.count = atoi(amount); // n <items>
-	else    
-		return item; // unable to parse text as item
-	item.name = name;
-	return item;
 }
 
 void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {

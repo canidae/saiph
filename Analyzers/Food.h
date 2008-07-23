@@ -2,6 +2,7 @@
 /* defines */
 #define FOOD_H
 /* priorities */
+#define FOOD_PRAY_FOR_FOOD 200
 #define FOOD_LOOT_PRIORITY 60
 #define FOOD_EAT_PRIORITY 60
 
@@ -29,7 +30,6 @@ class Food : public Analyzer {
 		void command(string *command);
 		void finish();
 		void parseMessages(const string &messages);
-		bool request(const Request &request);
 
 	private:
 		/* variables */

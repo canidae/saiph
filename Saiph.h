@@ -44,6 +44,7 @@ class Saiph;
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"
+#include "Analyzers/Pray.h"
 #include "Analyzers/Zorkmid.h"
 
 /* namespace */
