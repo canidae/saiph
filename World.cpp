@@ -337,6 +337,7 @@ void World::update() {
 	/* also, we do this in two loops because otherwise it flickers a lot */
 	for (int a = 0; a < data_size; ++a)
 		cout << data[a];
+	cout.flush(); // same reason as in saiph.dumpMaps()
 	*debugfile << DATA_DEBUG_NAME;
 	for (int a = 0; a < data_size; ++a)
 		*debugfile << data[a];
