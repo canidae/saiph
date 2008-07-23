@@ -38,6 +38,7 @@ class Loot : public Analyzer {
 		Saiph *saiph;
 		string action;
 		bool update_inventory;
+		map<int, map<int, map<Point, unsigned char> > > top_symbol;
 		list<Point> visit;
 		map<Coordinate, int> loot;
 };

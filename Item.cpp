@@ -98,6 +98,7 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 		pos += 3;
 	}
 	name.erase(0, pos);
+	/* TODO: "named" & "called" */
 	/* set "(being worn)" and so on in additional */
 	if (name[name.size() - 1] == ')') {
 		pos = name.rfind("(", name.size() - 1);

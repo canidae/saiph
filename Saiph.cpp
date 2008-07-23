@@ -174,10 +174,6 @@ bool Saiph::run() {
 	else
 		engulfed = false;
 
-	/* call begin() in itemtracker & monstertracker */
-	itemtracker->begin();
-	monstertracker->begin();
-
 	/* update maps */
 	if (!world->question && !world->menu && !engulfed)
 		updateMaps();

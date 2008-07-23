@@ -30,15 +30,14 @@ class ItemTracker {
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
 		map<int, map<int, map<Point, Stash> > > stashes;
-		vector<Point> updated_stashes;
 		Stash *on_ground;
 
 		/* constructors */
 		ItemTracker(Saiph *saiph);
 
 		/* methods */
-		void begin();
 		void parseMessages(const string &messages);
+		void removeItemFromInventory(unsigned char key, const Item &item);
 		void removeStashes();
 		void updateStash(const Point &point);
 
@@ -51,7 +50,6 @@ class ItemTracker {
 		void addItemToPickup(unsigned char key, const Item &item);
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
-		void removeItemFromInventory(unsigned char key, const Item &item);
 		void removeItemFromPickup(const Item &item);
 		void removeItemFromStash(const Point &point, const Item &item);
 };

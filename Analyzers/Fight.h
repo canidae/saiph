@@ -8,6 +8,7 @@
 #define FIGHT_ATTACK_BLUE_E 2
 #define FIGHT_ATTACK_WHITE_AT 1
 #define FIGHT_ATTACK_BLUE_AT 1
+#define FIGHT_LOOT_PRIORITY 70
 
 /* forward declare */
 class Fight;
@@ -39,5 +40,7 @@ class Fight : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string action;
+		list<string> thrown;
+		Request req;
 };
 #endif

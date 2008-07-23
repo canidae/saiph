@@ -26,16 +26,12 @@ ItemTracker::ItemTracker(Saiph *saiph) : saiph(saiph) {
 }
 
 /* methods */
-void ItemTracker::begin() {
-	/* reset certain things */
-	updated_stashes.clear();
-	on_ground = NULL;
-}
-
 void ItemTracker::parseMessages(const string &messages) {
 	/* figure out if there's something on the ground or if we're picking up something */
 	/* always clear pickup list */
 	pickup.clear();
+	/* and on_ground */
+	on_ground = NULL;
 	string::size_type pos;
 	if ((pos = messages.find(MESSAGE_YOU_SEE_HERE, 0)) != string::npos) {
 		/* single item on ground */
@@ -135,13 +131,22 @@ void ItemTracker::parseMessages(const string &messages) {
 		on_ground = &stashes[saiph->position.branch][saiph->position.level][saiph->position];
 }
 
+void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
+	map<unsigned char, Item>::iterator i = inventory.find(key);
+	if (i == inventory.end())
+		return;
+	if (i->second.count > item.count)
+		i->second.count -= item.count; // we got more than we remove
+	else
+		inventory.erase(i); // removing all we got
+}
+
 void ItemTracker::removeStashes() {
 	/* remove stashes that seems to be gone. */
 	for (map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ) {
-		if (saiph->world->view[s->first.row][s->first.col] == s->second.top_symbol) {
-			++s;
-			continue; // same top_symbol
-		}
 		if (saiph->world->view[s->first.row][s->first.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[s->first.row][s->first.col]) {
 			/* stash seems to be gone */
 			stashes[saiph->position.branch][saiph->position.level].erase(s++);
@@ -153,19 +158,11 @@ void ItemTracker::removeStashes() {
 
 void ItemTracker::updateStash(const Point &point) {
 	unsigned char symbol = saiph->world->view[point.row][point.col];
-	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
-	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
-		if (s->second.top_symbol == symbol)
-			return;
-		/* this stash has changed somehow */
-		saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Stash at " << point.row << ", " << point.col << " is changed! symbol changes: " << s->second.top_symbol << " - " << symbol << endl;
-		s->second.top_symbol = symbol;
-		updated_stashes.push_back(point);
-		return;
-	}
+	saiph->map[saiph->position.branch][saiph->position.level].item[point.row][point.col] = symbol;
+	if (stashes[saiph->position.branch][saiph->position.level].find(point) != stashes[saiph->position.branch][saiph->position.level].end())
+		return; // know of this stash already
 	/* new stash */
-	stashes[saiph->position.branch][saiph->position.level][point] = Stash(symbol);
-	updated_stashes.push_back(point);
+	stashes[saiph->position.branch][saiph->position.level][point] = Stash();
 }
 
 /* private methods */
@@ -210,19 +207,6 @@ void ItemTracker::clearStash(const Point &point) {
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
 	if (s != stashes[saiph->position.branch][saiph->position.level].end())
 		s->second.items.clear();
-}
-
-void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return;
-	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
-	map<unsigned char, Item>::iterator i = inventory.find(key);
-	if (i == inventory.end())
-		return;
-	if (i->second.count > item.count)
-		i->second.count -= item.count; // we got more than we remove
-	else
-		inventory.erase(i); // removing all we got
 }
 
 void ItemTracker::removeItemFromPickup(const Item &item) {

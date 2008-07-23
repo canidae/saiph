@@ -23,8 +23,14 @@ void Loot::command(string *command) {
 void Loot::finish() {
 	/* check inventory, loot or visit stash */
 	/* first check if some stashes have changed since last time */
-	for (vector<Point>::iterator u = saiph->itemtracker->updated_stashes.begin(); u != saiph->itemtracker->updated_stashes.end(); ++u)
-		visit.push_back(*u);
+	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
+		map<Point, unsigned char>::iterator t = top_symbol[saiph->position.branch][saiph->position.level].find(s->first);
+		if (t != top_symbol[saiph->position.branch][saiph->position.level].end() && t->second == saiph->map[saiph->position.branch][saiph->position.level].item[s->first.row][s->first.col])
+			continue; // same symbol as last time
+		/* symbol is changed, we should visit the stash */
+		top_symbol[saiph->position.branch][saiph->position.level][s->first] = saiph->map[saiph->position.branch][saiph->position.level].item[s->first.row][s->first.col];
+		visit.push_back(s->first);
+	}
 	/* check inventory */
 	if (PRIORITY_LOOK > priority && update_inventory) {
 		action = "i";
