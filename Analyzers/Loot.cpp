@@ -24,6 +24,10 @@ void Loot::finish() {
 	/* check inventory, loot or visit stash */
 	/* first check if some stashes have changed since last time */
 	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
+		/* FIXME
+		 * there's a bug here. what if an item disappear?
+		 * we won't remove the top_symbol then, so if a similar symbol appear
+		 * on the same spot, then we won't check it */
 		map<Point, unsigned char>::iterator t = top_symbol[saiph->position.branch][saiph->position.level].find(s->first);
 		if (t != top_symbol[saiph->position.branch][saiph->position.level].end() && t->second == saiph->map[saiph->position.branch][saiph->position.level].item[s->first.row][s->first.col])
 			continue; // same symbol as last time
@@ -40,11 +44,20 @@ void Loot::finish() {
 	int best_distance = INT_MAX;
 	int best_priority = ILLEGAL_PRIORITY;
 	/* loot items */
-	for (map<Coordinate, int>::iterator l = loot.begin(); l != loot.end(); ++l) {
-		if (l->first.branch != saiph->position.branch || l->first.level != saiph->position.level)
+	for (map<Coordinate, int>::iterator l = loot.begin(); l != loot.end(); ) {
+		if (saiph->itemtracker->stashes[l->first.branch][l->first.level].find(l->first) == saiph->itemtracker->stashes[l->first.branch][l->first.level].end()) {
+			/* this stash doesn't exist */
+			loot.erase(l++);
 			continue;
-		if (l->second < best_priority)
+		}
+		if (l->first.branch != saiph->position.branch || l->first.level != saiph->position.level) {
+			++l;
 			continue;
+		}
+		if (l->second < best_priority) {
+			++l;
+			continue;
+		}
 		int distance = -1;
 		bool straight_line = false;
 		unsigned char move = saiph->shortestPath(l->first, false, &distance, &straight_line);
@@ -53,6 +66,7 @@ void Loot::finish() {
 			best_priority = l->second;
 			action = move;
 		}
+		++l;
 	}
 	if (best_priority > priority && best_priority > ILLEGAL_PRIORITY) {
 		/* we should pick up something */
@@ -73,7 +87,7 @@ void Loot::finish() {
 			v = visit.erase(v);
 			continue;
 		}
-		if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[v->row][v->col] == saiph->world->view[v->row][v->col]) {
+		if (saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].find(*v) == saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end()) {
 			/* hmm, stash is gone */
 			v = visit.erase(v);
 			continue;
