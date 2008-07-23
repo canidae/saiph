@@ -143,8 +143,6 @@
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
-#define MESSAGE_GOLD_PIECE " gold piece.  " // we don't get "# - 3 gold pieces" when we pick up gold
-#define MESSAGE_GOLD_PIECES " gold pieces.  " // same as above
 #define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
 #define MESSAGE_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
