@@ -170,7 +170,7 @@ void ItemTracker::updateStash(const Point &point) {
 
 /* private methods */
 void ItemTracker::addItemToInventory(unsigned char key, const Item &item) {
-	if (item.count < 0)
+	if (item.count <= 0)
 		return;
 	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (inventory.find(key) != inventory.end()) {
@@ -183,14 +183,14 @@ void ItemTracker::addItemToInventory(unsigned char key, const Item &item) {
 }
 
 void ItemTracker::addItemToPickup(unsigned char key, const Item &item) {
-	if (item.count < 0)
+	if (item.count <= 0)
 		return;
 	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to pickup slot " << key << endl;
 	pickup[key] = item;
 }
 
 void ItemTracker::addItemToStash(const Point &point, const Item &item) {
-	if (item.count < 0)
+	if (item.count <= 0)
 		return;
 	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << saiph->position.branch << ", " << saiph->position.level << ", " << point.row << ", " << point.col << endl;
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
@@ -213,7 +213,7 @@ void ItemTracker::clearStash(const Point &point) {
 }
 
 void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
-	if (item.count < 0)
+	if (item.count <= 0)
 		return;
 	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	map<unsigned char, Item>::iterator i = inventory.find(key);
@@ -228,7 +228,7 @@ void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
 void ItemTracker::removeItemFromPickup(const Item &item) {
 	/* we currently don't have a way to tell exactly which item we removed.
 	 * we'll have to search and remove the best match */
-	if (item.count < 0)
+	if (item.count <= 0)
 		return;
 	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from pickup" << endl;
 	for (map<unsigned char, Item>::iterator p = pickup.begin(); p != pickup.end(); ++p) {
@@ -246,7 +246,7 @@ void ItemTracker::removeItemFromPickup(const Item &item) {
 }
 
 void ItemTracker::removeItemFromStash(const Point &point, const Item &item) {
-	if (item.count < 0)
+	if (item.count <= 0)
 		return;
 	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << saiph->position.branch << ", " << saiph->position.level << ", " << point.row << ", " << point.col << endl;
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
