@@ -44,6 +44,7 @@ class Saiph;
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"
+#include "Analyzers/Zorkmid.h"
 
 /* namespace */
 using namespace std;

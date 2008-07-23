@@ -153,7 +153,7 @@
 #define MESSAGE_STAIRCASE_UP "  There is a staircase up here.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
-#define MESSAGE_YOU_READ "  You read: " // followed by the text
+#define MESSAGE_YOU_READ "  You read:" // followed by the text. no space after ":" because message parser is a bit buggy
 #define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define MESSAGE_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 

@@ -92,6 +92,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Health(this));
 	analyzers.push_back(new Level(this));
 	analyzers.push_back(new Loot(this));
+	analyzers.push_back(new Zorkmid(this));
 }
 
 /* destructor */
