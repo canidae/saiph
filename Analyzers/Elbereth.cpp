@@ -74,6 +74,20 @@ bool Elbereth::request(const Request &request) {
 		/* check that we're not engulfed */
 		if (saiph->engulfed)
 			return false;
+		/* check that the monsters around us respects elbereth */
+		for (map<Point, Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+			if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
+				/* monster is not next to player */
+				continue;
+			}
+			/* TODO
+			 * monster that won't respect elbereth might be friendly.
+			 * we also need to check for minotaurs & riders (heh, yeah, right) */
+			if (m->second.symbol == '@')
+				return false; // elbereth won't be respected
+			if (m->second.symbol == 'A')
+				return false; // elbereth won't be respected
+		}
 		if (!did_look && !burned && !digged && !dusted) {
 			/* we'll need to look first, which means set action & priority and return true */
 			action = ":";
