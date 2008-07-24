@@ -23,8 +23,8 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("melons");
 	eat_order.push_back("apple");
 	eat_order.push_back("apples");
-	//eat_order.push_back("pear"); // temporary removed because of "spear"
-	//eat_order.push_back("pears"); // temporary removed because of "spear"
+	eat_order.push_back("pear");
+	eat_order.push_back("pears");
 	eat_order.push_back("kelp frond");
 	eat_order.push_back("kelp fronds");
 	eat_order.push_back("C-ration");
@@ -42,8 +42,8 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("fortune cookies");
 	eat_order.push_back("banana");
 	eat_order.push_back("bananas");
-	//eat_order.push_back("orange"); // "orange gem"
-	//eat_order.push_back("oranges"); // "orange gem"
+	eat_order.push_back("orange");
+	eat_order.push_back("oranges");
 	eat_order.push_back("candy bar");
 	eat_order.push_back("candy bars");
 	eat_order.push_back("byte");
