@@ -93,8 +93,10 @@ void Fight::finish() {
 			continue; // can't path to this monster
 		if (got_thrown == 0 || enemy_in_line && !straight_line)
 			continue; // got another enemy in line already, this enemy isn't
-		if (distance >= best_distance)
+		if (distance > best_distance)
 			continue; // we know of a monster closer to us
+		if (distance == best_distance && m->second.symbol != '@' && m->second.symbol != 'A')
+			continue; // equally close, and it's not '@' or 'A' (we attack those first as they won't respect elbereth)
 		enemy_in_line = straight_line;
 		priority = cur_priority;
 		best_distance = distance;
