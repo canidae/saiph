@@ -31,6 +31,7 @@ void Excalibur::finish() {
 		/* yes, dip */
 		action = DIP;
 		action2 = got_long_sword;
+		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
 		/* no, request that someone takes us there */
 		req.request = REQUEST_VISIT_NEAREST_FOUNTAIN;
@@ -44,9 +45,11 @@ void Excalibur::parseMessages(const string &messages) {
 		/* what to dip... the long sword ofcourse! */
 		action = action2;
 		action2 = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (action != "" && action2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
 		/* if we want to dip in fountain? sure */
 		action = action2;
 		action2 = "";
+		priority = PRIORITY_CONTINUE_ACTION;
 	}
 }
