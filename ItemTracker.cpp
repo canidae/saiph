@@ -33,7 +33,7 @@ void ItemTracker::parseMessages(const string &messages) {
 	/* and on_ground */
 	on_ground = NULL;
 	string::size_type pos;
-	if ((pos = messages.find(MESSAGE_YOU_SEE_HERE, 0)) != string::npos) {
+	if ((pos = messages.find(MESSAGE_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(MESSAGE_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* single item on ground */
 		clearStash(saiph->position);
 		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
