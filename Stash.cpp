@@ -1,7 +1,7 @@
 #include "Stash.h"
 
 /* constructors */
-Stash::Stash(int frame_changed) : frame_changed(frame_changed) {
+Stash::Stash(int frame_changed, unsigned char top_symbol) : frame_changed(frame_changed), top_symbol(top_symbol) {
 }
 
 /* methods */
