@@ -24,6 +24,10 @@ void Loot::finish() {
 	/* check inventory, loot or visit stash */
 	if (priority >= PRIORITY_LOOK)
 		return; // we're probably listing inventory
+	if (saiph->world->player.hallucinating) {
+		/* argh, annoying. just return */
+		return;
+	}
 	/* first check if some stashes have changed since last time */
 	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
 		map<Point, int>::iterator t = turn_last_changed[saiph->position.branch][saiph->position.level].find(s->first);

@@ -535,6 +535,8 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 		}
 		//if (polymorphed_to_grid_bug)
 		//	return false;
+		//if (rogue_level)
+		//	return false; // level that is hard to parse. only allowing cardinal moves makes it easier
 	}
 	//if (blacklisted_move)
 	//	return false;
