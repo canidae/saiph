@@ -66,7 +66,7 @@
 #define ILLEGAL_MOVE 0
 /* actions */
 #define ILLEGAL_ACTION 0
-#define DIP 'd'
+#define DIP "#dip\n"
 #define EAT 'e'
 #define ENGRAVE 'E'
 #define KICK 4
@@ -145,10 +145,11 @@
 #define PRIORITY_LOOK 1001
 #define PRIORITY_MAX 1000
 /* messages */
+#define MESSAGE_BUMP_INTO_DOOR "  Ouch!  You bump into a door.  "
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_DIGGED_TEXT "  Something is engraved here on the floor.  "
-#define MESSAGE_DIP_IN_FOUNTAIN "  Dip it into the fountain? [yn] (n)  "
+#define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
 #define MESSAGE_DOOR_CLOSES "  The door closes.  "
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
 #define MESSAGE_DOOR_OPENS "  The door opens.  "
