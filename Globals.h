@@ -72,6 +72,7 @@
 #define PRAY "#pray\n"
 #define REST '.'
 #define SEARCH 's'
+#define THROW 't'
 /* common answers */
 #define HANDS '-'
 #define NO 'n'
