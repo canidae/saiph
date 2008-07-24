@@ -128,10 +128,17 @@
 #define PET 138
 #define PLAYER 139
 /* priorities */
+/*    0-199: explore/random/do stuff we normally wouldn't do (melee floating eye)
+ *  200-399: move around, eg. attacking & looting
+ *  400-599: don't move. engrave for protection, attack if not moving and protected, feed, etc
+ *  600-799: don't panic, rest for hp, fix bad stuff
+ *  800-999: panic, all hell is loose, pray, teleport, get the hell away
+ * 1000->  : zero-turn actions, defined below
+ */
 #define ILLEGAL_PRIORITY -1
-#define PRIORITY_PICKUP_ITEM 1004
-#define PRIORITY_PICKUP_STASH 1003
-#define PRIORITY_CONTINUE_ACTION 1002
+#define PRIORITY_CONTINUE_ACTION 1004
+#define PRIORITY_PICKUP_ITEM 1003
+#define PRIORITY_PICKUP_STASH 1002
 #define PRIORITY_LOOK 1001
 #define PRIORITY_MAX 1000
 /* messages */
@@ -153,6 +160,7 @@
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
 #define MESSAGE_STAIRCASE_DOWN "  There is a staircase down here.  "
 #define MESSAGE_STAIRCASE_UP "  There is a staircase up here.  "
+#define MESSAGE_THERE_IS_A "  There is a %[^\t\n] here; eat it? "
 #define MESSAGE_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
