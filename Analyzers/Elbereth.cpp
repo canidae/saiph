@@ -68,6 +68,19 @@ void Elbereth::parseMessages(const string &messages) {
 
 bool Elbereth::request(const Request &request) {
 	if (request.request == REQUEST_ELBERETH_OR_REST) {
+		/* check if we're levitating */
+		/* check if there's a fountain/grave/altar here */
+		switch (saiph->map[saiph->position.branch][saiph->position.level].dungeon[saiph->position.row][saiph->position.col]) {
+			case ALTAR:
+			case GRAVE:
+			case FOUNTAIN:
+				return false;
+				break;
+
+			default:
+				/* rest is ok, but don't return as we need to check for other things too */
+				break;
+		}
 		/* check for ill effects */
 		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
 			return false;
