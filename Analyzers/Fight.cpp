@@ -116,8 +116,17 @@ void Fight::finish() {
 }
 
 void Fight::parseMessages(const string &messages) {
-	if (messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
+	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
 		action = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && action3 != "" && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
+		action = action2;
+		action2 = action3;
+		action3 = "";
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && action2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+		action = action2;
+		action2 = "";
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
 		/* pick up thrown weapons if any */
