@@ -157,6 +157,7 @@
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
+#define MESSAGE_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
 #define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
 #define MESSAGE_KICK_DOOR_FAIL "  WHAMMM!!!  "
 #define MESSAGE_KICK_DOOR_OPEN "  As you kick the door, it crashes open!  "

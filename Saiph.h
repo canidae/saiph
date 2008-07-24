@@ -41,6 +41,7 @@ class Saiph;
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
+#include "Analyzers/Fountain.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"

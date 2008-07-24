@@ -10,6 +10,7 @@
 #define REQUEST_DIRTY_INVENTORY 5
 #define REQUEST_UPDATED_INVENTORY 6
 #define REQUEST_PRAY 7
+#define REQUEST_VISIT_NEAREST_FOUNTAIN 8
 
 /* forward declare */
 class Request;
