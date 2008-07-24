@@ -157,10 +157,14 @@ void ItemTracker::removeStashes() {
 }
 
 void ItemTracker::updateStash(const Point &point) {
-	if (stashes[saiph->position.branch][saiph->position.level].find(point) != stashes[saiph->position.branch][saiph->position.level].end())
+	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
+	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
+		s->second.top_symbol = saiph->world->view[point.row][point.col];
+		s->second.frame_changed = saiph->frame_count;
 		return; // know of this stash already
+	}
 	/* new stash */
-	stashes[saiph->position.branch][saiph->position.level][point] = Stash(saiph->world->view[point.row][point.col]);
+	stashes[saiph->position.branch][saiph->position.level][point] = Stash(saiph->world->player.turn, saiph->world->view[point.row][point.col]);
 }
 
 /* private methods */
@@ -194,7 +198,7 @@ void ItemTracker::addItemToStash(const Point &point, const Item &item) {
 		return;
 	}
 	/* new stash */
-	Stash stash;
+	Stash stash(saiph->frame_count);
 	stash.items.push_back(item);
 	stashes[saiph->position.branch][saiph->position.level][point] = stash;
 }

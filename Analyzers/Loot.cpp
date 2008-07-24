@@ -24,15 +24,11 @@ void Loot::finish() {
 	/* check inventory, loot or visit stash */
 	/* first check if some stashes have changed since last time */
 	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
-		/* FIXME
-		 * there's a bug here. what if an item disappear?
-		 * we won't remove the top_symbol then, so if a similar symbol appear
-		 * on the same spot, then we won't check it */
-		map<Point, unsigned char>::iterator t = top_symbol[saiph->position.branch][saiph->position.level].find(s->first);
-		if (t != top_symbol[saiph->position.branch][saiph->position.level].end() && t->second == saiph->map[saiph->position.branch][saiph->position.level].item[s->first.row][s->first.col])
-			continue; // same symbol as last time
-		/* symbol is changed, we should visit the stash */
-		top_symbol[saiph->position.branch][saiph->position.level][s->first] = saiph->map[saiph->position.branch][saiph->position.level].item[s->first.row][s->first.col];
+		map<Point, int>::iterator f = frame_last_changed[saiph->position.branch][saiph->position.level].find(s->first);
+		if (f != frame_last_changed[saiph->position.branch][saiph->position.level].end() && s->second.frame_changed - f->second <= LOOT_REVISIT_STASH_TIME)
+			continue; // not changed or changed too soon for us to care
+		/* we should visit the stash */
+		frame_last_changed[saiph->position.branch][saiph->position.level][s->first] = s->second.frame_changed;
 		visit.push_back(s->first);
 	}
 	/* check inventory */

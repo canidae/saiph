@@ -15,6 +15,9 @@ Saiph::Saiph(int interface) {
 	/* engulfed */
 	engulfed = false;
 
+	/* frame count */
+	frame_count = 0;
+
 	/* pathing & maps */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
 		passable[a] = false;
@@ -237,6 +240,7 @@ bool Saiph::run() {
 	analyzers[best_analyzer]->command(&command);
 	debugfile << COMMAND_DEBUG_NAME << "'" << command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
 	world->executeCommand(command);
+	++frame_count;
 	return true;
 }
 

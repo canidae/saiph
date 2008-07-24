@@ -69,6 +69,7 @@ class Saiph {
 		Coordinate position;
 		string command;
 		bool engulfed;
+		int frame_count;
 
 		/* constructors */
 		Saiph(int interface);

@@ -1,6 +1,8 @@
 #ifndef LOOT_H
 /* defines */
 #define LOOT_H
+/* if a stash change within this amount of turns since we last visited it, don't revisit */
+#define LOOT_REVISIT_STASH_TIME 1
 /* priorities */
 #define LOOT_VISIT_STASH_PRIORITY 50
 
@@ -38,7 +40,7 @@ class Loot : public Analyzer {
 		Saiph *saiph;
 		string action;
 		bool update_inventory;
-		map<int, map<int, map<Point, unsigned char> > > top_symbol;
+		map<int, map<int, map<Point, int> > > frame_last_changed;
 		list<Point> visit;
 		map<Coordinate, int> loot;
 };
