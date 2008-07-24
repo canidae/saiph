@@ -86,6 +86,7 @@ Saiph::Saiph(int interface) {
 	/* Analyzers */
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Elbereth(this));
+	analyzers.push_back(new Excalibur(this));
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Food(this));
@@ -388,16 +389,22 @@ void Saiph::inspect() {
 
 void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc. */
-	if (world->messages.find(MESSAGE_STAIRCASE_UP, 0) != string::npos)
+	if (world->messages.find(MESSAGE_STAIRCASE_UP_HERE, 0) != string::npos)
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
-	else if (world->messages.find(MESSAGE_STAIRCASE_DOWN, 0) != string::npos)
+	else if (world->messages.find(MESSAGE_STAIRCASE_DOWN_HERE, 0) != string::npos)
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
-	else if (world->messages.find(MESSAGE_OPEN_DOOR, 0) != string::npos)
+	else if (world->messages.find(MESSAGE_OPEN_DOOR_HERE, 0) != string::npos)
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
+	else if (world->messages.find(MESSAGE_FOUNTAIN_HERE, 0) != string::npos)
+		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = FOUNTAIN;
 	/* when we've checked messages for static dungeon features and not found anything,
 	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
 	else if (map[position.branch][position.level].dungeon[world->player.row][world->player.col] == UNKNOWN_TILE)
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
+
+	/* messages that remove static dungeon features */
+	if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos)
+		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = FLOOR;
 
 	/* let the trackers parse messages */
 	itemtracker->parseMessages(world->messages);

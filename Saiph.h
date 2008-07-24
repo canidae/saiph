@@ -38,6 +38,7 @@ class Saiph;
 /* analyzers */
 #include "Analyzers/Door.h"
 #include "Analyzers/Elbereth.h"
+#include "Analyzers/Excalibur.h"
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
