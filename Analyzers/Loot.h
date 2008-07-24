@@ -40,7 +40,7 @@ class Loot : public Analyzer {
 		Saiph *saiph;
 		string action;
 		bool update_inventory;
-		map<int, map<int, map<Point, int> > > frame_last_changed;
+		map<int, map<int, map<Point, int> > > turn_last_changed;
 		list<Point> visit;
 		map<Coordinate, int> loot;
 };

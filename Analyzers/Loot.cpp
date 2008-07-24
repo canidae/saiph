@@ -24,11 +24,11 @@ void Loot::finish() {
 	/* check inventory, loot or visit stash */
 	/* first check if some stashes have changed since last time */
 	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
-		map<Point, int>::iterator f = frame_last_changed[saiph->position.branch][saiph->position.level].find(s->first);
-		if (f != frame_last_changed[saiph->position.branch][saiph->position.level].end() && s->second.frame_changed - f->second <= LOOT_REVISIT_STASH_TIME)
+		map<Point, int>::iterator t = turn_last_changed[saiph->position.branch][saiph->position.level].find(s->first);
+		if (t != turn_last_changed[saiph->position.branch][saiph->position.level].end() && s->second.turn_changed - t->second <= LOOT_REVISIT_STASH_TIME)
 			continue; // not changed or changed too soon for us to care
 		/* we should visit the stash */
-		frame_last_changed[saiph->position.branch][saiph->position.level][s->first] = s->second.frame_changed;
+		turn_last_changed[saiph->position.branch][saiph->position.level][s->first] = s->second.turn_changed;
 		visit.push_back(s->first);
 	}
 	/* check inventory */
