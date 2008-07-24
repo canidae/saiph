@@ -4,7 +4,7 @@
 /* if a stash change within this amount of turns since we last visited it, don't revisit */
 #define LOOT_REVISIT_STASH_TIME 1
 /* priorities */
-#define LOOT_VISIT_STASH_PRIORITY 50
+#define LOOT_VISIT_STASH_PRIORITY 250
 
 /* forward declare */
 class Loot;

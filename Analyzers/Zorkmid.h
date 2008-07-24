@@ -2,7 +2,7 @@
 /* defines */
 #define ZORKMID_H
 /* priorities */
-#define ZORKMID_LOOT_PRIORITY 60
+#define ZORKMID_LOOT_PRIORITY 275
 /* gold */
 #define ZORKMID_GOLD_PIECE "gold piece"
 

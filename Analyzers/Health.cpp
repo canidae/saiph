@@ -13,7 +13,7 @@ void Health::finish() {
 	if (hp > 0 && hp < hp_max * 3 / 5) {
 		/* hp below 60%. heal up */
 		req.request = REQUEST_ELBERETH_OR_REST;
-		req.priority = HEALTH_REST_FOR_HP;
+		req.priority = HEALTH_REST_FOR_HP_LOW;
 		resting = true;
 		if (!saiph->request(req)) {
 			/* elbereth won't work... how about pray? */
@@ -30,7 +30,7 @@ void Health::finish() {
 			resting = false; // enough hp (>90%) to continue our journey
 		} else {
 			req.request = REQUEST_ELBERETH_OR_REST;
-			req.priority = HEALTH_REST_FOR_HP;
+			req.priority = HEALTH_REST_FOR_HP_HIGH;
 			if (!saiph->request(req)) {
 				/* noone would handle our request.
 				 * we're bones */

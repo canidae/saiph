@@ -68,6 +68,8 @@
 #define ILLEGAL_ACTION 0
 #define EAT 'e'
 #define ENGRAVE 'E'
+#define KICK 4
+#define OPEN 'o'
 #define PICKUP ','
 #define PRAY "#pray\n"
 #define REST '.'
@@ -145,6 +147,10 @@
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_DIGGED_TEXT "  Something is engraved here on the floor.  "
+#define MESSAGE_DOOR_CLOSES "  The door closes.  "
+#define MESSAGE_DOOR_LOCKED "  This door is locked.  "
+#define MESSAGE_DOOR_OPENS "  The door opens.  "
+#define MESSAGE_DOOR_RESISTS "  The door resists!  "
 #define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? " // followed by "[ynq] (y)" or something
@@ -152,15 +158,21 @@
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
 #define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
+#define MESSAGE_KICK_DOOR_FAIL "  WHAMMM!!!  "
+#define MESSAGE_KICK_DOOR_OPEN "  As you kick the door, it crashes open!  "
 #define MESSAGE_MANY_OBJECTS_HERE "  There are many objects here.  "
+#define MESSAGE_NO_DOOR "  You see no door there.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_OPEN_DOOR "  There is an open door here.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
+#define MESSAGE_SHOP_ON_LEVEL1 "  You hear someone cursing shoplifters.  "
+#define MESSAGE_SHOP_ON_LEVEL2 "  You hear the chime of a cash register.  "
+#define MESSAGE_SHOP_ON_LEVEL3 "  You hear Neiman and Marcus arguing!  "
 #define MESSAGE_STAIRCASE_DOWN "  There is a staircase down here.  "
 #define MESSAGE_STAIRCASE_UP "  There is a staircase up here.  "
-#define MESSAGE_THERE_IS_A "  There is a %[^\t\n] here; eat it? "
+#define MESSAGE_THERE_IS_A_EAT_IT "  There is a %[^\t\n] here; eat it? "
 #define MESSAGE_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"

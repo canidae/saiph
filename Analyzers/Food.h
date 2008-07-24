@@ -2,9 +2,11 @@
 /* defines */
 #define FOOD_H
 /* priorities */
-#define FOOD_PRAY_FOR_FOOD 200
-#define FOOD_LOOT_PRIORITY 60
-#define FOOD_EAT_PRIORITY 60
+#define FOOD_LOOT_PRIORITY 300
+#define FOOD_EAT_HUNGRY_PRIORITY 350
+#define FOOD_EAT_WEAK_PRIORITY 550
+#define FOOD_EAT_FAINTING_PRIORITY 750
+#define FOOD_PRAY_FOR_FOOD 950
 
 /* forward declare */
 class Food;

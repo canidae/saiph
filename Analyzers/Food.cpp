@@ -86,7 +86,19 @@ void Food::finish() {
 					/* and we got something to eat */
 					action = EAT;
 					action2 = i->first;
-					priority = FOOD_EAT_PRIORITY;
+					switch (saiph->world->player.hunger) {
+						case HUNGRY:
+							priority = FOOD_EAT_HUNGRY_PRIORITY;
+							break;
+
+						case WEAK:
+							priority = FOOD_EAT_WEAK_PRIORITY;
+							break;
+
+						default:
+							priority = FOOD_EAT_FAINTING_PRIORITY;
+							break;
+					}
 					return;
 				}
 			}
@@ -110,7 +122,7 @@ void Food::finish() {
 				/* easter egg: eat bytes when [over]satiated */
 				action2 = i->first;
 				action = EAT;
-				priority = FOOD_EAT_PRIORITY;
+				priority = FOOD_EAT_HUNGRY_PRIORITY;
 				return;
 			}
 		}

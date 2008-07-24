@@ -36,7 +36,7 @@ void Fight::finish() {
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
 		action = MOVE_NW; // doesn't matter which direction
-		priority = FIGHT_ATTACK_MONSTER;
+		priority = FIGHT_ATTACK_PRIORITY;
 		return;
 	}
 	/* look for thrown weapons on ground */
@@ -78,22 +78,20 @@ void Fight::finish() {
 	for (map<Point, Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
-		int cur_priority;
-		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE)
-			cur_priority = FIGHT_ATTACK_BLUE_E;
-		else if (m->second.symbol == '@' && m->second.color == WHITE)
-			cur_priority = FIGHT_ATTACK_WHITE_AT;
-		else if (m->second.symbol == '@' && m->second.color == BLUE)
-			cur_priority = FIGHT_ATTACK_BLUE_AT;
-		else
-			cur_priority = FIGHT_ATTACK_MONSTER;
-		if (cur_priority < priority)
-			continue; // we've already found another monster with higher priority
 		int distance = -1;
 		bool straight_line = false;
 		unsigned char move = saiph->shortestPath(m->first, true, &distance, &straight_line);
 		if (move == ILLEGAL_MOVE)
 			continue; // can't path to this monster
+		int cur_priority;
+		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE)
+			cur_priority = FIGHT_BLUE_E_PRIORITY;
+		else if (m->second.symbol == '@' && m->second.color == BLUE)
+			cur_priority = FIGHT_BLUE_AT_PRIORITY;
+		else
+			cur_priority = (distance == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
+		if (cur_priority < priority)
+			continue; // we've already found another monster with higher priority
 		if (got_thrown > 0 && enemy_in_line && !straight_line)
 			continue; // got thrown and an enemy in line already, this enemy isn't or we got no thrown
 		if (distance > best_distance)

@@ -59,7 +59,7 @@ void Door::finish() {
 			da.direction = move;
 			da.dp = &(*d);
 			if (distance == 1)
-				da.action = DOOR_OPEN; // standing next to door
+				da.action = OPEN; // standing next to door
 			else
 				da.action = ILLEGAL_ACTION;
 		/* TODO:
@@ -87,7 +87,7 @@ void Door::finish() {
 			da.direction = move;
 			da.dp = &(*d);
 			if (distance == 1)
-				da.action = DOOR_KICK; // standing next to door
+				da.action = KICK; // standing next to door
 			else
 				da.action = ILLEGAL_ACTION;
 		}
@@ -115,15 +115,15 @@ void Door::parseMessages(const string &messages) {
 		da.action = ILLEGAL_ACTION;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
-	//} else if (messages.find(DOOR_CLOSES, 0) != string::npos) {
-	//} else if (messages.find(DOOR_KICK_FAIL, 0) != string::npos) {
-	//} else if (messages.find(DOOR_KICK_OPEN, 0) != string::npos) {
-	} else if (messages.find(DOOR_LOCKED, 0) != string::npos && da.dp != NULL) {
+	//} else if (messages.find(MESSAGE_DOOR_CLOSES, 0) != string::npos) {
+	//} else if (messages.find(MESSAGE_KICK_DOOR_FAIL, 0) != string::npos) {
+	//} else if (messages.find(MESSAGE_KICK_DOOR_OPEN, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos && da.dp != NULL) {
 		da.dp->locked = true;
-	//} else if (messages.find(DOOR_NO_DOOR, 0) != string::npos) {
-	//} else if (messages.find(DOOR_OPENS, 0) != string::npos) {
-	//} else if (messages.find(DOOR_RESISTS, 0) != string::npos) {
-	} else if (!shop_on_level[saiph->position.branch][saiph->position.level] && messages.find(DOOR_SHOP_ON_LEVEL1, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL2, 0) != string::npos || messages.find(DOOR_SHOP_ON_LEVEL3, 0) != string::npos) {
+	//} else if (messages.find(MESSAGE_NO_DOOR, 0) != string::npos) {
+	//} else if (messages.find(MESSAGE_DOOR_OPENS, 0) != string::npos) {
+	//} else if (messages.find(MESSAGE_DOOR_RESISTS, 0) != string::npos) {
+	} else if (!shop_on_level[saiph->position.branch][saiph->position.level] && messages.find(MESSAGE_SHOP_ON_LEVEL1, 0) != string::npos || messages.find(MESSAGE_SHOP_ON_LEVEL2, 0) != string::npos || messages.find(MESSAGE_SHOP_ON_LEVEL3, 0) != string::npos) {
 		/* TODO
 		 * this will not be specific for doors(?) */
 		shop_on_level[saiph->position.branch][saiph->position.level] = true;

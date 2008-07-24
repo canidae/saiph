@@ -2,7 +2,7 @@
 /* defines */
 #define LEVEL_H
 /* various */
-#define LEVEL_DESCEND_PRIORITY 30
+#define LEVEL_DESCEND_PRIORITY 40
 
 /* forward declare */
 class Level;

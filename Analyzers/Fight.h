@@ -4,11 +4,11 @@
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
 /* priorities */
-#define FIGHT_ATTACK_MONSTER 70
-#define FIGHT_ATTACK_BLUE_E 2
-#define FIGHT_ATTACK_WHITE_AT 70
-#define FIGHT_ATTACK_BLUE_AT 1
-#define FIGHT_LOOT_PRIORITY 70
+#define FIGHT_MOVE_PRIORITY 325
+#define FIGHT_ATTACK_PRIORITY 450
+#define FIGHT_BLUE_E_PRIORITY 30
+#define FIGHT_BLUE_AT_PRIORITY ILLEGAL_PRIORITY
+#define FIGHT_LOOT_PRIORITY 350
 
 /* forward declare */
 class Fight;
