@@ -20,70 +20,70 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 	string::size_type pos = 0;
 	name = name_long;
 	/* buc */
-	if (name.find(ITEM_PARSE_BLESSED, pos) == 0) {
+	if (name.find(ITEM_PARSE_BLESSED, pos) == pos) {
 		buc_status = BLESSED;
 		pos += sizeof (ITEM_PARSE_BLESSED) - 1;
-	} else if (name.find(ITEM_PARSE_UNCURSED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_UNCURSED, pos) == pos) {
 		buc_status = UNCURSED;
 		pos += sizeof (ITEM_PARSE_UNCURSED) - 1;
-	} else if (name.find(ITEM_PARSE_CURSED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_CURSED, pos) == pos) {
 		buc_status = CURSED;
 		pos += sizeof (ITEM_PARSE_CURSED) - 1;
 	} else {
 		buc_status = BUC_UNKNOWN;
 	}
 	/* greased */
-	if (name.find(ITEM_PARSE_GREASED, pos) == 0) {
+	if (name.find(ITEM_PARSE_GREASED, pos) == pos) {
 		greased = true;
 		pos += sizeof (ITEM_PARSE_GREASED) - 1;
 	} else {
 		greased = false;
 	}
 	/* fixed */
-	if (name.find(ITEM_PARSE_FIREPROOF, pos) == 0) {
+	if (name.find(ITEM_PARSE_FIREPROOF, pos) == pos) {
 		fixed = true;
 		pos += sizeof (ITEM_PARSE_FIREPROOF) - 1;
-	} else if (name.find(ITEM_PARSE_RUSTPROOF, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_RUSTPROOF, pos) == pos) {
 		fixed = true;
 		pos += sizeof (ITEM_PARSE_RUSTPROOF) - 1;
 	} else {
 		fixed = false;
 	}
 	/* damage */
-	if (name.find(ITEM_PARSE_THOROUGHLY_BURNT, pos) == 0) {
+	if (name.find(ITEM_PARSE_THOROUGHLY_BURNT, pos) == pos) {
 		damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_THOROUGHLY_CORRODED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_THOROUGHLY_CORRODED, pos) == pos) {
 		damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_THOROUGHLY_ROTTED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_THOROUGHLY_ROTTED, pos) == pos) {
 		damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
 		damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_RUSTY) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_BURNT, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_VERY_BURNT, pos) == pos) {
 		damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_CORRODED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_VERY_CORRODED, pos) == pos) {
 		damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_ROTTED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_VERY_ROTTED, pos) == pos) {
 		damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
 		damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_RUSTY) - 1;
-	} else if (name.find(ITEM_PARSE_BURNT, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_BURNT, pos) == pos) {
 		damage = 1;
 		pos += sizeof (ITEM_PARSE_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_CORRODED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_CORRODED, pos) == pos) {
 		damage = 1;
 		pos += sizeof (ITEM_PARSE_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_ROTTED, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_ROTTED, pos) == pos) {
 		damage = 1;
 		pos += sizeof (ITEM_PARSE_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_RUSTY, pos) == 0) {
+	} else if (name.find(ITEM_PARSE_RUSTY, pos) == pos) {
 		damage = 1;
 		pos += sizeof (ITEM_PARSE_RUSTY) - 1;
 	} else {
