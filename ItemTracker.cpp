@@ -157,6 +157,8 @@ void ItemTracker::removeStashes() {
 }
 
 void ItemTracker::updateStash(const Point &point) {
+	if (!item[(unsigned char) saiph->world->view[point.row][point.col]])
+		return;
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
 	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
 		if (s->second.top_symbol != saiph->world->view[point.row][point.col]) {

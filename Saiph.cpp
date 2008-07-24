@@ -174,13 +174,6 @@ bool Saiph::run() {
 	else
 		engulfed = false;
 
-	/* update maps */
-	if (!world->question && !world->menu && !engulfed)
-		updateMaps();
-
-	/* print stuff so we see what we're doing */
-	dumpMaps();
-
 	/* clear analyzers priority */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->priority = ILLEGAL_PRIORITY;
@@ -189,7 +182,14 @@ bool Saiph::run() {
 	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	/* global parsing */
 	parseMessages();
-	/* then analyzer parsing */
+
+	/* update maps */
+	if (!world->question && !world->menu && !engulfed)
+		updateMaps();
+	/* print maps so we see what we're doing */
+	dumpMaps();
+
+	/* then analyzer message parsing */
 	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
 		analyzers[a]->parseMessages(world->messages);
 
@@ -398,7 +398,7 @@ void Saiph::parseMessages() {
 	else if (map[position.branch][position.level].dungeon[world->player.row][world->player.col] == UNKNOWN_TILE)
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
 
-	/* the ItemTracker needs to parse the messages to */
+	/* let the trackers parse messages */
 	itemtracker->parseMessages(world->messages);
 }
 
@@ -419,16 +419,9 @@ void Saiph::updateMaps() {
 			 * even if we already know what's beneath the monster/item. */
 			map[position.branch][position.level].dungeon[c->row][c->col] = UNKNOWN_TILE;
 		}
-		if (itemtracker->item[s]) {
-			/* found an item!
-			 * tell it to the item tracker */
-			itemtracker->updateStash(*c);
-		}
-		if (monstertracker->monster[s]) {
-			/* found a monster!
-			 * let the monster tracker know */
-			monstertracker->updateMonster(*c);
-		}
+		/* let itemtracker & monstertracker do their magic */
+		itemtracker->updateStash(*c);
+		monstertracker->updateMonster(*c);
 	}
 	/* remove stashes that seems to be gone */
 	itemtracker->removeStashes();

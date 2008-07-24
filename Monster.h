@@ -14,8 +14,9 @@ class Monster {
 		/* variables */
 		unsigned char symbol;
 		int color;
+		bool visible;
 
 		/* constructors */
-		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0);
+		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, bool visible = false);
 };
 #endif

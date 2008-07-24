@@ -8,6 +8,7 @@ class MonsterTracker;
 /* includes */
 #include <list>
 #include <map>
+#include <string>
 #include "Globals.h"
 #include "Monster.h"
 #include "Point.h"
@@ -33,5 +34,8 @@ class MonsterTracker {
 	private:
 		/* variables */
 		Saiph *saiph;
+
+		/* methods */
+		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);
 };
 #endif

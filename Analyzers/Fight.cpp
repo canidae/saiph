@@ -60,9 +60,8 @@ void Fight::finish() {
 	/* fight nearest monster */
 	int best_distance = INT_MAX;
 	unsigned char best_move = ILLEGAL_MOVE;
-	unsigned char best_symbol = ILLEGAL_MONSTER;
+	map<Point, Monster>::iterator best_monster;
 	bool enemy_in_line = false;
-	int best_color = NO_COLOR;
 	unsigned char got_thrown = 0;
 	for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); got_thrown == 0 && i != saiph->itemtracker->inventory.end(); ++i) {
 		for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
@@ -101,10 +100,9 @@ void Fight::finish() {
 		priority = cur_priority;
 		best_distance = distance;
 		best_move = move;
-		best_symbol = m->second.symbol;
-		best_color = m->second.color;
+		best_monster = m;
 	}
-	if (got_thrown != 0 && enemy_in_line && (best_distance > 1 || (best_symbol == 'e' && best_color == BLUE))) {
+	if (got_thrown != 0 && enemy_in_line && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE && best_monster->second.visible))) {
 		/* throw */
 		action = THROW;
 		action2 = got_thrown;
