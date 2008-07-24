@@ -134,10 +134,10 @@ void ItemTracker::parseMessages(const string &messages) {
 void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return;
-	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	map<unsigned char, Item>::iterator i = inventory.find(key);
 	if (i == inventory.end())
 		return;
+	saiph->debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (i->second.count > item.count)
 		i->second.count -= item.count; // we got more than we remove
 	else
