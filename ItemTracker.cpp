@@ -157,12 +157,10 @@ void ItemTracker::removeStashes() {
 }
 
 void ItemTracker::updateStash(const Point &point) {
-	unsigned char symbol = saiph->world->view[point.row][point.col];
-	saiph->map[saiph->position.branch][saiph->position.level].item[point.row][point.col] = symbol;
 	if (stashes[saiph->position.branch][saiph->position.level].find(point) != stashes[saiph->position.branch][saiph->position.level].end())
 		return; // know of this stash already
 	/* new stash */
-	stashes[saiph->position.branch][saiph->position.level][point] = Stash();
+	stashes[saiph->position.branch][saiph->position.level][point] = Stash(saiph->world->view[point.row][point.col]);
 }
 
 /* private methods */
