@@ -7,6 +7,7 @@ class Stash;
 
 /* includes */
 #include <list>
+#include "Globals.h"
 #include "Item.h"
 
 /* namespaces */
@@ -16,10 +17,11 @@ using namespace std;
 class Stash {
 	public:
 		/* variables */
+		unsigned char top_symbol;
 		list<Item> items;
 
 		/* constructors */
-		Stash();
+		Stash(unsigned char top_symbol = ILLEGAL_ITEM);
 
 		/* methods */
 		void addItem(const Item &item);

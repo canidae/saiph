@@ -1,7 +1,7 @@
 #include "Stash.h"
 
 /* constructors */
-Stash::Stash() {
+Stash::Stash(unsigned char top_symbol) : top_symbol(top_symbol) {
 }
 
 /* methods */
