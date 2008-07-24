@@ -102,7 +102,7 @@ void Fight::finish() {
 		best_move = move;
 		best_monster = m;
 	}
-	if (got_thrown != 0 && enemy_in_line && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE && best_monster->second.visible))) {
+	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
 		/* throw */
 		action = THROW;
 		action2 = got_thrown;

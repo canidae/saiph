@@ -38,7 +38,6 @@ class ItemTracker {
 		/* methods */
 		void parseMessages(const string &messages);
 		void removeItemFromInventory(unsigned char key, const Item &item);
-		void removeStashes();
 		void updateStash(const Point &point);
 
 	private:

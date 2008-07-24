@@ -144,21 +144,14 @@ void ItemTracker::removeItemFromInventory(unsigned char key, const Item &item) {
 		inventory.erase(i); // removing all we got
 }
 
-void ItemTracker::removeStashes() {
-	/* remove stashes that seems to be gone. */
-	for (map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].begin(); s != stashes[saiph->position.branch][saiph->position.level].end(); ) {
-		if (saiph->world->view[s->first.row][s->first.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[s->first.row][s->first.col]) {
-			/* stash seems to be gone */
-			stashes[saiph->position.branch][saiph->position.level].erase(s++);
-			continue;
-		}
-		++s;
-	}
-}
-
 void ItemTracker::updateStash(const Point &point) {
-	if (!item[(unsigned char) saiph->world->view[point.row][point.col]])
+	if (!item[(unsigned char) saiph->world->view[point.row][point.col]]) {
+		if (saiph->world->view[point.row][point.col] == saiph->map[saiph->position.branch][saiph->position.level].dungeon[point.row][point.col]) {
+			/* if there ever was a stash here, it's gone now */
+			stashes[saiph->position.branch][saiph->position.level].erase(point);
+		}
 		return;
+	}
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
 	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
 		if (s->second.top_symbol != saiph->world->view[point.row][point.col]) {

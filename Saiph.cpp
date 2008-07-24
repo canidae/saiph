@@ -423,8 +423,6 @@ void Saiph::updateMaps() {
 		itemtracker->updateStash(*c);
 		monstertracker->updateMonster(*c);
 	}
-	/* remove stashes that seems to be gone */
-	itemtracker->removeStashes();
 	/* remove monsters that seems to be gone */
 	monstertracker->removeMonsters();
 	/* update map used for pathing */
