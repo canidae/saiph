@@ -153,6 +153,7 @@
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
 #define MESSAGE_STAIRCASE_DOWN "  There is a staircase down here.  "
 #define MESSAGE_STAIRCASE_UP "  There is a staircase up here.  "
+#define MESSAGE_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? " // followed by "[abc...]"

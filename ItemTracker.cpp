@@ -57,7 +57,7 @@ void ItemTracker::parseMessages(const string &messages) {
 			addItemToStash(saiph->position, item);
 			pos += length;
 		}
-	} else if ((pos = messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0)) != string::npos) {
+	} else if (messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(MESSAGE_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
 		clearStash(saiph->position);
 	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos) {
