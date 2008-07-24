@@ -7,7 +7,6 @@ class Stash;
 
 /* includes */
 #include <list>
-#include "Globals.h"
 #include "Item.h"
 
 /* namespaces */
@@ -18,11 +17,10 @@ class Stash {
 	public:
 		/* variables */
 		int frame_changed;
-		unsigned char top_symbol;
 		list<Item> items;
 
 		/* constructors */
-		Stash(int frame_changed = -1, unsigned char top_symbol = ILLEGAL_ITEM);
+		Stash(int frame_changed = -1);
 
 		/* methods */
 		void addItem(const Item &item);
