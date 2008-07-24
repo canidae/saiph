@@ -63,11 +63,20 @@ void Fight::finish() {
 	unsigned char best_symbol = ILLEGAL_MONSTER;
 	bool enemy_in_line = false;
 	int best_color = NO_COLOR;
+	unsigned char got_thrown = 0;
+	for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); got_thrown == 0 && i != saiph->itemtracker->inventory.end(); ++i) {
+		for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
+			if (i->second.name == *t) {
+				got_thrown = i->first;
+				break;
+			}
+		}
+	}
 	for (map<Point, Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
 		int cur_priority;
-		if (m->second.symbol == 'e' && m->second.color == BLUE)
+		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE)
 			cur_priority = FIGHT_ATTACK_BLUE_E;
 		else if (m->second.symbol == '@' && m->second.color == WHITE)
 			cur_priority = FIGHT_ATTACK_WHITE_AT;
@@ -82,7 +91,7 @@ void Fight::finish() {
 		unsigned char move = saiph->shortestPath(m->first, true, &distance, &straight_line);
 		if (move == ILLEGAL_MOVE)
 			continue; // can't path to this monster
-		if (enemy_in_line && !straight_line)
+		if (got_thrown == 0 || enemy_in_line && !straight_line)
 			continue; // got another enemy in line already, this enemy isn't
 		if (distance >= best_distance)
 			continue; // we know of a monster closer to us
@@ -93,7 +102,15 @@ void Fight::finish() {
 		best_symbol = m->second.symbol;
 		best_color = m->second.color;
 	}
-	action = best_move;
+	if (got_thrown != 0 && enemy_in_line && (best_distance > 1 || (best_symbol == 'e' && best_color == BLUE))) {
+		/* throw */
+		action = THROW;
+		action2 = got_thrown;
+		action3 = best_move;
+	} else {
+		/* move or melee */
+		action = best_move;
+	}
 }
 
 void Fight::parseMessages(const string &messages) {

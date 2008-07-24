@@ -40,6 +40,8 @@ class Fight : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string action;
+		string action2;
+		string action3;
 		list<string> thrown;
 		Request req;
 };
