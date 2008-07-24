@@ -3,7 +3,7 @@
 /* constructors */
 Pray::Pray(Saiph *saiph) : Analyzer("Pray"), saiph(saiph) {
 	action = "";
-	last_pray_turn = INT_MIN;
+	last_pray_turn = PRAY_PRAYER_TIMEOUT;
 	priority = ILLEGAL_PRIORITY;
 }
 
