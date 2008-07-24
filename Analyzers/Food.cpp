@@ -75,6 +75,11 @@ void Food::finish() {
 	/* are we hungry? */
 	if (saiph->world->player.hunger <= HUNGRY) {
 		/* yes, we are */
+		/* make sure inventory is updated */
+		req.request = REQUEST_UPDATED_INVENTORY;
+		req.priority = PRIORITY_LOOK;
+		if (!saiph->request(req))
+			return; // hmm, we can't say if inventory is updated?
 		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 			for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
 				if (i->second.name == *f) {
@@ -95,6 +100,11 @@ void Food::finish() {
 			saiph->request(req);
 		}
 	} else if (saiph->world->player.hunger > CONTENT) {
+		/* make sure inventory is updated */
+		req.request = REQUEST_UPDATED_INVENTORY;
+		req.priority = PRIORITY_LOOK;
+		if (!saiph->request(req))
+			return; // hmm, we can't say if inventory is updated?
 		for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
 				/* easter egg: eat bytes when [over]satiated */
@@ -129,8 +139,8 @@ void Food::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
 		action = action2;
 		priority = PRIORITY_CONTINUE_ACTION;
-		/* request inventory listing */
-		req.request = REQUEST_LIST_INVENTORY;
+		/* food gone, make inventory dirty */
+		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		return;
 	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {

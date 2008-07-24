@@ -1,15 +1,15 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), update_inventory(true) {
+Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true) {
 }
 
 /* methods */
 void Loot::command(string *command) {
 	*command = action;
 	if (action == "i") {
-		/* checking inventory, set update_inventory to false */
-		update_inventory = false;
+		/* checking inventory, set dirty_inventory to false */
+		dirty_inventory = false;
 		action = " ";
 	} else if (action == " ") {
 		/* closing inventory/pickup list */
@@ -22,6 +22,8 @@ void Loot::command(string *command) {
 
 void Loot::finish() {
 	/* check inventory, loot or visit stash */
+	if (priority >= PRIORITY_LOOK)
+		return; // we're probably listing inventory
 	/* first check if some stashes have changed since last time */
 	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
 		map<Point, int>::iterator t = turn_last_changed[saiph->position.branch][saiph->position.level].find(s->first);
@@ -30,12 +32,6 @@ void Loot::finish() {
 		/* we should visit the stash */
 		turn_last_changed[saiph->position.branch][saiph->position.level][s->first] = s->second.turn_changed;
 		visit.push_back(s->first);
-	}
-	/* check inventory */
-	if (PRIORITY_LOOK > priority && update_inventory) {
-		action = "i";
-		priority = PRIORITY_LOOK;
-		return;
 	}
 	int best_distance = INT_MAX;
 	int best_priority = ILLEGAL_PRIORITY;
@@ -136,9 +132,17 @@ bool Loot::request(const Request &request) {
 			loot[request.coordinate] = request.priority;
 		}
 		return true;
-	} else if (request.request == REQUEST_LIST_INVENTORY) {
-		/* someone needs to check our inventory */
-		update_inventory = true;
+	} else if (request.request == REQUEST_DIRTY_INVENTORY) {
+		/* someone wants to mark our inventory as dirty */
+		dirty_inventory = true;
+		return true;
+	} else if (request.request == REQUEST_UPDATED_INVENTORY) {
+		/* someone needs an updated inventory */
+		if (dirty_inventory) {
+			/* it's dirty, we must look */
+			action = "i";
+			priority = request.priority;
+		}
 		return true;
 	}
 	return false;
