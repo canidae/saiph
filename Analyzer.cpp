@@ -2,6 +2,14 @@
 
 /* constructor */
 Analyzer::Analyzer(string name) : name(name) {
+	/* methods will be called in this order:
+	 * 1. parseMessages
+	 * 2. begin
+	 * 3. inspect
+	 * 4. finish
+	 * 5. command
+	 *
+	 * additionally, requests may come at any time */
 }
 
 /* destructor */

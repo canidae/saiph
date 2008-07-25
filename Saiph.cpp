@@ -250,8 +250,12 @@ bool Saiph::run() {
 	}
 
 	/* inspect the dungeon */
-	if (!world->question && !world->menu)
-		inspect();
+	if (!world->question && !world->menu) {
+		for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
+			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+				(*a)->inspect(*c);
+		}
+	}
 
 	/* call finish() in analyzers */
 	if (!world->question && !world->menu) {
@@ -468,14 +472,6 @@ void Saiph::dumpMaps() {
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
-}
-
-void Saiph::inspect() {
-	/* notify the analyzers about changes */
-	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-			(*a)->inspect(*c);
-	}
 }
 
 void Saiph::parseMessages() {

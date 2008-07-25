@@ -108,7 +108,6 @@ class Saiph {
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
 		void dumpMaps();
-		void inspect();
 		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);
 		void parseMessages();
 		void removeItemFromPickup(const Item &item);
