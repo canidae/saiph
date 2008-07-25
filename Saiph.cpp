@@ -206,12 +206,14 @@ bool Saiph::request(const Request &request) {
 }
 
 bool Saiph::run() {
-	/* figure out which map to use.
-	 * TODO: we need some branch detection & stuff here */
-	position.branch = 0;
-	position.level = world->player.dungeon;
-	position.row = world->player.row;
-	position.col = world->player.col;
+	/* clear pickup list */
+	pickup.clear();
+	/* and on_ground */
+	on_ground = NULL;
+
+	/* clear analyzers priority */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* check if we're engulfed */
 	if (position.row > MAP_ROW_BEGIN && position.row < MAP_ROW_END && position.col > MAP_COL_BEGIN && position.col < MAP_COL_END && world->view[position.row - 1][position.col - 1] == '/' && world->view[position.row - 1][position.col + 1] == '\\' && world->view[position.row + 1][position.col - 1] == '\\' && world->view[position.row + 1][position.col + 1] == '/')
@@ -219,9 +221,12 @@ bool Saiph::run() {
 	else
 		engulfed = false;
 
-	/* clear analyzers priority */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->priority = ILLEGAL_PRIORITY;
+	/* figure out which map to use.
+	 * TODO: we need some branch detection & stuff here */
+	position.branch = 0;
+	position.level = world->player.dungeon;
+	position.row = world->player.row;
+	position.col = world->player.col;
 
 	/* deal with messages */
 	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
@@ -483,14 +488,112 @@ void Saiph::parseMessages() {
 		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = OPEN_DOOR;
 	else if (world->messages.find(MESSAGE_FOUNTAIN_HERE, 0) != string::npos)
 		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FOUNTAIN;
+	else if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos)
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FLOOR;
 	/* when we've checked messages for static dungeon features and not found anything,
 	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
 	else if (dungeonmap[position.branch][position.level][world->player.row][world->player.col] == UNKNOWN_TILE)
 		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
 
-	/* messages that remove static dungeon features */
-	if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FLOOR;
+	/* item parsing */
+	/* figure out if there's something on the ground or if we're picking up something */
+	string::size_type pos;
+	if ((pos = world->messages.find(MESSAGE_YOU_SEE_HERE, 0)) != string::npos || (pos = world->messages.find(MESSAGE_YOU_FEEL_HERE, 0)) != string::npos) {
+		/* single item on ground */
+		clearStash(position);
+		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
+		string::size_type length = world->messages.find(".  ", pos);
+		if (length != string::npos) {
+			length = length - pos;
+			Item item(world->messages.substr(pos, length));
+			addItemToStash(position, item);
+		}
+	} else if ((pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
+		/* multiple items on ground */
+		clearStash(position);
+		pos = world->messages.find("  ", pos + 1);
+		while (pos != string::npos && world->messages.size() > pos + 2) {
+			pos += 2;
+			string::size_type length = world->messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			Item item(world->messages.substr(pos, length));
+			addItemToStash(position, item);
+			pos += length;
+		}
+	} else if (world->messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0) != string::npos || world->messages.find(MESSAGE_THERE_IS_NOTHING_HERE, 0) != string::npos) {
+		/* no items on ground */
+		clearStash(position);
+	} else if ((pos = world->messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos) {
+		/* picking up stuff.
+		 * we should clear the stash here too and update it */
+		clearStash(position);
+		pos = world->messages.find("  ", pos + 1);
+		while (pos != string::npos && world->messages.size() > pos + 6) {
+			pos += 6;
+			string::size_type length = world->messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if (world->messages[pos - 2] == '-') {
+				Item item(world->messages.substr(pos, length));
+				addItemToPickup(world->messages[pos - 4], item);
+				addItemToStash(position, item);
+			}
+			pos += length;
+		}
+	} else if (world->messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || world->messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
+		/* our inventory is empty. how did that happen? */
+		inventory.clear();
+	} else if ((pos = world->messages.find(".  ", 0)) != string::npos) {
+		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
+		 * we'll need to handle this too somehow.
+		 * we're searching for ".  " as we won't get that when we're listing inventory.
+		 * also, this won't detect gold, but we might not need to detect that,
+		 * well, it's gonna be a bit buggy when picking up gold from stashes */
+		/* additionally, we'll assume we're picking up from the stash at this location.
+		 * this will also trigger on wishes, but meh, probably not gonna be an issue */
+		pos = 0;
+		while ((pos = world->messages.find(" - ", pos)) != string::npos) {
+			if (pos > 2 && world->messages[pos - 3] == ' ' && world->messages[pos - 2] == ' ') {
+				unsigned char key = world->messages[pos - 1];
+				pos += 3;
+				string::size_type length = world->messages.find(".  ", pos);
+				if (length == string::npos)
+					break;
+				length = length - pos;
+				Item item(world->messages.substr(pos, length));
+				addItemToInventory(key, item);
+				removeItemFromPickup(item);
+				removeItemFromStash(position, item);
+				pos += length;
+			} else {
+				/* "Yak - dog food!" mess things up */
+				++pos;
+			}
+		}
+	} else if ((pos = world->messages.find(" - ", 0)) != string::npos) {
+		/* we probably listed our inventory */
+		inventory.clear();
+		while ((pos = world->messages.find(" - ", pos)) != string::npos) {
+			if (pos > 2 && world->messages[pos - 3] == ' ' && world->messages[pos - 2] == ' ') {
+				unsigned char key = world->messages[pos - 1];
+				pos += 3;
+				string::size_type length = world->messages.find("  ", pos);
+				if (length == string::npos)
+					break;
+				length = length - pos;
+				Item item(world->messages.substr(pos, length));
+				addItemToInventory(key, item);
+				removeItemFromStash(position, item);
+				pos += length;
+			}
+		}
+	}
+	/* we'll need to set the on_ground pointer here */
+	if (stashes[position.branch][position.level].find(position) != stashes[position.branch][position.level].end())
+		on_ground = &stashes[position.branch][position.level][position];
 }
 
 void Saiph::removeItemFromPickup(const Item &item) {
