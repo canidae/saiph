@@ -516,7 +516,7 @@ void Saiph::parseMessages() {
 			Item item(world->messages.substr(pos, length));
 			addItemToStash(position, item);
 		}
-	} else if ((pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
+	} else if ((pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
 		clearStash(position);
 		pos = world->messages.find("  ", pos + 1);
