@@ -3,6 +3,7 @@
 #define SAIPH_H
 /* debug */
 #define COMMAND_DEBUG_NAME "[Command    ] "
+#define ITEMTRACKER_DEBUG_NAME "[ItemTracker] "
 #define MESSAGES_DEBUG_NAME "[Messages   ] "
 #define REQUEST_DEBUG_NAME "[Request    ] "
 #define SAIPH_DEBUG_NAME "[Saiph      ] "
@@ -22,18 +23,18 @@ class Saiph;
 /* includes */
 #include <fstream>
 #include <list>
+#include <map>
 #include <string>
 #include <vector>
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Globals.h"
 #include "Item.h"
-#include "ItemTracker.h"
-#include "Map.h"
-#include "MonsterTracker.h"
+#include "Monster.h"
 #include "Player.h"
 #include "Point.h"
 #include "Request.h"
+#include "Stash.h"
 #include "World.h"
 /* analyzers */
 #include "Analyzers/Door.h"
@@ -63,11 +64,15 @@ struct PathNode {
 class Saiph {
 	public:
 		/* variables */
-		ofstream debugfile;
-		MonsterTracker *monstertracker;
-		ItemTracker *itemtracker;
 		World *world;
-		Map map[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
+		ofstream debugfile;
+		unsigned char dungeonmap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
+		unsigned char monstermap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
+		map<int, map<int, map<Point, Monster> > > monsters;
+		map<int, map<int, map<Point, Stash> > > stashes;
+		map<unsigned char, Item> inventory;
+		map<unsigned char, Item> pickup;
+		Stash *on_ground;
 		Coordinate position;
 		string command;
 		bool engulfed;
@@ -79,26 +84,35 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void debug(const string &component, const string &text);
 		void farlook(const Point &target);
+		void removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
 
 	private:
 		/* variables */
-		vector<Analyzer *> analyzers;
 		Connection *connection;
+		vector<Analyzer *> analyzers;
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		Point pathing_queue[PATHING_QUEUE_SIZE];
 		int pathcost[UCHAR_MAX + 1];
 		bool passable[UCHAR_MAX + 1];
-		bool static_dungeon_symbol[UCHAR_MAX + 1];
+		bool dungeon[UCHAR_MAX + 1];
+		bool monster[UCHAR_MAX + 1];
+		bool item[UCHAR_MAX + 1];
 
 		/* methods */
+		void addItemToInventory(unsigned char key, const Item &item);
+		void addItemToPickup(unsigned char key, const Item &item);
+		void addItemToStash(const Point &point, const Item &item);
+		void clearStash(const Point &point);
 		void dumpMaps();
 		void inspect();
+		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);
 		void parseMessages();
+		void removeItemFromPickup(const Item &item);
+		void removeItemFromStash(const Point &point, const Item &item);
 		void updateMaps();
 		void updatePathMap();
 		bool updatePathMapHelper(const Point &to, const Point &from);

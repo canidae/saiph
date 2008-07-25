@@ -2,6 +2,9 @@
 /* defines */
 #define MONSTER_H
 
+/* forward declare */
+class Monster;
+
 /* includes */
 #include "Globals.h"
 

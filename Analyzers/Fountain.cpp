@@ -46,7 +46,7 @@ void Fountain::finish() {
 }
 
 void Fountain::inspect(const Point &point) {
-	if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[point.row][point.col] != FOUNTAIN) {
+	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][point.row][point.col] != FOUNTAIN) {
 		if (fountains[saiph->position.branch][saiph->position.level].find(point) != fountains[saiph->position.branch][saiph->position.level].end()) {
 			/* this fountain is gone */
 			fountains[saiph->position.branch][saiph->position.level].erase(point);

@@ -2,6 +2,9 @@
 /* defines */
 #define COORDINATE_H
 
+/* forward declare */
+class Coordinate;
+
 /* includes */
 #include "Point.h"
 

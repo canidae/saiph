@@ -18,7 +18,7 @@ void Excalibur::finish() {
 		return;
 	/* do we have a long sword? */
 	unsigned char got_long_sword = ILLEGAL_ITEM;
-	for(map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); i != saiph->itemtracker->inventory.end(); ++i) {
+	for(map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		if (i->second.name == EXCALIBUR_LONG_SWORD) {
 			got_long_sword = i->first;
 			break;
@@ -27,7 +27,7 @@ void Excalibur::finish() {
 	if (got_long_sword == ILLEGAL_ITEM)
 		return;
 	/* are we standing on a fountain? */
-	if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[saiph->position.row][saiph->position.col] == FOUNTAIN) {
+	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col] == FOUNTAIN) {
 		/* yes, dip */
 		action = DIP;
 		action2 = got_long_sword;

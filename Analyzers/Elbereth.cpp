@@ -70,7 +70,7 @@ bool Elbereth::request(const Request &request) {
 	if (request.request == REQUEST_ELBERETH_OR_REST) {
 		/* check if we're levitating */
 		/* check if there's a fountain/grave/altar here */
-		switch (saiph->map[saiph->position.branch][saiph->position.level].dungeon[saiph->position.row][saiph->position.col]) {
+		switch (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col]) {
 			case ALTAR:
 			case GRAVE:
 			case FOUNTAIN:
@@ -88,7 +88,7 @@ bool Elbereth::request(const Request &request) {
 		if (saiph->engulfed)
 			return false;
 		/* check that the monsters around us respects elbereth */
-		for (map<Point, Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+		for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m!= saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 			if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
 				/* monster is not next to player */
 				continue;

@@ -2,6 +2,14 @@
 /* defines */
 #define POINT_H
 
+/* foward declare */
+class Point;
+
+/* includes */
+
+/* namespaces */
+using namespace std;
+
 /* Point */
 class Point {
 	public:

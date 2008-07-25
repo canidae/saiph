@@ -25,7 +25,7 @@ void Loot::finish() {
 	if (priority >= PRIORITY_LOOK)
 		return; // we're probably listing inventory
 	/* first check if some stashes have changed since last time */
-	for (map<Point, Stash>::iterator s = saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
+	for (map<Point, Stash>::iterator s = saiph->stashes[saiph->position.branch][saiph->position.level].begin(); s != saiph->stashes[saiph->position.branch][saiph->position.level].end(); ++s) {
 		map<Point, int>::iterator t = turn_last_changed[saiph->position.branch][saiph->position.level].find(s->first);
 		if (t != turn_last_changed[saiph->position.branch][saiph->position.level].end() && s->second.turn_changed - t->second <= LOOT_REVISIT_STASH_TIME)
 			continue; // not changed or changed too soon for us to care
@@ -37,7 +37,7 @@ void Loot::finish() {
 	int best_priority = ILLEGAL_PRIORITY;
 	/* loot items */
 	for (map<Coordinate, int>::iterator l = loot.begin(); l != loot.end(); ) {
-		if (saiph->itemtracker->stashes[l->first.branch][l->first.level].find(l->first) == saiph->itemtracker->stashes[l->first.branch][l->first.level].end()) {
+		if (saiph->stashes[l->first.branch][l->first.level].find(l->first) == saiph->stashes[l->first.branch][l->first.level].end()) {
 			/* this stash doesn't exist */
 			loot.erase(l++);
 			continue;
@@ -79,7 +79,7 @@ void Loot::finish() {
 			v = visit.erase(v);
 			continue;
 		}
-		if (saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].find(*v) == saiph->itemtracker->stashes[saiph->position.branch][saiph->position.level].end()) {
+		if (saiph->stashes[saiph->position.branch][saiph->position.level].find(*v) == saiph->stashes[saiph->position.branch][saiph->position.level].end()) {
 			/* hmm, stash is gone */
 			v = visit.erase(v);
 			continue;

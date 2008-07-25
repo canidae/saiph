@@ -9,18 +9,50 @@ Saiph::Saiph(int interface) {
 		exit(1);
 	}
 	world = new World(connection, &debugfile);
-	monstertracker = new MonsterTracker(this);
-	itemtracker = new ItemTracker(this);
 
 	/* engulfed */
 	engulfed = false;
 
-	/* pathing & maps */
+	/* null out maps */
+	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
+	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));
+
+	/* set on_ground to NULL */
+	on_ground = NULL;
+
+	/* tracking, pathing & maps */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
+		/* monstertracking */
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
+			monster[a] = true;
+		else
+			monster[a] = false;
+		/* itemtracking */
+		item[a] = false;
+		/* pathing & maps */
 		passable[a] = false;
-		static_dungeon_symbol[a] = false;
+		dungeon[a] = false;
 		pathcost[a] = 0;
 	}
+	/* items */
+	item[(unsigned char) WEAPON] = true;
+	item[(unsigned char) ARMOR] = true;
+	item[(unsigned char) RING] = true;
+	item[(unsigned char) AMULET] = true;
+	item[(unsigned char) TOOL] = true;
+	item[(unsigned char) FOOD] = true;
+	item[(unsigned char) POTION] = true;
+	item[(unsigned char) SCROLL] = true;
+	item[(unsigned char) SPELLBOOK] = true;
+	item[(unsigned char) WAND] = true;
+	item[(unsigned char) GOLD] = true;
+	item[(unsigned char) GEM] = true;
+	item[(unsigned char) STATUE] = true;
+	// skipping boulder as that's a special item
+	item[(unsigned char) IRON_BALL] = true;
+	item[(unsigned char) CHAINS] = true;
+	item[(unsigned char) VENOM] = true;
+	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
 	passable[(unsigned char) CORRIDOR] = true;
@@ -55,28 +87,28 @@ Saiph::Saiph(int interface) {
 	passable[(unsigned char) CHAINS] = true;
 	passable[(unsigned char) VENOM] = true;
 	passable[(unsigned char) PET] = true;
-	static_dungeon_symbol[(unsigned char) VERTICAL_WALL] = true;
-	static_dungeon_symbol[(unsigned char) HORIZONTAL_WALL] = true;
-	static_dungeon_symbol[(unsigned char) FLOOR] = true;
-	static_dungeon_symbol[(unsigned char) OPEN_DOOR] = true;
-	static_dungeon_symbol[(unsigned char) CLOSED_DOOR] = true;
-	static_dungeon_symbol[(unsigned char) IRON_BARS] = true;
-	static_dungeon_symbol[(unsigned char) TREE] = true;
-	static_dungeon_symbol[(unsigned char) CORRIDOR] = true;
-	static_dungeon_symbol[(unsigned char) STAIRS_UP] = true;
-	static_dungeon_symbol[(unsigned char) STAIRS_DOWN] = true;
-	static_dungeon_symbol[(unsigned char) ALTAR] = true;
-	static_dungeon_symbol[(unsigned char) GRAVE] = true;
-	static_dungeon_symbol[(unsigned char) THRONE] = true;
-	static_dungeon_symbol[(unsigned char) SINK] = true;
-	static_dungeon_symbol[(unsigned char) FOUNTAIN] = true;
-	static_dungeon_symbol[(unsigned char) WATER] = true;
-	static_dungeon_symbol[(unsigned char) ICE] = true;
-	static_dungeon_symbol[(unsigned char) LAVA] = true;
-	static_dungeon_symbol[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	static_dungeon_symbol[(unsigned char) RAISED_DRAWBRIDGE] = true;
-	static_dungeon_symbol[(unsigned char) TRAP] = true;
-	static_dungeon_symbol[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
+	dungeon[(unsigned char) VERTICAL_WALL] = true;
+	dungeon[(unsigned char) HORIZONTAL_WALL] = true;
+	dungeon[(unsigned char) FLOOR] = true;
+	dungeon[(unsigned char) OPEN_DOOR] = true;
+	dungeon[(unsigned char) CLOSED_DOOR] = true;
+	dungeon[(unsigned char) IRON_BARS] = true;
+	dungeon[(unsigned char) TREE] = true;
+	dungeon[(unsigned char) CORRIDOR] = true;
+	dungeon[(unsigned char) STAIRS_UP] = true;
+	dungeon[(unsigned char) STAIRS_DOWN] = true;
+	dungeon[(unsigned char) ALTAR] = true;
+	dungeon[(unsigned char) GRAVE] = true;
+	dungeon[(unsigned char) THRONE] = true;
+	dungeon[(unsigned char) SINK] = true;
+	dungeon[(unsigned char) FOUNTAIN] = true;
+	dungeon[(unsigned char) WATER] = true;
+	dungeon[(unsigned char) ICE] = true;
+	dungeon[(unsigned char) LAVA] = true;
+	dungeon[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
+	dungeon[(unsigned char) TRAP] = true;
+	dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
 	pathcost[ICE] = COST_ICE;
 	pathcost[LAVA] = COST_LAVA;
 	pathcost[PET] = COST_PET;
@@ -102,8 +134,6 @@ Saiph::Saiph(int interface) {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
-	delete itemtracker;
-	delete monstertracker;
 	delete world;
 	delete connection;
 	debugfile.close();
@@ -149,6 +179,19 @@ void Saiph::farlook(const Point &target) {
 	}
 	command.push_back(',');
 	world->executeCommand(command);
+}
+
+void Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	map<unsigned char, Item>::iterator i = inventory.find(key);
+	if (i == inventory.end())
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
+	if (i->second.count > item.count)
+		i->second.count -= item.count; // we got more than we remove
+	else
+		inventory.erase(i); // removing all we got
 }
 
 bool Saiph::request(const Request &request) {
@@ -337,6 +380,49 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 }
 
 /* private methods */
+void Saiph::addItemToInventory(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
+	if (inventory.find(key) != inventory.end()) {
+		/* existing item, add amount */
+		inventory[key].count += item.count;
+	} else {
+		/* new item */
+		inventory[key] = item;
+	}
+}
+
+void Saiph::addItemToPickup(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to pickup slot " << key << endl;
+	pickup[key] = item;
+}
+
+void Saiph::addItemToStash(const Point &point, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
+	if (s != stashes[position.branch][position.level].end()) {
+		s->second.addItem(item);
+		return;
+	}
+	/* new stash */
+	Stash stash(world->player.turn);
+	stash.items.push_back(item);
+	stashes[position.branch][position.level][point] = stash;
+}
+
+void Saiph::clearStash(const Point &point) {
+	/* clear the contents of a stash */
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Clearing stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
+	if (s != stashes[position.branch][position.level].end())
+		s->second.items.clear();
+}
+
 void Saiph::dumpMaps() {
 	/* monsters */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
@@ -344,10 +430,10 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (map[position.branch][position.level].monster[r][c] != ILLEGAL_MONSTER)
-				cout << (unsigned char) (map[position.branch][position.level].monster[r][c]);
+			else if (monstermap[position.branch][position.level][r][c] != ILLEGAL_MONSTER)
+				cout << (unsigned char) (monstermap[position.branch][position.level][r][c]);
 			else
-				cout << (unsigned char) (map[position.branch][position.level].dungeon[r][c]);
+				cout << (unsigned char) (dungeonmap[position.branch][position.level][r][c]);
 		}
 	}
 	/* world map as the bot sees it */
@@ -356,7 +442,7 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[35m";
-			cout << (unsigned char) (map[position.branch][position.level].dungeon[r][c]);
+			cout << (unsigned char) (dungeonmap[position.branch][position.level][r][c]);
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[m";
 		}
@@ -370,7 +456,7 @@ void Saiph::dumpMaps() {
 			else if (pathmap[r][c].move >= 'a' && pathmap[r][c].move <= 'z')
 				cout << (unsigned char) pathmap[r][c].move;
 			else
-				cout << (unsigned char) (map[position.branch][position.level].dungeon[r][c]);
+				cout << (unsigned char) (dungeonmap[position.branch][position.level][r][c]);
 		}
 	}
 	/* return cursor back to where it was */
@@ -390,49 +476,149 @@ void Saiph::inspect() {
 void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc. */
 	if (world->messages.find(MESSAGE_STAIRCASE_UP_HERE, 0) != string::npos)
-		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = STAIRS_UP;
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = STAIRS_UP;
 	else if (world->messages.find(MESSAGE_STAIRCASE_DOWN_HERE, 0) != string::npos)
-		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = STAIRS_DOWN;
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = STAIRS_DOWN;
 	else if (world->messages.find(MESSAGE_OPEN_DOOR_HERE, 0) != string::npos)
-		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = OPEN_DOOR;
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = OPEN_DOOR;
 	else if (world->messages.find(MESSAGE_FOUNTAIN_HERE, 0) != string::npos)
-		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = FOUNTAIN;
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FOUNTAIN;
 	/* when we've checked messages for static dungeon features and not found anything,
 	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
-	else if (map[position.branch][position.level].dungeon[world->player.row][world->player.col] == UNKNOWN_TILE)
-		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
+	else if (dungeonmap[position.branch][position.level][world->player.row][world->player.col] == UNKNOWN_TILE)
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
 
 	/* messages that remove static dungeon features */
 	if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos)
-		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = FLOOR;
+		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FLOOR;
+}
 
-	/* let the trackers parse messages */
-	itemtracker->parseMessages(world->messages);
+void Saiph::removeItemFromPickup(const Item &item) {
+	/* we currently don't have a way to tell exactly which item we removed.
+	 * we'll have to search and remove the best match */
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from pickup" << endl;
+	for (map<unsigned char, Item>::iterator p = pickup.begin(); p != pickup.end(); ++p) {
+		if (p->second.name != item.name)
+			continue;
+		if (p->second.count > item.count) {
+			/* we got more than we remove */
+			p->second.count -= item.count;
+		} else {
+			/* removing all we got */
+			pickup.erase(p);
+		}
+		return;
+	}
+}
+
+void Saiph::removeItemFromStash(const Point &point, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
+	if (s != stashes[position.branch][position.level].end())
+		s->second.removeItem(item);
 }
 
 void Saiph::updateMaps() {
 	/* update the various maps */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
-		unsigned char s = world->view[c->row][c->col];
-		if (s == SOLID_ROCK)
+		if (world->view[c->row][c->col] == SOLID_ROCK)
 			continue; // not interesting (also mess up unlit rooms)
-		if (static_dungeon_symbol[s]) {
+		if (dungeon[(unsigned char) world->view[c->row][c->col]]) {
 			/* update the map showing static stuff */
-			map[position.branch][position.level].dungeon[c->row][c->col] = s;
-		} else if (!passable[map[position.branch][position.level].dungeon[c->row][c->col]]) {
+			dungeonmap[position.branch][position.level][c->row][c->col] = world->view[c->row][c->col];
+		} else if (!passable[dungeonmap[position.branch][position.level][c->row][c->col]]) {
 			/* we can't see the floor here, but we believe we can pass this tile.
 			 * place an UNKNOWN_TILE here.
 			 * the reason we check if stored tile is !passable is because if we don't,
 			 * then every tile a monster steps on or drops an item on will become UNKNOWN_TILE,
 			 * even if we already know what's beneath the monster/item. */
-			map[position.branch][position.level].dungeon[c->row][c->col] = UNKNOWN_TILE;
+			dungeonmap[position.branch][position.level][c->row][c->col] = UNKNOWN_TILE;
 		}
-		/* let itemtracker & monstertracker do their magic */
-		itemtracker->updateStash(*c);
-		monstertracker->updateMonster(*c);
+		/* update items */
+		if (!world->player.hallucinating) {
+			if (item[(unsigned char) world->view[c->row][c->col]]) {
+				map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(*c);
+				if (s != stashes[position.branch][position.level].end()) {
+					if (s->second.top_symbol != world->view[c->row][c->col]) {
+						/* top symbol changed, update */
+						/* TODO: check color too */
+						s->second.turn_changed = world->player.turn;
+						s->second.top_symbol = world->view[c->row][c->col];
+					}
+				} else {
+					/* new stash */
+					stashes[position.branch][position.level][*c] = Stash(world->player.turn, world->view[c->row][c->col]);
+				}
+			} else if (world->view[c->row][c->col] == dungeonmap[position.branch][position.level][c->row][c->col]) {
+				/* if there ever was a stash here, it's gone now */
+				stashes[position.branch][position.level].erase(*c);
+			}
+		}
+
+		/* update monsters */
+		if (monster[(unsigned char) world->view[c->row][c->col]]) {
+			/* add a monster, or update position of an existing monster */
+			/* set monster on monstermap */
+			if (world->color[c->row][c->col] == INVERSE)
+				monstermap[position.branch][position.level][c->row][c->col] = PET; // pets are a bit unique
+			else
+				monstermap[position.branch][position.level][c->row][c->col] = world->view[c->row][c->col];
+			/* find nearest monster */
+			int min_distance = INT_MAX;
+			map<Point, Monster>::iterator nearest = monsters[position.branch][position.level].end();
+			for (map<Point, Monster>::iterator m = monsters[position.branch][position.level].begin(); m != monsters[position.branch][position.level].end(); ++m) {
+				if (m->second.symbol != world->view[c->row][c->col] || m->second.color != world->color[c->row][c->col])
+					continue; // not the same monster
+				if (world->view[m->first.row][m->first.col] == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color)
+					continue; // this monster already is on its square
+				/* see if this monster is closer than the last found monster */
+				int distance = max(abs(m->first.row - c->row), abs(m->first.col - c->col));
+				if (distance >= min_distance)
+					continue;
+				/* it is */
+				min_distance = distance;
+				nearest = m;
+			}
+			if (nearest != monsters[position.branch][position.level].end()) {
+				/* we know of this monster, move it to new location */
+				/* remove monster from monstermap */
+				monstermap[position.branch][position.level][nearest->first.row][nearest->first.col] = ILLEGAL_MONSTER;
+				/* update monster */
+				monsters[position.branch][position.level][*c] = nearest->second;
+				monsters[position.branch][position.level].erase(nearest);
+			} else {
+				/* add monster */
+				monsters[position.branch][position.level][*c] = Monster(world->view[c->row][c->col], world->color[c->row][c->col]);
+			}
+		}
 	}
-	/* remove monsters that seems to be gone */
-	monstertracker->removeMonsters();
+	/* remove monsters that seems to be gone
+	 * and make monsters we can't see !visible */
+	for (map<Point, Monster>::iterator m = monsters[position.branch][position.level].begin(); m != monsters[position.branch][position.level].end(); ) {
+		/* if we don't see the monster on world->view then it's not visible */
+		m->second.visible = (world->view[m->first.row][m->first.col] == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color);
+		if (abs(position.row - m->first.row) > 1 || abs(position.col - m->first.col) > 1) {
+			/* player is not next to where we last saw the monster */
+			++m;
+			continue;
+		}
+		unsigned char symbol = world->view[m->first.row][m->first.col];
+		if (world->color[m->first.row][m->first.col] == INVERSE)
+			symbol = PET; // pets are a bit unique
+		if (symbol == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color) {
+			/* we can still see the monster */
+			++m;
+			continue;
+		}
+		/* remove monster from monstermap */
+		monstermap[position.branch][position.level][m->first.row][m->first.col] = ILLEGAL_MONSTER;
+		/* remove monster from list */
+		monsters[position.branch][position.level].erase(m++);
+	}
 	/* update map used for pathing */
 	updatePathMap();
 }
@@ -510,20 +696,20 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 	 * return true if the move is legal and we should path further from this node */
 	if (to.row < MAP_ROW_BEGIN || to.row > MAP_ROW_END || to.col < MAP_COL_BEGIN || to.col > MAP_COL_END)
 		return false; // outside map
-	unsigned char s = map[position.branch][position.level].dungeon[to.row][to.col];
+	unsigned char s = dungeonmap[position.branch][position.level][to.row][to.col];
 	if (!passable[s])
 		return false;
-	unsigned char m = map[position.branch][position.level].monster[to.row][to.col];
-	if (monstertracker->monster[m] && m != PET)
+	unsigned char m = monstermap[position.branch][position.level][to.row][to.col];
+	if (monster[m] && m != PET)
 		return false; // can't path through monsters (except pets)
 	bool cardinal_move = (to.row == from.row || to.col == from.col);
 	if (!cardinal_move) {
-		if (s == OPEN_DOOR || map[position.branch][position.level].dungeon[from.row][from.col] == OPEN_DOOR)
+		if (s == OPEN_DOOR || dungeonmap[position.branch][position.level][from.row][from.col] == OPEN_DOOR)
 			return false; // diagonally in/out of door
-		if (s == UNKNOWN_TILE || map[position.branch][position.level].dungeon[from.row][from.col] == UNKNOWN_TILE)
+		if (s == UNKNOWN_TILE || dungeonmap[position.branch][position.level][from.row][from.col] == UNKNOWN_TILE)
 			return false; // don't know what tile this is, it may be a door. no diagonal movement
-		unsigned char sc1 = map[position.branch][position.level].dungeon[to.row][from.col];
-		unsigned char sc2 = map[position.branch][position.level].dungeon[from.row][to.col];
+		unsigned char sc1 = dungeonmap[position.branch][position.level][to.row][from.col];
+		unsigned char sc2 = dungeonmap[position.branch][position.level][from.row][to.col];
 		if (!passable[sc1] && !passable[sc2]) {
 			/* moving past two corners
 			 * while we may pass two corners if we're not carrying too much we'll just ignore this.

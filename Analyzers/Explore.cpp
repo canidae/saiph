@@ -27,13 +27,13 @@ void Explore::finish() {
 			e = explore.erase(e);
 			continue;
 		}
-		unsigned char hs = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row][e->col - 1];
-		unsigned char js = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row + 1][e->col];
-		unsigned char ks = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row - 1][e->col];
-		unsigned char ls = saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row][e->col + 1];
+		unsigned char hs = saiph->dungeonmap[saiph->position.branch][saiph->position.level][e->row][e->col - 1];
+		unsigned char js = saiph->dungeonmap[saiph->position.branch][saiph->position.level][e->row + 1][e->col];
+		unsigned char ks = saiph->dungeonmap[saiph->position.branch][saiph->position.level][e->row - 1][e->col];
+		unsigned char ls = saiph->dungeonmap[saiph->position.branch][saiph->position.level][e->row][e->col + 1];
 		int cur_priority = 1;
 		int count = 0;
-		switch (saiph->map[saiph->position.branch][saiph->position.level].dungeon[e->row][e->col]) {
+		switch (saiph->dungeonmap[saiph->position.branch][saiph->position.level][e->row][e->col]) {
 			case CORRIDOR:
 				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
 					cur_priority = EXPLORE_VISIT_CORRIDOR;
@@ -128,7 +128,7 @@ void Explore::finish() {
 }
 
 void Explore::inspect(const Point &point) {
-	unsigned char ds = saiph->map[saiph->position.branch][saiph->position.level].dungeon[point.row][point.col];
+	unsigned char ds = saiph->dungeonmap[saiph->position.branch][saiph->position.level][point.row][point.col];
 	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_PASSABLE)
 		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
 	if (ep_added[saiph->position.branch][saiph->position.level][point.row][point.col])

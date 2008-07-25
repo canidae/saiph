@@ -24,12 +24,12 @@ void Door::finish() {
 	int best_distance = INT_MAX;
 	for (vector<DoorPoint>::iterator d = doors[saiph->position.branch][saiph->position.level].begin(); d != doors[saiph->position.branch][saiph->position.level].end(); ) {
 		/* check if door still is there */
-		if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[d->row][d->col] != OPEN_DOOR && saiph->map[saiph->position.branch][saiph->position.level].dungeon[d->row][d->col] != CLOSED_DOOR) {
+		if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][d->row][d->col] != OPEN_DOOR && saiph->dungeonmap[saiph->position.branch][saiph->position.level][d->row][d->col] != CLOSED_DOOR) {
 			/* it isn't, remove it from the list */
 			d = doors[saiph->position.branch][saiph->position.level].erase(d);
 			continue;
 		}
-		if (saiph->map[saiph->position.branch][saiph->position.level].dungeon[d->row][d->col] == OPEN_DOOR) {
+		if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][d->row][d->col] == OPEN_DOOR) {
 			/* door is open, currently uninteresting */
 			++d;
 			continue;

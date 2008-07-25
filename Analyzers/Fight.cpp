@@ -40,13 +40,13 @@ void Fight::finish() {
 		return;
 	}
 	/* look for thrown weapons on ground */
-	if (saiph->itemtracker->on_ground != NULL) {
+	if (saiph->on_ground != NULL) {
 		/* there are items here, we should look for weapons */
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FIGHT_LOOT_PRIORITY;
 		req.coordinate = saiph->position;
 		bool die = false;
-		for (list<Item>::iterator i = saiph->itemtracker->on_ground->items.begin(); !die && i != saiph->itemtracker->on_ground->items.end(); ++i) {
+		for (list<Item>::iterator i = saiph->on_ground->items.begin(); !die && i != saiph->on_ground->items.end(); ++i) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (i->name == *t) {
 					/* request that someone loot this stash */
@@ -60,13 +60,13 @@ void Fight::finish() {
 	/* fight nearest monster */
 	int best_distance = INT_MAX;
 	unsigned char best_move = ILLEGAL_MOVE;
-	map<Point, Monster>::iterator best_monster = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end();
+	map<Point, Monster>::iterator best_monster = saiph->monsters[saiph->position.branch][saiph->position.level].end();
 	bool enemy_in_line = false;
 	unsigned char got_thrown = 0;
 	req.request = REQUEST_UPDATED_INVENTORY;
 	req.priority = PRIORITY_LOOK;
 	if (saiph->request(req)) {
-		for (map<unsigned char, Item>::iterator i = saiph->itemtracker->inventory.begin(); got_thrown == 0 && i != saiph->itemtracker->inventory.end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); got_thrown == 0 && i != saiph->inventory.end(); ++i) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (i->second.name == *t) {
 					got_thrown = i->first;
@@ -75,7 +75,7 @@ void Fight::finish() {
 			}
 		}
 	}
-	for (map<Point, Monster>::iterator m = saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+	for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
 		int distance = -1;
@@ -104,7 +104,7 @@ void Fight::finish() {
 		best_move = move;
 		best_monster = m;
 	}
-	if (best_monster == saiph->monstertracker->monsters[saiph->position.branch][saiph->position.level].end())
+	if (best_monster == saiph->monsters[saiph->position.branch][saiph->position.level].end())
 		return;
 	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << best_distance << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
 	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
@@ -136,7 +136,7 @@ void Fight::parseMessages(const string &messages) {
 		saiph->request(req);
 	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
 		/* pick up thrown weapons if any */
-		for (map<unsigned char, Item>::iterator p = saiph->itemtracker->pickup.begin(); p != saiph->itemtracker->pickup.end(); ++p) {
+		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (p->second.name == *t) {
 					/* pick it up :) */
