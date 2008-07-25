@@ -92,7 +92,7 @@ void World::fetchMessages() {
 			messages.append(msg_str);
 		} else {
 			/* more than 1 line */
-			if (c > 0 && view[r][c - 1] != ' ') {
+			if (c == 0 || view[r][c - 1] != ' ') {
 				/* this is just a very long line, not a list */
 				c = 0;
 				fetchMenuText(r, c, false);
