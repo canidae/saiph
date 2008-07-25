@@ -100,7 +100,13 @@ void World::fetchMessages() {
 				messages.append(2, ' '); // add two spaces
 			} else {
 				/* this is a list */
-				fetchMenuText(r - 1, c, true); // "r - 1" to avoid the last "--More--"
+				/* sometimes "--More--" is placed 1 char to the right of the menu.
+				 * this happens at least when the entire page is filled.
+				 * check that the line above also is ' ', if not, c - 1 */
+				if (view[r - 1][c] == ' ')
+					fetchMenuText(r - 1, c, true); // "r - 1" to avoid the last "--More--"
+				else
+					fetchMenuText(r - 1, c - 1, true); // "r - 1" to avoid the last "--More--"
 			}
 		}
 		/* request the remaining messages */
