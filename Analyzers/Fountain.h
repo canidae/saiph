@@ -24,7 +24,7 @@ class Fountain : public Analyzer {
 		Fountain(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void inspect(const Point &point);
 		void parseMessages(const string &messages);
@@ -36,7 +36,6 @@ class Fountain : public Analyzer {
 		map<int, map<int, map<Point, bool> > > fountains;
 		Coordinate target;
 		int target_priority;
-		string action;
 		Request req;
 };
 #endif

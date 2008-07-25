@@ -5,8 +5,7 @@ Fountain::Fountain(Saiph *saiph) : Analyzer("Fountain"), saiph(saiph), target(-1
 }
 
 /* methods */
-void Fountain::command(string *command) {
-	*command = action;
+void Fountain::complete() {
 }
 
 void Fountain::finish() {
@@ -41,7 +40,7 @@ void Fountain::finish() {
 		 * if this happen, we got ourselves an oscillobot */
 		return;
 	}
-	action = move;
+	command = move;
 	priority = target_priority;
 }
 

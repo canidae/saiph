@@ -35,7 +35,7 @@ class Explore : public Analyzer {
 		Explore(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void inspect(const Point &point);
 

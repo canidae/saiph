@@ -22,14 +22,13 @@ class Elbereth : public Analyzer {
 		Elbereth(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
 		int elbereth_count;
 		bool burned;
 		bool digged;

@@ -1,7 +1,7 @@
 #include "Fight.h"
 
 /* constructors */
-Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph), action("") {
+Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 	thrown.push_back("dwarvish spear");
 	thrown.push_back("dwarvish spears");
 	thrown.push_back("silver spear");
@@ -27,15 +27,14 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph), action("") {
 }
 
 /* methods */
-void Fight::command(string *command) {
-	*command = action;
+void Fight::complete() {
 }
 
 void Fight::finish() {
-	action = "";
+	command = "";
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
-		action = MOVE_NW; // doesn't matter which direction
+		command = MOVE_NW; // doesn't matter which direction
 		priority = FIGHT_ATTACK_PRIORITY;
 		return;
 	}
@@ -109,27 +108,27 @@ void Fight::finish() {
 	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << best_distance << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
 	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
 		/* throw */
-		action = THROW;
-		action2 = got_thrown;
-		action3 = best_move;
+		command = THROW;
+		command2 = got_thrown;
+		command3 = best_move;
 	} else {
 		/* move or melee */
-		action = best_move;
+		command = best_move;
 	}
 }
 
 void Fight::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
-		action = YES;
+		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && action3 != "" && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
-		action = action2;
-		action2 = action3;
-		action3 = "";
+	} else if (saiph->world->question && command3 != "" && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
+		command = command2;
+		command2 = command3;
+		command3 = "";
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && action2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
-		action = action2;
-		action2 = "";
+	} else if (saiph->world->question && command2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+		command = command2;
+		command2 = "";
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
@@ -140,7 +139,7 @@ void Fight::parseMessages(const string &messages) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (p->second.name == *t) {
 					/* pick it up :) */
-					action = p->first;
+					command = p->first;
 					priority = PRIORITY_PICKUP_ITEM;
 					continue;
 				}

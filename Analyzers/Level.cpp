@@ -3,20 +3,18 @@
 /* constructors */
 Level::Level(Saiph *saiph) : Analyzer("Level") {
 	this->saiph = saiph;
-	action = "";
 }
 
 /* methods */
-void Level::command(string *command) {
-	*command = action;
+void Level::complete() {
 }
 
 void Level::finish() {
 	/* time to descend */
-	action = "";
+	command = "";
 	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col] == STAIRS_DOWN) {
 		/* standing on downstairs, descend */
-		action = MOVE_DOWN;
+		command = MOVE_DOWN;
 		priority = LEVEL_DESCEND_PRIORITY;
 		return;
 	}
@@ -28,7 +26,7 @@ void Level::finish() {
 			bool direct_line = false;
 			unsigned char move = saiph->shortestPath(*s, false, &distance, &direct_line);
 			if (move != ILLEGAL_MOVE) {
-				action = move;
+				command = move;
 				priority = LEVEL_DESCEND_PRIORITY;
 				return;
 			}

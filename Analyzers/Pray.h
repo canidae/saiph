@@ -24,14 +24,13 @@ class Pray : public Analyzer {
 		Pray(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
 		int last_pray_turn;
 };
 #endif

@@ -19,6 +19,7 @@ class Analyzer {
 		/* variables */
 		string name;
 		int priority;
+		string command;
 	
 		/* constructor */
 		Analyzer(string name);
@@ -28,7 +29,7 @@ class Analyzer {
 
 		/* methods */
 		virtual void begin();
-		virtual void command(string *command);
+		virtual void complete();
 		virtual void finish();
 		virtual void inspect(const Point &point);
 		virtual void parseMessages(const string &messages);

@@ -30,7 +30,7 @@ class Loot : public Analyzer {
 		Loot(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
@@ -38,7 +38,6 @@ class Loot : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
 		bool dirty_inventory;
 		map<int, map<int, map<Point, int> > > turn_last_changed;
 		list<Point> visit;

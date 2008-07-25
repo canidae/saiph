@@ -2,25 +2,21 @@
 
 /* constructors */
 Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph) {
-	da.action = ILLEGAL_ACTION;
-	da.direction = ILLEGAL_MOVE;
-	da.dp = NULL;
 	memset(shop_on_level, false, sizeof (shop_on_level));
+	command_door = NULL;
 }
 
 /* methods */
-void Door::command(string *command) {
-	if (da.action == ILLEGAL_ACTION)
-		*command = da.direction;
-	else
-		*command = da.action;
+void Door::complete() {
 }
 
 void Door::finish() {
 	/* open closed doors */
-	da.action = ILLEGAL_ACTION;
-	da.direction = ILLEGAL_MOVE;
-	da.dp = NULL;
+	if (priority > DOOR_OPEN_PRIORITY)
+		return;
+	command = "";
+	command2 = "";
+	command_door = NULL;
 	int best_distance = INT_MAX;
 	for (vector<DoorPoint>::iterator d = doors[saiph->position.branch][saiph->position.level].begin(); d != doors[saiph->position.branch][saiph->position.level].end(); ) {
 		/* check if door still is there */
@@ -56,12 +52,13 @@ void Door::finish() {
 				continue;
 			}
 			priority = DOOR_OPEN_PRIORITY;
-			da.direction = move;
-			da.dp = &(*d);
-			if (distance == 1)
-				da.action = OPEN; // standing next to door
-			else
-				da.action = ILLEGAL_ACTION;
+			if (distance == 1) {
+				command = OPEN; // standing next to door
+				command2 = move;
+				command_door = &(*d);
+			} else {
+				command = move;
+			}
 		/* TODO:
 		} else if (d->locked && can_lockpick && DOOR_PICK_PRIORITY >= priority) {
 		*/
@@ -84,12 +81,13 @@ void Door::finish() {
 				continue;
 			}
 			priority = DOOR_KICK_PRIORITY;
-			da.direction = move;
-			da.dp = &(*d);
-			if (distance == 1)
-				da.action = KICK; // standing next to door
-			else
-				da.action = ILLEGAL_ACTION;
+			if (distance == 1) {
+				command = KICK; // standing next to door
+				command2 = move;
+				command_door = &(*d);
+			} else {
+				command = move;
+			}
 		}
 		++d;
 	}
@@ -111,15 +109,16 @@ void Door::inspect(const Point &point) {
 }
 
 void Door::parseMessages(const string &messages) {
-	if (da.action != ILLEGAL_ACTION && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
-		da.action = ILLEGAL_ACTION;
+	if (command2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
+		command = command2;
+		command2 = "";
 		return;
 	//} else if (messages.find(MESSAGE_DOOR_CLOSES, 0) != string::npos) {
 	//} else if (messages.find(MESSAGE_KICK_DOOR_FAIL, 0) != string::npos) {
 	//} else if (messages.find(MESSAGE_KICK_DOOR_OPEN, 0) != string::npos) {
-	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos && da.dp != NULL) {
-		da.dp->locked = true;
+	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos && command_door != NULL) {
+		command_door->locked = true;
 	//} else if (messages.find(MESSAGE_NO_DOOR, 0) != string::npos) {
 	//} else if (messages.find(MESSAGE_DOOR_OPENS, 0) != string::npos) {
 	//} else if (messages.find(MESSAGE_DOOR_RESISTS, 0) != string::npos) {

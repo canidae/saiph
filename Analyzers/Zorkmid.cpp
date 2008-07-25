@@ -2,8 +2,6 @@
 
 /* constructors */
 Zorkmid::Zorkmid(Saiph *saiph) : Analyzer("Zorkmid"), saiph(saiph) {
-	action = "";
-	priority = ILLEGAL_PRIORITY;
 }
 
 /* methods */
@@ -23,8 +21,7 @@ void Zorkmid::begin() {
 	}
 }
 
-void Zorkmid::command(string *command) {
-	*command = action;
+void Zorkmid::complete() {
 }
 
 void Zorkmid::parseMessages(const string &messages) {
@@ -33,7 +30,7 @@ void Zorkmid::parseMessages(const string &messages) {
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			if (p->second.name.find(ZORKMID_GOLD_PIECE, 0) != string::npos) {
 				/* pick it up :) */
-				action = p->first;
+				command = p->first;
 				priority = PRIORITY_PICKUP_ITEM;
 				continue;
 			}

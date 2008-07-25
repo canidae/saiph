@@ -22,14 +22,13 @@ class Level : public Analyzer {
 		Level(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void inspect(const Point &point);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
 		vector<Coordinate> stairs; // TODO: this must be more advanced in the future 
 };
 #endif

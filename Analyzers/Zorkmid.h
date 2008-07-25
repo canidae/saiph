@@ -29,13 +29,12 @@ class Zorkmid : public Analyzer {
 
 		/* methods */
 		void begin();
-		void command(string *command);
+		void complete();
 		void parseMessages(const string &messages);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
 		Request req;
 };
 #endif

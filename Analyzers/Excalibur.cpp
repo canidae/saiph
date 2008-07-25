@@ -1,14 +1,13 @@
 #include "Excalibur.h"
 
 /* constructors */
-Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excalibur_exists(false), action(""), action2("") {
+Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excalibur_exists(false), command2("") {
 }
 
 /* methods */
-void Excalibur::command(string *command) {
-	*command = action;
-	if (action2 == "")
-		action = "";
+void Excalibur::complete() {
+	if (command2 == "")
+		command = "";
 }
 
 void Excalibur::finish() {
@@ -29,8 +28,8 @@ void Excalibur::finish() {
 	/* are we standing on a fountain? */
 	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col] == FOUNTAIN) {
 		/* yes, dip */
-		action = DIP;
-		action2 = got_long_sword;
+		command = DIP;
+		command2 = got_long_sword;
 		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
 		/* no, request that someone takes us there */
@@ -41,15 +40,15 @@ void Excalibur::finish() {
 }
 
 void Excalibur::parseMessages(const string &messages) {
-	if (action != "" && action2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
+	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
-		action = action2;
-		action2 = YES;
+		command = command2;
+		command2 = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (action != "" && action2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
+	} else if (command != "" && command2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
 		/* if we want to dip in fountain? sure */
-		action = action2;
-		action2 = "";
+		command = command2;
+		command2 = "";
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
 		/* alright! */

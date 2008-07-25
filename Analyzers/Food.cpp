@@ -2,8 +2,7 @@
 
 /* constructors */
 Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
-	action = "";
-	action2 = "";
+	command2 = "";
 	priority = ILLEGAL_PRIORITY;
 	//eat_order.push_back("tin");
 	eat_order.push_back("meatball");
@@ -84,8 +83,7 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 }
 
 /* methods */
-void Food::command(string *command) {
-	*command = action;
+void Food::complete() {
 }
 
 void Food::finish() {
@@ -101,8 +99,8 @@ void Food::finish() {
 			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 				if (i->second.name == *f) {
 					/* and we got something to eat */
-					action = EAT;
-					action2 = i->first;
+					command = EAT;
+					command2 = i->first;
 					switch (saiph->world->player.hunger) {
 						case HUNGRY:
 							priority = FOOD_EAT_HUNGRY_PRIORITY;
@@ -137,8 +135,8 @@ void Food::finish() {
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
 				/* easter egg: eat bytes when [over]satiated */
-				action2 = i->first;
-				action = EAT;
+				command2 = i->first;
+				command = EAT;
 				priority = FOOD_EAT_HUNGRY_PRIORITY;
 				return;
 			}
@@ -166,7 +164,7 @@ void Food::finish() {
 
 void Food::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
-		action = action2;
+		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* food gone, make inventory dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
@@ -178,7 +176,7 @@ void Food::parseMessages(const string &messages) {
 			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 				if (p->second.name.find(*f, 0) != string::npos) {
 					/* we should pick up this */
-					action = p->first;
+					command = p->first;
 					priority = PRIORITY_PICKUP_ITEM;
 					continue;
 				}
@@ -187,7 +185,7 @@ void Food::parseMessages(const string &messages) {
 		return;
 	} else if (messages.find(MESSAGE_EAT_IT, 0) != string::npos) {
 		/* we don't eat items on the floor yet */
-		action = NO;
+		command = NO;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
 	}

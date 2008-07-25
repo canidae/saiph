@@ -142,6 +142,8 @@ Saiph::~Saiph() {
 /* methods */
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
+	/* TODO: make this an analyzer */
+	string command;
 	command.push_back(';');
 	Point cursor(world->player.row, world->player.col);
 	while (cursor.row != target.row && cursor.col != target.col) {
@@ -239,58 +241,68 @@ bool Saiph::run() {
 	/* print maps so we see what we're doing */
 	dumpMaps();
 
+	Analyzer *best_analyzer = NULL;
+	int best_priority = ILLEGAL_PRIORITY;
+
 	/* then analyzer message parsing */
-	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
-		analyzers[a]->parseMessages(world->messages);
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		(*a)->parseMessages(world->messages);
+		if ((*a)->priority > best_priority) {
+			best_priority = (*a)->priority;
+			best_analyzer = *a;
+		}
+	}
 
 	/* call begin() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
-			analyzers[a]->begin();
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+			(*a)->begin();
+			if ((*a)->priority > best_priority) {
+				best_priority = (*a)->priority;
+				best_analyzer = *a;
+			}
+		}
 	}
 
 	/* inspect the dungeon */
 	if (!world->question && !world->menu) {
-		for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
-			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 				(*a)->inspect(*c);
+			if ((*a)->priority > best_priority) {
+				best_priority = (*a)->priority;
+				best_analyzer = *a;
+			}
 		}
 	}
 
 	/* call finish() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
-			analyzers[a]->finish();
-	}
-
-	/* check if we got a command */
-	int best_analyzer = -1;
-	int best_priority = ILLEGAL_PRIORITY;
-	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-		if (analyzers[a]->priority > best_priority) {
-			best_priority = analyzers[a]->priority;
-			best_analyzer = a;
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+			(*a)->finish();
+			if ((*a)->priority > best_priority) {
+				best_priority = (*a)->priority;
+				best_analyzer = *a;
+			}
 		}
 	}
 
-	if (world->question && best_analyzer == -1) {
+	/* check if we got a command */
+	if (world->question && best_analyzer == NULL) {
 		debugfile << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		return false;
-	}
-
-	if (world->menu && best_analyzer == -1) {
+	} else if (world->menu && best_analyzer == NULL) {
 		debugfile << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
+	} else if (best_analyzer == NULL) {
+		debugfile << SAIPH_DEBUG_NAME << "I have no idea what to do" << endl;
+		return false;
 	}
 
-	if (best_analyzer == -1)
-		return false;
-
 	/* let an analyzer do its command */
-	command.clear(); // just in case some analyzer messed with this string
-	analyzers[best_analyzer]->command(&command);
-	debugfile << COMMAND_DEBUG_NAME << "'" << command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
-	world->executeCommand(command);
+	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
+	world->executeCommand(best_analyzer->command);
+	best_analyzer->complete();
 	return true;
 }
 

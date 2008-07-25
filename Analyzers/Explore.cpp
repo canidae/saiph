@@ -9,10 +9,9 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 }
 
 /* methods */
-void Explore::command(string *command) {
+void Explore::complete() {
 	if (move == SEARCH)
 		++search[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col];
-	*command = move;
 }
 
 void Explore::finish() {
@@ -125,6 +124,7 @@ void Explore::finish() {
 		priority = cur_priority;
 		best_distance = distance;
 	}
+	command = move;
 }
 
 void Explore::inspect(const Point &point) {

@@ -31,16 +31,15 @@ class Fight : public Analyzer {
 		Fight(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
-		string action2;
-		string action3;
+		string command2;
+		string command3;
 		list<string> thrown;
 		Request req;
 };

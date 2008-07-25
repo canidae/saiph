@@ -26,7 +26,7 @@ class Excalibur : public Analyzer {
 		Excalibur(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 
@@ -35,7 +35,6 @@ class Excalibur : public Analyzer {
 		Saiph *saiph;
 		bool excalibur_exists;
 		Request req;
-		string action;
-		string action2;
+		string command2;
 };
 #endif

@@ -5,16 +5,15 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 }
 
 /* methods */
-void Loot::command(string *command) {
-	*command = action;
-	if (action == "i") {
+void Loot::complete() {
+	if (command == "i") {
 		/* checking inventory, set dirty_inventory to false */
 		dirty_inventory = false;
-		action = " ";
-	} else if (action == " ") {
+		command = " ";
+	} else if (command == " ") {
 		/* closing inventory/pickup list */
-		action = "";
-	} else if (action == "," && loot.find(saiph->position) != loot.end()) {
+		command = "";
+	} else if (command == "," && loot.find(saiph->position) != loot.end()) {
 		/* we're looting a place, remove it from list */
 		loot.erase(saiph->position);
 	}
@@ -56,15 +55,15 @@ void Loot::finish() {
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
 			best_priority = l->second;
-			action = move;
+			command = move;
 		}
 		++l;
 	}
 	if (best_priority > priority && best_priority > ILLEGAL_PRIORITY) {
 		/* we should pick up something */
-		if (action[0] == REST) {
+		if (command[0] == REST) {
 			/* infact, we should pick up something _here_ */
-			action = PICKUP;
+			command = PICKUP;
 		}
 		priority = best_priority;
 	}
@@ -72,7 +71,7 @@ void Loot::finish() {
 		return;
 	/* visit stashes */
 	best_distance = INT_MAX;
-	unsigned char best_action = ILLEGAL_ACTION;
+	unsigned char best_command = ILLEGAL_ACTION;
 	for (list<Point>::iterator v = visit.begin(); v != visit.end(); ) {
 		if (v->row == saiph->world->player.row && v->col == saiph->world->player.col) {
 			/* we're on the stash, remove it from visit list */
@@ -89,30 +88,30 @@ void Loot::finish() {
 		unsigned char move = saiph->shortestPath(*v, false, &distance, &straight_line);
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
-			best_action = move;
+			best_command = move;
 		}
 		++v;
 	}
 	if (best_distance < INT_MAX && LOOT_VISIT_STASH_PRIORITY > best_priority) {
 		priority = LOOT_VISIT_STASH_PRIORITY;
-		action = best_action;
+		command = best_command;
 	}
 }
 
 void Loot::parseMessages(const string &messages) {
 	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. we should look */
-		action = ":";
+		command = ":";
 		priority = PRIORITY_LOOK;
 	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
 		/* we're picking up stuff.
 		 * analyzers will by themselves decide what to pick up, so we just try to close it */
-		action = " ";
+		command = " ";
 		priority = PRIORITY_PICKUP_STASH;
 		/* and remember to remove this stash from "loot" */
 		if (loot.find(saiph->position) != loot.end())
 			loot.erase(saiph->position);
-	} else if (saiph->world->menu && action == " ") {
+	} else if (saiph->world->menu && command == " ") {
 		/* probably listing the inventory, close the menu */
 		priority = PRIORITY_CONTINUE_ACTION;
 	}
@@ -140,7 +139,7 @@ bool Loot::request(const Request &request) {
 		/* someone needs an updated inventory */
 		if (dirty_inventory) {
 			/* it's dirty, we must look */
-			action = "i";
+			command = "i";
 			priority = request.priority;
 		}
 		return true;

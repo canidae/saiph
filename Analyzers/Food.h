@@ -29,15 +29,14 @@ class Food : public Analyzer {
 		Food(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 
 	private:
 		/* variables */
 		Saiph *saiph;
-		string action;
-		string action2;
+		string command2;
 		list<string> eat_order;
 		Request req;
 };

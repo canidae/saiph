@@ -74,7 +74,6 @@ class Saiph {
 		map<unsigned char, Item> pickup;
 		Stash *on_ground;
 		Coordinate position;
-		string command;
 		bool engulfed;
 
 		/* constructors */

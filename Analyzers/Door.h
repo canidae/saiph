@@ -26,14 +26,6 @@ class DoorPoint : public Point {
 		bool locked;
 };
 
-/* opening/picking/kicking doors is a multi turn affair.
- * we'll need a more complex way of storing an action */
-struct DoorAction {
-	unsigned char direction;
-	unsigned char action;
-	DoorPoint *dp;
-};
-
 /* analyzes the map and finds somewhere to explore */
 class Door : public Analyzer {
 	public:
@@ -41,7 +33,7 @@ class Door : public Analyzer {
 		Door(Saiph *saiph);
 
 		/* methods */
-		void command(string *command);
+		void complete();
 		void finish();
 		void inspect(const Point &point);
 		void parseMessages(const string &messages);
@@ -51,6 +43,7 @@ class Door : public Analyzer {
 		Saiph *saiph;
 		vector<DoorPoint> doors[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
 		bool shop_on_level[MAX_BRANCHES][MAX_DUNGEON_DEPTH];
-		DoorAction da;
+		string command2;
+		DoorPoint *command_door;
 };
 #endif

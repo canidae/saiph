@@ -2,7 +2,6 @@
 
 /* constructors */
 Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
-	action = "";
 	elbereth_count = 0;
 	burned = false;
 	digged = false;
@@ -13,8 +12,7 @@ Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
 }
 
 /* methods */
-void Elbereth::command(string *command) {
-	*command = action;
+void Elbereth::complete() {
 }
 
 void Elbereth::parseMessages(const string &messages) {
@@ -23,22 +21,22 @@ void Elbereth::parseMessages(const string &messages) {
 	burned = false;
 	digged = false;
 	elbereth_count = 0;
-	if (action == ":") {
+	if (command == ":") {
 		did_look = true;
-		action = "";
+		command = "";
 	} else {
 		did_look = false;
 	}
 	/* set up next command */
-	if (action.size() > 0 && action[0] == ENGRAVE && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
+	if (command.size() > 0 && command[0] == ENGRAVE && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
-		action = HANDS;
-	} else if (action.size() > 0 && action[0] == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
+		command = HANDS;
+	} else if (command.size() > 0 && command[0] == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
-		action = append ? YES : NO;
-	} else if (action.size() > 0 && (action[0] == YES || action[0] == NO || action[0] == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
+		command = append ? YES : NO;
+	} else if (command.size() > 0 && (command[0] == YES || command[0] == NO || command[0] == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
 		priority = PRIORITY_CONTINUE_ACTION;
-		action = ELBERETH "\n";
+		command = ELBERETH "\n";
 	}
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(MESSAGE_YOU_READ, 0);
@@ -103,20 +101,20 @@ bool Elbereth::request(const Request &request) {
 		}
 		if (!did_look && !burned && !digged && !dusted) {
 			/* we'll need to look first, which means set action & priority and return true */
-			action = ":";
+			command = ":";
 			priority = PRIORITY_LOOK; // since it's a zero turn affair
 			return true;
 		} else {
 			/* we know what's here */
 			if (((burned || digged) && elbereth_count > 0) || (dusted && elbereth_count >= 3)) {
 				/* we should rest */
-				action = "20.";
+				command = "20.";
 				priority = request.priority;
 				return true;
 			} else if (!burned && !digged && elbereth_count < 3) {
 				/* we should engrave in the dust */
 				append = (elbereth_count > 0); // append if 0 < elbereth_count < 3
-				action = ENGRAVE;
+				command = ENGRAVE;
 				priority = request.priority;
 				return true;
 			} else {

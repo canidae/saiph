@@ -1,13 +1,13 @@
 #include "Analyzer.h"
 
 /* constructor */
-Analyzer::Analyzer(string name) : name(name) {
+Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command("") {
 	/* methods will be called in this order:
 	 * 1. parseMessages
 	 * 2. begin
 	 * 3. inspect
 	 * 4. finish
-	 * 5. command
+	 * 5. complete
 	 *
 	 * additionally, requests may come at any time */
 }
@@ -24,9 +24,10 @@ void Analyzer::begin() {
 	/* decisions should be made here. */
 }
 
-void Analyzer::command(string *command) {
-	/* this one should be fixed.
-	 * it should return pointer to a string instead of this */
+void Analyzer::complete() {
+	/* this method is called only for the analyzer
+	 * that got the highest priority.
+	 * it's called *after* command is fetched */
 }
 
 void Analyzer::finish() {
