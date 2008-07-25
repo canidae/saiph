@@ -103,7 +103,7 @@ void World::fetchMessages() {
 				/* sometimes "--More--" is placed 1 char to the right of the menu.
 				 * this happens at least when the entire page is filled.
 				 * check that the line above also is ' ', if not, c - 1 */
-				if (view[r - 1][c] == ' ')
+				if (view[r - 1][c - 1] == ' ')
 					fetchMenuText(r - 1, c, true); // "r - 1" to avoid the last "--More--"
 				else
 					fetchMenuText(r - 1, c - 1, true); // "r - 1" to avoid the last "--More--"
