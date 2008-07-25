@@ -2,7 +2,7 @@
 /* defines */
 #define HEALTH_H
 /* priorities */
-#define HEALTH_REST_FOR_HP_HIGH 500
+#define HEALTH_REST_FOR_HP_HIGH 450
 #define HEALTH_REST_FOR_HP_LOW 700
 #define HEALTH_PRAY_FOR_HP 900
 

@@ -144,7 +144,7 @@ void Food::finish() {
 	} else if (saiph->on_ground != NULL) {
 		/* there are items here, we should look for food */
 		req.request = REQUEST_LOOT_STASH;
-		req.priority = FOOD_LOOT_PRIORITY;
+		req.priority = FOOD_PICKUP_PRIORITY;
 		req.coordinate = saiph->position;
 		bool die = false;
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); !die && i != saiph->on_ground->items.end(); ++i) {

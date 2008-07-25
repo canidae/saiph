@@ -42,7 +42,7 @@ void Fight::finish() {
 	if (saiph->on_ground != NULL) {
 		/* there are items here, we should look for weapons */
 		req.request = REQUEST_LOOT_STASH;
-		req.priority = FIGHT_LOOT_PRIORITY;
+		req.priority = FIGHT_PICKUP_PRIORITY;
 		req.coordinate = saiph->position;
 		bool die = false;
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); !die && i != saiph->on_ground->items.end(); ++i) {
