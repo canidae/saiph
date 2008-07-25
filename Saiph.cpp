@@ -574,7 +574,7 @@ void Saiph::parseMessages() {
 			}
 		}
 	} else if ((pos = world->messages.find(" - ", 0)) != string::npos) {
-		/* we probably listed our inventory */
+		/* we probably listed our inventory or the pickup list */
 		inventory.clear();
 		while ((pos = world->messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && world->messages[pos - 3] == ' ' && world->messages[pos - 2] == ' ') {
