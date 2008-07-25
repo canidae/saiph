@@ -61,7 +61,7 @@ void Fountain::inspect(const Point &point) {
 }
 
 void Fountain::parseMessages(const string &messages) {
-	if (messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos) {
+	if (messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos) {
 		/* fountain is now gone */
 		fountains[saiph->position.branch][saiph->position.level].erase(saiph->position);
 	}

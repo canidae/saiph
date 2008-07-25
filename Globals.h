@@ -161,6 +161,7 @@
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
 #define MESSAGE_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
+#define MESSAGE_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
 #define MESSAGE_FOUNTAIN_HERE "  There is a fountain here.  "
 #define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
 #define MESSAGE_KICK_DOOR_FAIL "  WHAMMM!!!  "
@@ -171,6 +172,7 @@
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_OPEN_DOOR_HERE "  There is an open door here.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
+#define MESSAGE_RECEIVED_EXCALIBUR "  A murky hand from the depths reaches up to bless the sword.  "// wohoo
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
 #define MESSAGE_SHOP_ON_LEVEL1 "  You hear someone cursing shoplifters.  "
 #define MESSAGE_SHOP_ON_LEVEL2 "  You hear the chime of a cash register.  "

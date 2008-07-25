@@ -403,7 +403,7 @@ void Saiph::parseMessages() {
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
 
 	/* messages that remove static dungeon features */
-	if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos)
+	if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos)
 		map[position.branch][position.level].dungeon[world->player.row][world->player.col] = FLOOR;
 
 	/* let the trackers parse messages */

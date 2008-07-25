@@ -51,5 +51,8 @@ void Excalibur::parseMessages(const string &messages) {
 		action = action2;
 		action2 = "";
 		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
+		/* alright! */
+		excalibur_exists = true;
 	}
 }
