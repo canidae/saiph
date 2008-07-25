@@ -167,5 +167,14 @@ void Food::parseMessages(const string &messages) {
 				}
 			}
 		}
+		return;
+	}
+	char bleh[128];
+	int matched = sscanf(message.c_str(), MESSAGE_THERE_IS_A_EAT_IT, bleh);
+	if (matched == 1) {
+		/* we don't eat items on the floor yet */
+		action = NO;
+		priority = PRIORITY_CONTINUE_ACTION;
+		return;
 	}
 }

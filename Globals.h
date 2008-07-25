@@ -172,7 +172,7 @@
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_OPEN_DOOR_HERE "  There is an open door here.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
-#define MESSAGE_RECEIVED_EXCALIBUR "  A murky hand from the depths reaches up to bless the sword.  "// wohoo
+#define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
 #define MESSAGE_SHOP_ON_LEVEL1 "  You hear someone cursing shoplifters.  "
 #define MESSAGE_SHOP_ON_LEVEL2 "  You hear the chime of a cash register.  "
