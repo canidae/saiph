@@ -562,18 +562,25 @@ void Saiph::updateMaps() {
 		/* update monsters */
 		if (monster[(unsigned char) world->view[c->row][c->col]]) {
 			/* add a monster, or update position of an existing monster */
-			/* set monster on monstermap */
+			unsigned char symbol;
 			if (world->color[c->row][c->col] == INVERSE)
-				monstermap[position.branch][position.level][c->row][c->col] = PET; // pets are a bit unique
+				symbol = PET;
 			else
-				monstermap[position.branch][position.level][c->row][c->col] = world->view[c->row][c->col];
+				symbol = world->view[c->row][c->col];
+			/* set monster on monstermap */
+			monstermap[position.branch][position.level][c->row][c->col] = symbol;
 			/* find nearest monster */
 			int min_distance = INT_MAX;
 			map<Point, Monster>::iterator nearest = monsters[position.branch][position.level].end();
 			for (map<Point, Monster>::iterator m = monsters[position.branch][position.level].begin(); m != monsters[position.branch][position.level].end(); ++m) {
-				if (m->second.symbol != world->view[c->row][c->col] || m->second.color != world->color[c->row][c->col])
+				if (m->second.symbol != symbol || m->second.color != world->color[c->row][c->col])
 					continue; // not the same monster
-				if (world->view[m->first.row][m->first.col] == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color)
+				unsigned char old_symbol;
+				if (world->color[m->first.row][m->first.col] == INVERSE)
+					old_symbol = PET;
+				else
+					old_symbol = world->view[c->row][c->col];
+				if (m->second.symbol == old_symbol && m->second.color == world->color[m->first.row][m->first.col])
 					continue; // this monster already is on its square
 				/* see if this monster is closer than the last found monster */
 				int distance = max(abs(m->first.row - c->row), abs(m->first.col - c->col));
@@ -592,23 +599,25 @@ void Saiph::updateMaps() {
 				monsters[position.branch][position.level].erase(nearest);
 			} else {
 				/* add monster */
-				monsters[position.branch][position.level][*c] = Monster(world->view[c->row][c->col], world->color[c->row][c->col]);
+				monsters[position.branch][position.level][*c] = Monster(symbol, world->color[c->row][c->col]);
 			}
 		}
 	}
 	/* remove monsters that seems to be gone
 	 * and make monsters we can't see !visible */
 	for (map<Point, Monster>::iterator m = monsters[position.branch][position.level].begin(); m != monsters[position.branch][position.level].end(); ) {
+		unsigned char symbol;
+		if (world->color[m->first.row][m->first.col] == INVERSE)
+			symbol = PET;
+		else
+			symbol = world->view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (world->view[m->first.row][m->first.col] == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color);
+		m->second.visible = (symbol == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color);
 		if (abs(position.row - m->first.row) > 1 || abs(position.col - m->first.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
 		}
-		unsigned char symbol = world->view[m->first.row][m->first.col];
-		if (world->color[m->first.row][m->first.col] == INVERSE)
-			symbol = PET; // pets are a bit unique
 		if (symbol == m->second.symbol && world->color[m->first.row][m->first.col] == m->second.color) {
 			/* we can still see the monster */
 			++m;
