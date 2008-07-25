@@ -12,6 +12,9 @@ Analyzer::~Analyzer() {
 }
 
 /* methods */
+void Analyzer::begin() {
+}
+
 void Analyzer::command(string *command) {
 }
 
@@ -26,7 +29,4 @@ void Analyzer::parseMessages(const string &messages) {
 
 bool Analyzer::request(const Request &request) {
 	return false;
-}
-
-void Analyzer::start() {
 }

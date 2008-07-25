@@ -7,11 +7,7 @@ Zorkmid::Zorkmid(Saiph *saiph) : Analyzer("Zorkmid"), saiph(saiph) {
 }
 
 /* methods */
-void Zorkmid::command(string *command) {
-	*command = action;
-}
-
-void Zorkmid::finish() {
+void Zorkmid::begin() {
 	if (saiph->on_ground != NULL) {
 		/* there are items here, we should look for zorkmids */
 		req.request = REQUEST_LOOT_STASH;
@@ -25,6 +21,10 @@ void Zorkmid::finish() {
 			}
 		}
 	}
+}
+
+void Zorkmid::command(string *command) {
+	*command = action;
 }
 
 void Zorkmid::parseMessages(const string &messages) {

@@ -27,11 +27,11 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
+		virtual void begin();
 		virtual void command(string *command);
 		virtual void finish();
 		virtual void inspect(const Point &point);
 		virtual void parseMessages(const string &messages);
 		virtual bool request(const Request &request);
-		virtual void start();
 };
 #endif

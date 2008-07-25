@@ -243,10 +243,10 @@ bool Saiph::run() {
 	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
 		analyzers[a]->parseMessages(world->messages);
 
-	/* call start() in analyzers */
+	/* call begin() in analyzers */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a)
-			analyzers[a]->start();
+			analyzers[a]->begin();
 	}
 
 	/* inspect the dungeon */

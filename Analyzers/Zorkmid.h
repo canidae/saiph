@@ -28,8 +28,8 @@ class Zorkmid : public Analyzer {
 		Zorkmid(Saiph *saiph);
 
 		/* methods */
+		void begin();
 		void command(string *command);
-		void finish();
 		void parseMessages(const string &messages);
 
 	private:
