@@ -51,43 +51,56 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 	}
 	/* damage */
 	if (name.find(ITEM_PARSE_THOROUGHLY_BURNT, pos) == pos) {
-		damage = 3;
+		if (damage < 3)
+			damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_THOROUGHLY_CORRODED, pos) == pos) {
-		damage = 3;
-		pos += sizeof (ITEM_PARSE_THOROUGHLY_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_THOROUGHLY_ROTTED, pos) == pos) {
-		damage = 3;
-		pos += sizeof (ITEM_PARSE_THOROUGHLY_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
-		damage = 3;
-		pos += sizeof (ITEM_PARSE_THOROUGHLY_RUSTY) - 1;
 	} else if (name.find(ITEM_PARSE_VERY_BURNT, pos) == pos) {
-		damage = 2;
+		if (damage < 2)
+			damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_CORRODED, pos) == pos) {
-		damage = 2;
-		pos += sizeof (ITEM_PARSE_VERY_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_ROTTED, pos) == pos) {
-		damage = 2;
-		pos += sizeof (ITEM_PARSE_VERY_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
-		damage = 2;
-		pos += sizeof (ITEM_PARSE_VERY_RUSTY) - 1;
 	} else if (name.find(ITEM_PARSE_BURNT, pos) == pos) {
-		damage = 1;
+		if (damage < 1)
+			damage = 1;
 		pos += sizeof (ITEM_PARSE_BURNT) - 1;
+	}
+	if (name.find(ITEM_PARSE_THOROUGHLY_CORRODED, pos) == pos) {
+		if (damage < 3)
+			damage = 3;
+		pos += sizeof (ITEM_PARSE_THOROUGHLY_CORRODED) - 1;
+	} else if (name.find(ITEM_PARSE_VERY_CORRODED, pos) == pos) {
+		if (damage < 2)
+			damage = 2;
+		pos += sizeof (ITEM_PARSE_VERY_CORRODED) - 1;
 	} else if (name.find(ITEM_PARSE_CORRODED, pos) == pos) {
-		damage = 1;
+		if (damage < 1)
+			damage = 1;
 		pos += sizeof (ITEM_PARSE_CORRODED) - 1;
+	}
+	if (name.find(ITEM_PARSE_THOROUGHLY_ROTTED, pos) == pos) {
+		if (damage < 3)
+			damage = 3;
+		pos += sizeof (ITEM_PARSE_THOROUGHLY_ROTTED) - 1;
+	} else if (name.find(ITEM_PARSE_VERY_ROTTED, pos) == pos) {
+		if (damage < 2)
+			damage = 2;
+		pos += sizeof (ITEM_PARSE_VERY_ROTTED) - 1;
 	} else if (name.find(ITEM_PARSE_ROTTED, pos) == pos) {
-		damage = 1;
+		if (damage < 1)
+			damage = 1;
 		pos += sizeof (ITEM_PARSE_ROTTED) - 1;
+	}
+	if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
+		if (damage < 3)
+			damage = 3;
+		pos += sizeof (ITEM_PARSE_THOROUGHLY_RUSTY) - 1;
+	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
+		if (damage < 2)
+			damage = 2;
+		pos += sizeof (ITEM_PARSE_VERY_RUSTY) - 1;
 	} else if (name.find(ITEM_PARSE_RUSTY, pos) == pos) {
-		damage = 1;
+		if (damage < 1)
+			damage = 1;
 		pos += sizeof (ITEM_PARSE_RUSTY) - 1;
-	} else {
-		damage = 0;
 	}
 	/* enchantment */
 	if (name[pos] == '+') {

@@ -152,6 +152,8 @@ void ItemTracker::updateStash(const Point &point) {
 		}
 		return;
 	}
+	if (saiph->world->player.hallucinating)
+		return; // don't update/add stashes when hallucinating
 	map<Point, Stash>::iterator s = stashes[saiph->position.branch][saiph->position.level].find(point);
 	if (s != stashes[saiph->position.branch][saiph->position.level].end()) {
 		if (s->second.top_symbol != saiph->world->view[point.row][point.col]) {
