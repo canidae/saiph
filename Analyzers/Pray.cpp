@@ -1,8 +1,7 @@
 #include "Pray.h"
 
 /* constructors */
-Pray::Pray(Saiph *saiph) : Analyzer("Pray"), saiph(saiph) {
-	last_pray_turn = PRAY_PRAYER_TIMEOUT;
+Pray::Pray(Saiph *saiph) : Analyzer("Pray"), saiph(saiph), last_pray_turn(0) {
 }
 
 /* methods */
