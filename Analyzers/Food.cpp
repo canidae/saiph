@@ -13,12 +13,18 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("meat sticks");
 	eat_order.push_back("huge chunk of meat");
 	eat_order.push_back("huge chunks of meat");
+	eat_order.push_back("partly eaten huge chunk of meat");
+	eat_order.push_back("partly eaten huge chunks of meat");
 	eat_order.push_back("cream pie");
 	eat_order.push_back("cream pies");
 	eat_order.push_back("lichen corpse");
 	eat_order.push_back("lichen corpses");
+	eat_order.push_back("partly eaten lichen corpse");
+	eat_order.push_back("partly eaten lichen corpses");
 	eat_order.push_back("tripe ration");
 	eat_order.push_back("tripe rations");
+	eat_order.push_back("partly eaten tripe ration");
+	eat_order.push_back("partly eaten tripe rations");
 	eat_order.push_back("melon");
 	eat_order.push_back("melons");
 	eat_order.push_back("apple");
@@ -31,9 +37,14 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("C-rations");
 	eat_order.push_back("cram ration");
 	eat_order.push_back("cram rations");
+	eat_order.push_back("partly eaten cram ration");
+	eat_order.push_back("partly eaten cram rations");
 	eat_order.push_back("food ration");
 	eat_order.push_back("food rations");
+	eat_order.push_back("partly eaten food ration");
+	eat_order.push_back("partly eaten food rations");
 	eat_order.push_back("gunyoki");
+	eat_order.push_back("partly eaten gunyoki");
 	eat_order.push_back("K-ration");
 	eat_order.push_back("K-rations");
 	eat_order.push_back("clove of garlic");
@@ -54,8 +65,12 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("lumps of royal jelly");
 	eat_order.push_back("pancake");
 	eat_order.push_back("pancakes");
+	eat_order.push_back("partly eaten pancake");
+	eat_order.push_back("partly eaten pancakes");
 	eat_order.push_back("lembas wafer");
 	eat_order.push_back("lembas wafers");
+	eat_order.push_back("partly eaten lembas wafer");
+	eat_order.push_back("partly eaten lembas wafers");
 	eat_order.push_back("carrot"); // will cure blindness
 	eat_order.push_back("carrots"); // will cure blindness
 	eat_order.push_back("eucalyptus leaf"); // will cure sickness
@@ -64,6 +79,8 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("sprigs of wolfsbane"); // will cure lycanthropy
 	eat_order.push_back("lizard corpse"); // wil cure stoning
 	eat_order.push_back("lizard corpses"); // wil cure stoning
+	eat_order.push_back("partly eaten lizard corpse"); // wil cure stoning
+	eat_order.push_back("partly eaten lizard corpses"); // wil cure stoning
 }
 
 /* methods */
