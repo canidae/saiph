@@ -50,6 +50,19 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 		fixed = false;
 	}
 	/* damage */
+	if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
+		if (damage < 3)
+			damage = 3;
+		pos += sizeof (ITEM_PARSE_THOROUGHLY_RUSTY) - 1;
+	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
+		if (damage < 2)
+			damage = 2;
+		pos += sizeof (ITEM_PARSE_VERY_RUSTY) - 1;
+	} else if (name.find(ITEM_PARSE_RUSTY, pos) == pos) {
+		if (damage < 1)
+			damage = 1;
+		pos += sizeof (ITEM_PARSE_RUSTY) - 1;
+	}
 	if (name.find(ITEM_PARSE_THOROUGHLY_BURNT, pos) == pos) {
 		if (damage < 3)
 			damage = 3;
@@ -88,19 +101,6 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 		if (damage < 1)
 			damage = 1;
 		pos += sizeof (ITEM_PARSE_ROTTED) - 1;
-	}
-	if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
-		if (damage < 3)
-			damage = 3;
-		pos += sizeof (ITEM_PARSE_THOROUGHLY_RUSTY) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
-		if (damage < 2)
-			damage = 2;
-		pos += sizeof (ITEM_PARSE_VERY_RUSTY) - 1;
-	} else if (name.find(ITEM_PARSE_RUSTY, pos) == pos) {
-		if (damage < 1)
-			damage = 1;
-		pos += sizeof (ITEM_PARSE_RUSTY) - 1;
 	}
 	/* enchantment */
 	if (name[pos] == '+') {
