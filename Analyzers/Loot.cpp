@@ -120,6 +120,11 @@ void Loot::parseMessages(const string &messages) {
 bool Loot::request(const Request &request) {
 	if (request.request == REQUEST_LOOT_STASH) {
 		/* someone wants loot */
+		/* if we see a white '@' then don't loot */
+		for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+			if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
+				return false;
+		}
 		map<Coordinate, int>::iterator l = loot.find(request.coordinate);
 		if (l != loot.end()) {
 			/* this stash has already been requested by someone else.

@@ -87,6 +87,8 @@ void Fight::finish() {
 			cur_priority = FIGHT_BLUE_E_PRIORITY;
 		else if (m->second.symbol == '@' && m->second.color == BLUE)
 			cur_priority = FIGHT_BLUE_AT_PRIORITY;
+		else if (m->second.symbol == '@' && m->second.color == WHITE)
+			cur_priority = FIGHT_WHITE_AT_PRIORITY;
 		else
 			cur_priority = (distance == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
 		if (cur_priority < priority)
