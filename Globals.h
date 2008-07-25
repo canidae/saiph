@@ -156,6 +156,7 @@
 #define MESSAGE_DOOR_RESISTS "  The door resists!  "
 #define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
+#define MESSAGE_EAT_IT " here; eat it? "
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? " // followed by "[ynq] (y)" or something
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
@@ -179,7 +180,6 @@
 #define MESSAGE_SHOP_ON_LEVEL3 "  You hear Neiman and Marcus arguing!  "
 #define MESSAGE_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
 #define MESSAGE_STAIRCASE_UP_HERE "  There is a staircase up here.  "
-#define MESSAGE_THERE_IS_A_EAT_IT "  There is a %[^\t\n] here; eat it? "
 #define MESSAGE_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? " // followed by "[abcd...]"
