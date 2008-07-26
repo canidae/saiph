@@ -174,7 +174,7 @@ void Food::parseMessages(const string &messages) {
 		/* select what to pick up */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-				if (p->second.name.find(*f, 0) != string::npos) {
+				if (p->second.name == *f) {
 					/* we should pick up this */
 					command = p->first;
 					priority = PRIORITY_PICKUP_ITEM;
