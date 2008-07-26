@@ -66,7 +66,7 @@ class Saiph {
 		/* variables */
 		World *world;
 		ofstream debugfile;
-		//map<unsigned char, map<int, map<int, map<Point, bool> > > > dungeon_feature;
+		map<unsigned char, map<int, map<int, map<Point, bool> > > > dungeon_feature;
 		unsigned char dungeonmap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		map<int, map<int, map<Point, Monster> > > monsters;
@@ -101,6 +101,7 @@ class Saiph {
 		bool dungeon[UCHAR_MAX + 1];
 		bool monster[UCHAR_MAX + 1];
 		bool item[UCHAR_MAX + 1];
+		bool track_symbol[UCHAR_MAX + 1];
 
 		/* methods */
 		void addItemToInventory(unsigned char key, const Item &item);
@@ -112,6 +113,7 @@ class Saiph {
 		void parseMessages();
 		void removeItemFromPickup(const Item &item);
 		void removeItemFromStash(const Point &point, const Item &item);
+		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		void updateMaps();
 		void updatePathMap();
 		bool updatePathMapHelper(const Point &to, const Point &from);

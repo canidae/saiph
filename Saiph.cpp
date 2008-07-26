@@ -29,6 +29,8 @@ Saiph::Saiph(int interface) {
 			monster[a] = false;
 		/* itemtracking */
 		item[a] = false;
+		/* dungeon symbol tracking */
+		track_symbol[a] = false;
 		/* pathing & maps */
 		passable[a] = false;
 		dungeon[a] = false;
@@ -52,6 +54,16 @@ Saiph::Saiph(int interface) {
 	item[(unsigned char) IRON_BALL] = true;
 	item[(unsigned char) CHAINS] = true;
 	item[(unsigned char) VENOM] = true;
+	/* dungeon symbol tracking */
+	track_symbol[(unsigned char) OPEN_DOOR] = true;
+	track_symbol[(unsigned char) CLOSED_DOOR] = true;
+	track_symbol[(unsigned char) STAIRS_UP] = true;
+	track_symbol[(unsigned char) STAIRS_DOWN] = true;
+	track_symbol[(unsigned char) ALTAR] = true;
+	track_symbol[(unsigned char) GRAVE] = true;
+	track_symbol[(unsigned char) THRONE] = true;
+	track_symbol[(unsigned char) SINK] = true;
+	track_symbol[(unsigned char) FOUNTAIN] = true;
 	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
@@ -489,19 +501,19 @@ void Saiph::dumpMaps() {
 void Saiph::parseMessages() {
 	/* parse messages that can help us find doors/staircases/etc. */
 	if (world->messages.find(MESSAGE_STAIRCASE_UP_HERE, 0) != string::npos)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = STAIRS_UP;
+		setDungeonSymbol(position, STAIRS_UP);
 	else if (world->messages.find(MESSAGE_STAIRCASE_DOWN_HERE, 0) != string::npos)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = STAIRS_DOWN;
+		setDungeonSymbol(position, STAIRS_DOWN);
 	else if (world->messages.find(MESSAGE_OPEN_DOOR_HERE, 0) != string::npos)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = OPEN_DOOR;
+		setDungeonSymbol(position, OPEN_DOOR);
 	else if (world->messages.find(MESSAGE_FOUNTAIN_HERE, 0) != string::npos)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FOUNTAIN;
+		setDungeonSymbol(position, FOUNTAIN);
 	else if (world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || world->messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = FLOOR;
+		setDungeonSymbol(position, FLOOR);
 	/* when we've checked messages for static dungeon features and not found anything,
 	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
 	else if (dungeonmap[position.branch][position.level][world->player.row][world->player.col] == UNKNOWN_TILE)
-		dungeonmap[position.branch][position.level][world->player.row][world->player.col] = UNKNOWN_TILE_DIAGONALLY_PASSABLE;
+		setDungeonSymbol(position, UNKNOWN_TILE_DIAGONALLY_PASSABLE);
 
 	/* item parsing */
 	/* figure out if there's something on the ground or if we're picking up something */
@@ -633,6 +645,15 @@ void Saiph::removeItemFromStash(const Point &point, const Item &item) {
 		s->second.removeItem(item);
 }
 
+void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
+	/* since we're gonna track certain symbols we'll use an own method for this */
+	if (track_symbol[dungeonmap[position.branch][position.level][point.row][point.col]])
+		dungeon_feature[dungeonmap[position.branch][position.level][point.row][point.col]][position.branch][position.level].erase(point);
+	if (track_symbol[symbol])
+		dungeon_feature[(unsigned char) symbol][position.branch][position.level][point] = true;
+	dungeonmap[position.branch][position.level][point.row][point.col] = symbol;
+}
+
 void Saiph::updateMaps() {
 	/* update the various maps */
 	for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
@@ -640,14 +661,14 @@ void Saiph::updateMaps() {
 			continue; // not interesting (also mess up unlit rooms)
 		if (dungeon[(unsigned char) world->view[c->row][c->col]]) {
 			/* update the map showing static stuff */
-			dungeonmap[position.branch][position.level][c->row][c->col] = world->view[c->row][c->col];
+			setDungeonSymbol(*c, world->view[c->row][c->col]);
 		} else if (!passable[dungeonmap[position.branch][position.level][c->row][c->col]]) {
 			/* we can't see the floor here, but we believe we can pass this tile.
 			 * place an UNKNOWN_TILE here.
 			 * the reason we check if stored tile is !passable is because if we don't,
 			 * then every tile a monster steps on or drops an item on will become UNKNOWN_TILE,
 			 * even if we already know what's beneath the monster/item. */
-			dungeonmap[position.branch][position.level][c->row][c->col] = UNKNOWN_TILE;
+			setDungeonSymbol(*c, UNKNOWN_TILE);
 		}
 		/* update items */
 		if (!world->player.hallucinating) {
