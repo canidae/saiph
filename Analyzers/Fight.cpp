@@ -22,6 +22,8 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 	thrown.push_back("daggers");
 	thrown.push_back("orcish dagger");
 	thrown.push_back("orcish daggers");
+	thrown.push_back("poisoned dart");
+	thrown.push_back("poisoned darts");
 	thrown.push_back("dart");
 	thrown.push_back("darts");
 }
@@ -108,7 +110,7 @@ void Fight::finish() {
 	if (best_monster == saiph->monsters[saiph->position.branch][saiph->position.level].end())
 		return;
 	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << best_distance << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
-	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
+	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && best_distance <= saiph->world->player.strength / 2 && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
 		/* throw */
 		command = THROW;
 		command2 = got_thrown;
