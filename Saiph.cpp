@@ -528,6 +528,9 @@ void Saiph::parseMessages() {
 			Item item(world->messages.substr(pos, length));
 			addItemToStash(position, item);
 		}
+		/* if there are no items in this stash, erase it */
+		if (stashes[position.branch][position.level][position].items.size() <= 0)
+			stashes[position.branch][position.level].erase(position);
 	} else if ((pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = world->messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
 		clearStash(position);
@@ -542,9 +545,12 @@ void Saiph::parseMessages() {
 			addItemToStash(position, item);
 			pos += length;
 		}
+		/* if there are no items in this stash, erase it */
+		if (stashes[position.branch][position.level][position].items.size() <= 0)
+			stashes[position.branch][position.level].erase(position);
 	} else if (world->messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0) != string::npos || world->messages.find(MESSAGE_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
-		clearStash(position);
+		stashes[position.branch][position.level].erase(position);
 	} else if ((pos = world->messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos) {
 		/* picking up stuff.
 		 * we should clear the stash here too and update it */
@@ -563,6 +569,9 @@ void Saiph::parseMessages() {
 			}
 			pos += length;
 		}
+		/* if there are no items in this stash, erase it */
+		if (stashes[position.branch][position.level][position].items.size() <= 0)
+			stashes[position.branch][position.level].erase(position);
 	} else if (world->messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || world->messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* our inventory is empty. how did that happen? */
 		inventory.clear();
