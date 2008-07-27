@@ -102,12 +102,13 @@ void Fight::finish() {
 		} else {
 			cur_priority = (moves == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
 		}
+		saiph->debugfile << "[Fight      ] Monster: " << got_thrown << ", " << enemy_in_line << ", " << direct_line << ", " << m->second.visible << ", " << moves << ", " << m->second.symbol << ", " << m->second.color << ", " << cur_priority << endl;
 		if (cur_priority < priority) {
 			continue; // we've already found another monster with higher priority
 		} else if (enemy_in_line && !direct_line) {
 			continue; // we got a monster we can throw at, and we can't throw at this monster
-		} else if (!direct_line) {
-			/* either we can't throw at best_monster nor current monster, or we can throw at both */
+		} else if ((!enemy_in_line && !direct_line) || (enemy_in_line && direct_line)) {
+			/* either we can't throw at neither monster, or we can throw at them both */
 			if (moves > fewest_moves)
 				continue; // best_monster is closer
 			else if (moves == fewest_moves && m->second.symbol != '@' && m->second.symbol != 'A')
