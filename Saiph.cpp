@@ -318,6 +318,14 @@ bool Saiph::run() {
 	return true;
 }
 
+unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves) {
+	/* returns next move in shortest path from player to target.
+	 * also sets amount of moves to the target */
+	if (target.branch < 0 || target.branch > MAX_BRANCHES || target.level < 0 || target.level > MAX_DUNGEON_DEPTH || target.row < MAP_ROW_BEGIN || target.row > MAP_ROW_END || target.col < MAP_COL_BEGIN || target.col > MAP_COL_END)
+		return ILLEGAL_MOVE; // outside the map
+	return ILLEGAL_MOVE;
+}
+
 unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line) {
 	/* returns next move in shortest path from player to target.
 	 * also sets "distance" and "straight_line" to target */
@@ -659,7 +667,7 @@ void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	if (track_symbol[dungeonmap[position.branch][position.level][point.row][point.col]])
 		dungeon_feature[dungeonmap[position.branch][position.level][point.row][point.col]][position.branch][position.level].erase(point);
 	if (track_symbol[symbol])
-		dungeon_feature[(unsigned char) symbol][position.branch][position.level][point] = true;
+		dungeon_feature[(unsigned char) symbol][position.branch][position.level][point] = 0;
 	dungeonmap[position.branch][position.level][point.row][point.col] = symbol;
 }
 

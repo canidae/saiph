@@ -66,7 +66,7 @@ class Saiph {
 		/* variables */
 		World *world;
 		ofstream debugfile;
-		map<unsigned char, map<int, map<int, map<Point, bool> > > > dungeon_feature;
+		map<unsigned char, map<int, map<int, map<Point, int> > > > dungeon_feature;
 		unsigned char dungeonmap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		map<int, map<int, map<Point, Monster> > > monsters;
@@ -88,6 +88,7 @@ class Saiph {
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
+		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line);
 
 	private:
