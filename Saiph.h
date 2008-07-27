@@ -84,7 +84,7 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		bool directLine(Point point, bool ignore_sinks);
+		unsigned char directLine(Point point, bool ignore_sinks);
 		void farlook(const Point &target);
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);

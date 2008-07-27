@@ -95,10 +95,17 @@ void Fight::finish() {
 		} else if (m->second.symbol == '@' && m->second.color == WHITE) {
 			/* don't attack white @ for now */
 			cur_priority = FIGHT_WHITE_AT_PRIORITY;
-		} else if (got_thrown && distance <= saiph->world->player.strength / 2 && saiph->directLine(m->first, false)) {
-			/* seemingly we can throw stuff at the enemy */
-			direct_line = true;
-			cur_priority = FIGHT_ATTACK_PRIORITY;
+		} else if (got_thrown && distance <= saiph->world->player.strength / 2) {
+			unsigned char direct_move = saiph->directLine(m->first, false);
+			if (direct_move != ILLEGAL_MOVE) {
+				/* seemingly we can throw stuff at the enemy */
+				direct_line = true;
+				cur_priority = FIGHT_ATTACK_PRIORITY;
+				move = direct_move; // or we'll throw in wild direction while standing in doorways, aiming diagonally
+				moves = distance; // or we might try to pass somewhere we cannot
+			} else {
+				cur_priority = (moves == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
+			}
 		} else {
 			cur_priority = (moves == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
 		}

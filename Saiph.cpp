@@ -152,42 +152,44 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-bool Saiph::directLine(Point point, bool ignore_sinks) {
+unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 	/* is the target in a direct line from the player? */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
 		/* outside map */
-		return false;
+		return ILLEGAL_MOVE;
 	} else if (point == position) {
 		/* eh? this doesn't happen */
-		return true;
+		return REST;
 	} else if (point.row == position.row) {
 		/* aligned horizontally */
 		if (point.col > position.col) {
 			while (--point.col > position.col) {
 				if (!directLineHelper(point, ignore_sinks))
-					return false;
+					return ILLEGAL_MOVE;
 			}
+			return MOVE_E;
 		} else {
 			while (++point.col < position.col) {
 				if (!directLineHelper(point, ignore_sinks))
-					return false;
+					return ILLEGAL_MOVE;
 			}
+			return MOVE_W;
 		}
-		return true;
 	} else if (point.col == position.col) {
 		/* aligned vertically */
 		if (point.row > position.row) {
 			while (--point.row > position.row) {
 				if (!directLineHelper(point, ignore_sinks))
-					return false;
+					return ILLEGAL_MOVE;
 			}
+			return MOVE_S;
 		} else {
 			while (++point.row < position.row) {
 				if (!directLineHelper(point, ignore_sinks))
-					return false;
+					return ILLEGAL_MOVE;
 			}
+			return MOVE_N;
 		}
-		return true;
 	} else if (abs(point.row - position.row) == abs(point.col - position.col)) {
 		/* aligned diagonally */
 		if (point.row > position.row) {
@@ -195,33 +197,36 @@ bool Saiph::directLine(Point point, bool ignore_sinks) {
 				while (--point.row > position.row) {
 					--point.col;
 					if (!directLineHelper(point, ignore_sinks))
-						return false;
+						return ILLEGAL_MOVE;
 				}
+				return MOVE_SE;
 			} else {
 				while (--point.row > position.row) {
 					++point.col;
 					if (!directLineHelper(point, ignore_sinks))
-						return false;
+						return ILLEGAL_MOVE;
 				}
+				return MOVE_SW;
 			}
 		} else {
 			if (point.col > position.col) {
 				while (++point.row < position.row) {
 					--point.col;
 					if (!directLineHelper(point, ignore_sinks))
-						return false;
+						return ILLEGAL_MOVE;
 				}
+				return MOVE_NE;
 			} else {
 				while (++point.row < position.row) {
 					++point.col;
 					if (!directLineHelper(point, ignore_sinks))
-						return false;
+						return ILLEGAL_MOVE;
 				}
+				return MOVE_NW;
 			}
 		}
-		return true;
 	}
-	return false;
+	return ILLEGAL_MOVE;
 }
 
 void Saiph::farlook(const Point &target) {

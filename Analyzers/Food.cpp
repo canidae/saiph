@@ -141,7 +141,8 @@ void Food::finish() {
 				return;
 			}
 		}
-	} else if (saiph->on_ground != NULL) {
+	}
+	if (saiph->on_ground != NULL) {
 		/* there are items here, we should look for food */
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FOOD_PICKUP_PRIORITY;
