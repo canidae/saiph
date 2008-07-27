@@ -152,7 +152,7 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-bool Saiph::directLine(const Point &point, bool ignore_sinks) {
+bool Saiph::directLine(Point point, bool ignore_sinks) {
 	/* is the target in a direct line from the player? */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
 		/* outside map */
@@ -163,96 +163,63 @@ bool Saiph::directLine(const Point &point, bool ignore_sinks) {
 	} else if (point.row == position.row) {
 		/* aligned horizontally */
 		if (point.col > position.col) {
-			for (int c = position.col + 1; c < point.col; ++c) {
-				if (monstermap[position.branch][position.level][point.row][c] != ILLEGAL_MONSTER)
-					return false;
-				else if (!passable[dungeonmap[position.branch][position.level][point.row][c]])
-					return false;
-				else if (!ignore_sinks && dungeonmap[position.branch][position.level][point.row][c] == SINK)
+			while (--point.col > position.col) {
+				if (!directLineHelper(point, ignore_sinks))
 					return false;
 			}
-			return true;
 		} else {
-			for (int c = position.col - 1; c > point.col; --c) {
-				if (monstermap[position.branch][position.level][point.row][c] != ILLEGAL_MONSTER)
-					return false;
-				else if (!passable[dungeonmap[position.branch][position.level][point.row][c]])
-					return false;
-				else if (!ignore_sinks && dungeonmap[position.branch][position.level][point.row][c] == SINK)
+			while (++point.col < position.col) {
+				if (!directLineHelper(point, ignore_sinks))
 					return false;
 			}
-			return true;
 		}
+		return true;
 	} else if (point.col == position.col) {
 		/* aligned vertically */
 		if (point.row > position.row) {
-			for (int r = position.row + 1; r < point.row; ++r) {
-				if (monstermap[position.branch][position.level][r][point.col] != ILLEGAL_MONSTER)
-					return false;
-				else if (!passable[dungeonmap[position.branch][position.level][r][point.col]])
-					return false;
-				else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][point.col] == SINK)
+			while (--point.row > position.row) {
+				if (!directLineHelper(point, ignore_sinks))
 					return false;
 			}
-			return true;
 		} else {
-			for (int r = position.row - 1; r > point.row; --r) {
-				if (monstermap[position.branch][position.level][r][point.col] != ILLEGAL_MONSTER)
-					return false;
-				else if (!passable[dungeonmap[position.branch][position.level][r][point.col]])
-					return false;
-				else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][point.col] == SINK)
+			while (++point.row < position.row) {
+				if (!directLineHelper(point, ignore_sinks))
 					return false;
 			}
-			return true;
 		}
+		return true;
 	} else if (abs(point.row - position.row) == abs(point.col - position.col)) {
 		/* aligned diagonally */
 		if (point.row > position.row) {
 			if (point.col > position.col) {
-				for (int rc = position.row + 1; rc < point.row; ++rc) {
-					if (monstermap[position.branch][position.level][rc][rc] != ILLEGAL_MONSTER)
-						return false;
-					else if (!passable[dungeonmap[position.branch][position.level][rc][rc]])
-						return false;
-					else if (!ignore_sinks && dungeonmap[position.branch][position.level][rc][rc] == SINK)
+				while (--point.row > position.row) {
+					--point.col;
+					if (!directLineHelper(point, ignore_sinks))
 						return false;
 				}
 			} else {
-				int c = position.col - 1;
-				for (int r = position.row + 1; r < point.row; ++r) {
-					if (monstermap[position.branch][position.level][r][c] != ILLEGAL_MONSTER)
+				while (--point.row > position.row) {
+					++point.col;
+					if (!directLineHelper(point, ignore_sinks))
 						return false;
-					else if (!passable[dungeonmap[position.branch][position.level][r][c]])
-						return false;
-					else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][c] == SINK)
-						return false;
-					--c;
 				}
 			}
 		} else {
 			if (point.col > position.col) {
-				int c = position.col + 1;
-				for (int r = position.row - 1; r > point.row; --r) {
-					if (monstermap[position.branch][position.level][r][c] != ILLEGAL_MONSTER)
+				while (++point.row < position.row) {
+					--point.col;
+					if (!directLineHelper(point, ignore_sinks))
 						return false;
-					else if (!passable[dungeonmap[position.branch][position.level][r][c]])
-						return false;
-					else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][c] == SINK)
-						return false;
-					++c;
 				}
 			} else {
-				for (int rc = position.row - 1; rc > point.row; --rc) {
-					if (monstermap[position.branch][position.level][rc][rc] != ILLEGAL_MONSTER)
-						return false;
-					else if (!passable[dungeonmap[position.branch][position.level][rc][rc]])
-						return false;
-					else if (!ignore_sinks && dungeonmap[position.branch][position.level][rc][rc] == SINK)
+				while (++point.row < position.row) {
+					++point.col;
+					if (!directLineHelper(point, ignore_sinks))
 						return false;
 				}
 			}
 		}
+		return true;
 	}
 	return false;
 }
@@ -501,6 +468,16 @@ void Saiph::clearStash(const Point &point) {
 	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
 	if (s != stashes[position.branch][position.level].end())
 		s->second.items.clear();
+}
+
+bool Saiph::directLineHelper(const Point &point, bool ignore_sinks) {
+	if (!passable[dungeonmap[position.branch][position.level][point.row][point.col]])
+		return false;
+	else if (!ignore_sinks && dungeonmap[position.branch][position.level][point.row][point.col] == SINK)
+		return false;
+	else if (monstermap[position.branch][position.level][point.row][point.col] != ILLEGAL_MONSTER && monsters[position.branch][position.level][point].visible)
+		return false;
+	return true;
 }
 
 unsigned char Saiph::doPath(const Point &target, bool allow_illegal_last_move, int *moves) {

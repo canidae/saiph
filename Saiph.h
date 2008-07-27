@@ -84,7 +84,7 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		bool directLine(const Point &point, bool ignore_sinks);
+		bool directLine(Point point, bool ignore_sinks);
 		void farlook(const Point &target);
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
@@ -110,6 +110,7 @@ class Saiph {
 		void addItemToPickup(unsigned char key, const Item &item);
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
+		bool directLineHelper(const Point &point, bool ignore_sinks);
 		unsigned char doPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		void dumpMaps();
 		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);

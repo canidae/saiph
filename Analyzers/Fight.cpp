@@ -113,6 +113,7 @@ void Fight::finish() {
 			else if (moves == fewest_moves && m->second.symbol != '@' && m->second.symbol != 'A')
 				continue; // monster is just as far away, and it's not a '@' or 'A'
 		}
+		enemy_in_line = direct_line;
 		priority = cur_priority;
 		fewest_moves = moves;
 		best_move = move;
