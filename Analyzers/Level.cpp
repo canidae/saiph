@@ -23,8 +23,7 @@ void Level::finish() {
 			continue;
 		if (saiph->dungeonmap[s->branch][s->level][s->row][s->col] == STAIRS_DOWN) {
 			int distance = 0;
-			bool direct_line = false;
-			unsigned char move = saiph->shortestPath(*s, false, &distance, &direct_line);
+			unsigned char move = saiph->shortestPath(*s, false, &distance);
 			if (move != ILLEGAL_MOVE) {
 				command = move;
 				priority = LEVEL_DESCEND_PRIORITY;

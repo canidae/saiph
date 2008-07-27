@@ -152,6 +152,111 @@ Saiph::~Saiph() {
 }
 
 /* methods */
+bool Saiph::directLine(const Point &point, bool ignore_sinks) {
+	/* is the target in a direct line from the player? */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
+		/* outside map */
+		return false;
+	} else if (point == position) {
+		/* eh? this doesn't happen */
+		return true;
+	} else if (point.row == position.row) {
+		/* aligned horizontally */
+		if (point.col > position.col) {
+			for (int c = position.col + 1; c < point.col; ++c) {
+				if (monstermap[position.branch][position.level][point.row][c] != ILLEGAL_MONSTER)
+					return false;
+				else if (!passable[dungeonmap[position.branch][position.level][point.row][c]])
+					return false;
+				else if (!ignore_sinks && dungeonmap[position.branch][position.level][point.row][c] == SINK)
+					return false;
+			}
+			return true;
+		} else {
+			for (int c = position.col - 1; c > point.col; --c) {
+				if (monstermap[position.branch][position.level][point.row][c] != ILLEGAL_MONSTER)
+					return false;
+				else if (!passable[dungeonmap[position.branch][position.level][point.row][c]])
+					return false;
+				else if (!ignore_sinks && dungeonmap[position.branch][position.level][point.row][c] == SINK)
+					return false;
+			}
+			return true;
+		}
+	} else if (point.col == position.col) {
+		/* aligned vertically */
+		if (point.row > position.row) {
+			for (int r = position.row + 1; r < point.row; ++r) {
+				if (monstermap[position.branch][position.level][r][point.col] != ILLEGAL_MONSTER)
+					return false;
+				else if (!passable[dungeonmap[position.branch][position.level][r][point.col]])
+					return false;
+				else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][point.col] == SINK)
+					return false;
+			}
+			return true;
+		} else {
+			for (int r = position.row - 1; r > point.row; --r) {
+				if (monstermap[position.branch][position.level][r][point.col] != ILLEGAL_MONSTER)
+					return false;
+				else if (!passable[dungeonmap[position.branch][position.level][r][point.col]])
+					return false;
+				else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][point.col] == SINK)
+					return false;
+			}
+			return true;
+		}
+	} else if (abs(point.row - position.row) == abs(point.col - position.col)) {
+		/* aligned diagonally */
+		if (point.row > position.row) {
+			if (point.col > position.col) {
+				for (int rc = position.row + 1; rc < point.row; ++rc) {
+					if (monstermap[position.branch][position.level][rc][rc] != ILLEGAL_MONSTER)
+						return false;
+					else if (!passable[dungeonmap[position.branch][position.level][rc][rc]])
+						return false;
+					else if (!ignore_sinks && dungeonmap[position.branch][position.level][rc][rc] == SINK)
+						return false;
+				}
+			} else {
+				int c = position.col - 1;
+				for (int r = position.row + 1; r < point.row; ++r) {
+					if (monstermap[position.branch][position.level][r][c] != ILLEGAL_MONSTER)
+						return false;
+					else if (!passable[dungeonmap[position.branch][position.level][r][c]])
+						return false;
+					else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][c] == SINK)
+						return false;
+					--c;
+				}
+			}
+		} else {
+			if (point.col > position.col) {
+				int c = position.col + 1;
+				for (int r = position.row - 1; r > point.row; --r) {
+					if (monstermap[position.branch][position.level][r][c] != ILLEGAL_MONSTER)
+						return false;
+					else if (!passable[dungeonmap[position.branch][position.level][r][c]])
+						return false;
+					else if (!ignore_sinks && dungeonmap[position.branch][position.level][r][c] == SINK)
+						return false;
+					++c;
+				}
+			} else {
+				for (int rc = position.row - 1; rc > point.row; --rc) {
+					if (monstermap[position.branch][position.level][rc][rc] != ILLEGAL_MONSTER)
+						return false;
+					else if (!passable[dungeonmap[position.branch][position.level][rc][rc]])
+						return false;
+					else if (!ignore_sinks && dungeonmap[position.branch][position.level][rc][rc] == SINK)
+						return false;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	/* TODO: make this an analyzer */
@@ -321,24 +426,94 @@ bool Saiph::run() {
 unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from player to target.
 	 * also sets amount of moves to the target */
-	if (target.branch < 0 || target.branch > MAX_BRANCHES || target.level < 0 || target.level > MAX_DUNGEON_DEPTH || target.row < MAP_ROW_BEGIN || target.row > MAP_ROW_END || target.col < MAP_COL_BEGIN || target.col > MAP_COL_END)
+	if (target.branch < 0 || target.branch >= MAX_BRANCHES || target.level < 0 || target.level >= MAX_DUNGEON_DEPTH || target.row < MAP_ROW_BEGIN || target.row > MAP_ROW_END || target.col < MAP_COL_BEGIN || target.col > MAP_COL_END)
 		return ILLEGAL_MOVE; // outside the map
+	if (target.branch != position.branch) {
+		/* we don't handle branches yet */
+	}
+	if (target.level < position.level) {
+		/* path to upstairs */
+		for (map<Point, int>::iterator s = dungeon_feature[STAIRS_UP][position.branch][position.level].begin(); s != dungeon_feature[STAIRS_UP][position.branch][position.level].end(); ++s) {
+			/* need to check that these are the stairs we want */
+			unsigned char move = doPath(s->first, allow_illegal_last_move, moves);
+			if (move == REST)
+				return MOVE_UP;
+		}
+	} else if (target.level > position.level) {
+		/* path to downstairs */
+		for (map<Point, int>::iterator s = dungeon_feature[STAIRS_DOWN][position.branch][position.level].begin(); s != dungeon_feature[STAIRS_DOWN][position.branch][position.level].end(); ++s) {
+			/* need to check that these are the stairs we want */
+			unsigned char move = doPath(s->first, allow_illegal_last_move, moves);
+			if (move == REST)
+				return MOVE_DOWN;
+		}
+	} else {
+		/* path to target */
+		return doPath(target, allow_illegal_last_move, moves);
+	}
 	return ILLEGAL_MOVE;
 }
 
-unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *distance, bool *straight_line) {
+unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
+	/* pathing on same level */
+	return doPath(target, allow_illegal_last_move, moves);
+}
+
+/* private methods */
+void Saiph::addItemToInventory(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
+	if (inventory.find(key) != inventory.end()) {
+		/* existing item, add amount */
+		inventory[key].count += item.count;
+	} else {
+		/* new item */
+		inventory[key] = item;
+	}
+}
+
+void Saiph::addItemToPickup(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to pickup slot " << key << endl;
+	pickup[key] = item;
+}
+
+void Saiph::addItemToStash(const Point &point, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
+	if (s != stashes[position.branch][position.level].end()) {
+		s->second.addItem(item);
+		return;
+	}
+	/* new stash */
+	Stash stash(world->player.turn);
+	stash.items.push_back(item);
+	stashes[position.branch][position.level][point] = stash;
+}
+
+void Saiph::clearStash(const Point &point) {
+	/* clear the contents of a stash */
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Clearing stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
+	if (s != stashes[position.branch][position.level].end())
+		s->second.items.clear();
+}
+
+unsigned char Saiph::doPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from player to target.
-	 * also sets "distance" and "straight_line" to target */
+	 * also sets "moves" to target */
 	if (target.row < MAP_ROW_BEGIN || target.row > MAP_ROW_END || target.col < MAP_COL_BEGIN || target.col > MAP_COL_END)
 		return ILLEGAL_MOVE; // outside the map
 	PathNode *node = &pathmap[target.row][target.col];
-	*distance = 0;
-	*straight_line = true;
+	*moves = 0;
 	if (node->cost == 0)
 		return REST; // pathing to player?
-	++*distance;
+	++*moves;
 	unsigned char move = ILLEGAL_MOVE;
-	unsigned char previous_move = ILLEGAL_MOVE; // used to determine straight_line
 	if (allow_illegal_last_move && node->nextnode == NULL) {
 		/* sometimes we wish to move somewhere we really can't move to.
 		 * for example: fighting a monster in a wall or through "corner".
@@ -401,67 +576,19 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
-		previous_move = move;
 		if (lowest_cost == 0)
 			return move; // found the player
-		++*distance;
+		++*moves;
 	}
 	if (node->nextnode == NULL)
 		return ILLEGAL_MOVE; // couldn't find path
 
 	while (node->nextnode != NULL) {
-		previous_move = move;
 		move = node->move;
-		if (*distance > 1 && previous_move != move)
-			*straight_line = false;
-		++*distance;
+		++*moves;
 		node = node->nextnode;
 	}
 	return move;
-}
-
-/* private methods */
-void Saiph::addItemToInventory(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
-	if (inventory.find(key) != inventory.end()) {
-		/* existing item, add amount */
-		inventory[key].count += item.count;
-	} else {
-		/* new item */
-		inventory[key] = item;
-	}
-}
-
-void Saiph::addItemToPickup(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to pickup slot " << key << endl;
-	pickup[key] = item;
-}
-
-void Saiph::addItemToStash(const Point &point, const Item &item) {
-	if (item.count <= 0)
-		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
-	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
-	if (s != stashes[position.branch][position.level].end()) {
-		s->second.addItem(item);
-		return;
-	}
-	/* new stash */
-	Stash stash(world->player.turn);
-	stash.items.push_back(item);
-	stashes[position.branch][position.level][point] = stash;
-}
-
-void Saiph::clearStash(const Point &point) {
-	/* clear the contents of a stash */
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Clearing stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
-	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
-	if (s != stashes[position.branch][position.level].end())
-		s->second.items.clear();
 }
 
 void Saiph::dumpMaps() {

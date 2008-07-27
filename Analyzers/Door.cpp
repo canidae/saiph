@@ -17,7 +17,7 @@ void Door::finish() {
 	command = "";
 	command2 = "";
 	command_door = NULL;
-	int best_distance = INT_MAX;
+	int best_moves = INT_MAX;
 	for (vector<DoorPoint>::iterator d = doors[saiph->position.branch][saiph->position.level].begin(); d != doors[saiph->position.branch][saiph->position.level].end(); ) {
 		/* check if door still is there */
 		if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][d->row][d->col] != OPEN_DOOR && saiph->dungeonmap[saiph->position.branch][saiph->position.level][d->row][d->col] != CLOSED_DOOR) {
@@ -36,9 +36,8 @@ void Door::finish() {
 			continue;
 		}
 		*/
-		bool straight_line = false;
-		int distance = -1;
-		unsigned char move = saiph->shortestPath(*d, true, &distance, &straight_line);
+		int moves = -1;
+		unsigned char move = saiph->shortestPath(*d, true, &moves);
 		if (move == ILLEGAL_MOVE) {
 			/* can't path to this door, ignore it */
 			++d;
@@ -46,13 +45,13 @@ void Door::finish() {
 		}
 		if (!d->locked && DOOR_OPEN_PRIORITY >= priority) {
 			/* [go to] open a door */
-			if (DOOR_OPEN_PRIORITY == priority && distance >= best_distance) {
+			if (DOOR_OPEN_PRIORITY == priority && moves >= best_moves) {
 				/* another door we want to open is nearer */
 				++d;
 				continue;
 			}
 			priority = DOOR_OPEN_PRIORITY;
-			if (distance == 1) {
+			if (moves == 1) {
 				command = OPEN; // standing next to door
 				command2 = move;
 				command_door = &(*d);
@@ -64,7 +63,7 @@ void Door::finish() {
 		*/
 			/* [go to] pick a door */
 			/*
-			if (DOOR_PICK_PRIORITY == priority && distance >= best_distance) {
+			if (DOOR_PICK_PRIORITY == priority && moves >= best_moves) {
 			*/
 				/* another door we want to pick is nearer */
 				/*
@@ -75,13 +74,13 @@ void Door::finish() {
 		*/
 		} else if (d->locked && DOOR_KICK_PRIORITY >= priority) {
 			/* [go to] kick a door */
-			if (DOOR_KICK_PRIORITY == priority && distance >= best_distance) {
+			if (DOOR_KICK_PRIORITY == priority && moves >= best_moves) {
 				/* another door we want to kick is nearer */
 				++d;
 				continue;
 			}
 			priority = DOOR_KICK_PRIORITY;
-			if (distance == 1) {
+			if (moves == 1) {
 				command = KICK; // standing next to door
 				command2 = move;
 				command_door = &(*d);

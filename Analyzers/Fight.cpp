@@ -59,7 +59,7 @@ void Fight::finish() {
 		}
 	}
 	/* fight nearest monster */
-	int best_distance = INT_MAX;
+	int fewest_moves = INT_MAX;
 	unsigned char best_move = ILLEGAL_MOVE;
 	map<Point, Monster>::iterator best_monster = saiph->monsters[saiph->position.branch][saiph->position.level].end();
 	bool enemy_in_line = false;
@@ -79,38 +79,49 @@ void Fight::finish() {
 	for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
-		int distance = -1;
-		bool straight_line = false;
-		unsigned char move = saiph->shortestPath(m->first, true, &distance, &straight_line);
+		int moves = -1;
+		unsigned char move = saiph->shortestPath(m->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
 			continue; // can't path to this monster
 		int cur_priority;
-		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE)
+		bool direct_line = false;
+		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
+		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE) {
+			/* only fight blue e when we can throw stuff at it or when we're cornered */
 			cur_priority = FIGHT_BLUE_E_PRIORITY;
-		else if (m->second.symbol == '@' && m->second.color == BLUE)
+		} else if (m->second.symbol == '@' && m->second.color == BLUE) {
+			/* don't attack blue @ for now */
 			cur_priority = FIGHT_BLUE_AT_PRIORITY;
-		else if (m->second.symbol == '@' && m->second.color == WHITE)
+		} else if (m->second.symbol == '@' && m->second.color == WHITE) {
+			/* don't attack white @ for now */
 			cur_priority = FIGHT_WHITE_AT_PRIORITY;
-		else
-			cur_priority = (distance == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
-		if (cur_priority < priority)
+		} else if (got_thrown && distance <= saiph->world->player.strength / 2 && saiph->directLine(m->first, false)) {
+			/* seemingly we can throw stuff at the enemy */
+			direct_line = true;
+			cur_priority = FIGHT_ATTACK_PRIORITY;
+		} else {
+			cur_priority = (moves == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
+		}
+		if (cur_priority < priority) {
 			continue; // we've already found another monster with higher priority
-		if (got_thrown > 0 && enemy_in_line && !straight_line)
-			continue; // got thrown and an enemy in line already, this enemy isn't or we got no thrown
-		if (distance > best_distance)
-			continue; // we know of a monster closer to us
-		if (distance == best_distance && m->second.symbol != '@' && m->second.symbol != 'A')
-			continue; // equally close, and it's not '@' or 'A' (we attack those first as they won't respect elbereth)
-		enemy_in_line = straight_line;
+		} else if (enemy_in_line && !direct_line) {
+			continue; // we got a monster we can throw at, and we can't throw at this monster
+		} else if (!direct_line) {
+			/* either we can't throw at best_monster nor current monster, or we can throw at both */
+			if (moves > fewest_moves)
+				continue; // best_monster is closer
+			else if (moves == fewest_moves && m->second.symbol != '@' && m->second.symbol != 'A')
+				continue; // monster is just as far away, and it's not a '@' or 'A'
+		}
 		priority = cur_priority;
-		best_distance = distance;
+		fewest_moves = moves;
 		best_move = move;
 		best_monster = m;
 	}
 	if (best_monster == saiph->monsters[saiph->position.branch][saiph->position.level].end())
 		return;
-	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << best_distance << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
-	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && best_distance <= saiph->world->player.strength / 2 && (best_distance > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
+	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << fewest_moves << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
+	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && fewest_moves <= saiph->world->player.strength / 2 && (fewest_moves > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
 		/* throw */
 		command = THROW;
 		command2 = got_thrown;

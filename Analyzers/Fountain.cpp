@@ -33,8 +33,7 @@ void Fountain::finish() {
 		return;
 	}
 	int distance = -1;
-	bool straight_line = false;
-	unsigned char move = saiph->shortestPath(target, false, &distance, &straight_line);
+	unsigned char move = saiph->shortestPath(target, false, &distance);
 	if (move == ILLEGAL_MOVE) {
 		/* well, we're screwed. we can't path to this fountain.
 		 * if this happen, we got ourselves an oscillobot */

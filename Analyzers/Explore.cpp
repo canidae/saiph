@@ -18,7 +18,7 @@ void Explore::finish() {
 	/* figure out which place to explore */
 	/* make the place the player stands on "visited" */
 	visited[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
-	int best_distance = INT_MAX;
+	int best_moves = INT_MAX;
 	move = ILLEGAL_MOVE;
 	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
 		if (search[saiph->position.branch][saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
@@ -109,11 +109,10 @@ void Explore::finish() {
 			++e;
 			continue;
 		}
-		int distance = 0;
-		bool straight_line = false;
-		unsigned char nextmove = saiph->shortestPath(*e, false, &distance, &straight_line);
+		int moves = 0;
+		unsigned char nextmove = saiph->shortestPath(*e, false, &moves);
 		++e;
-		if (cur_priority == priority && distance > best_distance)
+		if (cur_priority == priority && moves > best_moves)
 			continue;
 		if (nextmove == ILLEGAL_MOVE)
 			continue;
@@ -122,7 +121,7 @@ void Explore::finish() {
 		else
 			move = nextmove;
 		priority = cur_priority;
-		best_distance = distance;
+		best_moves = moves;
 	}
 	command = move;
 }

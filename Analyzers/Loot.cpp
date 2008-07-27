@@ -50,8 +50,7 @@ void Loot::finish() {
 			continue;
 		}
 		int distance = -1;
-		bool straight_line = false;
-		unsigned char move = saiph->shortestPath(l->first, false, &distance, &straight_line);
+		unsigned char move = saiph->shortestPath(l->first, false, &distance);
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
 			best_priority = l->second;
@@ -84,8 +83,7 @@ void Loot::finish() {
 			continue;
 		}
 		int distance = -1;
-		bool straight_line = false;
-		unsigned char move = saiph->shortestPath(*v, false, &distance, &straight_line);
+		unsigned char move = saiph->shortestPath(*v, false, &distance);
 		if (move != ILLEGAL_MOVE && distance < best_distance) {
 			best_distance = distance;
 			best_command = move;
