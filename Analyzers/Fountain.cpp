@@ -5,9 +5,6 @@ Fountain::Fountain(Saiph *saiph) : Analyzer("Fountain"), saiph(saiph), target(-1
 }
 
 /* methods */
-void Fountain::complete() {
-}
-
 void Fountain::finish() {
 	if (target.branch == -1)
 		return;

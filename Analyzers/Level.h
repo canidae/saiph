@@ -22,7 +22,6 @@ class Level : public Analyzer {
 		Level(Saiph *saiph);
 
 		/* methods */
-		void complete();
 		void finish();
 		void inspect(const Point &point);
 

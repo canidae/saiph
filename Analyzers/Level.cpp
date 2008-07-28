@@ -6,9 +6,6 @@ Level::Level(Saiph *saiph) : Analyzer("Level") {
 }
 
 /* methods */
-void Level::complete() {
-}
-
 void Level::finish() {
 	/* time to descend */
 	command = "";

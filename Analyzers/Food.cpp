@@ -83,9 +83,6 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 }
 
 /* methods */
-void Food::complete() {
-}
-
 void Food::finish() {
 	/* are we hungry? */
 	if (saiph->world->player.hunger <= HUNGRY) {

@@ -43,7 +43,6 @@ class Saiph;
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
-#include "Analyzers/Fountain.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"
@@ -76,6 +75,7 @@ class Saiph {
 		Stash *on_ground;
 		Coordinate position;
 		bool engulfed;
+		int best_priority;
 
 		/* constructors */
 		Saiph(int interface);
@@ -89,6 +89,7 @@ class Saiph {
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
+		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 

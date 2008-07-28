@@ -21,9 +21,6 @@ void Zorkmid::begin() {
 	}
 }
 
-void Zorkmid::complete() {
-}
-
 void Zorkmid::parseMessages(const string &messages) {
 	if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
 		/* check if there's gold here to pick up */

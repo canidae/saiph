@@ -22,7 +22,6 @@ class Elbereth : public Analyzer {
 		Elbereth(Saiph *saiph);
 
 		/* methods */
-		void complete();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 

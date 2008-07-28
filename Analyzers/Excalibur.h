@@ -13,7 +13,6 @@ class Excalibur;
 #include <string>
 #include "../Analyzer.h"
 #include "../Globals.h"
-#include "../Request.h"
 #include "../Saiph.h"
 
 /* namespace */
@@ -34,7 +33,6 @@ class Excalibur : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool excalibur_exists;
-		Request req;
 		string command2;
 };
 #endif

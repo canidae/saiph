@@ -29,7 +29,6 @@ class Zorkmid : public Analyzer {
 
 		/* methods */
 		void begin();
-		void complete();
 		void parseMessages(const string &messages);
 
 	private:

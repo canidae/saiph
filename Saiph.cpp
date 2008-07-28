@@ -13,6 +13,9 @@ Saiph::Saiph(int interface) {
 	/* engulfed */
 	engulfed = false;
 
+	/* set best_priority to ILLEGAL_PRIORITY */
+	best_priority = ILLEGAL_PRIORITY;
+
 	/* null out maps */
 	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
 	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));
@@ -134,7 +137,6 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Food(this));
-	analyzers.push_back(new Fountain(this));
 	analyzers.push_back(new Health(this));
 	analyzers.push_back(new Level(this));
 	analyzers.push_back(new Loot(this));
@@ -302,10 +304,6 @@ bool Saiph::run() {
 	/* and on_ground */
 	on_ground = NULL;
 
-	/* clear analyzers priority */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->priority = ILLEGAL_PRIORITY;
-
 	/* check if we're engulfed */
 	if (position.row > MAP_ROW_BEGIN && position.row < MAP_ROW_END && position.col > MAP_COL_BEGIN && position.col < MAP_COL_END && world->view[position.row - 1][position.col - 1] == '/' && world->view[position.row - 1][position.col + 1] == '\\' && world->view[position.row + 1][position.col - 1] == '\\' && world->view[position.row + 1][position.col + 1] == '/')
 		engulfed = true;
@@ -331,7 +329,7 @@ bool Saiph::run() {
 	dumpMaps();
 
 	Analyzer *best_analyzer = NULL;
-	int best_priority = ILLEGAL_PRIORITY;
+	best_priority = ILLEGAL_PRIORITY;
 
 	/* then analyzer message parsing */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
@@ -395,10 +393,37 @@ bool Saiph::run() {
 	return true;
 }
 
+unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves) {
+	/* returns next move in shortest path from player to nearest symbol.
+	 * also sets amount of moves to the target */
+	if (!track_symbol[symbol])
+		return ILLEGAL_MOVE;
+	int least_moves = INT_MAX;
+	unsigned char best_move = ILLEGAL_MOVE;
+	for (map<int, map<int, map<Point, int> > >::iterator b = dungeon_feature[symbol].begin(); b != dungeon_feature[symbol].end(); ++b) {
+		for (map<int, map<Point, int> >::iterator l = b->second.begin(); l != b->second.end(); ++l) {
+			for (map<Point, int>::iterator p = l->second.begin(); p != l->second.end(); ++p) {
+				unsigned char move = shortestPath(Coordinate(b->first, l->first, p->first), allow_illegal_last_move, moves);
+				if (move == ILLEGAL_MOVE)
+					continue;
+				if (b->first != position.branch)
+					*moves += 1000; // on another branch, add some high number to moves for now
+				if (l->first != position.level)
+					*moves += abs(l->first - position.level) * 100; // on another level, add 100 moves per level
+				if (*moves >= least_moves)
+					continue;
+				least_moves = *moves;
+				best_move = move;
+			}
+		}
+	}
+	return best_move;
+}
+
 unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from player to target.
 	 * also sets amount of moves to the target */
-	if (target.branch < 0 || target.branch >= MAX_BRANCHES || target.level < 0 || target.level >= MAX_DUNGEON_DEPTH || target.row < MAP_ROW_BEGIN || target.row > MAP_ROW_END || target.col < MAP_COL_BEGIN || target.col > MAP_COL_END)
+	if (target.branch < 0 || target.branch >= MAX_BRANCHES || target.level < 0 || target.level >= MAX_DUNGEON_DEPTH)
 		return ILLEGAL_MOVE; // outside the map
 	if (target.branch != position.branch) {
 		/* we don't handle branches yet */

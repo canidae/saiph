@@ -32,7 +32,6 @@ class Fight : public Analyzer {
 		Fight(Saiph *saiph);
 
 		/* methods */
-		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 

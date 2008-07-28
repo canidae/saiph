@@ -12,9 +12,6 @@ Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
 }
 
 /* methods */
-void Elbereth::complete() {
-}
-
 void Elbereth::parseMessages(const string &messages) {
 	/* reset these each time */
 	dusted = false;
@@ -94,9 +91,7 @@ bool Elbereth::request(const Request &request) {
 			/* TODO
 			 * monster that won't respect elbereth might be friendly.
 			 * we also need to check for minotaurs & riders (heh, yeah, right) */
-			if (m->second.symbol == '@')
-				return false; // elbereth won't be respected
-			if (m->second.symbol == 'A')
+			if (m->second.symbol == '@' || m->second.symbol == 'A')
 				return false; // elbereth won't be respected
 		}
 		if (!did_look && !burned && !digged && !dusted) {

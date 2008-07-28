@@ -24,7 +24,6 @@ class Fountain : public Analyzer {
 		Fountain(Saiph *saiph);
 
 		/* methods */
-		void complete();
 		void finish();
 		void inspect(const Point &point);
 		void parseMessages(const string &messages);

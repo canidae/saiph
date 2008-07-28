@@ -11,6 +11,8 @@ void Excalibur::complete() {
 }
 
 void Excalibur::finish() {
+	if (saiph->best_priority > EXCALIBUR_DIP_PRIORITY)
+		return;
 	if (excalibur_exists)
 		return;
 	if (saiph->world->player.experience < 5)
@@ -32,14 +34,19 @@ void Excalibur::finish() {
 		command2 = got_long_sword;
 		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
-		/* no, request that someone takes us there */
-		req.request = REQUEST_VISIT_NEAREST_FOUNTAIN;
-		req.priority = EXCALIBUR_DIP_PRIORITY;
-		saiph->request(req);
+		/* no, path to nearest fountain */
+		int moves = 0;
+		unsigned char move = saiph->shortestPath(FOUNTAIN, false, &moves);
+		if (move == ILLEGAL_MOVE)
+			return; // don't know of any fountains
+		command = move;
+		priority = EXCALIBUR_DIP_PRIORITY;
 	}
 }
 
 void Excalibur::parseMessages(const string &messages) {
+	if (excalibur_exists)
+		return;
 	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
 		command = command2;

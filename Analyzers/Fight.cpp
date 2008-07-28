@@ -29,9 +29,6 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 }
 
 /* methods */
-void Fight::complete() {
-}
-
 void Fight::finish() {
 	command = "";
 	/* if engulfed try to fight our way out */
@@ -79,13 +76,16 @@ void Fight::finish() {
 	for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
+		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
+		if (distance <= saiph->world->player.strength / 2) {
+			/* we're within throwing distance */
+		}
 		int moves = -1;
 		unsigned char move = saiph->shortestPath(m->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
 			continue; // can't path to this monster
 		int cur_priority;
 		bool direct_line = false;
-		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
 		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE) {
 			/* only fight blue e when we can throw stuff at it or when we're cornered */
 			cur_priority = FIGHT_BLUE_E_PRIORITY;
