@@ -89,6 +89,7 @@ class Saiph {
 		void removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
+		void setDungeonSymbolValue(const Point &point, unsigned char symbol, int value);
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);

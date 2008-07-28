@@ -397,6 +397,17 @@ bool Saiph::run() {
 	return true;
 }
 
+void Saiph::setDungeonSymbolValue(const Point &point, unsigned char symbol, int value) {
+	/* set the value of a certain dungeon symbol at a certain point.
+	 * we can use this to set [un]locked doors, alignment of altars, etc */
+	if (!track_symbol[symbol])
+		return;
+	map<Point, int>::iterator d = dungeon_feature[symbol][position.branch][position.level].find(point);
+	if (d == dungeon_feature[symbol][position.branch][position.level].end())
+		return;
+	d->second = value;
+}
+
 unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from player to nearest symbol.
 	 * also sets amount of moves to the target */
@@ -439,6 +450,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 			unsigned char move = doPath(s->first, allow_illegal_last_move, moves);
 			if (move == REST)
 				return MOVE_UP;
+			return move;
 		}
 	} else if (target.level > position.level) {
 		/* path to downstairs */
@@ -447,6 +459,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 			unsigned char move = doPath(s->first, allow_illegal_last_move, moves);
 			if (move == REST)
 				return MOVE_DOWN;
+			return move;
 		}
 	} else {
 		/* path to target */
@@ -805,7 +818,7 @@ void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	if (track_symbol[dungeonmap[position.branch][position.level][point.row][point.col]])
 		dungeon_feature[dungeonmap[position.branch][position.level][point.row][point.col]][position.branch][position.level].erase(point);
 	if (track_symbol[symbol])
-		dungeon_feature[(unsigned char) symbol][position.branch][position.level][point] = 0;
+		dungeon_feature[symbol][position.branch][position.level][point] = 0;
 	dungeonmap[position.branch][position.level][point.row][point.col] = symbol;
 }
 

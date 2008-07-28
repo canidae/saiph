@@ -24,7 +24,6 @@ class Door : public Analyzer {
 		Door(Saiph *saiph);
 
 		/* methods */
-		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 
@@ -32,5 +31,6 @@ class Door : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		string command2;
+		Point cur_door;
 };
 #endif

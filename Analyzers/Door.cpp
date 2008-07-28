@@ -1,30 +1,27 @@
 #include "Door.h"
 
 /* constructors */
-Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2("") {
+Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), cur_door(-1, -1) {
 }
 
 /* methods */
-void Door::complete() {
-	if (command.size() == 1 && command[0] == KICK)
-		command = "";
-}
-
 void Door::finish() {
 	/* open closed doors */
 	if (saiph->best_priority > DOOR_OPEN_PRIORITY)
 		return; // another analyzer got higher priority than we ever will have
-	if (command.size() == 1 && command[0] == KICK)
-		return; // kicking down door
 	int least_moves = INT_MAX;
 	for (map<Point, int>::iterator d = saiph->dungeon_feature[CLOSED_DOOR][saiph->position.branch][saiph->position.level].begin(); d != saiph->dungeon_feature[CLOSED_DOOR][saiph->position.branch][saiph->position.level].end(); ++d) {
 		int moves = -1;
 		unsigned char move = saiph->shortestPath(d->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
 			continue;
+		cur_door = d->first;
 		if (moves == 1) {
-			/* open door */
-			command = OPEN;
+			/* open/pick/kick door */
+			if (d->second == 0)
+				command = OPEN;
+			else
+				command = KICK;
 			command2 = move;
 			priority = DOOR_OPEN_PRIORITY;
 			return;
@@ -38,6 +35,8 @@ void Door::finish() {
 	}
 	if (least_moves < INT_MAX)
 		return;
+	cur_door.row = -1;
+	cur_door.col = -1;
 	command = "";
 	command2 = "";
 	priority = ILLEGAL_PRIORITY;
@@ -49,8 +48,7 @@ void Door::parseMessages(const string &messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = command2;
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
-		/* kick it down, for now */
-		command = KICK;
-		priority = DOOR_OPEN_PRIORITY;
+		/* door is locked, set the value to 1 */
+		saiph->setDungeonSymbolValue(cur_door, CLOSED_DOOR, 1);
 	}
 }
