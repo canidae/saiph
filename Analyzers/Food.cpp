@@ -80,6 +80,54 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("partly eaten lizard corpses"); // wil cure stoning?
 	eat_order.push_back("lizard corpse"); // wil cure stoning
 	eat_order.push_back("lizard corpses"); // wil cure stoning
+
+	/* corpses */
+	inedible_corpses["abbot corpse"] = true;
+	inedible_corpses["abbot corpses"] = true;
+	inedible_corpses["bat corpse"] = true;
+	inedible_corpses["bat corpses"] = true;
+	inedible_corpses["chameleon corpse"] = true;
+	inedible_corpses["chameleon corpses"] = true;
+	inedible_corpses["chickatrice corpse"] = true;
+	inedible_corpses["chickatrice corpses"] = true;
+	inedible_corpses["cockatrice corpse"] = true;
+	inedible_corpses["cockatrice corpses"] = true;
+	inedible_corpses["Death's corpse"] = true;
+	inedible_corpses["dog corpse"] = true;
+	inedible_corpses["dog corpses"] = true;
+	inedible_corpses["doppelganger corpse"] = true;
+	inedible_corpses["doppelganger corpses"] = true;
+	inedible_corpses["Famine's corpse"] = true;
+	inedible_corpses["giant bat corpse"] = true;
+	inedible_corpses["giant bat corpses"] = true;
+	inedible_corpses["giant mimic corpse"] = true;
+	inedible_corpses["giant mimic corpses"] = true;
+	inedible_corpses["green slime corpse"] = true;
+	inedible_corpses["green slime corpses"] = true;
+	inedible_corpses["housecat corpse"] = true;
+	inedible_corpses["housecat corpses"] = true;
+	inedible_corpses["kitten corpse"] = true;
+	inedible_corpses["kitten corpses"] = true;
+	inedible_corpses["large cat corpse"] = true;
+	inedible_corpses["large cat corpses"] = true;
+	inedible_corpses["large dog corpse"] = true;
+	inedible_corpses["large dog corpses"] = true;
+	inedible_corpses["large mimic corpse"] = true;
+	inedible_corpses["large mimic corpses"] = true;
+	inedible_corpses["lichen corpse"] = true;
+	inedible_corpses["lichen corpses"] = true;
+	inedible_corpses["little dog corpse"] = true;
+	inedible_corpses["little dog corpses"] = true;
+	inedible_corpses["Medusa's corpse"] = true;
+	inedible_corpses["Pestilence's corpse"] = true;
+	inedible_corpses["small mimic corpse"] = true;
+	inedible_corpses["small mimic corpses"] = true;
+	inedible_corpses["werejackal corpse"] = true;
+	inedible_corpses["werejackal corpses"] = true;
+	inedible_corpses["wererat corpse"] = true;
+	inedible_corpses["wererat corpses"] = true;
+	inedible_corpses["werewolf corpse"] = true;
+	inedible_corpses["werewolf corpses"] = true;
 }
 
 /* methods */
@@ -92,7 +140,7 @@ void Food::finish() {
 		req.priority = PRIORITY_LOOK;
 		if (!saiph->request(req))
 			return; // hmm, we can't say if inventory is updated?
-		for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
+		for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 				if (i->second.name == *f) {
 					/* and we got something to eat */
@@ -132,28 +180,49 @@ void Food::finish() {
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
 				/* easter egg: eat bytes when [over]satiated */
-				command2 = i->first;
 				command = EAT;
+				command2 = i->first;
 				priority = FOOD_EAT_HUNGRY_PRIORITY;
 				return;
 			}
 		}
 	}
 	if (saiph->on_ground != NULL) {
-		/* there are items here, we should look for food */
+		for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+			if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
+				return; // we see a white '@', don't eat
+		}
+		/* there are items here, we should look for corpses to eat */
+		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
+			if (saiph->world->player.hunger < SATIATED) {
+				/* we'll allow eating corpses */
+				string::size_type pos;
+				if (((pos = i->name.find(FOOD_CORPSES)) != string::npos && pos == i->name.size() - sizeof (FOOD_CORPSES) + 1) || ((pos = i->name.find(FOOD_CORPSE)) != string::npos && pos == i->name.size() - sizeof (FOOD_CORPSE) + 1)) {
+					/* there's a corpse in the stash, is it edible? */
+					if (inedible_corpses.find(i->name) == inedible_corpses.end()) {
+						/* it is, but how old is the corpse? */
+						/* screw that for now, eat everything! */
+						command = EAT;
+						command2 = i->name;
+						priority = FOOD_EAT_HUNGRY_PRIORITY;
+						return;
+					}
+				}
+			}
+		}
+	}
+	if (saiph->on_ground != NULL) {
+		/* there are items here, we should look for food to pick up */
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FOOD_PICKUP_PRIORITY;
 		req.coordinate = saiph->position;
-		bool die = false;
-		for (list<Item>::iterator i = saiph->on_ground->items.begin(); !die && i != saiph->on_ground->items.end(); ++i) {
-			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
+		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
+			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 				if (i->name == *f) {
 					/* wooo, foood!
 					 * request that someone loot this stash */
 					saiph->request(req);
-					/* and break loops */
-					die = true;
-					break;
+					return;
 				}
 			}
 		}
@@ -161,6 +230,7 @@ void Food::finish() {
 }
 
 void Food::parseMessages(const string &messages) {
+	string::size_type pos;
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -171,7 +241,7 @@ void Food::parseMessages(const string &messages) {
 	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
 		/* select what to pick up */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			for (list<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
+			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 				if (p->second.name == *f) {
 					/* we should pick up this */
 					command = p->first;
@@ -181,9 +251,33 @@ void Food::parseMessages(const string &messages) {
 			}
 		}
 		return;
-	} else if (messages.find(MESSAGE_EAT_IT, 0) != string::npos) {
-		/* we don't eat items on the floor yet */
-		command = NO;
+	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0) != string::npos)) {
+		/* asks if we should eat the stuff on the floor */
+		string::size_type pos2 = pos;
+		pos = messages.find(FOOD_EAT_IT_1, 0);
+		if (pos == string::npos) {
+			pos = messages.find(FOOD_EAT_ONE_1, 0);
+			if (pos == string::npos) {
+				/* this shouldn't happen */
+				command = NO;
+				priority = PRIORITY_CONTINUE_ACTION;
+				return;
+			} else {
+				pos += sizeof (FOOD_EAT_ONE_1) - 1;
+			}
+		} else {
+			pos += sizeof (FOOD_EAT_IT_1) - 1;
+		}
+		Item item(messages.substr(pos, pos2 - pos));
+		if (command2 == item.name) {
+			command = YES;
+			/* since we already got the "what do you want to eat?" prompt,
+			 * it's safe to remove it from stash here.
+			 * the corpse will be "partially eaten" if we're interrupted */
+			saiph->removeItemFromStash(saiph->position, item);
+		} else {
+			command = NO;
+		}
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
 	}

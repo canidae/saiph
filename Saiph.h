@@ -87,6 +87,7 @@ class Saiph {
 		unsigned char directLine(Point point, bool ignore_sinks);
 		void farlook(const Point &target);
 		void removeItemFromInventory(unsigned char key, const Item &item);
+		void removeItemFromStash(const Point &point, const Item &item);
 		bool request(const Request &request);
 		bool run();
 		void setDungeonSymbolValue(const Point &point, unsigned char symbol, int value);
@@ -118,7 +119,6 @@ class Saiph {
 		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);
 		void parseMessages();
 		void removeItemFromPickup(const Item &item);
-		void removeItemFromStash(const Point &point, const Item &item);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		void updateMaps();
 		void updatePathMap();

@@ -287,6 +287,15 @@ void Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 		inventory.erase(i); // removing all we got
 }
 
+void Saiph::removeItemFromStash(const Point &point, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
+	if (s != stashes[position.branch][position.level].end())
+		s->second.removeItem(item);
+}
+
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
 	debugfile << REQUEST_DEBUG_NAME << request.request << ", " << request.priority << ", " << request.value << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
@@ -802,15 +811,6 @@ void Saiph::removeItemFromPickup(const Item &item) {
 		}
 		return;
 	}
-}
-
-void Saiph::removeItemFromStash(const Point &point, const Item &item) {
-	if (item.count <= 0)
-		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
-	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
-	if (s != stashes[position.branch][position.level].end())
-		s->second.removeItem(item);
 }
 
 void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
