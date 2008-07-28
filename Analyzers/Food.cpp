@@ -251,7 +251,7 @@ void Food::parseMessages(const string &messages) {
 			}
 		}
 		return;
-	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0) != string::npos)) {
+	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos) {
 		/* asks if we should eat the stuff on the floor */
 		string::size_type pos2 = pos;
 		pos = messages.find(FOOD_EAT_IT_1, 0);
