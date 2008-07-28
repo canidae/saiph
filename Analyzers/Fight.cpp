@@ -77,9 +77,6 @@ void Fight::finish() {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
-		if (distance <= saiph->world->player.strength / 2) {
-			/* we're within throwing distance */
-		}
 		int moves = -1;
 		unsigned char move = saiph->shortestPath(m->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
