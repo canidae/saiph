@@ -317,6 +317,10 @@ bool Saiph::run() {
 	position.row = world->player.row;
 	position.col = world->player.col;
 
+	/* clear priority from analyzers */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->priority = ILLEGAL_PRIORITY;
+
 	/* deal with messages */
 	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	/* global parsing */

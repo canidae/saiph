@@ -17,6 +17,7 @@ void Loot::complete() {
 		/* we're looting a place, remove it from list */
 		loot.erase(saiph->position);
 	}
+	priority = ILLEGAL_PRIORITY;
 }
 
 void Loot::finish() {

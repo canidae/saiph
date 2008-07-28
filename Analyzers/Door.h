@@ -24,6 +24,7 @@ class Door : public Analyzer {
 		Door(Saiph *saiph);
 
 		/* methods */
+		void complete();
 		void finish();
 		void parseMessages(const string &messages);
 
