@@ -145,7 +145,7 @@ void Food::finish() {
 		safe_monster[m->first] = true;
 	}
 	/* are we hungry? */
-	if (saiph->world->player.hunger <= HUNGRY) {
+	if (saiph->world->player.hunger <= WEAK) {
 		/* yes, we are */
 		/* make sure inventory is updated */
 		req.request = REQUEST_UPDATED_INVENTORY;
