@@ -265,7 +265,7 @@ void Food::parseMessages(const string &messages) {
 		/* asks if we should eat the stuff on the floor */
 		priority = PRIORITY_CONTINUE_ACTION;
 		map<Point, int>::iterator s = safe_to_eat.find(saiph->position);
-		if (s != safe_to_eat.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
+		if (s == safe_to_eat.end() || s->second + FOOD_CORPSE_EAT_TIME <= saiph->world->player.turn) {
 			/* this corpse is rotten */
 			command = NO;
 			return;
