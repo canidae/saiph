@@ -132,6 +132,16 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 
 /* methods */
 void Food::finish() {
+	/* update safe_monster with seen monsters */
+	safe_monster.clear();
+	for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+		if (m->second.symbol == 'Z' || m->second.symbol == 'M' || m->second.symbol == 'V')
+			continue; // these leave tainted corpses
+		map<Point, Stash>::iterator s = saiph->stashes[saiph->position.branch][saiph->position.level].find(m->first);
+		if (s != saiph->stashes[saiph->position.branch][saiph->position.level].end())
+			continue; // there's a stash here, might be an old corpse, don't gamble
+		safe_monster[m->first] = true;
+	}
 	/* are we hungry? */
 	if (saiph->world->player.hunger <= HUNGRY) {
 		/* yes, we are */
@@ -187,21 +197,21 @@ void Food::finish() {
 			}
 		}
 	}
-	if (saiph->on_ground != NULL) {
-		for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
-			if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
-				return; // we see a white '@', don't eat
-		}
-		/* there are items here, we should look for corpses to eat */
-		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-			if (saiph->world->player.hunger < SATIATED) {
-				/* we'll allow eating corpses */
+	if (saiph->on_ground != NULL && saiph->world->player.hunger < SATIATED) {
+		map<Point, int>::iterator s = safe_to_eat.find(saiph->position);
+		if (s != safe_to_eat.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
+			/* it's safe to eat corpses here */
+			for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+				if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
+					return; // we see a white '@', don't eat (nor loot)
+			}
+			/* there are items here, we should look for corpses to eat */
+			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				string::size_type pos;
 				if (((pos = i->name.find(FOOD_CORPSES)) != string::npos && pos == i->name.size() - sizeof (FOOD_CORPSES) + 1) || ((pos = i->name.find(FOOD_CORPSE)) != string::npos && pos == i->name.size() - sizeof (FOOD_CORPSE) + 1)) {
 					/* there's a corpse in the stash, is it edible? */
 					if (inedible_corpses.find(i->name) == inedible_corpses.end()) {
-						/* it is, but how old is the corpse? */
-						/* screw that for now, eat everything! */
+						/* it is, and we know we can eat corpses on this position */
 						command = EAT;
 						command2 = i->name;
 						priority = FOOD_EAT_HUNGRY_PRIORITY;
@@ -219,7 +229,7 @@ void Food::finish() {
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 				if (i->name == *f) {
-					/* wooo, foood!
+					/* wooo, food!
 					 * request that someone loot this stash */
 					saiph->request(req);
 					return;
@@ -253,6 +263,13 @@ void Food::parseMessages(const string &messages) {
 		return;
 	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos) {
 		/* asks if we should eat the stuff on the floor */
+		priority = PRIORITY_CONTINUE_ACTION;
+		map<Point, int>::iterator s = safe_to_eat.find(saiph->position);
+		if (s != safe_to_eat.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
+			/* this corpse is rotten */
+			command = NO;
+			return;
+		}
 		string::size_type pos2 = pos;
 		pos = messages.find(FOOD_EAT_IT_1, 0);
 		if (pos == string::npos) {
@@ -260,7 +277,6 @@ void Food::parseMessages(const string &messages) {
 			if (pos == string::npos) {
 				/* this shouldn't happen */
 				command = NO;
-				priority = PRIORITY_CONTINUE_ACTION;
 				return;
 			} else {
 				pos += sizeof (FOOD_EAT_ONE_1) - 1;
@@ -278,7 +294,40 @@ void Food::parseMessages(const string &messages) {
 		} else {
 			command = NO;
 		}
-		priority = PRIORITY_CONTINUE_ACTION;
 		return;
+	} else if ((pos = messages.find(FOOD_YOU_KILL, 0)) != string::npos) {
+		/* we killed a monster.
+		 * look for a spot there used to be a "safe_monster",
+		 * but now is a stash instead */
+		string::size_type pos2 = messages.find("!  ", pos);
+		if (pos2 != string::npos) {
+			for (map<Point, bool>::iterator s = safe_monster.begin(); s != safe_monster.end(); ++s) {
+				if (saiph->stashes[saiph->position.branch][saiph->position.level].find(s->first) != saiph->stashes[saiph->position.branch][saiph->position.level].end()) {
+					/* there's a stash where we last saw the monster.
+					 * since it's a "safe_monster", we can eat any corpse here.
+					 * we've already checked that it wasn't a stash here before the monster went there */
+					safe_to_eat[s->first] = saiph->world->player.turn;
+					saiph->debugfile << "[Food corpse] Corpse is safe to eat at " << s->first.row << ", " << s->first.col << endl;
+					return;
+				}
+			}
+		}
+	} else if ((pos = messages.find(FOOD_IS_KILLED, 0)) != string::npos) {
+		/* we saw a monster die.
+		 * look for a spot there used to be a "safe_monster",
+		 * but now is a stash instead */
+		string::size_type pos2 = pos;
+		pos = messages.rfind("  The ", pos2);
+		if (pos != string::npos) {
+			for (map<Point, bool>::iterator s = safe_monster.begin(); s != safe_monster.end(); ++s) {
+				if (saiph->stashes[saiph->position.branch][saiph->position.level].find(s->first) != saiph->stashes[saiph->position.branch][saiph->position.level].end()) {
+					/* there's a stash where we last saw the monster.
+					 * since it's a "safe_monster", we can eat any corpse here.
+					 * we've already checked that it wasn't a stash here before the monster went there */
+					safe_to_eat[s->first] = saiph->world->player.turn;
+					return;
+				}
+			}
+		}
 	}
 }

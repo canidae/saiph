@@ -8,6 +8,10 @@
 #define FOOD_EAT_IT_2 " here; eat it? "
 #define FOOD_EAT_ONE_1 "  There are "
 #define FOOD_EAT_ONE_2 " here; eat one? "
+#define FOOD_IS_KILLED " is killed!  "
+#define FOOD_YOU_KILL "  You kill the "
+/* how old corpses may be */
+#define FOOD_CORPSE_EAT_TIME 30
 /* priorities */
 #define FOOD_EAT_CORPSE_PRIORITY 575
 #define FOOD_PICKUP_PRIORITY 550
@@ -47,6 +51,8 @@ class Food : public Analyzer {
 		string command2;
 		vector<string> eat_order;
 		map<string, bool> inedible_corpses;
+		map<Point, bool> safe_monster;
+		map<Point, int> safe_to_eat;
 		Request req;
 };
 #endif
