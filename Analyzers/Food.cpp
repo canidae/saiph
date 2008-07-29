@@ -307,7 +307,6 @@ void Food::parseMessages(const string &messages) {
 					 * since it's a "safe_monster", we can eat any corpse here.
 					 * we've already checked that it wasn't a stash here before the monster went there */
 					safe_to_eat[s->first] = saiph->world->player.turn;
-					saiph->debugfile << "[Food corpse] Corpse is safe to eat at " << s->first.row << ", " << s->first.col << endl;
 					return;
 				}
 			}
