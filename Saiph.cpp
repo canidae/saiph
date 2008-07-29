@@ -294,6 +294,8 @@ void Saiph::removeItemFromStash(const Point &point, const Item &item) {
 	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
 	if (s != stashes[position.branch][position.level].end())
 		s->second.removeItem(item);
+	if (s->second.items.size() <= 0)
+		stashes[position.branch][position.level].erase(point);
 }
 
 bool Saiph::request(const Request &request) {
