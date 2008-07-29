@@ -116,6 +116,8 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	inedible_corpses["large mimic corpses"] = true;
 	inedible_corpses["lichen corpse"] = true;
 	inedible_corpses["lichen corpses"] = true;
+	inedible_corpses["lizard corpse"] = true;
+	inedible_corpses["lizard corpses"] = true;
 	inedible_corpses["little dog corpse"] = true;
 	inedible_corpses["little dog corpses"] = true;
 	inedible_corpses["Medusa's corpse"] = true;
