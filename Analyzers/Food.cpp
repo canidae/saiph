@@ -176,9 +176,9 @@ void Food::finish() {
 			}
 		}
 		/* hmm, nothing to eat, how bad is it? */
-		if (saiph->world->player.hunger <= FAINTING) {
-			/* quite, quite bad.
-			 * pray for food, but if this doesn't work... help! */
+		if (saiph->world->player.hunger <= WEAK) {
+			/* bad enough to pray for help.
+			 * if this doesn't work... help! */
 			req.request = REQUEST_PRAY;
 			req.priority = FOOD_PRAY_FOR_FOOD;
 			saiph->request(req);
