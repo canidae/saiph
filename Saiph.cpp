@@ -292,10 +292,11 @@ void Saiph::removeItemFromStash(const Point &point, const Item &item) {
 		return;
 	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
 	map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(point);
-	if (s != stashes[position.branch][position.level].end())
+	if (s != stashes[position.branch][position.level].end()) {
 		s->second.removeItem(item);
-	if (s->second.items.size() <= 0)
-		stashes[position.branch][position.level].erase(point);
+		if (s->second.items.size() <= 0)
+			stashes[position.branch][position.level].erase(point);
+	}
 }
 
 bool Saiph::request(const Request &request) {
