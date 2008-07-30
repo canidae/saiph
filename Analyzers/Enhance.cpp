@@ -24,8 +24,12 @@ void Enhance::parseMessages(const string &messages) {
 		return;
 	} else if (got_enhance_menu && saiph->world->menu) {
 		/* showing enhance menu.
-		 * enhance 'a' for now */
-		command = "a";
+		 * enhance 'a' for now.
+		 * search for "  a - ", if not found set command = " " */
+		if (messages.find("  a - ", 0) != string::npos)
+			command = "a";
+		else
+			command = " ";
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
 	}
