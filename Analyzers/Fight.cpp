@@ -92,7 +92,7 @@ void Fight::finish() {
 		} else if (m->second.symbol == '@' && m->second.color == WHITE) {
 			/* don't attack white @ for now */
 			cur_priority = FIGHT_WHITE_AT_PRIORITY;
-		} else if (got_thrown && distance <= saiph->world->player.strength / 2) {
+		} else if (got_thrown && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			unsigned char direct_move = saiph->directLine(m->first, false);
 			if (direct_move != ILLEGAL_MOVE) {
 				/* seemingly we can throw stuff at the enemy */
