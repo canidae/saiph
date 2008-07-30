@@ -124,11 +124,11 @@ Saiph::Saiph(int interface) {
 	dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
 	dungeon[(unsigned char) TRAP] = true;
 	dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
-	pathcost[ICE] = COST_ICE;
-	pathcost[LAVA] = COST_LAVA;
-	pathcost[PET] = COST_PET;
-	pathcost[TRAP] = COST_TRAP;
-	pathcost[WATER] = COST_WATER;
+	pathcost[(unsigned char) ICE] = COST_ICE;
+	pathcost[(unsigned char) LAVA] = COST_LAVA;
+	pathcost[(unsigned char) PET] = COST_PET;
+	pathcost[(unsigned char) TRAP] = COST_TRAP;
+	pathcost[(unsigned char) WATER] = COST_WATER;
 
 	/* Analyzers */
 	analyzers.push_back(new Door(this));
