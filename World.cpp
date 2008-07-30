@@ -10,6 +10,8 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	cursor.row = 0;
 	cursor.col = 0;
 	messages = "  ";
+	cur_page = -1;
+	max_page = -1;
 	menu = false;
 	question = false;
 	last_menu = Point(-1, -1);
@@ -136,8 +138,9 @@ void World::fetchMessages() {
 		if (!menu) {
 			/* check if we got a new menu */
 			msg_str = &data[data_size - sizeof (PAGE)];
-			int x, y;
-			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE, &x, &y) == 2) {
+			cur_page = -1;
+			max_page = -1;
+			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE, &cur_page, &max_page) == 2) {
 				/* hot jiggity! we got a list */
 				/* now find the "(" in "(end) " or "(x of y)" */
 				int c;

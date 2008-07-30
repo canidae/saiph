@@ -182,6 +182,7 @@
 #define MESSAGE_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define MESSAGE_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
+#define MESSAGE_VAULT_GUARD "  \"Hello stranger, who are you?\" -  "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? " // followed by "[abc...]"

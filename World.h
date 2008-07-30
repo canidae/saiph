@@ -36,6 +36,8 @@ class World {
 		Point cursor; // cursor position
 		Player player;
 		string messages;
+		int cur_page;
+		int max_page;
 		bool menu;
 		bool question;
 
