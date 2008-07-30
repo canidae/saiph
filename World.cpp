@@ -139,7 +139,7 @@ void World::fetchMessages() {
 			int x, y;
 			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE, &x, &y) == 2) {
 				/* hot jiggity! we got a list */
-				/* now find the "(" in "(end) " of "(x of y)" */
+				/* now find the "(" in "(end) " or "(x of y)" */
 				int c;
 				for (c = cursor.col; c >= 0 && view[cursor.row][c] != '('; --c)
 					;
