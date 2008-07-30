@@ -20,15 +20,15 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
                 for (int c = 0; c <= CHAR_MAX; ++c)
                         uniquemap[s][c] = s;
         }
-        uniquemap[CORRIDOR][CYAN] = IRON_BARS;
-        uniquemap[CORRIDOR][GREEN] = TREE;
-        uniquemap[FLOOR][CYAN] = ICE;
-        uniquemap[FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
-        uniquemap[FOUNTAIN][NO_COLOR] = SINK;
-        uniquemap[GRAVE][YELLOW] = THRONE;
-        uniquemap[HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
-        uniquemap[VERTICAL_WALL][YELLOW] = OPEN_DOOR;
-        uniquemap[WATER][RED] = LAVA;
+        uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
+        uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
+        uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
+        uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
+        uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
+        uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
+        uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
+        uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
+        uniquemap[(unsigned char) WATER][RED] = LAVA;
 	/* fetch the first "frame" */
 	update();
 }
