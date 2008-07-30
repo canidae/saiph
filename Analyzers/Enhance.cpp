@@ -9,7 +9,7 @@ void Enhance::parseMessages(const string &messages) {
 	if (messages.find(ENHANCE_MESSAGE_CONFIDENT, 0) != string::npos) {
 		do_enhance = true;
 		return;
-	} else if (messages.find(ENHANCE_CURRENT_SKILLS, 0) != string::npos) {
+	} else if (messages.find(ENHANCE_CURRENT_SKILLS, 0) != string::npos || messages.find(ENHANCE_PICK_A_SKILL, 0) != string::npos) {
 		got_enhance_menu = true;
 	}
 	if (got_enhance_menu && !saiph->world->menu) {
