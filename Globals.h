@@ -192,4 +192,6 @@
 #define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define MESSAGE_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 
+#define MESSAGE_YOU_DID_DAMAGE "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
+
 #endif
