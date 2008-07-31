@@ -71,6 +71,7 @@
 #define EAT 'e'
 #define ENGRAVE 'E'
 #define KICK 4
+#define LOOK ":"
 #define OPEN 'o'
 #define PICKUP ','
 #define PRAY "#pray\n"

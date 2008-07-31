@@ -9,9 +9,15 @@ void Beatitude::begin() {
 	if (!saiph->world->menu && got_drop_menu) {
 		check_beatitude = false;
 		got_drop_menu = false;
+		/* we should look on the ground so we'll pick up the stuff we just dropped,
+		 * if we still want it, that is */
+		command = LOOK;
+		priority = PRIORITY_LOOK;
+		return;
 	}
 	if (got_drop_menu || saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
 		return;
+	unsigned char move = ILLEGAL_MOVE;
 	if (!check_beatitude && saiph->world->player.turn % 100 == 0) {
 		/* how many of our items needs to be checked? */
 		int items_to_beatify = 0;
@@ -19,8 +25,15 @@ void Beatitude::begin() {
 			if (i->second.beatitude == BEATITUDE_UNKNOWN)
 				++items_to_beatify;
 		}
-		if (items_to_beatify >= BEATITUDE_DROP_ALTAR_MIN)
-			check_beatitude = true;
+		if (items_to_beatify >= BEATITUDE_DROP_ALTAR_MIN) {
+			int moves = 0;
+			move = saiph->shortestPath(ALTAR, false, &moves);
+			if (move == ILLEGAL_MOVE)
+				return; // don't know of any altars
+			items_to_beatify -= moves * BEATITUDE_DROP_ALTAR_ADD_PER_1000_MOVE / 1000;
+			if (items_to_beatify >= BEATITUDE_DROP_ALTAR_MIN)
+				check_beatitude = true;
+		}
 	}
 	if (!check_beatitude)
 		return;
@@ -31,8 +44,10 @@ void Beatitude::begin() {
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
 	} else {
 		/* no, path to nearest altar */
-		int moves = 0;
-		unsigned char move = saiph->shortestPath(ALTAR, false, &moves);
+		if (move == ILLEGAL_MOVE) {
+			int moves = 0;
+			move = saiph->shortestPath(ALTAR, false, &moves);
+		}
 		if (move == ILLEGAL_MOVE)
 			return; // don't know of any altars
 		command = move;

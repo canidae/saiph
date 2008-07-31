@@ -1,8 +1,13 @@
 #ifndef BEATITUDE_H
 /* defines */
 #define BEATITUDE_H
-/* least amount of items with unknown beatitude before we head to altar */
-#define BEATITUDE_DROP_ALTAR_MIN 3
+/* BEATITUDE_DROP_ALTAR_MIN says how many items we need at least before we
+ * bother dropping them on an altar.
+ * BEATITUDE_DROP_ALTAR_ADD_PER_1000_MOVE says how many additional items per
+ * move we need before we bother heading towards an altar. we do this so that
+ * she's a bit more reluctant to go a long way back to an altar */
+#define BEATITUDE_DROP_ALTAR_MIN 8
+#define BEATITUDE_DROP_ALTAR_ADD_PER_1000_MOVE 5
 /* priorities */
 #define BEATITUDE_DROP_ALTAR_PRIORITY 225
 /* messages */
