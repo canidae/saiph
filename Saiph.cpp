@@ -401,8 +401,9 @@ bool Saiph::run() {
 		debugfile << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
 	} else if (best_analyzer == NULL) {
-		debugfile << SAIPH_DEBUG_NAME << "I have no idea what to do" << endl;
-		return false;
+		debugfile << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching" << endl;
+		world->executeCommand("s");
+		return true;
 	}
 
 	/* let an analyzer do its command */
