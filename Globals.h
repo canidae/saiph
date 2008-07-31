@@ -33,7 +33,7 @@
 #define CURSED -1
 #define UNCURSED 0
 #define BLESSED 1
-#define BUC_UNKNOWN 2
+#define BEATITUDE_UNKNOWN 2
 /* alignment */
 #define CHAOTIC -1
 #define NEUTRAL 0

@@ -158,7 +158,7 @@ void Fight::parseMessages(const string &messages) {
 		/* pick up thrown weapons if any */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-				if (p->second.name == *t && p->second.buc_status != CURSED) {
+				if (p->second.name == *t && p->second.beatitude != CURSED) {
 					/* pick it up :) */
 					command = p->first;
 					priority = PRIORITY_PICKUP_ITEM;

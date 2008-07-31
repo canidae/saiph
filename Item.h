@@ -38,7 +38,7 @@ class Item {
 		/* variables */
 		string name;
 		int count;
-		int buc_status;
+		int beatitude;
 		bool greased;
 		bool fixed;
 		int damage;

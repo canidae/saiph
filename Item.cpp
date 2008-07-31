@@ -1,7 +1,7 @@
 #include "Item.h"
 
 /* constructors */
-Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
+Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -21,16 +21,16 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 	name = name_long;
 	/* buc */
 	if (name.find(ITEM_PARSE_BLESSED, pos) == pos) {
-		buc_status = BLESSED;
+		beatitude = BLESSED;
 		pos += sizeof (ITEM_PARSE_BLESSED) - 1;
 	} else if (name.find(ITEM_PARSE_UNCURSED, pos) == pos) {
-		buc_status = UNCURSED;
+		beatitude = UNCURSED;
 		pos += sizeof (ITEM_PARSE_UNCURSED) - 1;
 	} else if (name.find(ITEM_PARSE_CURSED, pos) == pos) {
-		buc_status = CURSED;
+		beatitude = CURSED;
 		pos += sizeof (ITEM_PARSE_CURSED) - 1;
 	} else {
-		buc_status = BUC_UNKNOWN;
+		beatitude = BEATITUDE_UNKNOWN;
 	}
 	/* greased */
 	if (name.find(ITEM_PARSE_GREASED, pos) == pos) {
@@ -122,5 +122,5 @@ Item::Item(const string &text) : name(""), count(0), buc_status(BUC_UNKNOWN), gr
 	}
 }
 
-Item::Item() : name(""), count(0), buc_status(BUC_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
+Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
 }
