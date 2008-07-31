@@ -857,7 +857,7 @@ void Saiph::updateMaps() {
 		if (item[(unsigned char) world->view[c->row][c->col]]) {
 			map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(*c);
 			if (s != stashes[position.branch][position.level].end()) {
-				if (!world->player.hallucinating && s->second.top_symbol != world->view[c->row][c->col] && s->second.top_color != world->color[c->row][c->col]) {
+				if (!world->player.hallucinating && (s->second.top_symbol != world->view[c->row][c->col] || s->second.top_color != world->color[c->row][c->col])) {
 					/* top symbol/color changed, update */
 					s->second.turn_changed = world->player.turn;
 					s->second.top_symbol = world->view[c->row][c->col];
