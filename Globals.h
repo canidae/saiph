@@ -29,7 +29,7 @@
 #define MAGENTA 35
 #define CYAN 36
 #define WHITE 37
-/* buc status */
+/* beatitude */
 #define CURSED -1
 #define UNCURSED 0
 #define BLESSED 1
@@ -67,6 +67,7 @@
 /* actions */
 #define ILLEGAL_ACTION 0
 #define DIP "#dip\n"
+#define DROP 'D'
 #define EAT 'e'
 #define ENGRAVE 'E'
 #define KICK 4

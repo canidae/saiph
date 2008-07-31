@@ -131,6 +131,7 @@ Saiph::Saiph(int interface) {
 	pathcost[(unsigned char) WATER] = COST_WATER;
 
 	/* Analyzers */
+	analyzers.push_back(new Beatitude(this));
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Elbereth(this));
 	analyzers.push_back(new Enhance(this));

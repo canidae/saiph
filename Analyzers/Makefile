@@ -3,10 +3,11 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g
-OBJECTS = Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Health.o Level.o Loot.o Pray.o Wand.o Wish.o Zorkmid.o
+OBJECTS = Beatitude.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Health.o Level.o Loot.o Pray.o Wand.o Wish.o Zorkmid.o
 
 analyzers: $(OBJECTS)
 
+Beatitude.o: Beatitude.h Beatitude.cpp
 Door.o: Door.h Door.cpp
 Elbereth.o: Elbereth.h Elbereth.cpp
 Enhance.o: Enhance.h Enhance.cpp
