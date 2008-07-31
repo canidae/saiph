@@ -24,7 +24,7 @@ class Wand : public Analyzer {
 		Wand(Saiph *saiph);
 
 		/* methods */
-		void finish();
+		void begin();
 		void parseMessages(const string &messages);
 
 	private:

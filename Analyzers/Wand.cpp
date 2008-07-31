@@ -5,7 +5,7 @@ Wand::Wand(Saiph *saiph) : Analyzer("Wand"), saiph(saiph) {
 }
 
 /* methods */
-void Wand::finish() {
+void Wand::begin() {
 	if (saiph->on_ground != NULL) {
 		/* if there's a wand here, pick it up */
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
