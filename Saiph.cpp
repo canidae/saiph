@@ -846,24 +846,22 @@ void Saiph::updateMaps() {
 			setDungeonSymbol(*c, UNKNOWN_TILE);
 		}
 		/* update items */
-		if (!world->player.hallucinating) {
-			if (item[(unsigned char) world->view[c->row][c->col]]) {
-				map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(*c);
-				if (s != stashes[position.branch][position.level].end()) {
-					if (s->second.top_symbol != world->view[c->row][c->col]) {
-						/* top symbol changed, update */
-						/* TODO: check color too */
-						s->second.turn_changed = world->player.turn;
-						s->second.top_symbol = world->view[c->row][c->col];
-					}
-				} else {
-					/* new stash */
-					stashes[position.branch][position.level][*c] = Stash(world->player.turn, world->view[c->row][c->col]);
+		if (item[(unsigned char) world->view[c->row][c->col]]) {
+			map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(*c);
+			if (s != stashes[position.branch][position.level].end()) {
+				if (!world->player.hallucinating && s->second.top_symbol != world->view[c->row][c->col]) {
+					/* top symbol changed, update */
+					/* TODO: check color too */
+					s->second.turn_changed = world->player.turn;
+					s->second.top_symbol = world->view[c->row][c->col];
 				}
-			} else if (world->view[c->row][c->col] == dungeonmap[position.branch][position.level][c->row][c->col]) {
-				/* if there ever was a stash here, it's gone now */
-				stashes[position.branch][position.level].erase(*c);
+			} else {
+				/* new stash */
+				stashes[position.branch][position.level][*c] = Stash(world->player.turn, world->view[c->row][c->col]);
 			}
+		} else if (world->view[c->row][c->col] == dungeonmap[position.branch][position.level][c->row][c->col]) {
+			/* if there ever was a stash here, it's gone now */
+			stashes[position.branch][position.level].erase(*c);
 		}
 
 		/* update monsters */
