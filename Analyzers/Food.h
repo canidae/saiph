@@ -16,7 +16,7 @@
 #define FOOD_EAT_CORPSE_PRIORITY 435
 #define FOOD_PICKUP_PRIORITY 425
 #define FOOD_EAT_HUNGRY_PRIORITY 350
-#define FOOD_EAT_WEAK_PRIORITY 525
+#define FOOD_EAT_WEAK_PRIORITY 725
 #define FOOD_EAT_FAINTING_PRIORITY 750
 #define FOOD_PRAY_FOR_FOOD 950
 /* effects we should avoid unless we're protected */

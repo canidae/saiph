@@ -143,6 +143,11 @@ void World::fetchMessages() {
 			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE, &cur_page, &max_page) == 2) {
 				/* hot jiggity! we got a list */
 				/* now find the "(" in "(end) " or "(x of y)" */
+				if (cur_page == -1) {
+					/* only 1 page */
+					cur_page = 1;
+					max_page = 1;
+				}
 				int c;
 				for (c = cursor.col; c >= 0 && view[cursor.row][c] != '('; --c)
 					;

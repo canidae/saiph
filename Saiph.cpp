@@ -788,7 +788,8 @@ void Saiph::parseMessages() {
 		}
 	} else if ((pos = world->messages.find(" - ", 0)) != string::npos) {
 		/* we probably listed our inventory */
-		inventory.clear();
+		if (world->cur_page == 1)
+			inventory.clear(); // only clear when we're listing 1st page
 		while ((pos = world->messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && world->messages[pos - 3] == ' ' && world->messages[pos - 2] == ' ') {
 				unsigned char key = world->messages[pos - 1];

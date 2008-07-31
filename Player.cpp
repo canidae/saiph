@@ -81,6 +81,8 @@ bool Player::parseStatusRow(const char *statusrow) {
 			encumbrance = OVERLOADED;
 		} else if (strcmp(effects[e], "Fainting") == 0) {
 			hunger = FAINTING;
+		} else if (strcmp(effects[e], "Fainted") == 0) {
+			hunger = FAINTING;
 		} else if (strcmp(effects[e], "Weak") == 0) {
 			hunger = WEAK;
 		} else if (strcmp(effects[e], "Hungry") == 0) {
