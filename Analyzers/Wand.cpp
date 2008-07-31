@@ -27,7 +27,7 @@ void Wand::parseMessages(const string &messages) {
 			if (p->second.name.size() < 4 || (p->second.name.substr(0, 4) != "wand" && p->second.name.substr(p->second.name.size() - 4) != "wand"))
 				continue; // not a wand
 			command = p->first;
-			priority = PRIORITY_PICKUP_ITEM;
+			priority = PRIORITY_SELECT_ITEM;
 		}
 	}
 }

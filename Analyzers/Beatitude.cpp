@@ -6,7 +6,11 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 
 /* methods */
 void Beatitude::begin() {
-	if (saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
+	if (!saiph->world->menu && got_drop_menu) {
+		check_beatitude = false;
+		got_drop_menu = false;
+	}
+	if (got_drop_menu || saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
 		return;
 	if (!check_beatitude && saiph->world->player.turn % 100 == 0) {
 		/* how many of our items needs to be checked? */
@@ -21,7 +25,7 @@ void Beatitude::begin() {
 	if (!check_beatitude)
 		return;
 	/* are we standing on an altar */
-	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col] == FOUNTAIN) {
+	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col] == ALTAR) {
 		/* yes, drop items with unknown beatitude */
 		command = DROP;
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
@@ -46,5 +50,17 @@ void Beatitude::parseMessages(const string &messages) {
 		got_drop_menu = true;
 	}
 	if (got_drop_menu) {
+		/* drop stuff we don't know beatitude of */
+		for(map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
+			if (d->second.beatitude == BEATITUDE_UNKNOWN) {
+				/* mark this */
+				command = d->first;
+				priority = PRIORITY_SELECT_ITEM;
+				return;
+			}
+		}
+		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
+		command = " ";
+		priority = PRIORITY_CLOSE_ITEM_LIST;
 	}
 }

@@ -141,8 +141,8 @@
  */
 #define ILLEGAL_PRIORITY -1
 #define PRIORITY_CONTINUE_ACTION 1004
-#define PRIORITY_PICKUP_ITEM 1003
-#define PRIORITY_PICKUP_STASH 1002
+#define PRIORITY_SELECT_ITEM 1003
+#define PRIORITY_CLOSE_ITEM_LIST 1002
 #define PRIORITY_LOOK 1001
 #define PRIORITY_MAX 1000
 /* messages */
@@ -155,6 +155,7 @@
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
 #define MESSAGE_DOOR_OPENS "  The door opens.  "
 #define MESSAGE_DOOR_RESISTS "  The door resists!  "
+#define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
 #define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? " // followed by "[ynq] (y)" or something

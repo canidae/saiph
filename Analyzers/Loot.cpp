@@ -106,7 +106,7 @@ void Loot::parseMessages(const string &messages) {
 		/* we're picking up stuff.
 		 * analyzers will by themselves decide what to pick up, so we just try to close it */
 		command = " ";
-		priority = PRIORITY_PICKUP_STASH;
+		priority = PRIORITY_CLOSE_ITEM_LIST;
 		/* and remember to remove this stash from "loot" */
 		if (loot.find(saiph->position) != loot.end())
 			loot.erase(saiph->position);

@@ -504,13 +504,6 @@ void Saiph::addItemToInventory(unsigned char key, const Item &item) {
 	}
 }
 
-void Saiph::addItemToPickup(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to pickup slot " << key << endl;
-	pickup[key] = item;
-}
-
 void Saiph::addItemToStash(const Point &point, const Item &item) {
 	if (item.count <= 0)
 		return;
@@ -731,6 +724,7 @@ void Saiph::parseMessages() {
 		/* picking up stuff.
 		 * we should clear the stash here too and update it */
 		clearStash(position);
+		pickup.clear();
 		pos = world->messages.find("  ", pos + 1);
 		while (pos != string::npos && world->messages.size() > pos + 6) {
 			pos += 6;
@@ -740,7 +734,7 @@ void Saiph::parseMessages() {
 			length = length - pos;
 			if (world->messages[pos - 2] == '-') {
 				Item item(world->messages.substr(pos, length));
-				addItemToPickup(world->messages[pos - 4], item);
+				pickup[world->messages[pos - 4]] = item;
 				addItemToStash(position, item);
 			}
 			pos += length;
@@ -748,6 +742,20 @@ void Saiph::parseMessages() {
 		/* if there are no items in this stash, erase it */
 		if (stashes[position.branch][position.level][position].items.size() <= 0)
 			stashes[position.branch][position.level].erase(position);
+	} else if ((pos = world->messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos) {
+		/* dropping items */
+		drop.clear();
+		pos = world->messages.find("  ", pos + 1);
+		while (pos != string::npos && world->messages.size() > pos + 6) {
+			pos += 6;
+			string::size_type length = world->messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if (world->messages[pos - 2] == '-')
+				drop[world->messages[pos - 4]] = Item(world->messages.substr(pos, length));
+			pos += length;
+		}
 	} else if (world->messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || world->messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* our inventory is empty. how did that happen? */
 		inventory.clear();
@@ -779,7 +787,7 @@ void Saiph::parseMessages() {
 			}
 		}
 	} else if ((pos = world->messages.find(" - ", 0)) != string::npos) {
-		/* we probably listed our inventory or the pickup list */
+		/* we probably listed our inventory */
 		inventory.clear();
 		while ((pos = world->messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && world->messages[pos - 3] == ' ' && world->messages[pos - 2] == ' ') {
@@ -791,7 +799,6 @@ void Saiph::parseMessages() {
 				length = length - pos;
 				Item item(world->messages.substr(pos, length));
 				addItemToInventory(key, item);
-				removeItemFromStash(position, item);
 				pos += length;
 			}
 		}

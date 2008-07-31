@@ -76,6 +76,7 @@ class Saiph {
 		map<int, map<int, map<Point, Stash> > > stashes;
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
+		map<unsigned char, Item> drop;
 		Stash *on_ground;
 		Coordinate position;
 		bool engulfed;
@@ -114,7 +115,6 @@ class Saiph {
 
 		/* methods */
 		void addItemToInventory(unsigned char key, const Item &item);
-		void addItemToPickup(unsigned char key, const Item &item);
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
 		bool directLineHelper(const Point &point, bool ignore_sinks);

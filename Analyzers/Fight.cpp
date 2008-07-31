@@ -161,7 +161,7 @@ void Fight::parseMessages(const string &messages) {
 				if (p->second.name == *t && p->second.beatitude != CURSED) {
 					/* pick it up :) */
 					command = p->first;
-					priority = PRIORITY_PICKUP_ITEM;
+					priority = PRIORITY_SELECT_ITEM;
 					continue;
 				}
 			}

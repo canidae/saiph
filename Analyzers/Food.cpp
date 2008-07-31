@@ -493,7 +493,7 @@ void Food::parseMessages(const string &messages) {
 				if (p->second.name == *f) {
 					/* we should pick up this */
 					command = p->first;
-					priority = PRIORITY_PICKUP_ITEM;
+					priority = PRIORITY_SELECT_ITEM;
 					continue;
 				}
 			}

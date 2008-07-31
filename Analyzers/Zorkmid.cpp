@@ -28,7 +28,7 @@ void Zorkmid::parseMessages(const string &messages) {
 			if (p->second.name.find(ZORKMID_GOLD_PIECE, 0) != string::npos) {
 				/* pick it up :) */
 				command = p->first;
-				priority = PRIORITY_PICKUP_ITEM;
+				priority = PRIORITY_SELECT_ITEM;
 				continue;
 			}
 		}
