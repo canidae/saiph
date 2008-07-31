@@ -886,7 +886,7 @@ void Saiph::updateMaps() {
 				if (world->color[m->first.row][m->first.col] == INVERSE)
 					old_symbol = PET;
 				else
-					old_symbol = world->view[c->row][c->col];
+					old_symbol = world->view[m->row][m->col];
 				if (m->second.symbol == old_symbol && m->second.color == world->color[m->first.row][m->first.col])
 					continue; // this monster already is on its square
 				/* see if this monster is closer than the last found monster */
