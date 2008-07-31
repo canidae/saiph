@@ -849,15 +849,15 @@ void Saiph::updateMaps() {
 		if (item[(unsigned char) world->view[c->row][c->col]]) {
 			map<Point, Stash>::iterator s = stashes[position.branch][position.level].find(*c);
 			if (s != stashes[position.branch][position.level].end()) {
-				if (!world->player.hallucinating && s->second.top_symbol != world->view[c->row][c->col]) {
-					/* top symbol changed, update */
-					/* TODO: check color too */
+				if (!world->player.hallucinating && s->second.top_symbol != world->view[c->row][c->col] && s->second.top_color != world->color[c->row][c->col]) {
+					/* top symbol/color changed, update */
 					s->second.turn_changed = world->player.turn;
 					s->second.top_symbol = world->view[c->row][c->col];
+					s->second.top_color = world->color[c->row][c->col];
 				}
 			} else {
 				/* new stash */
-				stashes[position.branch][position.level][*c] = Stash(world->player.turn, world->view[c->row][c->col]);
+				stashes[position.branch][position.level][*c] = Stash(world->player.turn, world->view[c->row][c->col], world->color[c->row][c->col]);
 			}
 		} else if (world->view[c->row][c->col] == dungeonmap[position.branch][position.level][c->row][c->col]) {
 			/* if there ever was a stash here, it's gone now */
@@ -884,7 +884,7 @@ void Saiph::updateMaps() {
 				if (world->color[m->first.row][m->first.col] == INVERSE)
 					old_symbol = PET;
 				else
-					old_symbol = world->view[m->row][m->col];
+					old_symbol = world->view[m->first.row][m->first.col];
 				if (m->second.symbol == old_symbol && m->second.color == world->color[m->first.row][m->first.col])
 					continue; // this monster already is on its square
 				/* see if this monster is closer than the last found monster */
