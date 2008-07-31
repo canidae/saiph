@@ -37,7 +37,7 @@ void Beatitude::begin() {
 }
 
 void Beatitude::parseMessages(const string &messages) {
-	if (!beatitude || !saiph->world->menu)
+	if (!check_beatitude || !saiph->world->menu)
 		return;
 	if (command.size() == 1 && command[0] == DROP && messages.find(BEATITUDE_DROP_WHAT_TYPE, 0) != string::npos) {
 		command = 'a';
