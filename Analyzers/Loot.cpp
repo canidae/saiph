@@ -10,9 +10,6 @@ void Loot::complete() {
 		/* checking inventory, set dirty_inventory to false */
 		dirty_inventory = false;
 		command = " ";
-	} else if (command == " ") {
-		/* closing inventory/pickup list */
-		command = "";
 	} else if (command == "," && loot.find(saiph->position) != loot.end()) {
 		/* we're looting a place, remove it from list */
 		loot.erase(saiph->position);
@@ -21,6 +18,9 @@ void Loot::complete() {
 }
 
 void Loot::finish() {
+	/* close inventory/pickup list */
+	if (!saiph->world->menu && command == " ")
+		command = "";
 	/* check inventory, loot or visit stash */
 	if (priority >= PRIORITY_LOOK)
 		return; // we're probably listing inventory
