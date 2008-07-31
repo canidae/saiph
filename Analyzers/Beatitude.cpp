@@ -43,10 +43,10 @@ void Beatitude::begin() {
 void Beatitude::parseMessages(const string &messages) {
 	if (!check_beatitude || !saiph->world->menu)
 		return;
-	if (command.size() == 1 && command[0] == DROP && messages.find(BEATITUDE_DROP_WHAT_TYPE, 0) != string::npos) {
+	if (check_beatitude && command.size() == 1 && command[0] == DROP && messages.find(BEATITUDE_DROP_WHAT_TYPE, 0) != string::npos) {
 		command = 'a';
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (command.size() == 1 && command[0] == 'a' && messages.find(BEATITUDE_DROP_WHICH_ITEMS, 0) != string::npos) {
+	} else if (check_beatitude && messages.find(BEATITUDE_DROP_WHICH_ITEMS, 0) != string::npos) {
 		got_drop_menu = true;
 	}
 	if (got_drop_menu) {
