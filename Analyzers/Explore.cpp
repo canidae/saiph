@@ -123,6 +123,21 @@ void Explore::finish() {
 		priority = cur_priority;
 		best_moves = moves;
 	}
+	if (priority < 60) {
+		/* descend */
+		map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin();
+		if (down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end()) {
+			int moves = 0;
+			unsigned char nextmove = saiph->shortestPath(down->first, false, &moves);
+			if (nextmove != ILLEGAL_MOVE) {
+				if (nextmove == REST)
+					move = MOVE_DOWN;
+				else
+					move = nextmove;
+				priority = 60;
+			}
+		}
+	}
 	command = move;
 }
 
