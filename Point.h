@@ -18,7 +18,7 @@ class Point {
 		int col;
 
 		/* constructors */
-		Point(int row = 0, int col = 0);
+		Point(int row = -1, int col = -1);
 
 		/* operator overloading */
 		bool operator<(const Point &point) const;

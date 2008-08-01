@@ -10,6 +10,7 @@
 #define MAP_ROW_END 21 // where the actual map height end
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
+#define LEVEL_NAME_SIZE 16
 #define MAX_BRANCHES 7
 #define MAX_DUNGEON_DEPTH 64
 #define BRANCH_MAIN 0

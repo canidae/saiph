@@ -18,7 +18,7 @@ class Coordinate : public Point {
 		int level;
 
 		/* constructors */
-		Coordinate(int level = 0, int row = 0, int col = 0);
+		Coordinate(int level = -1, int row = -1, int col = -1);
 		Coordinate(int level, const Point &point = Point());
 
 		/* operator overloading */

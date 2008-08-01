@@ -46,7 +46,7 @@ class Player {
 		bool slimed;
 		bool stunned;
 		/* position */
-		char level[16];
+		char level[LEVEL_NAME_SIZE];
 		int row;
 		int col;
 		/* zorkmids */

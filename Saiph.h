@@ -116,6 +116,7 @@ class Saiph {
 		bool monster[UCHAR_MAX + 1];
 		bool item[UCHAR_MAX + 1];
 		bool track_symbol[UCHAR_MAX + 1];
+		map<string, vector<int> > levelmap; // used for faster map recognition
 
 		/* methods */
 		void addItemToInventory(unsigned char key, const Item &item);

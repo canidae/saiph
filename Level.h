@@ -7,6 +7,7 @@ class Level;
 
 /* includes */
 #include <map>
+#include <string>
 #include "Globals.h"
 #include "Monster.h"
 #include "Point.h"
@@ -24,9 +25,10 @@ class Level {
 		map<Point, Monster> monsters;
 		map<Point, Stash> stashes;
 		map<unsigned char, map<Point, int> > symbols;
+		string name;
 		unsigned char branch;
 
 		/* constructors */
-		Level(unsigned char branch = BRANCH_MAIN);
+		Level(string name, unsigned char branch = BRANCH_MAIN);
 };
 #endif

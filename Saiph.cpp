@@ -63,6 +63,7 @@ Saiph::Saiph(int interface) {
 	track_symbol[(unsigned char) THRONE] = true;
 	track_symbol[(unsigned char) SINK] = true;
 	track_symbol[(unsigned char) FOUNTAIN] = true;
+	track_symbol[(unsigned char) VERTICAL_WALL] = true;
 	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
@@ -515,24 +516,70 @@ void Saiph::clearStash(const Point &point) {
 }
 
 void Saiph::detectPosition() {
-	position.row = world->player.row;
-	position.col = world->player.col;
-	if (world->player.level[0] == 'H') {
-		/* quest branch */
-		position.level = world->player.level[5] - '0';
-	} else if (world->player.level[0] == 'E') {
-		/* elemental plane */
-		position.level = 1; // 1-4, but this is _really_ not a pressing matter :p
-	} else if (world->player.level[0] == 'A') {
-		/* astral plane */
-		position.level = 5;
-	} else {
-		/* some other branch */
-		position.level = atoi(&(world->player.level[5]));
-		if (position.level >= 3 || position.level <= 15) {
-			/* may be mines */
+	if (position.level == -1) {
+		/* this happens when we start */
+		position.row = world->player.row;
+		position.col = world->player.col;
+		position.level = levels.size();
+		levels.push_back(Level(world->player.level));
+		levelmap[world->player.level].push_back(position.level);
+		return;
+	}
+	if ((int) levels.size() >= position.level - 1 && strcmp(world->player.level, levels[position.level].name.c_str()) == 0) {
+		/* same level as last frame, just update row & col */
+		position.row = world->player.row;
+		position.col = world->player.col;
+		return;
+	}
+	/* level has changed.
+	 * we need to figure out if it's a new level or one we already know of */
+	int found = -1;
+	/* maybe we already know where these stairs lead? */
+	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
+		/* we did stand on stairs down, and if we don't know where they lead then
+		 * the next line will still just set found to -1 */
+		found = levels[position.level].symbols[STAIRS_DOWN][position];
+	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
+		/* we did stand on stairs up, and if we don't know where they lead then
+		 * the next line will still just set found to -1 */
+		found = levels[position.level].symbols[STAIRS_UP][position];
+	}
+	string level = world->player.level;
+	if (found == -1) {
+		/* we didn't know where the stairs would take us */
+		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
+			/* check if level got vertical walls on same locations.
+			 * since walls can disappear, we'll allow a 70% match */
+			int total = 0;
+			int matched = 0;
+			for (map<Point, int>::iterator s = levels[*lm].symbols[VERTICAL_WALL].begin(); s != levels[*lm].symbols[VERTICAL_WALL].end(); ++s) {
+				if (world->view[s->first.row][s->first.col] == VERTICAL_WALL)
+					++matched;
+				++total;
+			}
+			if (matched * 10 >= total * 7) {
+				found = *lm;
+				break;
+			}
 		}
 	}
+	if (found == -1) {
+		/* new level */
+		found = levels.size();
+		levels.push_back(Level(level));
+	}
+	/* were we on stairs on last position? */
+	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
+		/* yes, we were on stairs down */
+		levels[position.level].symbols[STAIRS_DOWN][position] = found;
+	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
+		/* yes, we were on stairs up */
+		levels[position.level].symbols[STAIRS_UP][position] = found;
+	}
+	position.row = world->player.row;
+	position.col = world->player.col;
+	position.level = found;
+	levelmap[level].push_back(found);
 }
 
 bool Saiph::directLineHelper(const Point &point, bool ignore_sinks) {
@@ -839,10 +886,12 @@ void Saiph::removeItemFromPickup(const Item &item) {
 
 void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	/* since we're gonna track certain symbols we'll use an own method for this */
+	if (levels[position.level].dungeonmap[point.row][point.col] == symbol)
+		return; // no change
 	if (track_symbol[levels[position.level].dungeonmap[point.row][point.col]])
 		levels[position.level].symbols[levels[position.level].dungeonmap[point.row][point.col]].erase(point);
 	if (track_symbol[symbol])
-		levels[position.level].symbols[symbol][point] = 0;
+		levels[position.level].symbols[symbol][point] = -1;
 	levels[position.level].dungeonmap[point.row][point.col] = symbol;
 }
 
