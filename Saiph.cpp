@@ -912,10 +912,10 @@ void Saiph::updateMaps() {
 			setDungeonSymbol(*c, UNKNOWN_TILE);
 		}
 		/* update items */
-		if (item[(unsigned char) world->view[c->row][c->col]]) {
+		if (!world->player.hallucinating && item[(unsigned char) world->view[c->row][c->col]]) {
 			map<Point, Stash>::iterator s = levels[position.level].stashes.find(*c);
 			if (s != levels[position.level].stashes.end()) {
-				if (!world->player.hallucinating && (s->second.top_symbol != world->view[c->row][c->col] || s->second.top_color != world->color[c->row][c->col])) {
+				if ((s->second.top_symbol != world->view[c->row][c->col] || s->second.top_color != world->color[c->row][c->col])) {
 					/* top symbol/color changed, update */
 					s->second.turn_changed = world->player.turn;
 					s->second.top_symbol = world->view[c->row][c->col];
@@ -1125,7 +1125,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
+	Saiph *saiph = new Saiph(CONNECTION_TELNET);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
