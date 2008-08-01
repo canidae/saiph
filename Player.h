@@ -11,13 +11,12 @@ class Player;
 /* includes */
 #include <iostream>
 #include "Globals.h"
-#include "Point.h"
 
 /* namespace */
 using namespace std;
 
 /* the player class holds various info about the player */
-class Player : public Point {
+class Player {
 	public:
 		/* variables */
 		/* attributes */
@@ -47,7 +46,9 @@ class Player : public Point {
 		bool slimed;
 		bool stunned;
 		/* position */
-		int dungeon;
+		char level[16];
+		int row;
+		int col;
 		/* zorkmids */
 		int zorkmids;
 		/* turn */

@@ -29,9 +29,9 @@ Player::Player() {
 	slimed = false;
 	stunned = false;
 	/* position */
-	dungeon = 0;
-	col = 0;
+	level[0] = '\0';
 	row = 0;
+	col = 0;
 	/* zorkmids */
 	zorkmids = 0;
 	/* turn */
@@ -64,7 +64,7 @@ bool Player::parseStatusRow(const char *statusrow) {
 	ill = false;
 	slimed = false;
 	stunned = false;
-	int matched = sscanf(statusrow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", &dungeon, &zorkmids, &hitpoints, &hitpoints_max, &power, &power_max, &armor_class, &experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	int matched = sscanf(statusrow, "%16[^$]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", level, &zorkmids, &hitpoints, &hitpoints_max, &power, &power_max, &armor_class, &experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
 	if (matched < 9)
 		return false;
 	int effects_found = matched - 9;

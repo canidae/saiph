@@ -329,7 +329,7 @@ bool Saiph::run() {
 	/* figure out which map to use.
 	 * TODO: we need some branch detection & stuff here */
 	position.branch = 0;
-	position.level = world->player.dungeon;
+	position.level = atoi(world->player.level);
 	position.row = world->player.row;
 	position.col = world->player.col;
 
