@@ -290,7 +290,7 @@ void Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 void Saiph::removeItemFromStash(const Point &point, const Item &item) {
 	if (item.count <= 0)
 		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from stash at " << position.level << ", " << point.row << ", " << point.col << endl;
 	map<Point, Stash>::iterator s = levels[position.level].stashes.find(point);
 	if (s != levels[position.level].stashes.end()) {
 		s->second.removeItem(item);
@@ -301,7 +301,7 @@ void Saiph::removeItemFromStash(const Point &point, const Item &item) {
 
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
-	debugfile << REQUEST_DEBUG_NAME << request.request << ", " << request.priority << ", " << request.value << ", " << request.data << ", (" << request.coordinate.branch << ", " << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
+	debugfile << REQUEST_DEBUG_NAME << request.request << ", " << request.priority << ", " << request.value << ", " << request.data << ", (" << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->request(request) && !status)
@@ -428,7 +428,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	for (vector<Level>::iterator l = levels.begin(); l != levels.end(); ++l) {
 		++level;
 		for (map<Point, int>::iterator p = l->symbols[symbol].begin(); p != l->symbols[symbol].end(); ++p) {
-			unsigned char move = shortestPath(Coordinate(BRANCH_MAIN, level, p->first), allow_illegal_last_move, moves);
+			unsigned char move = shortestPath(Coordinate(level, p->first), allow_illegal_last_move, moves);
 			if (move == ILLEGAL_MOVE)
 				continue;
 			if (level != position.level)
@@ -445,11 +445,8 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from player to target.
 	 * also sets amount of moves to the target */
-	if (target.branch < 0 || target.branch >= MAX_BRANCHES || target.level < 0 || target.level >= MAX_DUNGEON_DEPTH)
+	if (target.level < 0 || target.level >= (int) levels.size())
 		return ILLEGAL_MOVE; // outside the map
-	if (target.branch != position.branch) {
-		/* we don't handle branches yet */
-	}
 	if (target.level < position.level) {
 		/* path to upstairs */
 		for (map<Point, int>::iterator s = levels[position.level].symbols[STAIRS_UP].begin(); s != levels[position.level].symbols[STAIRS_UP].end(); ++s) {
@@ -497,7 +494,7 @@ void Saiph::addItemToInventory(unsigned char key, const Item &item) {
 void Saiph::addItemToStash(const Point &point, const Item &item) {
 	if (item.count <= 0)
 		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << position.level << ", " << point.row << ", " << point.col << endl;
 	map<Point, Stash>::iterator s = levels[position.level].stashes.find(point);
 	if (s != levels[position.level].stashes.end()) {
 		s->second.addItem(item);
@@ -511,7 +508,7 @@ void Saiph::addItemToStash(const Point &point, const Item &item) {
 
 void Saiph::clearStash(const Point &point) {
 	/* clear the contents of a stash */
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Clearing stash at " << position.branch << ", " << position.level << ", " << point.row << ", " << point.col << endl;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Clearing stash at " << position.level << ", " << point.row << ", " << point.col << endl;
 	map<Point, Stash>::iterator s = levels[position.level].stashes.find(point);
 	if (s != levels[position.level].stashes.end())
 		s->second.items.clear();
@@ -522,15 +519,12 @@ void Saiph::detectPosition() {
 	position.col = world->player.col;
 	if (world->player.level[0] == 'H') {
 		/* quest branch */
-		position = BRANCH_QUEST;
 		position.level = world->player.level[5] - '0';
 	} else if (world->player.level[0] == 'E') {
 		/* elemental plane */
-		position.branch = BRANCH_ASTRAL;
 		position.level = 1; // 1-4, but this is _really_ not a pressing matter :p
 	} else if (world->player.level[0] == 'A') {
 		/* astral plane */
-		position.branch = BRANCH_ASTRAL;
 		position.level = 5;
 	} else {
 		/* some other branch */
@@ -538,7 +532,6 @@ void Saiph::detectPosition() {
 		if (position.level >= 3 || position.level <= 15) {
 			/* may be mines */
 		}
-		position.branch = BRANCH_MAIN;
 	}
 }
 
@@ -1054,8 +1047,10 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 			 * it's bound to cause issues */
 			if (sc1 != BOULDER && sc2 != BOULDER)
 				return false; // neither corner is a boulder, we may not pass
+			/*
 			else if (position.branch == BRANCH_SOKOBAN)
 				return false; // in sokoban we can't pass by boulders diagonally
+			*/
 		}
 		//if (polymorphed_to_grid_bug)
 		//	return false;

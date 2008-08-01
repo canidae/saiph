@@ -15,12 +15,11 @@ using namespace std;
 class Coordinate : public Point {
 	public:
 		/* variables */
-		int branch;
 		int level;
 
 		/* constructors */
-		Coordinate(int branch = 0, int level = 0, int row = 0, int col = 0);
-		Coordinate(int branch, int level, const Point &point = Point());
+		Coordinate(int level = 0, int row = 0, int col = 0);
+		Coordinate(int level, const Point &point = Point());
 
 		/* operator overloading */
 		bool operator<(const Coordinate &coordinate) const;

@@ -39,7 +39,7 @@ class Loot : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool dirty_inventory;
-		map<int, map<int, map<Point, int> > > turn_last_changed;
+		map<int, map<Point, int> > turn_last_changed;
 		list<Point> visit;
 		map<Coordinate, int> loot;
 };

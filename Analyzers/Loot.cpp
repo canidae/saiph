@@ -26,11 +26,11 @@ void Loot::finish() {
 		return; // we're probably listing inventory
 	/* first check if some stashes have changed since last time */
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
-		map<Point, int>::iterator t = turn_last_changed[saiph->position.branch][saiph->position.level].find(s->first);
-		if (t != turn_last_changed[saiph->position.branch][saiph->position.level].end() && s->second.turn_changed - t->second <= LOOT_REVISIT_STASH_TIME)
+		map<Point, int>::iterator t = turn_last_changed[saiph->position.level].find(s->first);
+		if (t != turn_last_changed[saiph->position.level].end() && s->second.turn_changed - t->second <= LOOT_REVISIT_STASH_TIME)
 			continue; // not changed or changed too soon for us to care
 		/* we should visit the stash */
-		turn_last_changed[saiph->position.branch][saiph->position.level][s->first] = s->second.turn_changed;
+		turn_last_changed[saiph->position.level][s->first] = s->second.turn_changed;
 		visit.push_back(s->first);
 	}
 	int best_distance = INT_MAX;
@@ -42,7 +42,7 @@ void Loot::finish() {
 			loot.erase(l++);
 			continue;
 		}
-		if (l->first.branch != saiph->position.branch || l->first.level != saiph->position.level) {
+		if (l->first.level != saiph->position.level) {
 			++l;
 			continue;
 		}

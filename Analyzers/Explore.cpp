@@ -11,17 +11,17 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 /* methods */
 void Explore::complete() {
 	if (move == SEARCH)
-		++search[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col];
+		++search[saiph->position.level][saiph->world->player.row][saiph->world->player.col];
 }
 
 void Explore::finish() {
 	/* figure out which place to explore */
 	/* make the place the player stands on "visited" */
-	visited[saiph->position.branch][saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
+	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
 	int best_moves = INT_MAX;
 	move = ILLEGAL_MOVE;
 	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
-		if (search[saiph->position.branch][saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
+		if (search[saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 			/* this place is fully searched out. remove it from the list */
 			e = explore.erase(e);
 			continue;
@@ -34,7 +34,7 @@ void Explore::finish() {
 		int count = 0;
 		switch (saiph->levels[saiph->position.level].dungeonmap[e->row][e->col]) {
 			case CORRIDOR:
-				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
+				if (!visited[saiph->position.level][e->row][e->col]) {
 					cur_priority = EXPLORE_VISIT_CORRIDOR;
 					break;
 				}
@@ -60,7 +60,7 @@ void Explore::finish() {
 				break;
 
 			case OPEN_DOOR:
-				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
+				if (!visited[saiph->position.level][e->row][e->col]) {
 					cur_priority = EXPLORE_VISIT_OPEN_DOOR;
 					break;
 				}
@@ -75,7 +75,7 @@ void Explore::finish() {
 				break;
 
 			case FLOOR:
-				if (visited[saiph->position.branch][saiph->position.level][e->row][e->col] && search[saiph->position.branch][saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
+				if (visited[saiph->position.level][e->row][e->col] && search[saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 					/* been here & searched, uninteresting place */
 					e = explore.erase(e);
 					continue;
@@ -94,7 +94,7 @@ void Explore::finish() {
 
 			case UNKNOWN_TILE:
 			case UNKNOWN_TILE_DIAGONALLY_PASSABLE:
-				if (!visited[saiph->position.branch][saiph->position.level][e->row][e->col]) {
+				if (!visited[saiph->position.level][e->row][e->col]) {
 					/* visit this place */
 					cur_priority = EXPLORE_VISIT_UNKNOWN_TILE;
 					break;;
@@ -130,8 +130,8 @@ void Explore::inspect(const Point &point) {
 	unsigned char ds = saiph->levels[saiph->position.level].dungeonmap[point.row][point.col];
 	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_PASSABLE)
 		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
-	if (ep_added[saiph->position.branch][saiph->position.level][point.row][point.col])
+	if (ep_added[saiph->position.level][point.row][point.col])
 		return; // already added this place
-	ep_added[saiph->position.branch][saiph->position.level][point.row][point.col] = true;
+	ep_added[saiph->position.level][point.row][point.col] = true;
 	explore.push_back(point);
 }
