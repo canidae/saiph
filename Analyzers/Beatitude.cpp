@@ -37,19 +37,19 @@ void Beatitude::begin() {
 	}
 	if (!check_beatitude)
 		return;
-	/* are we standing on an altar */
-	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col] == ALTAR) {
-		/* yes, drop items with unknown beatitude */
+	/* path to nearest altar */
+	if (move == ILLEGAL_MOVE) {
+		int moves = 0;
+		move = saiph->shortestPath(ALTAR, false, &moves);
+	}
+	if (move == ILLEGAL_MOVE)
+		return; // don't know of any altars
+	if (move == REST) {
+		/* we're standing on the altar, drop items */
 		command = DROP;
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
 	} else {
-		/* no, path to nearest altar */
-		if (move == ILLEGAL_MOVE) {
-			int moves = 0;
-			move = saiph->shortestPath(ALTAR, false, &moves);
-		}
-		if (move == ILLEGAL_MOVE)
-			return; // don't know of any altars
+		/* moving towards altar */
 		command = move;
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
 	}

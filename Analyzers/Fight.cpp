@@ -58,7 +58,7 @@ void Fight::finish() {
 	/* fight nearest monster */
 	int fewest_moves = INT_MAX;
 	unsigned char best_move = ILLEGAL_MOVE;
-	map<Point, Monster>::iterator best_monster = saiph->monsters[saiph->position.branch][saiph->position.level].end();
+	map<Point, Monster>::iterator best_monster = saiph->levels[saiph->position.level].monsters.end();
 	bool enemy_in_line = false;
 	unsigned char got_thrown = 0;
 	req.request = REQUEST_UPDATED_INVENTORY;
@@ -73,7 +73,7 @@ void Fight::finish() {
 			}
 		}
 	}
-	for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
@@ -124,7 +124,7 @@ void Fight::finish() {
 		best_move = move;
 		best_monster = m;
 	}
-	if (best_monster == saiph->monsters[saiph->position.branch][saiph->position.level].end())
+	if (best_monster == saiph->levels[saiph->position.level].monsters.end())
 		return;
 	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << fewest_moves << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
 	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && fewest_moves <= saiph->world->player.strength / 2 && (fewest_moves > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {

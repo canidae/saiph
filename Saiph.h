@@ -30,6 +30,7 @@ class Saiph;
 #include "Connection.h"
 #include "Globals.h"
 #include "Item.h"
+#include "Level.h"
 #include "Monster.h"
 #include "Player.h"
 #include "Point.h"
@@ -46,7 +47,7 @@ class Saiph;
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
-#include "Analyzers/Level.h"
+//#include "Analyzers/Level.h"
 #include "Analyzers/Loot.h"
 #include "Analyzers/Pray.h"
 #include "Analyzers/Wand.h"
@@ -69,11 +70,14 @@ class Saiph {
 		/* variables */
 		World *world;
 		ofstream debugfile;
+		vector<Level> levels;
+		/*
 		map<unsigned char, map<int, map<int, map<Point, int> > > > dungeon_feature;
 		unsigned char dungeonmap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		map<int, map<int, map<Point, Monster> > > monsters;
 		map<int, map<int, map<Point, Stash> > > stashes;
+		*/
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
 		map<unsigned char, Item> drop;
@@ -117,6 +121,7 @@ class Saiph {
 		void addItemToInventory(unsigned char key, const Item &item);
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
+		void detectPosition();
 		bool directLineHelper(const Point &point, bool ignore_sinks);
 		unsigned char doPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		void dumpMaps();

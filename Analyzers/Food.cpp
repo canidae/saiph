@@ -372,11 +372,11 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 void Food::finish() {
 	/* update safe_monster with seen monsters */
 	safe_monster.clear();
-	for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == 'Z' || m->second.symbol == 'M' || m->second.symbol == 'V')
 			continue; // these leave tainted corpses
-		map<Point, Stash>::iterator s = saiph->stashes[saiph->position.branch][saiph->position.level].find(m->first);
-		if (s != saiph->stashes[saiph->position.branch][saiph->position.level].end())
+		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(m->first);
+		if (s != saiph->levels[saiph->position.level].stashes.end())
 			continue; // there's a stash here, might be an old corpse, don't gamble
 		safe_monster[m->first] = true;
 	}
@@ -439,7 +439,7 @@ void Food::finish() {
 		map<Point, int>::iterator s = safe_eat_loc.find(saiph->position);
 		if (s != safe_eat_loc.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
-			for (map<Point, Monster>::iterator m = saiph->monsters[saiph->position.branch][saiph->position.level].begin(); m != saiph->monsters[saiph->position.branch][saiph->position.level].end(); ++m) {
+			for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 				if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
 					return; // we see a white '@', don't eat (nor loot)
 			}
@@ -540,7 +540,7 @@ void Food::parseMessages(const string &messages) {
 		string::size_type pos2 = messages.find("!  ", pos);
 		if (pos2 != string::npos) {
 			for (map<Point, bool>::iterator s = safe_monster.begin(); s != safe_monster.end(); ++s) {
-				if (saiph->stashes[saiph->position.branch][saiph->position.level].find(s->first) != saiph->stashes[saiph->position.branch][saiph->position.level].end()) {
+				if (saiph->levels[saiph->position.level].stashes.find(s->first) != saiph->levels[saiph->position.level].stashes.end()) {
 					/* there's a stash where we last saw the monster.
 					 * since it's a "safe_monster", we can eat any corpse here.
 					 * we've already checked that it wasn't a stash here before the monster went there */
@@ -557,7 +557,7 @@ void Food::parseMessages(const string &messages) {
 		pos = messages.rfind("  The ", pos2);
 		if (pos != string::npos) {
 			for (map<Point, bool>::iterator s = safe_monster.begin(); s != safe_monster.end(); ++s) {
-				if (saiph->stashes[saiph->position.branch][saiph->position.level].find(s->first) != saiph->stashes[saiph->position.branch][saiph->position.level].end()) {
+				if (saiph->levels[saiph->position.level].stashes.find(s->first) != saiph->levels[saiph->position.level].stashes.end()) {
 					/* there's a stash where we last saw the monster.
 					 * since it's a "safe_monster", we can eat any corpse here.
 					 * we've already checked that it wasn't a stash here before the monster went there */

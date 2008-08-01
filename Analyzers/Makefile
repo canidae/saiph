@@ -3,7 +3,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g
-OBJECTS = Beatitude.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Health.o Level.o Loot.o Pray.o Wand.o Wish.o Zorkmid.o
+OBJECTS = Beatitude.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Health.o Loot.o Pray.o Wand.o Wish.o Zorkmid.o
 
 analyzers: $(OBJECTS)
 
@@ -16,7 +16,6 @@ Explore.o: Explore.h Explore.cpp
 Fight.o: Fight.h Fight.cpp
 Food.o: Food.h Food.cpp
 Health.o: Health.h Health.cpp
-Level.o: Level.h Level.cpp
 Loot.o: Loot.h Loot.cpp
 Pray.o: Pray.h Pray.cpp
 Wand.o: Wand.h Wand.cpp

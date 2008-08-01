@@ -10,7 +10,7 @@ void Door::finish() {
 	if (saiph->best_priority > DOOR_OPEN_PRIORITY)
 		return; // another analyzer got higher priority than we ever will have
 	int least_moves = INT_MAX;
-	for (map<Point, int>::iterator d = saiph->dungeon_feature[CLOSED_DOOR][saiph->position.branch][saiph->position.level].begin(); d != saiph->dungeon_feature[CLOSED_DOOR][saiph->position.branch][saiph->position.level].end(); ++d) {
+	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
 		int moves = -1;
 		unsigned char move = saiph->shortestPath(d->first, true, &moves);
 		if (move == ILLEGAL_MOVE)

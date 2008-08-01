@@ -10,7 +10,7 @@
 #define MAP_ROW_END 21 // where the actual map height end
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
-#define MAX_BRANCHES 6
+#define MAX_BRANCHES 7
 #define MAX_DUNGEON_DEPTH 64
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
@@ -18,6 +18,7 @@
 #define BRANCH_VLAD 3
 #define BRANCH_WIZARD 4
 #define BRANCH_ASTRAL 5
+#define BRANCH_QUEST 6
 /* colors & attributes */
 #define NO_COLOR 0
 #define INVERSE 7

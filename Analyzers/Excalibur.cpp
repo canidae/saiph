@@ -27,18 +27,18 @@ void Excalibur::finish() {
 	}
 	if (got_long_sword == ILLEGAL_ITEM)
 		return;
-	/* are we standing on a fountain? */
-	if (saiph->dungeonmap[saiph->position.branch][saiph->position.level][saiph->position.row][saiph->position.col] == FOUNTAIN) {
-		/* yes, dip */
+	/* path to nearest fountain */
+	int moves = 0;
+	unsigned char move = saiph->shortestPath(FOUNTAIN, false, &moves);
+	if (move == ILLEGAL_MOVE)
+		return; // don't know of any fountains
+	if (move == REST) {
+		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;
 		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
-		/* no, path to nearest fountain */
-		int moves = 0;
-		unsigned char move = saiph->shortestPath(FOUNTAIN, false, &moves);
-		if (move == ILLEGAL_MOVE)
-			return; // don't know of any fountains
+		/* move towards fountain */
 		command = move;
 		priority = EXCALIBUR_DIP_PRIORITY;
 	}
