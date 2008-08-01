@@ -1125,7 +1125,7 @@ bool Saiph::updatePathMapHelper(const Point &to, const Point &from) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

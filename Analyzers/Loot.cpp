@@ -14,7 +14,6 @@ void Loot::complete() {
 		/* we're looting a place, remove it from list */
 		loot.erase(saiph->position);
 	}
-	priority = ILLEGAL_PRIORITY;
 }
 
 void Loot::finish() {
@@ -98,6 +97,7 @@ void Loot::finish() {
 }
 
 void Loot::parseMessages(const string &messages) {
+	saiph->debugfile << "[Loot       ] parsemessages in loot: " << saiph->world->menu << ", '" << command << "'" << endl;
 	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. we should look */
 		command = ":";
