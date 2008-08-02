@@ -56,9 +56,6 @@ void Level::parseMessages(const string &messages) {
 			Item item(messages.substr(pos, length));
 			addItemToStash(saiph->position, item);
 		}
-		/* if there are no items in this stash, erase it */
-		if (stashes[saiph->position].items.size() <= 0)
-			stashes.erase(saiph->position);
 	} else if ((pos = messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
 		clearStash(saiph->position);
@@ -73,9 +70,6 @@ void Level::parseMessages(const string &messages) {
 			addItemToStash(saiph->position, item);
 			pos += length;
 		}
-		/* if there are no items in this stash, erase it */
-		if (stashes[saiph->position].items.size() <= 0)
-			stashes.erase(saiph->position);
 	} else if (messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(MESSAGE_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
 		stashes.erase(saiph->position);
@@ -87,8 +81,7 @@ void Level::parseMessages(const string &messages) {
 			if (pos == string::npos)
 				pos = 0; // uh, this shouldn't happen
 		} else {
-			/* first page, clear stash on this location */
-			clearStash(saiph->position);
+			/* first page */
 			got_pickup_menu = true;
 		}
 		pos = messages.find("  ", pos + 1);
@@ -101,13 +94,9 @@ void Level::parseMessages(const string &messages) {
 			if (messages[pos - 2] == '-') {
 				Item item(messages.substr(pos, length));
 				saiph->pickup[messages[pos - 4]] = item;
-				addItemToStash(saiph->position, item);
 			}
 			pos += length;
 		}
-		/* if there are no items in this stash, erase it */
-		if (stashes[saiph->position].items.size() <= 0)
-			stashes.erase(saiph->position);
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
 		/* dropping items */
 		if (got_drop_menu) {
