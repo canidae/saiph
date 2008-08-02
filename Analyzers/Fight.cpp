@@ -154,7 +154,7 @@ void Fight::parseMessages(const string &messages) {
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
 		saiph->request(req);
-	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+	} else if (saiph->pickup.size() > 0) {
 		/* pick up thrown weapons if any */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {

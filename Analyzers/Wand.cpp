@@ -22,7 +22,7 @@ void Wand::begin() {
 }
 
 void Wand::parseMessages(const string &messages) {
-	if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+	if (saiph->pickup.size() > 0) {
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			if (p->second.name.size() < 4 || (p->second.name.substr(0, 4) != "wand" && p->second.name.substr(p->second.name.size() - 4) != "wand"))
 				continue; // not a wand

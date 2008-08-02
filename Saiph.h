@@ -116,7 +116,8 @@ class Saiph {
 		bool monster[UCHAR_MAX + 1];
 		bool item[UCHAR_MAX + 1];
 		bool track_symbol[UCHAR_MAX + 1];
-		int menu;
+		bool got_drop_menu;
+		bool got_pickup_menu;
 		map<string, vector<int> > levelmap; // used for faster map recognition
 
 		/* methods */

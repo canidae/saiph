@@ -12,7 +12,6 @@
 #define BEATITUDE_DROP_ALTAR_PRIORITY 225
 /* messages */
 #define BEATITUDE_DROP_WHAT_TYPE "  Drop what type of items?  "
-#define BEATITUDE_DROP_WHICH_ITEMS "  What would you like to drop?  "
 
 /* forward declare */
 class Beatitude;

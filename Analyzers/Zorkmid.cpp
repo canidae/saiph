@@ -22,7 +22,7 @@ void Zorkmid::begin() {
 }
 
 void Zorkmid::parseMessages(const string &messages) {
-	if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+	if (saiph->pickup.size() > 0) {
 		/* check if there's gold here to pick up */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			if (p->second.name.find(ZORKMID_GOLD_PIECE, 0) != string::npos) {

@@ -61,7 +61,7 @@ void Beatitude::parseMessages(const string &messages) {
 	if (check_beatitude && command.size() == 1 && command[0] == DROP && messages.find(BEATITUDE_DROP_WHAT_TYPE, 0) != string::npos) {
 		command = 'a';
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (check_beatitude && messages.find(BEATITUDE_DROP_WHICH_ITEMS, 0) != string::npos) {
+	} else if (check_beatitude && saiph->drop.size() > 0 && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR) {
 		got_drop_menu = true;
 	}
 	if (got_drop_menu) {

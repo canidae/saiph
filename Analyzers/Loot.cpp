@@ -101,7 +101,7 @@ void Loot::parseMessages(const string &messages) {
 		/* several/many objects here. we should look */
 		command = ":";
 		priority = PRIORITY_LOOK;
-	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+	} else if (saiph->pickup.size() > 0) {
 		/* we're picking up stuff.
 		 * analyzers will by themselves decide what to pick up, so we just try to close it */
 		command = " ";

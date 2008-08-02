@@ -486,7 +486,7 @@ void Food::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		return;
-	} else if (saiph->world->menu && messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+	} else if (saiph->pickup.size() > 0) {
 		/* select what to pick up */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
