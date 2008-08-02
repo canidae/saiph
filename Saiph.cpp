@@ -33,7 +33,6 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Food(this));
 	analyzers.push_back(new Health(this));
-	//analyzers.push_back(new Level(this));
 	analyzers.push_back(new Loot(this));
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Wand(this));
