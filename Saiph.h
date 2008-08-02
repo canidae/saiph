@@ -57,13 +57,6 @@ class Saiph;
 /* namespace */
 using namespace std;
 
-/* struct used for pathing */
-struct PathNode {
-	PathNode *nextnode;
-	unsigned int cost;
-	unsigned char move;
-};
-
 /* this is our AI */
 class Saiph {
 	public:
@@ -71,13 +64,6 @@ class Saiph {
 		World *world;
 		ofstream debugfile;
 		vector<Level> levels;
-		/*
-		map<unsigned char, map<int, map<int, map<Point, int> > > > dungeon_feature;
-		unsigned char dungeonmap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char monstermap[MAX_BRANCHES][MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		map<int, map<int, map<Point, Monster> > > monsters;
-		map<int, map<int, map<Point, Stash> > > stashes;
-		*/
 		map<unsigned char, Item> inventory;
 		map<unsigned char, Item> pickup;
 		map<unsigned char, Item> drop;
@@ -93,13 +79,12 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
+		void addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks);
 		void farlook(const Point &target);
 		void removeItemFromInventory(unsigned char key, const Item &item);
-		void removeItemFromStash(const Point &point, const Item &item);
 		bool request(const Request &request);
 		bool run();
-		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = -1);
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
@@ -108,31 +93,13 @@ class Saiph {
 		/* variables */
 		Connection *connection;
 		vector<Analyzer *> analyzers;
-		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		Point pathing_queue[PATHING_QUEUE_SIZE];
-		int pathcost[UCHAR_MAX + 1];
-		bool passable[UCHAR_MAX + 1];
-		bool dungeon[UCHAR_MAX + 1];
-		bool monster[UCHAR_MAX + 1];
-		bool item[UCHAR_MAX + 1];
-		bool track_symbol[UCHAR_MAX + 1];
 		bool got_drop_menu;
 		bool got_pickup_menu;
 		map<string, vector<int> > levelmap; // used for faster map recognition
 
 		/* methods */
-		void addItemToInventory(unsigned char key, const Item &item);
-		void addItemToStash(const Point &point, const Item &item);
-		void clearStash(const Point &point);
 		void detectPosition();
 		bool directLineHelper(const Point &point, bool ignore_sinks);
-		unsigned char doPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		void dumpMaps();
-		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);
-		void parseMessages();
-		void removeItemFromPickup(const Item &item);
-		void updateMaps();
-		void updatePathMap();
-		bool updatePathMapHelper(const Point &to, const Point &from);
 };
 #endif
