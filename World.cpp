@@ -442,7 +442,10 @@ void World::update(int buffer_pos) {
 	} else if (!menu && !question) {
 		/* hmm, this is suspicious.
 		 * it looks like we didn't get all the data, try to fetch the rest */
-		*debugfile << WORLD_DEBUG_NAME << "EXPECTED MORE DATA: " << cursor.row << ", " << cursor.col << endl;
+		*debugfile << WORLD_DEBUG_NAME << "EXPECTED MORE DATA: ";
+		for (int a = 0; a < data_size; ++a)
+			*debugfile << data[a];
+		*debugfile << endl;
 		if (received > 0) {
 			/* set the cursor back to where it was,
 			 * set updated_status_row = false,
