@@ -510,8 +510,8 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[position.level].pathmap[r][c].move >= 'a' && levels[position.level].pathmap[r][c].move <= 'z')
-				cout << (unsigned char) levels[position.level].pathmap[r][c].move;
+			else if (levels[position.level].pathmap.nodes[r][c].move >= 'a' && levels[position.level].pathmap.nodes[r][c].move <= 'z')
+				cout << (unsigned char) levels[position.level].pathmap.nodes[r][c].move;
 			else
 				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
 		}

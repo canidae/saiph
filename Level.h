@@ -34,12 +34,16 @@ struct PathNode {
 	unsigned char move;
 };
 
+struct PathMap {
+	PathNode nodes[MAP_ROW_END + 1][MAP_COL_END + 1];
+};
+
 /* Level */
 class Level {
 	public:
 		/* variables */
-		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		map<Point, PathNode[MAP_ROW_END + 1][MAP_COL_END + 1]> pointpathmap;
+		PathMap pathmap;
+		map<Point, PathMap> pointpathmap;
 		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		map<Point, Monster> monsters;
@@ -81,9 +85,9 @@ class Level {
 		/* methods */
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
-		unsigned char shortestPath(PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1], const Point &target, bool allow_illegal_last_move, int *moves);
-		void updatePathMap(const Point &point, PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1]);
-		bool updatePathMapHelper(const Point &to, const Point &from);
+		unsigned char shortestPath(const PathMap &pathmap, const Point &target, bool allow_illegal_last_move, int *moves);
+		void updatePathMap(const Point &point, PathMap *pathmap);
+		bool updatePathMapHelper(const Point &to, const Point &from, PathMap *pathmap);
 
 		/* static methods */
 		static void init();
