@@ -56,7 +56,8 @@ int Local::retrieve(char *buffer, int count, bool blocking) {
 		/* make reading non-blocking */
 		fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
 		/* read remaining */
-		data_received += read(link[0], &buffer[data_received], count - data_received);
+		if (data_received >= 0)
+			data_received += read(link[0], &buffer[data_received], count - data_received);
 	} else {
 		/* non-blocking reading requested.
 		 * this means that we expected more data.

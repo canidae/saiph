@@ -24,11 +24,6 @@ Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 		exit(1);
 	}
 
-	/* set up ping */
-	ping[0] = 0xff; // IAC
-	ping[1] = 0xfd; // DO
-	ping[2] = 0x63; // decimal 99, which is our "ping"
-
 	/* tell server our terminal (xterm-color) and size (80x24) and set some other things */
 	char data[] = {0xff, 0xfb, 0x18, 0xff, 0xfa, 0x18, 0x00, 'x', 't', 'e', 'r', 'm', 0xff, 0xf0, 0xff, 0xfc, 0x20, 0xff, 0xfc, 0x23, 0xff, 0xfc, 0x27, 0xff, 0xfe, 0x03, 0xff, 0xfb, 0x01, 0xff, 0xfd, 0x05, 0xff, 0xfb, 0x21, 0xff, 0xfb, 0x1f, 0xff, 0xfa, 0x1f, 0x00, 0x50, 0x00, 0x18, 0xff, 0xf0}; 
 	transmit(data, 47);
@@ -50,53 +45,31 @@ Telnet::~Telnet() {
 
 /* methods */
 int Telnet::retrieve(char *buffer, int count, bool blocking) {
-	/* this is borrowed from TAEB:
-	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
-	 * then we'll just read until last bytes equal [?, ?, ?] */
-	transmit(ping, 3);
+	/* retrieve data */
 	int retrieved = 0;
-	int more_data = true;
-	int tries = 5;
-	while (more_data && tries >= 0) {
-		retrieved += recv(sock, &buffer[retrieved], count, 0);
-		for (int a = retrieved - 3; a >= 0; --a) {
-			/* search for pong backwards (we're expecting pong to be last).
-			 * we do it like this because if we find it somewhere else than
-			 * at the end of the stream, we should send a new ping */
-			if ((unsigned char) buffer[a] == 0xff && (unsigned char) buffer[a + 1] == 0xfc && (unsigned char) buffer[a + 2] == 0x63) {
-				/* found pong, but is it at end of stream? */
-				if (a == retrieved - 3) {
-					/* yes, it is.
-					 * however, did we receive something else than the pong? */
-					if (retrieved > 3) {
-						/* yes, we did, good! */
-						more_data = false;
-						/* remove pong */
-						buffer[--retrieved] = '\0';
-						buffer[--retrieved] = '\0';
-						buffer[--retrieved] = '\0';
-					} else {
-						/* no, we didn't. hmmm */
-						retrieved = 0;
-						transmit(ping, 3);
-						--tries; // also decrease this, in case we're not getting any data */
-					}
-				} else {
-					/* no, it isn't.
-					 * we should send a new ping */
-					transmit(ping, 3);
-					/* and we'll have to remove the pong reply, gah */
-					for (int b = a; b < retrieved - 3; ++b)
-						buffer[b] = buffer[b + 3];
-					retrieved -= 3;
-					break;
-				}
-			}
+	if (blocking) {
+		/* make reading blocking */
+		fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) & ~O_NONBLOCK);
+		/* read 4 bytes blocked */
+		retrieved = recv(sock, buffer, 4, 0);
+		/* make reading non-blocking */
+		fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK);
+		/* read remaining */
+		if (retrieved >= 0)
+			retrieved += recv(sock, &buffer[retrieved], count - retrieved, 0);
+	} else {
+		/* non-blocking reading requested.
+		 * this means that we expected more data.
+		 * sleep a bit and read again */
+		for (int a = 0; retrieved <= 0 && a < TELNET_NON_BLOCKING_ATTEMPTS; ++a) {
+			*debugfile << "attempting to read again..." << endl;
+			usleep(TELNET_NON_BLOCKING_DELAY);
+			retrieved = recv(sock, buffer, count, 0);
 		}
 	}
-	if (tries < 0)
-		*debugfile << TELNET_DEBUG_NAME << "We were expecting data, but got none. Fix this bug, please!" << endl;
-	return retrieved;
+	if (retrieved >= 0)
+		return retrieved;
+	return 0;
 }
 
 int Telnet::transmit(const string &data) {
@@ -125,6 +98,7 @@ void Telnet::start() {
 	transmit(password);
 	size = retrieve(buffer, TELNET_BUFFER_SIZE);
 	transmit("p");
+	size = retrieve(buffer, TELNET_BUFFER_SIZE);
 }
 
 void Telnet::stop() {

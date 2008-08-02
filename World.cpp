@@ -16,6 +16,8 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	question = false;
 	last_menu = Point(-1, -1);
 	updated_status_row = false;
+	last_cursor.row = 0;
+	last_cursor.col = 0;
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
         /* remapping of unique symbols */
@@ -113,6 +115,14 @@ void World::fetchMessages() {
 					fetchMenuText(r - 1, c - 1, true); // "r - 1" to avoid the last "--More--"
 			}
 		}
+		/* dump data */
+		for (int a = 0; a < data_size; ++a)
+			cout << data[a];
+		cout.flush(); // same reason as in saiph.dumpMaps()
+		*debugfile << DATA_DEBUG_NAME;
+		for (int a = 0; a < data_size; ++a)
+			*debugfile << data[a];
+		*debugfile << endl;
 		/* request the remaining messages */
 		connection->transmit(" ");
 		update();
@@ -364,16 +374,6 @@ void World::update(int buffer_pos) {
 	int received = connection->retrieve(&data[buffer_pos], BUFFER_SIZE - buffer_pos, (buffer_pos == 0));
 	data_size = buffer_pos + received;
 	data[data_size] = '\0'; // for string parsing
-	/* print world & data (to debugfile)
-	 * this must be done here because if we get --More-- messages we'll update again */
-	/* also, we do this in two loops because otherwise it'll flicker a lot */
-	for (int a = 0; a < data_size; ++a)
-		cout << data[a];
-	cout.flush(); // same reason as in saiph.dumpMaps()
-	*debugfile << DATA_DEBUG_NAME;
-	for (int a = 0; a < data_size; ++a)
-		*debugfile << data[a];
-	*debugfile << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:
@@ -444,13 +444,26 @@ void World::update(int buffer_pos) {
 		 * it looks like we didn't get all the data, try to fetch the rest */
 		*debugfile << WORLD_DEBUG_NAME << "EXPECTED MORE DATA: " << cursor.row << ", " << cursor.col << endl;
 		if (received > 0) {
-			/* clear messages parsed so far and try to fetch more data */
+			/* set the cursor back to where it was,
+			 * set updated_status_row = false,
+			 * set messages = "  " and
+			 * request the remaining data (if any) */
+			cursor = last_cursor;
 			updated_status_row = false;
 			messages = "  ";
 			update(data_size);
 			return;
 		}
 	}
+	last_cursor = cursor;
 	if (messages == "  ")
 		messages.clear(); // no messages
+	/* dump data */
+	for (int a = 0; a < data_size; ++a)
+		cout << data[a];
+	cout.flush(); // same reason as in saiph.dumpMaps()
+	*debugfile << DATA_DEBUG_NAME;
+	for (int a = 0; a < data_size; ++a)
+		*debugfile << data[a];
+	*debugfile << endl;
 }
