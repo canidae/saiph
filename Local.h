@@ -3,11 +3,11 @@
 #define LOCAL_H
 /* debug */
 #define LOCAL_DEBUG_NAME "[Local      ] "
-/* buffer */
-#define READ_LIMIT 4095
-#define BUFFER_SIZE 65536
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
+/* delay & attempts when reading non-blocking */
+#define LOCAL_NON_BLOCKING_DELAY 20000
+#define LOCAL_NON_BLOCKING_ATTEMPTS 20
 
 /* forward declare */
 class Local;
@@ -33,7 +33,7 @@ class Local : public Connection {
 		~Local();
 
 		/* methods */
-		virtual int retrieve(char *buffer, int count);
+		virtual int retrieve(char *buffer, int count, bool blocking = true);
 		virtual int transmit(const string &data);
 		virtual void start();
 		virtual void stop();

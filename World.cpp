@@ -15,6 +15,7 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	menu = false;
 	question = false;
 	last_menu = Point(-1, -1);
+	updated_status_row = false;
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
         /* remapping of unique symbols */
@@ -41,6 +42,7 @@ bool World::executeCommand(const string &command) {
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
 		changed[c->row][c->col] = false;
 	changes.clear();
+	updated_status_row = false;
 	messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */
@@ -116,11 +118,14 @@ void World::fetchMessages() {
 		update();
 		return;
 	} else if (cursor.row == 0) {
-		/* looks like we got a question.
-		 * we might want to significantly improve this later,
-		 * as we sometimes get partial data */
-		question = true;
-		menu = false; // no menu when we got a question
+		/* we might have a question.
+		 * it seems like last 4 bytes always are " ^[[K" when we got a question,
+		 * so let's check that */
+		if (data[data_size - 4] == ' ' && data[data_size - 3] == 27 && data[data_size - 2] == '[' && data[data_size - 1] == 'K') {
+			/* must be question */
+			question = true;
+			menu = false; // no menu when we got a question
+		}
 	} else {
 		/* --More-- not found, but we might have a menu.
 		 * this is pain */
@@ -319,7 +324,10 @@ void World::handleEscapeSequence(int *pos, int *color) {
 			}
 		}
 		if (*pos >= data_size) {
-			*debugfile << WORLD_DEBUG_NAME << "Did not find stop char for sequence: " << data << endl;
+			*debugfile << WORLD_DEBUG_NAME << "Did not find stop char for sequence: ";
+			for (int a = 0; a <= data_size; ++a)
+				*debugfile << data[a];
+			*debugfile << endl;
 			exit(6);
 		}
 	} else if (data[*pos] == '(') {
@@ -350,13 +358,15 @@ void World::handleEscapeSequence(int *pos, int *color) {
 	}
 }
 
-void World::update() {
+void World::update(int buffer_pos) {
 	/* update the view */
 	int color = 0; // color of the char
-	data_size = connection->retrieve(data, BUFFER_SIZE);
-	/* print world & data (to cerr, for debugging)
+	int received = connection->retrieve(&data[buffer_pos], BUFFER_SIZE - buffer_pos, (buffer_pos == 0));
+	data_size = buffer_pos + received;
+	data[data_size] = '\0'; // for string parsing
+	/* print world & data (to debugfile)
 	 * this must be done here because if we get --More-- messages we'll update again */
-	/* also, we do this in two loops because otherwise it flickers a lot */
+	/* also, we do this in two loops because otherwise it'll flicker a lot */
 	for (int a = 0; a < data_size; ++a)
 		cout << data[a];
 	cout.flush(); // same reason as in saiph.dumpMaps()
@@ -409,6 +419,8 @@ void World::update() {
 					*debugfile << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << cursor.row << ", " << cursor.col << endl;
 					break;
 				}
+				if (cursor.row == STATUS_ROW)
+					updated_status_row = true;
 				view[cursor.row][cursor.col] = uniquemap[(unsigned char) data[pos]][color];
 				this->color[cursor.row][cursor.col] = color;
 				addChangedLocation(cursor);
@@ -422,19 +434,22 @@ void World::update() {
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
-	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
-		/* the last escape sequence *sometimes* place the cursor on the player,
-		 * which is quite handy since we won't have to search for the player then */
+	if (updated_status_row && parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
+		/* it seems like we got all the data */
 		view[cursor.row][cursor.col] = PLAYER;
 		player.row = cursor.row;
 		player.col = cursor.col;
 	} else if (!menu && !question) {
-		/* hmm, what else can it be?
-		 * could we be missing data?
-		 * this is bad, we'll lose messages, this should never happen */
-		*debugfile << WORLD_DEBUG_NAME << "CURSOR ON UNEXPECTED LOCATION: " << cursor.row << ", " << cursor.col << endl;
-		update();
-		return;
+		/* hmm, this is suspicious.
+		 * it looks like we didn't get all the data, try to fetch the rest */
+		*debugfile << WORLD_DEBUG_NAME << "EXPECTED MORE DATA: " << cursor.row << ", " << cursor.col << endl;
+		if (received > 0) {
+			/* clear messages parsed so far and try to fetch more data */
+			updated_status_row = false;
+			messages = "  ";
+			update(data_size);
+			return;
+		}
 	}
 	if (messages == "  ")
 		messages.clear(); // no messages

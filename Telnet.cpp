@@ -49,7 +49,7 @@ Telnet::~Telnet() {
 }
 
 /* methods */
-int Telnet::retrieve(char *buffer, int count) {
+int Telnet::retrieve(char *buffer, int count, bool blocking) {
 	/* this is borrowed from TAEB:
 	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
 	 * then we'll just read until last bytes equal [?, ?, ?] */

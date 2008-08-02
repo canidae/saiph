@@ -29,7 +29,7 @@ Connection *Connection::create(int interface, ofstream *debugfile) {
 }
 
 /* methods */
-int Connection::retrieve(char *buffer, int count) {
+int Connection::retrieve(char *buffer, int count, bool blocking) {
 	return 0;
 }
 

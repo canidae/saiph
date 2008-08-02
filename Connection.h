@@ -28,7 +28,7 @@ class Connection {
 		static Connection *create(int interface, ofstream *debugfile);
 
 		/* methods */
-		virtual int retrieve(char *buffer, int count);
+		virtual int retrieve(char *buffer, int count, bool blocking = true);
 		virtual int transmit(const string &data);
 		virtual void start();
 		virtual void stop();

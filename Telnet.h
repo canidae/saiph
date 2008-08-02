@@ -36,8 +36,7 @@ class Telnet : public Connection {
 		~Telnet();
 
 		/* methods */
-		int retrieve(char *buffer, int count);
-		int transmit(const char *data, int length);
+		int retrieve(char *buffer, int count, bool blocking = true);
 		int transmit(const string &data);
 		void start();
 		void stop();
@@ -46,5 +45,8 @@ class Telnet : public Connection {
 		/* variables */
 		int sock;
 		char ping[3];
+
+		/* methods */
+		int transmit(const char *data, int length);
 };
 #endif
