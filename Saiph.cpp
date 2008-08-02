@@ -335,7 +335,7 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* detect player position */
-	if (!world->question || !world->menu)
+	if (!world->question && !world->menu)
 		detectPosition();
 
 	/* clear priority from analyzers */
@@ -419,15 +419,18 @@ bool Saiph::run() {
 	return true;
 }
 
-void Saiph::setDungeonSymbolValue(const Point &point, unsigned char symbol, int value) {
-	/* set the value of a certain dungeon symbol at a certain point.
-	 * we can use this to set [un]locked doors, alignment of altars, etc */
-	if (!track_symbol[symbol])
-		return;
-	map<Point, int>::iterator d = levels[position.level].symbols[symbol].find(point);
-	if (d == levels[position.level].symbols[symbol].end())
-		return;
-	d->second = value;
+void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol, int value) {
+	/* since we're gonna track certain symbols we'll use an own method for this */
+	if (levels[position.level].dungeonmap[point.row][point.col] == symbol) {
+		/* only update value */
+		levels[position.level].symbols[symbol][point] = value;
+		return; // no change
+	}
+	if (track_symbol[levels[position.level].dungeonmap[point.row][point.col]])
+		levels[position.level].symbols[levels[position.level].dungeonmap[point.row][point.col]].erase(point);
+	if (track_symbol[symbol])
+		levels[position.level].symbols[symbol][point] = -1;
+	levels[position.level].dungeonmap[point.row][point.col] = symbol;
 }
 
 unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves) {
@@ -909,17 +912,6 @@ void Saiph::removeItemFromPickup(const Item &item) {
 		}
 		return;
 	}
-}
-
-void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
-	/* since we're gonna track certain symbols we'll use an own method for this */
-	if (levels[position.level].dungeonmap[point.row][point.col] == symbol)
-		return; // no change
-	if (track_symbol[levels[position.level].dungeonmap[point.row][point.col]])
-		levels[position.level].symbols[levels[position.level].dungeonmap[point.row][point.col]].erase(point);
-	if (track_symbol[symbol])
-		levels[position.level].symbols[symbol][point] = -1;
-	levels[position.level].dungeonmap[point.row][point.col] = symbol;
 }
 
 void Saiph::updateMaps() {

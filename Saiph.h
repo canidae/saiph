@@ -99,7 +99,7 @@ class Saiph {
 		void removeItemFromStash(const Point &point, const Item &item);
 		bool request(const Request &request);
 		bool run();
-		void setDungeonSymbolValue(const Point &point, unsigned char symbol, int value);
+		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = -1);
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
@@ -131,7 +131,6 @@ class Saiph {
 		map<Point, Monster>::iterator nearestMonster(const Point &point, unsigned char symbol, int color);
 		void parseMessages();
 		void removeItemFromPickup(const Item &item);
-		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		void updateMaps();
 		void updatePathMap();
 		bool updatePathMapHelper(const Point &to, const Point &from);
