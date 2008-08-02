@@ -92,8 +92,6 @@ class Saiph {
 		/* variables */
 		Connection *connection;
 		vector<Analyzer *> analyzers;
-		bool got_drop_menu;
-		bool got_pickup_menu;
 		map<string, vector<int> > levelmap; // used for faster map recognition
 
 		/* methods */

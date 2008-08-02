@@ -16,10 +16,6 @@ Saiph::Saiph(int interface) {
 	/* set best_priority to ILLEGAL_PRIORITY */
 	best_priority = ILLEGAL_PRIORITY;
 
-	/* set got_[drop|pickup]_menu to false */
-	got_drop_menu = false;
-	got_pickup_menu = false;
-
 	/* set on_ground to NULL */
 	on_ground = NULL;
 
@@ -50,13 +46,26 @@ Saiph::~Saiph() {
 }
 
 /* methods */
+void Saiph::addItemToInventory(unsigned char key, const Item &item) {
+	if (item.count <= 0)
+		return;
+	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
+	if (inventory.find(key) != inventory.end()) {
+		/* existing item, add amount */
+		inventory[key].count += item.count;
+	} else {
+		/* new item */
+		inventory[key] = item;
+	}
+}
+
 unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 	/* is the target in a direct line from the player? */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
 		/* outside map */
 		return ILLEGAL_MOVE;
 	} else if (point == position) {
-		/* eh? this doesn't happen */
+		/* eh? don't do this */
 		return REST;
 	} else if (point.row == position.row) {
 		/* aligned horizontally */
@@ -195,11 +204,6 @@ bool Saiph::request(const Request &request) {
 }
 
 bool Saiph::run() {
-	/* set got_[drop|pickup]_menu to false if we don't have a menu */
-	if (!world->menu) {
-		got_drop_menu = false;
-		got_pickup_menu = false;
-	}
 	/* clear pickup list */
 	pickup.clear();
 	/* and drop list */
@@ -214,16 +218,11 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* detect player position */
-	if (!world->question && !world->menu)
+	if (!world->question && !world->menu && !engulfed)
 		detectPosition();
 
-	/* clear priority from analyzers */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->priority = ILLEGAL_PRIORITY;
-
-	/* deal with messages */
-	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	/* level message parsing */
+	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	levels[position.level].parseMessages(world->messages);
 
 	/* set the on_ground pointer if there's loot here */
@@ -241,10 +240,15 @@ bool Saiph::run() {
 	/* print maps so we see what we're doing */
 	dumpMaps();
 
+	/* analyzer stuff comes here */
 	Analyzer *best_analyzer = NULL;
 	best_priority = ILLEGAL_PRIORITY;
 
-	/* then analyzer message parsing */
+	/* clear priority from analyzers */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->priority = ILLEGAL_PRIORITY;
+
+	/* let analyzers parse messages */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		(*a)->parseMessages(world->messages);
 		if ((*a)->priority > best_priority) {
@@ -399,19 +403,6 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 }
 
 /* private methods */
-void Saiph::addItemToInventory(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return;
-	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
-	if (inventory.find(key) != inventory.end()) {
-		/* existing item, add amount */
-		inventory[key].count += item.count;
-	} else {
-		/* new item */
-		inventory[key] = item;
-	}
-}
-
 void Saiph::detectPosition() {
 	if (position.level == -1) {
 		/* this happens when we start */

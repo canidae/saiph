@@ -45,16 +45,19 @@ class Level {
 		map<Point, Monster> monsters;
 		map<Point, Stash> stashes;
 		map<unsigned char, map<Point, int> > symbols;
-		static bool passable[UCHAR_MAX + 1];
-		static bool track_symbol[UCHAR_MAX + 1];
 		string name;
 		unsigned char branch;
+
+		/* static variables */
+		static bool passable[UCHAR_MAX + 1];
+		static bool track_symbol[UCHAR_MAX + 1];
 
 		/* constructors */
 		Level(Saiph *saiph, string name, unsigned char branch = BRANCH_MAIN);
 
 		/* methods */
 		void parseMessages(const string &messages);
+		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = -1);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &from, const Point &to, bool allow_illegal_last_move, int *moves);
 		void updateMapPoint(const Point &point, unsigned char symbol, int color);
@@ -66,6 +69,8 @@ class Level {
 		Saiph *saiph;
 		bool got_drop_menu;
 		bool got_pickup_menu;
+
+		/* static variables */
 		static Point pathing_queue[PATHING_QUEUE_SIZE];
 		static int pathcost[UCHAR_MAX + 1];
 		static bool dungeon[UCHAR_MAX + 1];
@@ -76,7 +81,6 @@ class Level {
 		/* methods */
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
-		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = -1);
 		unsigned char shortestPath(PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1], const Point &target, bool allow_illegal_last_move, int *moves);
 		void updatePathMap(const Point &point, PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1]);
 		bool updatePathMapHelper(const Point &to, const Point &from);
@@ -84,6 +88,5 @@ class Level {
 		/* static methods */
 		static void init();
 };
-bool Level::initialized = false;
 
 #endif

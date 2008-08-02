@@ -1,5 +1,17 @@
 #include "Level.h"
 
+/* initialize static variables */
+/* public */
+bool Level::passable[UCHAR_MAX + 1] = {false};
+bool Level::track_symbol[UCHAR_MAX + 1] = {false};
+/* private */
+Point Level::pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
+int Level::pathcost[UCHAR_MAX + 1] = {INT_MAX};
+bool Level::dungeon[UCHAR_MAX + 1] = {false};
+bool Level::monster[UCHAR_MAX + 1] = {false};
+bool Level::item[UCHAR_MAX + 1] = {false};
+bool Level::initialized = false;
+
 /* constructors */
 Level::Level(Saiph *saiph, string name, unsigned char branch) : name(name), branch(branch), saiph(saiph), got_drop_menu(false), got_pickup_menu(false) {
 	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
@@ -10,6 +22,11 @@ Level::Level(Saiph *saiph, string name, unsigned char branch) : name(name), bran
 
 /* methods */
 void Level::parseMessages(const string &messages) {
+	/* set got_[drop|pickup]_menu to false if we don't have a menu */
+	if (!saiph->world->menu) {
+		got_drop_menu = false;
+		got_pickup_menu = false;
+	}
 	/* parse messages that can help us find doors/staircases/etc. */
 	if (messages.find(MESSAGE_STAIRCASE_UP_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, STAIRS_UP);
@@ -161,6 +178,20 @@ void Level::parseMessages(const string &messages) {
 	}
 }
 
+void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value) {
+	/* since we're gonna track certain symbols we'll use an own method for this */
+	if (dungeonmap[point.row][point.col] == symbol) {
+		/* only update value */
+		symbols[symbol][point] = value;
+		return; // no change
+	}
+	if (track_symbol[dungeonmap[point.row][point.col]])
+		symbols[dungeonmap[point.row][point.col]].erase(point);
+	if (track_symbol[symbol])
+		symbols[symbol][point] = value;
+	dungeonmap[point.row][point.col] = symbol;
+}
+
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* return next move in shortest path from player to target */
 	return shortestPath(pathmap, target, allow_illegal_last_move, moves);
@@ -307,20 +338,6 @@ void Level::clearStash(const Point &point) {
 	map<Point, Stash>::iterator s = stashes.find(point);
 	if (s != stashes.end())
 		s->second.items.clear();
-}
-
-void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value) {
-	/* since we're gonna track certain symbols we'll use an own method for this */
-	if (dungeonmap[point.row][point.col] == symbol) {
-		/* only update value */
-		symbols[symbol][point] = value;
-		return; // no change
-	}
-	if (track_symbol[dungeonmap[point.row][point.col]])
-		symbols[dungeonmap[point.row][point.col]].erase(point);
-	if (track_symbol[symbol])
-		symbols[symbol][point] = value;
-	dungeonmap[point.row][point.col] = symbol;
 }
 
 unsigned char Level::shortestPath(PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1], const Point &target, bool allow_illegal_last_move, int *moves) {
@@ -535,21 +552,10 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 /* private static methods */
 void Level::init() {
 	initialized = true;
-	/* tracking, pathing & maps */
+	/* monsters */
 	for (int a = 0; a <= UCHAR_MAX; ++a) {
-		/* monstertracking */
 		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5')  || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
 			monster[a] = true;
-		else
-			monster[a] = false;
-		/* itemtracking */
-		item[a] = false;
-		/* dungeon symbol tracking */
-		track_symbol[a] = false;
-		/* pathing & maps */
-		passable[a] = false;
-		dungeon[a] = false;
-		pathcost[a] = 0;
 	}
 	/* items */
 	item[(unsigned char) WEAPON] = true;

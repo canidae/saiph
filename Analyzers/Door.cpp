@@ -49,6 +49,6 @@ void Door::parseMessages(const string &messages) {
 		command = command2;
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
-		saiph->setDungeonSymbol(cur_door, CLOSED_DOOR, 1);
+		saiph->levels[saiph->position.level].setDungeonSymbol(cur_door, CLOSED_DOOR, 1);
 	}
 }
