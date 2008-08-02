@@ -335,7 +335,8 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* detect player position */
-	detectPosition();
+	if (!world->question || !world->menu)
+		detectPosition();
 
 	/* clear priority from analyzers */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
