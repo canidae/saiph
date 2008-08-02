@@ -9,7 +9,8 @@
 /* text used to identify --More-- and menus */
 #define MORE "--More--"
 #define END "(end) " // yeah, space should be there
-#define PAGE "%*[^(](%d of %d)"
+#define PAGE "(%d of %d)"
+#define PAGE_DIRTY "%*[^(]" PAGE
 
 /* forward declare */
 class World;

@@ -16,6 +16,9 @@ Saiph::Saiph(int interface) {
 	/* set best_priority to ILLEGAL_PRIORITY */
 	best_priority = ILLEGAL_PRIORITY;
 
+	/* set menu to ILLEGAL_MENU */
+	menu = ILLEGAL_MENU;
+
 	/* set on_ground to NULL */
 	on_ground = NULL;
 
@@ -312,9 +315,14 @@ bool Saiph::request(const Request &request) {
 }
 
 bool Saiph::run() {
+	/* set menu to ILLEGAL_MENU if we don't have a menu */
+	if (!world->menu)
+		menu = ILLEGAL_MENU;
 	/* clear pickup list */
 	pickup.clear();
-	/* and on_ground */
+	/* and drop list */
+	drop.clear();
+	/* set on_ground to NULL */
 	on_ground = NULL;
 
 	/* check if we're engulfed */
@@ -775,11 +783,18 @@ void Saiph::parseMessages() {
 	} else if (world->messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0) != string::npos || world->messages.find(MESSAGE_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
 		levels[position.level].stashes.erase(position);
-	} else if ((pos = world->messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos) {
-		/* picking up stuff.
-		 * we should clear the stash here too and update it */
-		clearStash(position);
-		pickup.clear();
+	} else if ((pos = world->messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || menu == MENU_PICKUP) {
+		/* picking up stuff */
+		if (menu == MENU_PICKUP) {
+			/* not the first page, set pos */
+			pos = world->messages.find_first_not_of(" ", 0);
+			if (pos == string::npos)
+				pos = 0; // uh, this shouldn't happen
+		} else {
+			/* first page, clear stash on this location */
+			clearStash(position);
+			menu = MENU_PICKUP;
+		}
 		pos = world->messages.find("  ", pos + 1);
 		while (pos != string::npos && world->messages.size() > pos + 6) {
 			pos += 6;
@@ -797,9 +812,17 @@ void Saiph::parseMessages() {
 		/* if there are no items in this stash, erase it */
 		if (levels[position.level].stashes[position].items.size() <= 0)
 			levels[position.level].stashes.erase(position);
-	} else if ((pos = world->messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos) {
+	} else if ((pos = world->messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || menu == MENU_DROP) {
 		/* dropping items */
-		drop.clear();
+		if (menu == MENU_DROP) {
+			/* not the first page, set pos */
+			pos = world->messages.find_first_not_of(" ", 0);
+			if (pos == string::npos)
+				pos = 0; // uh, this shouldn't happen
+		} else {
+			/* first page, set menu */
+			menu = MENU_DROP;
+		}
 		pos = world->messages.find("  ", pos + 1);
 		while (pos != string::npos && world->messages.size() > pos + 6) {
 			pos += 6;

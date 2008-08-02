@@ -127,20 +127,28 @@ void World::fetchMessages() {
 		if (menu) {
 			/* we had a menu last frame, check if we still do */
 			msg_str = &view[last_menu.row][last_menu.col];
-			int x, y;
-			if (msg_str.find(END, 0) == string::npos && sscanf(&view[last_menu.row][last_menu.col], PAGE, &x, &y) != 2) {
+			cur_page = -1;
+			max_page = -1;
+			if (msg_str.find(END, 0) == string::npos && sscanf(&view[last_menu.row][last_menu.col], PAGE, &cur_page, &max_page) != 2) {
 				/* nah, last menu is gone */
 				menu = false;
 				last_menu.row = -1;
 				last_menu.col = -1;
+			} else {
+				/* still got a menu */
+				if (cur_page == -1) {
+					/* only 1 page */
+					cur_page = 1;
+					max_page = 1;
+				}
 			}
 		}
 		if (!menu) {
 			/* check if we got a new menu */
-			msg_str = &data[data_size - sizeof (PAGE)];
+			msg_str = &data[data_size - sizeof (PAGE_DIRTY)];
 			cur_page = -1;
 			max_page = -1;
-			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE, &cur_page, &max_page) == 2) {
+			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE_DIRTY, &cur_page, &max_page) == 2) {
 				/* hot jiggity! we got a list */
 				/* now find the "(" in "(end) " or "(x of y)" */
 				if (cur_page == -1) {
