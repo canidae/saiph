@@ -200,7 +200,9 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 unsigned char Level::shortestPath(const Point &from, const Point &to, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from "from" to "to".
 	 * if we haven't created a pathmap, whoops? */
-	return ILLEGAL_MOVE;
+	if (pointpathmap.find(from) == pointpathmap.end())
+		return ILLEGAL_MOVE;
+	return shortestPath(pointpathmap[from], to, allow_illegal_last_move, moves);
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {
