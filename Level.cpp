@@ -6,7 +6,7 @@ bool Level::passable[UCHAR_MAX + 1] = {false};
 bool Level::track_symbol[UCHAR_MAX + 1] = {false};
 /* private */
 Point Level::pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
-int Level::pathcost[UCHAR_MAX + 1] = {INT_MAX};
+int Level::pathcost[UCHAR_MAX + 1] = {0};
 bool Level::dungeon[UCHAR_MAX + 1] = {false};
 bool Level::monster[UCHAR_MAX + 1] = {false};
 bool Level::item[UCHAR_MAX + 1] = {false};
