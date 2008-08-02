@@ -18,7 +18,7 @@ void Door::finish() {
 		cur_door = d->first;
 		if (moves == 1) {
 			/* open/pick/kick door */
-			if (d->second == 0)
+			if (d->second != 1)
 				command = OPEN;
 			else
 				command = KICK;

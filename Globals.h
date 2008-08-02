@@ -193,6 +193,7 @@
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? " // followed by "[abc...]"
 #define MESSAGE_YOU_DONT_HAVE "  You don't have that object.  "
 #define MESSAGE_YOU_FEEL_HERE "  You feel here " // not two spaces here as it's followed by eg. "a lichen corpse"
+#define MESSAGE_YOU_FEEL_NO_OBJECTS "  You feel no objects here.  "
 #define MESSAGE_YOU_READ "  You read:" // followed by the text. no space after ":" because message parser is a bit buggy
 #define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define MESSAGE_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
