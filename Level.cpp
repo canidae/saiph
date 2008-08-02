@@ -431,7 +431,7 @@ unsigned char Level::shortestPath(const PathMap &pathmap, const Point &target, b
 	return move;
 }
 
-void Level::updatePathMap(const Point &point, PathMap *pathmap) {
+void Level::updatePathMap(Point from, PathMap *pathmap) {
 	/* create pathmap in given map */
 	/* first reset nextnode pointer, cost & move */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
@@ -441,7 +441,6 @@ void Level::updatePathMap(const Point &point, PathMap *pathmap) {
 			pathmap->nodes[r][c].move = ILLEGAL_MOVE;
 		}
 	}
-	Point from(point);
 	pathing_queue[0] = from;
 	pathmap->nodes[from.row][from.col].cost = 0;
 	pathmap->nodes[from.row][from.col].move = REST;
@@ -525,10 +524,8 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from, PathMap *pat
 			 * it's bound to cause issues */
 			if (sc1 != BOULDER && sc2 != BOULDER)
 				return false; // neither corner is a boulder, we may not pass
-			/*
-			   else if (position.branch == BRANCH_SOKOBAN)
-			   return false; // in sokoban we can't pass by boulders diagonally
-			   */
+			//else if (position.branch == BRANCH_SOKOBAN)
+			//	return false; // in sokoban we can't pass by boulders diagonally
 		}
 		//if (polymorphed_to_grid_bug)
 		//      return false;

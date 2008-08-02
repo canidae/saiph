@@ -1,7 +1,7 @@
 #include "Beatitude.h"
 
 /* constructors */
-Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_beatitude(false) {
+Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_beatitude(false), got_drop_menu(false) {
 }
 
 /* methods */

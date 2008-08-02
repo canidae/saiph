@@ -87,7 +87,7 @@ class Level {
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
 		unsigned char shortestPath(const PathMap &pathmap, const Point &target, bool allow_illegal_last_move, int *moves);
-		void updatePathMap(const Point &point, PathMap *pathmap);
+		void updatePathMap(Point from, PathMap *pathmap);
 		bool updatePathMapHelper(const Point &to, const Point &from, PathMap *pathmap);
 
 		/* static methods */
