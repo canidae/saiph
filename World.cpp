@@ -79,7 +79,7 @@ void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 	}
 }
 
-void World::fetchMessages() {
+bool World::fetchMessages() {
 	/* even yet a try on fetching messages sanely */
 	question = false; // we can do this as a question max last 1 turn
 	msg_str = &data[data_size - sizeof (MORE)];
@@ -126,7 +126,7 @@ void World::fetchMessages() {
 		/* request the remaining messages */
 		connection->transmit(" ");
 		update();
-		return;
+		return false;
 	} else if (cursor.row == 0) {
 		/* we might have a question.
 		 * it seems like last 4 bytes always are " ^[[K" when we got a question,
@@ -192,11 +192,12 @@ void World::fetchMessages() {
 		string::size_type fns = msg_str.find_first_not_of(" ");
 		string::size_type lns = msg_str.find_last_not_of(" ");
 		if (fns == string::npos || lns == string::npos || fns >= lns)
-			return; // blank line?
+			return true; // blank line?
 		msg_str = msg_str.substr(fns, lns - fns + 1);
 		messages.append(msg_str);
 		messages.append(2, ' ');
 	}
+	return true;
 }
 
 void World::handleEscapeSequence(int *pos, int *color) {
@@ -429,7 +430,8 @@ void World::update(int buffer_pos) {
 		}
 	}
 
-	fetchMessages();
+	if (!fetchMessages())
+		return; // fetchMessages requested --More--
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
@@ -442,7 +444,7 @@ void World::update(int buffer_pos) {
 	} else if (!menu && !question) {
 		/* hmm, this is suspicious.
 		 * it looks like we didn't get all the data, try to fetch the rest */
-		*debugfile << WORLD_DEBUG_NAME << "EXPECTED MORE DATA: ";
+		*debugfile << WORLD_DEBUG_NAME << "EXPECTED MORE DATA (received " << data_size << " bytes): ";
 		for (int a = 0; a < data_size; ++a)
 			*debugfile << data[a];
 		*debugfile << endl;

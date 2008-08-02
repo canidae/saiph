@@ -65,7 +65,7 @@ class World {
 		void addChangedLocation(const Point &point);
 		void fetchMenu();
 		void fetchMenuText(int stoprow, int startcol, bool addspaces);
-		void fetchMessages();
+		bool fetchMessages();
 		void handleEscapeSequence(int *pos, int *color);
 		void update(int buffer_pos = 0);
 };
