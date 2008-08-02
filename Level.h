@@ -65,6 +65,7 @@ class Level {
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &from, const Point &to, bool allow_illegal_last_move, int *moves);
 		void updateMapPoint(const Point &point, unsigned char symbol, int color);
+		void updateMonsters();
 		void updatePathMap();
 		void updatePointPathMap(const Point &point);
 

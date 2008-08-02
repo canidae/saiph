@@ -258,8 +258,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			if (symbol == INVERSE)
 				old_symbol = PET;
 			else
-				old_symbol = symbol;
-			if (m->second.symbol == old_symbol && m->second.color == color)
+				old_symbol = saiph->world->view[m->first.row][m->first.col];
+			if (m->second.symbol == old_symbol && m->second.color == saiph->world->color[m->first.row][m->first.col])
 				continue; // this monster already is on its square
 			/* see if this monster is closer than the last found monster */
 			int distance = max(abs(m->first.row - point.row), abs(m->first.col - point.col));
@@ -281,22 +281,25 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			monsters[point] = Monster(msymbol, color);
 		}
 	}
+}
+
+void Level::updateMonsters() {
 	/* remove monsters that seems to be gone
 	 * and make monsters we can't see !visible */
 	for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ) {
-		unsigned char msymbol;
-		if (color == INVERSE)
-			msymbol = PET;
+		unsigned char symbol;
+		if (saiph->world->color[m->first.row][m->first.col] == INVERSE)
+			symbol = PET;
 		else
-			msymbol = symbol;
+			symbol = saiph->world->view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (symbol == m->second.symbol && color == m->second.color);
+		m->second.visible = (symbol == m->second.symbol && saiph->world->color[m->first.row][m->first.col] == m->second.color);
 		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
 		}
-		if (symbol == m->second.symbol && color == m->second.color) {
+		if (symbol == m->second.symbol && saiph->world->color[m->first.row][m->first.col] == m->second.color) {
 			/* we can still see the monster */
 			++m;
 			continue;
@@ -306,8 +309,6 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 		/* remove monster from list */
 		monsters.erase(m++);
 	}
-	/* update map used for pathing */
-	updatePathMap();
 }
 
 void Level::updatePathMap() {

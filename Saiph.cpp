@@ -234,7 +234,9 @@ bool Saiph::run() {
 		/* update changed symbols */
 		for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
 			levels[position.level].updateMapPoint(*c, (unsigned char) world->view[c->row][c->col], world->color[c->row][c->col]);
-		/* update pathmap for player */
+		/* update monsters */
+		levels[position.level].updateMonsters();
+		/* update pathmap */
 		levels[position.level].updatePathMap();
 	}
 	/* print maps so we see what we're doing */
