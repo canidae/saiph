@@ -528,7 +528,8 @@ void Food::parseMessages(const string &messages) {
 			/* since we already got the "what do you want to eat?" prompt,
 			 * it's safe to remove it from stash here.
 			 * the corpse will be "partially eaten" if we're interrupted */
-			//saiph->removeItemFromStash(saiph->position, item);
+			/* this is a hack */
+			saiph->levels[saiph->position.level].stashes.erase(saiph->position);
 		} else {
 			command = NO;
 		}
