@@ -6,7 +6,7 @@ Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph) {
 }
 
 /* methods */
-void Health::begin() {
+void Health::analyze() {
 	/* do something if our health is low */
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;

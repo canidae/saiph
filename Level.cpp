@@ -214,7 +214,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 		if (s != stashes.end()) {
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
-				s->second.turn_changed = saiph->world->player.turn;
+				if (s->second.top_symbol != ILLEGAL_ITEM)
+					s->second.turn_changed = saiph->world->player.turn;
 				s->second.top_symbol = symbol;
 				s->second.top_color = color;
 			}
@@ -316,7 +317,7 @@ void Level::addItemToStash(const Point &point, const Item &item) {
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);
 	if (s != stashes.end()) {
-		s->second.addItem(item);
+		s->second.items.push_back(item);
 		return;
 	}
 	/* new stash */
@@ -328,8 +329,10 @@ void Level::addItemToStash(const Point &point, const Item &item) {
 void Level::clearStash(const Point &point) {
 	/* clear the contents of a stash */
 	map<Point, Stash>::iterator s = stashes.find(point);
-	if (s != stashes.end())
+	if (s != stashes.end()) {
 		s->second.items.clear();
+		s->second.top_symbol = ILLEGAL_ITEM;
+	}
 }
 
 unsigned char Level::shortestPath(const PathMap &pathmap, const Point &target, bool allow_illegal_last_move, int *moves) {
@@ -340,7 +343,7 @@ unsigned char Level::shortestPath(const PathMap &pathmap, const Point &target, b
 	const PathNode *node = &pathmap.nodes[target.row][target.col];
 	*moves = 0;
 	if (node->cost == 0)
-		return REST; // pathing to center of map?
+		return MOVE_NOWHERE; // pathing to center of map?
 	++*moves;
 	unsigned char move = ILLEGAL_MOVE;
 	if (allow_illegal_last_move && node->nextnode == NULL) {
@@ -432,7 +435,7 @@ void Level::updatePathMap(Point from, PathMap *pathmap) {
 	}
 	pathing_queue[0] = from;
 	pathmap->nodes[from.row][from.col].cost = 0;
-	pathmap->nodes[from.row][from.col].move = REST;
+	pathmap->nodes[from.row][from.col].move = MOVE_NOWHERE;
 	int curnode = 0;
 	int nodes = 1;
 	while (curnode < nodes) {

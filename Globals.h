@@ -65,25 +65,28 @@
 #define MOVE_SE 'n'
 #define MOVE_UP '<'
 #define MOVE_DOWN '>'
+#define MOVE_NOWHERE '.'
 #define ILLEGAL_MOVE 0
 /* actions */
 #define ILLEGAL_ACTION 0
 #define DIP "#dip\n"
-#define DROP 'D'
-#define EAT 'e'
-#define ENGRAVE 'E'
-#define KICK 4
+#define DROP "D"
+#define EAT "e"
+#define ENGRAVE "E"
+#define INVENTORY "i"
+#define KICK ""
 #define LOOK ":"
-#define OPEN 'o'
-#define PICKUP ','
+#define NEXT_PAGE " "
+#define OPEN "o"
+#define PICKUP ","
 #define PRAY "#pray\n"
-#define REST '.'
-#define SEARCH 's'
-#define THROW 't'
+#define REST "."
+#define SEARCH "s"
+#define THROW "t"
 /* common answers */
-#define HANDS '-'
-#define NO 'n'
-#define YES 'y'
+#define HANDS "-"
+#define NO "n"
+#define YES "y"
 /* elbereth */
 #define ELBERETH "Elbereth" // note the missing "\n". we'll search for Elbereth, can't have a "\n" then
 /* dungeon symbols */
@@ -158,6 +161,7 @@
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
 #define MESSAGE_DOOR_OPENS "  The door opens.  "
 #define MESSAGE_DOOR_RESISTS "  The door resists!  "
+#define MESSAGE_DROP_WHAT_TYPE "  Drop what type of items?  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
 #define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "

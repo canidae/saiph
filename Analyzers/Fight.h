@@ -4,12 +4,13 @@
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
 /* priorities */
-#define FIGHT_MOVE_PRIORITY 325
 #define FIGHT_ATTACK_PRIORITY 450
 #define FIGHT_BLUE_E_PRIORITY 30
-#define FIGHT_BLUE_AT_PRIORITY ILLEGAL_PRIORITY
-#define FIGHT_WHITE_AT_PRIORITY ILLEGAL_PRIORITY
+#define FIGHT_MOVE_PRIORITY 325
 #define FIGHT_PICKUP_PRIORITY 425
+/* used for finding thrown weapons */
+#define FIGHT_NOT_CHECKED_THROWN_WEAPONS 0
+#define FIGHT_NO_THROWN_WEAPONS 1
 
 /* forward declare */
 class Fight;
@@ -32,7 +33,7 @@ class Fight : public Analyzer {
 		Fight(Saiph *saiph);
 
 		/* methods */
-		void finish();
+		void analyze();
 		void parseMessages(const string &messages);
 
 	private:
@@ -42,5 +43,8 @@ class Fight : public Analyzer {
 		string command3;
 		list<string> thrown;
 		Request req;
+
+		/* methods */
+		unsigned char gotThrown();
 };
 #endif

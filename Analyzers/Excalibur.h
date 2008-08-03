@@ -25,8 +25,7 @@ class Excalibur : public Analyzer {
 		Excalibur(Saiph *saiph);
 
 		/* methods */
-		void complete();
-		void finish();
+		void analyze();
 		void parseMessages(const string &messages);
 
 	private:

@@ -369,7 +369,7 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 }
 
 /* methods */
-void Food::finish() {
+void Food::analyze() {
 	/* update safe_monster with seen monsters */
 	safe_monster.clear();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
@@ -435,7 +435,7 @@ void Food::finish() {
 			}
 		}
 	}
-	if (saiph->on_ground != NULL && saiph->world->player.hunger < SATIATED) {
+	if (saiph->on_ground != NULL && saiph->world->player.hunger < SATIATED && priority < FOOD_EAT_CORPSE_PRIORITY) {
 		map<Point, int>::iterator s = safe_eat_loc.find(saiph->position);
 		if (s != safe_eat_loc.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
@@ -445,8 +445,7 @@ void Food::finish() {
 			}
 			/* there are items here, we should look for corpses to eat */
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-				string::size_type pos;
-				if (((pos = i->name.find(FOOD_CORPSES)) != string::npos && pos == i->name.size() - sizeof (FOOD_CORPSES) + 1) || ((pos = i->name.find(FOOD_CORPSE)) != string::npos && pos == i->name.size() - sizeof (FOOD_CORPSE) + 1)) {
+				if (i->name.find(FOOD_CORPSES, i->name.size() - sizeof (FOOD_CORPSES) + 1) != string::npos || i->name.find(FOOD_CORPSE, i->name.size() - sizeof (FOOD_CORPSE) + 1) != string::npos) {
 					/* there's a corpse in the stash, is it edible? */
 					if (safeToEat(i->name)) {
 						/* it is, and we know we can eat corpses on this position */
@@ -459,11 +458,10 @@ void Food::finish() {
 			}
 		}
 	}
-	if (saiph->on_ground != NULL) {
+	if (saiph->on_ground != NULL && priority < FOOD_PICKUP_PRIORITY) {
 		/* there are items here, we should look for food to pick up */
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FOOD_PICKUP_PRIORITY;
-		req.coordinate = saiph->position;
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 				if (i->name == *f) {
@@ -494,11 +492,10 @@ void Food::parseMessages(const string &messages) {
 					/* we should pick up this */
 					command = p->first;
 					priority = PRIORITY_SELECT_ITEM;
-					continue;
+					return;
 				}
 			}
 		}
-		return;
 	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos) {
 		/* asks if we should eat the stuff on the floor */
 		priority = PRIORITY_CONTINUE_ACTION;

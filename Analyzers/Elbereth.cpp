@@ -25,13 +25,13 @@ void Elbereth::parseMessages(const string &messages) {
 		did_look = false;
 	}
 	/* set up next command */
-	if (command.size() > 0 && command[0] == ENGRAVE && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
+	if (command == ENGRAVE && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = HANDS;
-	} else if (command.size() > 0 && command[0] == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
+	} else if (command == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = append ? YES : NO;
-	} else if (command.size() > 0 && (command[0] == YES || command[0] == NO || command[0] == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
+	} else if ((command == YES || command == NO || command == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = ELBERETH "\n";
 	}

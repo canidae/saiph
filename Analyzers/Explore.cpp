@@ -5,21 +5,15 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 	memset(search, 0, sizeof (search));
 	memset(ep_added, false, sizeof (ep_added));
 	memset(visited, false, sizeof (visited));
-	move = ILLEGAL_MOVE;
 }
 
 /* methods */
-void Explore::complete() {
-	if (move == SEARCH)
-		++search[saiph->position.level][saiph->world->player.row][saiph->world->player.col];
-}
-
-void Explore::finish() {
+void Explore::analyze() {
 	/* figure out which place to explore */
 	/* make the place the player stands on "visited" */
 	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
 	int best_moves = INT_MAX;
-	move = ILLEGAL_MOVE;
+	command.clear();
 	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
 		if (search[saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 			/* this place is fully searched out. remove it from the list */
@@ -110,16 +104,16 @@ void Explore::finish() {
 			continue;
 		}
 		int moves = 0;
-		unsigned char nextmove = saiph->shortestPath(*e, false, &moves);
+		unsigned char move = saiph->shortestPath(*e, false, &moves);
 		++e;
 		if (cur_priority == priority && moves > best_moves)
 			continue;
-		if (nextmove == ILLEGAL_MOVE)
+		if (move == ILLEGAL_MOVE)
 			continue;
-		if (nextmove == REST)
-			move = SEARCH;
+		if (move == MOVE_NOWHERE)
+			command = SEARCH;
 		else
-			move = nextmove;
+			command = move;
 		priority = cur_priority;
 		best_moves = moves;
 	}
@@ -128,17 +122,21 @@ void Explore::finish() {
 		map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin();
 		if (down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end()) {
 			int moves = 0;
-			unsigned char nextmove = saiph->shortestPath(down->first, false, &moves);
-			if (nextmove != ILLEGAL_MOVE) {
-				if (nextmove == REST)
-					move = MOVE_DOWN;
+			unsigned char move = saiph->shortestPath(down->first, false, &moves);
+			if (move != ILLEGAL_MOVE) {
+				if (move == MOVE_NOWHERE)
+					command = MOVE_DOWN;
 				else
-					move = nextmove;
+					command = move;
 				priority = 60;
 			}
 		}
 	}
-	command = move;
+}
+
+void Explore::complete() {
+	if (command == SEARCH)
+		++search[saiph->position.level][saiph->world->player.row][saiph->world->player.col];
 }
 
 void Explore::inspect(const Point &point) {

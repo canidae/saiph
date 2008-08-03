@@ -35,8 +35,8 @@ class Explore : public Analyzer {
 		Explore(Saiph *saiph);
 
 		/* methods */
+		void analyze();
 		void complete();
-		void finish();
 		void inspect(const Point &point);
 
 	private:
@@ -46,6 +46,5 @@ class Explore : public Analyzer {
 		bool ep_added[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		bool visited[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		list<Point> explore;
-		unsigned char move;
 };
 #endif

@@ -5,17 +5,18 @@ Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), cur_doo
 }
 
 /* methods */
-void Door::finish() {
+void Door::analyze() {
 	/* open closed doors */
+	command2.clear();
 	if (saiph->best_priority > DOOR_OPEN_PRIORITY)
 		return; // another analyzer got higher priority than we ever will have
+	/* go to nearest closed door and get it open somehow */
 	int least_moves = INT_MAX;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
 		int moves = -1;
 		unsigned char move = saiph->shortestPath(d->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
 			continue;
-		cur_door = d->first;
 		if (moves == 1) {
 			/* open/pick/kick door */
 			if (d->second != 1)
@@ -23,30 +24,27 @@ void Door::finish() {
 			else
 				command = KICK;
 			command2 = move;
+			cur_door = d->first;
 			priority = DOOR_OPEN_PRIORITY;
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
 			command = move;
-			command2 = "";
 			priority = DOOR_OPEN_PRIORITY;
 			least_moves = moves;
 		}
 	}
 	if (least_moves < INT_MAX)
 		return;
-	cur_door.row = -1;
-	cur_door.col = -1;
-	command = "";
-	command2 = "";
 	priority = ILLEGAL_PRIORITY;
 }
 
 void Door::parseMessages(const string &messages) {
-	if (command2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+	if (!command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		/* which direction we should open/pick/kick */
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = command2;
+		command2.clear();
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbol(cur_door, CLOSED_DOOR, 1);

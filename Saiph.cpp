@@ -65,7 +65,7 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 		return ILLEGAL_MOVE;
 	} else if (point == position) {
 		/* eh? don't do this */
-		return REST;
+		return MOVE_NOWHERE;
 	} else if (point.row == position.row) {
 		/* aligned horizontally */
 		if (point.col > position.col) {
@@ -258,17 +258,6 @@ bool Saiph::run() {
 		}
 	}
 
-	/* call begin() in analyzers */
-	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-			(*a)->begin();
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
-				best_analyzer = *a;
-			}
-		}
-	}
-
 	/* inspect the dungeon */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
@@ -281,10 +270,10 @@ bool Saiph::run() {
 		}
 	}
 
-	/* call finish() in analyzers */
+	/* call analyze() in analyzers */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-			(*a)->finish();
+			(*a)->analyze();
 			if ((*a)->priority > best_priority) {
 				best_priority = (*a)->priority;
 				best_analyzer = *a;
@@ -361,7 +350,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 				} else if (s->second == target.level) {
 					/* these stairs leads to the right level */
 					unsigned char move = levels[levelqueue[pivot]].shortestPath(up_or_down[pivot], allow_illegal_last_move, moves);
-					if (move == REST)
+					if (move == MOVE_NOWHERE)
 						return MOVE_UP;
 					return move;
 				} else {
@@ -380,7 +369,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 				} else if (s->second == target.level) {
 					/* these stairs leads to the right level */
 					unsigned char move = levels[levelqueue[pivot]].shortestPath(up_or_down[pivot], allow_illegal_last_move, moves);
-					if (move == REST)
+					if (move == MOVE_NOWHERE)
 						return MOVE_DOWN;
 					return move;
 				} else {

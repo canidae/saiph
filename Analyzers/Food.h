@@ -62,7 +62,7 @@ class Food : public Analyzer {
 		Food(Saiph *saiph);
 
 		/* methods */
-		void finish();
+		void analyze();
 		void parseMessages(const string &messages);
 
 	private:

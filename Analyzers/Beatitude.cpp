@@ -5,16 +5,7 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 }
 
 /* methods */
-void Beatitude::begin() {
-	if (!saiph->world->menu && got_drop_menu) {
-		check_beatitude = false;
-		got_drop_menu = false;
-		/* we should look on the ground so we'll pick up the stuff we just dropped,
-		 * if we still want it, that is */
-		command = LOOK;
-		priority = PRIORITY_LOOK;
-		return;
-	}
+void Beatitude::analyze() {
 	if (got_drop_menu || saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
 		return;
 	unsigned char move = ILLEGAL_MOVE;
@@ -37,14 +28,14 @@ void Beatitude::begin() {
 	}
 	if (!check_beatitude)
 		return;
-	/* path to nearest altar */
+	/* path to nearest altar (if we haven't already) */
 	if (move == ILLEGAL_MOVE) {
 		int moves = 0;
 		move = saiph->shortestPath(ALTAR, false, &moves);
 	}
 	if (move == ILLEGAL_MOVE)
 		return; // don't know of any altars
-	if (move == REST) {
+	if (move == MOVE_NOWHERE) {
 		/* we're standing on the altar, drop items */
 		command = DROP;
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
@@ -56,14 +47,20 @@ void Beatitude::begin() {
 }
 
 void Beatitude::parseMessages(const string &messages) {
+	if (!saiph->world->menu && got_drop_menu) {
+		/* no longer got drop menu */
+		check_beatitude = false;
+		got_drop_menu = false;
+		/* we should look on the ground so we'll pick up the stuff we just dropped,
+		 * if we still want it, that is */
+		command = LOOK;
+		priority = PRIORITY_LOOK;
+		return;
+	}
 	if (!check_beatitude || !saiph->world->menu)
 		return;
-	if (check_beatitude && command.size() == 1 && command[0] == DROP && messages.find(BEATITUDE_DROP_WHAT_TYPE, 0) != string::npos) {
-		command = 'a';
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (check_beatitude && saiph->drop.size() > 0 && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR) {
+	if (check_beatitude && saiph->drop.size() > 0 && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR)
 		got_drop_menu = true;
-	}
 	if (got_drop_menu) {
 		/* drop stuff we don't know beatitude of */
 		for(map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
@@ -75,7 +72,7 @@ void Beatitude::parseMessages(const string &messages) {
 			}
 		}
 		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
-		command = " ";
+		command = NEXT_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
 	}
 }

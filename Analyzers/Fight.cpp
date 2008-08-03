@@ -2,6 +2,7 @@
 
 /* constructors */
 Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
+	/* thrown weapons */
 	thrown.push_back("dwarvish spear");
 	thrown.push_back("dwarvish spears");
 	thrown.push_back("silver spear");
@@ -22,119 +23,93 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 	thrown.push_back("daggers");
 	thrown.push_back("orcish dagger");
 	thrown.push_back("orcish daggers");
-	thrown.push_back("poisoned dart");
-	thrown.push_back("poisoned darts");
+	//thrown.push_back("poisoned dart"); // damages our alignment
+	//thrown.push_back("poisoned darts"); // ^^
 	thrown.push_back("dart");
 	thrown.push_back("darts");
 }
 
 /* methods */
-void Fight::finish() {
-	command = "";
+void Fight::analyze() {
+	if (FIGHT_ATTACK_PRIORITY < saiph->best_priority)
+		return;
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
 		command = MOVE_NW; // doesn't matter which direction
 		priority = FIGHT_ATTACK_PRIORITY;
 		return;
 	}
+	/* fight monsters */
+	unsigned char got_thrown = FIGHT_NOT_CHECKED_THROWN_WEAPONS;
+	int min_distance = INT_MAX;
+	int min_moves = INT_MAX;
+	map<Point, Monster>::iterator best_monster = saiph->levels[saiph->position.level].monsters.end();
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
+		if (m->second.symbol == PET)
+			continue; // we're not fighting pets :)
+		else if (m->second.symbol == '@' && m->second.color == BLUE)
+			continue; // don't attack blue @ for now
+		else if (m->second.symbol == '@' && m->second.color == WHITE)
+			continue; // don't attack white @ for now
+		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
+		if (distance > min_distance)
+			continue; // we'll always attack nearest monster
+		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
+		if ((distance > 1 || blue_e) && distance <= saiph->world->player.strength / 2) {
+			/* monster is within throw distance, or it's a blue 'e' */
+			unsigned char in_line = saiph->directLine(m->first, false);
+			if (in_line != ILLEGAL_MOVE) {
+				/* we got a direct line to the monster */
+				if (got_thrown == FIGHT_NOT_CHECKED_THROWN_WEAPONS)
+					got_thrown = gotThrown();
+				if (got_thrown != FIGHT_NO_THROWN_WEAPONS) {
+					/* got thrown weapons */
+					if (priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
+						continue; // already got a target
+					priority = FIGHT_ATTACK_PRIORITY;
+					min_distance = distance;
+					command = THROW;
+					command2 = got_thrown;
+					command3 = in_line;
+					continue;
+				}
+			}
+		}
+		/* we couldn't throw something at the monster, try moving to or melee it */
+		if (blue_e)
+			continue; // never melee blue 'e'
+		int moves = 0;
+		unsigned char move = saiph->shortestPath(m->first, true, &moves);
+		if (move == ILLEGAL_MOVE)
+			continue; // unable to path to monster
+		if (moves > 1 && priority > FIGHT_MOVE_PRIORITY)
+			continue; // we must move to monster, but we got something else with higher priority
+		if (moves > min_moves)
+			continue; // we know of a monster closer than this one
+		if (moves == 1 && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
+			continue; // already got a target
+		priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
+		min_distance = distance;
+		min_moves = moves;
+		command = move;
+	}
+
 	/* look for thrown weapons on ground */
+	if (FIGHT_PICKUP_PRIORITY < saiph->best_priority)
+		return;
 	if (saiph->on_ground != NULL) {
 		/* there are items here, we should look for weapons */
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FIGHT_PICKUP_PRIORITY;
-		req.coordinate = saiph->position;
-		bool die = false;
-		for (list<Item>::iterator i = saiph->on_ground->items.begin(); !die && i != saiph->on_ground->items.end(); ++i) {
+		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (i->name == *t) {
 					/* request that someone loot this stash */
 					saiph->request(req);
-					die = true;
-					break;
+					return;
 				}
 			}
 		}
-	}
-	/* fight nearest monster */
-	int fewest_moves = INT_MAX;
-	unsigned char best_move = ILLEGAL_MOVE;
-	map<Point, Monster>::iterator best_monster = saiph->levels[saiph->position.level].monsters.end();
-	bool enemy_in_line = false;
-	unsigned char got_thrown = 0;
-	req.request = REQUEST_UPDATED_INVENTORY;
-	req.priority = PRIORITY_LOOK;
-	if (saiph->request(req)) {
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); got_thrown == 0 && i != saiph->inventory.end(); ++i) {
-			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-				if (i->second.name == *t) {
-					got_thrown = i->first;
-					break;
-				}
-			}
-		}
-	}
-	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-		if (m->second.symbol == PET)
-			continue; // we're not fighting pets :)
-		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
-		int moves = -1;
-		unsigned char move = saiph->shortestPath(m->first, true, &moves);
-		if (move == ILLEGAL_MOVE)
-			continue; // can't path to this monster
-		int cur_priority;
-		bool direct_line = false;
-		if (got_thrown == 0 && m->second.symbol == 'e' && m->second.color == BLUE) {
-			/* only fight blue e when we can throw stuff at it or when we're cornered */
-			cur_priority = FIGHT_BLUE_E_PRIORITY;
-		} else if (m->second.symbol == '@' && m->second.color == BLUE) {
-			/* don't attack blue @ for now */
-			cur_priority = FIGHT_BLUE_AT_PRIORITY;
-		} else if (m->second.symbol == '@' && m->second.color == WHITE) {
-			/* don't attack white @ for now */
-			cur_priority = FIGHT_WHITE_AT_PRIORITY;
-		} else if (got_thrown && m->second.visible && distance <= saiph->world->player.strength / 2) {
-			unsigned char direct_move = saiph->directLine(m->first, false);
-			if (direct_move != ILLEGAL_MOVE) {
-				/* seemingly we can throw stuff at the enemy */
-				direct_line = true;
-				cur_priority = FIGHT_ATTACK_PRIORITY;
-				move = direct_move; // or we'll throw in wild direction while standing in doorways, aiming diagonally
-				moves = distance; // or we might try to pass somewhere we cannot
-			} else {
-				cur_priority = (moves == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
-			}
-		} else {
-			cur_priority = (moves == 1 ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY);
-		}
-		saiph->debugfile << "[Fight      ] Monster: " << got_thrown << ", " << enemy_in_line << ", " << direct_line << ", " << m->second.visible << ", " << moves << ", " << m->second.symbol << ", " << m->second.color << ", " << cur_priority << endl;
-		if (cur_priority < priority) {
-			continue; // we've already found another monster with higher priority
-		} else if (enemy_in_line && !direct_line) {
-			continue; // we got a monster we can throw at, and we can't throw at this monster
-		} else if ((!enemy_in_line && !direct_line) || (enemy_in_line && direct_line)) {
-			/* either we can't throw at neither monster, or we can throw at them both */
-			if (moves > fewest_moves)
-				continue; // best_monster is closer
-			else if (moves == fewest_moves && m->second.symbol != '@' && m->second.symbol != 'A')
-				continue; // monster is just as far away, and it's not a '@' or 'A'
-		}
-		enemy_in_line = direct_line;
-		priority = cur_priority;
-		fewest_moves = moves;
-		best_move = move;
-		best_monster = m;
-	}
-	if (best_monster == saiph->levels[saiph->position.level].monsters.end())
-		return;
-	saiph->debugfile << "[Fight      ] " << got_thrown << ", " << enemy_in_line << ", " << best_monster->second.visible << ", " << fewest_moves << ", " << best_monster->second.symbol << ", " << best_monster->second.color << endl;
-	if (got_thrown != 0 && enemy_in_line && best_monster->second.visible && fewest_moves <= saiph->world->player.strength / 2 && (fewest_moves > 1 || (best_monster->second.symbol == 'e' && best_monster->second.color == BLUE))) {
-		/* throw */
-		command = THROW;
-		command2 = got_thrown;
-		command3 = best_move;
-	} else {
-		/* move or melee */
-		command = best_move;
 	}
 }
 
@@ -145,11 +120,11 @@ void Fight::parseMessages(const string &messages) {
 	} else if (saiph->world->question && command3 != "" && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
 		command = command2;
 		command2 = command3;
-		command3 = "";
+		command3.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (saiph->world->question && command2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		command = command2;
-		command2 = "";
+		command2.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
@@ -167,4 +142,20 @@ void Fight::parseMessages(const string &messages) {
 			}
 		}
 	}
+}
+
+/* private methods */
+unsigned char Fight::gotThrown() {
+	/* return best weapon we can throw, if any */
+	req.request = REQUEST_UPDATED_INVENTORY;
+	req.priority = PRIORITY_LOOK;
+	if (saiph->request(req)) {
+		for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
+			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+				if (i->second.name == *t)
+					return i->first;
+			}
+		}
+	}
+	return FIGHT_NO_THROWN_WEAPONS;
 }

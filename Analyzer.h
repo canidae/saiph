@@ -28,9 +28,8 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		/* methods */
-		virtual void begin();
+		virtual void analyze();
 		virtual void complete();
-		virtual void finish();
 		virtual void inspect(const Point &point);
 		virtual void parseMessages(const string &messages);
 		virtual bool request(const Request &request);

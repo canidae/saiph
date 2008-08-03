@@ -5,12 +5,7 @@ Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excali
 }
 
 /* methods */
-void Excalibur::complete() {
-	if (command2 == "")
-		command = "";
-}
-
-void Excalibur::finish() {
+void Excalibur::analyze() {
 	if (saiph->best_priority > EXCALIBUR_DIP_PRIORITY)
 		return;
 	if (excalibur_exists)
@@ -32,7 +27,7 @@ void Excalibur::finish() {
 	unsigned char move = saiph->shortestPath(FOUNTAIN, false, &moves);
 	if (move == ILLEGAL_MOVE)
 		return; // don't know of any fountains
-	if (move == REST) {
+	if (move == MOVE_NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;
@@ -40,6 +35,7 @@ void Excalibur::finish() {
 	} else {
 		/* move towards fountain */
 		command = move;
+		command2.clear();
 		priority = EXCALIBUR_DIP_PRIORITY;
 	}
 }
@@ -50,12 +46,11 @@ void Excalibur::parseMessages(const string &messages) {
 	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
 		command = command2;
-		command2 = YES;
+		command2.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (command != "" && command2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
 		/* if we want to dip in fountain? sure */
-		command = command2;
-		command2 = "";
+		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
 		/* alright! */

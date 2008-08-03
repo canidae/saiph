@@ -5,7 +5,7 @@ Wand::Wand(Saiph *saiph) : Analyzer("Wand"), saiph(saiph) {
 }
 
 /* methods */
-void Wand::begin() {
+void Wand::analyze() {
 	if (saiph->on_ground != NULL) {
 		/* if there's a wand here, pick it up */
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
@@ -14,9 +14,8 @@ void Wand::begin() {
 			/* request that someone loot this stash */
 			req.request = REQUEST_LOOT_STASH;
 			req.priority = WAND_PICKUP_PRIORITY;
-			req.coordinate = saiph->position;
 			saiph->request(req);
-			break;
+			return;
 		}
 	}
 }
@@ -28,6 +27,7 @@ void Wand::parseMessages(const string &messages) {
 				continue; // not a wand
 			command = p->first;
 			priority = PRIORITY_SELECT_ITEM;
+			return;
 		}
 	}
 }

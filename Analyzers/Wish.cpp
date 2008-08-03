@@ -10,7 +10,7 @@ void Wish::parseMessages(const string &messages) {
 	if (messages.find(WISH_MESSAGE, 0) != string::npos) {
 		/* we actually got a wish?
 		 * yay, well, just wish for a gdsm for the time being */
-		command = *(wishes.begin());
+		command = wishes[0];
 		command.append("\n");
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;

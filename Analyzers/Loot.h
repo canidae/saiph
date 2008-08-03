@@ -1,16 +1,13 @@
 #ifndef LOOT_H
 /* defines */
 #define LOOT_H
-/* if a stash change within this amount of turns since we last visited it, don't revisit */
-#define LOOT_REVISIT_STASH_TIME 1
 /* priorities */
-#define LOOT_VISIT_STASH_PRIORITY 250
+#define LOOT_DISCOVER_STASH_PRIORITY 250
 
 /* forward declare */
 class Loot;
 
 /* includes */
-#include <list>
 #include <map>
 #include <string>
 #include "../Analyzer.h"
@@ -23,15 +20,14 @@ class Loot;
 /* namespace */
 using namespace std;
 
-/* explores loot locations and picks up? */
+/* visit loot locations, open & close loot menus */
 class Loot : public Analyzer {
 	public:
 		/* constructors */
 		Loot(Saiph *saiph);
 
 		/* methods */
-		void complete();
-		void finish();
+		void analyze();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
@@ -39,8 +35,8 @@ class Loot : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool dirty_inventory;
-		map<int, map<Point, int> > turn_last_changed;
-		list<Point> visit;
-		map<Coordinate, int> loot;
+		bool listing_inventory;
+		map<Point, int> discover_stash; // location, turn_changed
+		map<Coordinate, int> visit_stash; // location, priority
 };
 #endif

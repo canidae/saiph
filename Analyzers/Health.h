@@ -26,7 +26,7 @@ class Health : public Analyzer {
 		Health(Saiph *saiph);
 
 		/* methods */
-		void begin();
+		void analyze();
 
 	private:
 		/* variables */

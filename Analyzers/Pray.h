@@ -3,6 +3,8 @@
 #define PRAY_H
 /* turns between safe to pray */
 #define PRAY_PRAYER_TIMEOUT 1000
+/* messages */
+#define PRAY_FINISHED_PRAYING "  You finish your prayer.  "
 
 /* forward declare */
 class Pray;
@@ -24,7 +26,6 @@ class Pray : public Analyzer {
 		Pray(Saiph *saiph);
 
 		/* methods */
-		void complete();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 

@@ -24,9 +24,5 @@ class Stash {
 
 		/* constructors */
 		Stash(int turn_changed = -1, unsigned char top_symbol = ILLEGAL_ITEM, int top_color = NO_COLOR);
-
-		/* methods */
-		void addItem(const Item &item);
-		void removeItem(const Item &item);
 };
 #endif
