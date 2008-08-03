@@ -1,7 +1,7 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), listing_inventory(false) {
+Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), listing_stuff(false) {
 }
 
 /* methods */
@@ -43,7 +43,7 @@ void Loot::analyze() {
 	min_moves = INT_MAX;
 	best_move = ILLEGAL_MOVE;
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
-		map<Point, int>::iterator d = discover_stash.find(s->first);
+		map<Coordinate, int>::iterator d = discover_stash.find(Coordinate(saiph->position.level, s->first));
 		if (d == discover_stash.end() || d->second != s->second.turn_changed) {
 			/* new or changed stash, visit it if it's closer */
 			int moves = 0;
@@ -71,23 +71,23 @@ void Loot::analyze() {
 }
 
 void Loot::parseMessages(const string &messages) {
-	if (listing_inventory && !saiph->world->menu) {
-		/* no longer listing inventory */
-		listing_inventory = false;
+	if (listing_stuff && !saiph->world->menu) {
+		/* no longer listing something */
+		listing_stuff = false;
 	}
 	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. we should look */
 		command = LOOK;
 		priority = PRIORITY_LOOK;
-	} else if (saiph->pickup.size() > 0) {
-		/* we're picking up stuff.
-		 * analyzers will by themselves decide what to pick up, so we just try to close it */
-		command = NEXT_PAGE;
-		priority = PRIORITY_CLOSE_ITEM_LIST;
+	} else if (messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
+		listing_stuff = true;
 	} else if (saiph->world->menu && command == INVENTORY) {
-		listing_inventory = true;
+		listing_stuff = true;
+		dirty_inventory = false;
 	}
-	if (listing_inventory) {
+	if (listing_stuff) {
+		/* we're listing something (inventory, pickup, drop).
+		 * we just try to close the list, the analyzers will pick up or drop at their leisure */
 		command = NEXT_PAGE;
 		priority = PRIORITY_CONTINUE_ACTION;
 	}

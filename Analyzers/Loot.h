@@ -13,7 +13,6 @@ class Loot;
 #include "../Analyzer.h"
 #include "../Coordinate.h"
 #include "../Globals.h"
-#include "../Point.h"
 #include "../Request.h"
 #include "../Saiph.h"
 
@@ -35,8 +34,8 @@ class Loot : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool dirty_inventory;
-		bool listing_inventory;
-		map<Point, int> discover_stash; // location, turn_changed
+		bool listing_stuff;
+		map<Coordinate, int> discover_stash; // location, turn_changed
 		map<Coordinate, int> visit_stash; // location, priority
 };
 #endif
