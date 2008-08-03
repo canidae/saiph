@@ -89,7 +89,7 @@ void Loot::parseMessages(const string &messages) {
 		/* we're listing something (inventory, pickup, drop).
 		 * we just try to close the list, the analyzers will pick up or drop at their leisure */
 		command = NEXT_PAGE;
-		priority = PRIORITY_CONTINUE_ACTION;
+		priority = PRIORITY_CLOSE_ITEM_LIST;
 	}
 }
 

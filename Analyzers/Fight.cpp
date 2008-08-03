@@ -137,7 +137,7 @@ void Fight::parseMessages(const string &messages) {
 					/* pick it up :) */
 					command = p->first;
 					priority = PRIORITY_SELECT_ITEM;
-					continue;
+					return;
 				}
 			}
 		}
