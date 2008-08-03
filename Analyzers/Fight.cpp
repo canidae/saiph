@@ -55,7 +55,7 @@ void Fight::analyze() {
 		if (distance > min_distance)
 			continue; // we'll always attack nearest monster
 		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
-		if ((distance > 1 || blue_e) && distance <= saiph->world->player.strength / 2) {
+		if ((distance > 1 || blue_e) && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			/* monster is within throw distance, or it's a blue 'e' */
 			unsigned char in_line = saiph->directLine(m->first, false);
 			if (in_line != ILLEGAL_MOVE) {

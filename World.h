@@ -62,7 +62,8 @@ class World {
 		unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1]; // remapping ambigous symbols
 		Point last_menu; // needed to help detect menus that persist over turns
 		bool updated_status_row; // statusrow will be updated every frame, we can use this to determine if we got all the data
-		Point last_cursor;
+		Point last_cursor; // must place the cursor where it was if we didn't get all the data
+		string last_messages; // if we didn't get all the data, then messages may be screwed
 
 		/* methods */
 		void addChangedLocation(const Point &point);

@@ -18,6 +18,7 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	updated_status_row = false;
 	last_cursor.row = 0;
 	last_cursor.col = 0;
+	last_messages = messages;
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
         /* remapping of unique symbols */
@@ -431,6 +432,7 @@ void World::update(int buffer_pos) {
 		}
 	}
 
+	last_messages = messages;
 	if (!fetchMessages())
 		return; // fetchMessages requested --More--
 
@@ -452,11 +454,11 @@ void World::update(int buffer_pos) {
 		if (received >= 0) {
 			/* set the cursor back to where it was,
 			 * set updated_status_row = false,
-			 * set messages = "  " and
+			 * set messages back to what it was before fetching them and
 			 * request the remaining data (if any) */
 			cursor = last_cursor;
 			updated_status_row = false;
-			messages = "  ";
+			messages = last_messages;
 			update(data_size);
 			return;
 		}
