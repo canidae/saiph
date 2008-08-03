@@ -149,7 +149,7 @@ void Level::parseMessages(const string &messages) {
 				++pos;
 			}
 		}
-		if (stashes[saiph->position].items.size() == pickup_count) {
+		if ((int) stashes[saiph->position].items.size() == pickup_count) {
 			/* we probably picked up everything here, remove stash */
 			stashes.erase(saiph->position);
 		}
