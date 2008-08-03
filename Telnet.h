@@ -6,7 +6,7 @@
 /* buffer for login */
 #define TELNET_BUFFER_SIZE 4096
 /* delay & attempts when reading non-blocking */
-#define TELNET_NON_BLOCKING_DELAY 10000
+#define TELNET_NON_BLOCKING_DELAY 20000
 #define TELNET_NON_BLOCKING_ATTEMPTS 100
 /* host */
 #define TELNET_NETHACK_URL "nethack.alt.org"

@@ -62,10 +62,16 @@ int Telnet::retrieve(char *buffer, int count, bool blocking) {
 		 * this means that we expected more data.
 		 * sleep a bit and read again */
 		for (int a = 0; retrieved <= 0 && a < TELNET_NON_BLOCKING_ATTEMPTS; ++a) {
-			*debugfile << "attempting to read again..." << endl;
+			*debugfile << TELNET_DEBUG_NAME << "Attempting to read more data" << endl;
 			usleep(TELNET_NON_BLOCKING_DELAY);
 			retrieved = recv(sock, buffer, count, 0);
 		}
+	}
+	if (retrieved != 0 && retrieved % 1448 == 0) {
+		/* if we get packets of size 1448 we probably didn't get it all.
+		 * since we can't be sure, we'll have to read non-blocking */
+		*debugfile << TELNET_DEBUG_NAME << "Received " << retrieved << " bytes, expecting more data" << endl;
+		retrieved += retrieve(&buffer[retrieved], count - retrieved, false);
 	}
 	if (retrieved >= 0)
 		return retrieved;
