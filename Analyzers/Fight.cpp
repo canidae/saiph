@@ -103,7 +103,7 @@ void Fight::analyze() {
 		req.priority = FIGHT_PICKUP_PRIORITY;
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-				if (i->name == *t) {
+				if (i->name == *t && i->beatitude != CURSED) {
 					/* request that someone loot this stash */
 					saiph->request(req);
 					return;

@@ -77,10 +77,10 @@ class Saiph {
 		~Saiph();
 
 		/* methods */
-		void addItemToInventory(unsigned char key, const Item &item);
+		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks);
 		void farlook(const Point &target);
-		void removeItemFromInventory(unsigned char key, const Item &item);
+		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);

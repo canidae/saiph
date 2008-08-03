@@ -45,9 +45,9 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-void Saiph::addItemToInventory(unsigned char key, const Item &item) {
+bool Saiph::addItemToInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
-		return;
+		return false;
 	debugfile << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (inventory.find(key) != inventory.end()) {
 		/* existing item, add amount */
@@ -56,6 +56,7 @@ void Saiph::addItemToInventory(unsigned char key, const Item &item) {
 		/* new item */
 		inventory[key] = item;
 	}
+	return true;
 }
 
 unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
@@ -178,17 +179,18 @@ void Saiph::farlook(const Point &target) {
 	world->executeCommand(command);
 }
 
-void Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
+bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
-		return;
+		return false;
 	map<unsigned char, Item>::iterator i = inventory.find(key);
 	if (i == inventory.end())
-		return;
+		return false;
 	debugfile << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (i->second.count > item.count)
 		i->second.count -= item.count; // we got more than we remove
 	else
 		inventory.erase(i); // removing all we got
+	return true;
 }
 
 bool Saiph::request(const Request &request) {
@@ -295,6 +297,7 @@ bool Saiph::run() {
 	}
 
 	/* let an analyzer do its command */
+	sleep(5);
 	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
 	best_analyzer->complete();

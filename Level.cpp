@@ -131,6 +131,7 @@ void Level::parseMessages(const string &messages) {
 		/* additionally, we'll assume we're picking up from the stash at this location.
 		 * this will also trigger on wishes, but meh, probably not gonna be an issue */
 		pos = 0;
+		int pickup_count = 0;
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
 				unsigned char key = messages[pos - 1];
@@ -140,12 +141,17 @@ void Level::parseMessages(const string &messages) {
 					break;
 				length = length - pos;
 				Item item(messages.substr(pos, length));
-				saiph->addItemToInventory(key, item);
+				if (saiph->addItemToInventory(key, item))
+					++pickup_count;
 				pos += length;
 			} else {
 				/* "Yak - dog food!" mess things up */
 				++pos;
 			}
+		}
+		if (stashes[saiph->position].items.size() == pickup_count) {
+			/* we probably picked up everything here, remove stash */
+			stashes.erase(saiph->position);
 		}
 	} else if ((pos = messages.find(" - ", 0)) != string::npos) {
 		/* we probably listed our inventory */

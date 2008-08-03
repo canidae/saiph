@@ -1,4 +1,6 @@
 #include "Telnet.h"
+#include <sys/time.h>
+#include <time.h>
 
 /* constructors */
 Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
@@ -73,6 +75,10 @@ int Telnet::retrieve(char *buffer, int count, bool blocking) {
 		*debugfile << TELNET_DEBUG_NAME << "Received " << retrieved << " bytes, expecting more data" << endl;
 		retrieved += retrieve(&buffer[retrieved], count - retrieved, false);
 	}
+	struct timeval tv;
+	gettimeofday(&tv, NULL);
+	*debugfile << TELNET_DEBUG_NAME << tv.tv_sec << "." << tv.tv_usec << endl;
+
 	if (retrieved >= 0)
 		return retrieved;
 	return 0;
@@ -112,5 +118,6 @@ void Telnet::stop() {
 
 /* private methods */
 int Telnet::transmit(const char *data, int length) {
+	*debugfile << TELNET_DEBUG_NAME << "Sending: '" << data << "'" << endl;
 	return send(sock, data, length, 0);
 }

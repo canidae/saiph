@@ -8,31 +8,26 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 void Loot::analyze() {
 	/* go to a stash requested visited */
 	int min_moves = INT_MAX;
-	unsigned char best_move = ILLEGAL_MOVE;
 	for (map<Coordinate, int>::iterator v = visit_stash.begin(); v != visit_stash.end(); ) {
 		if (v->second < priority) {
 			/* got something else to do with a higher priority */
 			++v;
 			continue;
-		}
-		if (saiph->levels[v->first.level].stashes.find(v->first) == saiph->levels[v->first.level].stashes.end()) {
+		} else if (saiph->levels[v->first.level].stashes.find(v->first) == saiph->levels[v->first.level].stashes.end()) {
 			/* hmm, there's no stash here */
+			visit_stash.erase(v++);
+			continue;
+		} else if (saiph->levels[v->first.level].stashes.find(saiph->position) != saiph->levels[v->first.level].stashes.end()) {
+			/* standing on stash, remove it from visit list */
 			visit_stash.erase(v++);
 			continue;
 		}
 		int moves = 0;
 		unsigned char move = saiph->shortestPath(v->first, false, &moves);
 		if (move != ILLEGAL_MOVE && moves < min_moves) {
-			best_move = move;
 			min_moves = moves;
-			if (best_move == MOVE_NOWHERE) {
-				/* standing on stash */
-				visit_stash.erase(v);
-			} else {
-				/* moving towards stash */
-				command = best_move;
-				priority = v->second;
-			}
+			command = move;
+			priority = v->second;
 		}
 		++v;
 	}
@@ -41,31 +36,21 @@ void Loot::analyze() {
 	if (priority >= LOOT_DISCOVER_STASH_PRIORITY)
 		return;
 	min_moves = INT_MAX;
-	best_move = ILLEGAL_MOVE;
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
 		map<Coordinate, int>::iterator d = discover_stash.find(Coordinate(saiph->position.level, s->first));
 		if (d == discover_stash.end() || d->second != s->second.turn_changed) {
 			/* new or changed stash, visit it if it's closer */
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_MOVE && moves < min_moves) {
-				best_move = move;
-				min_moves = moves;
-			}
-		}
-	}
-	if (best_move != ILLEGAL_MOVE) {
-		if (best_move == MOVE_NOWHERE) {
-			/* standing on stash */
-			map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(saiph->position);
-			if (s == saiph->levels[saiph->position.level].stashes.end())
-				discover_stash.erase(saiph->position);
-			else
+			if (move == MOVE_NOWHERE) {
+				/* standing on stash, update turn_changed */
 				discover_stash[saiph->position] = s->second.turn_changed;
-		} else {
-			/* moving towards stash */
-			command = best_move;
-			priority = LOOT_DISCOVER_STASH_PRIORITY;
+			} else if (move != ILLEGAL_MOVE && moves < min_moves) {
+				/* move towards stash */
+				min_moves = moves;
+				command = move;
+				priority = LOOT_DISCOVER_STASH_PRIORITY;
+			}
 		}
 	}
 }
@@ -79,11 +64,13 @@ void Loot::parseMessages(const string &messages) {
 		}
 		if (listing_items) {
 			/* we just modified this stash,
-			 * look at what's on the floor now */
+			 * look at what's on the floor unless we think the stash is gone */
 			listing_items = false;
-			command = LOOK;
-			priority = PRIORITY_LOOK;
-			return;
+			if (saiph->levels[saiph->position.level].stashes.find(saiph->position) != saiph->levels[saiph->position.level].stashes.end()) {
+				command = LOOK;
+				priority = PRIORITY_LOOK;
+				return;
+			}
 		}
 	}
 	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos) {
