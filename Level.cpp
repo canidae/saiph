@@ -28,15 +28,15 @@ void Level::parseMessages(const string &messages) {
 		got_pickup_menu = false;
 	}
 	/* parse messages that can help us find doors/staircases/etc. */
-	if (messages.find(MESSAGE_STAIRCASE_UP_HERE, 0) != string::npos)
+	if (messages.find(LEVEL_STAIRCASE_UP_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, STAIRS_UP);
-	else if (messages.find(MESSAGE_STAIRCASE_DOWN_HERE, 0) != string::npos)
+	else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, STAIRS_DOWN);
-	else if (messages.find(MESSAGE_OPEN_DOOR_HERE, 0) != string::npos)
+	else if (messages.find(LEVEL_OPEN_DOOR_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, OPEN_DOOR);
-	else if (messages.find(MESSAGE_FOUNTAIN_HERE, 0) != string::npos)
+	else if (messages.find(LEVEL_FOUNTAIN_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, FOUNTAIN);
-	else if (messages.find(MESSAGE_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(MESSAGE_FOUNTAIN_DRIES_UP2, 0) != string::npos)
+	else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2, 0) != string::npos)
 		setDungeonSymbol(saiph->position, FLOOR);
 	/* when we've checked messages for static dungeon features and not found anything,
 	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
@@ -46,17 +46,17 @@ void Level::parseMessages(const string &messages) {
 	/* item parsing */
 	/* figure out if there's something on the ground or if we're picking up something */
 	string::size_type pos;
-	if ((pos = messages.find(MESSAGE_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(MESSAGE_YOU_FEEL_HERE, 0)) != string::npos) {
+	if ((pos = messages.find(LEVEL_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* single item on ground */
 		clearStash(saiph->position);
-		pos += sizeof (MESSAGE_YOU_SEE_HERE) - 1;
+		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
 			addItemToStash(saiph->position, item);
 		}
-	} else if ((pos = messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(MESSAGE_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
+	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
 		clearStash(saiph->position);
 		pos = messages.find("  ", pos + 1);
@@ -70,7 +70,7 @@ void Level::parseMessages(const string &messages) {
 			addItemToStash(saiph->position, item);
 			pos += length;
 		}
-	} else if (messages.find(MESSAGE_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(MESSAGE_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(MESSAGE_THERE_IS_NOTHING_HERE, 0) != string::npos) {
+	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
 		stashes.erase(saiph->position);
 	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || got_pickup_menu) {

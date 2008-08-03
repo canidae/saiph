@@ -13,6 +13,8 @@
 #define EXPLORE_SEARCH_ROOM_CORNER 25
 #define EXPLORE_SEARCH_CORRIDOR_CORNER 10
 #define EXPLORE_SEARCH_WALL 10
+/* this should go */
+#define MAX_DUNGEON_DEPTH 64
 
 /* forward declare */
 class Explore;

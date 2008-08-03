@@ -36,19 +36,19 @@ void Elbereth::parseMessages(const string &messages) {
 		command = ELBERETH "\n";
 	}
 	/* figure out if something is engraved here */
-	string::size_type pos = messages.find(MESSAGE_YOU_READ, 0);
+	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
 		return;
 	}
 	/* is it written in dust, burned or digged? */
-	if (messages.find(MESSAGE_DUSTED_TEXT, 0) != string::npos) {
+	if (messages.find(ELBERETH_DUSTED_TEXT, 0) != string::npos) {
 		/* it's dusted. */
 		dusted = true;
-	} else if (messages.find(MESSAGE_BURNED_TEXT, 0) != string::npos) {
+	} else if (messages.find(ELBERETH_BURNED_TEXT, 0) != string::npos) {
 		/* it's burned */
 		burned = true;
-	} else if (messages.find(MESSAGE_DIGGED_TEXT, 0) != string::npos) {
+	} else if (messages.find(ELBERETH_DIGGED_TEXT, 0) != string::npos) {
 		/* it's digged */
 		digged = true;
 	} else {

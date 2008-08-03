@@ -10,6 +10,20 @@
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
+/* messages */
+#define LEVEL_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
+#define LEVEL_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
+#define LEVEL_FOUNTAIN_HERE "  There is a fountain here.  "
+#define LEVEL_OPEN_DOOR_HERE "  There is an open door here.  "
+#define LEVEL_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
+#define LEVEL_STAIRCASE_UP_HERE "  There is a staircase up here.  "
+#define LEVEL_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
+#define LEVEL_THINGS_THAT_ARE_HERE "  Things that are here:  "
+#define LEVEL_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
+#define LEVEL_YOU_FEEL_HERE "  You feel here " // not two spaces here as it's followed by eg. "a lichen corpse"
+#define LEVEL_YOU_FEEL_NO_OBJECTS "  You feel no objects here.  "
+#define LEVEL_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
+#define LEVEL_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 
 /* forward declare */
 class Level;

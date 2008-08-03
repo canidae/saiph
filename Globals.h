@@ -8,11 +8,6 @@
 #define MAP_COL_END 79 // where the actual map width end
 #define MAP_ROW_BEGIN 1 // where the actual map height begin
 #define MAP_ROW_END 21 // where the actual map height end
-#define ATTRIBUTES_ROW 22
-#define STATUS_ROW 23
-#define LEVEL_NAME_SIZE 16
-#define MAX_BRANCHES 7
-#define MAX_DUNGEON_DEPTH 64
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
 #define BRANCH_SOKOBAN 2
@@ -87,8 +82,6 @@
 #define HANDS "-"
 #define NO "n"
 #define YES "y"
-/* elbereth */
-#define ELBERETH "Elbereth" // note the missing "\n". we'll search for Elbereth, can't have a "\n" then
 /* dungeon symbols */
 #define SOLID_ROCK ' '
 #define VERTICAL_WALL '|'
@@ -152,56 +145,20 @@
 #define PRIORITY_LOOK 1001
 #define PRIORITY_MAX 1000
 /* messages */
-#define MESSAGE_BUMP_INTO_DOOR "  Ouch!  You bump into a door.  "
-#define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
-#define MESSAGE_DIGGED_TEXT "  Something is engraved here on the floor.  "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
-#define MESSAGE_DOOR_CLOSES "  The door closes.  "
-#define MESSAGE_DOOR_LOCKED "  This door is locked.  "
-#define MESSAGE_DOOR_OPENS "  The door opens.  "
-#define MESSAGE_DOOR_RESISTS "  The door resists!  "
-#define MESSAGE_DROP_WHAT_TYPE "  Drop what type of items?  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
-#define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? " // followed by "[ynq] (y)" or something
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
-#define MESSAGE_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
-#define MESSAGE_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
-#define MESSAGE_FOUNTAIN_HERE "  There is a fountain here.  "
-#define MESSAGE_GOT_NOTHING_TO_EAT "  You don't have anything to eat.  "
-#define MESSAGE_KICK_DOOR_FAIL "  WHAMMM!!!  "
-#define MESSAGE_KICK_DOOR_OPEN "  As you kick the door, it crashes open!  "
-#define MESSAGE_MANY_OBJECTS_HERE "  There are many objects here.  "
-#define MESSAGE_NO_DOOR "  You see no door there.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
-#define MESSAGE_OPEN_DOOR_HERE "  There is an open door here.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
-#define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
-#define MESSAGE_SHOP_ON_LEVEL1 "  You hear someone cursing shoplifters.  "
-#define MESSAGE_SHOP_ON_LEVEL2 "  You hear the chime of a cash register.  "
-#define MESSAGE_SHOP_ON_LEVEL3 "  You hear Neiman and Marcus arguing!  "
-#define MESSAGE_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
-#define MESSAGE_STAIRCASE_UP_HERE "  There is a staircase up here.  "
-#define MESSAGE_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
-#define MESSAGE_THINGS_THAT_ARE_HERE "  Things that are here:  "
-#define MESSAGE_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
-#define MESSAGE_VAULT_GUARD "  \"Hello stranger, who are you?\" -  "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? " // followed by "[abc...]"
-#define MESSAGE_YOU_DONT_HAVE "  You don't have that object.  "
-#define MESSAGE_YOU_FEEL_HERE "  You feel here " // not two spaces here as it's followed by eg. "a lichen corpse"
-#define MESSAGE_YOU_FEEL_NO_OBJECTS "  You feel no objects here.  "
-#define MESSAGE_YOU_READ "  You read:" // followed by the text. no space after ":" because message parser is a bit buggy
-#define MESSAGE_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
-#define MESSAGE_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
-
-#define MESSAGE_YOU_DID_DAMAGE "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
 
 #endif

@@ -3,6 +3,9 @@
 #define LOOT_H
 /* priorities */
 #define LOOT_DISCOVER_STASH_PRIORITY 250
+/* messages */
+#define LOOT_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
+#define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 
 /* forward declare */
 class Loot;
@@ -34,7 +37,8 @@ class Loot : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool dirty_inventory;
-		bool listing_stuff;
+		bool listing_inventory;
+		bool listing_items;
 		map<Coordinate, int> discover_stash; // location, turn_changed
 		map<Coordinate, int> visit_stash; // location, priority
 };

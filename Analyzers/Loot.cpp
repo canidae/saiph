@@ -1,7 +1,7 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), listing_stuff(false) {
+Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), listing_inventory(false), listing_items(false) {
 }
 
 /* methods */
@@ -71,21 +71,34 @@ void Loot::analyze() {
 }
 
 void Loot::parseMessages(const string &messages) {
-	if (listing_stuff && !saiph->world->menu) {
-		/* no longer listing something */
-		listing_stuff = false;
+	if (!saiph->world->menu) {
+		if (listing_inventory) {
+			/* just listed inventory, it's no longer dirty */
+			dirty_inventory = false;
+			listing_inventory = false;
+		}
+		if (listing_items) {
+			/* we just modified this stash,
+			 * look at what's on the floor now */
+			listing_items = false;
+			command = LOOK;
+			priority = PRIORITY_LOOK;
+			return;
+		}
 	}
-	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE, 0) != string::npos) {
+	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. we should look */
 		command = LOOK;
 		priority = PRIORITY_LOOK;
 	} else if (messages.find(MESSAGE_PICK_UP_WHAT, 0) != string::npos) {
-		listing_stuff = true;
+		listing_items = true;
 	} else if (saiph->world->menu && command == INVENTORY) {
-		listing_stuff = true;
+		listing_inventory = true;
+	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
+		/* we won't get a list when we're not carrying anything (except gold) */
 		dirty_inventory = false;
 	}
-	if (listing_stuff) {
+	if (listing_inventory || listing_items) {
 		/* we're listing something (inventory, pickup, drop).
 		 * we just try to close the list, the analyzers will pick up or drop at their leisure */
 		command = NEXT_PAGE;

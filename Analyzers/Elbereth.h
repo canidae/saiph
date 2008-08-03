@@ -1,6 +1,13 @@
 #ifndef ELBERETH_H
 /* defines */
 #define ELBERETH_H
+/* messages */
+#define ELBERETH_BURNED_TEXT "  Some text has been burned into the floor here.  "
+#define ELBERETH_DIGGED_TEXT "  Something is engraved here on the floor.  "
+#define ELBERETH_DUSTED_TEXT "  Something is written here in the dust.  "
+#define ELBERETH_YOU_READ "  You read:"
+/* Elbereth */
+#define ELBERETH "Elbereth"
 
 /* forward declare */
 class Elbereth;

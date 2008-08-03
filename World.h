@@ -6,6 +6,9 @@
 #define DATA_DEBUG_NAME "[Data       ] " // data from game, give that an unique name
 /* buffer */
 #define BUFFER_SIZE 65536
+/* stuff for parsing attribute & status rows */
+#define ATTRIBUTES_ROW 22
+#define STATUS_ROW 23
 /* text used to identify --More-- and menus */
 #define MORE "--More--"
 #define END "(end) " // yeah, space should be there
