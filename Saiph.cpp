@@ -33,7 +33,6 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Wand(this));
 	analyzers.push_back(new Wish(this));
-	analyzers.push_back(new Zorkmid(this));
 }
 
 /* destructor */

@@ -51,7 +51,6 @@ class Saiph;
 #include "Analyzers/Pray.h"
 #include "Analyzers/Wand.h"
 #include "Analyzers/Wish.h"
-#include "Analyzers/Zorkmid.h"
 
 /* namespace */
 using namespace std;
