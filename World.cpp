@@ -130,8 +130,9 @@ bool World::fetchMessages() {
 	} else if (cursor.row == 0) {
 		/* we might have a question.
 		 * it seems like last 4 bytes always are " ^[[K" when we got a question,
+		 * and the byte before should always be "?", ":", "]" or ")"
 		 * so let's check that */
-		if (data[data_size - 4] == ' ' && data[data_size - 3] == 27 && data[data_size - 2] == '[' && data[data_size - 1] == 'K') {
+		if (data[data_size - 4] == ' ' && data[data_size - 3] == 27 && data[data_size - 2] == '[' && data[data_size - 1] == 'K' && (data[data_size - 5] == '?' || data[data_size - 5] == ':' || data[data_size - 5] == ']' || data[data_size - 5] == ')')) {
 			/* must be question */
 			question = true;
 			menu = false; // no menu when we got a question

@@ -6,8 +6,8 @@
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
 /* delay & attempts when reading non-blocking */
-#define LOCAL_NON_BLOCKING_DELAY 20000
-#define LOCAL_NON_BLOCKING_ATTEMPTS 20
+#define LOCAL_NON_BLOCKING_DELAY 2000
+#define LOCAL_NON_BLOCKING_ATTEMPTS 100
 
 /* forward declare */
 class Local;

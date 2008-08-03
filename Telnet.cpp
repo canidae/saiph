@@ -67,7 +67,7 @@ int Telnet::retrieve(char *buffer, int count, bool blocking) {
 			retrieved = recv(sock, buffer, count, 0);
 		}
 	}
-	if (retrieved != 0 && retrieved % 1448 == 0) {
+	if (retrieved != 0 && retrieved % TELNET_PACKET_SIZE == 0) {
 		/* if we get packets of size 1448 we probably didn't get it all.
 		 * since we can't be sure, we'll have to read non-blocking */
 		*debugfile << TELNET_DEBUG_NAME << "Received " << retrieved << " bytes, expecting more data" << endl;

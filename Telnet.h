@@ -8,6 +8,8 @@
 /* delay & attempts when reading non-blocking */
 #define TELNET_NON_BLOCKING_DELAY 20000
 #define TELNET_NON_BLOCKING_ATTEMPTS 100
+/* packet size, used for determining if we received everything */
+#define TELNET_PACKET_SIZE 1448
 /* host */
 #define TELNET_NETHACK_URL "nethack.alt.org"
 #define TELNET_NETHACK_PORT 23

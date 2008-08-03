@@ -28,9 +28,10 @@
 # * traps
 # - web is represented by '^', not '"'
 OPTIONS=align:lawful
-OPTIONS=!autopickup
+OPTIONS=autopickup
 OPTIONS=boulder:0
 OPTIONS=catname:Sebbe
+OPTIONS=!cmdassist
 OPTIONS=color
 OPTIONS=disclose:-i -a -v -g -c
 OPTIONS=dogname:Eidolos
@@ -49,6 +50,7 @@ OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*````
 OPTIONS=pettype:none
 OPTIONS=pickup_burden:Burdened
+OPTIONS=pickup_types:$
 OPTIONS=!prayconfirm
 OPTIONS=race:human
 OPTIONS=role:valkyrie
