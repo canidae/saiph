@@ -20,11 +20,11 @@ Saiph::Saiph(int interface) {
 	on_ground = NULL;
 
 	/* Analyzers */
-	analyzers.push_back(new Beatitude(this));
+	//analyzers.push_back(new Beatitude(this));
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Elbereth(this));
 	analyzers.push_back(new Enhance(this));
-	analyzers.push_back(new Excalibur(this));
+	//analyzers.push_back(new Excalibur(this));
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Food(this));

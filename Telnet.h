@@ -5,9 +5,6 @@
 #define TELNET_DEBUG_NAME "[Telnet     ] "
 /* buffer for login */
 #define TELNET_BUFFER_SIZE 4096
-/* delay & attempts when reading non-blocking */
-#define TELNET_NON_BLOCKING_DELAY 20000
-#define TELNET_NON_BLOCKING_ATTEMPTS 100
 /* packet size, used for determining if we received everything */
 #define TELNET_PACKET_SIZE 1448
 /* host */
@@ -50,6 +47,9 @@ class Telnet : public Connection {
 	private:
 		/* variables */
 		int sock;
+		struct timeval last_send;
+		struct timeval last_receive;
+		long expected_latency;
 
 		/* methods */
 		int transmit(const char *data, int length);

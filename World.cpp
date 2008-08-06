@@ -15,20 +15,12 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	menu = false;
 	question = false;
 	last_menu = Point(-1, -1);
+	updated_status_row = false;
 	last_cursor.row = 0;
 	last_cursor.col = 0;
 	last_messages = messages;
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
-	updated_status_row = false;
-	/* set up some data we use for detecting if we've received all the data */
-	char tmp[][SEQUENCE_LENGTH] = {{27, '[', 'H', 27, '[', '2', 'J', 27, '[', 'H', 27, '[', '2', '3', ';', '1', 0},
-		{27, '[', 'H', 27, '[', 'K', 27, '[', '2', '3', ';', '1', 0},
-		{27, '[', '2', '3', ';', '1', 0}};
-	for (int a = 0; a < SEQUENCES; ++a) {
-		for (int b = 0; b < SEQUENCE_LENGTH; ++b)
-			expected_first_bytes[a][b] = tmp[a][b];
-	}
         /* remapping of unique symbols */
         for (int s = 0; s <= UCHAR_MAX; ++s) {
                 for (int c = 0; c <= CHAR_MAX; ++c)
@@ -53,12 +45,12 @@ bool World::executeCommand(const string &command) {
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
 		changed[c->row][c->col] = false;
 	changes.clear();
+	updated_status_row = false;
 	messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */
 		return false;
 	}
-	updated_status_row = false;
 	connection->transmit(command);
 	update();
 	return true;
@@ -444,66 +436,31 @@ void World::update(int buffer_pos) {
 	if (!fetchMessages())
 		return; // fetchMessages requested --More--
 
-	/* detect if we retrieved all the data:
-	 * this is _really_ tricky.
-	 * there are some few things we know:
-	 * - if we got a question or a menu, we received all the data
-	 * - if we don't have a question or a menu:
-	 *   + status row should've been updated
-	 *   + parsing attribute row & status row should not fail
-	 *   + cursor should be placed somewhere in the map
-	 * - if we don't receive any messages then data should begin with:
-	 *   + "^[[H^[[2J^[[H^[[23;1"
-	 *   + "^[[H^[[K^[[23;1H"
-	 *   + "^[[23;1H"
-	 */
-	if (!menu && !question) {
-		/* there's no menu nor question.
-		 * we'll need to check if we received all the data */
-		bool ok = true;
-		if (messages == "  ") {
-			ok = false;
-			for (int a = 0; !ok && a < SEQUENCES; ++a) {
-				for (int b = 0; b < SEQUENCE_LENGTH; ++b) {
-					if (expected_first_bytes[a][b] == 0)
-						ok = true;
-					if (data[b] != expected_first_bytes[a][b])
-						break;
-				}
-			}
-			if (!ok) {
-				/* data did not begin with expected sequence */
-				*debugfile << WORLD_DEBUG_NAME << "Expected sequence not found: ";
-				for (int a = 0; a < data_size; ++a)
-					*debugfile << data[a];
-				*debugfile << endl;
-			}
-		}
-		if (ok) {
-			bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
-			bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
-			if (updated_status_row && parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END) {
-				/* it seems like we got all the data */
-				view[cursor.row][cursor.col] = PLAYER;
-				player.row = cursor.row;
-				player.col = cursor.col;
-			} else {
-				/* hmmz, this ain't right */
-				ok = false;
-			}
-		}
-		if (!ok) {
-			/* data did not begin with expected sequence */
-			*debugfile << WORLD_DEBUG_NAME << "Suspect we didn't receive it all: ";
-			for (int a = 0; a < data_size; ++a)
-				*debugfile << data[a];
-			*debugfile << endl;
-			if (received >= 0 && buffer_pos == 0) {
-				cursor = last_cursor;
-				messages = last_messages;
-				update(data_size);
-				return;
-			}
+	/* parse attribute & status rows */
+	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
+	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
+	if (updated_status_row && !menu && !question && parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END) {
+		/* it seems like we got all the data */
+		view[cursor.row][cursor.col] = PLAYER;
+		player.row = cursor.row;
+		player.col = cursor.col;
+	} else if (!menu && !question) {
+		/* hmm, this is suspicious.
+		 * it looks like we didn't get all the data, try to fetch the rest */
+		*debugfile << WORLD_DEBUG_NAME << "Expected more data (received " << data_size << " bytes): ";
+		for (int a = 0; a < data_size; ++a)
+			*debugfile << data[a];
+		*debugfile << endl;
+		if (received == 0) {
+			/* set the cursor back to where it was,
+			 * set updated_status_row = false,
+			 * set messages back to what it was before fetching them and
+			 * request the remaining data (if any) */
+			cursor = last_cursor;
+			updated_status_row = false;
+			messages = last_messages;
+			update(data_size);
+			return;
 		}
 	}
 	last_cursor = cursor;

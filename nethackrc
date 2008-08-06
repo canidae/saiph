@@ -46,6 +46,7 @@ OPTIONS=!mail
 OPTIONS=menustyle:partial
 OPTIONS=monsters:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ@X'&;:~m
 OPTIONS=name:saiph
+OPTIONS=!null
 OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*````
 OPTIONS=pettype:none
@@ -60,4 +61,3 @@ OPTIONS=!splash_screen
 OPTIONS=time
 OPTIONS=!timed_delay
 OPTIONS=traps:\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^
-OPTIONS=vary_msgcount:1

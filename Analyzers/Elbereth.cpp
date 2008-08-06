@@ -63,6 +63,7 @@ void Elbereth::parseMessages(const string &messages) {
 
 bool Elbereth::request(const Request &request) {
 	if (request.request == REQUEST_ELBERETH_OR_REST) {
+		saiph->debugfile << REQUEST_DEBUG_NAME << "Elbereth received request" << endl;
 		/* check if we're levitating */
 		/* check if there's a fountain/grave/altar here */
 		switch (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col]) {
@@ -76,12 +77,15 @@ bool Elbereth::request(const Request &request) {
 				/* rest is ok, but don't return as we need to check for other things too */
 				break;
 		}
+		saiph->debugfile << REQUEST_DEBUG_NAME << "Elbereth still good 1" << endl;
 		/* check for ill effects */
 		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
 			return false;
+		saiph->debugfile << REQUEST_DEBUG_NAME << "Elbereth still good 2" << endl;
 		/* check that we're not engulfed */
 		if (saiph->engulfed)
 			return false;
+		saiph->debugfile << REQUEST_DEBUG_NAME << "Elbereth still good 3" << endl;
 		/* check that the monsters around us respects elbereth */
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m!= saiph->levels[saiph->position.level].monsters.end(); ++m) {
 			if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
@@ -94,6 +98,7 @@ bool Elbereth::request(const Request &request) {
 			if (m->second.symbol == '@' || m->second.symbol == 'A')
 				return false; // elbereth won't be respected
 		}
+		saiph->debugfile << REQUEST_DEBUG_NAME << "Elbereth still good 4" << endl;
 		if (!did_look && !burned && !digged && !dusted) {
 			/* we'll need to look first, which means set action & priority and return true */
 			command = ":";
