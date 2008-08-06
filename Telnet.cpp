@@ -101,13 +101,13 @@ void Telnet::start() {
 	char discard[TELNET_BUFFER_SIZE];
 	while (transmit("l") == 0)
 		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	sleep(1);
+	retrieve(discard, TELNET_BUFFER_SIZE); // discard response
 	while (transmit(username) == 0)
 		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	sleep(1);
+	retrieve(discard, TELNET_BUFFER_SIZE); // discard response
 	while (transmit(password) == 0)
 		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	sleep(1);
+	retrieve(discard, TELNET_BUFFER_SIZE); // discard response
 	while (transmit("p") == 0)
 		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
 }
@@ -124,9 +124,8 @@ int Telnet::transmit(const char *data, int length) {
 	*debugfile << TELNET_DEBUG_NAME << "Sending: '" << data << "'" << endl;
 	*debugfile << TELNET_DEBUG_NAME << "Expected latency: " << expected_latency << endl;
 	long max_latency = expected_latency * 6 / 5 + 5000;
-	stop_time = last_receive;
-	stop_time.tv_sec += max_latency / 1000000;
-	stop_time.tv_usec += max_latency % 1000000;
+	stop_time.tv_sec = last_receive.tv_sec + max_latency / 1000000;
+	stop_time.tv_usec = last_receive.tv_usec + max_latency % 1000000;
 	*debugfile << TELNET_DEBUG_NAME << "Stop time: " << stop_time.tv_sec << "." << stop_time.tv_usec << endl;
 	gettimeofday(&current_time, NULL);
 	*debugfile << TELNET_DEBUG_NAME << "Current time: " << current_time.tv_sec << "." << current_time.tv_usec << endl;
