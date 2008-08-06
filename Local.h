@@ -33,7 +33,7 @@ class Local : public Connection {
 		~Local();
 
 		/* methods */
-		virtual int retrieve(char *buffer, int count, bool blocking = true);
+		virtual int retrieve(char *buffer, int count);
 		virtual int transmit(const string &data);
 		virtual void start();
 		virtual void stop();

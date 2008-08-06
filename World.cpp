@@ -374,7 +374,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 void World::update(int buffer_pos) {
 	/* update the view */
 	int color = 0; // color of the char
-	int received = connection->retrieve(&data[buffer_pos], BUFFER_SIZE - buffer_pos, (buffer_pos == 0));
+	int received = connection->retrieve(&data[buffer_pos], BUFFER_SIZE - buffer_pos);
 	data_size = buffer_pos + received;
 	data[data_size] = '\0'; // for string parsing
 	for (int pos = 0; pos < data_size; ++pos) {

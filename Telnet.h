@@ -39,7 +39,7 @@ class Telnet : public Connection {
 		~Telnet();
 
 		/* methods */
-		int retrieve(char *buffer, int count, bool blocking = true);
+		int retrieve(char *buffer, int count);
 		int transmit(const string &data);
 		void start();
 		void stop();

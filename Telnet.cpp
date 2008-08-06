@@ -30,19 +30,12 @@ Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 		exit(1);
 	}
 
-	/* discard the initial data we receive */
-	char discard[TELNET_BUFFER_SIZE];
-	sleep(1);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
-		sleep(1);
-
 	/* tell server our terminal (xterm-color) and size (80x24) and set some other things */
 	char data[] = {0xff, 0xfb, 0x18, 0xff, 0xfa, 0x18, 0x00, 'x', 't', 'e', 'r', 'm', 0xff, 0xf0, 0xff, 0xfc, 0x20, 0xff, 0xfc, 0x23, 0xff, 0xfc, 0x27, 0xff, 0xfe, 0x03, 0xff, 0xfb, 0x01, 0xff, 0xfd, 0x05, 0xff, 0xfb, 0x21, 0xff, 0xfb, 0x1f, 0xff, 0xfa, 0x1f, 0x00, 0x50, 0x00, 0x18, 0xff, 0xf0}; 
-	transmit(data, 47);
-	/* discard any data sent back */
-	sleep(1);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
-		sleep(1);
+	/* buffer used for discarding */
+	char discard[TELNET_BUFFER_SIZE];
+	while (transmit(data, 47) == 0)
+		retrieve(discard, TELNET_BUFFER_SIZE); // discard data in socket
 
 	/* and let's log in */
 	start();
@@ -55,18 +48,22 @@ Telnet::~Telnet() {
 }
 
 /* methods */
-int Telnet::retrieve(char *buffer, int count, bool blocking) {
+int Telnet::retrieve(char *buffer, int count) {
 	/* retrieve data */
 	*debugfile << TELNET_DEBUG_NAME << "Read requested" << endl;
-	int retrieved = 0;
-	if (blocking) {
-		/* read 4 bytes blocked */
-		retrieved = recv(sock, buffer, 4, 0);
-	}
-	/* read remaining unblocked */
-	if (retrieved >= 0)
-		retrieved += recv(sock, &buffer[retrieved], count - retrieved, MSG_DONTWAIT);
+	int retrieved = recv(sock, buffer, count, 0);
+	/* set last_receive */
 	gettimeofday(&last_receive, NULL);
+	/* calculate roughly our latency
+	 * this is the intriguing bit:
+	 * when we get a new send request, usleep(expected_latency).
+	 * then check if there's any data in the socket.
+	 * if it is, then don't send the command.
+	 * why not? because it means that we didn't get all the data last time,
+	 * so we just want to read the rest */
+	*debugfile << TELNET_DEBUG_NAME << "Last send: " << last_send.tv_sec << "." << last_send.tv_usec << " | Last receive: " << last_receive.tv_sec << "." << last_receive.tv_usec << endl;
+	expected_latency = (expected_latency + ((last_receive.tv_sec - last_send.tv_sec) * 1000000 + last_receive.tv_usec - last_send.tv_usec)) / 2;
+	expected_latency = expected_latency * 4 / 3 + 5000; // add 33% and 5ms
 
 	if (retrieved != 0 && retrieved % TELNET_PACKET_SIZE == 0) {
 		/* if we get packets of size 1448 we probably didn't get it all */
@@ -78,7 +75,7 @@ int Telnet::retrieve(char *buffer, int count, bool blocking) {
 		 * so the latency will be ~correct when we set "last_send" here.
 		 * we really just want the time it took from we sent a packet and until we received one */
 		gettimeofday(&last_send, NULL);
-		retrieved += retrieve(&buffer[retrieved], count - retrieved, true);
+		retrieved += retrieve(&buffer[retrieved], count - retrieved);
 	}
 	*debugfile << TELNET_DEBUG_NAME << "Read " << retrieved << " bytes: ";
 	for (int a = 0; a < retrieved; ++a)
@@ -109,23 +106,14 @@ void Telnet::start() {
 	username.append("\n");
 	password.append("\n");
 	char discard[TELNET_BUFFER_SIZE];
-	transmit("l");
-	/* discard any data sent back */
-	sleep(1);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
-		sleep(1);
-	transmit(username);
-	/* discard any data sent back */
-	sleep(1);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
-		sleep(1);
-	transmit(password);
-	/* discard any data sent back */
-	sleep(1);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
-		sleep(1);
-	transmit("p");
-	/* don't discard now, game should appear */
+	while (transmit("l") == 0)
+		retrieve(discard, TELNET_BUFFER_SIZE); // discard data in socket
+	while (transmit(username) == 0)
+		retrieve(discard, TELNET_BUFFER_SIZE); // discard data in socket
+	while (transmit(password) == 0)
+		retrieve(discard, TELNET_BUFFER_SIZE); // discard data in socket
+	while (transmit("p") == 0)
+		retrieve(discard, TELNET_BUFFER_SIZE); // discard data in socket
 }
 
 void Telnet::stop() {
@@ -133,17 +121,9 @@ void Telnet::stop() {
 
 /* private methods */
 int Telnet::transmit(const char *data, int length) {
+	*debugfile << TELNET_DEBUG_NAME << "Sleeping " << expected_latency << " microseconds" << endl;
+	usleep(expected_latency);
 	*debugfile << TELNET_DEBUG_NAME << "Sending: '" << data << "'" << endl;
-	/* here's the intriguing bit:
-	 * when we get a new send request, usleep(expected_latency).
-	 * then check if there's any data in the socket.
-	 * if it is, then don't send the command.
-	 * why not? because it means that we didn't get all the data last time,
-	 * so we just want to read the rest */
-	*debugfile << TELNET_DEBUG_NAME << "Last send: " << last_send.tv_sec << "." << last_send.tv_usec << " | Last receive: " << last_receive.tv_sec << "." << last_receive.tv_usec << endl;
-	expected_latency = (expected_latency + ((last_receive.tv_sec - last_send.tv_sec) * 1000000 + last_receive.tv_usec - last_send.tv_usec)) / 2;
-	*debugfile << TELNET_DEBUG_NAME << "Sleeping " << expected_latency * 4 / 3 << " microseconds" << endl;
-	usleep(expected_latency * 4 / 3); // add 33% to the expected latency, for safety
 	/* let's peek */
 	char buffer[2];
 	int retrieved = recv(sock, buffer, 2, MSG_DONTWAIT | MSG_PEEK);
