@@ -49,9 +49,12 @@ class Telnet : public Connection {
 		int sock;
 		struct timeval last_send;
 		struct timeval last_receive;
+		struct timeval stop_time;
+		struct timeval current_time;
 		long expected_latency;
 
 		/* methods */
+		long timediff(const timeval &first, const timeval &last);
 		int transmit(const char *data, int length);
 };
 #endif

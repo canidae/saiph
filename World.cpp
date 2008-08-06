@@ -451,7 +451,7 @@ void World::update(int buffer_pos) {
 		for (int a = 0; a < data_size; ++a)
 			*debugfile << data[a];
 		*debugfile << endl;
-		if (received == 0) {
+		if (received > 0) {
 			/* set the cursor back to where it was,
 			 * set updated_status_row = false,
 			 * set messages back to what it was before fetching them and
