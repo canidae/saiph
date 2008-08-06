@@ -46,11 +46,11 @@ void Excalibur::parseMessages(const string &messages) {
 	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
 		command = command2;
-		command2.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (command != "" && command2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
 		/* if we want to dip in fountain? sure */
 		command = YES;
+		command2.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
 		/* alright! */

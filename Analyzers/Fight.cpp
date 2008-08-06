@@ -76,8 +76,6 @@ void Fight::analyze() {
 			}
 		}
 		/* we couldn't throw something at the monster, try moving to or melee it */
-		if (blue_e)
-			continue; // never melee blue 'e'
 		int moves = 0;
 		unsigned char move = saiph->shortestPath(m->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
@@ -88,7 +86,10 @@ void Fight::analyze() {
 			continue; // we know of a monster closer than this one
 		if (moves == 1 && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
-		priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
+		if (blue_e)
+			priority = FIGHT_BLUE_E_PRIORITY;
+		else
+			priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
 		min_distance = distance;
 		min_moves = moves;
 		command = move;
