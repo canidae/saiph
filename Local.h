@@ -3,11 +3,11 @@
 #define LOCAL_H
 /* debug */
 #define LOCAL_DEBUG_NAME "[Local      ] "
+/* buffer */
+#define READ_LIMIT 4095
+#define BUFFER_SIZE 65536
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
-/* delay & attempts when reading non-blocking */
-#define LOCAL_NON_BLOCKING_DELAY 2000
-#define LOCAL_NON_BLOCKING_ATTEMPTS 100
 
 /* forward declare */
 class Local;

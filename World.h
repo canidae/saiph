@@ -56,21 +56,18 @@ class World {
 		Connection *connection;
 		ofstream *debugfile;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
-		char data[BUFFER_SIZE + 1]; // "+ 1" because we'll add an extra '\0' at the end for string parsing
+		char data[BUFFER_SIZE];
 		int data_size;
 		string msg_str; // helps fetching messages
 		unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1]; // remapping ambigous symbols
 		Point last_menu; // needed to help detect menus that persist over turns
-		bool updated_status_row; // statusrow will be updated every frame, we can use this to determine if we got all the data
-		Point last_cursor; // must place the cursor where it was if we didn't get all the data
-		string last_messages; // if we didn't get all the data, then messages may be screwed
 
 		/* methods */
 		void addChangedLocation(const Point &point);
 		void fetchMenu();
 		void fetchMenuText(int stoprow, int startcol, bool addspaces);
-		bool fetchMessages();
+		void fetchMessages();
 		void handleEscapeSequence(int *pos, int *color);
-		void update(int buffer_pos = 0);
+		void update();
 };
 #endif

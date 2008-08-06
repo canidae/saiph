@@ -5,8 +5,6 @@
 #define TELNET_DEBUG_NAME "[Telnet     ] "
 /* buffer for login */
 #define TELNET_BUFFER_SIZE 4096
-/* packet size, used for determining if we received everything */
-#define TELNET_PACKET_SIZE 1448
 /* host */
 #define TELNET_NETHACK_URL "nethack.alt.org"
 #define TELNET_NETHACK_PORT 23
@@ -15,7 +13,6 @@
 class Telnet;
 
 /* includes */
-#include <fcntl.h>
 #include <iostream>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -40,6 +37,7 @@ class Telnet : public Connection {
 
 		/* methods */
 		int retrieve(char *buffer, int count);
+		int transmit(const char *data, int length);
 		int transmit(const string &data);
 		void start();
 		void stop();
@@ -47,14 +45,6 @@ class Telnet : public Connection {
 	private:
 		/* variables */
 		int sock;
-		struct timeval last_send;
-		struct timeval last_receive;
-		struct timeval stop_time;
-		struct timeval current_time;
-		long expected_latency;
-
-		/* methods */
-		long timediff(const timeval &first, const timeval &last);
-		int transmit(const char *data, int length);
+		char ping[3];
 };
 #endif

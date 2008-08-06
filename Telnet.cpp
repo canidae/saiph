@@ -1,13 +1,7 @@
 #include "Telnet.h"
-#include <sys/time.h>
-#include <time.h>
 
 /* constructors */
 Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
-	/* reset some variables */
-	gettimeofday(&last_send, NULL);
-	gettimeofday(&last_receive, NULL);
-	expected_latency = 500000;
 	/* connect to host using telnet */
 	struct hostent *he = gethostbyname(TELNET_NETHACK_URL);
 	if (he == NULL) {
@@ -30,15 +24,19 @@ Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 		exit(1);
 	}
 
+	/* set up ping */
+	ping[0] = 0xff; // IAC
+	ping[1] = 0xfd; // DO
+	ping[2] = 0x63; // decimal 99, which is our "ping"
+
 	/* tell server our terminal (xterm-color) and size (80x24) and set some other things */
 	char data[] = {0xff, 0xfb, 0x18, 0xff, 0xfa, 0x18, 0x00, 'x', 't', 'e', 'r', 'm', 0xff, 0xf0, 0xff, 0xfc, 0x20, 0xff, 0xfc, 0x23, 0xff, 0xfc, 0x27, 0xff, 0xfe, 0x03, 0xff, 0xfb, 0x01, 0xff, 0xfd, 0x05, 0xff, 0xfb, 0x21, 0xff, 0xfb, 0x1f, 0xff, 0xfa, 0x1f, 0x00, 0x50, 0x00, 0x18, 0xff, 0xf0}; 
-	/* buffer used for discarding */
-	char discard[TELNET_BUFFER_SIZE];
-	retrieve(discard, TELNET_BUFFER_SIZE); // discard initial response
-	while (transmit(data, 47) == 0)
-		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	retrieve(discard, TELNET_BUFFER_SIZE); // discard reply to setting modes
-	retrieve(discard, TELNET_BUFFER_SIZE); // discard menu
+	transmit(data, 47);
+
+	/* that last command we sent to will send us data back.
+	 * let's discard it */
+	char discard[4096];
+	retrieve(discard, 4096);
 
 	/* and let's log in */
 	start();
@@ -52,32 +50,53 @@ Telnet::~Telnet() {
 
 /* methods */
 int Telnet::retrieve(char *buffer, int count) {
-	/* retrieve data */
-	*debugfile << TELNET_DEBUG_NAME << "Read requested" << endl;
-	int retrieved = recv(sock, buffer, count, 0);
-	/* set last_receive */
-	gettimeofday(&last_receive, NULL);
-	/* calculate roughly our latency */
-	expected_latency = (expected_latency + timediff(last_send, last_receive)) / 2;
-	/* and set last_send even if we didn't send anything.
-	 * why? because we might send an ACK to the server.
-	 * we'll also overwrite this value the next time we "transmit".
-	 * it's probably "ok" */
-	gettimeofday(&last_send, NULL);
-
-	if (retrieved != 0 && retrieved % TELNET_PACKET_SIZE == 0) {
-		/* if we get packets of size 1448 we probably didn't get it all */
-		*debugfile << TELNET_DEBUG_NAME << "Received " << retrieved << " bytes, expecting more data" << endl;
-		retrieved += retrieve(&buffer[retrieved], count - retrieved);
+	/* this is borrowed from TAEB:
+	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
+	 * then we'll just read until last bytes equal [?, ?, ?] */
+	transmit(ping, 3);
+	int retrieved = 0;
+	int more_data = true;
+	int tries = 5;
+	while (more_data && tries >= 0) {
+		retrieved += recv(sock, &buffer[retrieved], count, 0);
+		for (int a = retrieved - 3; a >= 0; --a) {
+			/* search for pong backwards (we're expecting pong to be last).
+			 * we do it like this because if we find it somewhere else than
+			 * at the end of the stream, we should send a new ping */
+			if ((unsigned char) buffer[a] == 0xff && (unsigned char) buffer[a + 1] == 0xfc && (unsigned char) buffer[a + 2] == 0x63) {
+				/* found pong, but is it at end of stream? */
+				if (a == retrieved - 3) {
+					/* yes, it is.
+					 * however, did we receive something else than the pong? */
+					if (retrieved > 3) {
+						/* yes, we did, good! */
+						more_data = false;
+						/* remove pong */
+						buffer[--retrieved] = '\0';
+						buffer[--retrieved] = '\0';
+						buffer[--retrieved] = '\0';
+					} else {
+						/* no, we didn't. hmmm */
+						retrieved = 0;
+						transmit(ping, 3);
+						--tries; // also decrease this, in case we're not getting any data */
+					}
+				} else {
+					/* no, it isn't.
+					 * we should send a new ping */
+					transmit(ping, 3);
+					/* and we'll have to remove the pong reply, gah */
+					for (int b = a; b < retrieved - 3; ++b)
+						buffer[b] = buffer[b + 3];
+					retrieved -= 3;
+					break;
+				}
+			}
+		}
 	}
-	*debugfile << TELNET_DEBUG_NAME << "Read " << retrieved << " bytes: ";
-	for (int a = 0; a < retrieved; ++a)
-		*debugfile << buffer[a];
-	*debugfile << endl;
-
-	if (retrieved >= 0)
-		return retrieved;
-	return 0;
+	if (tries < 0)
+		*debugfile << TELNET_DEBUG_NAME << "We were expecting data, but got none. Fix this bug, please!" << endl;
+	return retrieved;
 }
 
 int Telnet::transmit(const string &data) {
@@ -98,51 +117,20 @@ void Telnet::start() {
 	account.close();
 	username.append("\n");
 	password.append("\n");
-	char discard[TELNET_BUFFER_SIZE];
-	while (transmit("l") == 0)
-		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	retrieve(discard, TELNET_BUFFER_SIZE); // discard response
-	while (transmit(username) == 0)
-		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	retrieve(discard, TELNET_BUFFER_SIZE); // discard response
-	while (transmit(password) == 0)
-		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
-	retrieve(discard, TELNET_BUFFER_SIZE); // discard response
-	while (transmit("p") == 0)
-		retrieve(discard, TELNET_BUFFER_SIZE); // discard unexpected data
+	char buffer[TELNET_BUFFER_SIZE];
+	transmit("l");
+	int size = retrieve(buffer, TELNET_BUFFER_SIZE);
+	transmit(username);
+	size = retrieve(buffer, TELNET_BUFFER_SIZE);
+	transmit(password);
+	size = retrieve(buffer, TELNET_BUFFER_SIZE);
+	transmit("p");
 }
 
 void Telnet::stop() {
 }
 
 /* private methods */
-long Telnet::timediff(const timeval &first, const timeval &last) {
-	return (long) (last.tv_sec - first.tv_sec) * 1000000 + last.tv_usec - first.tv_usec;
-}
-
 int Telnet::transmit(const char *data, int length) {
-	*debugfile << TELNET_DEBUG_NAME << "Sending: '" << data << "'" << endl;
-	*debugfile << TELNET_DEBUG_NAME << "Expected latency: " << expected_latency << endl;
-	long max_latency = expected_latency * 6 / 5 + 5000;
-	stop_time.tv_sec = last_receive.tv_sec + max_latency / 1000000;
-	stop_time.tv_usec = last_receive.tv_usec + max_latency % 1000000;
-	*debugfile << TELNET_DEBUG_NAME << "Stop time: " << stop_time.tv_sec << "." << stop_time.tv_usec << endl;
-	gettimeofday(&current_time, NULL);
-	*debugfile << TELNET_DEBUG_NAME << "Current time: " << current_time.tv_sec << "." << current_time.tv_usec << endl;
-	*debugfile << TELNET_DEBUG_NAME << "Diff: " << timediff(current_time, stop_time) << endl;
-	while (gettimeofday(&current_time, NULL) == 0 && timediff(current_time, stop_time) > 0) {
-		/* let's peek */
-		char buffer[2];
-		int retrieved = recv(sock, buffer, 2, MSG_DONTWAIT | MSG_PEEK);
-		if (retrieved > 0) {
-			*debugfile << TELNET_DEBUG_NAME << "Data in the socket, not sending command" << endl;
-			return 0; // there's data, don't send
-		}
-		/* no data? sleep and try again */
-		*debugfile << "Sleeping " << max_latency / 100 << " microseconds" << endl;
-		usleep(max_latency / 100);
-	}
-	/* no data in socket, we probably got it all */
-	gettimeofday(&last_send, NULL);
 	return send(sock, data, length, 0);
 }

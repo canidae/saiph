@@ -47,10 +47,18 @@ Local::~Local() {
 /* methods */
 int Local::retrieve(char *buffer, int count) {
 	/* retrieve data */
-	ssize_t data_received = read(link[0], buffer, count);
-	if (data_received >= 0)
-		return (int) data_received; // if we couldn't read, data_received will be -1, which mess things up
-	return 0;
+	usleep(200000);
+	ssize_t data_received = 0;
+	/* make reading blocking */
+	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
+	/* read 4 bytes, this will block until there's data available */
+	data_received += read(link[0], buffer, 4);
+	/* make reading non-blocking */
+	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
+	data_received += read(link[0], &buffer[data_received], count - data_received - 2);
+	if (data_received < (ssize_t) count)
+		buffer[data_received] = '\0';
+	return (int) data_received;
 }
 
 int Local::transmit(const string &data) {

@@ -15,10 +15,6 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	menu = false;
 	question = false;
 	last_menu = Point(-1, -1);
-	updated_status_row = false;
-	last_cursor.row = 0;
-	last_cursor.col = 0;
-	last_messages = messages;
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
         /* remapping of unique symbols */
@@ -45,7 +41,6 @@ bool World::executeCommand(const string &command) {
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
 		changed[c->row][c->col] = false;
 	changes.clear();
-	updated_status_row = false;
 	messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */
@@ -80,7 +75,7 @@ void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 	}
 }
 
-bool World::fetchMessages() {
+void World::fetchMessages() {
 	/* even yet a try on fetching messages sanely */
 	question = false; // we can do this as a question max last 1 turn
 	msg_str = &data[data_size - sizeof (MORE)];
@@ -116,28 +111,16 @@ bool World::fetchMessages() {
 					fetchMenuText(r - 1, c - 1, true); // "r - 1" to avoid the last "--More--"
 			}
 		}
-		/* dump data */
-		for (int a = 0; a < data_size; ++a)
-			cout << data[a];
-		cout.flush(); // same reason as in saiph.dumpMaps()
-		*debugfile << DATA_DEBUG_NAME;
-		for (int a = 0; a < data_size; ++a)
-			*debugfile << data[a];
-		*debugfile << endl;
 		/* request the remaining messages */
 		connection->transmit(" ");
 		update();
-		return false;
+		return;
 	} else if (cursor.row == 0) {
-		/* we might have a question.
-		 * it seems like last 4 bytes always are " ^[[K" when we got a question,
-		 * and the byte before should always be "?", ":", "]" or ")"
-		 * so let's check that */
-		if (data[data_size - 4] == ' ' && data[data_size - 3] == 27 && data[data_size - 2] == '[' && data[data_size - 1] == 'K' && (data[data_size - 5] == '?' || data[data_size - 5] == ':' || data[data_size - 5] == ']' || data[data_size - 5] == ')')) {
-			/* must be question */
-			question = true;
-			menu = false; // no menu when we got a question
-		}
+		/* looks like we got a question.
+		 * we might want to significantly improve this later,
+		 * as we sometimes get partial data */
+		question = true;
+		menu = false; // no menu when we got a question
 	} else {
 		/* --More-- not found, but we might have a menu.
 		 * this is pain */
@@ -194,12 +177,11 @@ bool World::fetchMessages() {
 		string::size_type fns = msg_str.find_first_not_of(" ");
 		string::size_type lns = msg_str.find_last_not_of(" ");
 		if (fns == string::npos || lns == string::npos || fns >= lns)
-			return true; // blank line?
+			return; // blank line?
 		msg_str = msg_str.substr(fns, lns - fns + 1);
 		messages.append(msg_str);
 		messages.append(2, ' ');
 	}
-	return true;
 }
 
 void World::handleEscapeSequence(int *pos, int *color) {
@@ -337,10 +319,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 			}
 		}
 		if (*pos >= data_size) {
-			*debugfile << WORLD_DEBUG_NAME << "Did not find stop char for sequence: ";
-			for (int a = 0; a <= data_size; ++a)
-				*debugfile << data[a];
-			*debugfile << endl;
+			*debugfile << WORLD_DEBUG_NAME << "Did not find stop char for sequence: " << data << endl;
 			exit(6);
 		}
 	} else if (data[*pos] == '(') {
@@ -371,12 +350,20 @@ void World::handleEscapeSequence(int *pos, int *color) {
 	}
 }
 
-void World::update(int buffer_pos) {
+void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
-	int received = connection->retrieve(&data[buffer_pos], BUFFER_SIZE - buffer_pos);
-	data_size = buffer_pos + received;
-	data[data_size] = '\0'; // for string parsing
+	data_size = connection->retrieve(data, BUFFER_SIZE);
+	/* print world & data (to cerr, for debugging)
+	 * this must be done here because if we get --More-- messages we'll update again */
+	/* also, we do this in two loops because otherwise it flickers a lot */
+	for (int a = 0; a < data_size; ++a)
+		cout << data[a];
+	cout.flush(); // same reason as in saiph.dumpMaps()
+	*debugfile << DATA_DEBUG_NAME;
+	for (int a = 0; a < data_size; ++a)
+		*debugfile << data[a];
+	*debugfile << endl;
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:
@@ -422,8 +409,6 @@ void World::update(int buffer_pos) {
 					*debugfile << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << cursor.row << ", " << cursor.col << endl;
 					break;
 				}
-				if (cursor.row == STATUS_ROW)
-					updated_status_row = true;
 				view[cursor.row][cursor.col] = uniquemap[(unsigned char) data[pos]][color];
 				this->color[cursor.row][cursor.col] = color;
 				addChangedLocation(cursor);
@@ -432,46 +417,25 @@ void World::update(int buffer_pos) {
 		}
 	}
 
-	last_messages = messages;
-	if (!fetchMessages())
-		return; // fetchMessages requested --More--
+	fetchMessages();
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
 	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
-	if (updated_status_row && !menu && !question && parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END) {
-		/* it seems like we got all the data */
+	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
+		/* the last escape sequence *sometimes* place the cursor on the player,
+		 * which is quite handy since we won't have to search for the player then */
 		view[cursor.row][cursor.col] = PLAYER;
 		player.row = cursor.row;
 		player.col = cursor.col;
 	} else if (!menu && !question) {
-		/* hmm, this is suspicious.
-		 * it looks like we didn't get all the data, try to fetch the rest */
-		*debugfile << WORLD_DEBUG_NAME << "Expected more data (received " << data_size << " bytes): ";
-		for (int a = 0; a < data_size; ++a)
-			*debugfile << data[a];
-		*debugfile << endl;
-		if (received > 0) {
-			/* set the cursor back to where it was,
-			 * set updated_status_row = false,
-			 * set messages back to what it was before fetching them and
-			 * request the remaining data (if any) */
-			cursor = last_cursor;
-			updated_status_row = false;
-			messages = last_messages;
-			update(data_size);
-			return;
-		}
+		/* hmm, what else can it be?
+		 * could we be missing data?
+		 * this is bad, we'll lose messages, this should never happen */
+		*debugfile << WORLD_DEBUG_NAME << "CURSOR ON UNEXPECTED LOCATION: " << cursor.row << ", " << cursor.col << endl;
+		update();
+		return;
 	}
-	last_cursor = cursor;
 	if (messages == "  ")
 		messages.clear(); // no messages
-	/* dump data */
-	for (int a = 0; a < data_size; ++a)
-		cout << data[a];
-	cout.flush(); // same reason as in saiph.dumpMaps()
-	*debugfile << DATA_DEBUG_NAME;
-	for (int a = 0; a < data_size; ++a)
-		*debugfile << data[a];
-	*debugfile << endl;
 }
