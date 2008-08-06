@@ -32,17 +32,17 @@ Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 
 	/* discard the initial data we receive */
 	char discard[TELNET_BUFFER_SIZE];
-	usleep(expected_latency);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) != 0)
-		usleep(expected_latency);
+	sleep(1);
+	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
+		sleep(1);
 
 	/* tell server our terminal (xterm-color) and size (80x24) and set some other things */
 	char data[] = {0xff, 0xfb, 0x18, 0xff, 0xfa, 0x18, 0x00, 'x', 't', 'e', 'r', 'm', 0xff, 0xf0, 0xff, 0xfc, 0x20, 0xff, 0xfc, 0x23, 0xff, 0xfc, 0x27, 0xff, 0xfe, 0x03, 0xff, 0xfb, 0x01, 0xff, 0xfd, 0x05, 0xff, 0xfb, 0x21, 0xff, 0xfb, 0x1f, 0xff, 0xfa, 0x1f, 0x00, 0x50, 0x00, 0x18, 0xff, 0xf0}; 
 	transmit(data, 47);
 	/* discard any data sent back */
-	usleep(expected_latency);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) != 0)
-		usleep(expected_latency);
+	sleep(1);
+	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
+		sleep(1);
 
 	/* and let's log in */
 	start();
@@ -66,6 +66,7 @@ int Telnet::retrieve(char *buffer, int count, bool blocking) {
 	/* read remaining unblocked */
 	if (retrieved >= 0)
 		retrieved += recv(sock, &buffer[retrieved], count - retrieved, MSG_DONTWAIT);
+	gettimeofday(&last_receive, NULL);
 
 	if (retrieved != 0 && retrieved % TELNET_PACKET_SIZE == 0) {
 		/* if we get packets of size 1448 we probably didn't get it all */
@@ -78,8 +79,6 @@ int Telnet::retrieve(char *buffer, int count, bool blocking) {
 		 * we really just want the time it took from we sent a packet and until we received one */
 		gettimeofday(&last_send, NULL);
 		retrieved += retrieve(&buffer[retrieved], count - retrieved, true);
-	} else {
-		gettimeofday(&last_receive, NULL);
 	}
 	*debugfile << TELNET_DEBUG_NAME << "Read " << retrieved << " bytes: ";
 	for (int a = 0; a < retrieved; ++a)
@@ -112,19 +111,19 @@ void Telnet::start() {
 	char discard[TELNET_BUFFER_SIZE];
 	transmit("l");
 	/* discard any data sent back */
-	usleep(expected_latency);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) != 0)
-		usleep(expected_latency);
+	sleep(1);
+	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
+		sleep(1);
 	transmit(username);
 	/* discard any data sent back */
-	usleep(expected_latency);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) != 0)
-		usleep(expected_latency);
+	sleep(1);
+	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
+		sleep(1);
 	transmit(password);
 	/* discard any data sent back */
-	usleep(expected_latency);
-	while (retrieve(discard, TELNET_BUFFER_SIZE, false) != 0)
-		usleep(expected_latency);
+	sleep(1);
+	while (retrieve(discard, TELNET_BUFFER_SIZE, false) > 0)
+		sleep(1);
 	transmit("p");
 	/* don't discard now, game should appear */
 }
@@ -143,7 +142,6 @@ int Telnet::transmit(const char *data, int length) {
 	 * so we just want to read the rest */
 	*debugfile << TELNET_DEBUG_NAME << "Last send: " << last_send.tv_sec << "." << last_send.tv_usec << " | Last receive: " << last_receive.tv_sec << "." << last_receive.tv_usec << endl;
 	expected_latency = (expected_latency + ((last_receive.tv_sec - last_send.tv_sec) * 1000000 + last_receive.tv_usec - last_send.tv_usec)) / 2;
-	gettimeofday(&last_send, NULL);
 	*debugfile << TELNET_DEBUG_NAME << "Sleeping " << expected_latency * 4 / 3 << " microseconds" << endl;
 	usleep(expected_latency * 4 / 3); // add 33% to the expected latency, for safety
 	/* let's peek */
@@ -153,5 +151,6 @@ int Telnet::transmit(const char *data, int length) {
 		*debugfile << TELNET_DEBUG_NAME << "Data in the socket, not sending command" << endl;
 		return 0; // there's data, don't send
 	}
+	gettimeofday(&last_send, NULL);
 	return send(sock, data, length, 0);
 }
