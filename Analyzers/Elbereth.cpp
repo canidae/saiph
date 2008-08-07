@@ -91,7 +91,7 @@ bool Elbereth::request(const Request &request) {
 			/* TODO
 			 * monster that won't respect elbereth might be friendly.
 			 * we also need to check for minotaurs & riders (heh, yeah, right) */
-			if (m->second.symbol == '@' || m->second.symbol == 'A')
+			if (m->second.symbol == '@' || m->second.symbol == 'A' || m->second.symbol == 'I')
 				return false; // elbereth won't be respected
 		}
 		if (!did_look && !burned && !digged && !dusted) {
