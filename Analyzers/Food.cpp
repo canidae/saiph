@@ -477,7 +477,8 @@ void Food::analyze() {
 
 void Food::parseMessages(const string &messages) {
 	if (command2 == "ate corpse") {
-		/* just ate a corpse, we should look at ground */
+		/* just ate a corpse, we should clear stash and look at ground */
+		saiph->levels[saiph->position.level].stashes.erase(saiph->position);
 		priority = PRIORITY_LOOK;
 		command = LOOK;
 		command2.clear();
@@ -485,6 +486,10 @@ void Food::parseMessages(const string &messages) {
 	}
 	string::size_type pos;
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
+		if (command2.size() != 1) {
+			/* we expected to eat a corpse, but that must be gone */
+			command2 = " ";
+		}
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* food gone, make inventory dirty */
@@ -529,7 +534,6 @@ void Food::parseMessages(const string &messages) {
 		Item item(messages.substr(pos, pos2 - pos));
 		if (command2 == item.name) {
 			command = YES;
-			/* after eating we should look at the stash */
 			command2 = "ate corpse";
 		} else {
 			command = NO;
@@ -568,6 +572,10 @@ void Food::parseMessages(const string &messages) {
 				}
 			}
 		}
+	} else if (saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
+		/* we should stop eating when we get this message */
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
 	}
 }
 

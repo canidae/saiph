@@ -84,7 +84,7 @@ void Fight::analyze() {
 			continue; // we must move to monster, but we got something else with higher priority
 		if (moves > min_moves)
 			continue; // we know of a monster closer than this one
-		if (moves == 1 && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
+		if (moves == 1 && distance == min_distance && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
 		if (blue_e)
 			priority = FIGHT_BLUE_E_PRIORITY;
