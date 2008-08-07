@@ -48,7 +48,9 @@ class Saiph;
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Loot.h"
+#include "Analyzers/Potion.h"
 #include "Analyzers/Pray.h"
+#include "Analyzers/Scroll.h"
 #include "Analyzers/Wand.h"
 #include "Analyzers/Wish.h"
 
@@ -97,5 +99,6 @@ class Saiph {
 		void detectPosition();
 		bool directLineHelper(const Point &point, bool ignore_sinks);
 		void dumpMaps();
+		void parseMessages(const string &messages);
 };
 #endif

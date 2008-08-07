@@ -153,6 +153,7 @@
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
+#define MESSAGE_FOR_INSTRUCTIONS "  (For instructions type a ?)  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "

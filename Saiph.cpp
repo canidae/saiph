@@ -30,7 +30,9 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Food(this));
 	analyzers.push_back(new Health(this));
 	analyzers.push_back(new Loot(this));
+	analyzers.push_back(new Potion(this));
 	analyzers.push_back(new Pray(this));
+	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Wand(this));
 	analyzers.push_back(new Wish(this));
 }
@@ -221,6 +223,9 @@ bool Saiph::run() {
 	/* detect player position */
 	if (!world->question && !world->menu && !engulfed)
 		detectPosition();
+
+	/* global message parsing */
+	parseMessages(world->messages);
 
 	/* level message parsing */
 	debugfile << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
@@ -563,6 +568,14 @@ void Saiph::dumpMaps() {
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
+}
+
+void Saiph::parseMessages(const string &messages) {
+	if (messages.find(MESSAGE_FOR_INSTRUCTIONS, 0) != string::npos) {
+		/* a bit unique case, this is a question.
+		 * the data doesn't end with the sequence we check in World */
+		world->question = true;
+	}
 }
 
 /* main */
