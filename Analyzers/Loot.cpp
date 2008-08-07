@@ -84,6 +84,8 @@ void Loot::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* we won't get a list when we're not carrying anything (except gold) */
 		dirty_inventory = false;
+	} else if (messages.find(LOOT_STOLE, 0) != string::npos) {
+		dirty_inventory = true;
 	}
 	if (listing_inventory || listing_items) {
 		/* we're listing something (inventory, pickup, drop).

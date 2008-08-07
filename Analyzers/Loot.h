@@ -6,6 +6,7 @@
 /* messages */
 #define LOOT_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
+#define LOOT_STOLE " stole "
 
 /* forward declare */
 class Loot;

@@ -327,11 +327,15 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	int level_queue[levels.size()];
 	int level_moves[levels.size()];
 	int level_move[levels.size()];
+	bool level_added[levels.size()];
+	for (int a = 0; a < (int) levels.size(); ++a)
+		level_added[a] = false;
 	int pivot = 0;
 	int level_count = 1;
 	level_queue[0] = position.level;
 	level_moves[0] = 0;
 	level_move[0] = MOVE_NOWHERE;
+	level_added[position.level] = true;
 	int tmp_moves = 0;
 	debugfile << SAIPH_DEBUG_NAME << "Pathing to nearest " << symbol << endl;
 	while (pivot < level_count) {
@@ -357,6 +361,8 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			debugfile << SAIPH_DEBUG_NAME << "Pathing to upstairs leading to " << s->second << endl;
 			if (s->second == -1)
 				continue; // we don't know where these stairs lead
+			if (level_added[s->second])
+				continue; // already added this level
 			unsigned char move;
 			/* are we pathing on the current level, or is it another level? */
 			if (pivot == 0) {
@@ -383,6 +389,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				 * we should check the level these stairs lead to as well */
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
+				level_added[s->second] = true;
 				++level_count;
 			}
 		}
@@ -391,6 +398,8 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			debugfile << SAIPH_DEBUG_NAME << "Pathing to downstairs leading to " << s->second << endl;
 			if (s->second == -1)
 				continue; // we don't know where these stairs lead
+			if (level_added[s->second])
+				continue; // already added this level
 			unsigned char move;
 			/* are we pathing on the current level, or is it another level? */
 			if (position.level == level_queue[pivot]) {
@@ -417,6 +426,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				 * we should check the level these stairs lead to as well */
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
+				level_added[s->second] = true;
 				++level_count;
 			}
 		}
@@ -580,7 +590,7 @@ void Saiph::parseMessages(const string &messages) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
+	Saiph *saiph = new Saiph(CONNECTION_TELNET);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

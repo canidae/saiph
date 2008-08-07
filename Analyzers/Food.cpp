@@ -476,6 +476,13 @@ void Food::analyze() {
 }
 
 void Food::parseMessages(const string &messages) {
+	if (command2 == "ate corpse") {
+		/* just ate a corpse, we should look at ground */
+		priority = PRIORITY_LOOK;
+		command = LOOK;
+		command2.clear();
+		return;
+	}
 	string::size_type pos;
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
 		command = command2;
@@ -522,11 +529,8 @@ void Food::parseMessages(const string &messages) {
 		Item item(messages.substr(pos, pos2 - pos));
 		if (command2 == item.name) {
 			command = YES;
-			/* since we already got the "what do you want to eat?" prompt,
-			 * it's safe to remove it from stash here.
-			 * the corpse will be "partially eaten" if we're interrupted */
-			/* this is a hack */
-			saiph->levels[saiph->position.level].stashes.erase(saiph->position);
+			/* after eating we should look at the stash */
+			command2 = "ate corpse";
 		} else {
 			command = NO;
 		}
