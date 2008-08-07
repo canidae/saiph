@@ -57,7 +57,7 @@ void Level::parseMessages(const string &messages) {
 			Item item(messages.substr(pos, length));
 			addItemToStash(saiph->position, item);
 		}
-	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos) {
+	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
 		clearStash(saiph->position);
 		pos = messages.find("  ", pos + 1);
