@@ -344,13 +344,29 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			debugfile << SAIPH_DEBUG_NAME << "Pathing to upstairs leading to " << s->second << endl;
 			if (s->second == -1)
 				continue; // we don't know where these stairs lead
-			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+			unsigned char move;
+			/* are we pathing on the current level, or is it another level? */
+			if (position.level == level_queue[pivot]) {
+				/* pathing on level we're on.
+				 * path from player */
+				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+			} else {
+				/* pathing on another level.
+				 * path from stairs */
+				for (map<Point, int>::iterator t = levels[s->second].symbols[STAIRS_DOWN].begin(); t != levels[s->second].symbols[STAIRS_DOWN].end(); ++t) {
+					if (t->second != level_queue[pivot])
+						continue;
+					move = levels[level_queue[pivot]].shortestPath(t->first, s->first, allow_illegal_last_move, &tmp_moves);
+					break;
+				}
+			}
 			tmp_moves += level_moves[pivot];
 			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
+				++level_count;
 			}
 		}
 		/* path to downstairs on level */
@@ -358,13 +374,29 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			debugfile << SAIPH_DEBUG_NAME << "Pathing to downstairs leading to " << s->second << endl;
 			if (s->second == -1)
 				continue; // we don't know where these stairs lead
-			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+			unsigned char move;
+			/* are we pathing on the current level, or is it another level? */
+			if (position.level == level_queue[pivot]) {
+				/* pathing on level we're on.
+				 * path from player */
+				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+			} else {
+				/* pathing on another level.
+				 * path from stairs */
+				for (map<Point, int>::iterator t = levels[s->second].symbols[STAIRS_UP].begin(); t != levels[s->second].symbols[STAIRS_UP].end(); ++t) {
+					if (t->second != level_queue[pivot])
+						continue;
+					move = levels[level_queue[pivot]].shortestPath(t->first, s->first, allow_illegal_last_move, &tmp_moves);
+					break;
+				}
+			}
 			tmp_moves += level_moves[pivot];
 			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
+				++level_count;
 			}
 		}
 		++pivot;
