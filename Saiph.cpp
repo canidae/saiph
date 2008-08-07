@@ -321,10 +321,12 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	unsigned char best_move = ILLEGAL_MOVE;
 	int level_queue[levels.size()];
 	int level_moves[levels.size()];
+	int level_move[levels.size()];
 	int pivot = 0;
 	int level_count = 1;
 	level_queue[0] = position.level;
 	level_moves[0] = 0;
+	level_move[0] = MOVE_NOWHERE;
 	int tmp_moves = 0;
 	debugfile << SAIPH_DEBUG_NAME << "Pathing to nearest " << symbol << endl;
 	while (pivot < level_count) {
@@ -336,7 +338,13 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				/* this symbol is closer than the previously found one */
 				debugfile << SAIPH_DEBUG_NAME << "Found " << symbol << " on level " << level_queue[pivot] << endl;
 				least_moves = tmp_moves;
-				best_move = move;
+				if (pivot == 0) {
+					/* symbol is on current level, just set best_move to move */
+					best_move = move;
+				} else {
+					/* set best_move to move leading towards right stairs */
+					best_move = level_move[pivot];
+				}
 			}
 		}
 		/* path to upstairs on level */
@@ -346,10 +354,13 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				continue; // we don't know where these stairs lead
 			unsigned char move;
 			/* are we pathing on the current level, or is it another level? */
-			if (position.level == level_queue[pivot]) {
+			if (pivot == 0) {
 				/* pathing on level we're on.
 				 * path from player */
 				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+				if (move == MOVE_NOWHERE)
+					move = MOVE_UP;
+				level_move[s->second] = move;
 			} else {
 				/* pathing on another level.
 				 * path from stairs */
@@ -357,6 +368,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 					if (t->second != level_queue[pivot])
 						continue;
 					move = levels[level_queue[pivot]].shortestPath(t->first, s->first, allow_illegal_last_move, &tmp_moves);
+					level_move[s->second] = t->second;
 					break;
 				}
 			}
@@ -380,6 +392,9 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				/* pathing on level we're on.
 				 * path from player */
 				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+				if (move == MOVE_NOWHERE)
+					move = MOVE_DOWN;
+				level_move[s->second] = move;
 			} else {
 				/* pathing on another level.
 				 * path from stairs */
@@ -387,6 +402,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 					if (t->second != level_queue[pivot])
 						continue;
 					move = levels[level_queue[pivot]].shortestPath(t->first, s->first, allow_illegal_last_move, &tmp_moves);
+					level_move[s->second] = t->second;
 					break;
 				}
 			}
