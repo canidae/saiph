@@ -117,8 +117,9 @@ void Explore::analyze() {
 		priority = cur_priority;
 		best_moves = moves;
 	}
-	if (priority < EXPLORE_UNKNOWN_STAIRS) {
-		/* explore unknown stairs on level */
+	if (priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
+		/* explore unknown stairs on level, unless we're on depth 1.
+		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
 		/* go up first (or we'll never check the upstairs) */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
 			if (s->second != -1)

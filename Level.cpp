@@ -16,6 +16,7 @@ bool Level::initialized = false;
 Level::Level(Saiph *saiph, string name, unsigned char branch) : name(name), branch(branch), saiph(saiph), got_drop_menu(false), got_pickup_menu(false) {
 	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
 	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));
+	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
 	if (!initialized)
 		init();
 }
@@ -175,16 +176,19 @@ void Level::parseMessages(const string &messages) {
 
 void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value) {
 	/* since we're gonna track certain symbols we'll use an own method for this */
-	if (dungeonmap[point.row][point.col] == symbol) {
-		/* only update value */
-		symbols[symbol][point] = value;
+	if (dungeonmap[point.row][point.col] == symbol)
 		return; // no change
-	}
 	if (track_symbol[dungeonmap[point.row][point.col]])
 		symbols[dungeonmap[point.row][point.col]].erase(point);
 	if (track_symbol[symbol])
 		symbols[symbol][point] = value;
 	dungeonmap[point.row][point.col] = symbol;
+}
+
+void Level::setDungeonSymbolValue(const Point &point, int value) {
+	/* set the value of the symbol on given point */
+	if (track_symbol[dungeonmap[point.row][point.col]])
+		symbols[dungeonmap[point.row][point.col]][point] = value;
 }
 
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {

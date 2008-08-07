@@ -64,6 +64,7 @@ class Level {
 		map<Point, Stash> stashes;
 		map<unsigned char, map<Point, int> > symbols;
 		string name;
+		int depth;
 		unsigned char branch;
 
 		/* static variables */
@@ -76,6 +77,7 @@ class Level {
 		/* methods */
 		void parseMessages(const string &messages);
 		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = -1);
+		void setDungeonSymbolValue(const Point &point, int value = -1);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &from, const Point &to, bool allow_illegal_last_move, int *moves);
 		void updateMapPoint(const Point &point, unsigned char symbol, int color);
