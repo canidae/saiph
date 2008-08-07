@@ -64,12 +64,14 @@ void Beatitude::parseMessages(const string &messages) {
 	if (got_drop_menu) {
 		/* drop stuff we don't know beatitude of */
 		for(map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-			if (d->second.beatitude == BEATITUDE_UNKNOWN) {
-				/* mark this */
-				command = d->first;
-				priority = PRIORITY_SELECT_ITEM;
-				return;
-			}
+			if (d->second.beatitude != BEATITUDE_UNKNOWN)
+				continue;
+			if (d->second.name == "gold piece" || d->second.name == "gold pieces")
+				continue; // don't drop gold
+			/* mark this */
+			command = d->first;
+			priority = PRIORITY_SELECT_ITEM;
+			return;
 		}
 		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
 		command = NEXT_PAGE;
