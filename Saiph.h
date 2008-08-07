@@ -71,6 +71,7 @@ class Saiph {
 		Coordinate position;
 		bool engulfed;
 		int best_priority;
+		string last_command;
 
 		/* constructors */
 		Saiph(int interface);

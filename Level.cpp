@@ -28,6 +28,9 @@ void Level::parseMessages(const string &messages) {
 		got_drop_menu = false;
 		got_pickup_menu = false;
 	}
+	/* if last command was ":" we should clear stash on ground */
+	if (saiph->last_command == ":")
+		clearStash(saiph->position);
 	/* parse messages that can help us find doors/staircases/etc. */
 	if (messages.find(LEVEL_STAIRCASE_UP_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, STAIRS_UP);
