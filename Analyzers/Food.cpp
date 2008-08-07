@@ -579,10 +579,8 @@ bool Food::safeToEat(const string &corpse) {
 	else if ((c->second & FOOD_ACIDIC) != 0)
 		return false;
 	*/
-	/* screw aggravate for now
 	else if ((c->second & FOOD_AGGRAVATE) != 0)
 		return false;
-	*/
 	else if ((c->second & FOOD_DIE) != 0)
 		return false;
 	/* eat dwarves for now
@@ -599,10 +597,8 @@ bool Food::safeToEat(const string &corpse) {
 	*/
 	else if ((c->second & FOOD_HALLUCINOGENIC) != 0)
 		return false;
-	/* heck. eat humans too
 	else if ((c->second & FOOD_HUMAN) != 0)
 		return false;
-	*/
 	else if ((c->second & FOOD_LYCANTHROPY) != 0)
 		return false;
 	else if ((c->second & FOOD_MIMIC) != 0)
