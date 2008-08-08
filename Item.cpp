@@ -1,7 +1,7 @@
 #include "Item.h"
 
 /* constructors */
-Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
+Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), called(""), named(""), additional("") {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -110,8 +110,8 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		enchantment = 0 - (name[pos + 1] - '0'); // assuming no item is enchanted beyond -9
 		pos += 3;
 	}
+	/* erase up to pos as we've extracted all the info up to item name */
 	name.erase(0, pos);
-	/* TODO: "named" & "called" */
 	/* set "(being worn)" and so on in additional */
 	if (name[name.size() - 1] == ')') {
 		pos = name.rfind("(", name.size() - 1);
@@ -120,7 +120,19 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 			name.erase(pos - 1); // no need for this in name, and remove last space before "(" too
 		}
 	}
+	/* extract "named" */
+	pos = name.rfind(ITEM_NAMED, name.size() - 1);
+	if (pos != string::npos) {
+		named = name.substr(pos + sizeof (ITEM_NAMED) - 1);
+		name.erase(pos);
+	}
+	/* extraced "called" */
+	pos = name.rfind(ITEM_CALLED, name.size() - 1);
+	if (pos != string::npos) {
+		called = name.substr(pos + sizeof (ITEM_CALLED) - 1);
+		name.erase(pos);
+	}
 }
 
-Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
+Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), called(""), named(""), additional("") {
 }

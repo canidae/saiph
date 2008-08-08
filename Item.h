@@ -2,6 +2,8 @@
 /* defines */
 #define ITEM_H
 /* parse text */
+#define ITEM_CALLED " called "
+#define ITEM_NAMED " named "
 #define ITEM_PARSE_TEXT "%7s %127[^\t\n]"
 #define ITEM_PARSE_BLESSED "blessed "
 #define ITEM_PARSE_UNCURSED "uncursed "
@@ -43,6 +45,8 @@ class Item {
 		bool fixed;
 		int damage;
 		int enchantment;
+		string called;
+		string named;
 		string additional;
 
 		/* constructors */
