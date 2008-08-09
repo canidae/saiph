@@ -9,14 +9,12 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	if (matched != 2)
 		return; // unable to parse text as item
 	/* figure out amount of items */
-	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || (amount[0] == 't' && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))     
+	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || ((amount[0] == 't' || amount[0] == 'T') && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))     
 		count = 1; // "a", "an" or "the" <item>
 	else if (amount[0] >= '0' || amount[0] <= '9')
 		count = atoi(amount); // n <items>
 	else    
 		return; // unable to parse text as item
-	/* blessed greased fireproof +3 cloak of magic resistance
-	 *  <buc>    <g>    <fixed>  <>   <item> */
 	string::size_type pos = 0;
 	name = name_long;
 	/* buc */
