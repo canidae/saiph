@@ -7,9 +7,11 @@
 #define REQUEST_VISIT_STASH 3
 #define REQUEST_LOOT_STASH 4
 #define REQUEST_DIRTY_INVENTORY 5
-#define REQUEST_UPDATED_INVENTORY 6
 #define REQUEST_PRAY 7
 #define REQUEST_VISIT_NEAREST_FOUNTAIN 8
+#define REQUEST_WEAPON_GROUP_CREATE 9
+#define REQUEST_WEAPON_GROUP_ADD 10
+#define REQUEST_WEAPON_AMOUNT 11
 
 /* forward declare */
 class Request;
@@ -29,6 +31,7 @@ class Request {
 		int request;
 		int priority;
 		int value;
+		int status;
 		string data;
 		Coordinate coordinate;
 

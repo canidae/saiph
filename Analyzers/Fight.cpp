@@ -135,14 +135,10 @@ void Fight::parseMessages(const string &messages) {
 /* private methods */
 unsigned char Fight::gotThrown() {
 	/* return best weapon we can throw, if any */
-	req.request = REQUEST_UPDATED_INVENTORY;
-	req.priority = PRIORITY_LOOK;
-	if (saiph->request(req)) {
-		for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-				if (i->second.name == *t)
-					return i->first;
-			}
+	for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name == *t)
+				return i->first;
 		}
 	}
 	return FIGHT_NO_THROWN_WEAPONS;

@@ -3,6 +3,7 @@
 /* constructor */
 Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command("") {
 	/* methods will be called in this order:
+	 * 0. init (once, after all analyzers have been created)
 	 * 1. parseMessages
 	 * 2. inspect
 	 * 3. analyze
@@ -23,6 +24,9 @@ void Analyzer::analyze() {
 }
 
 void Analyzer::complete() {
+}
+
+void Analyzer::init() {
 }
 
 void Analyzer::inspect(const Point &point) {

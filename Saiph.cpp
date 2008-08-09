@@ -35,6 +35,10 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Wand(this));
 	analyzers.push_back(new Wish(this));
+
+	/* run init in analyzers */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->init();
 }
 
 /* destructor */

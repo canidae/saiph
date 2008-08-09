@@ -6,6 +6,12 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 
 /* methods */
 void Loot::analyze() {
+	/* list inventory if it's dirty */
+	if (dirty_inventory) {
+		command = INVENTORY;
+		priority = PRIORITY_LOOK;
+		return;
+	}
 	/* go to a stash requested visited */
 	int min_moves = INT_MAX;
 	for (map<Coordinate, int>::iterator v = visit_stash.begin(); v != visit_stash.end(); ) {
@@ -125,14 +131,6 @@ bool Loot::request(const Request &request) {
 	} else if (request.request == REQUEST_DIRTY_INVENTORY) {
 		/* someone wants to mark our inventory as dirty */
 		dirty_inventory = true;
-		return true;
-	} else if (request.request == REQUEST_UPDATED_INVENTORY) {
-		/* someone needs an updated inventory */
-		if (dirty_inventory && request.priority > priority) {
-			/* it's dirty, we must look */
-			command = INVENTORY;
-			priority = request.priority;
-		}
 		return true;
 	}
 	return false;

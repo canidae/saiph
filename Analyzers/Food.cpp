@@ -216,11 +216,6 @@ void Food::analyze() {
 	/* are we hungry? */
 	if (saiph->world->player.hunger <= WEAK) {
 		/* yes, we are */
-		/* make sure inventory is updated */
-		req.request = REQUEST_UPDATED_INVENTORY;
-		req.priority = PRIORITY_LOOK;
-		if (!saiph->request(req))
-			return; // hmm, we can't say if inventory is updated?
 		for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
 			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 				if (i->second.name == *f) {
@@ -253,14 +248,9 @@ void Food::analyze() {
 			saiph->request(req);
 		}
 	} else if (saiph->world->player.hunger > CONTENT) {
-		/* make sure inventory is updated */
-		req.request = REQUEST_UPDATED_INVENTORY;
-		req.priority = PRIORITY_LOOK;
-		if (!saiph->request(req))
-			return; // hmm, we can't say if inventory is updated?
+		/* easter egg: eat bytes when [over]satiated */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
-				/* easter egg: eat bytes when [over]satiated */
 				command = EAT;
 				command2 = i->first;
 				priority = FOOD_EAT_HUNGRY_PRIORITY;
