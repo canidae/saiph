@@ -374,7 +374,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				level_move[s->second] = move;
 			} else {
 				/* pathing on another level.
-				 * path from stairs */
+				 * path from stairs leading to previous level */
 				for (map<Point, int>::iterator t = levels[s->second].symbols[STAIRS_DOWN].begin(); t != levels[s->second].symbols[STAIRS_DOWN].end(); ++t) {
 					if (t->second != level_queue[pivot])
 						continue;
@@ -402,7 +402,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				continue; // already added this level
 			unsigned char move;
 			/* are we pathing on the current level, or is it another level? */
-			if (position.level == level_queue[pivot]) {
+			if (pivot == 0) {
 				/* pathing on level we're on.
 				 * path from player */
 				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
@@ -411,7 +411,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				level_move[s->second] = move;
 			} else {
 				/* pathing on another level.
-				 * path from stairs */
+				 * path from stairs leading to previous level */
 				for (map<Point, int>::iterator t = levels[s->second].symbols[STAIRS_UP].begin(); t != levels[s->second].symbols[STAIRS_UP].end(); ++t) {
 					if (t->second != level_queue[pivot])
 						continue;
@@ -443,11 +443,9 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 	if (target.level == position.level) {
 		/* target on same level */
 		return levels[position.level].shortestPath(target, allow_illegal_last_move, moves);
-	} else {
-		/* pathing to another level */
-		/* not supported for now */
-		return ILLEGAL_MOVE;
 	}
+	/* pathing to another level */
+	return ILLEGAL_MOVE;
 }
 
 unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
@@ -590,7 +588,7 @@ void Saiph::parseMessages(const string &messages) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
