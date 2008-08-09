@@ -352,7 +352,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 					best_move = move;
 				} else {
 					/* set best_move to move leading towards right stairs */
-					best_move = level_move[pivot];
+					best_move = level_move[level_queue[pivot]];
 				}
 			}
 		}
