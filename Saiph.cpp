@@ -10,6 +10,9 @@ Saiph::Saiph(int interface) {
 	}
 	world = new World(connection, &debugfile);
 
+	/* inventory_updated */
+	inventory_updated = false;
+
 	/* engulfed */
 	engulfed = false;
 

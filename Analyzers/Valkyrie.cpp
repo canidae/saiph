@@ -9,7 +9,7 @@ void Valkyrie::init() {
 	/* "create" weapon group 0 with max 20 weapons */
 	req.request = REQUEST_WEAPON_GROUP_CREATE;
 	req.value = 0;
-	req.status = 20;
+	req.data = "20";
 	saiph->request(req);
 	/* add weapons to the group, best weapon first */
 	req.request = REQUEST_WEAPON_GROUP_ADD;
@@ -32,13 +32,14 @@ void Valkyrie::init() {
 	saiph->request(req);
 	req.data = "orcish spear";
 	saiph->request(req);
-	/* set amount we want of other handy weapons */
-	req.request = REQUEST_WEAPON_AMOUNT;
-	req.value = 1;
-	req.data = "long sword";
-	saiph->request(req);
+	/* and set which weapons we prefer using */
+	req.request = REQUEST_WEAPON_WIELD;
 	/* allow using cursed Excalibur */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "Excalibur";
+	saiph->request(req);
+	/* we don't want to wield a cursed long sword */
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.data = "long sword";
 	saiph->request(req);
 }

@@ -139,10 +139,40 @@ Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph) {
 
 /* methods */
 void Weapon::analyze() {
+	if (saiph->inventory_updated) {
+		/* inventory is changed somehow */
+		/* check that we're (still) wielding our preferred weapon */
+		unsigned char wielded = 0;
+		unsigned char best_key = 0;
+		int best_weapon = INT_MAX;
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.additional == "weapon in hand")
+				wielded = i->first;
+			for (vector<string>::size_type w = 0; w < wield_weapon.size(); ++w) {
+				if (wield_weapon[w] == i->second.name && (int) w < best_weapon) {
+					best_key = i->first;
+					best_weapon = w;
+				}
+			}
+		}
+		if (wielded != 0 && wielded == best_key)
+			return; // wielding best weapon
+		/* we're not wielding the best weapon, or we're not wielding any weapon */
+		if (best_key == 0)
+			return; // we don't have any weapons we'd like to wield
+		command = WIELD;
+		command2 = best_key;
+		priority = WEAPON_WIELD_PRIORITY;
+		return true;
+	}
 }
 
 void Weapon::parseMessages(const string &messages) {
-	if (saiph->pickup.size() > 0) {
+	if (saiph->world->question && !command2.empty() && messages.find(WEAPON_WHAT_TO_WIELD, 0) != string::npos) {
+		command = command2;
+		command2.clear();
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->pickup.size() > 0) {
 		/* pick up weapons according to our rules */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			map<string, int>::iterator w = weapon.find(p->second.name);
@@ -214,9 +244,10 @@ void Weapon::parseMessages(const string &messages) {
 bool Weapon::request(const Request &request) {
 	if (request.request == REQUEST_WEAPON_GROUP_CREATE) {
 		/* set total amount of weapons in the given group */
-		if (request.status <= 0)
+		int amount = atoi(request.data.c_str());
+		if (amount <= 0)
 			return false;
-		weapon_group_total[request.value] = request.status;
+		weapon_group_total[request.value] = amount;
 		return true;
 	} else if (request.request == REQUEST_WEAPON_GROUP_ADD) {
 		/* add weapon to group */
@@ -227,12 +258,14 @@ bool Weapon::request(const Request &request) {
 		weapon_accept_beatitude[request.data] = request.status;
 		weapon_group[request.value].push_back(request.data);
 		return true;
-	} else if (request.request == REQUEST_WEAPON_AMOUNT) {
-		/* set how many weapons of this type we wish to carry */
+	} else if (request.request == REQUEST_WEAPON_WIELD) {
+		/* player wish to wield this weapon */
 		if (weapon.find(request.data) == weapon.end())
 			return false;
 		weapon_accept_beatitude[request.data] = request.status;
-		weapon[request.data] = request.value;
+		if (weapon[request.data] <= 0)
+			weapon[request.data] = 1;
+		wield_weapon.push_back(request.data);
 		return true;
 	}
 	return false;

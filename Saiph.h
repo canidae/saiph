@@ -69,6 +69,7 @@ class Saiph {
 		map<unsigned char, Item> drop;
 		Stash *on_ground;
 		Coordinate position;
+		bool inventory_updated;
 		bool engulfed;
 		int best_priority;
 		string last_command;

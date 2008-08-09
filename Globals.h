@@ -80,6 +80,7 @@
 #define REST "."
 #define SEARCH "s"
 #define THROW "t"
+#define WIELD "w"
 /* common answers */
 #define HANDS "-"
 #define NO "n"

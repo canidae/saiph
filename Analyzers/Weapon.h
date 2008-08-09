@@ -3,9 +3,9 @@
 #define WEAPON_H
 /* priorities */
 #define WEAPON_PICKUP_PRIORITY 425
-/* used for finding thrown weapons */
-#define WEAPON_NOT_CHECKED_THROWN_WEAPONS 0
-#define WEAPON_NO_THROWN_WEAPONS 1
+#define WEAPON_WIELD_PRIORITY 475
+/* messages */
+#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
 
 /* forward declare */
 class Weapon;
@@ -36,10 +36,12 @@ class Weapon : public Analyzer {
 
 	private:
 		/* variables */
+		Saiph *saiph;
 		map<string, int> weapon; // name & amount we want
 		map<string, int> weapon_accept_beatitude; // name & accepted beatitudes
 		map<int, vector<string> > weapon_group; // used for grouping weapons
 		map<int, int> weapon_group_total; // total amount of weapons in group
-		Saiph *saiph;
+		vector<string> wield_weapon; // the order of which we'll wield weapons
+		string command2;
 };
 #endif
