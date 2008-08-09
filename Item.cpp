@@ -143,9 +143,11 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	}
 	if (stop == string::npos)
 		stop = name.size();
-	string::size_type start = name.find_last_not_of(' ', stop);
+	string::size_type start = name.find_last_of(' ', stop);
 	if (start == string::npos)
 		start = 0;
+	else
+		++start; // or we'll get the space before the word
 	string word = name.substr(start, stop - start);
 	if (word == "leaves")
 		word = "leaf";
