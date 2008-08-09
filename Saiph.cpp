@@ -359,7 +359,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		/* path to upstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_UP].end(); ++s) {
 			debugfile << SAIPH_DEBUG_NAME << "Pathing to upstairs leading to " << s->second << endl;
-			if (s->second == -1)
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
@@ -396,7 +396,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		/* path to downstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_DOWN].end(); ++s) {
 			debugfile << SAIPH_DEBUG_NAME << "Pathing to downstairs leading to " << s->second << endl;
-			if (s->second == -1)
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
@@ -457,7 +457,7 @@ unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_m
 
 /* private methods */
 void Saiph::detectPosition() {
-	if (position.level == -1) {
+	if (position.level < 0) {
 		/* this happens when we start */
 		position.row = world->player.row;
 		position.col = world->player.col;
@@ -474,19 +474,19 @@ void Saiph::detectPosition() {
 	}
 	/* level has changed.
 	 * we need to figure out if it's a new level or one we already know of */
-	int found = -1;
+	int found = UNKNOWN_SYMBOL_VALUE;
 	/* maybe we already know where these stairs lead? */
 	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
 		/* we did stand on stairs down, and if we don't know where they lead then
-		 * the next line will still just set found to -1 */
+		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
 		found = levels[position.level].symbols[STAIRS_DOWN][position];
 	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
 		/* we did stand on stairs up, and if we don't know where they lead then
-		 * the next line will still just set found to -1 */
+		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
 		found = levels[position.level].symbols[STAIRS_UP][position];
 	}
 	string level = world->player.level;
-	if (found == -1) {
+	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
 		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
 			/* check if level got vertical walls on same locations.
@@ -504,7 +504,7 @@ void Saiph::detectPosition() {
 			}
 		}
 	}
-	if (found == -1) {
+	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* new level */
 		found = levels.size();
 		levels.push_back(Level(this, level));

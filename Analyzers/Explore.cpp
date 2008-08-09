@@ -122,7 +122,7 @@ void Explore::analyze() {
 		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
 		/* go up first (or we'll never check the upstairs) */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
-			if (s->second != -1)
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
@@ -136,7 +136,7 @@ void Explore::analyze() {
 			}
 		}
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++s) {
-			if (s->second != -1)
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
