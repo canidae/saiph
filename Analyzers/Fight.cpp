@@ -8,7 +8,6 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 	thrown.push_back("elven spear");
 	thrown.push_back("spear");
 	thrown.push_back("orcish spear");
-	thrown.push_back("javelin");
 	thrown.push_back("silver dagger");
 	thrown.push_back("elven dagger");
 	thrown.push_back("dagger");

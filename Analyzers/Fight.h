@@ -21,6 +21,7 @@ class Fight;
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Monster.h"
+#include "../Request.h"
 #include "../Saiph.h"
 
 /* namespace */
