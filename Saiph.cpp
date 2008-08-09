@@ -337,7 +337,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	level_move[0] = MOVE_NOWHERE;
 	level_added[position.level] = true;
 	int tmp_moves = 0;
-	debugfile << SAIPH_DEBUG_NAME << "Pathing to nearest " << symbol << endl;
+	debugfile << SAIPH_DEBUG_NAME << "Pathing to nearest '" << symbol << "'" << endl;
 	while (pivot < level_count) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
@@ -345,7 +345,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			tmp_moves += level_moves[pivot];
 			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
 				/* this symbol is closer than the previously found one */
-				debugfile << SAIPH_DEBUG_NAME << "Found " << symbol << " on level " << level_queue[pivot] << endl;
+				debugfile << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << endl;
 				least_moves = tmp_moves;
 				if (pivot == 0) {
 					/* symbol is on current level, just set best_move to move */
@@ -358,11 +358,11 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		}
 		/* path to upstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_UP].end(); ++s) {
-			debugfile << SAIPH_DEBUG_NAME << "Pathing to upstairs leading to " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
+			debugfile << SAIPH_DEBUG_NAME << "Pathing to upstairs leading to level " << s->second << endl;
 			unsigned char move;
 			/* are we pathing on the current level, or is it another level? */
 			if (pivot == 0) {
@@ -395,11 +395,11 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		}
 		/* path to downstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_DOWN].end(); ++s) {
-			debugfile << SAIPH_DEBUG_NAME << "Pathing to downstairs leading to " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
+			debugfile << SAIPH_DEBUG_NAME << "Pathing to downstairs leading to level " << s->second << endl;
 			unsigned char move;
 			/* are we pathing on the current level, or is it another level? */
 			if (pivot == 0) {

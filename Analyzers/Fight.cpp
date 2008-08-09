@@ -2,31 +2,19 @@
 
 /* constructors */
 Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
-	/* thrown weapons */
+	/* thrown weapons in the order we want to throw them */
 	thrown.push_back("dwarvish spear");
-	thrown.push_back("dwarvish spears");
 	thrown.push_back("silver spear");
-	thrown.push_back("silver spears");
 	thrown.push_back("elven spear");
-	thrown.push_back("elven spears");
 	thrown.push_back("spear");
-	thrown.push_back("spears");
 	thrown.push_back("orcish spear");
-	thrown.push_back("orcish spears");
 	thrown.push_back("javelin");
-	thrown.push_back("javelins");
 	thrown.push_back("silver dagger");
-	thrown.push_back("silver daggers");
 	thrown.push_back("elven dagger");
-	thrown.push_back("elven daggers");
 	thrown.push_back("dagger");
-	thrown.push_back("daggers");
 	thrown.push_back("orcish dagger");
-	thrown.push_back("orcish daggers");
-	//thrown.push_back("poisoned dart"); // damages our alignment
-	//thrown.push_back("poisoned darts"); // ^^
+	thrown.push_back("poisoned dart");
 	thrown.push_back("dart");
-	thrown.push_back("darts");
 }
 
 /* methods */
@@ -103,7 +91,7 @@ void Fight::analyze() {
 		req.request = REQUEST_LOOT_STASH;
 		req.priority = FIGHT_PICKUP_PRIORITY;
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
+			for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (i->name == *t && i->beatitude != CURSED) {
 					/* request that someone loot this stash */
 					saiph->request(req);
@@ -133,7 +121,7 @@ void Fight::parseMessages(const string &messages) {
 	} else if (saiph->pickup.size() > 0) {
 		/* pick up thrown weapons if any */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
+			for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 				if (p->second.name == *t && p->second.beatitude != CURSED) {
 					/* pick it up :) */
 					command = p->first;
@@ -151,7 +139,7 @@ unsigned char Fight::gotThrown() {
 	req.request = REQUEST_UPDATED_INVENTORY;
 	req.priority = PRIORITY_LOOK;
 	if (saiph->request(req)) {
-		for (list<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
+		for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
 			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 				if (i->second.name == *t)
 					return i->first;

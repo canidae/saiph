@@ -16,8 +16,8 @@
 class Fight;
 
 /* includes */
-#include <list>
 #include <string>
+#include <vector>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Monster.h"
@@ -41,7 +41,7 @@ class Fight : public Analyzer {
 		Saiph *saiph;
 		string command2;
 		string command3;
-		list<string> thrown;
+		vector<string> thrown;
 		Request req;
 
 		/* methods */

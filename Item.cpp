@@ -132,6 +132,26 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		called = name.substr(pos + sizeof (ITEM_CALLED) - 1);
 		name.erase(pos);
 	}
+	/* singularize name.
+	 * we'll only singularize stuff we care about for now */
+	if (name.find("pair of ") == 0)
+		return; // it's "2 pair of boots", not "2 pairs of boot"
+	string::size_type stop = string::npos;
+	if ((stop = name.find(" of ", 0)) != string::npos || (stop = name.find(" labeled ", 0)) != string::npos || (stop = name.find(" called ", 0)) != string::npos || (stop = name.find(" named ", 0)) != string::npos || (stop = name.find(" from ", 0)) != string::npos) {
+		/* no need to do anything here.
+		 * after this check "stop" should be placed just after the word that may be pluralized */
+	}
+	if (stop == string::npos)
+		stop = name.size();
+	string::size_type start = name.find_last_not_of(' ', stop);
+	if (start == string::npos)
+		start = 0;
+	string word = name.substr(start, stop - start);
+	if (word == "leaves")
+		word = "leaf";
+	else if (word.size() >= 2 && word[word.size() - 1] == 's' && word[word.size() - 2] != 's')
+		word.erase(word.size() - 1);
+	name.replace(start, stop, word);
 }
 
 Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), called(""), named(""), additional("") {
