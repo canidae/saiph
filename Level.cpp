@@ -32,6 +32,7 @@ void Level::parseMessages(const string &messages) {
 	if (saiph->last_command == ":")
 		clearStash(saiph->position);
 	/* parse messages that can help us find doors/staircases/etc. */
+	string::size_type pos;
 	if (messages.find(LEVEL_STAIRCASE_UP_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, STAIRS_UP);
 	else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE, 0) != string::npos)
@@ -42,6 +43,14 @@ void Level::parseMessages(const string &messages) {
 		setDungeonSymbol(saiph->position, FOUNTAIN);
 	else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2, 0) != string::npos)
 		setDungeonSymbol(saiph->position, FLOOR);
+	else if ((pos = messages.find(LEVEL_ALTAR_HERE, 0)) != string::npos) {
+		if (messages.find(" (unaligned) ", pos) != string::npos)
+			setDungeonSymbol(saiph->position, ALTAR, NEUTRAL);
+		else if (messages.find(" (chaotic) ", pos) != string::npos)
+			setDungeonSymbol(saiph->position, ALTAR, CHAOTIC);
+		else
+			setDungeonSymbol(saiph->position, ALTAR, LAWFUL);
+	}
 	/* when we've checked messages for static dungeon features and not found anything,
 	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
 	else if (dungeonmap[saiph->position.row][saiph->position.col] == UNKNOWN_TILE)
@@ -49,7 +58,6 @@ void Level::parseMessages(const string &messages) {
 
 	/* item parsing */
 	/* figure out if there's something on the ground or if we're picking up something */
-	string::size_type pos;
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* single item on ground */
 		clearStash(saiph->position);
@@ -190,7 +198,7 @@ void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value
 
 void Level::setDungeonSymbolValue(const Point &point, int value) {
 	/* set the value of the symbol on given point */
-	if (track_symbol[dungeonmap[point.row][point.col]])
+	if (track_symbol[dungeonmap[point.row][point.col]] && symbols[dungeonmap[point.row][point.col]].find(point) != symbols[dungeonmap[point.row][point.col]].end())
 		symbols[dungeonmap[point.row][point.col]][point] = value;
 }
 

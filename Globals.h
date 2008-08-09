@@ -15,6 +15,8 @@
 #define BRANCH_WIZARD 4
 #define BRANCH_ASTRAL 5
 #define BRANCH_QUEST 6
+/* unknown tracked symbol value */
+#define UNKNOWN_SYMBOL_VALUE INT_MIN
 /* colors & attributes */
 #define NO_COLOR 0
 #define INVERSE 7

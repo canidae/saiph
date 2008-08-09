@@ -11,6 +11,7 @@
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
 /* messages */
+#define LEVEL_ALTAR_HERE "  There is an altar to "
 #define LEVEL_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
 #define LEVEL_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
 #define LEVEL_FOUNTAIN_HERE "  There is a fountain here.  "
@@ -76,8 +77,8 @@ class Level {
 
 		/* methods */
 		void parseMessages(const string &messages);
-		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = -1);
-		void setDungeonSymbolValue(const Point &point, int value = -1);
+		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = UNKNOWN_SYMBOL_VALUE);
+		void setDungeonSymbolValue(const Point &point, int value = UNKNOWN_SYMBOL_VALUE);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &from, const Point &to, bool allow_illegal_last_move, int *moves);
 		void updateMapPoint(const Point &point, unsigned char symbol, int color);
