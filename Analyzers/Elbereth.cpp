@@ -18,6 +18,7 @@ void Elbereth::parseMessages(const string &messages) {
 	dusted = false;
 	burned = false;
 	digged = false;
+	frosted = false;
 	elbereth_count = 0;
 	if (command == ":") {
 		did_look = true;
@@ -100,14 +101,14 @@ bool Elbereth::request(const Request &request) {
 		}
 		if (!did_look && !burned && !digged && !dusted && !frosted) {
 			/* we'll need to look first, which means set action & priority and return true */
-			command = ":";
+			command = LOOK;
 			priority = PRIORITY_LOOK; // since it's a zero turn affair
 			return true;
 		} else {
 			/* we know what's here */
 			if (((burned || digged) && elbereth_count > 0) || ((dusted || frosted) && elbereth_count >= 3)) {
 				/* we should rest */
-				command = "20.";
+				command = "20" REST;
 				priority = request.priority;
 				return true;
 			} else if (!burned && !digged && elbereth_count < 3) {
