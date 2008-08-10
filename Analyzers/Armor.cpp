@@ -78,5 +78,5 @@ bool Armor::request(const Request &request) {
 
 /* private methods */
 void Armor::wearArmor() {
-	/* put on or change armor */
+	/* put on or change armor (which means we'll have to take something off) */
 }

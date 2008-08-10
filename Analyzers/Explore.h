@@ -46,7 +46,6 @@ class Explore : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		int search[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		bool ep_added[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		bool visited[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		list<Point> explore;
 };

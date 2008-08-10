@@ -3,7 +3,6 @@
 /* constructors */
 Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 	memset(search, 0, sizeof (search));
-	memset(ep_added, false, sizeof (ep_added));
 	memset(visited, false, sizeof (visited));
 }
 
@@ -177,8 +176,5 @@ void Explore::inspect(const Point &point) {
 	unsigned char ds = saiph->levels[saiph->position.level].dungeonmap[point.row][point.col];
 	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_PASSABLE)
 		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
-	if (ep_added[saiph->position.level][point.row][point.col])
-		return; // already added this place
-	ep_added[saiph->position.level][point.row][point.col] = true;
 	explore.push_back(point);
 }

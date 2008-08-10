@@ -165,6 +165,8 @@
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? " // followed by "[ynq] (y)" or something
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
+#define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here?  "
+#define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? " // followed by "[- abcde...]" or something
 #define MESSAGE_FOR_INSTRUCTIONS "  (For instructions type a ?)  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "

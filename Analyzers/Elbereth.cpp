@@ -6,6 +6,7 @@ Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
 	burned = false;
 	digged = false;
 	dusted = false;
+	frosted = false;
 	did_look = false;
 	append = false;
 	priority = ILLEGAL_PRIORITY;
@@ -31,7 +32,7 @@ void Elbereth::parseMessages(const string &messages) {
 	} else if (command == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = append ? YES : NO;
-	} else if ((command == YES || command == NO || command == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos)) {
+	} else if ((command == YES || command == NO || command == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos)) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = ELBERETH "\n";
 	}
@@ -51,6 +52,9 @@ void Elbereth::parseMessages(const string &messages) {
 	} else if (messages.find(ELBERETH_DIGGED_TEXT, 0) != string::npos) {
 		/* it's digged */
 		digged = true;
+	} else if (messages.find(ELBERETH_FROSTED_TEXT, 0) != string::npos) {
+		/* it's frosted */
+		frosted = true;
 	} else {
 		/* it's unexpected */
 		return;
@@ -94,20 +98,20 @@ bool Elbereth::request(const Request &request) {
 			if (m->second.symbol == '@' || m->second.symbol == 'A' || m->second.symbol == 'I')
 				return false; // elbereth won't be respected
 		}
-		if (!did_look && !burned && !digged && !dusted) {
+		if (!did_look && !burned && !digged && !dusted && !frosted) {
 			/* we'll need to look first, which means set action & priority and return true */
 			command = ":";
 			priority = PRIORITY_LOOK; // since it's a zero turn affair
 			return true;
 		} else {
 			/* we know what's here */
-			if (((burned || digged) && elbereth_count > 0) || (dusted && elbereth_count >= 3)) {
+			if (((burned || digged) && elbereth_count > 0) || ((dusted || frosted) && elbereth_count >= 3)) {
 				/* we should rest */
 				command = "20.";
 				priority = request.priority;
 				return true;
 			} else if (!burned && !digged && elbereth_count < 3) {
-				/* we should engrave in the dust */
+				/* we should engrave in the dust/frost */
 				append = (elbereth_count > 0); // append if 0 < elbereth_count < 3
 				command = ENGRAVE;
 				priority = request.priority;
