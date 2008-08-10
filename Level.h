@@ -66,14 +66,14 @@ class Level {
 		map<unsigned char, map<Point, int> > symbols;
 		string name;
 		int depth;
-		unsigned char branch;
+		int branch;
 
 		/* static variables */
 		static bool passable[UCHAR_MAX + 1];
 		static bool track_symbol[UCHAR_MAX + 1];
 
 		/* constructors */
-		Level(Saiph *saiph, string name, unsigned char branch = BRANCH_MAIN);
+		Level(Saiph *saiph, string name, int branch = BRANCH_MAIN);
 
 		/* methods */
 		void parseMessages(const string &messages);

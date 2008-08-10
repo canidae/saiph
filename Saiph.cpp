@@ -10,6 +10,9 @@ Saiph::Saiph(int interface) {
 	}
 	world = new World(connection, &debugfile);
 
+	/* we haven't found the mines yet */
+	mines_found = false;
+
 	/* engulfed */
 	engulfed = false;
 
@@ -470,10 +473,26 @@ void Saiph::detectPosition() {
 		levelmap[world->player.level].push_back(position.level);
 		return;
 	}
+	debugfile << SAIPH_DEBUG_NAME << "We're currently in branch " << levels[position.level].branch << endl;
 	if ((int) levels.size() >= position.level - 1 && strcmp(world->player.level, levels[position.level].name.c_str()) == 0) {
-		/* same level as last frame, just update row & col */
+		/* same level as last frame, update row & col */
 		position.row = world->player.row;
 		position.col = world->player.col;
+		/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
+		if (!mines_found && (levels[position.level].depth >= 3 || levels[position.level].depth <= 5)) {
+			for (map<Point, int>::iterator hw = levels[position.level].symbols[HORIZONTAL_WALL].begin(); hw != levels[position.level].symbols[HORIZONTAL_WALL].end(); ++hw) {
+				if (hw->first.row <= MAP_ROW_BEGIN || hw->first.row >= MAP_ROW_END || hw->first.col <= MAP_COL_BEGIN || hw->first.col >= MAP_COL_END)
+					continue;
+				/* if we see horizontal walls adjacent to this point (except west & east),
+				 * then we're in the mines */
+				if (levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col + 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col + 1] == HORIZONTAL_WALL) {
+					/* we're in the mines */
+					mines_found = true;
+					levels[position.level].branch = BRANCH_MINES;
+					debugfile << SAIPH_DEBUG_NAME << "Discovered the mines!" << endl;
+				}
+			}
+		}
 		return;
 	}
 	/* level has changed.
@@ -511,7 +530,11 @@ void Saiph::detectPosition() {
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* new level */
 		found = levels.size();
-		levels.push_back(Level(this, level));
+		/* was previous level in the mines? */
+		if (levels[position.level].branch == BRANCH_MINES)
+			levels.push_back(Level(this, level, BRANCH_MINES));
+		else
+			levels.push_back(Level(this, level));
 		levelmap[level].push_back(found);
 	}
 	/* were we on stairs on last position? */

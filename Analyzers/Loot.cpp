@@ -169,6 +169,8 @@ int Loot::pickupItem(const Item &item) {
 	map<string, ItemWanted>::iterator i = items.find(item.name);
 	if (i == items.end())
 		return 0; // item is not in our list
+	if (item.beatitude & i->second.beatitude == 0)
+		return 0; // item does not have a beatitude we'll accept
 	/* groups */
 	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
 		/* figure out how many items we already got in this group */
@@ -202,8 +204,6 @@ int Loot::pickupItem(const Item &item) {
 	/* solitary items */
 	if (i->second.amount <= 0)
 		return 0; // we don't desire this item
-	if (item.beatitude & i->second.beatitude == 0)
-		return 0; // item does not have a beatitude we'll accept
 	/* figure out how many we got of this item already */
 	int count = 0;
 	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {

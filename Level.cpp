@@ -13,7 +13,7 @@ bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
 
 /* constructors */
-Level::Level(Saiph *saiph, string name, unsigned char branch) : name(name), branch(branch), saiph(saiph), got_drop_menu(false), got_pickup_menu(false) {
+Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), saiph(saiph), got_drop_menu(false), got_pickup_menu(false) {
 	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
 	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));
 	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
@@ -601,6 +601,7 @@ void Level::init() {
 	track_symbol[(unsigned char) SINK] = true;
 	track_symbol[(unsigned char) FOUNTAIN] = true;
 	track_symbol[(unsigned char) VERTICAL_WALL] = true;
+	track_symbol[(unsigned char) HORIZONTAL_WALL] = true;
 	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
