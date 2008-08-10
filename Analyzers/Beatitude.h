@@ -18,6 +18,7 @@ class Beatitude;
 #include <string>
 #include "../Analyzer.h"
 #include "../Globals.h"
+#include "../Request.h"
 #include "../Saiph.h"
 
 /* namespace */
@@ -31,6 +32,7 @@ class Beatitude : public Analyzer {
 
 		/* methods */
 		void analyze();
+		void complete();
 		void parseMessages(const string &messages);
 
 	private:
@@ -38,5 +40,6 @@ class Beatitude : public Analyzer {
 		Saiph *saiph;
 		bool check_beatitude;
 		bool got_drop_menu;
+		Request req;
 };
 #endif

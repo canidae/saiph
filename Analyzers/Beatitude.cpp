@@ -6,6 +6,11 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 
 /* methods */
 void Beatitude::analyze() {
+	if (command == LOOK) {
+		/* still not looked at ground? */
+		priority = PRIORITY_LOOK;
+		return;
+	}
 	if (got_drop_menu || saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
 		return;
 	unsigned char move = ILLEGAL_MOVE;
@@ -46,6 +51,11 @@ void Beatitude::analyze() {
 	}
 }
 
+void Beatitude::complete() {
+	if (command == LOOK)
+		command.clear();
+}
+
 void Beatitude::parseMessages(const string &messages) {
 	if (!saiph->world->menu && got_drop_menu) {
 		/* no longer got drop menu */
@@ -55,6 +65,9 @@ void Beatitude::parseMessages(const string &messages) {
 		 * if we still want it, that is */
 		command = LOOK;
 		priority = PRIORITY_LOOK;
+		/* and request a dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 		return;
 	}
 	if (!check_beatitude || !saiph->world->menu)
