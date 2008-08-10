@@ -20,18 +20,23 @@ void Loot::analyze() {
 		return;
 	/* loot stash we're standing on */
 	if (saiph->on_ground != NULL) {
-		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-			int wanted = pickupItem(*i);
-			if (wanted == 0)
+		/* if we see a white '@' then don't loot */
+		bool doloot = true;
+		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
+			if (m->second.symbol != '@' || m->second.color != WHITE || !m->second.visible)
 				continue;
-			/* if we see a white '@' then don't loot */
-			for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-				if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
-					return;
+			doloot = false;
+			break;
+		}
+		if (doloot) {
+			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
+				int wanted = pickupItem(*i);
+				if (wanted == 0)
+					continue;
+				command = PICKUP;
+				priority = LOOT_LOOT_STASH_PRIORITY;
+				return;
 			}
-			command = PICKUP;
-			priority = LOOT_LOOT_STASH_PRIORITY;
-			return;
 		}
 	}
 
@@ -169,7 +174,7 @@ int Loot::pickupItem(const Item &item) {
 	map<string, ItemWanted>::iterator i = items.find(item.name);
 	if (i == items.end())
 		return 0; // item is not in our list
-	if (item.beatitude & i->second.beatitude == 0)
+	if ((item.beatitude & i->second.beatitude) == 0)
 		return 0; // item does not have a beatitude we'll accept
 	/* groups */
 	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {

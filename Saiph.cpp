@@ -473,7 +473,6 @@ void Saiph::detectPosition() {
 		levelmap[world->player.level].push_back(position.level);
 		return;
 	}
-	debugfile << SAIPH_DEBUG_NAME << "We're currently in branch " << levels[position.level].branch << endl;
 	if ((int) levels.size() >= position.level - 1 && strcmp(world->player.level, levels[position.level].name.c_str()) == 0) {
 		/* same level as last frame, update row & col */
 		position.row = world->player.row;
@@ -489,7 +488,7 @@ void Saiph::detectPosition() {
 					/* we're in the mines */
 					mines_found = true;
 					levels[position.level].branch = BRANCH_MINES;
-					debugfile << SAIPH_DEBUG_NAME << "Discovered the mines!" << endl;
+					break;
 				}
 			}
 		}

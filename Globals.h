@@ -29,10 +29,10 @@
 #define CYAN 36
 #define WHITE 37
 /* beatitude */
-#define BEATITUDE_UNKNOWN 0x0
-#define CURSED 0x1
-#define UNCURSED 0x2
-#define BLESSED 0x4
+#define BEATITUDE_UNKNOWN 0x1
+#define CURSED 0x2
+#define UNCURSED 0x4
+#define BLESSED 0x8
 /* alignment */
 #define CHAOTIC -1
 #define NEUTRAL 0
