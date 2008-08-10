@@ -4,6 +4,7 @@
 /* various */
 #define EXPLORE_SEARCH_COUNT 24 // how many times we should search a square
 /* priorities */
+#define EXPLORE_DESCEND 35
 #define EXPLORE_VISIT_CORRIDOR 60
 #define EXPLORE_VISIT_OPEN_DOOR 60
 #define EXPLORE_VISIT_UNLIT_AREA 60
@@ -13,7 +14,7 @@
 #define EXPLORE_SEARCH_ROOM_CORNER 25
 #define EXPLORE_SEARCH_CORRIDOR_CORNER 10
 #define EXPLORE_SEARCH_WALL 10
-#define EXPLORE_UNKNOWN_STAIRS 35
+#define EXPLORE_UNKNOWN_STAIRS 100
 /* this should go */
 #define MAX_DUNGEON_DEPTH 64
 

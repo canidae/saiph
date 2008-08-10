@@ -11,6 +11,39 @@ void Explore::analyze() {
 	/* figure out which place to explore */
 	/* make the place the player stands on "visited" */
 	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
+	if (priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
+		/* explore unknown stairs on level, unless we're on depth 1.
+		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
+		/* go up first (or we'll never check the upstairs) */
+		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			int moves = 0;
+			unsigned char move = saiph->shortestPath(s->first, false, &moves);
+			if (move != ILLEGAL_MOVE) {
+				if (move == MOVE_NOWHERE)
+					command = MOVE_UP;
+				else
+					command = move;
+				priority = EXPLORE_UNKNOWN_STAIRS;
+				return;
+			}
+		}
+		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			int moves = 0;
+			unsigned char move = saiph->shortestPath(s->first, false, &moves);
+			if (move != ILLEGAL_MOVE) {
+				if (move == MOVE_NOWHERE)
+					command = MOVE_DOWN;
+				else
+					command = move;
+				priority = EXPLORE_UNKNOWN_STAIRS;
+				return;
+			}
+		}
+	}
 	int best_moves = INT_MAX;
 	command.clear();
 	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
@@ -116,40 +149,7 @@ void Explore::analyze() {
 		priority = cur_priority;
 		best_moves = moves;
 	}
-	if (priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
-		/* explore unknown stairs on level, unless we're on depth 1.
-		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
-		/* go up first (or we'll never check the upstairs) */
-		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
-			if (s->second != UNKNOWN_SYMBOL_VALUE)
-				continue; // we know where these stairs lead
-			int moves = 0;
-			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_MOVE) {
-				if (move == MOVE_NOWHERE)
-					command = MOVE_UP;
-				else
-					command = move;
-				priority = EXPLORE_UNKNOWN_STAIRS;
-				return;
-			}
-		}
-		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++s) {
-			if (s->second != UNKNOWN_SYMBOL_VALUE)
-				continue; // we know where these stairs lead
-			int moves = 0;
-			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_MOVE) {
-				if (move == MOVE_NOWHERE)
-					command = MOVE_DOWN;
-				else
-					command = move;
-				priority = EXPLORE_UNKNOWN_STAIRS;
-				return;
-			}
-		}
-	}
-	if (priority < EXPLORE_UNKNOWN_STAIRS) {
+	if (priority < EXPLORE_DESCEND) {
 		/* descend */
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
 			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
@@ -161,7 +161,7 @@ void Explore::analyze() {
 					command = MOVE_DOWN;
 				else
 					command = move;
-				priority = EXPLORE_UNKNOWN_STAIRS;
+				priority = EXPLORE_DESCEND;
 			}
 		}
 	}
