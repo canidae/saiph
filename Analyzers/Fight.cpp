@@ -2,18 +2,6 @@
 
 /* constructors */
 Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
-	/* thrown weapons in the order we want to throw them */
-	thrown.push_back("dwarvish spear");
-	thrown.push_back("silver spear");
-	thrown.push_back("elven spear");
-	thrown.push_back("spear");
-	thrown.push_back("orcish spear");
-	thrown.push_back("silver dagger");
-	thrown.push_back("elven dagger");
-	thrown.push_back("dagger");
-	thrown.push_back("orcish dagger");
-	thrown.push_back("poisoned dart");
-	thrown.push_back("dart");
 }
 
 /* methods */
@@ -81,24 +69,6 @@ void Fight::analyze() {
 		min_moves = moves;
 		command = move;
 	}
-
-	/* look for thrown weapons on ground */
-	if (FIGHT_PICKUP_PRIORITY < saiph->best_priority)
-		return;
-	if (saiph->on_ground != NULL) {
-		/* there are items here, we should look for weapons */
-		req.request = REQUEST_LOOT_STASH;
-		req.priority = FIGHT_PICKUP_PRIORITY;
-		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-			for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-				if (i->name == *t && i->beatitude != CURSED) {
-					/* request that someone loot this stash */
-					saiph->request(req);
-					return;
-				}
-			}
-		}
-	}
 }
 
 void Fight::parseMessages(const string &messages) {
@@ -117,18 +87,12 @@ void Fight::parseMessages(const string &messages) {
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
 		saiph->request(req);
-	} else if (saiph->pickup.size() > 0) {
-		/* pick up thrown weapons if any */
-		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-				if (p->second.name == *t && p->second.beatitude != CURSED) {
-					/* pick it up :) */
-					command = p->first;
-					priority = PRIORITY_SELECT_ITEM;
-					return;
-				}
-			}
-		}
+	}
+}
+
+bool Fight::request(const Request &request) {
+	if (request.request == REQUEST_ADD_THROWN_WEAPON) {
+		thrown.push_back(request.data);
 	}
 }
 

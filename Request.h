@@ -12,6 +12,8 @@
 #define REQUEST_WEAPON_GROUP_CREATE 9
 #define REQUEST_WEAPON_GROUP_ADD 10
 #define REQUEST_WEAPON_WIELD 11
+#define REQUEST_WEAPON_PICKUP 12
+#define REQUEST_ADD_THROWN_WEAPON 13
 
 /* forward declare */
 class Request;

@@ -36,6 +36,7 @@ class Fight : public Analyzer {
 		/* methods */
 		void analyze();
 		void parseMessages(const string &messages);
+		bool request(const Request &request);
 
 	private:
 		/* variables */

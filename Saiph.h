@@ -51,7 +51,9 @@ class Saiph;
 #include "Analyzers/Potion.h"
 #include "Analyzers/Pray.h"
 #include "Analyzers/Scroll.h"
+#include "Analyzers/Valkyrie.h"
 #include "Analyzers/Wand.h"
+#include "Analyzers/Weapon.h"
 #include "Analyzers/Wish.h"
 
 /* namespace */

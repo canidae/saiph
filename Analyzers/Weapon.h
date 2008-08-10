@@ -17,6 +17,7 @@ class Weapon;
 #include <vector>
 #include "../Analyzer.h"
 #include "../Globals.h"
+#include "../Item.h"
 #include "../Request.h"
 #include "../Saiph.h"
 
@@ -43,5 +44,9 @@ class Weapon : public Analyzer {
 		map<int, int> weapon_group_total; // total amount of weapons in group
 		vector<string> wield_weapon; // the order of which we'll wield weapons
 		string command2;
+		Request req;
+
+		/* methods */
+		int weaponWanted(const Item &item);
 };
 #endif
