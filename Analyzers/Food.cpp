@@ -281,21 +281,6 @@ void Food::analyze() {
 			}
 		}
 	}
-	if (saiph->on_ground != NULL && priority < FOOD_PICKUP_PRIORITY) {
-		/* there are items here, we should look for food to pick up */
-		req.request = REQUEST_LOOT_STASH;
-		req.priority = FOOD_PICKUP_PRIORITY;
-		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-				if (i->name == *f) {
-					/* wooo, food!
-					 * request that someone loot this stash */
-					saiph->request(req);
-					return;
-				}
-			}
-		}
-	}
 }
 
 void Food::parseMessages(const string &messages) {
@@ -314,18 +299,6 @@ void Food::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		return;
-	} else if (saiph->pickup.size() > 0) {
-		/* select what to pick up */
-		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-				if (p->second.name == *f) {
-					/* we should pick up this */
-					command = p->first;
-					priority = PRIORITY_SELECT_ITEM;
-					return;
-				}
-			}
-		}
 	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos) {
 		/* asks if we should eat the stuff on the floor */
 		priority = PRIORITY_CONTINUE_ACTION;

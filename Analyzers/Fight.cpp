@@ -93,7 +93,9 @@ void Fight::parseMessages(const string &messages) {
 bool Fight::request(const Request &request) {
 	if (request.request == REQUEST_ADD_THROWN_WEAPON) {
 		thrown.push_back(request.data);
+		return true;
 	}
+	return false;
 }
 
 /* private methods */

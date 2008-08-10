@@ -11,18 +11,21 @@
 class Weapon;
 
 /* includes */
-#include <map>
-#include <sstream>
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
 #include "../Globals.h"
-#include "../Item.h"
 #include "../Request.h"
 #include "../Saiph.h"
 
 /* namespace */
 using namespace std;
+
+/* struct for wielding weapons */
+struct WieldWeapon {
+	int beatitude;
+	string name;
+};
 
 /* analyzer for handling weapons (picking up, dropping, wielding) */
 class Weapon : public Analyzer {
@@ -38,15 +41,8 @@ class Weapon : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
-		map<string, int> weapon; // name & amount we want
-		map<string, int> weapon_accept_beatitude; // name & accepted beatitudes
-		map<int, vector<string> > weapon_group; // used for grouping weapons
-		map<int, int> weapon_group_total; // total amount of weapons in group
-		vector<string> wield_weapon; // the order of which we'll wield weapons
+		vector<WieldWeapon> wield; // the order of which we'll wield weapons
 		string command2;
 		Request req;
-
-		/* methods */
-		int weaponWanted(const Item &item);
 };
 #endif

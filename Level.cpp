@@ -50,11 +50,11 @@ void Level::parseMessages(const string &messages) {
 			setDungeonSymbol(saiph->position, ALTAR, CHAOTIC);
 		else
 			setDungeonSymbol(saiph->position, ALTAR, LAWFUL);
-	}
-	/* when we've checked messages for static dungeon features and not found anything,
-	 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
-	else if (dungeonmap[saiph->position.row][saiph->position.col] == UNKNOWN_TILE)
+	} else if (dungeonmap[saiph->position.row][saiph->position.col] == UNKNOWN_TILE) {
+		/* when we've checked messages for static dungeon features and not found anything,
+		 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
 		setDungeonSymbol(saiph->position, UNKNOWN_TILE_DIAGONALLY_PASSABLE);
+	}
 
 	/* item parsing */
 	/* figure out if there's something on the ground or if we're picking up something */

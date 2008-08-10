@@ -27,5 +27,10 @@ class Valkyrie : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		Request req;
+
+		/* methods */
+		void setupFood();
+		void setupWand();
+		void setupWeapon();
 };
 #endif
