@@ -23,6 +23,7 @@ Saiph::Saiph(int interface) {
 	on_ground = NULL;
 
 	/* Analyzers */
+	analyzers.push_back(new Armor(this));
 	analyzers.push_back(new Beatitude(this));
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Elbereth(this));

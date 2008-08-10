@@ -29,8 +29,9 @@ class Valkyrie : public Analyzer {
 		Request req;
 
 		/* methods */
-		void setupFood();
-		void setupWand();
-		void setupWeapon();
+		void setupArmor(int &groupstart);
+		void setupFood(int &groupstart);
+		void setupWand(int &groupstart);
+		void setupWeapon(int &groupstart);
 };
 #endif

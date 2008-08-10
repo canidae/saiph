@@ -6,13 +6,475 @@ Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph) {
 
 /* methods */
 void Valkyrie::init() {
-	setupFood();
-	setupWand();
-	setupWeapon();
+	int groupstart = 0;
+	setupArmor(groupstart);
+	setupFood(groupstart);
+	setupWand(groupstart);
+	setupWeapon(groupstart);
 }
 
 /* private methods */
-void Valkyrie::setupFood() {
+void Valkyrie::setupArmor(int &groupstart) {
+	/* create shirt group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add shirts, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "T-shirt";
+	saiph->request(req);
+        req.data = "Hawaiian shirt";
+	saiph->request(req);
+
+	/* create suit group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add suits, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "gray dragon scale mail";
+	saiph->request(req);
+        req.data = "silver dragon scale mail";
+	saiph->request(req);
+        req.data = "black dragon scale mail";
+	saiph->request(req);
+        req.data = "yellow dragon scale mail";
+	saiph->request(req);
+        req.data = "green dragon scale mail";
+	saiph->request(req);
+        req.data = "orange dragon scale mail";
+	saiph->request(req);
+        req.data = "red dragon scale mail";
+	saiph->request(req);
+        req.data = "blue dragon scale mail";
+	saiph->request(req);
+        req.data = "white dragon scale mail";
+	saiph->request(req);
+        req.data = "gray dragon scale";
+	saiph->request(req);
+        req.data = "silver dragon scale";
+	saiph->request(req);
+        req.data = "black dragon scale";
+	saiph->request(req);
+        req.data = "yellow dragon scale";
+	saiph->request(req);
+        req.data = "green dragon scale";
+	saiph->request(req);
+        req.data = "orange dragon scale";
+	saiph->request(req);
+        req.data = "red dragon scale";
+	saiph->request(req);
+        req.data = "blue dragon scale";
+	saiph->request(req);
+        req.data = "white dragon scale";
+	saiph->request(req);
+        req.data = "dwarvish mithril coat";
+	saiph->request(req);
+        req.data = "elven mithril coat";
+	saiph->request(req);
+        req.data = "studded leather armor";
+	saiph->request(req);
+        req.data = "leather armor";
+	saiph->request(req);
+        req.data = "scale mail";
+	saiph->request(req);
+        req.data = "ring mail";
+	saiph->request(req);
+        req.data = "orcish ring mail";
+	saiph->request(req);
+        req.data = "crude ring mail";
+	saiph->request(req);
+        req.data = "leather jacket";
+	saiph->request(req);
+
+	/* create cloak group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add cloaks, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "cloak of magic resistance";
+	saiph->request(req);
+        req.data = "cloak of protection";
+	saiph->request(req);
+        req.data = "robe";
+	saiph->request(req);
+        req.data = "cloak of displacement";
+	saiph->request(req);
+        req.data = "cloak of invisibility";
+	saiph->request(req);
+        req.data = "piece of cloth";
+	saiph->request(req);
+        req.data = "opera cloak";
+	saiph->request(req);
+        req.data = "ornamental cope";
+	saiph->request(req);
+        req.data = "tattered cape";
+	saiph->request(req);
+        req.data = "oilskin cloak";
+	saiph->request(req);
+        req.data = "elven cloak";
+	saiph->request(req);
+        req.data = "alchemy smock";
+	saiph->request(req);
+        req.data = "apron";
+	saiph->request(req);
+        req.data = "leather cloak";
+	saiph->request(req);
+
+	/* create helm group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add helmets, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "helm of telepathy";
+	saiph->request(req);
+        req.data = "dwarvish iron helm";
+	saiph->request(req);
+        req.data = "hard hat";
+	saiph->request(req);
+        req.data = "helm of brilliance";
+	saiph->request(req);
+        req.data = "plumed helmet";
+	saiph->request(req);
+        req.data = "etched helmet";
+	saiph->request(req);
+        req.data = "crested helmet";
+	saiph->request(req);
+        req.data = "visored helmet";
+	saiph->request(req);
+        req.data = "elven leather helm";
+	saiph->request(req);
+        req.data = "leather hat";
+	saiph->request(req);
+        req.data = "cornuthaum";
+	saiph->request(req);
+        req.data = "orcish helm";
+	saiph->request(req);
+        req.data = "iron skull cap";
+	saiph->request(req);
+        req.data = "helmet";
+	saiph->request(req);
+
+	/* create glove group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add gloves, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "gauntlets of power";
+	saiph->request(req);
+        req.data = "gauntlets of dexterity";
+	saiph->request(req);
+        req.data = "padded gloves";
+	saiph->request(req);
+        req.data = "riding gloves";
+	saiph->request(req);
+        req.data = "fencing gloves";
+	saiph->request(req);
+        req.data = "old gloves";
+	saiph->request(req);
+        req.data = "leather gloves";
+	saiph->request(req);
+
+	/* create shield group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add shields, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "shield of reflection";
+	saiph->request(req);
+        req.data = "polished silver shield";
+	saiph->request(req);
+        req.data = "elven shield";
+	saiph->request(req);
+        req.data = "blue shield";
+	saiph->request(req);
+        req.data = "green shield";
+	saiph->request(req);
+        req.data = "small shield";
+	saiph->request(req);
+        req.data = "orcish shield";
+	saiph->request(req);
+        req.data = "red-eyed shield";
+	saiph->request(req);
+        req.data = "Uruk-hai shield";
+	saiph->request(req);
+        req.data = "white-handed shield";
+	saiph->request(req);
+
+	/* create boot group */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* add boots, most useful first.
+	 * note: not adding levitation boots since we're not handling levitation yet */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+        req.data = "speed boots";
+	saiph->request(req);
+        req.data = "water walking boots";
+	saiph->request(req);
+        req.data = "jumping boots";
+	saiph->request(req);
+        req.data = "kicking boots";
+	saiph->request(req);
+        req.data = "mud boots";
+	saiph->request(req);
+        req.data = "buckled boots";
+	saiph->request(req);
+        req.data = "riding boots";
+	saiph->request(req);
+        req.data = "snow boots";
+	saiph->request(req);
+        req.data = "hiking boots";
+	saiph->request(req);
+        req.data = "combat boots";
+	saiph->request(req);
+        req.data = "jungle boots";
+	saiph->request(req);
+        req.data = "iron shoes";
+	saiph->request(req);
+        req.data = "hard shoes";
+	saiph->request(req);
+        req.data = "high boots";
+	saiph->request(req);
+        req.data = "jackboots";
+	saiph->request(req);
+        req.data = "elven boots";
+	saiph->request(req);
+        req.data = "low boots";
+	saiph->request(req);
+        req.data = "walking shoes";
+	saiph->request(req);
+
+	/* phew. now we just have to tell the armor analyzer pretty much the same thing.
+	 * one change is that we'll only wear blessed or uncursed armor */
+	req.request = REQUEST_ARMOR_WEAR;
+	req.status = BLESSED | UNCURSED;
+
+	/* shirt */
+	req.value = ARMOR_SHIRT;
+        req.data = "T-shirt";
+	saiph->request(req);
+        req.data = "Hawaiian shirt";
+	saiph->request(req);
+
+	/* suit */
+	req.value = ARMOR_SUIT;
+        req.data = "gray dragon scale mail";
+	saiph->request(req);
+        req.data = "silver dragon scale mail";
+	saiph->request(req);
+        req.data = "black dragon scale mail";
+	saiph->request(req);
+        req.data = "yellow dragon scale mail";
+	saiph->request(req);
+        req.data = "green dragon scale mail";
+	saiph->request(req);
+        req.data = "orange dragon scale mail";
+	saiph->request(req);
+        req.data = "red dragon scale mail";
+	saiph->request(req);
+        req.data = "blue dragon scale mail";
+	saiph->request(req);
+        req.data = "white dragon scale mail";
+	saiph->request(req);
+        req.data = "gray dragon scale";
+	saiph->request(req);
+        req.data = "silver dragon scale";
+	saiph->request(req);
+        req.data = "black dragon scale";
+	saiph->request(req);
+        req.data = "yellow dragon scale";
+	saiph->request(req);
+        req.data = "green dragon scale";
+	saiph->request(req);
+        req.data = "orange dragon scale";
+	saiph->request(req);
+        req.data = "red dragon scale";
+	saiph->request(req);
+        req.data = "blue dragon scale";
+	saiph->request(req);
+        req.data = "white dragon scale";
+	saiph->request(req);
+        req.data = "dwarvish mithril coat";
+	saiph->request(req);
+        req.data = "elven mithril coat";
+	saiph->request(req);
+        req.data = "studded leather armor";
+	saiph->request(req);
+        req.data = "leather armor";
+	saiph->request(req);
+        req.data = "scale mail";
+	saiph->request(req);
+        req.data = "ring mail";
+	saiph->request(req);
+        req.data = "orcish ring mail";
+	saiph->request(req);
+        req.data = "crude ring mail";
+	saiph->request(req);
+        req.data = "leather jacket";
+	saiph->request(req);
+
+	/* cloak */
+	req.value = ARMOR_CLOAK;
+        req.data = "cloak of magic resistance";
+	saiph->request(req);
+        req.data = "cloak of protection";
+	saiph->request(req);
+        req.data = "robe";
+	saiph->request(req);
+        req.data = "cloak of displacement";
+	saiph->request(req);
+        req.data = "cloak of invisibility";
+	saiph->request(req);
+        req.data = "piece of cloth";
+	saiph->request(req);
+        req.data = "opera cloak";
+	saiph->request(req);
+        req.data = "ornamental cope";
+	saiph->request(req);
+        req.data = "tattered cape";
+	saiph->request(req);
+        req.data = "oilskin cloak";
+	saiph->request(req);
+        req.data = "elven cloak";
+	saiph->request(req);
+        req.data = "alchemy smock";
+	saiph->request(req);
+        req.data = "apron";
+	saiph->request(req);
+        req.data = "leather cloak";
+	saiph->request(req);
+
+	/* helmet */
+	req.value = ARMOR_HELMET;
+        req.data = "helm of telepathy";
+	saiph->request(req);
+        req.data = "dwarvish iron helm";
+	saiph->request(req);
+        req.data = "hard hat";
+	saiph->request(req);
+        req.data = "helm of brilliance";
+	saiph->request(req);
+        req.data = "plumed helmet";
+	saiph->request(req);
+        req.data = "etched helmet";
+	saiph->request(req);
+        req.data = "crested helmet";
+	saiph->request(req);
+        req.data = "visored helmet";
+	saiph->request(req);
+        req.data = "elven leather helm";
+	saiph->request(req);
+        req.data = "leather hat";
+	saiph->request(req);
+        req.data = "cornuthaum";
+	saiph->request(req);
+        req.data = "orcish helm";
+	saiph->request(req);
+        req.data = "iron skull cap";
+	saiph->request(req);
+        req.data = "helmet";
+	saiph->request(req);
+
+	/* gloves */
+	req.value = ARMOR_GLOVES;
+        req.data = "gauntlets of power";
+	saiph->request(req);
+        req.data = "gauntlets of dexterity";
+	saiph->request(req);
+        req.data = "padded gloves";
+	saiph->request(req);
+        req.data = "riding gloves";
+	saiph->request(req);
+        req.data = "fencing gloves";
+	saiph->request(req);
+        req.data = "old gloves";
+	saiph->request(req);
+        req.data = "leather gloves";
+	saiph->request(req);
+
+	/* shield */
+	req.value = ARMOR_SHIELD;
+        req.data = "shield of reflection";
+	saiph->request(req);
+        req.data = "polished silver shield";
+	saiph->request(req);
+        req.data = "elven shield";
+	saiph->request(req);
+        req.data = "blue shield";
+	saiph->request(req);
+        req.data = "green shield";
+	saiph->request(req);
+        req.data = "small shield";
+	saiph->request(req);
+        req.data = "orcish shield";
+	saiph->request(req);
+        req.data = "red-eyed shield";
+	saiph->request(req);
+        req.data = "Uruk-hai shield";
+	saiph->request(req);
+        req.data = "white-handed shield";
+	saiph->request(req);
+
+	/* boots */
+	req.value = ARMOR_BOOTS;
+        req.data = "speed boots";
+	saiph->request(req);
+        req.data = "water walking boots";
+	saiph->request(req);
+        req.data = "jumping boots";
+	saiph->request(req);
+        req.data = "kicking boots";
+	saiph->request(req);
+        req.data = "mud boots";
+	saiph->request(req);
+        req.data = "buckled boots";
+	saiph->request(req);
+        req.data = "riding boots";
+	saiph->request(req);
+        req.data = "snow boots";
+	saiph->request(req);
+        req.data = "hiking boots";
+	saiph->request(req);
+        req.data = "combat boots";
+	saiph->request(req);
+        req.data = "jungle boots";
+	saiph->request(req);
+        req.data = "iron shoes";
+	saiph->request(req);
+        req.data = "hard shoes";
+	saiph->request(req);
+        req.data = "high boots";
+	saiph->request(req);
+        req.data = "jackboots";
+	saiph->request(req);
+        req.data = "elven boots";
+	saiph->request(req);
+        req.data = "low boots";
+	saiph->request(req);
+        req.data = "walking shoes";
+	saiph->request(req);
+}
+
+void Valkyrie::setupFood(int &groupstart) {
 	/* first some food items we don't really want for food, but beneficial effects */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.value = 5;
@@ -29,7 +491,7 @@ void Valkyrie::setupFood() {
 
 	/* create a group for food */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = 0;
+	req.value = groupstart++;
 	req.data = "100";
 	saiph->request(req);
 	/* add food, most useful first */
@@ -103,10 +565,10 @@ void Valkyrie::setupFood() {
 	saiph->request(req);
 }
 
-void Valkyrie::setupWand() {
+void Valkyrie::setupWand(int &groupstart) {
 	/* create a group for wands */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = 1;
+	req.value = groupstart++;
 	req.data = "20";
 	saiph->request(req);
 	/* add wands to the group, best wand first */
@@ -216,10 +678,10 @@ void Valkyrie::setupWand() {
 	saiph->request(req);
 }
 
-void Valkyrie::setupWeapon() {
+void Valkyrie::setupWeapon(int &groupstart) {
 	/* create a group for thrown weapons */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = 2;
+	req.value = groupstart++;
 	req.data = "20";
 	saiph->request(req);
 	/* add weapons to the group, best weapon first */
@@ -246,7 +708,7 @@ void Valkyrie::setupWeapon() {
 
 	/* create a group for weapons we wish to wield too */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = 3;
+	req.value = groupstart++;
 	req.data = "2"; // we'll have main weapon & backup, nothing else
 	saiph->request(req);
 	/* add the weapons */

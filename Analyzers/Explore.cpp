@@ -152,8 +152,9 @@ void Explore::analyze() {
 	}
 	if (priority < EXPLORE_UNKNOWN_STAIRS) {
 		/* descend */
-		map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin();
-		if (down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end()) {
+		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
+			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
+				continue; // avoid mines
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(down->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {

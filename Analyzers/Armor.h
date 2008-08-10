@@ -1,14 +1,14 @@
-#ifndef WEAPON_H
+#ifndef ARMOR_H
 /* defines */
-#define WEAPON_H
+#define ARMOR_H
 /* priorities */
-#define WEAPON_PICKUP_PRIORITY 425
-#define WEAPON_WIELD_PRIORITY 475
+#define ARMOR_PICKUP_PRIORITY 425
+#define ARMOR_WEAR_PRIORITY 225
 /* messages */
-#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
+#define ARMOR_WHAT_TO_WEAR "  What do you want to wear? "
 
 /* forward declare */
-class Weapon;
+class Armor;
 
 /* includes */
 #include <string>
@@ -21,17 +21,17 @@ class Weapon;
 /* namespace */
 using namespace std;
 
-/* struct for wielding weapons */
-struct WieldWeapon {
+/* struct for wearing armor */
+struct WearArmor {
 	int beatitude;
 	string name;
 };
 
-/* analyzer for wielding weapons */
-class Weapon : public Analyzer {
+/* analyzer for wearing armor */
+class Armor : public Analyzer {
 	public:
 		/* constructors */
-		Weapon(Saiph *saiph);
+		Armor(Saiph *saiph);
 
 		/* methods */
 		void parseMessages(const string &messages);
@@ -40,8 +40,11 @@ class Weapon : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
-		vector<WieldWeapon> wield; // the order of which we'll wield weapons
+		vector<WearArmor> armor[ARMOR_SLOTS];
 		string command2;
 		Request req;
+
+		/* methods */
+		void wearArmor();
 };
 #endif

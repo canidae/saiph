@@ -51,6 +51,15 @@
 #define CONTENT 0
 #define SATIATED 1
 #define OVERSATIATED 2
+/* armor slots */
+#define ARMOR_SLOTS 7
+#define ARMOR_SHIRT 0
+#define ARMOR_SUIT 1
+#define ARMOR_CLOAK 2
+#define ARMOR_BOOTS 3
+#define ARMOR_GLOVES 4
+#define ARMOR_HELMET 5
+#define ARMOR_SHIELD 6
 /* movement */
 #define MOVE_NW 'y'
 #define MOVE_N 'k'
@@ -80,6 +89,7 @@
 #define REST "."
 #define SEARCH "s"
 #define THROW "t"
+#define WEAR "W"
 #define WIELD "w"
 /* common answers */
 #define HANDS "-"

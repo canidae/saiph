@@ -5,9 +5,6 @@ Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph) {
 }
 
 /* methods */
-void Weapon::analyze() {
-}
-
 void Weapon::parseMessages(const string &messages) {
 	if (saiph->world->question && !command2.empty() && messages.find(WEAPON_WHAT_TO_WIELD, 0) != string::npos) {
 		command = command2;
@@ -37,10 +34,10 @@ bool Weapon::request(const Request &request) {
 			if (i->second.additional == "weapon in hand")
 				wielded = i->first;
 			for (vector<WieldWeapon>::size_type w = 0; w < wield.size(); ++w) {
-				if (wield[w].name == i->second.name && (int) w < best_weapon) {
-					best_key = i->first;
-					best_weapon = w;
-				}
+				if (wield[w].name != i->second.name || (int) w >= best_weapon)
+					continue;
+				best_key = i->first;
+				best_weapon = w;
 			}
 		}
 		if (wielded != 0 && wielded == best_key)

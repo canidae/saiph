@@ -38,6 +38,7 @@ class Saiph;
 #include "Stash.h"
 #include "World.h"
 /* analyzers */
+#include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
 #include "Analyzers/Door.h"
 #include "Analyzers/Elbereth.h"
