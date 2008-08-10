@@ -596,7 +596,7 @@ void Saiph::dumpMaps() {
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (levels[position.level].pathmap.nodes[r][c].move >= 'a' && levels[position.level].pathmap.nodes[r][c].move <= 'z')
 				//cout << (unsigned char) levels[position.level].pathmap.nodes[r][c].move;
-				cout << (char) (levels[position.level].pathmap.nodes[r][c].cost % 64 + 65);
+				cout << (char) (levels[position.level].pathmap.nodes[r][c].cost % 64 + 48);
 			else
 				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
 		}
