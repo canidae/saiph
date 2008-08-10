@@ -54,6 +54,8 @@ class Loot : public Analyzer {
 		Saiph *saiph;
 		bool dirty_inventory;
 		bool dirty_stash;
+		bool showing_inventory;
+		bool showing_pickup;
 		map<Coordinate, int> visit_stash; // location, turn_changed
 		map<string, ItemWanted> items;
 		map<int, ItemGroup> groups;

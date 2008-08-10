@@ -1,36 +1,36 @@
 #include "Loot.h"
 
 /* constructors */
-Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), dirty_stash(false) {
+Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), dirty_stash(false), showing_inventory(false), showing_pickup(false) {
 }
 
 /* methods */
 void Loot::analyze() {
-	/* list inventory if it's dirty */
+	/* check inventory/stash if it's dirty */
 	if (dirty_inventory) {
 		command = INVENTORY;
 		priority = PRIORITY_LOOK;
 		return;
-	}
-	/* look at stash if it's dirty */
-	if (dirty_stash) {
+	} else if (dirty_stash) {
 		command = LOOK;
 		priority = PRIORITY_LOOK;
 		return;
 	}
+	if (priority >= LOOT_LOOT_STASH_PRIORITY)
+		return;
 	/* loot stash we're standing on */
 	if (saiph->on_ground != NULL) {
 		for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 			int wanted = pickupItem(*i);
 			if (wanted == 0)
 				continue;
-			command = PICKUP;
-			priority = LOOT_LOOT_STASH_PRIORITY;
 			/* if we see a white '@' then don't loot */
 			for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 				if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
 					return;
 			}
+			command = PICKUP;
+			priority = LOOT_LOOT_STASH_PRIORITY;
 			return;
 		}
 	}
@@ -60,14 +60,8 @@ void Loot::analyze() {
 
 void Loot::complete() {
 	if (command == INVENTORY) {
-		/* just listed inventory, it's no longer dirty */
-		dirty_inventory = false;
-		/* also announce that it's no longer dirty */
-		req.request = REQUEST_UPDATED_INVENTORY;
-		saiph->request(req);
-	} else if (dirty_stash && command == LOOK) {
-		/* just looked at this stash, it's no longer dirty */
-		dirty_stash = false;
+		/* we're showing our inventory */
+		showing_inventory = true;
 	}
 }
 
@@ -91,15 +85,43 @@ void Loot::parseMessages(const string &messages) {
 			return;
 		}
 		/* if we're here, we should get next page or close list */
+		showing_pickup = true;
 		command = NEXT_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
-	} else if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos) {
+	} else if (saiph->world->menu && showing_inventory) {
+		/* we should close the page of the inventory we're showing */
+		command = NEXT_PAGE;
+		priority = PRIORITY_CLOSE_ITEM_LIST;
+		return;
+	} else if (!saiph->world->menu) {
+		if (showing_inventory) {
+			/* we showed our inventory, but now it's closed */
+			dirty_inventory = false;
+			showing_inventory = false;
+			/* also announce that it's no longer dirty */
+			req.request = REQUEST_UPDATED_INVENTORY;
+			saiph->request(req);
+		} else if (showing_pickup) {
+			/* we just had a pickup menu. we should look on ground what's left.
+			 * why not just remove items as we pick them up?
+			 * because it takes a turn, and monsters _love_ throwing stuff at her that turn,
+			 * which makes her then ignore whatever they threw at her.
+			 * it's a zero turn thingy, only annoying for those who watch */
+			command = LOOK;
+			priority = PRIORITY_LOOK;
+			showing_pickup = false;
+		}
+	}
+	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. we should look */
 		command = LOOK;
 		priority = PRIORITY_LOOK;
-	} else if (messages.find(LOOT_STOLE, 0) != string::npos) {
+	}
+	if (messages.find(LOOT_STOLE, 0) != string::npos) {
 		/* some monster stole something, we should check our inventory */
 		dirty_inventory = true;
+		command = INVENTORY;
+		priority = PRIORITY_LOOK;
 	}
 }
 
@@ -107,10 +129,15 @@ bool Loot::request(const Request &request) {
 	if (request.request == REQUEST_DIRTY_INVENTORY) {
 		/* someone wants to mark our inventory as dirty */
 		dirty_inventory = true;
+		command = INVENTORY;
+		priority = PRIORITY_LOOK;
 		return true;
 	} else if (request.request == REQUEST_DIRTY_STASH) {
 		/* someone wants to mark stash at our position dirty */
 		dirty_stash = true;
+		command = LOOK;
+		priority = PRIORITY_LOOK;
+		return true;
 	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
 		/* set total amount of items in the given group */
 		int amount = atoi(request.data.c_str());

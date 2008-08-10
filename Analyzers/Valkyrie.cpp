@@ -244,6 +244,28 @@ void Valkyrie::setupWeapon() {
 	req.data = "orcish spear";
 	saiph->request(req);
 
+	/* create a group for weapons we wish to wield too */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = 3;
+	req.data = "2"; // we'll have main weapon & backup, nothing else
+	saiph->request(req);
+	/* add the weapons */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	/* allow picking up cursed excalibur */
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.data = "Excalibur";
+	saiph->request(req);
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.data = "long sword";
+	saiph->request(req);
+
+	/* set other weapons we wish to pick up that is not in a group */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.data = "dart";
+	req.value = 200;
+	saiph->request(req);
+
 	/* add thrown weapons in the order we want to throw them.
 	 * currently we'll throw them in the order we wish to get rid of stuff,
 	 * not the order that yields max damage */
@@ -267,28 +289,6 @@ void Valkyrie::setupWeapon() {
 	req.data = "silver dagger";
 	saiph->request(req);
 	req.data = "dart";
-	saiph->request(req);
-
-	/* create a group for weapons we wish to wield too */
-	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = 3;
-	req.data = "2"; // we'll have main weapon & backup, nothing else
-	saiph->request(req);
-	/* add the weapons */
-	req.request = REQUEST_ITEM_GROUP_ADD;
-	/* allow picking up cursed excalibur */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "Excalibur";
-	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.data = "long sword";
-	saiph->request(req);
-
-	/* set other weapons we wish to pick up that is not in a group */
-	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.data = "dart";
-	req.value = 200;
 	saiph->request(req);
 
 	/* and set which weapons we prefer wielding */

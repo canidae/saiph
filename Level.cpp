@@ -109,6 +109,8 @@ void Level::parseMessages(const string &messages) {
 			}
 			pos += length;
 		}
+		/* we'll add a dummy entry so when all items are selected in a list pickup.size() still exceed 0 */
+		saiph->pickup[' '] = Item("a dummy");
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
 		/* dropping items */
 		if (got_drop_menu) {
