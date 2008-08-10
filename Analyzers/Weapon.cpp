@@ -81,16 +81,18 @@ bool Weapon::request(const Request &request) {
 		return true;
 	} else if (request.request == REQUEST_WEAPON_GROUP_ADD) {
 		/* add weapon to group */
-		if (weapon_group.find(request.value) == weapon_group.end())
-			return false;
+		if (weapon_group_total.find(request.value) == weapon_group_total.end())
+			return false; // group does not exist
+		if (weapon.find(request.data) == weapon.end())
+			weapon[request.data] = 0; // we need to add an entry about this weapon
 		weapon_accept_beatitude[request.data] = request.status;
 		weapon_group[request.value].push_back(request.data);
 		return true;
 	} else if (request.request == REQUEST_WEAPON_WIELD) {
 		/* player wish to wield this weapon */
-		weapon_accept_beatitude[request.data] = request.status;
 		if (weapon.find(request.data) == weapon.end() || weapon[request.data] <= 0)
 			weapon[request.data] = 1;
+		weapon_accept_beatitude[request.data] = request.status;
 		wield_weapon.push_back(request.data);
 		return true;
 	} else if (request.request == REQUEST_WEAPON_PICKUP) {
@@ -129,14 +131,14 @@ int Weapon::weaponWanted(const Item &item) {
 				break;
 			}
 		}
-		if (weapon_in_group && count < weapon_group_total[wg->first]) {
-			if (count + item.count <= weapon_group_total[wg->first]) {
-				/* we want all of them */
-				return item.count;
-			} else {
-				/* we only want some of them */
-				return weapon_group_total[wg->first] - count - item.count;
-			}
+		if (!weapon_in_group || count >= weapon_group_total[wg->first])
+			continue;
+		if (count + item.count <= weapon_group_total[wg->first]) {
+			/* we want all of them */
+			return item.count;
+		} else {
+			/* we only want some of them */
+			return weapon_group_total[wg->first] - count - item.count;
 		}
 	}
 	/* solitary weapons */
