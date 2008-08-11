@@ -34,6 +34,7 @@ class Armor : public Analyzer {
 		Armor(Saiph *saiph);
 
 		/* methods */
+		void analyze();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
