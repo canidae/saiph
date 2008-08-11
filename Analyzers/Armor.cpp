@@ -10,10 +10,17 @@ void Armor::analyze() {
 }
 
 void Armor::parseMessages(const string &messages) {
-	if (saiph->world->question && !command2.empty() && messages.find(ARMOR_WHAT_TO_WEAR, 0) != string::npos) {
+	if (saiph->world->question && !command2.empty() && (messages.find(ARMOR_WHAT_TO_WEAR, 0) != string::npos || messages.find(ARMOR_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
+		/* take off or wear something */
 		command = command2;
 		command2.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
+		/* request dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
+	} else if (!saiph->world->question && !command2.empty() && messages.find(ARMOR_YOU_WERE_WEARING, 0) != string::npos) {
+		/* took off last piece of armor (no "what do you want to take off?" question then) */
+		command2.clear();
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
@@ -78,6 +85,26 @@ void Armor::wearArmor() {
 			continue; // wearing best armor
 		if (best_key[s] == 0)
 			continue; // we have no armor for this slot
+		if (s == ARMOR_SUIT || s == ARMOR_SHIRT) {
+			/* are we wearing a cloak? */
+			if (worn[ARMOR_CLOAK] != 0) {
+				/* yes, we must take it off first */
+				command = TAKEOFF;
+				command2 = worn[ARMOR_CLOAK];
+				priority = ARMOR_WEAR_PRIORITY;
+				return;
+			}
+			if (s == ARMOR_SHIRT) {
+				/* are we wearing a suit? */
+				if (worn[ARMOR_SUIT] != 0) {
+					/* yes, we must take it off first */
+					command = TAKEOFF;
+					command2 = worn[ARMOR_SUIT];
+					priority = ARMOR_WEAR_PRIORITY;
+					return;
+				}
+			}
+		}
 		/* we should put on this piece of armor */
 		command = WEAR;
 		command2 = best_key[s];

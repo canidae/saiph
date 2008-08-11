@@ -6,6 +6,8 @@
 #define ARMOR_WEAR_PRIORITY 225
 /* messages */
 #define ARMOR_WHAT_TO_WEAR "  What do you want to wear? "
+#define ARMOR_WHAT_TO_TAKE_OFF "  What do you want to take off? "
+#define ARMOR_YOU_WERE_WEARING "  You were wearing "
 
 /* forward declare */
 class Armor;

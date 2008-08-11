@@ -88,6 +88,7 @@
 #define PRAY "#pray\n"
 #define REST "."
 #define SEARCH "s"
+#define TAKEOFF "T"
 #define THROW "t"
 #define WEAR "W"
 #define WIELD "w"
