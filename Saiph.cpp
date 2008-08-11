@@ -385,7 +385,10 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
 				level_added[s->second] = true;
-				level_move[s->second] = move;
+				/* add what move we must make to get to this level.
+				 * if pivot == 0 we're pathing on current level, and move should be whatever shortestPath returns.
+				 * otherwise we're pathing on another level and then move should be the move towards the right stairs on current level */
+				level_move[s->second] = (pivot == 0) ? move : level_move[level_queue[pivot]];
 				++level_count;
 			} else {
 				debugfile << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
@@ -409,7 +412,10 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
 				level_added[s->second] = true;
-				level_move[s->second] = move;
+				/* add what move we must make to get to this level.
+				 * if pivot == 0 we're pathing on current level, and move should be whatever shortestPath returns.
+				 * otherwise we're pathing on another level and then move should be the move towards the right stairs on current level */
+				level_move[s->second] = (pivot == 0) ? move : level_move[level_queue[pivot]];
 				++level_count;
 			} else {
 				debugfile << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
