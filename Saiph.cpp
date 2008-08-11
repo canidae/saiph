@@ -10,8 +10,9 @@ Saiph::Saiph(int interface) {
 	}
 	world = new World(connection, &debugfile);
 
-	/* we haven't found the mines yet */
+	/* bools for branches */
 	mines_found = false;
+	sokoban_found = false;
 
 	/* engulfed */
 	engulfed = false;
@@ -368,76 +369,50 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		}
 		/* path to upstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_UP].end(); ++s) {
+			debugfile << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			debugfile << SAIPH_DEBUG_NAME << "Pathing to upstairs leading to level " << s->second << endl;
-			unsigned char move;
-			/* are we pathing on the current level, or is it another level? */
-			if (pivot == 0) {
-				/* pathing on level we're on.
-				 * path from player */
-				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
-				if (move == MOVE_NOWHERE)
-					move = MOVE_UP;
-				level_move[s->second] = move;
-			} else {
-				/* pathing on another level.
-				 * path from stairs leading to previous level */
-				for (map<Point, int>::iterator t = levels[s->second].symbols[STAIRS_DOWN].begin(); t != levels[s->second].symbols[STAIRS_DOWN].end(); ++t) {
-					if (t->second != level_queue[pivot])
-						continue;
-					move = levels[level_queue[pivot]].shortestPath(t->first, s->first, allow_illegal_last_move, &tmp_moves);
-					level_move[s->second] = t->second;
-					break;
-				}
-			}
+			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+			if (move == MOVE_NOWHERE)
+				move = MOVE_UP;
 			tmp_moves += level_moves[pivot];
 			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
+				debugfile << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
 				level_added[s->second] = true;
+				level_move[s->second] = move;
 				++level_count;
+			} else {
+				debugfile << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
 			}
 		}
 		/* path to downstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_DOWN].end(); ++s) {
+			debugfile << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			debugfile << SAIPH_DEBUG_NAME << "Pathing to downstairs leading to level " << s->second << endl;
-			unsigned char move;
-			/* are we pathing on the current level, or is it another level? */
-			if (pivot == 0) {
-				/* pathing on level we're on.
-				 * path from player */
-				move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
-				if (move == MOVE_NOWHERE)
-					move = MOVE_DOWN;
-				level_move[s->second] = move;
-			} else {
-				/* pathing on another level.
-				 * path from stairs leading to previous level */
-				for (map<Point, int>::iterator t = levels[s->second].symbols[STAIRS_UP].begin(); t != levels[s->second].symbols[STAIRS_UP].end(); ++t) {
-					if (t->second != level_queue[pivot])
-						continue;
-					move = levels[level_queue[pivot]].shortestPath(t->first, s->first, allow_illegal_last_move, &tmp_moves);
-					level_move[s->second] = t->second;
-					break;
-				}
-			}
+			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
+			if (move == MOVE_NOWHERE)
+				move = MOVE_DOWN;
 			tmp_moves += level_moves[pivot];
 			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
+				debugfile << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
 				level_added[s->second] = true;
+				level_move[s->second] = move;
 				++level_count;
+			} else {
+				debugfile << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
 			}
 		}
 		++pivot;
@@ -493,6 +468,10 @@ void Saiph::detectPosition() {
 				}
 			}
 		}
+		if (!sokoban_found && (levels[position.level].depth >= 5 || levels[position.level].depth <= 9)) {
+			/* look for sokoban level 1a or 1b */
+			/* TODO */
+		}
 		return;
 	}
 	/* level has changed.
@@ -530,24 +509,18 @@ void Saiph::detectPosition() {
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* new level */
 		found = levels.size();
-		/* was previous level in the mines? */
-		if (levels[position.level].branch == BRANCH_MINES)
-			levels.push_back(Level(this, level, BRANCH_MINES));
-		else
-			levels.push_back(Level(this, level));
+		/* when we discover a new level it's highly likely it's in the
+		 * same branch as the previous level */
+		levels.push_back(Level(this, level, levels[position.level].branch));
 		levelmap[level].push_back(found);
 	}
 	/* were we on stairs on last position? */
 	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
 		/* yes, we were on stairs down */
 		levels[position.level].symbols[STAIRS_DOWN][position] = found;
-		/* update pathmap for stairs point */
-		levels[position.level].updatePointPathMap(position);
 	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
 		/* yes, we were on stairs up */
 		levels[position.level].symbols[STAIRS_UP][position] = found;
-		/* update pathmap for stairs point */
-		levels[position.level].updatePointPathMap(position);
 	}
 	position.row = world->player.row;
 	position.col = world->player.col;
@@ -594,9 +567,9 @@ void Saiph::dumpMaps() {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
 			if (r == world->player.row && c == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[position.level].pathmap.nodes[r][c].move >= 'a' && levels[position.level].pathmap.nodes[r][c].move <= 'z')
+			else if (levels[position.level].pathmap[r][c].move >= 'a' && levels[position.level].pathmap[r][c].move <= 'z')
 				//cout << (unsigned char) levels[position.level].pathmap.nodes[r][c].move;
-				cout << (char) (levels[position.level].pathmap.nodes[r][c].cost % 64 + 48);
+				cout << (char) (levels[position.level].pathmap[r][c].cost % 64 + 48);
 			else
 				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
 		}

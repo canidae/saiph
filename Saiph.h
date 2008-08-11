@@ -99,6 +99,7 @@ class Saiph {
 		vector<Analyzer *> analyzers;
 		map<string, vector<int> > levelmap; // used for faster map recognition
 		bool mines_found;
+		bool sokoban_found;
 
 		/* methods */
 		void detectPosition();

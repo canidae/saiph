@@ -49,16 +49,11 @@ struct PathNode {
 	unsigned char move;
 };
 
-struct PathMap {
-	PathNode nodes[MAP_ROW_END + 1][MAP_COL_END + 1];
-};
-
 /* Level */
 class Level {
 	public:
 		/* variables */
-		PathMap pathmap;
-		map<Point, PathMap> pointpathmap;
+		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		map<Point, Monster> monsters;
@@ -80,11 +75,9 @@ class Level {
 		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = UNKNOWN_SYMBOL_VALUE);
 		void setDungeonSymbolValue(const Point &point, int value = UNKNOWN_SYMBOL_VALUE);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
-		unsigned char shortestPath(const Point &from, const Point &to, bool allow_illegal_last_move, int *moves);
 		void updateMapPoint(const Point &point, unsigned char symbol, int color);
 		void updateMonsters();
 		void updatePathMap();
-		void updatePointPathMap(const Point &point);
 
 	private:
 		/* variables */
@@ -103,9 +96,7 @@ class Level {
 		/* methods */
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
-		unsigned char shortestPath(const PathMap &pathmap, const Point &target, bool allow_illegal_last_move, int *moves);
-		void updatePathMap(Point from, PathMap *pathmap);
-		bool updatePathMapHelper(const Point &to, const Point &from, PathMap *pathmap);
+		bool updatePathMapHelper(const Point &to, const Point &from);
 
 		/* static methods */
 		static void init();
