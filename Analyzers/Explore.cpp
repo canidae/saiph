@@ -9,6 +9,8 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 /* methods */
 void Explore::analyze() {
 	/* figure out which place to explore */
+	if (saiph->world->player.blind)
+		return; // no exploring while blind
 	/* make the place the player stands on "visited" */
 	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
 	if (priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
