@@ -477,6 +477,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 void Valkyrie::setupFood(int &groupstart) {
 	/* first some food items we don't really want for food, but beneficial effects */
 	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 5;
 	req.data = "lizard corpse";
 	saiph->request(req);
