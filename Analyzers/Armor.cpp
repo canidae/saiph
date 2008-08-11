@@ -74,6 +74,8 @@ void Armor::wearArmor() {
 				for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
 					if (armor[s][a].name != i->second.name || (int) a >= best_armor[s])
 						continue;
+					if ((armor[s][a].beatitude & i->second.beatitude) == 0)
+						continue;
 					best_key[s] = i->first;
 					best_armor[s] = a;
 				}
