@@ -56,37 +56,32 @@ void Armor::wearArmor() {
 	for (int s = 0; s < ARMOR_SLOTS; ++s)
 		best_armor[s] = INT_MAX;
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-		if (i->second.additional == "being worn") {
-			/* we're wearing this item, which slot does it belong to? */
-			for (int s = 0; s < ARMOR_SLOTS; ++s) {
-				for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
-					if (armor[s][a].name != i->second.name)
-						continue;
+		for (int s = 0; s < ARMOR_SLOTS; ++s) {
+			for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
+				if (armor[s][a].name != i->second.name)
+					continue;
+				if (i->second.additional == "being worn")
 					worn[s] = i->first;
-					/* break loops */
-					s = ARMOR_SLOTS;
-					break;
-				}
-			}
-		} else {
-			/* we're not wearing this item, is it armor? */
-			for (int s = 0; s < ARMOR_SLOTS; ++s) {
-				for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
-					if (armor[s][a].name != i->second.name || (int) a >= best_armor[s])
-						continue;
-					if ((armor[s][a].beatitude & i->second.beatitude) == 0)
-						continue;
-					best_key[s] = i->first;
-					best_armor[s] = a;
-				}
+				if ((int) a >= best_armor[s])
+					continue;
+				if ((armor[s][a].beatitude & i->second.beatitude) == 0)
+					continue;
+				best_key[s] = i->first;
+				best_armor[s] = a;
 			}
 		}
 	}
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
-		if (worn[s] != 0 && worn[s] == best_armor[s])
-			continue; // wearing best armor
-		if (best_key[s] == 0)
-			continue; // we have no armor for this slot
+		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
+			continue; // wearing best armor or got no armor to wield
+		if (worn[s] != 0) {
+			saiph->debugfile << "Wearing " << best_key[s] << " - " << saiph->inventory[best_key[s]].name << " over " << worn[s] << " - " << saiph->inventory[worn[s]].name << endl;
+			/* we'll have to take this armor off first */
+			command = TAKEOFF;
+			command2 = worn[s];
+			priority = ARMOR_WEAR_PRIORITY;
+			return;
+		}
 		if (s == ARMOR_SUIT || s == ARMOR_SHIRT) {
 			/* are we wearing a cloak? */
 			if (worn[ARMOR_CLOAK] != 0) {

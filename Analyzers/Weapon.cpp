@@ -42,11 +42,8 @@ bool Weapon::request(const Request &request) {
 				best_weapon = w;
 			}
 		}
-		if (wielded != 0 && wielded == best_key)
-			return false; // wielding best weapon
-		/* we're not wielding the best weapon, or we're not wielding any weapon */
-		if (best_key == 0)
-			return false; // we don't have any weapons we'd like to wield
+		if (best_key == 0 || (wielded != 0 && saiph->inventory[wielded].name == saiph->inventory[best_key].name))
+			return false; // wielding best weapon or got no weapon to wield
 		command = WIELD;
 		command2 = best_key;
 		priority = WEAPON_WIELD_PRIORITY;
