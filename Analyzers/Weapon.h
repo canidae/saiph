@@ -34,6 +34,7 @@ class Weapon : public Analyzer {
 		Weapon(Saiph *saiph);
 
 		/* methods */
+		void analyze();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
@@ -43,5 +44,8 @@ class Weapon : public Analyzer {
 		vector<WieldWeapon> wield; // the order of which we'll wield weapons
 		string command2;
 		Request req;
+
+		/* methods */
+		void wieldWeapon();
 };
 #endif
