@@ -215,7 +215,7 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 		return MOVE_NOWHERE; // pathing to center of map?
 	++*moves;
 	unsigned char move = ILLEGAL_MOVE;
-	if (allow_illegal_last_move && node->nextnode == NULL) {
+	if (allow_illegal_last_move && node->nextrow == -1) {
 		/* sometimes we wish to move somewhere we really can't move to.
 		 * for example: fighting a monster in a wall or through "corner".
 		 * solution: find adjacent squares with lowest cost and backtrack from there */
@@ -281,13 +281,13 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 			return move; // found the center
 		++*moves;
 	}
-	if (node->nextnode == NULL)
+	if (node->nextrow == -1)
 		return ILLEGAL_MOVE; // couldn't find path
 
-	while (node->nextnode != NULL) {
+	while (node->nextrow != -1) {
 		move = node->move;
 		++*moves;
-		node = node->nextnode;
+		node = &pathmap[node->nextrow][node->nextcol];
 	}
 	return move;
 }
@@ -401,10 +401,11 @@ void Level::updateMonsters() {
 
 void Level::updatePathMap() {
 	/* create pathmap in given map */
-	/* first reset nextnode pointer, cost & move */
+	/* first reset nextrow, nextcol, cost & move */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			pathmap[r][c].nextnode = NULL;
+			pathmap[r][c].nextrow = -1;
+			pathmap[r][c].nextcol = -1;
 			pathmap[r][c].cost = UINT_MAX;
 			pathmap[r][c].move = ILLEGAL_MOVE;
 		}
@@ -535,7 +536,8 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	newcost += pathcost[s];
 	newcost += pathcost[m];
 	if (newcost < pathmap[to.row][to.col].cost) {
-		pathmap[to.row][to.col].nextnode = &pathmap[from.row][from.col];
+		pathmap[to.row][to.col].nextrow = from.row;
+		pathmap[to.row][to.col].nextcol = from.col;
 		pathmap[to.row][to.col].cost = newcost;
 		return true;
 	}
