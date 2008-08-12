@@ -72,9 +72,9 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "white dragon scale";
 	saiph->request(req);
-        req.data = "dwarvish mithril coat";
+        req.data = "dwarvish mithril-coat";
 	saiph->request(req);
-        req.data = "elven mithril coat";
+        req.data = "elven mithril-coat";
 	saiph->request(req);
         req.data = "studded leather armor";
 	saiph->request(req);
@@ -313,9 +313,9 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "white dragon scale";
 	saiph->request(req);
-        req.data = "dwarvish mithril coat";
+        req.data = "dwarvish mithril-coat";
 	saiph->request(req);
-        req.data = "elven mithril coat";
+        req.data = "elven mithril-coat";
 	saiph->request(req);
         req.data = "studded leather armor";
 	saiph->request(req);

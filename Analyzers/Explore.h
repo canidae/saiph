@@ -2,7 +2,7 @@
 /* defines */
 #define EXPLORE_H
 /* various */
-#define EXPLORE_SEARCH_COUNT 24 // how many times we should search a square
+#define EXPLORE_SEARCH_COUNT 32 // how many times we should search a square
 /* priorities */
 #define EXPLORE_DESCEND 35
 #define EXPLORE_VISIT_CORRIDOR 60
