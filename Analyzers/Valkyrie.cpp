@@ -173,19 +173,19 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* add gloves, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-        req.data = "gauntlets of power";
+        req.data = "pair of gauntlets of power";
 	saiph->request(req);
-        req.data = "gauntlets of dexterity";
+        req.data = "pair of gauntlets of dexterity";
 	saiph->request(req);
-        req.data = "padded gloves";
+        req.data = "pair of padded gloves";
 	saiph->request(req);
-        req.data = "riding gloves";
+        req.data = "pair of riding gloves";
 	saiph->request(req);
-        req.data = "fencing gloves";
+        req.data = "pair of fencing gloves";
 	saiph->request(req);
-        req.data = "old gloves";
+        req.data = "pair of old gloves";
 	saiph->request(req);
-        req.data = "leather gloves";
+        req.data = "pair of leather gloves";
 	saiph->request(req);
 
 	/* create shield group */
@@ -226,41 +226,41 @@ void Valkyrie::setupArmor(int &groupstart) {
 	 * note: not adding levitation boots since we're not handling levitation yet */
 	req.request = REQUEST_ITEM_GROUP_ADD;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-        req.data = "speed boots";
+        req.data = "pair of speed boots";
 	saiph->request(req);
-        req.data = "water walking boots";
+        req.data = "pair of water walking boots";
 	saiph->request(req);
-        req.data = "jumping boots";
+        req.data = "pair of jumping boots";
 	saiph->request(req);
-        req.data = "kicking boots";
+        req.data = "pair of kicking boots";
 	saiph->request(req);
-        req.data = "mud boots";
+        req.data = "pair of mud boots";
 	saiph->request(req);
-        req.data = "buckled boots";
+        req.data = "pair of buckled boots";
 	saiph->request(req);
-        req.data = "riding boots";
+        req.data = "pair of riding boots";
 	saiph->request(req);
-        req.data = "snow boots";
+        req.data = "pair of snow boots";
 	saiph->request(req);
-        req.data = "hiking boots";
+        req.data = "pair of hiking boots";
 	saiph->request(req);
-        req.data = "combat boots";
+        req.data = "pair of combat boots";
 	saiph->request(req);
-        req.data = "jungle boots";
+        req.data = "pair of jungle boots";
 	saiph->request(req);
-        req.data = "iron shoes";
+        req.data = "pair of iron shoes";
 	saiph->request(req);
-        req.data = "hard shoes";
+        req.data = "pair of hard shoes";
 	saiph->request(req);
-        req.data = "high boots";
+        req.data = "pair of high boots";
 	saiph->request(req);
-        req.data = "jackboots";
+        req.data = "pair of jackboots";
 	saiph->request(req);
-        req.data = "elven boots";
+        req.data = "pair of elven boots";
 	saiph->request(req);
-        req.data = "low boots";
+        req.data = "pair of low boots";
 	saiph->request(req);
-        req.data = "walking shoes";
+        req.data = "pair of walking shoes";
 	saiph->request(req);
 
 	/* phew. now we just have to tell the armor analyzer pretty much the same thing.
@@ -396,19 +396,19 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* gloves */
 	req.value = ARMOR_GLOVES;
-        req.data = "gauntlets of power";
+        req.data = "pair of gauntlets of power";
 	saiph->request(req);
-        req.data = "gauntlets of dexterity";
+        req.data = "pair of gauntlets of dexterity";
 	saiph->request(req);
-        req.data = "padded gloves";
+        req.data = "pair of padded gloves";
 	saiph->request(req);
-        req.data = "riding gloves";
+        req.data = "pair of riding gloves";
 	saiph->request(req);
-        req.data = "fencing gloves";
+        req.data = "pair of fencing gloves";
 	saiph->request(req);
-        req.data = "old gloves";
+        req.data = "pair of old gloves";
 	saiph->request(req);
-        req.data = "leather gloves";
+        req.data = "pair of leather gloves";
 	saiph->request(req);
 
 	/* shield */
@@ -436,41 +436,41 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* boots */
 	req.value = ARMOR_BOOTS;
-        req.data = "speed boots";
+        req.data = "pair of speed boots";
 	saiph->request(req);
-        req.data = "water walking boots";
+        req.data = "pair of water walking boots";
 	saiph->request(req);
-        req.data = "jumping boots";
+        req.data = "pair of jumping boots";
 	saiph->request(req);
-        req.data = "kicking boots";
+        req.data = "pair of kicking boots";
 	saiph->request(req);
-        req.data = "mud boots";
+        req.data = "pair of mud boots";
 	saiph->request(req);
-        req.data = "buckled boots";
+        req.data = "pair of buckled boots";
 	saiph->request(req);
-        req.data = "riding boots";
+        req.data = "pair of riding boots";
 	saiph->request(req);
-        req.data = "snow boots";
+        req.data = "pair of snow boots";
 	saiph->request(req);
-        req.data = "hiking boots";
+        req.data = "pair of hiking boots";
 	saiph->request(req);
-        req.data = "combat boots";
+        req.data = "pair of combat boots";
 	saiph->request(req);
-        req.data = "jungle boots";
+        req.data = "pair of jungle boots";
 	saiph->request(req);
-        req.data = "iron shoes";
+        req.data = "pair of iron shoes";
 	saiph->request(req);
-        req.data = "hard shoes";
+        req.data = "pair of hard shoes";
 	saiph->request(req);
-        req.data = "high boots";
+        req.data = "pair of high boots";
 	saiph->request(req);
-        req.data = "jackboots";
+        req.data = "pair of jackboots";
 	saiph->request(req);
-        req.data = "elven boots";
+        req.data = "pair of elven boots";
 	saiph->request(req);
-        req.data = "low boots";
+        req.data = "pair of low boots";
 	saiph->request(req);
-        req.data = "walking shoes";
+        req.data = "pair of walking shoes";
 	saiph->request(req);
 }
 
