@@ -523,10 +523,10 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 			else if (branch == BRANCH_SOKOBAN)
 				return false; // in sokoban we can't pass by boulders diagonally
 		}
+		if (branch == BRANCH_ROGUE)
+		      return false; // level that is hard to parse. only allowing cardinal moves makes it easier?
 		//if (polymorphed_to_grid_bug)
 		//      return false;
-		//if (rogue_level)
-		//      return false; // level that is hard to parse. only allowing cardinal moves makes it easier?
 	}
 	//if (blacklisted_move)
 	//      return false;

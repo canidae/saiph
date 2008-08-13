@@ -517,8 +517,9 @@ void Saiph::detectPosition() {
 		/* new level */
 		found = levels.size();
 		/* when we discover a new level it's highly likely it's in the
-		 * same branch as the previous level */
-		levels.push_back(Level(this, level, levels[position.level].branch));
+		 * same branch as the previous level.
+		 * exception is rogue level, which really isn't a branch*/
+		levels.push_back(Level(this, level, (levels[position.level].branch != BRANCH_ROGUE) ? levels[position.level].branch : BRANCH_MAIN));
 		levelmap[level].push_back(found);
 	}
 	/* were we on stairs on last position? */
@@ -592,6 +593,9 @@ void Saiph::parseMessages(const string &messages) {
 		/* a bit unique case, this is a question.
 		 * the data doesn't end with the sequence we check in World */
 		world->question = true;
+	} else if (messages.find(MESSAGE_ROGUE_LEVEL, 0) != string::npos) {
+		/* rogue level, set branch attribute */
+		levels[position.level].branch = BRANCH_ROGUE;
 	}
 }
 

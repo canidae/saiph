@@ -11,10 +11,11 @@
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
 #define BRANCH_SOKOBAN 2
-#define BRANCH_VLAD 3
-#define BRANCH_WIZARD 4
-#define BRANCH_ASTRAL 5
-#define BRANCH_QUEST 6
+#define BRANCH_ROGUE 3
+#define BRANCH_VLAD 4
+#define BRANCH_WIZARD 5
+#define BRANCH_ASTRAL 6
+#define BRANCH_QUEST 7
 /* unknown tracked symbol value */
 #define UNKNOWN_SYMBOL_VALUE INT_MIN
 /* colors & attributes */
@@ -174,6 +175,7 @@
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
+#define MESSAGE_ROGUE_LEVEL "  You enter what seems to be an older, more primitive world.  "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? " // followed by "[abc...]"
