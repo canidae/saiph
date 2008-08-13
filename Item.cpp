@@ -104,9 +104,15 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	if (name[pos] == '+') {
 		enchantment = name[pos + 1] - '0'; // assuming no item is enchanted beyond +9
 		pos += 3;
+		/* if we know enchantment, we (probably) know that it's uncursed unless it says otherwise */
+		if (beatitude == BEATITUDE_UNKNOWN)
+			beatitude = UNCURSED;
 	} else if (name[pos] == '-') {
 		enchantment = 0 - (name[pos + 1] - '0'); // assuming no item is enchanted beyond -9
 		pos += 3;
+		/* if we know enchantment, we (probably) know that it's uncursed unless it says otherwise */
+		if (beatitude == BEATITUDE_UNKNOWN)
+			beatitude = UNCURSED;
 	}
 	/* erase up to pos as we've extracted all the info up to item name */
 	name.erase(0, pos);

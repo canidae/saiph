@@ -72,7 +72,7 @@ class Food : public Analyzer {
 		string command2;
 		vector<string> eat_order;
 		map<string, int> corpse_data;
-		map<Point, bool> safe_monster;
+		map<Point, unsigned char> prev_monster_loc;
 		map<Point, int> safe_eat_loc;
 		Request req;
 
