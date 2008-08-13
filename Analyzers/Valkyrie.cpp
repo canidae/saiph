@@ -121,6 +121,8 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "elven cloak";
 	saiph->request(req);
+        req.data = "faded pall";
+	saiph->request(req);
         req.data = "alchemy smock";
 	saiph->request(req);
         req.data = "apron";
@@ -763,5 +765,13 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	/* we don't want to wield a cursed long sword (we'll gamble on unknown, though) */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "long sword";
+	saiph->request(req);
+	req.data = "silver dagger";
+	saiph->request(req);
+	req.data = "elven dagger";
+	saiph->request(req);
+	req.data = "dagger";
+	saiph->request(req);
+	req.data = "orcish dagger";
 	saiph->request(req);
 }
