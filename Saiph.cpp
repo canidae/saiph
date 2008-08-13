@@ -423,6 +423,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		}
 		++pivot;
 	}
+	*moves = least_moves;
 	return best_move;
 }
 
