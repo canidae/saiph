@@ -740,6 +740,9 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.data = "dart";
 	req.value = 200;
 	saiph->request(req);
+	req.data = "pick-axe";
+	req.value = 1;
+	saiph->request(req);
 
 	/* add thrown weapons in the order we want to throw them.
 	 * currently we'll throw them in the order we wish to get rid of stuff,
@@ -775,6 +778,8 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	/* we don't want to wield a cursed long sword (we'll gamble on unknown, though) */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "long sword";
+	saiph->request(req);
+	req.data = "pick-axe";
 	saiph->request(req);
 	req.data = "silver dagger";
 	saiph->request(req);
