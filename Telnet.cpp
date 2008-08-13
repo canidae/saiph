@@ -2,8 +2,25 @@
 
 /* constructors */
 Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
+	/* read login details from .account */
+	ifstream account;
+	account.open(".account");
+	if (!account) {
+		*debugfile << TELNET_DEBUG_NAME << "Unable to read .account (which should contain url, username and password on separate lines)" << endl;
+		exit(1);
+	}
+	string url;
+	string username;
+	string password;
+	account >> url;
+	account >> username;
+	account >> password;
+	account.close();
+	username.append("\n");
+	password.append("\n");
+
 	/* connect to host using telnet */
-	struct hostent *he = gethostbyname(TELNET_NETHACK_URL);
+	struct hostent *he = gethostbyname(url.c_str());
 	if (he == NULL) {
 		herror("gethostbyname");
 		exit(1);
@@ -39,6 +56,14 @@ Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 	retrieve(discard, 4096);
 
 	/* and let's log in */
+	transmit("l");
+	int size = retrieve(discard, TELNET_BUFFER_SIZE);
+	transmit(username);
+	size = retrieve(discard, TELNET_BUFFER_SIZE);
+	transmit(password);
+	size = retrieve(discard, TELNET_BUFFER_SIZE);
+
+	/* and start a game */
 	start();
 }
 
@@ -104,26 +129,6 @@ int Telnet::transmit(const string &data) {
 }
 
 void Telnet::start() {
-	ifstream account;
-	account.open(".account");
-	if (!account) {
-		*debugfile << TELNET_DEBUG_NAME << "Unable to read .account (which should contain username and password on separate lines)" << endl;
-		exit(1);
-	}
-	string username;
-	string password;
-	account >> username;
-	account >> password;
-	account.close();
-	username.append("\n");
-	password.append("\n");
-	char buffer[TELNET_BUFFER_SIZE];
-	transmit("l");
-	int size = retrieve(buffer, TELNET_BUFFER_SIZE);
-	transmit(username);
-	size = retrieve(buffer, TELNET_BUFFER_SIZE);
-	transmit(password);
-	size = retrieve(buffer, TELNET_BUFFER_SIZE);
 	transmit("p");
 }
 

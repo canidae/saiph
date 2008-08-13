@@ -6,7 +6,6 @@
 /* buffer for login */
 #define TELNET_BUFFER_SIZE 4096
 /* host */
-#define TELNET_NETHACK_URL "nethack.alt.org"
 #define TELNET_NETHACK_PORT 23
 
 /* forward declare */
