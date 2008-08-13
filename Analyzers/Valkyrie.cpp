@@ -9,6 +9,7 @@ void Valkyrie::init() {
 	int groupstart = 0;
 	setupArmor(groupstart);
 	setupFood(groupstart);
+	setupTool(groupstart);
 	setupWand(groupstart);
 	setupWeapon(groupstart);
 }
@@ -565,6 +566,15 @@ void Valkyrie::setupFood(int &groupstart) {
         req.data = "meat ring";
 	saiph->request(req);
         req.data = "meatball";
+	saiph->request(req);
+}
+
+void Valkyrie::setupTool(int &groupstart) {
+	/* unihorn */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 10;
+	req.data = "unicorn horn";
 	saiph->request(req);
 }
 

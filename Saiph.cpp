@@ -38,6 +38,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Potion(this));
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Scroll(this));
+	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
 	analyzers.push_back(new Wand(this));
 	analyzers.push_back(new Weapon(this));

@@ -31,6 +31,7 @@ class Valkyrie : public Analyzer {
 		/* methods */
 		void setupArmor(int &groupstart);
 		void setupFood(int &groupstart);
+		void setupTool(int &groupstart);
 		void setupWand(int &groupstart);
 		void setupWeapon(int &groupstart);
 };

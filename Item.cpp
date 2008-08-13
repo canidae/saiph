@@ -128,6 +128,14 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	pos = name.rfind(ITEM_NAMED, name.size() - 1);
 	if (pos != string::npos) {
 		named = name.substr(pos + sizeof (ITEM_NAMED) - 1);
+		if (beatitude == BEATITUDE_UNKNOWN) {
+			if (named == "blessed")
+				beatitude = BLESSED;
+			else if (named == "uncursed")
+				beatitude = UNCURSED;
+			else if (named == "cursed")
+				beatitude = CURSED;
+		}
 		name.erase(pos);
 	}
 	/* extraced "called" */

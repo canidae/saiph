@@ -3,6 +3,7 @@
 #define REQUEST_H
 /* requests */
 #define ILLEGAL_REQUEST 0
+#define REQUEST_APPLY_UNIHORN 1
 #define REQUEST_ELBERETH_OR_REST 2
 #define REQUEST_UPDATED_INVENTORY 3
 #define REQUEST_DIRTY_INVENTORY 4
@@ -34,6 +35,7 @@ class Request {
 		int priority;
 		int value;
 		int status;
+		unsigned char key;
 		string data;
 		Coordinate coordinate;
 
