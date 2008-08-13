@@ -39,6 +39,8 @@ void Level::parseMessages(const string &messages) {
 		setDungeonSymbol(saiph->position, STAIRS_DOWN);
 	else if (messages.find(LEVEL_OPEN_DOOR_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, OPEN_DOOR);
+	else if (messages.find(LEVEL_GRAVE_HERE, 0) != string::npos)
+		setDungeonSymbol(saiph->position, GRAVE);
 	else if (messages.find(LEVEL_FOUNTAIN_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, FOUNTAIN);
 	else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2, 0) != string::npos)
