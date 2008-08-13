@@ -374,6 +374,22 @@ void Food::parseMessages(const string &messages) {
 	}
 }
 
+bool Food::request(const Request &request) {
+	if (request.request == REQUEST_EAT) {
+		if (request.priority < priority)
+			return false;
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name != request.data)
+				continue;
+			command = EAT;
+			command2 = i->first;
+			priority = request.priority;
+			return true;
+		}
+	}
+	return false;
+}
+
 /* private methods */
 bool Food::safeToEat(const string &corpse) {
 	/* this method returns true if it's safe to eat given corpse */

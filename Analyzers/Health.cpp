@@ -1,8 +1,7 @@
 #include "Health.h"
 
 /* constructors */
-Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph) {
-	this->resting = false;
+Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), lycanthropy(false) {
 }
 
 /* methods */
@@ -24,7 +23,19 @@ void Health::analyze() {
 				saiph->request(req);
 			}
 		}
-	} else if (resting) {
+	}
+	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {
+		/* apply unihorn */
+		req.request = REQUEST_APPLY_UNIHORN;
+		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? HEALTH_UNIHORN_DEADLY : HEALTH_UNIHORN_NON_DEADLY;
+		if (!saiph->request(req) && (saiph->world->player.foodpoisoned || saiph->world->player.ill)) {
+			/* crap. it's deadly, and unihorn won't work. pray */
+			req.request = REQUEST_PRAY;
+			req.priority = HEALTH_PRAY_DEADLY;
+			saiph->request(req);
+		}
+	}
+	if (resting) {
 		/* still resting */
 		if (hp > hp_max * 9 / 10) {
 			resting = false; // enough hp (>90%) to continue our journey
@@ -36,5 +47,26 @@ void Health::analyze() {
 				 * we're bones */
 			}
 		}
+	}
+	if (lycanthropy) {
+		/* cure lycanthropy */
+		req.request = REQUEST_EAT;
+		req.priority = HEALTH_CURE_LYCANTHROPY;
+		req.data = "sprig of wolfsbane";
+		if (!saiph->request(req)) {
+			/* no? try praying instead */
+			req.request = REQUEST_PRAY;
+			saiph->request(req);
+		}
+	}
+}
+
+void Health::parseMessages(const string &messages) {
+	if (messages.find(HEALTH_FEEL_FEVERISH, 0) != string::npos) {
+		/* argh, bloody werefoo */
+		lycanthropy = true;
+	} else if (messages.find(HEALTH_FEEL_PURIFIED, 0) != string::npos) {
+		/* yay, cured from lycanthropy */
+		lycanthropy = false;
 	}
 }
