@@ -461,7 +461,7 @@ void Saiph::detectPosition() {
 		/* same level as last frame, update row & col */
 		position.row = world->player.row;
 		position.col = world->player.col;
-		if (!sokoban_found && (levels[position.level].depth >= 5 || levels[position.level].depth <= 9)) {
+		if (!sokoban_found && levels[position.level].branch == BRANCH_MAIN && (levels[position.level].depth >= 5 || levels[position.level].depth <= 9)) {
 			/* look for sokoban level 1a or 1b */
 			if (levels[position.level].dungeonmap[8][37] == BOULDER && levels[position.level].dungeonmap[8][38] == BOULDER && levels[position.level].dungeonmap[8][43] == BOULDER && levels[position.level].dungeonmap[9][38] == BOULDER && levels[position.level].dungeonmap[9][39] == BOULDER && levels[position.level].dungeonmap[9][42] == BOULDER && levels[position.level].dungeonmap[9][44] == BOULDER && levels[position.level].dungeonmap[11][41] == BOULDER && levels[position.level].dungeonmap[14][39] == BOULDER && levels[position.level].dungeonmap[14][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[14][42] == BOULDER) {
 				/* sokoban 1a */
@@ -476,7 +476,7 @@ void Saiph::detectPosition() {
 			}
 
 		}
-		if (!mines_found && (levels[position.level].depth >= 3 || levels[position.level].depth <= 5)) {
+		if (!mines_found && levels[position.level].branch == BRANCH_MAIN && (levels[position.level].depth >= 3 || levels[position.level].depth <= 5)) {
 			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
 			for (map<Point, int>::iterator hw = levels[position.level].symbols[HORIZONTAL_WALL].begin(); hw != levels[position.level].symbols[HORIZONTAL_WALL].end(); ++hw) {
 				if (hw->first.row <= MAP_ROW_BEGIN || hw->first.row >= MAP_ROW_END || hw->first.col <= MAP_COL_BEGIN || hw->first.col >= MAP_COL_END)
