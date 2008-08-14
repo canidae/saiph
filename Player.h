@@ -53,8 +53,16 @@ class Player {
 		int zorkmids;
 		/* turn */
 		int turn;
-		/* for parsing text */
-		char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
+		/* intrinsics */
+		bool cold_resistance;
+		bool disintegration_resistance;
+		bool fire_resistance;
+		bool poison_resistance;
+		bool shock_resistance;
+		bool sleep_resistance;
+		bool telepathy;
+		bool teleport_control;
+		bool teleportitis;
 
 		/* constructors */
 		Player();
@@ -62,5 +70,10 @@ class Player {
 		/* methods */
 		bool parseAttributeRow(const char *attributerow);
 		bool parseStatusRow(const char *statusrow);
+
+	private:
+		/* variables */
+		/* for parsing text */
+		char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 };
 #endif

@@ -612,6 +612,38 @@ void Saiph::parseMessages(const string &messages) {
 		/* rogue level, set branch attribute */
 		levels[position.level].branch = BRANCH_ROGUE;
 	}
+	if (messages.find(SAIPH_GAIN_COLD_RES1, 0) != string::npos)
+		world->player.cold_resistance = true;
+	if (messages.find(SAIPH_LOSE_COLD_RES1, 0) != string::npos)
+		world->player.cold_resistance = false;
+	if (messages.find(SAIPH_GAIN_DISINTEGRATION_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_DISINTEGRATION_RES2, 0) != string::npos)
+		world->player.disintegration_resistance = true;
+	if (messages.find(SAIPH_GAIN_FIRE_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_FIRE_RES2, 0) != string::npos)
+		world->player.fire_resistance = true;
+	if (messages.find(SAIPH_LOSE_FIRE_RES1, 0) != string::npos)
+		world->player.fire_resistance = false;
+	if (messages.find(SAIPH_GAIN_POISON_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_POISON_RES2, 0) != string::npos)
+		world->player.poison_resistance = true;
+	if (messages.find(SAIPH_LOSE_POISON_RES1, 0) != string::npos)
+		world->player.poison_resistance = false;
+	if (messages.find(SAIPH_GAIN_SHOCK_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_SHOCK_RES2, 0) != string::npos)
+		world->player.shock_resistance = true;
+	if (messages.find(SAIPH_LOSE_SHOCK_RES1, 0) != string::npos)
+		world->player.shock_resistance = false;
+	if (messages.find(SAIPH_GAIN_SLEEP_RES1, 0) != string::npos)
+		world->player.sleep_resistance = true;
+	if (messages.find(SAIPH_LOSE_SLEEP_RES1, 0) != string::npos)
+		world->player.sleep_resistance = false;
+	if (messages.find(SAIPH_GAIN_TELEPATHY1, 0) != string::npos)
+		world->player.telepathy = true;
+	if (messages.find(SAIPH_LOSE_TELEPATHY1, 0) != string::npos)
+		world->player.telepathy = false;
+	if (messages.find(SAIPH_GAIN_TELEPORT_CONTROL1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORT_CONTROL2, 0) != string::npos)
+		world->player.teleport_control = true;
+	if (messages.find(SAIPH_GAIN_TELEPORTITIS1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORTITIS2, 0) != string::npos)
+		world->player.teleportitis = true;
+	if (messages.find(SAIPH_LOSE_TELEPORTITIS1, 0) != string::npos)
+		world->player.teleportitis = false;
 }
 
 /* main */
