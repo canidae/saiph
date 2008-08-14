@@ -63,6 +63,10 @@ void Weapon::wieldWeapon() {
 	}
 	if (best_key == 0 || (wielded != 0 && saiph->inventory[wielded].name == saiph->inventory[best_key].name))
 		return; // wielding best weapon or got no weapon to wield
+	if (wielded != 0)
+		saiph->debugfile << "Wielding " << saiph->inventory[best_key].name << " over " << saiph->inventory[wielded].name << endl;
+	else
+		saiph->debugfile << "Wielding " << saiph->inventory[best_key].name << endl;
 	command = WIELD;
 	command2 = best_key;
 	priority = WEAPON_WIELD_PRIORITY;

@@ -36,7 +36,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	/* add suits, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "gray dragon scale mail";
 	saiph->request(req);
         req.data = "silver dragon scale mail";
@@ -73,6 +73,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "white dragon scale";
 	saiph->request(req);
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
         req.data = "dwarvish mithril-coat";
 	saiph->request(req);
         req.data = "elven mithril-coat";
@@ -99,7 +100,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	/* add cloaks, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "cloak of magic resistance";
 	saiph->request(req);
         req.data = "cloak of protection";
@@ -118,7 +119,10 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "tattered cape";
 	saiph->request(req);
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
         req.data = "oilskin cloak";
+	saiph->request(req);
+        req.data = "slippery cloak";
 	saiph->request(req);
         req.data = "elven cloak";
 	saiph->request(req);
@@ -198,11 +202,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	/* add shields, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "shield of reflection";
 	saiph->request(req);
         req.data = "polished silver shield";
 	saiph->request(req);
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
         req.data = "elven shield";
 	saiph->request(req);
         req.data = "blue shield";
@@ -228,9 +233,10 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* add boots, most useful first.
 	 * note: not adding levitation boots since we're not handling levitation yet */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "pair of speed boots";
 	saiph->request(req);
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
         req.data = "pair of water walking boots";
 	saiph->request(req);
         req.data = "pair of jumping boots";
@@ -266,8 +272,7 @@ void Valkyrie::setupArmor(int &groupstart) {
         req.data = "pair of walking shoes";
 	saiph->request(req);
 
-	/* phew. now we just have to tell the armor analyzer pretty much the same thing.
-	 * one change is that we'll only wear blessed or uncursed armor */
+	/* phew. now we just have to tell the armor analyzer pretty much the same thing */
 	req.request = REQUEST_ARMOR_WEAR;
 	req.status = BLESSED | UNCURSED;
 
@@ -280,6 +285,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* suit */
 	req.value = ARMOR_SUIT;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "gray dragon scale mail";
 	saiph->request(req);
         req.data = "silver dragon scale mail";
@@ -316,6 +322,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "white dragon scale";
 	saiph->request(req);
+	req.status = BLESSED | UNCURSED;
         req.data = "dwarvish mithril-coat";
 	saiph->request(req);
         req.data = "elven mithril-coat";
@@ -337,6 +344,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* cloak */
 	req.value = ARMOR_CLOAK;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "cloak of magic resistance";
 	saiph->request(req);
         req.data = "cloak of protection";
@@ -355,7 +363,10 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "tattered cape";
 	saiph->request(req);
+	req.status = BLESSED | UNCURSED;
         req.data = "oilskin cloak";
+	saiph->request(req);
+        req.data = "slippery cloak";
 	saiph->request(req);
         req.data = "elven cloak";
 	saiph->request(req);
@@ -416,10 +427,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* shield */
 	req.value = ARMOR_SHIELD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "shield of reflection";
 	saiph->request(req);
         req.data = "polished silver shield";
 	saiph->request(req);
+	req.status = BLESSED | UNCURSED;
         req.data = "elven shield";
 	saiph->request(req);
         req.data = "blue shield";
@@ -439,8 +452,10 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* boots */
 	req.value = ARMOR_BOOTS;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "pair of speed boots";
 	saiph->request(req);
+	req.status = BLESSED | UNCURSED;
         req.data = "pair of water walking boots";
 	saiph->request(req);
         req.data = "pair of jumping boots";
