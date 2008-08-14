@@ -527,7 +527,7 @@ void Saiph::detectPosition() {
 					++matched;
 				++total;
 			}
-			if (matched * 5 >= total * 4 || matched * 4 <= total * 5) {
+			if (matched > 0 && (matched * 5 >= total * 4 || matched * 4 <= total * 5)) {
 				found = *lm;
 				break;
 			}
