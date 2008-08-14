@@ -513,8 +513,8 @@ void Saiph::detectPosition() {
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
 		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
-			/* check if level got vertical walls on same locations.
-			 * since walls can disappear, we'll allow a 70% match */
+			/* check if level got walls on same locations.
+			 * since walls can disappear, we'll allow a 80% match */
 			int total = 0;
 			int matched = 0;
 			for (map<Point, int>::iterator s = levels[*lm].symbols[VERTICAL_WALL].begin(); s != levels[*lm].symbols[VERTICAL_WALL].end(); ++s) {
@@ -522,7 +522,12 @@ void Saiph::detectPosition() {
 					++matched;
 				++total;
 			}
-			if (matched * 10 >= total * 7) {
+			for (map<Point, int>::iterator s = levels[*lm].symbols[HORIZONTAL_WALL].begin(); s != levels[*lm].symbols[HORIZONTAL_WALL].end(); ++s) {
+				if (world->view[s->first.row][s->first.col] == HORIZONTAL_WALL)
+					++matched;
+				++total;
+			}
+			if (matched * 5 >= total * 4 || matched * 4 <= total * 5) {
 				found = *lm;
 				break;
 			}
