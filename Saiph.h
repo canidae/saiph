@@ -76,6 +76,7 @@ class Saiph {
 		bool engulfed;
 		int best_priority;
 		string last_command;
+		bool inventory_changed;
 
 		/* constructors */
 		Saiph(int interface);

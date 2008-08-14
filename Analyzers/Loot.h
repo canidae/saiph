@@ -5,7 +5,9 @@
 #define LOOT_LOOT_STASH_PRIORITY 450
 #define LOOT_VISIT_STASH_PRIORITY 250
 /* messages */
+#define LOOT_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "
 #define LOOT_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
+#define LOOT_MANY_MORE_OBJECTS_HERE "  There are many more objects here.  "
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define LOOT_STOLE " stole "
 

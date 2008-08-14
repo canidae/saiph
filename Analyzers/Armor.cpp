@@ -6,7 +6,8 @@ Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph) {
 
 /* methods */
 void Armor::analyze() {
-	wearArmor();
+	if (saiph->inventory_changed)
+		wearArmor();
 }
 
 void Armor::parseMessages(const string &messages) {

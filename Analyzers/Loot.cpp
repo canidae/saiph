@@ -117,7 +117,7 @@ void Loot::parseMessages(const string &messages) {
 			showing_pickup = false;
 		}
 	}
-	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos) {
+	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_SEVERAL_MORE_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_MORE_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. we should look */
 		command = LOOK;
 		priority = PRIORITY_LOOK;

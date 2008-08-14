@@ -23,6 +23,8 @@ Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch)
 
 /* methods */
 void Level::parseMessages(const string &messages) {
+	/* set inventory_changed to false */
+	saiph->inventory_changed = false;
 	/* set got_[drop|pickup]_menu to false if we don't have a menu */
 	if (!saiph->world->menu) {
 		got_drop_menu = false;
@@ -138,6 +140,7 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* our inventory is empty. how did that happen? */
 		saiph->inventory.clear();
+		saiph->inventory_changed = true;
 	} else if ((pos = messages.find(".  ", 0)) != string::npos) {
 		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
 		 * we'll need to handle this too somehow.
@@ -165,12 +168,15 @@ void Level::parseMessages(const string &messages) {
 				++pos;
 			}
 		}
+		saiph->inventory_changed = true;
 		if ((int) stashes[saiph->position].items.size() == pickup_count) {
 			/* we probably picked up everything here, remove stash */
 			stashes.erase(saiph->position);
 		}
-	} else if ((pos = messages.find(" - ", 0)) != string::npos) {
+	} else if ((pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
 		/* we probably listed our inventory */
+		/* we're searching for " -  " because when we #enhance there are 2 spaces after the "-".
+		 * otherwise we'll confuse the inventory list with the enhance list, which is very bad */
 		if (saiph->world->cur_page == 1)
 			saiph->inventory.clear(); // only clear when we're listing 1st page
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
@@ -186,6 +192,7 @@ void Level::parseMessages(const string &messages) {
 				pos += length;
 			}
 		}
+		saiph->inventory_changed = true;
 	}
 }
 

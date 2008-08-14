@@ -17,6 +17,9 @@ Saiph::Saiph(int interface) {
 	/* engulfed */
 	engulfed = false;
 
+	/* inventory changed */
+	inventory_changed = false;
+
 	/* set best_priority to ILLEGAL_PRIORITY */
 	best_priority = ILLEGAL_PRIORITY;
 
