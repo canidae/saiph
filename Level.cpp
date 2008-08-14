@@ -224,57 +224,60 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 		/* note:
 		 * since we're moving from target towards the "center" of the pathmap,
 		 * we're moving the opposite direction of the node we're checking */
-		/* northwest node */
 		int row = target.row - 1;
 		int col = target.col - 1;
-		move = MOVE_SE;
-		node = &pathmap[row][col];
-		unsigned int lowest_cost = node->cost;
+		unsigned int lowest_cost = UINT_MAX;
+		/* northwest node */
+		if (row >= MAP_ROW_BEGIN && col >= MAP_COL_BEGIN) {
+			move = MOVE_SE;
+			node = &pathmap[row][col];
+			lowest_cost = node->cost;
+		}
 		/* north node */
 		++col;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (row >= MAP_ROW_BEGIN && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_S;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
 		/* northeast node */
 		++col;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (row >= MAP_ROW_BEGIN && col <= MAP_COL_END && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_SW;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
 		/* east node */
 		++row;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (col <= MAP_COL_END && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_W;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
 		/* southeast node */
 		++row;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (row <= MAP_ROW_END && col <= MAP_COL_END && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_NW;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
 		/* south node */
 		--col;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (row <= MAP_ROW_END && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_N;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
 		/* southwest node */
 		--col;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (row <= MAP_ROW_END && col >= MAP_COL_BEGIN && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_NE;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
 		/* west node */
 		--row;
-		if (pathmap[row][col].cost < lowest_cost) {
+		if (col >= MAP_COL_BEGIN && pathmap[row][col].cost < lowest_cost) {
 			move = MOVE_E;
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
