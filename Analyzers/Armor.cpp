@@ -74,14 +74,6 @@ void Armor::wearArmor() {
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
 			continue; // wearing best armor or got no armor to wield
-		if (worn[s] != 0) {
-			saiph->debugfile << "Wearing " << best_key[s] << " - " << saiph->inventory[best_key[s]].name << " over " << worn[s] << " - " << saiph->inventory[worn[s]].name << endl;
-			/* we'll have to take this armor off first */
-			command = TAKEOFF;
-			command2 = worn[s];
-			priority = ARMOR_WEAR_PRIORITY;
-			return;
-		}
 		if (s == ARMOR_SUIT || s == ARMOR_SHIRT) {
 			/* are we wearing a cloak? */
 			if (worn[ARMOR_CLOAK] != 0) {
@@ -101,6 +93,14 @@ void Armor::wearArmor() {
 					return;
 				}
 			}
+		}
+		if (worn[s] != 0) {
+			saiph->debugfile << "Wearing " << best_key[s] << " - " << saiph->inventory[best_key[s]].name << " over " << worn[s] << " - " << saiph->inventory[worn[s]].name << endl;
+			/* we'll have to take this armor off first */
+			command = TAKEOFF;
+			command2 = worn[s];
+			priority = ARMOR_WEAR_PRIORITY;
+			return;
 		}
 		/* we should put on this piece of armor */
 		command = WEAR;
