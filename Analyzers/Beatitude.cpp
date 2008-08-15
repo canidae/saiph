@@ -14,7 +14,7 @@ void Beatitude::analyze() {
 	if (got_drop_menu || saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
 		return;
 	unsigned char move = ILLEGAL_MOVE;
-	if (!check_beatitude && saiph->world->player.turn % 100 == 0) {
+	if (!check_beatitude && saiph->inventory_changed) {
 		/* how many of our items needs to be checked? */
 		int items_to_beatify = 0;
 		for(map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
