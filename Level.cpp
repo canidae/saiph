@@ -65,7 +65,10 @@ void Level::parseMessages(const string &messages) {
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* single item on ground */
 		clearStash(saiph->position);
-		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
+		if (messages.find(LEVEL_YOU_SEE_HERE, 0) != string::npos)
+			pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
+		else
+			pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
@@ -114,7 +117,7 @@ void Level::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* we'll add a dummy entry so when all items are selected in a list pickup.size() still exceed 0 */
-		saiph->pickup[' '] = Item("a dummy");
+		saiph->pickup[' '] = Item();
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
 		/* dropping items */
 		if (got_drop_menu) {
@@ -144,6 +147,7 @@ void Level::parseMessages(const string &messages) {
 	} else if ((pos = messages.find(".  ", 0)) != string::npos) {
 		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
 		 * we'll need to handle this too somehow.
+		 * when we're burdened we'll get "  You have a little trouble lifting f - a lichen corpse.  ".
 		 * we're searching for ".  " as we won't get that when we're listing inventory.
 		 * also, this won't detect gold, but we might not need to detect that,
 		 * well, it's gonna be a bit buggy when picking up gold from stashes */
@@ -152,7 +156,7 @@ void Level::parseMessages(const string &messages) {
 		pos = 0;
 		int pickup_count = 0;
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
-			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
+			if (pos > 2 && (messages[pos - 3] == ' ' || messages[pos - 3] == 'g') && messages[pos - 2] == ' ') {
 				unsigned char key = messages[pos - 1];
 				pos += 3;
 				string::size_type length = messages.find(".  ", pos);
@@ -164,7 +168,10 @@ void Level::parseMessages(const string &messages) {
 					++pickup_count;
 				pos += length;
 			} else {
-				/* "Yak - dog food!" mess things up */
+				/* "Yak - dog food!" mess things up.
+				 * this is why we checked for "  " or "g " before the "-".
+				 * we may get "... trouble lifting f - ya", and we need to detect that,
+				 * hence the "g " */
 				++pos;
 			}
 		}
