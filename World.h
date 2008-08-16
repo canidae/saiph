@@ -59,7 +59,6 @@ class World {
 		char data[BUFFER_SIZE];
 		int data_size;
 		string msg_str; // helps fetching messages
-		unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1]; // remapping ambigous symbols
 		Point last_menu; // needed to help detect menus that persist over turns
 
 		/* methods */

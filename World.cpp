@@ -17,20 +17,6 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	last_menu = Point(-1, -1);
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
-        /* remapping of unique symbols */
-        for (int s = 0; s <= UCHAR_MAX; ++s) {
-                for (int c = 0; c <= CHAR_MAX; ++c)
-                        uniquemap[s][c] = s;
-        }
-        uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
-        uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
-        uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
-        uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
-        uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
-        uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
-        uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
-        uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
-        uniquemap[(unsigned char) WATER][RED] = LAVA;
 	/* fetch the first "frame" */
 	update();
 }
@@ -409,7 +395,7 @@ void World::update() {
 					*debugfile << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << cursor.row << ", " << cursor.col << endl;
 					break;
 				}
-				view[cursor.row][cursor.col] = uniquemap[(unsigned char) data[pos]][color];
+				view[cursor.row][cursor.col] = (unsigned char) data[pos];
 				this->color[cursor.row][cursor.col] = color;
 				addChangedLocation(cursor);
 				cursor.col++;

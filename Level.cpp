@@ -6,6 +6,7 @@ bool Level::passable[UCHAR_MAX + 1] = {false};
 bool Level::track_symbol[UCHAR_MAX + 1] = {false};
 /* private */
 Point Level::pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
+unsigned char Level::uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1] = {{0}};
 int Level::pathcost[UCHAR_MAX + 1] = {0};
 bool Level::dungeon[UCHAR_MAX + 1] = {false};
 bool Level::monster[UCHAR_MAX + 1] = {false};
@@ -308,6 +309,8 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {
+	/* remap ambigous symbols */
+	symbol = uniquemap[symbol][color];
 	if (symbol == SOLID_ROCK)
 		return; // not interesting (also mess up unlit rooms)
 	if (dungeon[symbol]) {
@@ -660,4 +663,18 @@ void Level::init() {
 	pathcost[(unsigned char) PET] = COST_PET;
 	pathcost[(unsigned char) TRAP] = COST_TRAP;
 	pathcost[(unsigned char) WATER] = COST_WATER;
+	/* remapping ambigous symbols */
+	for (int s = 0; s <= UCHAR_MAX; ++s) {
+		for (int c = 0; c <= CHAR_MAX; ++c)
+			uniquemap[s][c] = s;
+	}
+	uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
+	uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
+	uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
+	uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
+	uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
+	uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
+	uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
+	uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
+	uniquemap[(unsigned char) WATER][RED] = LAVA;
 }

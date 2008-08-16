@@ -87,6 +87,7 @@ class Level {
 
 		/* static variables */
 		static Point pathing_queue[PATHING_QUEUE_SIZE];
+		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
 		static int pathcost[UCHAR_MAX + 1];
 		static bool dungeon[UCHAR_MAX + 1];
 		static bool monster[UCHAR_MAX + 1];
