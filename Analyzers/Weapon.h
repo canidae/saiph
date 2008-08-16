@@ -41,6 +41,7 @@ class Weapon : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
+		bool wield_more;
 		vector<WieldWeapon> wield; // the order of which we'll wield weapons
 		string command2;
 		Request req;

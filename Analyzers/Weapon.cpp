@@ -1,13 +1,15 @@
 #include "Weapon.h"
 
 /* constructors */
-Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph) {
+Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_more(false) {
 }
 
 /* methods */
 void Weapon::analyze() {
-	if (saiph->inventory_changed)
+	if (saiph->inventory_changed || wield_more) {
+		wield_more = true;
 		wieldWeapon();
+	}
 }
 
 void Weapon::parseMessages(const string &messages) {
@@ -19,7 +21,7 @@ void Weapon::parseMessages(const string &messages) {
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (command == WIELD) {
+	} else if (command == WIELD && !command2.empty()) {
 		/* in case we didn't get to wield the weapon */
 		priority = WEAPON_WIELD_PRIORITY;
 	}
@@ -62,8 +64,11 @@ void Weapon::wieldWeapon() {
 			best_weapon = w;
 		}
 	}
-	if (best_key == 0 || (wielded != 0 && saiph->inventory[wielded].name == saiph->inventory[best_key].name))
-		return; // wielding best weapon or got no weapon to wield
+	if (best_key == 0 || (wielded != 0 && saiph->inventory[wielded].name == saiph->inventory[best_key].name)) {
+		/* wielding best weapon or got no weapon to wield */
+		wield_more = false;
+		return;
+	}
 	command = WIELD;
 	command2 = best_key;
 	priority = WEAPON_WIELD_PRIORITY;

@@ -43,6 +43,7 @@ class Armor : public Analyzer {
 	private:
 		/* variables */
 		Saiph *saiph;
+		bool wear_more;
 		vector<WearArmor> armor[ARMOR_SLOTS];
 		string command2;
 		Request req;

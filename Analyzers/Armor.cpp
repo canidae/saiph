@@ -1,13 +1,15 @@
 #include "Armor.h"
 
 /* constructors */
-Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph) {
+Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_more(false) {
 }
 
 /* methods */
 void Armor::analyze() {
-	if (saiph->inventory_changed)
+	if (saiph->inventory_changed || wear_more) {
+		wear_more = true;
 		wearArmor();
+	}
 }
 
 void Armor::parseMessages(const string &messages) {
@@ -96,7 +98,6 @@ void Armor::wearArmor() {
 			}
 		}
 		if (worn[s] != 0) {
-			saiph->debugfile << "Wearing " << best_key[s] << " - " << saiph->inventory[best_key[s]].name << " over " << worn[s] << " - " << saiph->inventory[worn[s]].name << endl;
 			/* we'll have to take this armor off first */
 			command = TAKEOFF;
 			command2 = worn[s];
@@ -109,6 +110,7 @@ void Armor::wearArmor() {
 		priority = ARMOR_WEAR_PRIORITY;
 		return;
 	}
-	/* nothing to wear, clear command */
+	/* nothing to wear */
+	wear_more = false;
 	command.clear();
 }
