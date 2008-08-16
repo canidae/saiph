@@ -40,6 +40,7 @@ class Health : public Analyzer {
 		Saiph *saiph;
 		bool resting;
 		bool lycanthropy;
+		int prev_attribute_sum;
 		Request req;
 };
 #endif

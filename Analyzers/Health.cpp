@@ -1,7 +1,7 @@
 #include "Health.h"
 
 /* constructors */
-Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), lycanthropy(false) {
+Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), lycanthropy(false), prev_attribute_sum(INT_MAX) {
 }
 
 /* methods */
@@ -65,6 +65,14 @@ void Health::analyze() {
 			saiph->request(req);
 		}
 	}
+	int cur_attribute_sum = saiph->world->player.charisma + saiph->world->player.constitution + saiph->world->player.dexterity + saiph->world->player.intelligence + saiph->world->player.strength + saiph->world->player.wisdom;
+	if (prev_attribute_sum < cur_attribute_sum) {
+		/* we lost some stats. apply unihorn */
+		req.request = REQUEST_APPLY_UNIHORN;
+		req.priority = HEALTH_CURE_NON_DEADLY;
+		saiph->request(req);
+	}
+	prev_attribute_sum = cur_attribute_sum;
 }
 
 void Health::parseMessages(const string &messages) {
