@@ -2,13 +2,12 @@
 /* defines */
 #define HEALTH_H
 /* priorities */
+#define HEALTH_CURE_DEADLY 900
 #define HEALTH_CURE_LYCANTHROPY 150
+#define HEALTH_CURE_NON_DEADLY 450
 #define HEALTH_REST_FOR_HP_HIGH 500
 #define HEALTH_REST_FOR_HP_LOW 700
 #define HEALTH_PRAY_FOR_HP 900
-#define HEALTH_UNIHORN_NON_DEADLY 450
-#define HEALTH_UNIHORN_DEADLY 800
-#define HEALTH_PRAY_DEADLY 900
 /* messages */
 #define HEALTH_FEEL_FEVERISH "  You feel feverish.  "
 #define HEALTH_FEEL_PURIFIED "  You feel purified.  "

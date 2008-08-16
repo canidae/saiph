@@ -29,7 +29,7 @@ void Vault::parseMessages(const string &messages) {
 			return;
 		}
 		/* we've probably selected our gold if we're here */
-		command = NEXT_PAGE;
+		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
 	} else if (drop_gold) {
 		/* move next to the guard before dropping */

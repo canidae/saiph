@@ -87,7 +87,7 @@ void Beatitude::parseMessages(const string &messages) {
 			return;
 		}
 		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
-		command = NEXT_PAGE;
+		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
 	}
 }

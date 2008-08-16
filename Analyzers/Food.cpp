@@ -209,7 +209,7 @@ void Food::analyze() {
 		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(m->first);
 		if (s != saiph->levels[saiph->position.level].stashes.end()) {
 			/* there's a stash here, might be an old corpse in it, don't gamble */
-			if (m->second == 'Z' || m->second == 'M' || m->second == 'V') {
+			if (m->second.symbol == 'Z' || m->second.symbol == 'M' || m->second.symbol == 'V') {
 				/* wherever a 'Z', 'M' or 'V' steps, we'll remove "safe_eat_loc".
 				 * we do this because otherwise this may happen:
 				 * 1. kill something edible, safe_eat_loc is set, and a stash is also created here.
@@ -347,15 +347,15 @@ void Food::parseMessages(const string &messages) {
 		 * but now is a stash instead */
 		string::size_type pos2 = messages.find("!  ", pos);
 		if (pos2 != string::npos) {
-			for (map<Point, unsigned char>::iterator s = prev_monster_loc.begin(); s != prev_monster_loc.end(); ++s) {
-				if (saiph->levels[saiph->position.level].stashes.find(s->first) != saiph->levels[saiph->position.level].stashes.end()) {
+			for (map<Point, unsigned char>::iterator p = prev_monster_loc.begin(); p != prev_monster_loc.end(); ++p) {
+				if (saiph->levels[saiph->position.level].stashes.find(p->first) != saiph->levels[saiph->position.level].stashes.end()) {
 					/* there's a stash where we last saw the monster.
 					 * unless the monster symbol is 'Z', 'M' or 'V', it's probably not tainted.
 					 * we've already checked that it wasn't a stash here before the monster went there */
-					if (s->second == 'Z' || s->second == 'M' || s->second == 'V')
-						safe_eat_loc.erase(s->first); // tainted corpse
+					if (p->second == 'Z' || p->second == 'M' || p->second == 'V')
+						safe_eat_loc.erase(p->first); // tainted corpse
 					else
-						safe_eat_loc[s->first] = saiph->world->player.turn;
+						safe_eat_loc[p->first] = saiph->world->player.turn;
 					return;
 				}
 			}
@@ -367,15 +367,15 @@ void Food::parseMessages(const string &messages) {
 		string::size_type pos2 = pos;
 		pos = messages.rfind("  The ", pos2);
 		if (pos != string::npos) {
-			for (map<Point, unsigned char>::iterator s = prev_monster_loc.begin(); s != prev_monster_loc.end(); ++s) {
-				if (saiph->levels[saiph->position.level].stashes.find(s->first) != saiph->levels[saiph->position.level].stashes.end()) {
+			for (map<Point, unsigned char>::iterator p = prev_monster_loc.begin(); p != prev_monster_loc.end(); ++p) {
+				if (saiph->levels[saiph->position.level].stashes.find(p->first) != saiph->levels[saiph->position.level].stashes.end()) {
 					/* there's a stash where we last saw the monster.
 					 * unless the monster symbol is 'Z', 'M' or 'V', it's probably not tainted.
 					 * we've already checked that it wasn't a stash here before the monster went there */
-					if (s->second == 'Z' || s->second == 'M' || s->second == 'V')
-						safe_eat_loc.erase(s->first); // tainted corpse
+					if (p->second == 'Z' || p->second == 'M' || p->second == 'V')
+						safe_eat_loc.erase(p->first); // tainted corpse
 					else
-						safe_eat_loc[s->first] = saiph->world->player.turn;
+						safe_eat_loc[p->first] = saiph->world->player.turn;
 					return;
 				}
 			}

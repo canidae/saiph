@@ -77,6 +77,7 @@
 /* actions */
 #define ILLEGAL_ACTION 0
 #define APPLY "a"
+#define CLOSE_PAGE " "
 #define DIP "#dip\n"
 #define DROP "D"
 #define EAT "e"
@@ -84,7 +85,6 @@
 #define INVENTORY "i"
 #define KICK ""
 #define LOOK ":"
-#define NEXT_PAGE " "
 #define OPEN "o"
 #define PICKUP ","
 #define PRAY "#pray\n"

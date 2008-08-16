@@ -27,11 +27,17 @@ void Health::analyze() {
 	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {
 		/* apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
-		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? HEALTH_UNIHORN_DEADLY : HEALTH_UNIHORN_NON_DEADLY;
+		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? HEALTH_CURE_DEADLY : HEALTH_CURE_NON_DEADLY;
 		if (!saiph->request(req) && (saiph->world->player.foodpoisoned || saiph->world->player.ill)) {
-			/* crap. it's deadly, and unihorn won't work. pray */
+			/* crap. it's deadly, and unihorn won't work. try eating eucalyptus leaf */
+			req.request = REQUEST_EAT;
+			req.priority = HEALTH_CURE_DEADLY;
+			req.data = "eucalyptus leaf";
+			if (saiph->request(req))
+				return; // yay, it'll work
+			/* no eucalyptus leaf, try praying */
 			req.request = REQUEST_PRAY;
-			req.priority = HEALTH_PRAY_DEADLY;
+			req.priority = HEALTH_CURE_DEADLY;
 			saiph->request(req);
 		}
 	}

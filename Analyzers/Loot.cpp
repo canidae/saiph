@@ -91,11 +91,11 @@ void Loot::parseMessages(const string &messages) {
 		}
 		/* if we're here, we should get next page or close list */
 		showing_pickup = true;
-		command = NEXT_PAGE;
+		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
 	} else if (saiph->world->menu && showing_inventory) {
 		/* we should close the page of the inventory we're showing */
-		command = NEXT_PAGE;
+		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
 		return;
 	} else if (!saiph->world->menu) {
