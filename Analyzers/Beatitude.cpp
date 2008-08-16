@@ -79,7 +79,7 @@ void Beatitude::parseMessages(const string &messages) {
 		for(map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 			if (d->second.beatitude != BEATITUDE_UNKNOWN)
 				continue;
-			if (d->second.name == "gold piece" || d->second.name == "gold pieces")
+			if (d->second.name == "gold piece")
 				continue; // don't drop gold
 			/* mark this */
 			command = d->first;

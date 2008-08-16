@@ -100,6 +100,8 @@ class Saiph {
 		int best_priority;
 		string last_command;
 		bool inventory_changed;
+		bool pickup_menu;
+		bool drop_menu;
 
 		/* constructors */
 		Saiph(int interface);

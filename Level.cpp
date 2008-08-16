@@ -115,8 +115,6 @@ void Level::parseMessages(const string &messages) {
 			}
 			pos += length;
 		}
-		/* we'll add a dummy entry so when all items are selected, pickup.size() still exceed 0 */
-		saiph->pickup[' '] = Item();
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
 		/* dropping items */
 		if (got_drop_menu) {
@@ -138,8 +136,6 @@ void Level::parseMessages(const string &messages) {
 				saiph->drop[messages[pos - 4]] = Item(messages.substr(pos, length));
 			pos += length;
 		}
-		/* we'll add a dummy entry so when all items are selected, drop.size() still exceed 0 */
-		saiph->drop[' '] = Item();
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* our inventory is empty. how did that happen? */
 		saiph->inventory.clear();
