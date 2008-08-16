@@ -207,8 +207,11 @@ void Food::analyze() {
 	prev_monster_loc.clear();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(m->first);
-		if (s != saiph->levels[saiph->position.level].stashes.end())
-			continue; // there's a stash here, might be an old corpse, don't gamble
+		if (s != saiph->levels[saiph->position.level].stashes.end()) {
+			/* there's a stash here, might be an old corpse, don't gamble */
+			safe_eat_loc.erase(s->first); // erase in case we kill edible, see stash, make it safe_eat_loc, then kill inedible before eating there
+			continue;
+		}
 		prev_monster_loc[m->first] = m->second.symbol;
 	}
 	/* are we hungry? */
