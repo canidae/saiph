@@ -1,7 +1,7 @@
 #include "Vault.h"
 
 /* constructors */
-Vault::Vault(Saiph *saiph) : Analyzer("Vault"), saiph(saiph), drop_gold(false) {
+Vault::Vault(Saiph *saiph) : Analyzer("Vault"), saiph(saiph), drop_gold(false), look_at_ground(false), follow_guard(false) {
 }
 
 /* methods */
@@ -31,25 +31,43 @@ void Vault::parseMessages(const string &messages) {
 		/* we've probably selected our gold if we're here */
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_LIST;
-	} else if (drop_gold) {
-		/* move next to the guard before dropping */
+		look_at_ground = true;
+	} else if (drop_gold && !look_at_ground) {
+		/* bring up drop menu */
+		command = DROP;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (look_at_ground) {
+		/* we'll look at ground after dropping the gold.
+		 * this makes us aware of the stash,
+		 * and the loot analyzer won't "visit" the stash after we move */
+		command = LOOK;
+		priority = PRIORITY_LOOK;
+		drop_gold = false;
+		look_at_ground = false;
+		follow_guard = true;
+	} else if (messages.find(VAULT_MESSAGE_DISAPPEAR, 0) != string::npos) {
+		/* guard is gone, stop following */
+		follow_guard = false;
+	} else if (follow_guard) {
+		/* follow the guard out */
+		/* this is really tricky.
+		 * general idea:
+		 * if we're next to guard, rest.
+		 * if we can see guard, move towards guard.
+		 * otherwise, hope the explore analyzer lead us out */
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
 				continue;
-			int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
-			if (distance <= 1)
-				continue;
-			/* we must move */
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(m->first, true, &moves);
 			if (move != ILLEGAL_MOVE) {
-				command = move;
+				if (moves == 1)
+					command = REST;
+				else
+					command = move;
 				priority = PRIORITY_CONTINUE_ACTION;
 				return;
 			}
 		}
-		/* haven't got the drop menu yet, ask for it */
-		command = DROP;
-		priority = PRIORITY_CONTINUE_ACTION;
 	}
 }

@@ -5,6 +5,7 @@
 #define VAULT_CROESUS "Croesus\n"
 /* messages */
 #define VAULT_MESSAGE_STRANGER "  \"Hello stranger, who are you?\" -  "
+#define VAULT_MESSAGE_DISAPPEAR "  Suddenly, the guard disappears.  "
 
 /* forward declare */
 class Vault;
@@ -31,5 +32,7 @@ class Vault : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool drop_gold;
+		bool look_at_ground;
+		bool follow_guard;
 };
 #endif
