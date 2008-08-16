@@ -61,14 +61,10 @@ Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 	transmit(username);
 	size = retrieve(discard, TELNET_BUFFER_SIZE);
 	transmit(password);
-	/* sleep a bit to prevent garbage in low latency connections */
-	sleep(1);
 	size = retrieve(discard, TELNET_BUFFER_SIZE);
 
 	/* and start a game */
 	start();
-	/* sleep a bit to prevent garbage in low latency connections */
-	sleep(1);
 }
 
 /* destructor */
