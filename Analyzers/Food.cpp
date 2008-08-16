@@ -208,8 +208,18 @@ void Food::analyze() {
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(m->first);
 		if (s != saiph->levels[saiph->position.level].stashes.end()) {
-			/* there's a stash here, might be an old corpse, don't gamble */
-			safe_eat_loc.erase(s->first); // erase in case we kill edible, see stash, make it safe_eat_loc, then kill inedible before eating there
+			/* there's a stash here, might be an old corpse in it, don't gamble */
+			if (m->second == 'Z' || m->second == 'M' || m->second == 'V') {
+				/* wherever a 'Z', 'M' or 'V' steps, we'll remove "safe_eat_loc".
+				 * we do this because otherwise this may happen:
+				 * 1. kill something edible, safe_eat_loc is set, and a stash is also created here.
+				 * 2. a 'Z', 'M' or 'V' steps on a stash we believe is edible, and we kill the monster there.
+				 * 3. since we've made the position of the stash edible, and because we skip monsters standing on stashes,
+				 *    it means that she'll think she can eat corpses on this location.
+				 *
+				 * it's hard to explain, but meh */
+				safe_eat_loc.erase(s->first);
+			}
 			continue;
 		}
 		prev_monster_loc[m->first] = m->second.symbol;
