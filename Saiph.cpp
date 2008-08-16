@@ -543,8 +543,9 @@ void Saiph::detectPosition() {
 					++matched;
 				++total;
 			}
-			if (matched > 0 && (matched * 5 >= total * 4 || matched * 4 <= total * 5)) {
+			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
 				found = *lm;
+				debugfile << SAIPH_DEBUG_NAME << "Recognized level " << found << endl;
 				break;
 			}
 		}
