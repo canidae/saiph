@@ -226,7 +226,6 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 	*moves = 0;
 	if (node->cost == 0)
 		return MOVE_NOWHERE; // pathing to center of map?
-	++*moves;
 	unsigned char move = ILLEGAL_MOVE;
 	if (allow_illegal_last_move && node->nextrow == -1) {
 		/* sometimes we wish to move somewhere we really can't move to.
@@ -293,9 +292,9 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 			node = &pathmap[row][col];
 			lowest_cost = node->cost;
 		}
+		++*moves;
 		if (lowest_cost == 0)
 			return move; // found the center
-		++*moves;
 	}
 	if (node->nextrow == -1)
 		return ILLEGAL_MOVE; // couldn't find path
