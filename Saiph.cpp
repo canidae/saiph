@@ -286,7 +286,7 @@ bool Saiph::run() {
 	}
 
 	/* inspect the dungeon */
-	if (!world->menu && !engulfed) {
+	if (!world->question && !world->menu && !engulfed) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 				(*a)->inspect(*c);
@@ -298,7 +298,7 @@ bool Saiph::run() {
 	}
 
 	/* call analyze() in analyzers */
-	if (!world->menu) {
+	if (!world->question && !world->menu) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 			(*a)->analyze();
 			if ((*a)->priority > best_priority) {
