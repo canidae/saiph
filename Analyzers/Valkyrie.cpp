@@ -370,6 +370,8 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "elven cloak";
 	saiph->request(req);
+        req.data = "faded pall";
+	saiph->request(req);
         req.data = "alchemy smock";
 	saiph->request(req);
         req.data = "apron";
