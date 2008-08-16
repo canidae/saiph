@@ -5,8 +5,8 @@ Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), comman
 	/* methods will be called in this order:
 	 * 0. init (once, after all analyzers have been created)
 	 * 1. parseMessages
-	 * 2. inspect
-	 * 3. analyze
+	 * 2. inspect (unless menu or engulfed)
+	 * 3. analyze (unless menu)
 	 * 3. complete (only called for analyzer that got its command through)
 	 *
 	 * additionally, requests may come at any time */

@@ -241,7 +241,7 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* detect player position */
-	if (!world->question && !world->menu && !engulfed)
+	if (!world->menu && !engulfed)
 		detectPosition();
 
 	/* global message parsing */
@@ -256,7 +256,7 @@ bool Saiph::run() {
 		on_ground = &levels[position.level].stashes[position];
 
 	/* update level */
-	if (!world->question && !world->menu && !engulfed) {
+	if (!world->menu && !engulfed) {
 		/* update changed symbols */
 		for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
 			levels[position.level].updateMapPoint(*c, (unsigned char) world->view[c->row][c->col], world->color[c->row][c->col]);
@@ -286,7 +286,7 @@ bool Saiph::run() {
 	}
 
 	/* inspect the dungeon */
-	if (!world->question && !world->menu) {
+	if (!world->menu && !engulfed) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 				(*a)->inspect(*c);
@@ -298,7 +298,7 @@ bool Saiph::run() {
 	}
 
 	/* call analyze() in analyzers */
-	if (!world->question && !world->menu) {
+	if (!world->menu) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 			(*a)->analyze();
 			if ((*a)->priority > best_priority) {
