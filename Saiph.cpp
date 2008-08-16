@@ -234,25 +234,9 @@ bool Saiph::run() {
 	on_ground = NULL;
 
 	/* check if we're engulfed */
-	if (engulfed) {
-		/* dump screen for debug */
-		for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-			for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c)
-				debugfile << (unsigned char) (levels[position.level].dungeonmap[r][c]);
-			debugfile << endl;
-		}
-	}
-	if (position.row > MAP_ROW_BEGIN && position.row < MAP_ROW_END && position.col > MAP_COL_BEGIN && position.col < MAP_COL_END && world->view[position.row - 1][position.col - 1] == '/' && world->view[position.row - 1][position.col + 1] == '\\' && world->view[position.row + 1][position.col - 1] == '\\' && world->view[position.row + 1][position.col + 1] == '/') {
-		if (!engulfed) {
-			/* dump screen for debug */
-			for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-				for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c)
-					debugfile << (unsigned char) (levels[position.level].dungeonmap[r][c]);
-				debugfile << endl;
-			}
-		}
+	if (world->player.row > MAP_ROW_BEGIN && world->player.row < MAP_ROW_END && world->player.col > MAP_COL_BEGIN && world->player.col < MAP_COL_END && world->view[world->player.row - 1][world->player.col - 1] == '/' && world->view[world->player.row - 1][world->player.col + 1] == '\\' && world->view[world->player.row + 1][world->player.col - 1] == '\\' && world->view[world->player.row + 1][world->player.col + 1] == '/')
 		engulfed = true;
-	} else
+	else
 		engulfed = false;
 
 	/* detect player position */
