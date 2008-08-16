@@ -21,8 +21,8 @@ Saiph::Saiph(int interface) {
 	inventory_changed = false;
 
 	/* pickup/drop menu not showing */
-	pickup_menu = false;
-	drop_menu = false;
+	got_pickup_menu = false;
+	got_drop_menu = false;
 
 	/* set best_priority to ILLEGAL_PRIORITY */
 	best_priority = ILLEGAL_PRIORITY;

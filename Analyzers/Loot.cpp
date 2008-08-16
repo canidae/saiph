@@ -71,7 +71,7 @@ void Loot::complete() {
 }
 
 void Loot::parseMessages(const string &messages) {
-	if (saiph->pickup_menu) {
+	if (saiph->got_pickup_menu) {
 		/* looting */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
 			int wanted = pickupItem(p->second);

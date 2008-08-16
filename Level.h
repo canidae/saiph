@@ -84,8 +84,6 @@ class Level {
 	private:
 		/* variables */
 		Saiph *saiph;
-		bool got_drop_menu;
-		bool got_pickup_menu;
 
 		/* static variables */
 		static Point pathing_queue[PATHING_QUEUE_SIZE];

@@ -13,7 +13,7 @@ bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
 
 /* constructors */
-Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), saiph(saiph), got_drop_menu(false), got_pickup_menu(false) {
+Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), saiph(saiph) {
 	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
 	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));
 	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
@@ -27,8 +27,8 @@ void Level::parseMessages(const string &messages) {
 	saiph->inventory_changed = false;
 	/* set got_[drop|pickup]_menu to false if we don't have a menu */
 	if (!saiph->world->menu) {
-		got_drop_menu = false;
-		got_pickup_menu = false;
+		saiph->got_drop_menu = false;
+		saiph->got_pickup_menu = false;
 	}
 	/* if last command was ":" we should clear stash on ground */
 	if (saiph->last_command == ":")
@@ -92,14 +92,14 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
 		stashes.erase(saiph->position);
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || got_pickup_menu) {
+	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || saiph->got_pickup_menu) {
 		/* picking up stuff */
-		if (got_pickup_menu) {
+		if (saiph->got_pickup_menu) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page */
-			got_pickup_menu = true;
+			saiph->got_pickup_menu = true;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
@@ -115,14 +115,14 @@ void Level::parseMessages(const string &messages) {
 			}
 			pos += length;
 		}
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
+	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || saiph->got_drop_menu) {
 		/* dropping items */
-		if (got_drop_menu) {
+		if (saiph->got_drop_menu) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page, set menu */
-			got_drop_menu = true;;
+			saiph->got_drop_menu = true;;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
