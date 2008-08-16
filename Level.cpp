@@ -310,12 +310,10 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {
 	/* remap ambigous symbols */
 	symbol = uniquemap[symbol][color];
-	if (symbol == SOLID_ROCK)
-		return; // not interesting (also mess up unlit rooms)
-	if (dungeon[symbol]) {
+	if (dungeon[symbol] || (symbol == SOLID_ROCK && dungeonmap[point.row][point.col] == CORRIDOR)) {
 		/* update the map showing static stuff */
 		setDungeonSymbol(point, symbol);
-	} else if (!passable[dungeonmap[point.row][point.col]]) {
+	} else if (symbol != SOLID_ROCK && !passable[dungeonmap[point.row][point.col]]) {
 		/* we can't see the floor here, but we believe we can pass this tile.
 		 * place an UNKNOWN_TILE here.
 		 * the reason we check if stored tile is !passable is because if we don't,
