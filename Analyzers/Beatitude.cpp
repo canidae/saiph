@@ -17,7 +17,7 @@ void Beatitude::analyze() {
 	if (!check_beatitude && saiph->inventory_changed) {
 		/* how many of our items needs to be checked? */
 		int items_to_beatify = 0;
-		for(map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.beatitude == BEATITUDE_UNKNOWN)
 				++items_to_beatify;
 		}
@@ -76,7 +76,7 @@ void Beatitude::parseMessages(const string &messages) {
 		got_drop_menu = true;
 	if (got_drop_menu) {
 		/* drop stuff we don't know beatitude of */
-		for(map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
+		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 			if (d->second.beatitude != BEATITUDE_UNKNOWN)
 				continue;
 			if (d->second.name == "gold piece")

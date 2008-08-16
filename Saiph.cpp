@@ -47,6 +47,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
+	analyzers.push_back(new Vault(this));
 	analyzers.push_back(new Wand(this));
 	analyzers.push_back(new Weapon(this));
 	analyzers.push_back(new Wish(this));
@@ -658,7 +659,7 @@ void Saiph::parseMessages(const string &messages) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
