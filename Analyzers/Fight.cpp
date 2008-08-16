@@ -39,7 +39,7 @@ void Fight::analyze() {
 					got_thrown = gotThrown();
 				if (got_thrown != FIGHT_NO_THROWN_WEAPONS) {
 					/* got thrown weapons */
-					if (priority == FIGHT_ATTACK_PRIORITY distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
+					if (priority == FIGHT_ATTACK_PRIORITY && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
 						continue; // already got a target
 					priority = FIGHT_ATTACK_PRIORITY;
 					min_distance = distance;
