@@ -38,6 +38,5 @@ class Beatitude : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		bool check_beatitude;
-		Request req;
 };
 #endif
