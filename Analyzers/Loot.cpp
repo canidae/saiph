@@ -286,7 +286,6 @@ int Loot::unwantedItem(const Item &item) {
 		}
 		if (!item_in_group)
 			continue;
-		saiph->debugfile << "Dropping group " << item.name << " because we got " << count << " of " << g->second.amount << " already" << endl;
 		if (count <= g->second.amount)
 			return 0;
 		else
@@ -302,7 +301,6 @@ int Loot::unwantedItem(const Item &item) {
 			continue;
 		count += in->second.count;
 	}
-	saiph->debugfile << "Dropping solitary " << item.name << " because we got " << count << " of " << i->second.amount << " already" << endl;
 	if (count <= i->second.amount)
 		return 0;
 	else
