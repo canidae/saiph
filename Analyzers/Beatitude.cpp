@@ -63,5 +63,8 @@ void Beatitude::parseMessages(const string &messages) {
 		check_beatitude = false;
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_ITEM_PAGE;
+		/* announce that the stash is dirty */
+		req.request = REQUEST_DIRTY_STASH;
+		saiph->request(req);
 	}
 }
