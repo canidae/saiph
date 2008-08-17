@@ -56,15 +56,20 @@ void Armor::wearArmor() {
 	unsigned char best_key[ARMOR_SLOTS];
 	memset(best_key, 0, sizeof (best_key));
 	int best_armor[ARMOR_SLOTS];
-	for (int s = 0; s < ARMOR_SLOTS; ++s)
+	bool is_cursed[ARMOR_SLOTS];
+	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		best_armor[s] = INT_MAX;
+		is_cursed[s] = false;
+	}
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
 			for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
 				if (armor[s][a].name != i->second.name)
 					continue;
-				if (i->second.additional == "being worn")
+				if (i->second.additional == "being worn") {
 					worn[s] = i->first;
+					is_cursed[s] = (i->second.beatitude == CURSED);
+				}
 				if ((int) a >= best_armor[s])
 					continue;
 				if ((armor[s][a].beatitude & i->second.beatitude) == 0)
@@ -77,7 +82,15 @@ void Armor::wearArmor() {
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
 			continue; // wearing best armor or got no armor to wield
+		if (is_cursed[s])
+			continue; // the item we're wearing in this slot it cursed and cannot be taken off
 		if (s == ARMOR_SUIT || s == ARMOR_SHIRT) {
+			/* wish to put on shirt or suit.
+			 * if cloak or suit is cursed, this can't be done */
+			if (is_cursed[ARMOR_CLOAK] || (s == ARMOR_SHIRT && is_cursed[ARMOR_SUIT])) {
+				/* cloak is cursed, or suit is cursed and we're putting on a shirt */
+				continue;
+			}
 			/* are we wearing a cloak? */
 			if (worn[ARMOR_CLOAK] != 0) {
 				/* yes, we must take it off first */
