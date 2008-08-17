@@ -161,8 +161,8 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 const string &Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
 	farlook_command = ";";
-	Point cursor(world->player.row, world->player.col);
-	while (cursor.row != target.row && cursor.col != target.col) {
+	Point cursor = position;
+	while (cursor != target) {
 		unsigned char move;
 		if (cursor.row < target.row && cursor.col < target.col) {
 			move = MOVE_SE;

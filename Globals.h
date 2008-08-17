@@ -149,7 +149,6 @@
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
 #define PET 138
-#define PLAYER 139
 /* priorities */
 /*    0-199: explore/random/do stuff we normally wouldn't do (melee floating eye)
  *  200-399: move around, eg. attacking & looting

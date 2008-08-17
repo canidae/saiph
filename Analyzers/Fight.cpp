@@ -24,18 +24,18 @@ void Fight::analyze() {
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
-		if (m->second.attitude == ATTITUDE_UNKNOWN && (m->second.symbol == '@' || m->second.symbol == 'A')) {
-			/* check attitude of '@' & 'A' */
-			look_at = m;
-			command = saiph->farlook(m->first);
-			priority = PRIORITY_LOOK;
-			return;
-		}
 		if (m->second.attitude == FRIENDLY)
 			continue; // don't attack friendlies
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
 		if (distance > min_distance)
 			continue; // we'll always attack nearest monster
+		if ((m->second.attitude == ATTITUDE_UNKNOWN || distance == 1) && (m->second.symbol == '@' || m->second.symbol == 'A')) {
+			/* check attitude of '@' & 'A' when we don't know it or when they're next to us */
+			look_at = m;
+			command = saiph->farlook(m->first);
+			priority = PRIORITY_LOOK;
+			return;
+		}
 		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
 		if (((!blue_e && distance > 1) || (blue_e && distance == 1)) && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			/* monster is within throw distance, or it's a blue 'e' and distance is 1 */

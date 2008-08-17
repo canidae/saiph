@@ -342,7 +342,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	}
 
 	/* update monsters */
-	if (monster[symbol]) {
+	if (monster[symbol] && point != saiph->position) {
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if (symbol == INVERSE)

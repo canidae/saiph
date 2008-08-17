@@ -411,7 +411,6 @@ void World::update() {
 	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
-		view[cursor.row][cursor.col] = PLAYER;
 		player.row = cursor.row;
 		player.col = cursor.col;
 	} else if (!menu && !question) {
