@@ -66,7 +66,7 @@ void Health::analyze() {
 		}
 	}
 	int cur_attribute_sum = saiph->world->player.charisma + saiph->world->player.constitution + saiph->world->player.dexterity + saiph->world->player.intelligence + saiph->world->player.strength + saiph->world->player.wisdom;
-	if (prev_attribute_sum < cur_attribute_sum) {
+	if (cur_attribute_sum < prev_attribute_sum) {
 		/* we lost some stats. apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
 		req.priority = HEALTH_CURE_NON_DEADLY;
