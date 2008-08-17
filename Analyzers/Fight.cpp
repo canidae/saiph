@@ -29,7 +29,7 @@ void Fight::analyze() {
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
 		if (distance > min_distance)
 			continue; // we'll always attack nearest monster
-		if ((m->second.attitude == ATTITUDE_UNKNOWN || distance == 1) && (m->second.symbol == '@' || m->second.symbol == 'A')) {
+		if ((m->second.attitude == ATTITUDE_UNKNOWN || (distance == 1 && m->second.attitude == FRIENDLY)) && (m->second.symbol == '@' || m->second.symbol == 'A')) {
 			/* check attitude of '@' & 'A' when we don't know it or when they're next to us */
 			look_at = m;
 			command = saiph->farlook(m->first);
