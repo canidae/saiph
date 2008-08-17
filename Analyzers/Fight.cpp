@@ -6,6 +6,8 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 
 /* methods */
 void Fight::analyze() {
+	/* reset look_at */
+	look_at = saiph->levels[saiph->position.level].monsters.end();
 	if (FIGHT_ATTACK_PRIORITY < saiph->best_priority)
 		return;
 	/* if engulfed try to fight our way out */
@@ -22,10 +24,15 @@ void Fight::analyze() {
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
-		else if (m->second.symbol == '@' && m->second.color == BLUE)
-			continue; // don't attack blue @ for now
-		else if (m->second.symbol == '@' && m->second.color == WHITE)
-			continue; // don't attack white @ for now
+		if (m->second.attitude == ATTITUDE_UNKNOWN && (m->second.symbol == '@' || m->second.symbol == 'A')) {
+			/* check attitude of '@' & 'A' */
+			look_at = m;
+			command = saiph->farlook(m->first);
+			priority = PRIORITY_LOOK;
+			return;
+		}
+		if (m->second.attitude == FRIENDLY)
+			continue; // don't attack friendlies
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
 		if (distance > min_distance)
 			continue; // we'll always attack nearest monster
@@ -87,6 +94,15 @@ void Fight::parseMessages(const string &messages) {
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
 		saiph->request(req);
+	} else if (messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ' && look_at != saiph->levels[saiph->position.level].monsters.end()) {
+		/* probably looked at a monster */
+		if (messages.find(" (peaceful ", 0) != string::npos) {
+			/* it's friendly */
+			look_at->second.attitude = FRIENDLY;
+		} else {
+			/* hostile */
+			look_at->second.attitude = HOSTILE;
+		}
 	}
 }
 

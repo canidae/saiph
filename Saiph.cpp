@@ -158,11 +158,9 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 	return ILLEGAL_MOVE;
 }
 
-void Saiph::farlook(const Point &target) {
+const string &Saiph::farlook(const Point &target) {
 	/* look at something, eg. monster */
-	/* TODO: make this an analyzer */
-	string command;
-	command.push_back(';');
+	farlook_command = ";";
 	Point cursor(world->player.row, world->player.col);
 	while (cursor.row != target.row && cursor.col != target.col) {
 		unsigned char move;
@@ -195,10 +193,10 @@ void Saiph::farlook(const Point &target) {
 			move = MOVE_W;
 			--cursor.col;
 		}
-		command.push_back(move);
+		farlook_command.push_back(move);
 	}
-	command.push_back(',');
-	world->executeCommand(command);
+	farlook_command.push_back(',');
+	return farlook_command;
 }
 
 bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {

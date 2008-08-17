@@ -113,7 +113,7 @@ class Saiph {
 		/* methods */
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks);
-		void farlook(const Point &target);
+		const string &farlook(const Point &target);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
@@ -128,6 +128,7 @@ class Saiph {
 		map<string, vector<int> > levelmap; // used for faster map recognition
 		bool mines_found;
 		bool sokoban_found;
+		string farlook_command;
 
 		/* methods */
 		void detectPosition();

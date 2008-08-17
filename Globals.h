@@ -38,6 +38,10 @@
 #define CHAOTIC -1
 #define NEUTRAL 0
 #define LAWFUL 1
+/* attitude */
+#define ATTITUDE_UNKNOWN 0x1
+#define HOSTILE 0x2
+#define FRIENDLY 0x4
 /* encumbrance */
 #define UNENCUMBERED 0
 #define BURDENED 1
