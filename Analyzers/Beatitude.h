@@ -32,14 +32,12 @@ class Beatitude : public Analyzer {
 
 		/* methods */
 		void analyze();
-		void complete();
 		void parseMessages(const string &messages);
 
 	private:
 		/* variables */
 		Saiph *saiph;
 		bool check_beatitude;
-		bool got_drop_menu;
 		Request req;
 };
 #endif

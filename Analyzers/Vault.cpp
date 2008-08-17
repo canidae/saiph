@@ -30,7 +30,7 @@ void Vault::parseMessages(const string &messages) {
 		}
 		/* we've probably selected our gold if we're here */
 		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_ITEM_LIST;
+		priority = PRIORITY_CLOSE_ITEM_PAGE;
 		look_at_ground = true;
 	} else if (drop_gold && !look_at_ground) {
 		/* bring up drop menu */

@@ -3,7 +3,9 @@
 #define LOOT_H
 /* priorities */
 #define LOOT_LOOT_STASH_PRIORITY 450
+#define LOOT_DROP_ITEMS_PRIORITY 225
 #define LOOT_VISIT_STASH_PRIORITY 250
+#define LOOT_PROTECT_STAIR_STASH_PRIORITY 550
 /* messages */
 #define LOOT_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "
 #define LOOT_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
@@ -58,12 +60,16 @@ class Loot : public Analyzer {
 		bool dirty_stash;
 		bool showing_inventory;
 		bool showing_pickup;
+		bool showing_drop;
 		map<Coordinate, int> visit_stash; // location, turn_changed
 		map<string, ItemWanted> items;
 		map<int, ItemGroup> groups;
 		Request req;
 
 		/* private methods */
-		int pickupItem(const Item &item);
+		void checkInventory();
+		void checkStash();
+		int unwantedItem(const Item &item);
+		int wantedItem(const Item &item);
 };
 #endif
