@@ -266,6 +266,8 @@ int Loot::unwantedItem(const Item &item) {
 		return item.count; // item is not in our list
 	if ((item.beatitude & i->second.beatitude) == 0)
 		return item.count; // item does not have a beatitude we'll accept
+	if (!item.additional.empty())
+		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
 	/* groups */
 	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
 		/* figure out how many items we already got in this group */
