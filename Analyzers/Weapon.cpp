@@ -47,7 +47,7 @@ void Weapon::wieldWeapon() {
 	unsigned char best_key = 0;
 	int best_weapon = INT_MAX;
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-		if (i->second.additional == "weapon in hand") {
+		if (i->second.additional == "weapon in hand" || i->second.additional == "wielded") {
 			wielded = i->first;
 			if (i->second.beatitude == CURSED) {
 				/* weapon is cursed, we can't wield another weapon */
