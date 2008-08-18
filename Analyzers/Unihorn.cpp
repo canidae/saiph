@@ -6,7 +6,13 @@ Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(
 
 /* methods */
 void Unihorn::analyze() {
-	if (apply_priority >= 0 && unihorn_key != 0) {
+	if (apply_priority >= 0) {
+		findUnihorn();
+		if (unihorn_key == 0) {
+			/* lost unihorn somehow */
+			apply_priority = -1;
+			return;
+		}
 		/* unihorn failed last attempt, try again */
 		command = APPLY;
 		priority = apply_priority;
@@ -24,22 +30,36 @@ void Unihorn::parseMessages(const string &messages) {
 
 bool Unihorn::request(const Request &request) {
 	if (request.request == REQUEST_APPLY_UNIHORN) {
-		if (unihorn_key == 0 || saiph->inventory[unihorn_key].beatitude == CURSED || saiph->inventory[unihorn_key].name != "unicorn horn") {
-			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-				if (i->second.beatitude == CURSED || i->second.name != "unicorn horn")
-					continue;
-				unihorn_key = i->first;
-				break;
-			}
-		}
+		findUnihorn();
 		if (unihorn_key == 0)
 			return false;
 		/* we got a unicorn horn */
-		if (request.priority < apply_priority)
-			return true;
 		command = APPLY;
-		priority = request.priority;
+		if (request.priority < apply_priority)
+			priority = request.priority;
 		apply_priority = priority;
+		return true;
 	}
 	return false;
+}
+
+/* private methods */
+void Unihorn::findUnihorn() {
+	map<unsigned char, Item>::iterator u;
+	if (unihorn_key == 0)
+		u = saiph->inventory.end();
+	else
+		u = saiph->inventory.find(unihorn_key);
+	if (u == saiph->inventory.end() || u->second.beatitude == CURSED || u->second.name != "unicorn horn") {
+		for (u = saiph->inventory.begin(); u != saiph->inventory.end(); ++u) {
+			if (u->second.beatitude == CURSED || u->second.name != "unicorn horn")
+				continue;
+			/* this should be a unihorn */
+			break;
+		}
+	}
+	if (u == saiph->inventory.end())
+		unihorn_key = 0;
+	else
+		unihorn_key = u->first;
 }

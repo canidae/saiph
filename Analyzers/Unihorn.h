@@ -36,5 +36,8 @@ class Unihorn : public Analyzer {
 		Saiph *saiph;
 		unsigned char unihorn_key;
 		int apply_priority;
+
+		/* methods */
+		void findUnihorn();
 };
 #endif
