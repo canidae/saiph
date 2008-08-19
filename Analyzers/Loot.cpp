@@ -118,6 +118,17 @@ void Loot::complete() {
 	}
 }
 
+void Loot::fail() {
+	/* most likely, we're trying to loot something in the wall */
+	if (command.size() == 1) {
+		Point moving_to =saiph->moveToPoint((unsigned char) command[0]);
+		if (moving_to != saiph->position) {
+			/* we'll not so elegantly solve this by making the tile we attempt to move to unpassable */
+			saiph->levels[saiph->position.level].dungeonmap[moving_to.row][moving_to.col] = SOLID_ROCK;
+		}
+	}
+}
+
 void Loot::parseMessages(const string &messages) {
 	if (saiph->got_pickup_menu) {
 		/* looting */

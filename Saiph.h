@@ -116,6 +116,7 @@ class Saiph {
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks);
 		const string &farlook(const Point &target);
+		Point moveToPoint(unsigned char move);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();

@@ -199,6 +199,52 @@ const string &Saiph::farlook(const Point &target) {
 	return farlook_command;
 }
 
+Point Saiph::moveToPoint(unsigned char move) {
+	/* return the position we'd be at if we do the given move */
+	Point pos = position;
+	switch (move) {
+		case 'y':
+			--pos.row;
+			--pos.col;
+			break;
+
+		case 'k':
+			--pos.row;
+			break;
+
+		case 'u':
+			--pos.row;
+			++pos.col;
+			break;
+
+		case 'l':
+			++pos.col;
+			break;
+
+		case 'n':
+			++pos.row;
+			++pos.col;
+			break;
+
+		case 'j':
+			++pos.row;
+			break;
+
+		case 'b':
+			++pos.row;
+			--pos.col;
+			break;
+
+		case 'h':
+			--pos.col;
+			break;
+	}
+	if (pos.row >= MAP_ROW_BEGIN && pos.row <= MAP_ROW_END && pos.col >= MAP_COL_BEGIN && pos.col <= MAP_COL_END)
+		return pos;
+	else
+		return position;
+}
+
 bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return false;
@@ -330,10 +376,12 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
-	if (world->stuck == 0)
+	if (world->stuck == 0) {
 		best_analyzer->complete();
-	else
+	} else {
+		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 		best_analyzer->fail();
+	}
 	last_command = best_analyzer->command;
 	return true;
 }

@@ -50,6 +50,7 @@ class Loot : public Analyzer {
 		/* methods */
 		void analyze();
 		void complete();
+		void fail();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
