@@ -345,6 +345,14 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* cloak */
 	req.value = ARMOR_CLOAK;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+        req.data = "piece of cloth";
+	saiph->request(req);
+        req.data = "opera cloak";
+	saiph->request(req);
+        req.data = "ornamental cope";
+	saiph->request(req);
+        req.data = "tattered cape";
+	saiph->request(req);
         req.data = "cloak of magic resistance";
 	saiph->request(req);
         req.data = "cloak of protection";
@@ -354,14 +362,6 @@ void Valkyrie::setupArmor(int &groupstart) {
         req.data = "cloak of displacement";
 	saiph->request(req);
         req.data = "cloak of invisibility";
-	saiph->request(req);
-        req.data = "piece of cloth";
-	saiph->request(req);
-        req.data = "opera cloak";
-	saiph->request(req);
-        req.data = "ornamental cope";
-	saiph->request(req);
-        req.data = "tattered cape";
 	saiph->request(req);
 	req.status = BLESSED | UNCURSED;
         req.data = "oilskin cloak";
