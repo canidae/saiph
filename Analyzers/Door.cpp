@@ -40,7 +40,7 @@ void Door::analyze() {
 }
 
 void Door::parseMessages(const string &messages) {
-	if (!command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+	if (!command2.empty() && (command == OPEN || command == KICK) && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		/* which direction we should open/pick/kick */
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = command2;
