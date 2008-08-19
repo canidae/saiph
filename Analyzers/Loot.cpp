@@ -36,6 +36,11 @@ void Loot::analyze() {
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 			if (m->second.symbol != '@' || m->second.color != WHITE || !m->second.visible)
 				continue;
+			/* if there's an altar within 10 moves, then we'll allow looting */
+			int moves = 0;
+			unsigned char move = saiph->shortestPath(ALTAR, true, &moves);
+			if (move != ILLEGAL_MOVE && moves <= 10)
+				continue; // altar nearby
 			doloot = false;
 			break;
 		}
