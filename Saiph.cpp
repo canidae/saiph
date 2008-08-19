@@ -376,9 +376,10 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
-	if (world->stuck == 0) {
+	if (world->stuck < 5) {
 		best_analyzer->complete();
 	} else {
+		/* if we receive the same data x times in a row, tell the analyzer that it's a total failure */
 		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 		best_analyzer->fail();
 	}

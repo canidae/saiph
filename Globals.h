@@ -127,6 +127,7 @@
 #define TRAP '^'
 #define UNKNOWN_TILE 136
 #define UNKNOWN_TILE_DIAGONALLY_PASSABLE 137
+#define UNKNOWN_TILE_UNPASSABLE 138
 /* item symbols */
 #define ILLEGAL_ITEM 0
 #define WEAPON ')'
@@ -148,7 +149,7 @@
 #define VENOM '`'
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
-#define PET 138
+#define PET 139
 /* priorities */
 /*    0-199: explore/random/do stuff we normally wouldn't do (melee floating eye)
  *  200-399: move around, eg. attacking & looting
