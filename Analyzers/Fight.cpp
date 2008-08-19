@@ -88,12 +88,12 @@ void Fight::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
 		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && command3 != "" && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
+	} else if (saiph->world->question && !command3.empty() && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
 		command = command2;
 		command2 = command3;
 		command3.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && command2 != "" && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+	} else if (saiph->world->question && command == THROW && !command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		command = command2;
 		command2.clear();
 		priority = PRIORITY_CONTINUE_ACTION;
