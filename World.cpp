@@ -355,6 +355,8 @@ void World::update() {
 		}
 		if (is_stuck)
 			++stuck;
+		else
+			stuck = 0;
 	} else {
 		stuck = 0;
 	}

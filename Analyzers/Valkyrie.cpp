@@ -498,16 +498,22 @@ void Valkyrie::setupFood(int &groupstart) {
 	/* first some food items we don't really want for food, but beneficial effects */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.value = 5;
+	req.value = 10;
 	req.data = "lizard corpse";
 	saiph->request(req);
 	req.data = "partly eaten lizard corpse";
 	saiph->request(req);
         req.data = "sprig of wolfsbane";
 	saiph->request(req);
+        req.data = "partly eaten sprig of wolfsbane";
+	saiph->request(req);
         req.data = "eucalyptus leaf";
 	saiph->request(req);
+        req.data = "partly eaten eucalyptus leaf";
+	saiph->request(req);
         req.data = "carrot";
+	saiph->request(req);
+        req.data = "partly eaten carrot";
 	saiph->request(req);
 
 	/* create a group for food */
@@ -528,19 +534,35 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
         req.data = "lump of royal jelly";
 	saiph->request(req);
+        req.data = "partly eaten lump of royal jelly";
+	saiph->request(req);
         req.data = "byte";
+	saiph->request(req);
+        req.data = "partly eaten byte";
 	saiph->request(req);
         req.data = "candy bar";
 	saiph->request(req);
+        req.data = "partly eaten candy bar";
+	saiph->request(req);
         req.data = "orange";
+	saiph->request(req);
+        req.data = "partly eaten orange";
 	saiph->request(req);
         req.data = "banana";
 	saiph->request(req);
+        req.data = "partly eaten banana";
+	saiph->request(req);
         req.data = "fortune cookie";
+	saiph->request(req);
+        req.data = "partly eaten fortune cookie";
 	saiph->request(req);
         req.data = "clove of garlic";
 	saiph->request(req);
+        req.data = "partly eaten clove of garlic";
+	saiph->request(req);
         req.data = "K-ration";
+	saiph->request(req);
+        req.data = "partly eaten K-ration";
 	saiph->request(req);
         req.data = "gunyoki";
 	saiph->request(req);
@@ -556,13 +578,23 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
         req.data = "C-ration";
 	saiph->request(req);
+        req.data = "partly eaten C-ration";
+	saiph->request(req);
         req.data = "kelp frond";
+	saiph->request(req);
+        req.data = "partly eaten kelp frond";
 	saiph->request(req);
         req.data = "pear";
 	saiph->request(req);
+        req.data = "partly eaten pear";
+	saiph->request(req);
         req.data = "apple";
 	saiph->request(req);
+        req.data = "partly eaten apple";
+	saiph->request(req);
         req.data = "melon";
+	saiph->request(req);
+        req.data = "partly eaten melon";
 	saiph->request(req);
         req.data = "tripe ration";
 	saiph->request(req);
@@ -574,15 +606,23 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
         req.data = "cream pie";
 	saiph->request(req);
+        req.data = "partly eaten cream pie";
+	saiph->request(req);
         req.data = "huge chunk of meat";
 	saiph->request(req);
         req.data = "partly eaten huge chunk of meat";
 	saiph->request(req);
         req.data = "meat stick";
 	saiph->request(req);
+        req.data = "partly eaten meat stick";
+	saiph->request(req);
         req.data = "meat ring";
 	saiph->request(req);
+        req.data = "partly eaten meat ring";
+	saiph->request(req);
         req.data = "meatball";
+	saiph->request(req);
+        req.data = "partly eaten meatball";
 	saiph->request(req);
 }
 
@@ -592,6 +632,23 @@ void Valkyrie::setupTool(int &groupstart) {
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 10;
 	req.data = "unicorn horn";
+	saiph->request(req);
+
+	/* key/lockpick/credit card */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "1";
+	saiph->request(req);
+	/* most useful unlocking device first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.data = "skeleton key";
+	saiph->request(req);
+	req.data = "key";
+	saiph->request(req);
+	req.data = "lock pick";
+	saiph->request(req);
+	req.data = "credit card";
 	saiph->request(req);
 }
 
@@ -739,7 +796,7 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	/* create a group for weapons we wish to wield too */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
 	req.value = groupstart++;
-	req.data = "2"; // we'll have main weapon & backup, nothing else
+	req.data = "1"; // we'll only keep 1 weapon for the time being
 	saiph->request(req);
 	/* add the weapons */
 	req.request = REQUEST_ITEM_GROUP_ADD;
