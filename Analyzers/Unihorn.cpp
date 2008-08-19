@@ -50,16 +50,15 @@ void Unihorn::findUnihorn() {
 		u = saiph->inventory.end();
 	else
 		u = saiph->inventory.find(unihorn_key);
-	if (u == saiph->inventory.end() || u->second.beatitude == CURSED || u->second.name != "unicorn horn") {
-		for (u = saiph->inventory.begin(); u != saiph->inventory.end(); ++u) {
-			if (u->second.beatitude == CURSED || u->second.name != "unicorn horn")
-				continue;
-			/* this should be a unihorn */
-			break;
-		}
-	}
-	if (u == saiph->inventory.end())
-		unihorn_key = 0;
-	else
+	if (u != saiph->inventory.end() && u->second.beatitude != CURSED && u->second.name == "unicorn horn")
+		return;
+	for (u = saiph->inventory.begin(); u != saiph->inventory.end(); ++u) {
+		if (u->second.beatitude == CURSED || u->second.name != "unicorn horn")
+			continue;
+		/* this should be a unihorn */
 		unihorn_key = u->first;
+		return;
+	}
+	/* no unihorn */
+	unihorn_key = 0;
 }
