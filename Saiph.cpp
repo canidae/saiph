@@ -653,6 +653,10 @@ void Saiph::parseMessages(const string &messages) {
 		world->player.teleportitis = true;
 	if (messages.find(SAIPH_LOSE_TELEPORTITIS1, 0) != string::npos)
 		world->player.teleportitis = false;
+	if (messages.find(SAIPH_FEEL_PURIFIED, 0) != string::npos)
+		world->player.lycanthropy = false;
+	if (messages.find(SAIPH_FEEL_FEVERISH, 0) != string::npos)
+		world->player.lycanthropy = true;
 }
 
 /* main */

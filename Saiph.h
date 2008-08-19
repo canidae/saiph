@@ -16,6 +16,9 @@
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
+/* messages */
+#define SAIPH_FEEL_FEVERISH "  You feel feverish.  "
+#define SAIPH_FEEL_PURIFIED "  You feel purified.  "
 
 /* forward declare */
 class Saiph;

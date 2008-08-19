@@ -1,7 +1,7 @@
 #include "Health.h"
 
 /* constructors */
-Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), lycanthropy(false), prev_attribute_sum(INT_MAX) {
+Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), prev_st(INT_MAX), prev_dx(INT_MAX), prev_co(INT_MAX), prev_in(INT_MAX), prev_wi(INT_MAX), prev_ch(INT_MAX) {
 }
 
 /* methods */
@@ -54,7 +54,7 @@ void Health::analyze() {
 			}
 		}
 	}
-	if (lycanthropy) {
+	if (saiph->world->player.lycanthropy) {
 		/* cure lycanthropy */
 		req.request = REQUEST_EAT;
 		req.priority = HEALTH_CURE_LYCANTHROPY;
@@ -65,22 +65,16 @@ void Health::analyze() {
 			saiph->request(req);
 		}
 	}
-	int cur_attribute_sum = saiph->world->player.charisma + saiph->world->player.constitution + saiph->world->player.dexterity + saiph->world->player.intelligence + saiph->world->player.strength + saiph->world->player.wisdom;
-	if (cur_attribute_sum < prev_attribute_sum) {
+	if (prev_st < saiph->world->player.strength || prev_dx < saiph->world->player.dexterity || prev_co < saiph->world->player.constitution || prev_in < saiph->world->player.intelligence || prev_wi < saiph->world->player.wisdom || prev_ch < saiph->world->player.charisma) {
 		/* we lost some stats. apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
 		req.priority = HEALTH_CURE_NON_DEADLY;
 		saiph->request(req);
 	}
-	prev_attribute_sum = cur_attribute_sum;
-}
-
-void Health::parseMessages(const string &messages) {
-	if (messages.find(HEALTH_FEEL_FEVERISH, 0) != string::npos) {
-		/* argh, bloody werefoo */
-		lycanthropy = true;
-	} else if (messages.find(HEALTH_FEEL_PURIFIED, 0) != string::npos) {
-		/* yay, cured from lycanthropy */
-		lycanthropy = false;
-	}
+	prev_st = saiph->world->player.strength;
+	prev_dx = saiph->world->player.dexterity;
+	prev_co = saiph->world->player.constitution;
+	prev_in = saiph->world->player.intelligence;
+	prev_wi = saiph->world->player.wisdom;
+	prev_ch = saiph->world->player.charisma;
 }

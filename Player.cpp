@@ -46,6 +46,8 @@ Player::Player() {
 	telepathy = false;
 	teleport_control = false;
 	teleportitis = false;
+	/* lycanthropy */
+	lycanthropy = false;
 }
 
 /* methods */

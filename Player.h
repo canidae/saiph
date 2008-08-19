@@ -63,6 +63,8 @@ class Player {
 		bool telepathy;
 		bool teleport_control;
 		bool teleportitis;
+		/* lycanthropy */
+		bool lycanthropy;
 
 		/* constructors */
 		Player();

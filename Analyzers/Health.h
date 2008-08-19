@@ -3,7 +3,7 @@
 #define HEALTH_H
 /* priorities */
 #define HEALTH_CURE_DEADLY 900
-#define HEALTH_CURE_LYCANTHROPY 150
+#define HEALTH_CURE_LYCANTHROPY 400
 #define HEALTH_CURE_NON_DEADLY 450
 #define HEALTH_REST_FOR_HP_HIGH 500
 #define HEALTH_REST_FOR_HP_LOW 700
@@ -33,14 +33,17 @@ class Health : public Analyzer {
 
 		/* methods */
 		void analyze();
-		void parseMessages(const string &messages);
 
 	private:
 		/* variables */
 		Saiph *saiph;
 		bool resting;
-		bool lycanthropy;
-		int prev_attribute_sum;
+		int prev_st;
+		int prev_dx;
+		int prev_co;
+		int prev_in;
+		int prev_wi;
+		int prev_ch;
 		Request req;
 };
 #endif
