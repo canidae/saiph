@@ -7,7 +7,7 @@ Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), comman
 	 * 1. parseMessages
 	 * 2. inspect (unless question, menu or engulfed)
 	 * 3. analyze (unless question or menu)
-	 * 3. complete (only called for analyzer that got its command through)
+	 * 3. complete/fail (only called for analyzer that got its command through)
 	 *
 	 * additionally, requests may come at any time */
 }
@@ -24,6 +24,9 @@ void Analyzer::analyze() {
 }
 
 void Analyzer::complete() {
+}
+
+void Analyzer::fail() {
 }
 
 void Analyzer::init() {

@@ -30,6 +30,7 @@ class Analyzer {
 		/* methods */
 		virtual void analyze();
 		virtual void complete();
+		virtual void fail();
 		virtual void init();
 		virtual void inspect(const Point &point);
 		virtual void parseMessages(const string &messages);

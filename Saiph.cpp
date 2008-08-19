@@ -330,7 +330,10 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
-	best_analyzer->complete();
+	if (world->stuck == 0)
+		best_analyzer->complete();
+	else
+		best_analyzer->fail();
 	last_command = best_analyzer->command;
 	return true;
 }
