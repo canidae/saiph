@@ -634,7 +634,7 @@ void Valkyrie::setupTool(int &groupstart) {
 	req.data = "unicorn horn";
 	saiph->request(req);
 
-	/* key/lockpick/credit card */
+	/* key/lock pick/credit card */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
 	req.value = groupstart++;
 	req.data = "1";
