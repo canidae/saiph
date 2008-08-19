@@ -42,6 +42,7 @@ class World {
 		string messages;
 		int cur_page;
 		int max_page;
+		int stuck;
 		bool menu;
 		bool question;
 
@@ -57,6 +58,7 @@ class World {
 		ofstream *debugfile;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
+		char last_data[BUFFER_SIZE];
 		int data_size;
 		string msg_str; // helps fetching messages
 		Point last_menu; // needed to help detect menus that persist over turns
