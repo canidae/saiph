@@ -549,7 +549,10 @@ void Saiph::detectPosition() {
 				}
 			}
 		}
-		return;
+		if (world->view[STATUS_ROW][8] == '*') {
+			/* rogue level, set branch attribute */
+			levels[position.level].branch = BRANCH_ROGUE;
+		}
 	}
 	/* level has changed.
 	 * we need to figure out if it's a new level or one we already know of */
@@ -669,9 +672,6 @@ void Saiph::parseMessages(const string &messages) {
 		/* a bit unique case, this is a question.
 		 * the data doesn't end with the sequence we check in World */
 		world->question = true;
-	} else if (messages.find(MESSAGE_ROGUE_LEVEL, 0) != string::npos) {
-		/* rogue level, set branch attribute */
-		levels[position.level].branch = BRANCH_ROGUE;
 	}
 	if (messages.find(SAIPH_GAIN_COLD_RES1, 0) != string::npos)
 		world->player.cold_resistance = true;
