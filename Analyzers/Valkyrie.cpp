@@ -629,9 +629,16 @@ void Valkyrie::setupFood(int &groupstart) {
 void Valkyrie::setupTool(int &groupstart) {
 	/* unihorn */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.value = 10;
 	req.data = "unicorn horn";
+	saiph->request(req);
+
+	/* stethoscope */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.value = 1;
+	req.data = "stethoscope";
 	saiph->request(req);
 
 	/* key/lock pick/credit card */

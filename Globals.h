@@ -182,6 +182,7 @@
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_ROGUE_LEVEL "  You enter what seems to be an older, more primitive world.  "
+#define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
 #define MESSAGE_WHAT_TO_APPLY "  What do you want to use or apply? "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? " // followed by "[abcd...]"
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? " // followed by "[abcd...]"

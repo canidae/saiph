@@ -42,6 +42,7 @@ class Explore : public Analyzer {
 		void analyze();
 		void complete();
 		void inspect(const Point &point);
+		void parseMessages(const string &messages);
 
 	private:
 		/* variables */

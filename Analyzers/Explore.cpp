@@ -180,3 +180,11 @@ void Explore::inspect(const Point &point) {
 		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
 	explore.push_back(point);
 }
+
+void Explore::parseMessages(const string &messages) {
+	if (saiph->world->question && messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
+		/* temporary hack for teleport control */
+		command = "><,";
+		priority = PRIORITY_CONTINUE_ACTION;
+	}
+}
