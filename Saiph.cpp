@@ -515,7 +515,8 @@ void Saiph::detectPosition() {
 		levelmap[world->player.level].push_back(position.level);
 		return;
 	}
-	if ((int) levels.size() >= position.level - 1 && strcmp(world->player.level, levels[position.level].name.c_str()) == 0) {
+	string level = world->player.level;
+	if ((int) levels.size() > position.level && level == levels[position.level].name) {
 		/* same level as last frame, update row & col */
 		position.row = world->player.row;
 		position.col = world->player.col;
@@ -523,12 +524,12 @@ void Saiph::detectPosition() {
 			/* look for sokoban level 1a or 1b */
 			if (levels[position.level].dungeonmap[8][37] == BOULDER && levels[position.level].dungeonmap[8][38] == BOULDER && levels[position.level].dungeonmap[8][43] == BOULDER && levels[position.level].dungeonmap[9][38] == BOULDER && levels[position.level].dungeonmap[9][39] == BOULDER && levels[position.level].dungeonmap[9][42] == BOULDER && levels[position.level].dungeonmap[9][44] == BOULDER && levels[position.level].dungeonmap[11][41] == BOULDER && levels[position.level].dungeonmap[14][39] == BOULDER && levels[position.level].dungeonmap[14][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[14][42] == BOULDER) {
 				/* sokoban 1a */
-				debugfile << SAIPH_DEBUG_NAME << "Found Sokoban level 1a" << endl;
+				debugfile << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 			} else if (levels[position.level].dungeonmap[8][34] == BOULDER && levels[position.level].dungeonmap[8][42] == BOULDER && levels[position.level].dungeonmap[9][34] == BOULDER && levels[position.level].dungeonmap[9][41] == BOULDER && levels[position.level].dungeonmap[10][42] == BOULDER && levels[position.level].dungeonmap[13][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[15][41] == BOULDER && levels[position.level].dungeonmap[16][40] == BOULDER && levels[position.level].dungeonmap[16][42] == BOULDER) {
 				/* sokoban 1b */
-				debugfile << SAIPH_DEBUG_NAME << "Found Sokoban level 1b" << endl;
+				debugfile << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 			}
@@ -543,6 +544,7 @@ void Saiph::detectPosition() {
 				 * then we're in the mines */
 				if (levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col + 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col + 1] == HORIZONTAL_WALL) {
 					/* we're in the mines */
+					debugfile << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
 					mines_found = true;
 					levels[position.level].branch = BRANCH_MINES;
 					break;
@@ -551,8 +553,10 @@ void Saiph::detectPosition() {
 		}
 		if (world->view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
+			debugfile << SAIPH_DEBUG_NAME << "Found the rogue level: " << position.level << endl;
 			levels[position.level].branch = BRANCH_ROGUE;
 		}
+		return;
 	}
 	/* level has changed.
 	 * we need to figure out if it's a new level or one we already know of */
@@ -567,7 +571,6 @@ void Saiph::detectPosition() {
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
 		found = levels[position.level].symbols[STAIRS_UP][position];
 	}
-	string level = world->player.level;
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
 		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
@@ -587,7 +590,7 @@ void Saiph::detectPosition() {
 			}
 			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
 				found = *lm;
-				debugfile << SAIPH_DEBUG_NAME << "Recognized level " << found << endl;
+				debugfile << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name << "'" << endl;
 				break;
 			}
 		}
@@ -600,6 +603,7 @@ void Saiph::detectPosition() {
 		 * exception is rogue level, which really isn't a branch*/
 		levels.push_back(Level(this, level, (levels[position.level].branch != BRANCH_ROGUE) ? levels[position.level].branch : BRANCH_MAIN));
 		levelmap[level].push_back(found);
+		debugfile << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
 	}
 	/* were we on stairs on last position? */
 	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
