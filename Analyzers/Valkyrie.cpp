@@ -357,13 +357,13 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "cloak of protection";
 	saiph->request(req);
-        req.data = "robe";
-	saiph->request(req);
         req.data = "cloak of displacement";
 	saiph->request(req);
         req.data = "cloak of invisibility";
 	saiph->request(req);
 	req.status = BLESSED | UNCURSED;
+        req.data = "robe";
+	saiph->request(req);
         req.data = "oilskin cloak";
 	saiph->request(req);
         req.data = "slippery cloak";
