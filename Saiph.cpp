@@ -46,6 +46,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Food(this));
 	analyzers.push_back(new Health(this));
 	analyzers.push_back(new Loot(this));
+	analyzers.push_back(new MonsterInfo(this));
 	analyzers.push_back(new Potion(this));
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Scroll(this));
@@ -85,7 +86,7 @@ bool Saiph::addItemToInventory(unsigned char key, const Item &item) {
 	return true;
 }
 
-unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
+unsigned char Saiph::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
 	/* is the target in a direct line from the player? */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
 		/* outside map */
@@ -97,13 +98,13 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 		/* aligned horizontally */
 		if (point.col > position.col) {
 			while (--point.col > position.col) {
-				if (!directLineHelper(point, ignore_sinks))
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 					return ILLEGAL_MOVE;
 			}
 			return MOVE_E;
 		} else {
 			while (++point.col < position.col) {
-				if (!directLineHelper(point, ignore_sinks))
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 					return ILLEGAL_MOVE;
 			}
 			return MOVE_W;
@@ -112,13 +113,13 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 		/* aligned vertically */
 		if (point.row > position.row) {
 			while (--point.row > position.row) {
-				if (!directLineHelper(point, ignore_sinks))
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 					return ILLEGAL_MOVE;
 			}
 			return MOVE_S;
 		} else {
 			while (++point.row < position.row) {
-				if (!directLineHelper(point, ignore_sinks))
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 					return ILLEGAL_MOVE;
 			}
 			return MOVE_N;
@@ -129,14 +130,14 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 			if (point.col > position.col) {
 				while (--point.row > position.row) {
 					--point.col;
-					if (!directLineHelper(point, ignore_sinks))
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 						return ILLEGAL_MOVE;
 				}
 				return MOVE_SE;
 			} else {
 				while (--point.row > position.row) {
 					++point.col;
-					if (!directLineHelper(point, ignore_sinks))
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 						return ILLEGAL_MOVE;
 				}
 				return MOVE_SW;
@@ -145,14 +146,14 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks) {
 			if (point.col > position.col) {
 				while (++point.row < position.row) {
 					--point.col;
-					if (!directLineHelper(point, ignore_sinks))
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 						return ILLEGAL_MOVE;
 				}
 				return MOVE_NE;
 			} else {
 				while (++point.row < position.row) {
 					++point.col;
-					if (!directLineHelper(point, ignore_sinks))
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
 						return ILLEGAL_MOVE;
 				}
 				return MOVE_NW;
@@ -627,8 +628,8 @@ void Saiph::detectPosition() {
 	position.level = found;
 }
 
-bool Saiph::directLineHelper(const Point &point, bool ignore_sinks) {
-	if (!Level::passable[levels[position.level].dungeonmap[point.row][point.col]])
+bool Saiph::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders) {
+	if (!Level::passable[levels[position.level].dungeonmap[point.row][point.col]] && (!ignore_boulders || levels[position.level].dungeonmap[point.row][point.col] != BOULDER))
 		return false;
 	else if (!ignore_sinks && levels[position.level].dungeonmap[point.row][point.col] == SINK)
 		return false;

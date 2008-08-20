@@ -30,7 +30,7 @@ void Fight::analyze() {
 		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
 		if (((!blue_e && distance > 1) || (blue_e && distance == 1)) && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			/* monster is within throw distance, or it's a blue 'e' and distance is 1 */
-			unsigned char in_line = saiph->directLine(m->first, false);
+			unsigned char in_line = saiph->directLine(m->first, false, true);
 			if (in_line != ILLEGAL_MOVE) {
 				/* we got a direct line to the monster */
 				if (got_thrown == FIGHT_NOT_CHECKED_THROWN_WEAPONS)

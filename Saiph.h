@@ -77,6 +77,7 @@ class Saiph;
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Loot.h"
+#include "Analyzers/MonsterInfo.h"
 #include "Analyzers/Potion.h"
 #include "Analyzers/Pray.h"
 #include "Analyzers/Scroll.h"
@@ -117,7 +118,7 @@ class Saiph {
 
 		/* methods */
 		bool addItemToInventory(unsigned char key, const Item &item);
-		unsigned char directLine(Point point, bool ignore_sinks);
+		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 		const string &farlook(const Point &target);
 		Point moveToPoint(unsigned char move);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
@@ -140,7 +141,7 @@ class Saiph {
 
 		/* methods */
 		void detectPosition();
-		bool directLineHelper(const Point &point, bool ignore_sinks);
+		bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
 		void dumpMaps();
 		void parseMessages(const string &messages);
 };
