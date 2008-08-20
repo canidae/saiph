@@ -19,8 +19,11 @@ class Monster {
 		int color;
 		bool visible;
 		int attitude;
+		bool shopkeeper;
+		bool priest;
+		bool minotaur;
 
 		/* constructors */
-		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, bool visible = false, int attitude = ATTITUDE_UNKNOWN);
+		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, bool visible = false, int attitude = ATTITUDE_UNKNOWN, bool shopkeeper = false, bool priest = false, bool minotaur = false);
 };
 #endif
