@@ -8,8 +8,10 @@
 #define FOOD_EAT_IT_2 " here; eat it? "
 #define FOOD_EAT_ONE_1 "  There are "
 #define FOOD_EAT_ONE_2 " here; eat one? "
+#define FOOD_IS_DESTROYED " is destroyed!  "
 #define FOOD_IS_KILLED " is killed!  "
 #define FOOD_STOP_EATING "  Stop eating? [yn] (y)  "
+#define FOOD_YOU_DESTROY "  You destroy the "
 #define FOOD_YOU_KILL "  You kill the "
 /* how old corpses may be */
 #define FOOD_CORPSE_EAT_TIME 30

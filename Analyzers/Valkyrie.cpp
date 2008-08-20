@@ -770,6 +770,8 @@ void Valkyrie::setupWand(int &groupstart) {
 	saiph->request(req);
 	req.data = "wand of nothing";
 	saiph->request(req);
+	req.data = "wand";
+	saiph->request(req);
 }
 
 void Valkyrie::setupWeapon(int &groupstart) {

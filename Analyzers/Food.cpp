@@ -360,7 +360,7 @@ void Food::parseMessages(const string &messages) {
 			command = NO;
 		}
 		return;
-	} else if ((pos = messages.find(FOOD_YOU_KILL, 0)) != string::npos) {
+	} else if ((pos = messages.find(FOOD_YOU_KILL, 0)) != string::npos || (pos = messages.find(FOOD_YOU_DESTROY, 0) != string::npos)) {
 		/* we killed a monster.
 		 * look for a spot where there used to be a monster,
 		 * but now is a stash instead */
@@ -379,7 +379,7 @@ void Food::parseMessages(const string &messages) {
 				}
 			}
 		}
-	} else if ((pos = messages.find(FOOD_IS_KILLED, 0)) != string::npos) {
+	} else if ((pos = messages.find(FOOD_IS_KILLED, 0)) != string::npos || (pos = messages.find(FOOD_IS_DESTROYED, 0)) != string::npos) {
 		/* we saw a monster die.
 		 * look for a spot where there used to be a monster,
 		 * but now is a stash instead */
