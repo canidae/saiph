@@ -402,7 +402,7 @@ void Level::updateMonsters() {
 			++m;
 			continue;
 		}
-		if (symbol == m->second.symbol && saiph->world->color[m->first.row][m->first.col] == m->second.color) {
+		if (m->first != saiph->position && symbol == m->second.symbol && saiph->world->color[m->first.row][m->first.col] == m->second.color) {
 			/* we can still see the monster */
 			++m;
 			continue;
