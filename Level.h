@@ -16,6 +16,8 @@
 #define LEVEL_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
 #define LEVEL_FOUNTAIN_HERE "  There is a fountain here.  "
 #define LEVEL_GRAVE_HERE "  There is a grave here.  "
+#define LEVEL_NO_STAIRS_DOWN_HERE "  You can't go down here.  "
+#define LEVEL_NO_STAIRS_UP_HERE "  You can't go up here.  "
 #define LEVEL_OPEN_DOOR_HERE "  There is an open door here.  "
 #define LEVEL_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
 #define LEVEL_STAIRCASE_UP_HERE "  There is a staircase up here.  "

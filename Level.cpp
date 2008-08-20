@@ -48,6 +48,8 @@ void Level::parseMessages(const string &messages) {
 		setDungeonSymbol(saiph->position, FOUNTAIN);
 	else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2, 0) != string::npos)
 		setDungeonSymbol(saiph->position, FLOOR);
+	else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE, 0) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE, 0) != string::npos)
+		setDungeonSymbol(saiph->position, UNKNOWN_TILE);
 	else if ((pos = messages.find(LEVEL_ALTAR_HERE, 0)) != string::npos) {
 		if (messages.find(" (unaligned) ", pos) != string::npos)
 			setDungeonSymbol(saiph->position, ALTAR, NEUTRAL);

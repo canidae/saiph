@@ -24,7 +24,6 @@ Player::Player() {
 	confused = false;
 	foodpoisoned = false;
 	hallucinating = false;
-	hurt_foot = false;
 	ill = false;
 	slimed = false;
 	stunned = false;
@@ -48,6 +47,8 @@ Player::Player() {
 	teleportitis = false;
 	/* lycanthropy */
 	lycanthropy = false;
+	/* hurt leg */
+	hurt_leg = false;
 }
 
 /* methods */

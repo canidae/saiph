@@ -41,6 +41,9 @@
 #define SAIPH_LOSE_TELEPORTITIS1 "  You feel less jumpy.  "
 #define SAIPH_FEEL_FEVERISH "  You feel feverish.  "
 #define SAIPH_FEEL_PURIFIED "  You feel purified.  "
+#define SAIPH_HURT_LEFT_LEG "  Your left leg is in no shape for kicking.  "
+#define SAIPH_HURT_RIGHT_LEG "  Your right leg is in no shape for kicking.  "
+#define SAIPH_LEG_IS_BETTER "  Your leg feels somewhat better.  "
 
 /* forward declare */
 class Saiph;
@@ -132,6 +135,8 @@ class Saiph {
 		bool mines_found;
 		bool sokoban_found;
 		string farlook_command;
+		int last_turn;
+		int stuck_counter;
 
 		/* methods */
 		void detectPosition();

@@ -12,7 +12,6 @@ World::World(Connection *connection, ofstream *debugfile) : connection(connectio
 	messages = "  ";
 	cur_page = -1;
 	max_page = -1;
-	stuck = 0;
 	menu = false;
 	question = false;
 	last_menu = Point(-1, -1);
@@ -340,26 +339,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
-	int last_data_size = data_size;
-	for (int a = 0; a < data_size; ++a)
-		last_data[a] = data[a];
 	data_size = connection->retrieve(data, BUFFER_SIZE);
-	/* increase stuck by 1 if nothing happened since last update */
-	if (last_data_size == data_size) {
-		bool is_stuck = true;
-		for (int a = 0; a < data_size; ++a) {
-			if (last_data[a] != data[a]) {
-				is_stuck = false;
-				break;
-			}
-		}
-		if (is_stuck)
-			++stuck;
-		else
-			stuck = 0;
-	} else {
-		stuck = 0;
-	}
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
 	/* also, we do this in two loops because otherwise it flickers a lot */

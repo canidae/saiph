@@ -30,6 +30,10 @@ Saiph::Saiph(int interface) {
 	/* set on_ground to NULL */
 	on_ground = NULL;
 
+	/* used to determine if we seem to be in a loop */
+	last_turn = 0;
+	stuck_counter = 0;
+
 	/* Analyzers */
 	analyzers.push_back(new Armor(this));
 	analyzers.push_back(new Beatitude(this));
@@ -376,14 +380,19 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
-	if (world->stuck < 5) {
+	if (stuck_counter < 5) {
 		best_analyzer->complete();
 	} else {
-		/* if we receive the same data x times in a row, tell the analyzer that it's a total failure */
+		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 		best_analyzer->fail();
 	}
+	if (last_command == best_analyzer->command && last_turn == world->player.turn)
+		stuck_counter++;
+	else
+		stuck_counter = 0;
 	last_command = best_analyzer->command;
+	last_turn = world->player.turn;
 	return true;
 }
 
@@ -713,6 +722,10 @@ void Saiph::parseMessages(const string &messages) {
 		world->player.lycanthropy = false;
 	if (messages.find(SAIPH_FEEL_FEVERISH, 0) != string::npos)
 		world->player.lycanthropy = true;
+	if (messages.find(SAIPH_HURT_LEFT_LEG, 0) != string::npos || messages.find(SAIPH_HURT_RIGHT_LEG, 0) != string::npos)
+		world->player.hurt_leg = true;
+	if (messages.find(SAIPH_LEG_IS_BETTER, 0) != string::npos)
+		world->player.hurt_leg = false;
 }
 
 /* main */

@@ -41,7 +41,6 @@ class Player {
 		bool confused;
 		bool foodpoisoned;
 		bool hallucinating;
-		bool hurt_foot;
 		bool ill;
 		bool slimed;
 		bool stunned;
@@ -65,6 +64,8 @@ class Player {
 		bool teleportitis;
 		/* lycanthropy */
 		bool lycanthropy;
+		/* hurt leg */
+		bool hurt_leg;
 
 		/* constructors */
 		Player();
