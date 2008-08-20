@@ -6,14 +6,6 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 
 /* methods */
 void Fight::analyze() {
-	/* reset look_at */
-	bool allow_farlook;
-	if (look_at != saiph->levels[saiph->position.level].monsters.end()) {
-		look_at = saiph->levels[saiph->position.level].monsters.end();
-		allow_farlook = false;
-	} else {
-		allow_farlook = true;
-	}
 	if (FIGHT_ATTACK_PRIORITY < saiph->best_priority)
 		return;
 	/* if engulfed try to fight our way out */
@@ -30,18 +22,11 @@ void Fight::analyze() {
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
+		if (m->second.attitude == FRIENDLY)
+			continue; // don't attack friendlies
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
 		if (distance > min_distance)
 			continue; // we'll always attack nearest monster
-		if ((m->second.attitude == ATTITUDE_UNKNOWN || (allow_farlook && distance == 1 && m->second.attitude == FRIENDLY)) && (m->second.symbol == '@' || m->second.symbol == 'A')) {
-			/* check attitude of '@' & 'A' when we don't know it or when they're next to us */
-			look_at = m;
-			command = saiph->farlook(m->first);
-			priority = PRIORITY_LOOK;
-			return;
-		}
-		if (m->second.attitude == FRIENDLY)
-			continue; // don't attack friendlies
 		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
 		if (((!blue_e && distance > 1) || (blue_e && distance == 1)) && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			/* monster is within throw distance, or it's a blue 'e' and distance is 1 */
@@ -101,15 +86,6 @@ void Fight::parseMessages(const string &messages) {
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
 		saiph->request(req);
-	} else if (messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ' && look_at != saiph->levels[saiph->position.level].monsters.end()) {
-		/* probably looked at a monster */
-		if (messages.find(" (peaceful ", 0) != string::npos) {
-			/* it's friendly */
-			look_at->second.attitude = FRIENDLY;
-		} else {
-			/* hostile */
-			look_at->second.attitude = HOSTILE;
-		}
 	}
 }
 

@@ -44,7 +44,6 @@ class Fight : public Analyzer {
 		string command2;
 		string command3;
 		vector<string> thrown;
-		map<Point, Monster>::iterator look_at;
 		Request req;
 
 		/* methods */
