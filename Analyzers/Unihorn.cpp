@@ -35,7 +35,7 @@ bool Unihorn::request(const Request &request) {
 			return false;
 		/* we got a unicorn horn */
 		command = APPLY;
-		if (request.priority < apply_priority)
+		if (request.priority > apply_priority)
 			priority = request.priority;
 		apply_priority = priority;
 		return true;
@@ -45,11 +45,7 @@ bool Unihorn::request(const Request &request) {
 
 /* private methods */
 void Unihorn::findUnihorn() {
-	map<unsigned char, Item>::iterator u;
-	if (unihorn_key == 0)
-		u = saiph->inventory.end();
-	else
-		u = saiph->inventory.find(unihorn_key);
+	map<unsigned char, Item>::iterator u = saiph->inventory.find(unihorn_key);
 	if (u != saiph->inventory.end() && u->second.beatitude != CURSED && u->second.name == "unicorn horn")
 		return;
 	for (u = saiph->inventory.begin(); u != saiph->inventory.end(); ++u) {
