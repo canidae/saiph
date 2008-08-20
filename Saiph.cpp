@@ -380,14 +380,14 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
-	if (stuck_counter < 5) {
+	if (stuck_counter < 42) {
 		best_analyzer->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 		best_analyzer->fail();
 	}
-	if (last_command == best_analyzer->command && last_turn == world->player.turn)
+	if (last_turn == world->player.turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
