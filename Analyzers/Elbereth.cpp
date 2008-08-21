@@ -2,40 +2,46 @@
 
 /* constructors */
 Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
+	sequence = -1;
+	last_look_turn = 0;
 	elbereth_count = 0;
 	burned = false;
 	digged = false;
 	dusted = false;
 	frosted = false;
-	did_look = false;
 	append = false;
 	priority = ILLEGAL_PRIORITY;
 }
 
 /* methods */
-void Elbereth::parseMessages(const string &messages) {
-	/* reset these each time */
-	dusted = false;
-	burned = false;
-	digged = false;
-	frosted = false;
-	elbereth_count = 0;
-	if (command == ":") {
-		did_look = true;
-		command = "";
-	} else {
-		did_look = false;
+void Elbereth::complete() {
+	if (command == LOOK) {
+		/* we're going to look now. reset variables telling us what's engraved here */
+		elbereth_count = 0;
+		dusted = false;
+		burned = false;
+		digged = false;
+		frosted = false;
+		last_look_turn = saiph->world->player.turn;
 	}
+}
+
+void Elbereth::parseMessages(const string &messages) {
 	/* set up next command */
-	if (command == ENGRAVE && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
+	if (sequence == 0 && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = HANDS;
-	} else if (command == HANDS && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
+		sequence = 1;
+	} else if (sequence == 1 && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
+		/* we only get this step if there's something engraved here already.
+		 * thus, don't increase sequence */
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = append ? YES : NO;
-	} else if ((command == YES || command == NO || command == HANDS) && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos)) {
+		sequence = 1;
+	} else if (sequence == 1 && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos)) {
 		priority = PRIORITY_CONTINUE_ACTION;
-		command = ELBERETH "\n";
+		command = ELBERETH_ELBERETH "\n";
+		sequence = -1;
 	}
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
@@ -60,7 +66,7 @@ void Elbereth::parseMessages(const string &messages) {
 		/* it's unexpected */
 		return;
 	}
-	while ((pos = messages.find(ELBERETH, pos + 1)) != string::npos) {
+	while ((pos = messages.find(ELBERETH_ELBERETH, pos + 1)) != string::npos) {
 		/* found another elbereth */
 		++elbereth_count;
 	}
@@ -68,38 +74,10 @@ void Elbereth::parseMessages(const string &messages) {
 
 bool Elbereth::request(const Request &request) {
 	if (request.request == REQUEST_ELBERETH_OR_REST) {
-		/* check if we're levitating */
-		/* check if there's a fountain/grave/altar here */
-		switch (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col]) {
-			case ALTAR:
-			case GRAVE:
-			case FOUNTAIN:
-				return false;
-				break;
-
-			default:
-				/* rest is ok, but don't return as we need to check for other things too */
-				break;
-		}
-		/* check for ill effects */
-		if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
+		if (!canEngrave())
 			return false;
-		/* check that we're not engulfed */
-		if (saiph->engulfed)
-			return false;
-		/* check that the monsters around us respects elbereth */
-		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m!= saiph->levels[saiph->position.level].monsters.end(); ++m) {
-			if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
-				/* monster is not next to player */
-				continue;
-			}
-			/* TODO
-			 * monster that won't respect elbereth might be friendly.
-			 * we also need to check for minotaurs & riders (heh, yeah, right) */
-			if (m->second.symbol == '@' || m->second.symbol == 'A' || m->second.symbol == 'I')
-				return false; // elbereth won't be respected
-		}
-		if (!did_look && !burned && !digged && !dusted && !frosted) {
+		/* we can engrave and elbereth will (probably) be respected */
+		if (last_look_turn != saiph->world->player.turn) {
 			/* we'll need to look first, which means set action & priority and return true */
 			command = LOOK;
 			priority = PRIORITY_LOOK; // since it's a zero turn affair
@@ -116,6 +94,7 @@ bool Elbereth::request(const Request &request) {
 				append = (elbereth_count > 0); // append if 0 < elbereth_count < 3
 				command = ENGRAVE;
 				priority = request.priority;
+				sequence = 0;
 				return true;
 			} else {
 				/* hmm... we don't know how to handle digged elbereths that fades out */
@@ -124,4 +103,35 @@ bool Elbereth::request(const Request &request) {
 		}
 	}
 	return false;
+}
+
+/* private methods */
+bool Elbereth::canEngrave() {
+	/* TODO: check if we're levitating */
+	/* check if there's a fountain/grave/altar here */
+	switch (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col]) {
+		case ALTAR:
+		case GRAVE:
+		case FOUNTAIN:
+			return false;
+			break;
+	}
+	/* check for ill effects */
+	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
+		return false;
+	/* check that we're not engulfed */
+	if (saiph->engulfed)
+		return false;
+	/* check that the monsters around us respects elbereth */
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m!= saiph->levels[saiph->position.level].monsters.end(); ++m) {
+		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
+			/* monster is not next to player */
+			continue;
+		}
+		if (m->second.attitude == FRIENDLY)
+			continue;
+		if (m->second.symbol == '@' || m->second.symbol == 'A' || m->second.symbol == 'I' || m->second.minotaur)
+			return false; // elbereth won't be respected
+	}
+	return true;
 }

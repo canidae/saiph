@@ -8,7 +8,7 @@
 #define ELBERETH_FROSTED_TEXT "  Something is written here in the frost.  "
 #define ELBERETH_YOU_READ "  You read:"
 /* Elbereth */
-#define ELBERETH "Elbereth"
+#define ELBERETH_ELBERETH "Elbereth"
 
 /* forward declare */
 class Elbereth;
@@ -23,25 +23,30 @@ class Elbereth;
 /* namespace */
 using namespace std;
 
-/* monitors health */
+/* engraves elbereth */
 class Elbereth : public Analyzer {
 	public:
 		/* constructors */
 		Elbereth(Saiph *saiph);
 
 		/* methods */
+		void complete();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
 	private:
 		/* variables */
 		Saiph *saiph;
+		int sequence;
+		int last_look_turn;
 		int elbereth_count;
 		bool burned;
 		bool digged;
 		bool dusted;
 		bool frosted;
-		bool did_look;
 		bool append;
+
+		/* methods */
+		bool canEngrave();
 };
 #endif
