@@ -1,7 +1,7 @@
 #include "Item.h"
 
 /* constructors */
-Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), named(""), additional("") {
+Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), called(""), named(""), additional("") {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -138,10 +138,12 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		}
 		name.erase(pos);
 	}
-	/* if items are called something, replace name with that */
+	/* extract "called" */
 	pos = name.rfind(ITEM_CALLED, name.size() - 1);
-	if (pos != string::npos)
-		name = name.substr(pos + sizeof (ITEM_CALLED) - 1);
+	if (pos != string::npos) {
+		called = name.substr(pos + sizeof (ITEM_CALLED) - 1);
+		name.erase(pos);
+	}
 	/* singularize name.
 	 * we'll only singularize stuff we care about for now */
 	if (name.find("pair of ") == 0)
@@ -166,5 +168,5 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	name.replace(start, stop, word);
 }
 
-Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), named(""), additional("") {
+Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), called(""), named(""), additional("") {
 }
