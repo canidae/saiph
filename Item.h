@@ -45,6 +45,7 @@ class Item {
 		bool fixed;
 		int damage;
 		int enchantment;
+		string called;
 		string named;
 		string additional;
 
