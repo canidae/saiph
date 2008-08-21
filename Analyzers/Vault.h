@@ -6,6 +6,8 @@
 /* messages */
 #define VAULT_MESSAGE_STRANGER "  \"Hello stranger, who are you?\" -  "
 #define VAULT_MESSAGE_DISAPPEAR "  Suddenly, the guard disappears.  "
+/* priority */
+#define VAULT_GO_OUT_PRIORITY 999
 
 /* forward declare */
 class Vault;
