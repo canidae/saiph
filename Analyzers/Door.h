@@ -5,6 +5,7 @@
 #define DOOR_OPEN_PRIORITY 150
 /* messages */
 #define DOOR_DOOR_LOCKED "  This door is locked.  "
+#define DOOR_UNLOCK_IT "  Unlock it? [yn] (n)  "
 
 /* forward declare */
 class Door;
@@ -27,6 +28,7 @@ class Door : public Analyzer {
 
 		/* methods */
 		void analyze();
+		void complete();
 		void parseMessages(const string &messages);
 
 	private:
@@ -34,5 +36,10 @@ class Door : public Analyzer {
 		Saiph *saiph;
 		string command2;
 		Point cur_door;
+		int sequence;
+		unsigned char unlock_tool_key;
+
+		/* methods */
+		void findUnlockingTool();
 };
 #endif
