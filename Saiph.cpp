@@ -24,9 +24,6 @@ Saiph::Saiph(int interface) {
 	got_pickup_menu = false;
 	got_drop_menu = false;
 
-	/* set best_priority to ILLEGAL_PRIORITY */
-	best_priority = ILLEGAL_PRIORITY;
-
 	/* set on_ground to NULL */
 	on_ground = NULL;
 
@@ -319,45 +316,31 @@ bool Saiph::run() {
 
 	/* analyzer stuff comes here */
 	Analyzer *best_analyzer = NULL;
-	best_priority = ILLEGAL_PRIORITY;
 
 	/* clear priority from analyzers */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* let analyzers parse messages */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->parseMessages(world->messages);
-		if ((*a)->priority > best_priority) {
-			best_priority = (*a)->priority;
-			best_analyzer = *a;
-		}
-	}
 
 	/* inspect the dungeon */
 	if (!world->question && !world->menu && !engulfed) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
 				(*a)->inspect(*c);
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
-				best_analyzer = *a;
-			}
 		}
 	}
 
 	/* call analyze() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 			(*a)->analyze();
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
-				best_analyzer = *a;
-			}
-		}
 	}
 
-	/* and finally we must check priorities of analyzers again */
+	/* find best analyzer */
+	int best_priority = ILLEGAL_PRIORITY;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->priority > best_priority) {
 			best_priority = (*a)->priority;
@@ -731,7 +714,7 @@ void Saiph::parseMessages(const string &messages) {
 
 /* main */
 int main() {
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

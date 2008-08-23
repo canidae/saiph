@@ -6,8 +6,6 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 
 /* methods */
 void Fight::analyze() {
-	if (FIGHT_ATTACK_PRIORITY < saiph->best_priority)
-		return;
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
 		command = MOVE_NW; // doesn't matter which direction

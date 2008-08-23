@@ -6,8 +6,6 @@ Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excali
 
 /* methods */
 void Excalibur::analyze() {
-	if (saiph->best_priority > EXCALIBUR_DIP_PRIORITY)
-		return;
 	if (excalibur_exists)
 		return;
 	if (saiph->world->player.experience < 5)

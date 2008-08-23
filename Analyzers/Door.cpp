@@ -7,8 +7,6 @@ Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), sequenc
 /* methods */
 void Door::analyze() {
 	/* open closed doors */
-	if (saiph->best_priority > DOOR_OPEN_PRIORITY)
-		return; // another analyzer got higher priority than we ever will have
 	if (saiph->world->player.hurt_leg)
 		return; // don't open doors when our leg is hurt
 	/* go to nearest closed door and get it open somehow */

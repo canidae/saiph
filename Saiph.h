@@ -104,7 +104,6 @@ class Saiph {
 		Stash *on_ground;
 		Coordinate position;
 		bool engulfed;
-		int best_priority;
 		string last_command;
 		bool inventory_changed;
 		bool got_pickup_menu;

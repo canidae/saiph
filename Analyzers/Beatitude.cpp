@@ -6,8 +6,6 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 
 /* methods */
 void Beatitude::analyze() {
-	if (saiph->best_priority > BEATITUDE_DROP_ALTAR_PRIORITY)
-		return;
 	unsigned char move = ILLEGAL_MOVE;
 	if (!check_beatitude && saiph->inventory_changed) {
 		/* how many of our items needs to be checked? */
