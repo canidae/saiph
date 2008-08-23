@@ -1,12 +1,12 @@
 #include "MonsterInfo.h"
 
 /* constructors */
-MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph), checking(false) {
+MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph), last_check_internal_turn(0) {
 }
 
 /* methods */
 void MonsterInfo::analyze() {
-	if (!checking)
+	if (last_check_internal_turn != saiph->internal_turn)
 		look_at = saiph->levels[saiph->position.level].monsters.begin();
 	for (; look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
 		if (look_at->second.symbol == PET)
@@ -17,13 +17,12 @@ void MonsterInfo::analyze() {
 			continue;
 		int distance = max(abs(look_at->first.row - saiph->position.row), abs(look_at->first.col - saiph->position.col));
 		if (look_at->second.attitude == ATTITUDE_UNKNOWN || (distance == 1 && look_at->second.attitude == FRIENDLY)) {
-			checking = true;
+			last_check_internal_turn = saiph->internal_turn;
 			command = saiph->farlook(look_at->first);
 			priority = PRIORITY_LOOK;
 			return;
 		}
 	}
-	checking = false;
 }
 
 void MonsterInfo::parseMessages(const string &messages) {

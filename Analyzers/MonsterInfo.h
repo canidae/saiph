@@ -30,6 +30,6 @@ class MonsterInfo : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		map<Point, Monster>::iterator look_at;
-		bool checking;
+		int last_check_internal_turn;
 };
 #endif
