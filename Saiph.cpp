@@ -14,6 +14,10 @@ Saiph::Saiph(int interface) {
 	mines_found = false;
 	sokoban_found = false;
 
+	/* internal turn counter.
+	 * whenever priority < 1000, we increase it by 1 */
+	internal_turn = 0;
+
 	/* engulfed */
 	engulfed = false;
 
@@ -377,6 +381,8 @@ bool Saiph::run() {
 		stuck_counter = 0;
 	last_command = best_analyzer->command;
 	last_turn = world->player.turn;
+	if (best_priority < PRIORITY_MAX)
+		++internal_turn;
 	return true;
 }
 

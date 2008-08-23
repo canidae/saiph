@@ -159,12 +159,12 @@
  * 1000->  : zero-turn actions, defined below
  */
 #define ILLEGAL_PRIORITY -1
-#define PRIORITY_CONTINUE_ACTION 1005
-#define PRIORITY_SELECT_ITEM 1004
-#define PRIORITY_CLOSE_ITEM_PAGE 1003
-#define PRIORITY_CHECK_INVENTORY 1002
-#define PRIORITY_LOOK 1001
-#define PRIORITY_MAX 1000
+#define PRIORITY_CONTINUE_ACTION 1004
+#define PRIORITY_SELECT_ITEM 1003
+#define PRIORITY_CLOSE_ITEM_PAGE 1002
+#define PRIORITY_CHECK_INVENTORY 1001
+#define PRIORITY_LOOK 1000
+#define PRIORITY_MAX 999
 /* messages */
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."

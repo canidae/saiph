@@ -103,8 +103,9 @@ class Saiph {
 		map<unsigned char, Item> drop;
 		Stash *on_ground;
 		Coordinate position;
-		bool engulfed;
 		string last_command;
+		int internal_turn;
+		bool engulfed;
 		bool inventory_changed;
 		bool got_pickup_menu;
 		bool got_drop_menu;
