@@ -23,8 +23,6 @@ void MonsterInfo::analyze() {
 			return;
 		}
 	}
-	/* set last_check_internal_turn to -1 to prevent a loop */
-	last_check_internal_turn = -1;
 }
 
 void MonsterInfo::parseMessages(const string &messages) {
@@ -52,5 +50,7 @@ void MonsterInfo::parseMessages(const string &messages) {
 			look_at->second.minotaur = true;
 		else
 			look_at->second.minotaur = false;
+		/* increase look_at or we'll look at the same monster repeatedly */
+		++look_at;
 	}
 }
