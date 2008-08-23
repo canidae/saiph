@@ -38,7 +38,7 @@ class Elbereth : public Analyzer {
 		/* variables */
 		Saiph *saiph;
 		int sequence;
-		int last_look_turn;
+		int last_look_internal_turn;
 		int elbereth_count;
 		bool burned;
 		bool digged;

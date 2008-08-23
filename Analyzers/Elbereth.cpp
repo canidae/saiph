@@ -3,7 +3,7 @@
 /* constructors */
 Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
 	sequence = -1;
-	last_look_turn = 0;
+	last_look_internal_turn = 0;
 	elbereth_count = 0;
 	burned = false;
 	digged = false;
@@ -22,7 +22,7 @@ void Elbereth::complete() {
 		burned = false;
 		digged = false;
 		frosted = false;
-		last_look_turn = saiph->world->player.turn;
+		last_look_internal_turn = saiph->internal_turn;
 	}
 }
 
@@ -77,7 +77,7 @@ bool Elbereth::request(const Request &request) {
 		if (!canEngrave())
 			return false;
 		/* we can engrave and elbereth will (probably) be respected */
-		if (last_look_turn != saiph->world->player.turn) {
+		if (last_look_internal_turn != saiph->internal_turn) {
 			/* we'll need to look first, which means set action & priority and return true */
 			command = LOOK;
 			priority = PRIORITY_LOOK; // since it's a zero turn affair
