@@ -1,7 +1,7 @@
 #include "MonsterInfo.h"
 
 /* constructors */
-MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph), last_check_internal_turn(0) {
+MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph), last_check_internal_turn(-1) {
 }
 
 /* methods */
@@ -23,6 +23,8 @@ void MonsterInfo::analyze() {
 			return;
 		}
 	}
+	/* set last_check_internal_turn to -1 to prevent a loop */
+	last_check_internal_turn = -1;
 }
 
 void MonsterInfo::parseMessages(const string &messages) {
