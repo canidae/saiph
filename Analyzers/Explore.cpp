@@ -151,6 +151,21 @@ void Explore::analyze() {
 		priority = cur_priority;
 		best_moves = moves;
 	}
+	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && priority < EXPLORE_DESCEND) {
+		/* if we're in the mines, go up */
+		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++up) {
+			int moves = 0;
+			unsigned char move = saiph->shortestPath(up->first, false, &moves);
+			if (move != ILLEGAL_MOVE) {
+				if (move == MOVE_NOWHERE)
+					command = MOVE_UP;
+				else
+					command = move;
+				priority = EXPLORE_DESCEND;
+				break;
+			}
+		}
+	}
 	if (priority < EXPLORE_DESCEND) {
 		/* descend */
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
@@ -164,6 +179,7 @@ void Explore::analyze() {
 				else
 					command = move;
 				priority = EXPLORE_DESCEND;
+				break;
 			}
 		}
 	}
