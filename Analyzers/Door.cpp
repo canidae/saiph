@@ -54,17 +54,18 @@ void Door::parseMessages(const string &messages) {
 		/* what to apply */
 		command = unlock_tool_key;
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (sequence == 1 && saiph->world->question && messages.find(DOOR_UNLOCK_IT, 0) != string::npos) {
+	} else if (sequence == 2 && saiph->world->question && messages.find(DOOR_UNLOCK_IT, 0) != string::npos) {
 		/* unlock door? */
 		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* we're going to assume the door won't be locked anymore */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, UNKNOWN_SYMBOL_VALUE);
+		sequence = -1;
 	} else if (sequence == 1 && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		/* which direction we should open/pick/kick */
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
-		sequence = -1;
+		sequence = 2;
 	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, 1);
