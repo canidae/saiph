@@ -50,7 +50,7 @@ OPTIONS=!null
 OPTIONS=number_pad:0
 OPTIONS=objects:m)[="(%!?+/$*````
 OPTIONS=pettype:none
-OPTIONS=pickup_burden:Overtaxed
+OPTIONS=pickup_burden:Overloaded
 OPTIONS=pickup_types:$
 OPTIONS=!prayconfirm
 OPTIONS=race:human
