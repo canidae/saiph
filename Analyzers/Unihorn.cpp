@@ -1,7 +1,7 @@
 #include "Unihorn.h"
 
 /* constructors */
-Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1) {
+Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1), sequence(-1) {
 }
 
 /* methods */
@@ -16,15 +16,23 @@ void Unihorn::analyze() {
 		/* unihorn failed last attempt, try again */
 		command = APPLY;
 		priority = apply_priority;
+		sequence = 0;
 	}
 }
 
+void Unihorn::complete() {
+	if (sequence == 0)
+		sequence = 1;
+}
+
 void Unihorn::parseMessages(const string &messages) {
-	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
+	if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
 		command = unihorn_key;
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
+		sequence = 2;
+	} else if (sequence == 2 && messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
 		apply_priority = -1;
+		sequence = -1;
 	}
 }
 
@@ -34,10 +42,11 @@ bool Unihorn::request(const Request &request) {
 		if (unihorn_key == 0)
 			return false;
 		/* we got a unicorn horn */
-		command = APPLY;
 		if (request.priority > apply_priority)
-			priority = request.priority;
-		apply_priority = priority;
+			apply_priority = request.priority;
+		command = APPLY;
+		priority = apply_priority;
+		sequence = 0;
 		return true;
 	}
 	return false;

@@ -28,6 +28,7 @@ class Unihorn : public Analyzer {
 
 		/* methods */
 		void analyze();
+		void complete();
 		void parseMessages(const string &messages);
 		bool request(const Request &request);
 
@@ -36,6 +37,7 @@ class Unihorn : public Analyzer {
 		Saiph *saiph;
 		unsigned char unihorn_key;
 		int apply_priority;
+		int sequence;
 
 		/* methods */
 		void findUnihorn();
