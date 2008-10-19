@@ -1,3 +1,5 @@
+#include <fcntl.h>
+#include <pty.h>
 #include "Globals.h"
 #include "Local.h"
 

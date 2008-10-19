@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Globals.h"

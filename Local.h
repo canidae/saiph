@@ -8,9 +8,7 @@
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
 
-#include <fcntl.h>
-#include <iostream>
-#include <pty.h>
+#include <fstream>
 #include <string>
 #include "Connection.h"
 

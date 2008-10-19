@@ -7,13 +7,8 @@
 /* host */
 #define TELNET_NETHACK_PORT 23
 
-#include <iostream>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdio.h>
+#include <fstream>
 #include <string>
-#include <sys/socket.h>
-#include <sys/types.h>
 #include "Connection.h"
 
 class Telnet : public Connection {

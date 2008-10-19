@@ -4,8 +4,6 @@
 #define MAX_EFFECTS 8
 #define MAX_TEXT_LENGTH 16
 
-#include <iostream>
-
 class Player {
 	public:
 		/* attributes */
