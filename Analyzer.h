@@ -8,18 +8,14 @@ class Request;
 
 class Analyzer {
 	public:
-		/* variables */
 		std::string name;
 		int priority;
 		std::string command;
 	
-		/* constructor */
 		Analyzer(std::string name);
 
-		/* destructor */
 		virtual ~Analyzer();
 
-		/* methods */
 		virtual void analyze();
 		virtual void complete();
 		virtual void fail();

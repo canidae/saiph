@@ -27,7 +27,6 @@
 
 class Item {
 	public:
-		/* variables */
 		std::string name;
 		int count;
 		int beatitude;
@@ -38,7 +37,6 @@ class Item {
 		std::string named;
 		std::string additional;
 
-		/* constructors */
 		Item(const std::string &text);
 		Item();
 };
