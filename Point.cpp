@@ -1,6 +1,6 @@
 #include "Point.h"
 
-/* constructors */
+/* constructors/destructor */
 Point::Point(int row, int col) : row(row), col(col) {
 }
 

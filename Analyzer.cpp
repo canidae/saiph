@@ -1,6 +1,9 @@
 #include "Analyzer.h"
+#include "Globals.h"
 
-/* constructor */
+using namespace std;
+
+/* constructors/destructor */
 Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command("") {
 	/* methods will be called in this order:
 	 * 0. init (once, after all analyzers have been created)
@@ -12,7 +15,6 @@ Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), comman
 	 * additionally, requests may come at any time */
 }
 
-/* destructor */
 Analyzer::~Analyzer() {
 	/* we must have a virtual destructor.
 	 * if we don't then the destructor of classes inheriting

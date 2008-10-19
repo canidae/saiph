@@ -1,5 +1,4 @@
 #ifndef FOOD_H
-/* defines */
 #define FOOD_H
 /* some text */
 #define FOOD_CORPSE " corpse"
@@ -43,43 +42,31 @@
 #define FOOD_VEGAN 0x20000
 #define FOOD_VEGETARIAN 0x40000
 
-/* forward declare */
-class Food;
-
-/* includes */
 #include <map>
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
-#include "../Globals.h"
 #include "../Request.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* monitors health */
 class Food : public Analyzer {
 	public:
-		/* constructors */
 		Food(Saiph *saiph);
 
-		/* methods */
 		void analyze();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
-		/* variables */
 		Saiph *saiph;
-		string command2;
-		vector<string> eat_order;
-		map<string, int> corpse_data;
-		map<Point, unsigned char> prev_monster_loc;
-		map<Point, int> safe_eat_loc;
+		std::string command2;
+		std::vector<std::string> eat_order;
+		std::map<std::string, int> corpse_data;
+		std::map<Point, unsigned char> prev_monster_loc;
+		std::map<Point, int> safe_eat_loc;
 		Request req;
 
-		/* methods */
-		bool safeToEat(const string &corpse);
+		bool safeToEat(const std::string &corpse);
 };
 #endif

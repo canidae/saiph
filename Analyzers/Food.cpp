@@ -1,6 +1,10 @@
 #include "Food.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	command2 = "";
 	priority = ILLEGAL_PRIORITY;

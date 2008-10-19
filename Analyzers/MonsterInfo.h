@@ -1,35 +1,23 @@
 #ifndef MONSTERINFO_H
-/* defines */
 #define MONSTERINFO_H
 
-/* forward declare */
-class MonsterInfo;
-
-/* includes */
+#include <map>
 #include <string>
 #include "../Analyzer.h"
-#include "../Globals.h"
 #include "../Monster.h"
-#include "../Request.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* analyzer that fetch additional info for certain monsters (@, A, aligned unicorn, minotaur, riders) */
 class MonsterInfo : public Analyzer {
 	public:
-		/* constructors */
 		MonsterInfo(Saiph *saiph);
 
-		/* methods */
 		void analyze();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 
 	private:
-		/* variables */
 		Saiph *saiph;
-		map<Point, Monster>::iterator look_at;
+		std::map<Point, Monster>::iterator look_at;
 		int last_check_internal_turn;
 };
 #endif

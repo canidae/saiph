@@ -1,5 +1,4 @@
 #ifndef FIGHT_H
-/* defines */
 #define FIGHT_H
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
@@ -12,41 +11,28 @@
 #define FIGHT_NOT_CHECKED_THROWN_WEAPONS 0
 #define FIGHT_NO_THROWN_WEAPONS 1
 
-/* forward declare */
-class Fight;
-
-/* includes */
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
-#include "../Globals.h"
-#include "../Monster.h"
 #include "../Request.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* analyzer for fighting monsters */
 class Fight : public Analyzer {
 	public:
-		/* constructors */
 		Fight(Saiph *saiph);
 
-		/* methods */
 		void analyze();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
-		/* variables */
 		Saiph *saiph;
-		string command2;
-		string command3;
-		vector<string> thrown;
+		std::string command2;
+		std::string command3;
+		std::vector<std::string> thrown;
 		Request req;
 
-		/* methods */
 		unsigned char gotThrown();
 };
 #endif

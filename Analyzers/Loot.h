@@ -1,5 +1,4 @@
 #ifndef LOOT_H
-/* defines */
 #define LOOT_H
 /* priorities */
 #define LOOT_LOOT_STASH_PRIORITY 450
@@ -13,21 +12,14 @@
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define LOOT_STOLE " stole "
 
-/* forward declare */
-class Loot;
-
-/* includes */
 #include <map>
 #include <string>
 #include <sstream>
+#include <vector>
 #include "../Analyzer.h"
 #include "../Coordinate.h"
-#include "../Globals.h"
+#include "../Item.h"
 #include "../Request.h"
-#include "../Saiph.h"
-
-/* namespace */
-using namespace std;
 
 /* struct for items we want */
 struct ItemWanted {
@@ -38,36 +30,33 @@ struct ItemWanted {
 /* struct for groups */
 struct ItemGroup {
 	int amount;
-	vector<string> items;
+	std::vector<std::string> items;
 };
 
-/* visit loot locations, open & close loot menus */
+class Saiph;
+
 class Loot : public Analyzer {
 	public:
-		/* constructors */
 		Loot(Saiph *saiph);
 
-		/* methods */
 		void analyze();
 		void complete();
 		void fail();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		bool dirty_inventory;
 		bool dirty_stash;
 		bool showing_inventory;
 		bool showing_pickup;
 		bool showing_drop;
-		map<Coordinate, int> visit_stash; // location, turn_changed
-		map<string, ItemWanted> items;
-		map<int, ItemGroup> groups;
+		std::map<Coordinate, int> visit_stash; // location, turn_changed
+		std::map<std::string, ItemWanted> items;
+		std::map<int, ItemGroup> groups;
 		Request req;
 
-		/* private methods */
 		void checkInventory();
 		void checkStash();
 		int unwantedItem(const Item &item);

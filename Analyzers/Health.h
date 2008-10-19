@@ -1,5 +1,4 @@
 #ifndef HEALTH_H
-/* defines */
 #define HEALTH_H
 /* priorities */
 #define HEALTH_CURE_DEADLY 900
@@ -12,30 +11,18 @@
 #define HEALTH_FEEL_FEVERISH "  You feel feverish.  "
 #define HEALTH_FEEL_PURIFIED "  You feel purified.  "
 
-/* forward declare */
-class Health;
-
-/* includes */
-#include <string>
 #include "../Analyzer.h"
-#include "../Globals.h"
 #include "../Request.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* monitors health */
 class Health : public Analyzer {
 	public:
-		/* constructors */
 		Health(Saiph *saiph);
 
-		/* methods */
 		void analyze();
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		bool resting;
 		int prev_st;

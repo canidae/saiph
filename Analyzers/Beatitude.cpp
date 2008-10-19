@@ -1,6 +1,10 @@
 #include "Beatitude.h"
+#include "../Globals.h"
+#include "../Saiph.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_beatitude(false) {
 }
 

@@ -2,11 +2,12 @@
 #include "Local.h"
 #include "Telnet.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Connection::Connection(ofstream *debugfile) : debugfile(debugfile) {
 }
 
-/* destructor */
 Connection::~Connection() {
 }
 

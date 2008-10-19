@@ -1,6 +1,9 @@
+#include "Globals.h"
 #include "Item.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), named(""), additional("") {
 	/* parse text */
 	char amount[8];

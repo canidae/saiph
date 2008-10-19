@@ -1,6 +1,6 @@
 #include "Coordinate.h"
 
-/* constructors */
+/* constructors/destructor */
 Coordinate::Coordinate(int level, int row, int col) : Point(row, col), level(level) {
 }
 

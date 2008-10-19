@@ -1,6 +1,10 @@
 #include "Scroll.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Scroll::Scroll(Saiph *saiph) : Analyzer("Scroll"), saiph(saiph) {
 	appearance.push_back("ANDOVA BEGARIN");
 	appearance.push_back("DAIYEN FOOELS");

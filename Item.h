@@ -1,5 +1,4 @@
 #ifndef ITEM_H
-/* defines */
 #define ITEM_H
 /* parse text */
 #define ITEM_CALLED " called "
@@ -24,32 +23,23 @@
 #define ITEM_PARSE_VERY_RUSTY "very rusty "
 #define ITEM_PARSE_THOROUGHLY_RUSTY "thoroughly rusty "
 
-/* forward declare */
-class Item;
-
-/* includes */
 #include <string>
-#include "Globals.h"
 
-/* namespace */
-using namespace std;
-
-/* Item */
 class Item {
 	public:
 		/* variables */
-		string name;
+		std::string name;
 		int count;
 		int beatitude;
 		bool greased;
 		bool fixed;
 		int damage;
 		int enchantment;
-		string named;
-		string additional;
+		std::string named;
+		std::string additional;
 
 		/* constructors */
-		Item(const string &text);
+		Item(const std::string &text);
 		Item();
 };
 #endif

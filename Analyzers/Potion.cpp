@@ -1,6 +1,10 @@
 #include "Potion.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph) {
 	appearance.push_back("black");
 	appearance.push_back("brilliant blue");

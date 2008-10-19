@@ -1,6 +1,9 @@
 #include "Wish.h"
+#include "../Saiph.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph) {
 	wishes.push_back("blessed greased fixed +3 gray dragon scale mail");
 }

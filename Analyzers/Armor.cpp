@@ -1,6 +1,10 @@
 #include "Armor.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_more(false) {
 }
 

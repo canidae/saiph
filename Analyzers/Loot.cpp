@@ -1,6 +1,10 @@
 #include "Loot.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), dirty_stash(false), showing_inventory(false), showing_pickup(false), showing_drop(false) {
 }
 

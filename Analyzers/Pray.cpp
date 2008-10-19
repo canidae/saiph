@@ -1,6 +1,11 @@
 #include "Pray.h"
+#include "../Request.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Pray::Pray(Saiph *saiph) : Analyzer("Pray"), saiph(saiph), last_pray_turn(0) {
 }
 

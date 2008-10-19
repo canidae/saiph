@@ -1,5 +1,4 @@
 #ifndef SAIPH_H
-/* defines */
 #define SAIPH_H
 /* debug */
 #define COMMAND_DEBUG_NAME "[Command    ] "
@@ -45,81 +44,44 @@
 #define SAIPH_HURT_RIGHT_LEG "  Your right leg is in no shape for kicking.  "
 #define SAIPH_LEG_IS_BETTER "  Your leg feels somewhat better.  "
 
-/* forward declare */
-class Saiph;
-
-/* includes */
 #include <fstream>
-#include <list>
 #include <map>
 #include <string>
 #include <vector>
-#include "Analyzer.h"
-#include "Connection.h"
-#include "Globals.h"
+#include "Coordinate.h"
 #include "Item.h"
 #include "Level.h"
-#include "Monster.h"
-#include "Player.h"
 #include "Point.h"
-#include "Request.h"
-#include "Stash.h"
-#include "World.h"
-/* analyzers */
-#include "Analyzers/Armor.h"
-#include "Analyzers/Beatitude.h"
-#include "Analyzers/Door.h"
-#include "Analyzers/Elbereth.h"
-#include "Analyzers/Enhance.h"
-#include "Analyzers/Excalibur.h"
-#include "Analyzers/Explore.h"
-#include "Analyzers/Fight.h"
-#include "Analyzers/Food.h"
-#include "Analyzers/Health.h"
-#include "Analyzers/Loot.h"
-#include "Analyzers/MonsterInfo.h"
-#include "Analyzers/Potion.h"
-#include "Analyzers/Pray.h"
-#include "Analyzers/Scroll.h"
-#include "Analyzers/Unihorn.h"
-#include "Analyzers/Valkyrie.h"
-#include "Analyzers/Vault.h"
-#include "Analyzers/Wand.h"
-#include "Analyzers/Weapon.h"
-#include "Analyzers/Wish.h"
 
-/* namespace */
-using namespace std;
+class Analyzer;
+class Connection;
+class Request;
+class Stash;
+class World;
 
-/* this is our AI */
 class Saiph {
 	public:
-		/* variables */
 		World *world;
-		ofstream debugfile;
-		vector<Level> levels;
-		map<unsigned char, Item> inventory;
-		map<unsigned char, Item> pickup;
-		map<unsigned char, Item> drop;
+		std::ofstream debugfile;
+		std::vector<Level> levels;
+		std::map<unsigned char, Item> inventory;
+		std::map<unsigned char, Item> pickup;
+		std::map<unsigned char, Item> drop;
 		Stash *on_ground;
 		Coordinate position;
-		string last_command;
+		std::string last_command;
 		int internal_turn;
 		bool engulfed;
 		bool inventory_changed;
 		bool got_pickup_menu;
 		bool got_drop_menu;
 
-		/* constructors */
 		Saiph(int interface);
-
-		/* destructor */
 		~Saiph();
 
-		/* methods */
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
-		const string &farlook(const Point &target);
+		const std::string &farlook(const Point &target);
 		Point moveToPoint(unsigned char move);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
@@ -129,20 +91,18 @@ class Saiph {
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 
 	private:
-		/* variables */
 		Connection *connection;
-		vector<Analyzer *> analyzers;
-		map<string, vector<int> > levelmap; // used for faster map recognition
+		std::vector<Analyzer *> analyzers;
+		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 		bool mines_found;
 		bool sokoban_found;
-		string farlook_command;
+		std::string farlook_command;
 		int last_turn;
 		int stuck_counter;
 
-		/* methods */
 		void detectPosition();
 		bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
 		void dumpMaps();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 };
 #endif

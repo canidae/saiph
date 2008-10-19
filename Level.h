@@ -1,5 +1,4 @@
 #ifndef LEVEL_H
-/* defines */
 #define LEVEL_H
 /* pathing */
 #define COST_CARDINAL 2
@@ -29,21 +28,12 @@
 #define LEVEL_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define LEVEL_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 
-/* forward declare */
-class Level;
-
-/* includes */
 #include <map>
 #include <string>
 #include "Globals.h"
-#include "Item.h"
 #include "Monster.h"
 #include "Point.h"
-#include "Saiph.h"
 #include "Stash.h"
-
-/* namespaces */
-using namespace std;
 
 /* struct used for pathing */
 struct PathNode {
@@ -53,29 +43,27 @@ struct PathNode {
 	unsigned char move;
 };
 
-/* Level */
+class Item;
+class Saiph;
+
 class Level {
 	public:
-		/* variables */
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		map<Point, Monster> monsters;
-		map<Point, Stash> stashes;
-		map<unsigned char, map<Point, int> > symbols;
-		string name;
+		std::map<Point, Monster> monsters;
+		std::map<Point, Stash> stashes;
+		std::map<unsigned char, std::map<Point, int> > symbols;
+		std::string name;
 		int depth;
 		int branch;
 
-		/* static variables */
 		static bool passable[UCHAR_MAX + 1];
 		static bool track_symbol[UCHAR_MAX + 1];
 
-		/* constructors */
-		Level(Saiph *saiph, string name, int branch = BRANCH_MAIN);
+		Level(Saiph *saiph, std::string name, int branch = BRANCH_MAIN);
 
-		/* methods */
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = UNKNOWN_SYMBOL_VALUE);
 		void setDungeonSymbolValue(const Point &point, int value = UNKNOWN_SYMBOL_VALUE);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
@@ -84,10 +72,8 @@ class Level {
 		void updatePathMap();
 
 	private:
-		/* variables */
 		Saiph *saiph;
 
-		/* static variables */
 		static Point pathing_queue[PATHING_QUEUE_SIZE];
 		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
 		static int pathcost[UCHAR_MAX + 1];
@@ -96,13 +82,10 @@ class Level {
 		static bool item[UCHAR_MAX + 1];
 		static bool initialized;
 
-		/* methods */
 		void addItemToStash(const Point &point, const Item &item);
 		void clearStash(const Point &point);
 		bool updatePathMapHelper(const Point &to, const Point &from);
 
-		/* static methods */
 		static void init();
 };
-
 #endif

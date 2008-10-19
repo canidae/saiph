@@ -1,5 +1,4 @@
 #ifndef WORLD_H
-/* defines */
 #define WORLD_H
 /* debug */
 #define WORLD_DEBUG_NAME "[World      ] "
@@ -15,53 +14,41 @@
 #define PAGE "(%d of %d)"
 #define PAGE_DIRTY "%*[^(]" PAGE
 
-/* forward declare */
-class World;
-
-/* includes */
 #include <fstream>
 #include <string>
 #include <vector>
-#include "Connection.h"
 #include "Globals.h"
 #include "Player.h"
 #include "Point.h"
 
-/* namespace */
-using namespace std;
+class Connection;
 
-/* the world in our eyes */
 class World {
 	public:
-		/* variables */
-		vector<Point> changes; // list of locations changed since last "frame"
+		std::vector<Point> changes; // list of locations changed since last "frame"
 		char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 		int color[ROWS][COLS]; // not used for string reading, no need for + 1
 		Point cursor; // cursor position
 		Player player;
-		string messages;
+		std::string messages;
 		int cur_page;
 		int max_page;
 		bool menu;
 		bool question;
 
-		/* constructors */
-		World(Connection *connection, ofstream *debugfile);
+		World(Connection *connection, std::ofstream *debugfile);
 
-		/* methods */
-		bool executeCommand(const string &command);
+		bool executeCommand(const std::string &command);
 
 	private:
-		/* variables */
 		Connection *connection;
-		ofstream *debugfile;
+		std::ofstream *debugfile;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
 		int data_size;
-		string msg_str; // helps fetching messages
+		std::string msg_str; // helps fetching messages
 		Point last_menu; // needed to help detect menus that persist over turns
 
-		/* methods */
 		void addChangedLocation(const Point &point);
 		void fetchMenu();
 		void fetchMenuText(int stoprow, int startcol, bool addspaces);

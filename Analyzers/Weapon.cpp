@@ -1,6 +1,10 @@
 #include "Weapon.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_more(false) {
 }
 

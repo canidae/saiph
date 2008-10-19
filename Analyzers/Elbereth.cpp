@@ -1,6 +1,11 @@
 #include "Elbereth.h"
+#include "../Request.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
 	sequence = -1;
 	last_look_internal_turn = 0;

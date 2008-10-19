@@ -1,6 +1,9 @@
 #include "MonsterInfo.h"
+#include "../Saiph.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph), last_check_internal_turn(-1) {
 }
 

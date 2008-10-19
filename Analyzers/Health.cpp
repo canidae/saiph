@@ -1,6 +1,8 @@
 #include "Health.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+/* constructors/destructor */
 Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), prev_st(INT_MAX), prev_dx(INT_MAX), prev_co(INT_MAX), prev_in(INT_MAX), prev_wi(INT_MAX), prev_ch(INT_MAX) {
 }
 

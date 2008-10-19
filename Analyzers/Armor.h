@@ -1,5 +1,4 @@
 #ifndef ARMOR_H
-/* defines */
 #define ARMOR_H
 /* priorities */
 #define ARMOR_PICKUP_PRIORITY 425
@@ -9,46 +8,35 @@
 #define ARMOR_WHAT_TO_TAKE_OFF "  What do you want to take off? "
 #define ARMOR_YOU_WERE_WEARING "  You were wearing "
 
-/* forward declare */
-class Armor;
-
-/* includes */
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Request.h"
-#include "../Saiph.h"
-
-/* namespace */
-using namespace std;
 
 /* struct for wearing armor */
 struct WearArmor {
 	int beatitude;
-	string name;
+	std::string name;
 };
 
-/* analyzer for wearing armor */
+class Saiph;
+
 class Armor : public Analyzer {
 	public:
-		/* constructors */
 		Armor(Saiph *saiph);
 
-		/* methods */
 		void analyze();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		bool wear_more;
-		vector<WearArmor> armor[ARMOR_SLOTS];
-		string command2;
+		std::vector<WearArmor> armor[ARMOR_SLOTS];
+		std::string command2;
 		Request req;
 
-		/* methods */
 		void wearArmor();
 };
 #endif

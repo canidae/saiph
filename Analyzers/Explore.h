@@ -1,5 +1,4 @@
 #ifndef EXPLORE_H
-/* defines */
 #define EXPLORE_H
 /* various */
 #define EXPLORE_SEARCH_COUNT 32 // how many times we should search a square
@@ -18,37 +17,27 @@
 /* this should go */
 #define MAX_DUNGEON_DEPTH 64
 
-/* forward declare */
-class Explore;
-
-/* includes */
 #include <list>
 #include <string>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Point.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* analyzes the map and finds somewhere to explore */
 class Explore : public Analyzer {
 	public:
-		/* constructors */
 		Explore(Saiph *saiph);
 
-		/* methods */
 		void analyze();
 		void complete();
 		void inspect(const Point &point);
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		int search[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
 		bool visited[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		list<Point> explore;
+		std::list<Point> explore;
 };
 #endif

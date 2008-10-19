@@ -1,6 +1,36 @@
+#include "Analyzer.h"
+#include "Connection.h"
+#include "Globals.h"
+#include "Request.h"
 #include "Saiph.h"
+#include "Stash.h"
+#include "World.h"
+/* analyzers */
+#include "Analyzers/Armor.h"
+#include "Analyzers/Beatitude.h"
+#include "Analyzers/Door.h"
+#include "Analyzers/Elbereth.h"
+#include "Analyzers/Enhance.h"
+#include "Analyzers/Excalibur.h"
+#include "Analyzers/Explore.h"
+#include "Analyzers/Fight.h"
+#include "Analyzers/Food.h"
+#include "Analyzers/Health.h"
+#include "Analyzers/Loot.h"
+#include "Analyzers/MonsterInfo.h"
+#include "Analyzers/Potion.h"
+#include "Analyzers/Pray.h"
+#include "Analyzers/Scroll.h"
+#include "Analyzers/Unihorn.h"
+#include "Analyzers/Valkyrie.h"
+#include "Analyzers/Vault.h"
+#include "Analyzers/Wand.h"
+#include "Analyzers/Weapon.h"
+#include "Analyzers/Wish.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Saiph::Saiph(int interface) {
 	debugfile.open("debug.log", ios::trunc);
 	connection = Connection::create(interface, &debugfile);
@@ -66,7 +96,6 @@ Saiph::Saiph(int interface) {
 		(*a)->init();
 }
 
-/* destructor */
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;

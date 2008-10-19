@@ -1,6 +1,9 @@
 #include "Wand.h"
+#include "../Saiph.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Wand::Wand(Saiph *saiph) : Analyzer("Wand"), saiph(saiph) {
 }
 

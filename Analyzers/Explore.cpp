@@ -1,6 +1,10 @@
 #include "Explore.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 	memset(search, 0, sizeof (search));
 	memset(visited, false, sizeof (visited));

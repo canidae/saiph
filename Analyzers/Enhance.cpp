@@ -1,6 +1,10 @@
 #include "Enhance.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Enhance::Enhance(Saiph *saiph) : Analyzer("Enhance"), saiph(saiph), do_enhance(true), got_enhance_menu(false) {
 }
 

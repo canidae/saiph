@@ -1,34 +1,21 @@
 #ifndef VALKYRIE_H
-/* defines */
 #define VALKYRIE_H
 
-/* forward declare */
-class Valkyrie;
-
-/* includes */
-#include <string>
 #include "../Analyzer.h"
-#include "../Globals.h"
-#include "../Saiph.h"
+#include "../Request.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* sets up things for a player of class valkyrie */
 class Valkyrie : public Analyzer {
 	public:
-		/* constructors */
 		Valkyrie(Saiph *saiph);
 
-		/* methods */
 		void init();
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		Request req;
 
-		/* methods */
 		void setupArmor(int &groupstart);
 		void setupFood(int &groupstart);
 		void setupTool(int &groupstart);

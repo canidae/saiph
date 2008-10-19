@@ -1,5 +1,4 @@
 #ifndef BEATITUDE_H
-/* defines */
 #define BEATITUDE_H
 /* BEATITUDE_DROP_ALTAR_MIN says how many items we need at least before we
  * bother dropping them on an altar.
@@ -11,31 +10,19 @@
 /* priorities */
 #define BEATITUDE_DROP_ALTAR_PRIORITY 225
 
-/* forward declare */
-class Beatitude;
-
-/* includes */
 #include <string>
 #include "../Analyzer.h"
-#include "../Globals.h"
-#include "../Request.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Saiph;
 
-/* monitors health */
 class Beatitude : public Analyzer {
 	public:
-		/* constructors */
 		Beatitude(Saiph *saiph);
 
-		/* methods */
 		void analyze();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		bool check_beatitude;
 };

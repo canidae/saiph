@@ -1,6 +1,10 @@
 #include "Door.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), sequence(-1), unlock_tool_key(0) {
 }
 

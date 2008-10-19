@@ -1,28 +1,20 @@
 #ifndef ANALYZER_H
-/* defines */
 #define ANALYZER_H
 
-/* forward declare */
-class Analyzer;
-
-/* includes */
 #include <string>
-#include "Point.h"
-#include "Request.h"
 
-/* namespace */
-using namespace std;
+class Point;
+class Request;
 
-/* analyze every tile of type and/or do whatever you want in finish() */
 class Analyzer {
 	public:
 		/* variables */
-		string name;
+		std::string name;
 		int priority;
-		string command;
+		std::string command;
 	
 		/* constructor */
-		Analyzer(string name);
+		Analyzer(std::string name);
 
 		/* destructor */
 		virtual ~Analyzer();
@@ -33,7 +25,7 @@ class Analyzer {
 		virtual void fail();
 		virtual void init();
 		virtual void inspect(const Point &point);
-		virtual void parseMessages(const string &messages);
+		virtual void parseMessages(const std::string &messages);
 		virtual bool request(const Request &request);
 };
 #endif

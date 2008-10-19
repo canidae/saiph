@@ -1,5 +1,4 @@
 #ifndef ELBERETH_H
-/* defines */
 #define ELBERETH_H
 /* messages */
 #define ELBERETH_BURNED_TEXT "  Some text has been burned into the floor here.  "
@@ -10,32 +9,21 @@
 /* Elbereth */
 #define ELBERETH_ELBERETH "Elbereth"
 
-/* forward declare */
-class Elbereth;
-
-/* includes */
 #include <string>
 #include "../Analyzer.h"
-#include "../Globals.h"
-#include "../Request.h"
-#include "../Saiph.h"
 
-/* namespace */
-using namespace std;
+class Request;
+class Saiph;
 
-/* engraves elbereth */
 class Elbereth : public Analyzer {
 	public:
-		/* constructors */
 		Elbereth(Saiph *saiph);
 
-		/* methods */
 		void complete();
-		void parseMessages(const string &messages);
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
-		/* variables */
 		Saiph *saiph;
 		int sequence;
 		int last_look_internal_turn;
@@ -46,7 +34,6 @@ class Elbereth : public Analyzer {
 		bool frosted;
 		bool append;
 
-		/* methods */
 		bool canEngrave();
 };
 #endif

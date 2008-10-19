@@ -1,6 +1,7 @@
+#include "Globals.h"
 #include "Player.h"
 
-/* constructors */
+/* constructors/destructor */
 Player::Player() {
 	/* attributes */
 	alignment = 0;

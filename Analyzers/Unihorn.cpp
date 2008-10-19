@@ -1,6 +1,11 @@
 #include "Unihorn.h"
+#include "../Request.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1), sequence(-1) {
 }
 

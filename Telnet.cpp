@@ -1,6 +1,9 @@
+#include "Globals.h"
 #include "Telnet.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
 	/* read login details from .account */
 	ifstream account;

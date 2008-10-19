@@ -1,5 +1,4 @@
 #ifndef TELNET_H
-/* defines */
 #define TELNET_H
 /* debug */
 #define TELNET_DEBUG_NAME "[Telnet     ] "
@@ -8,10 +7,6 @@
 /* host */
 #define TELNET_NETHACK_PORT 23
 
-/* forward declare */
-class Telnet;
-
-/* includes */
 #include <iostream>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -20,29 +15,19 @@ class Telnet;
 #include <sys/socket.h>
 #include <sys/types.h>
 #include "Connection.h"
-#include "Globals.h"
 
-/* namespace */
-using namespace std;
-
-/* connection to the game using telnet */
 class Telnet : public Connection {
 	public:
-		/* constructors */
-		Telnet(ofstream *debugfile);
-
-		/* destructor */
+		Telnet(std::ofstream *debugfile);
 		~Telnet();
 
-		/* methods */
 		int retrieve(char *buffer, int count);
 		int transmit(const char *data, int length);
-		int transmit(const string &data);
+		int transmit(const std::string &data);
 		void start();
 		void stop();
 
 	private:
-		/* variables */
 		int sock;
 		char ping[3];
 };

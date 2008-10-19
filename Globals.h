@@ -1,5 +1,4 @@
 #ifndef GLOBALS_H
-/* defines */
 #define GLOBALS_H
 /* dungeon limits */
 #define ROWS 24

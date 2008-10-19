@@ -1,6 +1,10 @@
 #include "Fight.h"
+#include "../Saiph.h"
+#include "../World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 }
 

@@ -1,4 +1,9 @@
+#include "Item.h"
 #include "Level.h"
+#include "Saiph.h"
+#include "World.h"
+
+using namespace std;
 
 /* initialize static variables */
 /* public */
@@ -13,7 +18,7 @@ bool Level::monster[UCHAR_MAX + 1] = {false};
 bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
 
-/* constructors */
+/* constructors/destructor */
 Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), saiph(saiph) {
 	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
 	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));

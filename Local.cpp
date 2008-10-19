@@ -1,6 +1,9 @@
+#include "Globals.h"
 #include "Local.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 Local::Local(ofstream *debugfile) : Connection(debugfile) {
 	/* set up pipes */
 	if (pipe(link) < 0) {
@@ -39,7 +42,6 @@ Local::Local(ofstream *debugfile) : Connection(debugfile) {
 	}
 }
 
-/* destructor */
 Local::~Local() {
 	stop();
 }

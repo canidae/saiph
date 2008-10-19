@@ -1,6 +1,9 @@
+#include "Connection.h"
 #include "World.h"
 
-/* constructors */
+using namespace std;
+
+/* constructors/destructor */
 World::World(Connection *connection, ofstream *debugfile) : connection(connection), debugfile(debugfile) {
 	memset(view, ' ', sizeof (view));
 	for (int r = 0; r < ROWS; ++r)

@@ -1,5 +1,4 @@
 #ifndef REQUEST_H
-/* defines */
 #define REQUEST_H
 /* requests */
 #define ILLEGAL_REQUEST 0
@@ -17,30 +16,19 @@
 #define REQUEST_WEAPON_WIELD 12
 #define REQUEST_ADD_THROWN_WEAPON 13
 
-/* forward declare */
-class Request;
-
-/* includes */
 #include <string>
 #include "Coordinate.h"
-#include "Globals.h"
 
-/* namespace */
-using namespace std;
-
-/* Request */
 class Request {
 	public:
-		/* variables */
 		int request;
 		int priority;
 		int value;
 		int status;
 		unsigned char key;
-		string data;
+		std::string data;
 		Coordinate coordinate;
 
-		/* constructors */
 		Request();
 };
 #endif

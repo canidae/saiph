@@ -1,6 +1,7 @@
 #include "Valkyrie.h"
+#include "../Saiph.h"
 
-/* constructors */
+/* constructors/destructor */
 Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph) {
 }
 
