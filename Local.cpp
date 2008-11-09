@@ -1,16 +1,17 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <pty.h>
+#include "Debug.h"
 #include "Globals.h"
 #include "Local.h"
 
 using namespace std;
 
 /* constructors/destructor */
-Local::Local(ofstream *debugfile) : Connection(debugfile) {
+Local::Local() {
 	/* set up pipes */
 	if (pipe(link) < 0) {
-		*debugfile << LOCAL_DEBUG_NAME << "Plumbing failed" << endl;
+		Debug::error() << LOCAL_DEBUG_NAME << "Plumbing failed" << endl;
 		exit(1);
 	}
 
@@ -24,7 +25,7 @@ Local::Local(ofstream *debugfile) : Connection(debugfile) {
 	wsize.ws_ypixel = 480;
 	pid_t pid = forkpty(&fd, slave, NULL, &wsize);
 	if (pid == -1) {
-		*debugfile << LOCAL_DEBUG_NAME << "There is no fork" << endl;
+		Debug::error() << LOCAL_DEBUG_NAME << "There is no fork" << endl;
 		exit(1);
 	} else if (pid) {
 		/* main thread */
@@ -37,7 +38,7 @@ Local::Local(ofstream *debugfile) : Connection(debugfile) {
 		setenv("TERM", "xterm", 1);
 		result = execl(LOCAL_NETHACK, LOCAL_NETHACK, "TERM=xterm", NULL);
 		if (result < 0) {
-			*debugfile << LOCAL_DEBUG_NAME << "Unable to enter the dungeon" << endl;
+			Debug::error() << LOCAL_DEBUG_NAME << "Unable to enter the dungeon" << endl;
 			exit(3);
 		}
 		return;

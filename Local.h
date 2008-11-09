@@ -8,13 +8,12 @@
 /* local */
 #define LOCAL_NETHACK "/usr/games/nethack"
 
-#include <fstream>
 #include <string>
 #include "Connection.h"
 
 class Local : public Connection {
 	public:
-		Local(std::ofstream *debugfile);
+		Local();
 		~Local();
 
 		virtual int retrieve(char *buffer, int count);

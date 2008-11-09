@@ -62,7 +62,6 @@ class World;
 class Saiph {
 	public:
 		World *world;
-		std::ofstream debugfile;
 		std::vector<Level> levels;
 		std::map<unsigned char, Item> inventory;
 		std::map<unsigned char, Item> pickup;

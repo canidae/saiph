@@ -5,18 +5,19 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include "Debug.h"
 #include "Globals.h"
 #include "Telnet.h"
 
 using namespace std;
 
 /* constructors/destructor */
-Telnet::Telnet(ofstream *debugfile) : Connection(debugfile) {
+Telnet::Telnet() {
 	/* read login details from .account */
 	ifstream account;
 	account.open(".account");
 	if (!account) {
-		*debugfile << TELNET_DEBUG_NAME << "Unable to read .account (which should contain url, username and password on separate lines)" << endl;
+		Debug::error() << TELNET_DEBUG_NAME << "Unable to read .account (which should contain url, username and password on separate lines)" << endl;
 		exit(1);
 	}
 	string url;
@@ -132,7 +133,7 @@ int Telnet::retrieve(char *buffer, int count) {
 		}
 	}
 	if (tries < 0)
-		*debugfile << TELNET_DEBUG_NAME << "We were expecting data, but got none. Fix this bug, please!" << endl;
+		Debug::warning() << TELNET_DEBUG_NAME << "We were expecting data, but got none. Fix this bug, please!" << endl;
 	return retrieved;
 }
 

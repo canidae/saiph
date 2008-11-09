@@ -1,4 +1,5 @@
 #include "Potion.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -55,7 +56,7 @@ void Potion::parseMessages(const string &messages) {
 		if (start == string::npos)
 			return;
 		string name = messages.substr(start, stop - start);
-		saiph->debugfile << "[Potion     ] Asking for name for a " << name << " potion" << endl;
+		Debug::notice() << "[Potion     ] Asking for name for a " << name << " potion" << endl;
 		for (vector<string>::iterator a = appearance.begin(); a != appearance.end(); ++a) {
 			if (name != *a)
 				continue;

@@ -36,13 +36,12 @@ class World {
 		bool menu;
 		bool question;
 
-		World(Connection *connection, std::ofstream *debugfile);
+		World(Connection *connection);
 
 		bool executeCommand(const std::string &command);
 
 	private:
 		Connection *connection;
-		std::ofstream *debugfile;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 		char data[BUFFER_SIZE];
 		int data_size;

@@ -5,21 +5,21 @@
 using namespace std;
 
 /* constructors/destructor */
-Connection::Connection(ofstream *debugfile) : debugfile(debugfile) {
+Connection::Connection() {
 }
 
 Connection::~Connection() {
 }
 
 /* static methods */
-Connection *Connection::create(int interface, ofstream *debugfile) {
+Connection *Connection::create(int interface) {
 	switch (interface) {
 		case CONNECTION_LOCAL:
-			return new Local(debugfile);
+			return new Local();
 			break;
 
 		case CONNECTION_TELNET:
-			return new Telnet(debugfile);
+			return new Telnet();
 			break;
 
 		default:

@@ -7,13 +7,12 @@
 /* host */
 #define TELNET_NETHACK_PORT 23
 
-#include <fstream>
 #include <string>
 #include "Connection.h"
 
 class Telnet : public Connection {
 	public:
-		Telnet(std::ofstream *debugfile);
+		Telnet();
 		~Telnet();
 
 		int retrieve(char *buffer, int count);

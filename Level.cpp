@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "Debug.h"
 #include "Item.h"
 #include "Level.h"
 #include "Saiph.h"
@@ -498,7 +499,7 @@ void Level::updatePathMap() {
 
 /* private methods */
 void Level::addItemToStash(const Point &point, const Item &item) {
-	saiph->debugfile << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
+	Debug::notice() << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
 	if (item.count <= 0)
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);

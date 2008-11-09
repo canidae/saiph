@@ -1,4 +1,5 @@
 #include "Scroll.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -48,7 +49,7 @@ void Scroll::parseMessages(const string &messages) {
 			return;
 		start += sizeof (SCROLL_CALL_SCROLL) - 1;
 		string name = messages.substr(start, stop - start);
-		saiph->debugfile << "[Scroll     ] Asking for name for a " << name << " potion" << endl;
+		Debug::notice() << "[Scroll     ] Asking for name for a " << name << " potion" << endl;
 		for (vector<string>::iterator a = appearance.begin(); a != appearance.end(); ++a) {
 			if (name != *a)
 				continue;

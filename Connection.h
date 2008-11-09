@@ -9,17 +9,14 @@
 
 class Connection {
 	public:
-		Connection(std::ofstream *debugfile);
+		Connection();
 		virtual ~Connection();
 
-		static Connection *create(int interface, std::ofstream *debugfile);
+		static Connection *create(int interface);
 
 		virtual int retrieve(char *buffer, int count);
 		virtual int transmit(const std::string &data);
 		virtual void start();
 		virtual void stop();
-
-	protected:
-		std::ofstream *debugfile;
 };
 #endif
