@@ -32,7 +32,7 @@ bool Unihorn::request(const Request &request) {
 			return false;
 		/* we got a unicorn horn */
 		setCommand(0, request.priority, APPLY);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(unihorn_key, 1));
+		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, unihorn_key));
 		sequence = 0;
 		return true;
 	}

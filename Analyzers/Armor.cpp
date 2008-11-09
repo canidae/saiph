@@ -89,7 +89,7 @@ void Armor::wearArmor() {
 			if (worn[ARMOR_CLOAK] != 0) {
 				/* yes, we must take it off first */
 				setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
-				setCommand(1, PRIORITY_CONTINUE_ACTION, string(worn[ARMOR_CLOAK], 1));
+				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[ARMOR_CLOAK]));
 				sequence = 0;
 				return;
 			}
@@ -98,7 +98,7 @@ void Armor::wearArmor() {
 				if (worn[ARMOR_SUIT] != 0) {
 					/* yes, we must take it off first */
 					setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(worn[ARMOR_SUIT], 1));
+					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[ARMOR_SUIT]));
 					sequence = 0;
 					return;
 				}
@@ -107,13 +107,13 @@ void Armor::wearArmor() {
 		if (worn[s] != 0) {
 			/* we'll have to take this armor off first */
 			setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
-			setCommand(1, PRIORITY_CONTINUE_ACTION, string(worn[s], 1));
+			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[s]));
 			sequence = 0;
 			return;
 		}
 		/* we should put on this piece of armor */
 		setCommand(0, ARMOR_WEAR_PRIORITY, WEAR);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(best_key[s], 1));
+		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key[s]));
 		sequence = 0;
 		return;
 	}

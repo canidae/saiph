@@ -31,7 +31,7 @@ void Beatitude::analyze() {
 		if (items_to_beatify < BEATITUDE_DROP_ALTAR_MIN)
 			return; // too far to nearest altar
 		/* moving towards altar */
-		setCommand(0, BEATITUDE_DROP_ALTAR_PRIORITY, string(move, 1));
+		setCommand(0, BEATITUDE_DROP_ALTAR_PRIORITY, string(1, move));
 		sequence = 0;
 	}
 }
@@ -45,7 +45,7 @@ void Beatitude::parseMessages(const string &messages) {
 			if (d->second.name == "gold piece")
 				continue; // don't drop gold
 			/* mark this */
-			setCommand(0, PRIORITY_SELECT_ITEM, string(d->first, 1));
+			setCommand(0, PRIORITY_SELECT_ITEM, string(1, d->first));
 			sequence = 0;
 			return;
 		}

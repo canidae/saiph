@@ -1,4 +1,5 @@
 #include "Analyzer.h"
+#include "Debug.h"
 #include "Globals.h"
 
 using namespace std;
@@ -40,6 +41,7 @@ string &Analyzer::getCommand() {
 }
 
 int Analyzer::getPriority() {
+	Debug::notice() << name << " getPriority(): " << commands.size() << " - " << sequence << endl;
 	if (sequence >= 0 && sequence < (int) commands.size())
 		return commands[sequence].priority;
 	return ILLEGAL_PRIORITY;
@@ -60,7 +62,8 @@ bool Analyzer::request(const Request &request) {
 
 /* protected methods */
 bool Analyzer::setCommand(int index, int priority, const string &data) {
-	if (index < 0 || index + 1 > (int) commands.size())
+	Debug::notice() << "'" << name << "' setting command: " << index << " - " << priority << " - " << data << " - " << commands.size() << endl;
+	if (index < 0 || index > (int) commands.size())
 		return false;
 	if (index < (int) commands.size())
 		commands[index].setCommand(priority, data);

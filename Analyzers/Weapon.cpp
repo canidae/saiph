@@ -69,6 +69,6 @@ void Weapon::wieldWeapon() {
 		return;
 	}
 	setCommand(0, WEAPON_WIELD_PRIORITY, WIELD);
-	setCommand(1, PRIORITY_CONTINUE_ACTION, string(best_key, 1));
+	setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key));
 	sequence = 0;
 }

@@ -1,4 +1,5 @@
 #include "Door.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -24,16 +25,16 @@ void Door::analyze() {
 			/* open/pick/kick door */
 			if (d->second != 1) {
 				setCommand(0, DOOR_OPEN_PRIORITY, OPEN);
-				setCommand(1, PRIORITY_CONTINUE_ACTION, string(move, 1));
+				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, move));
 			} else {
 				findUnlockingTool();
 				if (unlock_tool_key == 0) {
 					setCommand(0, DOOR_OPEN_PRIORITY, KICK);
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(move, 1));
+					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, move));
 				} else {
 					setCommand(0, DOOR_OPEN_PRIORITY, APPLY);
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(unlock_tool_key, 1));
-					setCommand(2, PRIORITY_CONTINUE_ACTION, string(move, 1));
+					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, unlock_tool_key));
+					setCommand(2, PRIORITY_CONTINUE_ACTION, string(1, move));
 					setCommand(3, PRIORITY_CONTINUE_ACTION, YES); // yes, unlock the door
 				}
 			}
@@ -42,24 +43,21 @@ void Door::analyze() {
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
-			setCommand(0, DOOR_OPEN_PRIORITY, string(move, 1));
+			setCommand(0, DOOR_OPEN_PRIORITY, string(1, move));
 			sequence = 0;
 			least_moves = moves;
 		}
 	}
 }
 
-void Door::complete() {
-	if (sequence == 0)
-		sequence = 1;
-}
-
 void Door::parseMessages(const string &messages) {
+	Debug::notice() << "Door sequence: " << sequence << endl;
 	if (sequence == 0 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
 		/* what to apply */
 		++sequence;
-	} else if (sequence > 0 && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+	} else if (sequence >= 0 && sequence <= 1 && saiph->world->question && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		/* which direction we should open/pick/kick */
+		Debug::notice() << "Door should pick direction now" << endl;
 		++sequence;
 	} else if (sequence == 2 && saiph->world->question && messages.find(MESSAGE_UNLOCK_IT, 0) != string::npos) {
 		/* unlock door? */
@@ -67,7 +65,7 @@ void Door::parseMessages(const string &messages) {
 		/* we're going to assume the door won't be locked anymore */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, UNKNOWN_SYMBOL_VALUE);
 		sequence = -1;
-	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
+	} else if (sequence >= 1 && sequence <= 2 && messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, 1);
 	} else if (sequence > 0) {

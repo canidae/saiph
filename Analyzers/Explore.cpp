@@ -1,4 +1,5 @@
 #include "Explore.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -39,9 +40,9 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(MOVE_UP, 1));
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, MOVE_UP));
 				else
-					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(move, 1));
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, move));
 				return;
 			}
 		}
@@ -52,9 +53,9 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(MOVE_DOWN, 1));
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, MOVE_DOWN));
 				else
-					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(move, 1));
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, move));
 				return;
 			}
 		}
@@ -159,7 +160,7 @@ void Explore::analyze() {
 		if (move == MOVE_NOWHERE)
 			setCommand(0, cur_priority, SEARCH);
 		else
-			setCommand(0, cur_priority, string(move, 1));
+			setCommand(0, cur_priority, string(1, move));
 		best_moves = moves;
 	}
 	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && commands[0].priority < EXPLORE_DESCEND) {
@@ -169,9 +170,9 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(up->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					setCommand(0, EXPLORE_DESCEND, string(MOVE_UP, 1));
+					setCommand(0, EXPLORE_DESCEND, string(1, MOVE_UP));
 				else
-					setCommand(0, EXPLORE_DESCEND, string(move, 1));
+					setCommand(0, EXPLORE_DESCEND, string(1, move));
 				break;
 			}
 		}
@@ -185,9 +186,9 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(down->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					setCommand(0, EXPLORE_DESCEND, string(MOVE_DOWN, 1));
+					setCommand(0, EXPLORE_DESCEND, string(1, MOVE_DOWN));
 				else
-					setCommand(0, EXPLORE_DESCEND, string(move, 1));
+					setCommand(0, EXPLORE_DESCEND, string(1, move));
 				break;
 			}
 		}

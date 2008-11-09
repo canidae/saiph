@@ -30,12 +30,12 @@ void Excalibur::analyze() {
 	if (move == MOVE_NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		setCommand(0, EXCALIBUR_DIP_PRIORITY, DIP);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(got_long_sword, 1));
+		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, got_long_sword));
 		setCommand(2, PRIORITY_CONTINUE_ACTION, YES); // yes, dip in fountain
 		sequence = 0;
 	} else {
 		/* move towards fountain */
-		setCommand(0, EXCALIBUR_DIP_PRIORITY, string(move, 1));
+		setCommand(0, EXCALIBUR_DIP_PRIORITY, string(1, move));
 		sequence = 0;
 	}
 }

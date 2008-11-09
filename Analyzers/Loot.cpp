@@ -86,7 +86,7 @@ void Loot::analyze() {
 				int moves = 0;
 				unsigned char move = saiph->shortestPath(up->first, false, &moves);
 				if (move != ILLEGAL_MOVE) {
-					setCommand(0, LOOT_DROP_ITEMS_PRIORITY, string(move, 1));
+					setCommand(0, LOOT_DROP_ITEMS_PRIORITY, string(1, move));
 					sequence = 0;
 					return;
 				}
@@ -112,7 +112,7 @@ void Loot::analyze() {
 		} else if (move != ILLEGAL_MOVE && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			setCommand(0, LOOT_VISIT_STASH_PRIORITY, string(move, 1));
+			setCommand(0, LOOT_VISIT_STASH_PRIORITY, string(1, move));
 			sequence = 0;
 		}
 	}
@@ -149,7 +149,7 @@ void Loot::parseMessages(const string &messages) {
 				continue;
 			} else if (wanted >= p->second.count) {
 				/* pick up all */
-				setCommand(0, PRIORITY_SELECT_ITEM, string(p->first, 1));
+				setCommand(0, PRIORITY_SELECT_ITEM, string(1, p->first));
 			} else {
 				/* pick up some */
 				stringstream tmp;
@@ -180,7 +180,7 @@ void Loot::parseMessages(const string &messages) {
 				} else if (unwanted >= d->second.count) {
 					/* drop all */
 					saiph->inventory[d->first].count = 0;
-					setCommand(0, PRIORITY_SELECT_ITEM, string(d->first, 1));
+					setCommand(0, PRIORITY_SELECT_ITEM, string(1, d->first));
 				} else {
 					/* drop some */
 					saiph->inventory[d->first].count -= unwanted;

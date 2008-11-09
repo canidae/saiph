@@ -28,7 +28,7 @@ void Vault::parseMessages(const string &messages) {
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 			if (d->second.name != "gold piece")
 				continue;
-			setCommand(0, PRIORITY_SELECT_ITEM, string(d->first, 1));
+			setCommand(0, PRIORITY_SELECT_ITEM, string(1, d->first));
 			sequence = 0;
 			return;
 		}
@@ -68,7 +68,7 @@ void Vault::parseMessages(const string &messages) {
 				if (moves == 1)
 					setCommand(0, VAULT_GO_OUT_PRIORITY, REST);
 				else
-					setCommand(0, VAULT_GO_OUT_PRIORITY, string(move, 1));
+					setCommand(0, VAULT_GO_OUT_PRIORITY, string(1, move));
 				sequence = 0;
 				return;
 			}

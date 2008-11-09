@@ -265,7 +265,7 @@ void Food::analyze() {
 							setCommand(0, FOOD_EAT_FAINTING_PRIORITY, EAT);
 							break;
 					}
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(i->first, 1));
+					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
 					sequence = 0;
 					return;
 				}
@@ -284,7 +284,7 @@ void Food::analyze() {
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
 				setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
-				setCommand(1, PRIORITY_CONTINUE_ACTION, string(i->first, 1));
+				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
 				sequence = 0;
 				return;
 			}
@@ -305,7 +305,7 @@ void Food::analyze() {
 					if (safeToEat(i->name)) {
 						/* it is, and we know we can eat corpses on this position */
 						setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
-						setCommand(1, PRIORITY_CONTINUE_ACTION, string(i->name, 1));
+						setCommand(1, PRIORITY_CONTINUE_ACTION, i->name);
 						setCommand(2, PRIORITY_LOOK, LOOK);
 						sequence = 0;
 						return;
@@ -414,7 +414,7 @@ bool Food::request(const Request &request) {
 			if (i->second.name != request.data)
 				continue;
 			setCommand(0, request.priority, EAT);
-			setCommand(1, PRIORITY_CONTINUE_ACTION, string(i->first, 1));
+			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
 			sequence = 0;
 			return true;
 		}
