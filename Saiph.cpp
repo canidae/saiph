@@ -376,8 +376,8 @@ bool Saiph::run() {
 	/* find best analyzer */
 	int best_priority = ILLEGAL_PRIORITY;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->sequence >= 0 && (*a)->commands[(*a)->sequence].priority > best_priority) {
-			best_priority = (*a)->commands[(*a)->sequence].priority;
+		if ((*a)->getPriority() > best_priority) {
+			best_priority = (*a)->getPriority();
 			best_analyzer = *a;
 		}
 	}
@@ -396,20 +396,20 @@ bool Saiph::run() {
 	}
 
 	/* let an analyzer do its command */
-	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->commands[best_analyzer->sequence].data << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
-	world->executeCommand(best_analyzer->commands[best_analyzer->sequence].data);
+	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->getCommand() << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
+	world->executeCommand(best_analyzer->getCommand());
 	if (stuck_counter < 42) {
 		best_analyzer->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
-		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->commands[best_analyzer->sequence].data << endl;
+		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->getCommand() << endl;
 		best_analyzer->fail();
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
-	last_command = best_analyzer->commands[best_analyzer->sequence].data;
+	last_command = best_analyzer->getCommand();
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;

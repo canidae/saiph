@@ -31,6 +31,20 @@ void Analyzer::complete() {
 void Analyzer::fail() {
 }
 
+string &Analyzer::getCommand() {
+	if (sequence >= 0 && sequence < (int) commands.size())
+		return commands[sequence].data;
+	/* this shouldn't happen */
+	setCommand(0, ILLEGAL_PRIORITY, SEARCH);
+	return commands[0].data;
+}
+
+int Analyzer::getPriority() {
+	if (sequence >= 0 && sequence < (int) commands.size())
+		return commands[sequence].priority;
+	return ILLEGAL_PRIORITY;
+}
+
 void Analyzer::init() {
 }
 
@@ -44,6 +58,7 @@ bool Analyzer::request(const Request &request) {
 	return false;
 }
 
+/* protected methods */
 bool Analyzer::setCommand(int index, int priority, const string &data) {
 	if (index < 0 || index + 1 > (int) commands.size())
 		return false;
