@@ -405,10 +405,6 @@ bool Saiph::run() {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->getCommand() << endl;
 		best_analyzer->fail();
 	}
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if (((*a) != best_analyzer || (*a)->wasLastCommand()) && !(*a)->rememberCommand())
-			(*a)->clearCommands();
-	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
 	else
@@ -417,6 +413,12 @@ bool Saiph::run() {
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;
+
+	/* clear old commands */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if (((*a) != best_analyzer || (*a)->wasLastCommand()) && !(*a)->rememberCommand())
+			(*a)->clearCommands();
+	}
 	return true;
 }
 

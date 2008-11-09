@@ -25,7 +25,7 @@ void Explore::analyze() {
 		return; // no exploring while blind/hallu/stun
 	/* make the place the player stands on "visited" */
 	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
-	if (commands[0].priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
+	if (getPriority() < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
 		/* explore unknown stairs on level, unless we're on depth 1.
 		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
 		/* go up first (or we'll never check the upstairs) */
@@ -144,14 +144,14 @@ void Explore::analyze() {
 				e = explore.erase(e);
 				continue;
 		}
-		if (cur_priority < commands[0].priority) {
+		if (cur_priority < getPriority()) {
 			++e;
 			continue;
 		}
 		int moves = 0;
 		unsigned char move = saiph->shortestPath(*e, false, &moves);
 		++e;
-		if (cur_priority == commands[0].priority && moves > best_moves)
+		if (cur_priority == getPriority() && moves > best_moves)
 			continue;
 		if (move == ILLEGAL_MOVE)
 			continue;
@@ -162,7 +162,7 @@ void Explore::analyze() {
 		sequence = 0;
 		best_moves = moves;
 	}
-	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && commands[0].priority < EXPLORE_DESCEND) {
+	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && getPriority() < EXPLORE_DESCEND) {
 		/* if we're in the mines, go up */
 		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++up) {
 			int moves = 0;
@@ -177,7 +177,7 @@ void Explore::analyze() {
 			}
 		}
 	}
-	if (commands[0].priority < EXPLORE_DESCEND) {
+	if (getPriority() < EXPLORE_DESCEND) {
 		/* descend */
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
 			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
