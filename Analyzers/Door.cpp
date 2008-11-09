@@ -64,15 +64,9 @@ void Door::parseMessages(const string &messages) {
 		++sequence;
 		/* we're going to assume the door won't be locked anymore */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, UNKNOWN_SYMBOL_VALUE);
-		sequence = -1;
 	} else if (sequence >= 1 && sequence <= 2 && messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, 1);
-	} else if (sequence > 0) {
-		/* only first action is an action that may have lower priority
-		 * than the action from another analyzer.
-		 * we can safely set sequence back to -1 */
-		sequence = -1;
 	}
 }
 

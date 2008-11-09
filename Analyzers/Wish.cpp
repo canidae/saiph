@@ -10,10 +10,6 @@ Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph) {
 }
 
 /* methods */
-void Wish::complete() {
-	sequence = -1;
-}
-
 void Wish::parseMessages(const string &messages) {
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
 		/* we actually got a wish?

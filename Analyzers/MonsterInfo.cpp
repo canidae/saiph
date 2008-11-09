@@ -29,10 +29,6 @@ void MonsterInfo::analyze() {
 	}
 }
 
-void MonsterInfo::complete() {
-	sequence = -1;
-}
-
 void MonsterInfo::parseMessages(const string &messages) {
 	if (messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ' && look_at != saiph->levels[saiph->position.level].monsters.end()) {
 		/* probably looked at a monster */

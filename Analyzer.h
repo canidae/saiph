@@ -16,19 +16,24 @@ class Analyzer {
 		virtual ~Analyzer();
 
 		virtual void analyze();
+		void clearCommands();
 		virtual void complete();
 		virtual void fail();
-		virtual std::string &getCommand();
-		virtual int getPriority();
+		std::string &getCommand();
+		int getPriority();
 		virtual void init();
 		virtual void inspect(const Point &point);
 		virtual void parseMessages(const std::string &messages);
+		bool rememberCommand();
 		virtual bool request(const Request &request);
 
 	protected:
 		std::vector<Command> commands;
 		int sequence;
 
-		virtual bool setCommand(int index, int priority, const std::string &data);
+		bool setCommand(int index, int priority, const std::string &data, bool remember = false);
+
+	private:
+		int last_sequence;
 };
 #endif

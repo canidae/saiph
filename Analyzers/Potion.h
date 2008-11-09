@@ -15,7 +15,6 @@ class Potion : public Analyzer {
 	public:
 		Potion(Saiph *saiph);
 
-		void complete();
 		void parseMessages(const std::string &messages);
 
 	private:

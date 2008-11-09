@@ -41,8 +41,6 @@ void Elbereth::parseMessages(const string &messages) {
 		 * we're on step 1 or 2.
 		 * in any case, go to step 3 */
 		sequence = 3;
-	} else if (sequence > 0) {
-		sequence = -1;
 	}
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(MESSAGE_YOU_READ, 0);
@@ -80,7 +78,7 @@ bool Elbereth::request(const Request &request) {
 		/* we can engrave and elbereth will (probably) be respected */
 		if (last_look_internal_turn != saiph->internal_turn) {
 			/* we'll need to look first, which means set action & priority and return true */
-			setCommand(0, PRIORITY_LOOK, LOOK);
+			setCommand(0, PRIORITY_LOOK, LOOK, true);
 			sequence = 0;
 			return true;
 		} else {
@@ -93,7 +91,7 @@ bool Elbereth::request(const Request &request) {
 			} else if (!burned && !digged && elbereth_count < 3) {
 				/* we should engrave in the dust/frost */
 				setCommand(0, request.priority, ENGRAVE);
-				setCommand(1, request.priority, HANDS);
+				setCommand(1, PRIORITY_CONTINUE_ACTION, HANDS);
 				if (elbereth_count > 0)
 					setCommand(2, PRIORITY_CONTINUE_ACTION, YES); // append
 				else

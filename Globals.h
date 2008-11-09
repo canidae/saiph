@@ -161,12 +161,12 @@
  * 1000->  : zero-turn actions, defined below
  */
 #define ILLEGAL_PRIORITY -1
-#define PRIORITY_CONTINUE_ACTION 1004
-#define PRIORITY_SELECT_ITEM 1003
-#define PRIORITY_CLOSE_PAGE 1002
-#define PRIORITY_CHECK_INVENTORY 1001
+#define PRIORITY_CONTINUE_ACTION 1003
+#define PRIORITY_SELECT_ITEM 1002
+#define PRIORITY_CLOSE_PAGE 1001
 #define PRIORITY_LOOK 1000
 #define PRIORITY_MAX 999
+#define PRIORITY_MIN 0
 /* messages */
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_CURRENT_SKILLS "  Current skills:  "

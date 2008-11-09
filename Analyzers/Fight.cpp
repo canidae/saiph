@@ -45,6 +45,7 @@ void Fight::analyze() {
 					setCommand(0, FIGHT_ATTACK_PRIORITY, THROW);
 					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, got_thrown));
 					setCommand(2, PRIORITY_CONTINUE_ACTION, string(1, in_line));
+					sequence = 0;
 					min_distance = distance;
 					continue;
 				}
@@ -65,6 +66,7 @@ void Fight::analyze() {
 			setCommand(0, FIGHT_BLUE_E_PRIORITY, string(1, move));
 		else
 			setCommand(0, (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY, string(1, move));
+		sequence = 0;
 		min_distance = distance;
 		min_moves = moves;
 	}
@@ -82,8 +84,6 @@ void Fight::parseMessages(const string &messages) {
 		/* this may happen after we've said which direction to attack.
 		 * overwrite current command with YES */
 		setCommand(sequence, PRIORITY_CONTINUE_ACTION, YES);
-	} else if (sequence > 0) {
-		sequence = -1;
 	}
 }
 

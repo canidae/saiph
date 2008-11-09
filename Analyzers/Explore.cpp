@@ -7,11 +7,7 @@ using namespace std;
 
 /* constructors/destructor */
 Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
-	/* we never stop exploring, so just set sequence to 0 here.
-	 * this analyzer needs a _huge_ overhaul, it just sucks */
-	sequence = 0;
-
-	/* argh */
+	/* this analyzer needs a _huge_ overhaul, it just sucks */
 	for (int a = 0; a < MAX_DUNGEON_DEPTH; ++a) {
 		for (int b = 0; b < MAP_ROW_END + 1; ++b) {
 			for (int c = 0; c < MAP_COL_END + 1; ++c) {
@@ -43,6 +39,7 @@ void Explore::analyze() {
 					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, MOVE_UP));
 				else
 					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, move));
+				sequence = 0;
 				return;
 			}
 		}
@@ -56,6 +53,7 @@ void Explore::analyze() {
 					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, MOVE_DOWN));
 				else
 					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(1, move));
+				sequence = 0;
 				return;
 			}
 		}
@@ -161,6 +159,7 @@ void Explore::analyze() {
 			setCommand(0, cur_priority, SEARCH);
 		else
 			setCommand(0, cur_priority, string(1, move));
+		sequence = 0;
 		best_moves = moves;
 	}
 	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && commands[0].priority < EXPLORE_DESCEND) {
@@ -173,6 +172,7 @@ void Explore::analyze() {
 					setCommand(0, EXPLORE_DESCEND, string(1, MOVE_UP));
 				else
 					setCommand(0, EXPLORE_DESCEND, string(1, move));
+				sequence = 0;
 				break;
 			}
 		}
@@ -189,6 +189,7 @@ void Explore::analyze() {
 					setCommand(0, EXPLORE_DESCEND, string(1, MOVE_DOWN));
 				else
 					setCommand(0, EXPLORE_DESCEND, string(1, move));
+				sequence = 0;
 				break;
 			}
 		}
@@ -211,5 +212,6 @@ void Explore::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
 		/* temporary hack for teleport control */
 		setCommand(0, PRIORITY_CONTINUE_ACTION, "><,");
+		sequence = 0;
 	}
 }

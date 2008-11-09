@@ -52,8 +52,6 @@ void Excalibur::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
 		/* alright! */
 		excalibur_exists = true;
-		sequence = -1;
-	} else if (sequence > 0) {
-		sequence = -1;
+		clearCommands();
 	}
 }

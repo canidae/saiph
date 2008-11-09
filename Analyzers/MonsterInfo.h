@@ -13,7 +13,6 @@ class MonsterInfo : public Analyzer {
 		MonsterInfo(Saiph *saiph);
 
 		void analyze();
-		void complete();
 		void parseMessages(const std::string &messages);
 
 	private:

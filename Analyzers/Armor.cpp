@@ -18,11 +18,6 @@ void Armor::parseMessages(const string &messages) {
 	if (sequence == 0 && saiph->world->question && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
 		/* wear or take off something */
 		++sequence;
-	} else if (sequence > 0) {
-		/* sequence above 0 got priority PRIORITY_CONTINUE,
-		 * this means that when the above checks fail,
-		 * we're done putting on/taking off armor */
-		sequence = -1;
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
@@ -88,7 +83,7 @@ void Armor::wearArmor() {
 			/* are we wearing a cloak? */
 			if (worn[ARMOR_CLOAK] != 0) {
 				/* yes, we must take it off first */
-				setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
+				setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF, true);
 				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[ARMOR_CLOAK]));
 				sequence = 0;
 				return;
@@ -97,7 +92,7 @@ void Armor::wearArmor() {
 				/* are we wearing a suit? */
 				if (worn[ARMOR_SUIT] != 0) {
 					/* yes, we must take it off first */
-					setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
+					setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF, true);
 					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[ARMOR_SUIT]));
 					sequence = 0;
 					return;
@@ -106,13 +101,13 @@ void Armor::wearArmor() {
 		}
 		if (worn[s] != 0) {
 			/* we'll have to take this armor off first */
-			setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
+			setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF, true);
 			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[s]));
 			sequence = 0;
 			return;
 		}
 		/* we should put on this piece of armor */
-		setCommand(0, ARMOR_WEAR_PRIORITY, WEAR);
+		setCommand(0, ARMOR_WEAR_PRIORITY, WEAR, true);
 		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key[s]));
 		sequence = 0;
 		return;

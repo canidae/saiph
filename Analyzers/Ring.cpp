@@ -21,10 +21,6 @@ void Ring::parseMessages(const string &messages) {
 	} else if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHICH_RING_FINGER, 0) != string::npos) {
 		/* need to specify which finger the ring should go on */
 		++sequence;
-	} else if (sequence > 0) {
-		/* if sequence > 0 and the above checks failed,
-		 * it probably means we put on/removed a ring */
-		sequence = -1;
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
@@ -85,7 +81,7 @@ void Ring::wearRing() {
 		return; // already wearing just as good or better rings
 	if (ring_on_right != 0 && ring_on_left != 0) {
 		/* must remove one ring before we can put on the new ring */
-		setCommand(0, RING_WEAR_PRIORITY, REMOVE);
+		setCommand(0, RING_WEAR_PRIORITY, REMOVE, true);
 		/* in case we get question about which ring to remove */
 		if (ring_on_right_pri < ring_on_left_pri)
 			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, ring_on_left));
@@ -94,7 +90,7 @@ void Ring::wearRing() {
 		sequence = 0;
 	} else {
 		/* no need to remove any rings, just put on the new ring */
-		setCommand(0, RING_WEAR_PRIORITY, PUT_ON);
+		setCommand(0, RING_WEAR_PRIORITY, PUT_ON, true);
 		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key));
 		/* in case we get question about which hand to put ring on */
 		setCommand(2, PRIORITY_CONTINUE_ACTION, "l");

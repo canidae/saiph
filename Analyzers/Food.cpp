@@ -254,15 +254,15 @@ void Food::analyze() {
 					/* and we got something to eat */
 					switch (saiph->world->player.hunger) {
 						case HUNGRY:
-							setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
+							setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT, true);
 							break;
 
 						case WEAK:
-							setCommand(0, FOOD_EAT_WEAK_PRIORITY, EAT);
+							setCommand(0, FOOD_EAT_WEAK_PRIORITY, EAT, true);
 							break;
 
 						default:
-							setCommand(0, FOOD_EAT_FAINTING_PRIORITY, EAT);
+							setCommand(0, FOOD_EAT_FAINTING_PRIORITY, EAT, true);
 							break;
 					}
 					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
@@ -283,7 +283,7 @@ void Food::analyze() {
 		/* easter egg: eat bytes when [over]satiated */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
-				setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
+				setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT, true);
 				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
 				sequence = 0;
 				return;
@@ -306,7 +306,7 @@ void Food::analyze() {
 						/* it is, and we know we can eat corpses on this position */
 						setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
 						setCommand(1, PRIORITY_CONTINUE_ACTION, i->name);
-						setCommand(2, PRIORITY_LOOK, LOOK);
+						setCommand(2, PRIORITY_LOOK, LOOK, true);
 						sequence = 0;
 						return;
 					}
@@ -314,11 +314,6 @@ void Food::analyze() {
 			}
 		}
 	}
-}
-
-void Food::complete() {
-	if (sequence == 2 && commands[2].data == LOOK)
-		sequence = -1;
 }
 
 void Food::parseMessages(const string &messages) {
@@ -413,7 +408,7 @@ bool Food::request(const Request &request) {
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name != request.data)
 				continue;
-			setCommand(0, request.priority, EAT);
+			setCommand(0, request.priority, EAT, true);
 			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
 			sequence = 0;
 			return true;

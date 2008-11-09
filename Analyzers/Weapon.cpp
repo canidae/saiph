@@ -20,7 +20,7 @@ void Weapon::parseMessages(const string &messages) {
 		/* wield a weapon */
 		++sequence;
 	} else if (sequence > 0) {
-		sequence = -1;
+		clearCommands();
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
@@ -68,7 +68,7 @@ void Weapon::wieldWeapon() {
 		/* wielding best weapon or got no weapon to wield */
 		return;
 	}
-	setCommand(0, WEAPON_WIELD_PRIORITY, WIELD);
+	setCommand(0, WEAPON_WIELD_PRIORITY, WIELD, true);
 	setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key));
 	sequence = 0;
 }

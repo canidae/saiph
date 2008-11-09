@@ -11,7 +11,6 @@ class Wish : public Analyzer {
 	public:
 		Wish(Saiph *saiph);
 
-		void complete();
 		void parseMessages(const std::string &messages);
 
 	private:
