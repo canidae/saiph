@@ -42,7 +42,7 @@ string &Analyzer::getCommand() {
 	if (sequence >= 0 && sequence <= last_sequence)
 		return commands[sequence].data;
 	/* this shouldn't happen */
-	setCommand(0, ILLEGAL_PRIORITY, SEARCH);
+	setCommand(0, ILLEGAL_PRIORITY, "Sy");
 	return commands[0].data;
 }
 
@@ -70,6 +70,10 @@ bool Analyzer::rememberCommand() {
 
 bool Analyzer::request(const Request &request) {
 	return false;
+}
+
+bool Analyzer::wasLastCommand() {
+	return (sequence == last_sequence);
 }
 
 /* protected methods */

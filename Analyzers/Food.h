@@ -55,6 +55,7 @@ class Food : public Analyzer {
 		Food(Saiph *saiph);
 
 		void analyze();
+		void complete();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 

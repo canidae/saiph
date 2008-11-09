@@ -398,16 +398,16 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->getCommand() << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->getCommand());
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a) != best_analyzer && !(*a)->rememberCommand())
-			(*a)->clearCommands();
-	}
 	if (stuck_counter < 42) {
 		best_analyzer->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->getCommand() << endl;
 		best_analyzer->fail();
+	}
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if (((*a) != best_analyzer || (*a)->wasLastCommand()) && !(*a)->rememberCommand())
+			(*a)->clearCommands();
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;

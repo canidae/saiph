@@ -197,7 +197,7 @@ void Explore::analyze() {
 }
 
 void Explore::complete() {
-	if (sequence == 0 && commands[0].data == SEARCH)
+	if (getCommand() == SEARCH)
 		++search[saiph->position.level][saiph->world->player.row][saiph->world->player.col];
 }
 

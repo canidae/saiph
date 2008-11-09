@@ -26,6 +26,7 @@ class Analyzer {
 		virtual void parseMessages(const std::string &messages);
 		bool rememberCommand();
 		virtual bool request(const Request &request);
+		bool wasLastCommand();
 
 	protected:
 		std::vector<Command> commands;
