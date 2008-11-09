@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <fcntl.h>
 #include <pty.h>
 #include "Globals.h"
@@ -15,8 +16,7 @@ Local::Local(ofstream *debugfile) : Connection(debugfile) {
 
 	/* set up pty */
 	int fd = 0;
-	char slave[256];
-	memset(slave, '\0', sizeof (slave));
+	char slave[256] = {0};
 	winsize wsize;
 	wsize.ws_row = ROWS;
 	wsize.ws_col = COLS;

@@ -1,3 +1,4 @@
+#include <string.h>
 #include <string>
 #include "Globals.h"
 #include "Player.h"

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "MonsterInfo.h"
 #include "../Saiph.h"
 
@@ -21,11 +22,15 @@ void MonsterInfo::analyze() {
 		int distance = max(abs(look_at->first.row - saiph->position.row), abs(look_at->first.col - saiph->position.col));
 		if (look_at->second.attitude == ATTITUDE_UNKNOWN || (distance == 1 && look_at->second.attitude == FRIENDLY)) {
 			last_check_internal_turn = saiph->internal_turn;
-			command = saiph->farlook(look_at->first);
-			priority = PRIORITY_LOOK;
+			setCommand(0, PRIORITY_LOOK, saiph->farlook(look_at->first));
+			sequence = 0;
 			return;
 		}
 	}
+}
+
+void MonsterInfo::complete() {
+	sequence = -1;
 }
 
 void MonsterInfo::parseMessages(const string &messages) {

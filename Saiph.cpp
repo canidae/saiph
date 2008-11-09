@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <iostream>
 #include "Analyzer.h"
 #include "Connection.h"
@@ -354,10 +355,6 @@ bool Saiph::run() {
 	/* analyzer stuff comes here */
 	Analyzer *best_analyzer = NULL;
 
-	/* clear priority from analyzers */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->priority = ILLEGAL_PRIORITY;
-
 	/* let analyzers parse messages */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->parseMessages(world->messages);
@@ -379,8 +376,8 @@ bool Saiph::run() {
 	/* find best analyzer */
 	int best_priority = ILLEGAL_PRIORITY;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->priority > best_priority) {
-			best_priority = (*a)->priority;
+		if ((*a)->sequence >= 0 && (*a)->commands[(*a)->sequence].priority > best_priority) {
+			best_priority = (*a)->commands[(*a)->sequence].priority;
 			best_analyzer = *a;
 		}
 	}
@@ -399,20 +396,20 @@ bool Saiph::run() {
 	}
 
 	/* let an analyzer do its command */
-	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
-	world->executeCommand(best_analyzer->command);
+	debugfile << COMMAND_DEBUG_NAME << "'" << best_analyzer->commands[best_analyzer->sequence].data << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
+	world->executeCommand(best_analyzer->commands[best_analyzer->sequence].data);
 	if (stuck_counter < 42) {
 		best_analyzer->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
-		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
+		debugfile << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->commands[best_analyzer->sequence].data << endl;
 		best_analyzer->fail();
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
-	last_command = best_analyzer->command;
+	last_command = best_analyzer->commands[best_analyzer->sequence].data;
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;

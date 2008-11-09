@@ -55,12 +55,12 @@ class Food : public Analyzer {
 		Food(Saiph *saiph);
 
 		void analyze();
+		void complete();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
 		Saiph *saiph;
-		std::string command2;
 		std::vector<std::string> eat_order;
 		std::map<std::string, int> corpse_data;
 		std::map<Point, unsigned char> prev_monster_loc;

@@ -6,37 +6,21 @@
 using namespace std;
 
 /* constructors/destructor */
-Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1), sequence(-1) {
+Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0) {
 }
 
 /* methods */
-void Unihorn::analyze() {
-	if (apply_priority >= 0) {
-		findUnihorn();
-		if (unihorn_key == 0) {
-			/* lost unihorn somehow */
-			apply_priority = -1;
-			return;
-		}
-		/* unihorn failed last attempt, try again */
-		command = APPLY;
-		priority = apply_priority;
-		sequence = 0;
-	}
-}
-
 void Unihorn::complete() {
 	if (sequence == 0)
-		sequence = 1;
+		++sequence;
 }
 
 void Unihorn::parseMessages(const string &messages) {
 	if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
-		command = unihorn_key;
-		priority = PRIORITY_CONTINUE_ACTION;
-		sequence = 2;
-	} else if (sequence == 2 && messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
-		apply_priority = -1;
+		/* back to start in case unihorn failed */
+		sequence = 0;
+	} else if (sequence == 0 && messages.find(MESSAGE_NOTHING_HAPPENS, 0) != string::npos) {
+		/* no more bad stuff to fix */
 		sequence = -1;
 	}
 }
@@ -47,10 +31,8 @@ bool Unihorn::request(const Request &request) {
 		if (unihorn_key == 0)
 			return false;
 		/* we got a unicorn horn */
-		if (request.priority > apply_priority)
-			apply_priority = request.priority;
-		command = APPLY;
-		priority = apply_priority;
+		setCommand(0, request.priority, APPLY);
+		setCommand(1, PRIORITY_CONTINUE_ACTION, string(unihorn_key, 1));
 		sequence = 0;
 		return true;
 	}

@@ -4,7 +4,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command("") {
+Analyzer::Analyzer(string name) : name(name), commands(1), sequence(-1) {
 	/* methods will be called in this order:
 	 * 0. init (once, after all analyzers have been created)
 	 * 1. parseMessages
@@ -42,4 +42,14 @@ void Analyzer::parseMessages(const string &messages) {
 
 bool Analyzer::request(const Request &request) {
 	return false;
+}
+
+bool Analyzer::setCommand(int index, int priority, const string &data) {
+	if (index < 0 || index + 1 > (int) commands.size())
+		return false;
+	if (index < (int) commands.size())
+		commands[index].setCommand(priority, data);
+	else
+		commands.push_back(Command(priority, data));
+	return true;
 }

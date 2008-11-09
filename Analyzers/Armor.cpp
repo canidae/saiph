@@ -5,35 +5,27 @@
 using namespace std;
 
 /* constructors/destructor */
-Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_more(false) {
+Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph) {
 }
 
 /* methods */
 void Armor::analyze() {
-	if (saiph->inventory_changed || wear_more) {
-		wear_more = true;
+	if (saiph->inventory_changed)
 		wearArmor();
-	}
 }
 
 void Armor::parseMessages(const string &messages) {
-	if (saiph->world->question && !command2.empty() && (messages.find(ARMOR_WHAT_TO_WEAR, 0) != string::npos || messages.find(ARMOR_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
-		/* take off or wear something */
-		command = command2;
-		command2.clear();
-		priority = PRIORITY_CONTINUE_ACTION;
+	if (sequence == 0 && saiph->world->question && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
+		/* wear or take off something */
+		++sequence;
+	} else if (sequence > 0) {
+		/* sequence above 0 got priority PRIORITY_CONTINUE,
+		 * this means that when the above checks fail,
+		 * we're done putting on/taking off armor */
+		sequence = -1;
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (!saiph->world->question && !command2.empty() && messages.find(ARMOR_YOU_WERE_WEARING, 0) != string::npos) {
-		/* took off last piece of armor (no "what do you want to take off?" question then) */
-		command2.clear();
-		/* request dirty inventory */
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
-	} else if (command == WEAR) {
-		/* in case we didn't get to wear the armor */
-		priority = ARMOR_WEAR_PRIORITY;
 	}
 }
 
@@ -55,10 +47,8 @@ bool Armor::request(const Request &request) {
 void Armor::wearArmor() {
 	/* put on or change armor (which means we'll have to take something off) */
 	/* check that we're (still) wearing our preferred armor */
-	unsigned char worn[ARMOR_SLOTS];
-	memset(worn, 0, sizeof (worn));
-	unsigned char best_key[ARMOR_SLOTS];
-	memset(best_key, 0, sizeof (best_key));
+	unsigned char worn[ARMOR_SLOTS] = {0};
+	unsigned char best_key[ARMOR_SLOTS] = {0};
 	int best_armor[ARMOR_SLOTS];
 	bool is_cursed[ARMOR_SLOTS];
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
@@ -98,36 +88,33 @@ void Armor::wearArmor() {
 			/* are we wearing a cloak? */
 			if (worn[ARMOR_CLOAK] != 0) {
 				/* yes, we must take it off first */
-				command = TAKEOFF;
-				command2 = worn[ARMOR_CLOAK];
-				priority = ARMOR_WEAR_PRIORITY;
+				setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
+				setCommand(1, PRIORITY_CONTINUE_ACTION, string(worn[ARMOR_CLOAK], 1));
+				sequence = 0;
 				return;
 			}
 			if (s == ARMOR_SHIRT) {
 				/* are we wearing a suit? */
 				if (worn[ARMOR_SUIT] != 0) {
 					/* yes, we must take it off first */
-					command = TAKEOFF;
-					command2 = worn[ARMOR_SUIT];
-					priority = ARMOR_WEAR_PRIORITY;
+					setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
+					setCommand(1, PRIORITY_CONTINUE_ACTION, string(worn[ARMOR_SUIT], 1));
+					sequence = 0;
 					return;
 				}
 			}
 		}
 		if (worn[s] != 0) {
 			/* we'll have to take this armor off first */
-			command = TAKEOFF;
-			command2 = worn[s];
-			priority = ARMOR_WEAR_PRIORITY;
+			setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF);
+			setCommand(1, PRIORITY_CONTINUE_ACTION, string(worn[s], 1));
+			sequence = 0;
 			return;
 		}
 		/* we should put on this piece of armor */
-		command = WEAR;
-		command2 = best_key[s];
-		priority = ARMOR_WEAR_PRIORITY;
+		setCommand(0, ARMOR_WEAR_PRIORITY, WEAR);
+		setCommand(1, PRIORITY_CONTINUE_ACTION, string(best_key[s], 1));
+		sequence = 0;
 		return;
 	}
-	/* nothing to wear */
-	wear_more = false;
-	command.clear();
 }

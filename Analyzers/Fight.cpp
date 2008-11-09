@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Fight.h"
 #include "../Saiph.h"
 #include "../World.h"
@@ -12,8 +13,8 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
-		command = MOVE_NW; // doesn't matter which direction
-		priority = FIGHT_ATTACK_PRIORITY;
+		setCommand(0, FIGHT_ATTACK_PRIORITY, string(MOVE_NW, 1));
+		sequence = 0;
 		return;
 	}
 	/* fight monsters */
@@ -39,13 +40,12 @@ void Fight::analyze() {
 					got_thrown = gotThrown();
 				if (got_thrown != FIGHT_NO_THROWN_WEAPONS) {
 					/* got thrown weapons */
-					if (priority == FIGHT_ATTACK_PRIORITY && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
+					if (commands[0].priority == FIGHT_ATTACK_PRIORITY && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
 						continue; // already got a target
-					priority = FIGHT_ATTACK_PRIORITY;
+					setCommand(0, FIGHT_ATTACK_PRIORITY, string(THROW, 1));
+					setCommand(1, PRIORITY_CONTINUE_ACTION, string(got_thrown, 1));
+					setCommand(2, PRIORITY_CONTINUE_ACTION, string(in_line, 1));
 					min_distance = distance;
-					command = THROW;
-					command2 = got_thrown;
-					command3 = in_line;
 					continue;
 				}
 			}
@@ -55,39 +55,35 @@ void Fight::analyze() {
 		unsigned char move = saiph->shortestPath(m->first, true, &moves);
 		if (move == ILLEGAL_MOVE)
 			continue; // unable to path to monster
-		if (moves > 1 && priority > FIGHT_MOVE_PRIORITY)
+		if (moves > 1 && sequence >= 0 && commands[sequence].priority > FIGHT_MOVE_PRIORITY)
 			continue; // we must move to monster, but we got something else with higher priority
 		if (moves > min_moves)
 			continue; // we know of a monster closer than this one
-		if (moves == 1 && distance == min_distance && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
+		if (moves == 1 && distance == min_distance && sequence >= 0 && commands[sequence].priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
 		if (blue_e)
-			priority = FIGHT_BLUE_E_PRIORITY;
+			setCommand(0, FIGHT_BLUE_E_PRIORITY, string(move, 1));
 		else
-			priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
+			setCommand(0, (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY, string(move, 1));
 		min_distance = distance;
 		min_moves = moves;
-		command = move;
 	}
 }
 
 void Fight::parseMessages(const string &messages) {
-	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
-		command = YES;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && !command3.empty() && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
-		command = command2;
-		command2 = command3;
-		command3 = THROW;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && command3 == THROW && !command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
-		command = command2;
-		command2.clear();
-		command3.clear();
-		priority = PRIORITY_CONTINUE_ACTION;
+	if (sequence == 0 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
+		++sequence;
+	} else if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+		++sequence;
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
 		saiph->request(req);
+	} else if (sequence == 1 && saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
+		/* this may happen after we've said which direction to attack.
+		 * overwrite current command with YES */
+		setCommand(sequence, PRIORITY_CONTINUE_ACTION, YES);
+	} else if (sequence > 0) {
+		sequence = -1;
 	}
 }
 

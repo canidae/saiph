@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Globals.h"
 #include "Item.h"
 

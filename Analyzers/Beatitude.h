@@ -24,6 +24,5 @@ class Beatitude : public Analyzer {
 
 	private:
 		Saiph *saiph;
-		bool check_beatitude;
 };
 #endif

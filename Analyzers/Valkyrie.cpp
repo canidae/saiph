@@ -8,14 +8,58 @@ Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph) {
 /* methods */
 void Valkyrie::init() {
 	int groupstart = 0;
+	setupAmulet(groupstart);
 	setupArmor(groupstart);
 	setupFood(groupstart);
+	setupRing(groupstart);
 	setupTool(groupstart);
 	setupWand(groupstart);
 	setupWeapon(groupstart);
 }
 
 /* private methods */
+void Valkyrie::setupAmulet(int &groupstart) {
+	/* 1 of each unidentified amulet */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 1;
+	req.data = "circular";
+	saiph->request(req);
+	req.data = "spherical";
+	saiph->request(req);
+	req.data = "oval";
+	saiph->request(req);
+	req.data = "triangular";
+	saiph->request(req);
+	req.data = "pyramidal";
+	saiph->request(req);
+	req.data = "square";
+	saiph->request(req);
+	req.data = "concave";
+	saiph->request(req);
+	req.data = "hexagonal";
+	saiph->request(req);
+	req.data = "octagonal";
+	saiph->request(req);
+
+	/* and one of each useful amulet */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 1;
+	req.data = "amulet of ESP";
+	saiph->request(req);
+	req.data = "amulet of life saving";
+	saiph->request(req);
+	req.data = "amulet of magical breathing";
+	saiph->request(req);
+	req.data = "amulet of reflection";
+	saiph->request(req);
+	req.data = "amulet of unchanging";
+	saiph->request(req);
+	req.data = "Amulet of Yendor";
+	saiph->request(req);
+}
+
 void Valkyrie::setupArmor(int &groupstart) {
 	/* create shirt group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
@@ -627,6 +671,137 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
 }
 
+void Valkyrie::setupRing(int &groupstart) {
+	/* 2 of each unidentified ring */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 2;
+	req.data = "pearl";
+	saiph->request(req);
+	req.data = "iron";
+	saiph->request(req);
+	req.data = "twisted";
+	saiph->request(req);
+	req.data = "steel";
+	saiph->request(req);
+	req.data = "wire";
+	saiph->request(req);
+	req.data = "engagement";
+	saiph->request(req);
+	req.data = "shiny";
+	saiph->request(req);
+	req.data = "bronze";
+	saiph->request(req);
+	req.data = "brass";
+	saiph->request(req);
+	req.data = "copper";
+	saiph->request(req);
+	req.data = "silver";
+	saiph->request(req);
+	req.data = "gold";
+	saiph->request(req);
+	req.data = "wooden";
+	saiph->request(req);
+	req.data = "granite";
+	saiph->request(req);
+	req.data = "opal";
+	saiph->request(req);
+	req.data = "clay";
+	saiph->request(req);
+	req.data = "coral";
+	saiph->request(req);
+	req.data = "black";
+	saiph->request(req);
+	req.data = "onyx";
+	saiph->request(req);
+	req.data = "moonstone";
+	saiph->request(req);
+	req.data = "tiger";
+	saiph->request(req);
+	req.data = "eye";
+	saiph->request(req);
+	req.data = "jade";
+	saiph->request(req);
+	req.data = "agate";
+	saiph->request(req);
+	req.data = "topaz";
+	saiph->request(req);
+	req.data = "sapphire";
+	saiph->request(req);
+	req.data = "ruby";
+	saiph->request(req);
+	req.data = "diamond";
+	saiph->request(req);
+	req.data = "ivory";
+	saiph->request(req);
+	req.data = "emerald";
+	saiph->request(req);
+
+	/* and one of each useful ring */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 1;
+	req.data = "ring of protection";
+	saiph->request(req);
+	req.data = "ring of protection from shape changers";
+	saiph->request(req);
+	req.data = "ring of stealth";
+	saiph->request(req);
+	req.data = "ring of sustain ability";
+	saiph->request(req);
+	req.data = "ring of warning";
+	saiph->request(req);
+	req.data = "ring of gain constitution";
+	saiph->request(req);
+	req.data = "ring of gain strength";
+	saiph->request(req);
+	req.data = "ring of increase accuracy";
+	saiph->request(req);
+	req.data = "ring of increase damage";
+	saiph->request(req);
+	req.data = "ring of invisibility";
+	saiph->request(req);
+	req.data = "ring of see invisible";
+	saiph->request(req);
+	req.data = "ring of free action";
+	saiph->request(req);
+	req.data = "ring of levitation";
+	saiph->request(req);
+	req.data = "ring of regeneration";
+	saiph->request(req);
+	req.data = "ring of searching";
+	saiph->request(req);
+	req.data = "ring of slow digestion";
+	saiph->request(req);
+	req.data = "ring of teleportation";
+	saiph->request(req);
+	req.data = "ring of conflict";
+	saiph->request(req);
+	req.data = "ring of teleport control";
+	saiph->request(req);
+
+	/* tell the ring analyzer which rings we wish to wear */
+	req.request = REQUEST_RING_WEAR;
+	req.status = BLESSED | UNCURSED;
+        req.data = "ring of free action";
+	saiph->request(req);
+        req.data = "ring of conflict";
+	saiph->request(req);
+        req.data = "ring of protection from shape changers";
+	saiph->request(req);
+        req.data = "ring of warning";
+	saiph->request(req);
+        req.data = "ring of regeneration";
+	saiph->request(req);
+        req.data = "ring of protection";
+	saiph->request(req);
+
+	/* easter egg */
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+        req.data = "gold"; // my precious
+	saiph->request(req);
+}
+
 void Valkyrie::setupTool(int &groupstart) {
 	/* unihorn */
 	req.request = REQUEST_ITEM_PICKUP;
@@ -640,6 +815,13 @@ void Valkyrie::setupTool(int &groupstart) {
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.value = 1;
 	req.data = "stethoscope";
+	saiph->request(req);
+
+	/* magic marker */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 10;
+	req.data = "magic marker";
 	saiph->request(req);
 
 	/* key/lock pick/credit card */

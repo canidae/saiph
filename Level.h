@@ -28,6 +28,7 @@
 #define LEVEL_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define LEVEL_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 
+#include <limits.h>
 #include <map>
 #include <string>
 #include "Globals.h"

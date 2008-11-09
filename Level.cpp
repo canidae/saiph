@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Item.h"
 #include "Level.h"
 #include "Saiph.h"
@@ -20,8 +21,12 @@ bool Level::initialized = false;
 
 /* constructors/destructor */
 Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), saiph(saiph) {
-	memset(dungeonmap, SOLID_ROCK, sizeof (dungeonmap));
-	memset(monstermap, ILLEGAL_MONSTER, sizeof (monstermap));
+	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
+		for (int b = 0; b < MAP_COL_END + 1; ++b) {
+			dungeonmap[a][b] = SOLID_ROCK;
+			monstermap[a][b] = ILLEGAL_MONSTER;
+		}
+	}
 	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
 	if (!initialized)
 		init();

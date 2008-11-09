@@ -35,6 +35,10 @@ Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph) {
 }
 
 /* methods */
+void Potion::complete() {
+	sequence = -1;
+}
+
 void Potion::parseMessages(const string &messages) {
 	if (saiph->world->question) {
 		string::size_type stop = messages.find(POTION_CALL_END, 0);
@@ -56,8 +60,8 @@ void Potion::parseMessages(const string &messages) {
 			if (name != *a)
 				continue;
 			/* recognized the potion */
-			command = "hello :)\n";
-			priority = PRIORITY_CONTINUE_ACTION;
+			setCommand(0, PRIORITY_CONTINUE_ACTION, "hello :)\n");
+			sequence = 0;
 		}
 	}
 }

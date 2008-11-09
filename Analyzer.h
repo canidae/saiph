@@ -2,6 +2,8 @@
 #define ANALYZER_H
 
 #include <string>
+#include <vector>
+#include "Command.h"
 
 class Point;
 class Request;
@@ -9,11 +11,10 @@ class Request;
 class Analyzer {
 	public:
 		std::string name;
-		int priority;
-		std::string command;
+		std::vector<Command> commands;
+		int sequence;
 	
 		Analyzer(std::string name);
-
 		virtual ~Analyzer();
 
 		virtual void analyze();
@@ -23,5 +24,6 @@ class Analyzer {
 		virtual void inspect(const Point &point);
 		virtual void parseMessages(const std::string &messages);
 		virtual bool request(const Request &request);
+		virtual bool setCommand(int index, int priority, const std::string &data);
 };
 #endif

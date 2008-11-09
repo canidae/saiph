@@ -34,6 +34,10 @@ Scroll::Scroll(Saiph *saiph) : Analyzer("Scroll"), saiph(saiph) {
 }
 
 /* methods */
+void Scroll::complete() {
+	sequence = -1;
+}
+
 void Scroll::parseMessages(const string &messages) {
 	if (saiph->world->question) {
 		string::size_type start = messages.find(SCROLL_CALL_SCROLL, 0);
@@ -49,8 +53,8 @@ void Scroll::parseMessages(const string &messages) {
 			if (name != *a)
 				continue;
 			/* recognized the scroll */
-			command = "will you be my friend?\n";
-			priority = PRIORITY_CONTINUE_ACTION;
+			setCommand(0, PRIORITY_CONTINUE_ACTION, "will you be my friend?\n");
+			sequence = 0;
 		}
 	}
 }

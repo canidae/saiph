@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "Loot.h"
 #include "../Saiph.h"
 #include "../World.h"
@@ -11,7 +12,7 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 /* methods */
 void Loot::analyze() {
 	/* check inventory/stash if it's dirty */
-	if (priority >= PRIORITY_LOOK)
+	if (sequence >= 0 && commands[0].priority >= PRIORITY_LOOK)
 		return;
 	if (dirty_inventory) {
 		checkInventory();
@@ -25,14 +26,14 @@ void Loot::analyze() {
 	if (saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
 		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(saiph->position);
 		if (s != saiph->levels[saiph->position.level].stashes.end() && s->second.top_symbol == '%' && saiph->levels[saiph->position.level].dungeonmap[s->first.row][s->first.col] != STAIRS_UP && saiph->levels[saiph->position.level].dungeonmap[s->first.row][s->first.col] != STAIRS_DOWN) {
-			command = LOOK;
-			priority = PRIORITY_LOOK;
+			setCommand(0, PRIORITY_LOOK, LOOK);
+			sequence = 0;
 			return;
 		}
 	}
 
 	/* loot stash we're standing on */
-	if (priority >= LOOT_LOOT_STASH_PRIORITY)
+	if (sequence >= 0 && commands[0].priority >= LOOT_LOOT_STASH_PRIORITY)
 		return;
 	if (saiph->on_ground != NULL) {
 		/* if we see a white '@' then don't loot */
@@ -52,15 +53,15 @@ void Loot::analyze() {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (wantedItem(*i) == 0)
 					continue;
-				command = PICKUP;
-				priority = LOOT_LOOT_STASH_PRIORITY;
+				setCommand(0, LOOT_LOOT_STASH_PRIORITY, PICKUP);
+				sequence = 0;
 				return;
 			}
 		}
 	}
 
 	/* drop unwanted stuff on STAIRS_UP and get safe Elbereth there */
-	if (priority >= LOOT_DROP_ITEMS_PRIORITY)
+	if (sequence >= 0 && commands[0].priority >= LOOT_DROP_ITEMS_PRIORITY)
 		return;
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
 		/* standing on stairs, drop unwanted stuff if any */
@@ -68,8 +69,8 @@ void Loot::analyze() {
 			if (unwantedItem(i->second) == 0)
 				continue;
 			/* we got unwanted stuff */
-			command = DROP;
-			priority = LOOT_DROP_ITEMS_PRIORITY;
+			setCommand(0, LOOT_DROP_ITEMS_PRIORITY, DROP);
+			sequence = 0;
 			return;
 		}
 		/* TODO: get down elbereth if there's a stash here */
@@ -85,8 +86,8 @@ void Loot::analyze() {
 				int moves = 0;
 				unsigned char move = saiph->shortestPath(up->first, false, &moves);
 				if (move != ILLEGAL_MOVE) {
-					command = move;
-					priority = LOOT_DROP_ITEMS_PRIORITY;
+					setCommand(0, LOOT_DROP_ITEMS_PRIORITY, string(move, 1));
+					sequence = 0;
 					return;
 				}
 			}
@@ -94,7 +95,7 @@ void Loot::analyze() {
 		}
 	}
 
-	if (priority >= LOOT_VISIT_STASH_PRIORITY || saiph->world->player.hallucinating)
+	if ((sequence >= 0 && commands[0].priority >= LOOT_VISIT_STASH_PRIORITY) || saiph->world->player.hallucinating)
 		return;
 	/* visit new/changed stashes unless hallucinating */
 	int min_moves = INT_MAX;
@@ -111,17 +112,17 @@ void Loot::analyze() {
 		} else if (move != ILLEGAL_MOVE && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			command = move;
-			priority = LOOT_VISIT_STASH_PRIORITY;
+			setCommand(0, LOOT_VISIT_STASH_PRIORITY, string(move, 1));
+			sequence = 0;
 		}
 	}
 }
 
 void Loot::complete() {
-	if (dirty_inventory && command == INVENTORY) {
+	if (dirty_inventory && sequence == 0 && commands[0].data == INVENTORY) {
 		/* we're showing our inventory */
 		showing_inventory = true;
-	} else if (dirty_stash && command == LOOK) {
+	} else if (dirty_stash && sequence == 0 && commands[0].data == LOOK) {
 		/* looked at ground, stash is no longer dirty */
 		dirty_stash = false;
 	}
@@ -129,8 +130,8 @@ void Loot::complete() {
 
 void Loot::fail() {
 	/* most likely, we're trying to loot something in the wall */
-	if (command.size() == 1) {
-		Point moving_to =saiph->moveToPoint((unsigned char) command[0]);
+	if (sequence == 0 && commands[0].data.size() == 1) {
+		Point moving_to = saiph->moveToPoint((unsigned char) commands[0].data[0]);
 		if (moving_to != saiph->position) {
 			/* we'll not so elegantly solve this by making the tile we attempt to move to unpassable */
 			saiph->levels[saiph->position.level].dungeonmap[moving_to.row][moving_to.col] = UNKNOWN_TILE_UNPASSABLE;
@@ -148,20 +149,20 @@ void Loot::parseMessages(const string &messages) {
 				continue;
 			} else if (wanted >= p->second.count) {
 				/* pick up all */
-				command = p->first;
+				setCommand(0, PRIORITY_SELECT_ITEM, string(p->first, 1));
 			} else {
 				/* pick up some */
 				stringstream tmp;
 				tmp << wanted << p->first;
-				command = tmp.str();
+				setCommand(0, PRIORITY_SELECT_ITEM, tmp.str());
 			}
-			priority = PRIORITY_SELECT_ITEM;
+			sequence = 0;
 			return;
 		}
 		/* if we're here, we should get next page or close list */
 		showing_pickup = true;
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_ITEM_PAGE;
+		setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+		sequence = 0;
 	} else if (saiph->got_drop_menu) {
 		showing_drop = true;
 		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
@@ -179,25 +180,25 @@ void Loot::parseMessages(const string &messages) {
 				} else if (unwanted >= d->second.count) {
 					/* drop all */
 					saiph->inventory[d->first].count = 0;
-					command = d->first;
+					setCommand(0, PRIORITY_SELECT_ITEM, string(d->first, 1));
 				} else {
 					/* drop some */
 					saiph->inventory[d->first].count -= unwanted;
 					stringstream tmp;
 					tmp << unwanted << d->first;
-					command = tmp.str();
+					setCommand(0, PRIORITY_SELECT_ITEM, tmp.str());
 				}
-				priority = PRIORITY_SELECT_ITEM;
+				sequence = 0;
 				return;
 			}
 			/* if we're here, we should get next page or close list */
-			command = CLOSE_PAGE;
-			priority = PRIORITY_CLOSE_ITEM_PAGE;
+			setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+			sequence = 0;
 		}
 	} else if (saiph->world->menu && showing_inventory) {
 		/* we should close the page of the inventory we're showing */
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_ITEM_PAGE;
+		setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+		sequence = 0;
 		return;
 	} else if (!saiph->world->menu) {
 		if (showing_inventory) {
@@ -265,18 +266,18 @@ bool Loot::request(const Request &request) {
 /* private methods */
 void Loot::checkInventory() {
 	dirty_inventory = true;
-	if (priority >= PRIORITY_CHECK_INVENTORY)
+	if (sequence >= 0 && commands[0].priority >= PRIORITY_CHECK_INVENTORY)
 		return;
-	command = INVENTORY;
-	priority = PRIORITY_CHECK_INVENTORY;
+	setCommand(0, PRIORITY_CHECK_INVENTORY, INVENTORY);
+	sequence = 0;
 }
 
 void Loot::checkStash() {
 	dirty_stash = true;
-	if (priority >= PRIORITY_LOOK)
+	if (sequence >= 0 && commands[0].priority >= PRIORITY_LOOK)
 		return;
-	command = LOOK;
-	priority = PRIORITY_LOOK;
+	setCommand(0, PRIORITY_LOOK, LOOK);
+	sequence = 0;
 }
 
 int Loot::unwantedItem(const Item &item) {

@@ -15,6 +15,7 @@ class Pray : public Analyzer {
 	public:
 		Pray(Saiph *saiph);
 
+		void complete();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 

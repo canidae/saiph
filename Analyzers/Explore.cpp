@@ -6,8 +6,19 @@ using namespace std;
 
 /* constructors/destructor */
 Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
-	memset(search, 0, sizeof (search));
-	memset(visited, false, sizeof (visited));
+	/* we never stop exploring, so just set sequence to 0 here.
+	 * this analyzer needs a _huge_ overhaul, it just sucks */
+	sequence = 0;
+
+	/* argh */
+	for (int a = 0; a < MAX_DUNGEON_DEPTH; ++a) {
+		for (int b = 0; b < MAP_ROW_END + 1; ++b) {
+			for (int c = 0; c < MAP_COL_END + 1; ++c) {
+				search[a][b][c] = 0;
+				visited[a][b][c] = false;
+			}
+		}
+	}
 }
 
 /* methods */
@@ -17,7 +28,7 @@ void Explore::analyze() {
 		return; // no exploring while blind/hallu/stun
 	/* make the place the player stands on "visited" */
 	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
-	if (priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
+	if (commands[0].priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
 		/* explore unknown stairs on level, unless we're on depth 1.
 		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
 		/* go up first (or we'll never check the upstairs) */
@@ -28,10 +39,9 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					command = MOVE_UP;
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(MOVE_UP, 1));
 				else
-					command = move;
-				priority = EXPLORE_UNKNOWN_STAIRS;
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(move, 1));
 				return;
 			}
 		}
@@ -42,16 +52,14 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					command = MOVE_DOWN;
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(MOVE_DOWN, 1));
 				else
-					command = move;
-				priority = EXPLORE_UNKNOWN_STAIRS;
+					setCommand(0, EXPLORE_UNKNOWN_STAIRS, string(move, 1));
 				return;
 			}
 		}
 	}
 	int best_moves = INT_MAX;
-	command.clear();
 	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
 		if (search[saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
 			/* this place is fully searched out. remove it from the list */
@@ -137,40 +145,38 @@ void Explore::analyze() {
 				e = explore.erase(e);
 				continue;
 		}
-		if (cur_priority < priority) {
+		if (cur_priority < commands[0].priority) {
 			++e;
 			continue;
 		}
 		int moves = 0;
 		unsigned char move = saiph->shortestPath(*e, false, &moves);
 		++e;
-		if (cur_priority == priority && moves > best_moves)
+		if (cur_priority == commands[0].priority && moves > best_moves)
 			continue;
 		if (move == ILLEGAL_MOVE)
 			continue;
 		if (move == MOVE_NOWHERE)
-			command = SEARCH;
+			setCommand(0, cur_priority, SEARCH);
 		else
-			command = move;
-		priority = cur_priority;
+			setCommand(0, cur_priority, string(move, 1));
 		best_moves = moves;
 	}
-	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && priority < EXPLORE_DESCEND) {
+	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && commands[0].priority < EXPLORE_DESCEND) {
 		/* if we're in the mines, go up */
 		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++up) {
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(up->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					command = MOVE_UP;
+					setCommand(0, EXPLORE_DESCEND, string(MOVE_UP, 1));
 				else
-					command = move;
-				priority = EXPLORE_DESCEND;
+					setCommand(0, EXPLORE_DESCEND, string(move, 1));
 				break;
 			}
 		}
 	}
-	if (priority < EXPLORE_DESCEND) {
+	if (commands[0].priority < EXPLORE_DESCEND) {
 		/* descend */
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
 			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
@@ -179,10 +185,9 @@ void Explore::analyze() {
 			unsigned char move = saiph->shortestPath(down->first, false, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (move == MOVE_NOWHERE)
-					command = MOVE_DOWN;
+					setCommand(0, EXPLORE_DESCEND, string(MOVE_DOWN, 1));
 				else
-					command = move;
-				priority = EXPLORE_DESCEND;
+					setCommand(0, EXPLORE_DESCEND, string(move, 1));
 				break;
 			}
 		}
@@ -190,7 +195,7 @@ void Explore::analyze() {
 }
 
 void Explore::complete() {
-	if (command == SEARCH)
+	if (sequence == 0 && commands[0].data == SEARCH)
 		++search[saiph->position.level][saiph->world->player.row][saiph->world->player.col];
 }
 
@@ -204,7 +209,6 @@ void Explore::inspect(const Point &point) {
 void Explore::parseMessages(const string &messages) {
 	if (saiph->world->question && messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
 		/* temporary hack for teleport control */
-		command = "><,";
-		priority = PRIORITY_CONTINUE_ACTION;
+		setCommand(0, PRIORITY_CONTINUE_ACTION, "><,");
 	}
 }

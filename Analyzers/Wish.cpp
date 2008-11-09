@@ -1,5 +1,6 @@
 #include "Wish.h"
 #include "../Saiph.h"
+#include "../Globals.h"
 
 using namespace std;
 
@@ -9,13 +10,16 @@ Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph) {
 }
 
 /* methods */
+void Wish::complete() {
+	sequence = -1;
+}
+
 void Wish::parseMessages(const string &messages) {
-	if (messages.find(WISH_MESSAGE, 0) != string::npos) {
+	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
 		/* we actually got a wish?
 		 * yay, well, just wish for a gdsm for the time being */
-		command = wishes[0];
-		command.append("\n");
-		priority = PRIORITY_CONTINUE_ACTION;
+		setCommand(0, PRIORITY_CONTINUE_ACTION, wishes[0]);
+		sequence = 0;
 		return;
 	}
 }

@@ -28,8 +28,6 @@ class Fight : public Analyzer {
 
 	private:
 		Saiph *saiph;
-		std::string command2;
-		std::string command3;
 		std::vector<std::string> thrown;
 		Request req;
 

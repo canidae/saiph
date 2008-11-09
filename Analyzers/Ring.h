@@ -1,8 +1,8 @@
-#ifndef ARMOR_H
-#define ARMOR_H
+#ifndef RING_H
+#define RING_H
 /* priorities */
-#define ARMOR_PICKUP_PRIORITY 425
-#define ARMOR_WEAR_PRIORITY 225
+#define RING_PICKUP_PRIORITY 425
+#define RING_WEAR_PRIORITY 225
 
 #include <string>
 #include <vector>
@@ -10,17 +10,17 @@
 #include "../Globals.h"
 #include "../Request.h"
 
-/* struct for wearing armor */
-struct WearArmor {
+/* struct for wearing ring */
+struct WearRing {
 	int beatitude;
 	std::string name;
 };
 
 class Saiph;
 
-class Armor : public Analyzer {
+class Ring : public Analyzer {
 	public:
-		Armor(Saiph *saiph);
+		Ring(Saiph *saiph);
 
 		void analyze();
 		void parseMessages(const std::string &messages);
@@ -28,9 +28,9 @@ class Armor : public Analyzer {
 
 	private:
 		Saiph *saiph;
-		std::vector<WearArmor> armor[ARMOR_SLOTS];
+		std::vector<WearRing> rings;
 		Request req;
 
-		void wearArmor();
+		void wearRing();
 };
 #endif
