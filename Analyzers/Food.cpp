@@ -1,4 +1,5 @@
 #include "Food.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -421,9 +422,15 @@ void Food::parseMessages(const string &messages) {
 				}
 			}
 		}
-	} else if (sequence > 0 && saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
+	} else if (saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
 		/* we should stop eating when we get this message */
-		setCommand(sequence, PRIORITY_CONTINUE_ACTION, YES);
+		clearCommands();
+		setCommand(0, PRIORITY_CONTINUE_ACTION, YES);
+		sequence = 0;
+	} else if (messages.find(MESSAGE_NOTHING_TO_EAT, 0) != string::npos) {
+		/* this shouldn't happen, but it does :\ */
+		Debug::warning() << "We got message '" MESSAGE_NOTHING_TO_EAT "', we shouldn't get that" << endl;
+		clearCommands();
 	}
 }
 

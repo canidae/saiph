@@ -16,6 +16,7 @@
 #define REQUEST_WEAPON_WIELD 12
 #define REQUEST_ADD_THROWN_WEAPON 13
 #define REQUEST_RING_WEAR 14
+#define REQUEST_AMULET_WEAR 15
 
 #include <string>
 #include "Coordinate.h"

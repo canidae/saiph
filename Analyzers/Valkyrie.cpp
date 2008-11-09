@@ -23,23 +23,23 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 1;
-	req.data = "circular";
+	req.data = "circular amulet";
 	saiph->request(req);
-	req.data = "spherical";
+	req.data = "spherical amulet";
 	saiph->request(req);
-	req.data = "oval";
+	req.data = "oval amulet";
 	saiph->request(req);
-	req.data = "triangular";
+	req.data = "triangular amulet";
 	saiph->request(req);
-	req.data = "pyramidal";
+	req.data = "pyramidal amulet";
 	saiph->request(req);
-	req.data = "square";
+	req.data = "square amulet";
 	saiph->request(req);
-	req.data = "concave";
+	req.data = "concave amulet";
 	saiph->request(req);
-	req.data = "hexagonal";
+	req.data = "hexagonal amulet";
 	saiph->request(req);
-	req.data = "octagonal";
+	req.data = "octagonal amulet";
 	saiph->request(req);
 
 	/* and one of each useful amulet */
@@ -57,6 +57,27 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	req.data = "amulet of unchanging";
 	saiph->request(req);
 	req.data = "Amulet of Yendor";
+	saiph->request(req);
+
+	/* tell the amulet analyzer which amulets we wish to wear */
+	req.request = REQUEST_AMULET_WEAR;
+	req.status = BLESSED | UNCURSED;
+        req.data = "amulet of life saving";
+	saiph->request(req);
+        req.data = "amulet of reflection";
+	saiph->request(req);
+        req.data = "amulet of ESP";
+	saiph->request(req);
+        req.data = "amulet of magical breathing";
+	saiph->request(req);
+        req.data = "amulet of unchanging";
+	saiph->request(req);
+        req.data = "Amulet of Yendor";
+	saiph->request(req);
+
+	/* easter egg */
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+        req.data = "square amulet"; // it's hip to be square
 	saiph->request(req);
 }
 
@@ -676,65 +697,61 @@ void Valkyrie::setupRing(int &groupstart) {
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 2;
-	req.data = "pearl";
+	req.data = "pearl ring";
 	saiph->request(req);
-	req.data = "iron";
+	req.data = "iron ring";
 	saiph->request(req);
-	req.data = "twisted";
+	req.data = "twisted ring";
 	saiph->request(req);
-	req.data = "steel";
+	req.data = "steel ring";
 	saiph->request(req);
-	req.data = "wire";
+	req.data = "wire ring";
 	saiph->request(req);
-	req.data = "engagement";
+	req.data = "engagement ring";
 	saiph->request(req);
-	req.data = "shiny";
+	req.data = "shiny ring";
 	saiph->request(req);
-	req.data = "bronze";
+	req.data = "bronze ring";
 	saiph->request(req);
-	req.data = "brass";
+	req.data = "brass ring";
 	saiph->request(req);
-	req.data = "copper";
+	req.data = "copper ring";
 	saiph->request(req);
-	req.data = "silver";
+	req.data = "silver ring";
 	saiph->request(req);
-	req.data = "gold";
+	req.data = "gold ring";
 	saiph->request(req);
-	req.data = "wooden";
+	req.data = "wooden ring";
 	saiph->request(req);
-	req.data = "granite";
+	req.data = "granite ring";
 	saiph->request(req);
-	req.data = "opal";
+	req.data = "opal ring";
 	saiph->request(req);
-	req.data = "clay";
+	req.data = "clay ring";
 	saiph->request(req);
-	req.data = "coral";
+	req.data = "coral ring";
 	saiph->request(req);
-	req.data = "black";
+	req.data = "black onyx ring";
 	saiph->request(req);
-	req.data = "onyx";
+	req.data = "moonstone ring";
 	saiph->request(req);
-	req.data = "moonstone";
+	req.data = "tiger eye ring";
 	saiph->request(req);
-	req.data = "tiger";
+	req.data = "jade ring";
 	saiph->request(req);
-	req.data = "eye";
+	req.data = "agate ring";
 	saiph->request(req);
-	req.data = "jade";
+	req.data = "topaz ring";
 	saiph->request(req);
-	req.data = "agate";
+	req.data = "sapphire ring";
 	saiph->request(req);
-	req.data = "topaz";
+	req.data = "ruby ring";
 	saiph->request(req);
-	req.data = "sapphire";
+	req.data = "diamond ring";
 	saiph->request(req);
-	req.data = "ruby";
+	req.data = "ivory ring";
 	saiph->request(req);
-	req.data = "diamond";
-	saiph->request(req);
-	req.data = "ivory";
-	saiph->request(req);
-	req.data = "emerald";
+	req.data = "emerald ring";
 	saiph->request(req);
 
 	/* and one of each useful ring */
@@ -798,7 +815,7 @@ void Valkyrie::setupRing(int &groupstart) {
 
 	/* easter egg */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-        req.data = "gold"; // my precious
+        req.data = "gold ring"; // my precious
 	saiph->request(req);
 }
 

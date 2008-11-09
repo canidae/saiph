@@ -47,7 +47,6 @@ string &Analyzer::getCommand() {
 }
 
 int Analyzer::getPriority() {
-	Debug::notice() << name << " getPriority(): " << last_sequence << " - " << sequence << endl;
 	if (sequence >= 0 && sequence <= last_sequence)
 		return commands[sequence].priority;
 	return ILLEGAL_PRIORITY;

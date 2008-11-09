@@ -188,6 +188,7 @@
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_NOTHING_HAPPENS "  Nothing happens.  "
+#define MESSAGE_NOTHING_TO_EAT "  You don't have anything to eat.  "
 #define MESSAGE_PICK_A_SKILL "  Pick a skill to advance:  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo

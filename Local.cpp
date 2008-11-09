@@ -52,7 +52,7 @@ Local::~Local() {
 /* methods */
 int Local::retrieve(char *buffer, int count) {
 	/* retrieve data */
-	usleep(100000);
+	usleep(50000);
 	ssize_t data_received = 0;
 	/* make reading blocking */
 	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);

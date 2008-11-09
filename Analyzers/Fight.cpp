@@ -80,10 +80,11 @@ void Fight::parseMessages(const string &messages) {
 		/* make inventory dirty, we just threw something */
 		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
 		saiph->request(req);
-	} else if (sequence == 1 && saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
+	} else if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
 		/* this may happen after we've said which direction to attack.
-		 * overwrite current command with YES */
-		setCommand(sequence, PRIORITY_CONTINUE_ACTION, YES);
+		 * answer YES for now */
+		setCommand(0, PRIORITY_CONTINUE_ACTION, YES);
+		sequence = 0;
 	}
 }
 
