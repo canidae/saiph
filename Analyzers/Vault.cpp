@@ -33,7 +33,7 @@ void Vault::parseMessages(const string &messages) {
 			return;
 		}
 		/* we've probably selected our gold if we're here */
-		setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+		setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
 		sequence = 0;
 		look_at_ground = true;
 	} else if (drop_gold && !look_at_ground) {

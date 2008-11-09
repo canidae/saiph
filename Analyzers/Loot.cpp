@@ -161,7 +161,7 @@ void Loot::parseMessages(const string &messages) {
 		}
 		/* if we're here, we should get next page or close list */
 		showing_pickup = true;
-		setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+		setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
 		sequence = 0;
 	} else if (saiph->got_drop_menu) {
 		showing_drop = true;
@@ -192,12 +192,12 @@ void Loot::parseMessages(const string &messages) {
 				return;
 			}
 			/* if we're here, we should get next page or close list */
-			setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+			setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
 			sequence = 0;
 		}
 	} else if (saiph->world->menu && showing_inventory) {
 		/* we should close the page of the inventory we're showing */
-		setCommand(0, PRIORITY_CLOSE_ITEM_PAGE, CLOSE_PAGE);
+		setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
 		sequence = 0;
 		return;
 	} else if (!saiph->world->menu) {
@@ -205,6 +205,7 @@ void Loot::parseMessages(const string &messages) {
 			/* we showed our inventory, but now it's closed */
 			dirty_inventory = false;
 			showing_inventory = false;
+			sequence = -1;
 			/* also announce that it's no longer dirty */
 			req.request = REQUEST_UPDATED_INVENTORY;
 			saiph->request(req);
