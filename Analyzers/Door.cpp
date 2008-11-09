@@ -38,8 +38,8 @@ void Door::analyze() {
 					setCommand(3, PRIORITY_CONTINUE_ACTION, YES); // yes, unlock the door
 				}
 			}
-			cur_door = d->first;
 			sequence = 0;
+			cur_door = d->first;
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
@@ -51,20 +51,18 @@ void Door::analyze() {
 }
 
 void Door::parseMessages(const string &messages) {
-	Debug::notice() << "Door sequence: " << sequence << endl;
 	if (sequence == 0 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
 		/* what to apply */
 		++sequence;
 	} else if (sequence >= 0 && sequence <= 1 && saiph->world->question && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		/* which direction we should open/pick/kick */
-		Debug::notice() << "Door should pick direction now" << endl;
 		++sequence;
 	} else if (sequence == 2 && saiph->world->question && messages.find(MESSAGE_UNLOCK_IT, 0) != string::npos) {
 		/* unlock door? */
 		++sequence;
 		/* we're going to assume the door won't be locked anymore */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, UNKNOWN_SYMBOL_VALUE);
-	} else if (sequence >= 1 && sequence <= 2 && messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, 1);
 	}
