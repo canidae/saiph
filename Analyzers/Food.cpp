@@ -284,7 +284,7 @@ void Food::analyze() {
 		/* easter egg: eat bytes when [over]satiated */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
-				setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT, true);
+				setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
 				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
 				sequence = 0;
 				return;
