@@ -321,14 +321,15 @@ void Food::analyze() {
 void Food::complete() {
 	if (sequence == 2) {
 		/* when we eat a corpse we're not guaranteed a unique message,
-		 * however, only sequence == 2 is "we just ate a corpse", so if
-		 * complete() is called when sequence is 2, we just increase it
-		 * by one */
+		 * however, sequence 2 is unique so if complete() is called and
+		 * sequence is 2 we know we just ate a corpse.
+		 * we'll need to look on floor after eating a corpse (check if
+		 * the corpse really is gone), so increase sequence by 1 */
 		++sequence;
 	} else if (sequence == 3) {
 		/* and if complete() is called when sequence is 3 it means we
 		 * looked at the floor after eating a corpse.
-		 * this is the last command, so clear the chain */
+		 * we need to clear this command manually, because we "remember" it */
 		clearCommands();
 	}
 }

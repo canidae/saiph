@@ -55,8 +55,8 @@ int Local::retrieve(char *buffer, int count) {
 	ssize_t data_received = 0;
 	/* make reading blocking */
 	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
-	/* read 4 bytes, this will block until there's data available */
-	data_received += read(link[0], buffer, 4);
+	/* read 8 bytes, this will block until there's data available */
+	data_received += read(link[0], buffer, 8);
 	/* usleep some ms here (after the blocked reading) both to
 	 * make sure that we've received all the data and to make the
 	 * game watchable  */
