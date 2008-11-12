@@ -37,7 +37,7 @@ void Beatitude::analyze() {
 }
 
 void Beatitude::parseMessages(const string &messages) {
-	if (sequence == 0 && saiph->got_drop_menu && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR) {
+	if (saiph->got_drop_menu && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR) {
 		/* drop stuff we don't know beatitude of */
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 			if (d->second.beatitude != BEATITUDE_UNKNOWN)
