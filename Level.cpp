@@ -185,7 +185,8 @@ void Level::parseMessages(const string &messages) {
 				++pos;
 			}
 		}
-		saiph->inventory_changed = true;
+		if (pickup_count > 0)
+			saiph->inventory_changed = true;
 		if ((int) stashes[saiph->position].items.size() == pickup_count) {
 			/* we probably picked up everything here, remove stash */
 			stashes.erase(saiph->position);
