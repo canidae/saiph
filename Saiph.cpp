@@ -23,6 +23,7 @@
 #include "Analyzers/MonsterInfo.h"
 #include "Analyzers/Potion.h"
 #include "Analyzers/Pray.h"
+#include "Analyzers/Ring.h"
 #include "Analyzers/Scroll.h"
 #include "Analyzers/Unihorn.h"
 #include "Analyzers/Valkyrie.h"
@@ -85,6 +86,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new MonsterInfo(this));
 	analyzers.push_back(new Potion(this));
 	analyzers.push_back(new Pray(this));
+	analyzers.push_back(new Ring(this));
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
@@ -755,7 +757,7 @@ void Saiph::parseMessages(const string &messages) {
 /* main */
 int main() {
 	Debug::open("saiph.log");
-	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
+	Saiph *saiph = new Saiph(CONNECTION_TELNET);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

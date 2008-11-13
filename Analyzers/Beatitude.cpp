@@ -15,7 +15,7 @@ void Beatitude::analyze() {
 		/* how many of our items needs to be checked? */
 		int items_to_beatify = 0;
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (i->second.beatitude == BEATITUDE_UNKNOWN)
+			if (beatify(i->second))
 				++items_to_beatify;
 		}
 		if (items_to_beatify >= BEATITUDE_DROP_ALTAR_MIN) {
@@ -52,10 +52,8 @@ void Beatitude::parseMessages(const string &messages) {
 	if (saiph->got_drop_menu && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR) {
 		/* drop stuff we don't know beatitude of */
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-			if (d->second.beatitude != BEATITUDE_UNKNOWN)
+			if (!beatify(d->second))
 				continue;
-			if (d->second.name == "gold piece")
-				continue; // don't drop gold
 			/* mark this */
 			command = d->first;
 			priority = PRIORITY_SELECT_ITEM;
@@ -66,4 +64,25 @@ void Beatitude::parseMessages(const string &messages) {
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_PAGE;
 	}
+}
+
+/* private methods */
+bool Beatitude::beatify(const Item &item) {
+	if (item.beatitude != BEATITUDE_UNKNOWN)
+		return false;
+	if (item.name == "gold piece")
+		return false;
+	if (item.additional == "being worn")
+		return false;
+	if (item.additional == "embedded in your skin")
+		return false;
+	if (item.additional == "in use")
+		return false;
+	if (item.additional == "wielded")
+		return false;
+	if (item.additional.find("weapon in ", 0) == 0 || item.additional.find("wielded in other ", 0) == 0)
+		return false;
+	if (item.additional.find("on left ", 0) == 0 || item.additional.find("on right ", 0) == 0)
+		return false;
+	return true;
 }

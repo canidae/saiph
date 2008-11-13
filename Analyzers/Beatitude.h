@@ -13,6 +13,7 @@
 #include <string>
 #include "../Analyzer.h"
 
+class Item;
 class Saiph;
 
 class Beatitude : public Analyzer {
@@ -25,5 +26,7 @@ class Beatitude : public Analyzer {
 	private:
 		Saiph *saiph;
 		bool check_beatitude;
+
+		bool beatify(const Item &item);
 };
 #endif

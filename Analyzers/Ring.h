@@ -30,6 +30,7 @@ class Ring : public Analyzer {
 		Saiph *saiph;
 		std::string command2;
 		std::vector<WearRing> rings;
+		bool wear_ring;
 		Request req;
 
 		void wearRing();
