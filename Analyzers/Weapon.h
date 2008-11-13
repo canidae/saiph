@@ -3,6 +3,8 @@
 /* priorities */
 #define WEAPON_PICKUP_PRIORITY 425
 #define WEAPON_WIELD_PRIORITY 475
+/* messages */
+#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
 
 #include <string>
 #include <vector>
@@ -27,7 +29,9 @@ class Weapon : public Analyzer {
 
 	private:
 		Saiph *saiph;
+		bool wield_more;
 		std::vector<WieldWeapon> wield; // the order of which we'll wield weapons
+		std::string command2;
 		Request req;
 
 		void wieldWeapon();

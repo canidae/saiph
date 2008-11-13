@@ -57,8 +57,8 @@ void Potion::parseMessages(const string &messages) {
 			if (name != *a)
 				continue;
 			/* recognized the potion */
-			setCommand(0, PRIORITY_CONTINUE_ACTION, "hello :)\n");
-			sequence = 0;
+			command = "hello :)\n";
+			priority = PRIORITY_CONTINUE_ACTION;
 		}
 	}
 }

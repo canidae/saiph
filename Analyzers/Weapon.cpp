@@ -5,25 +5,29 @@
 using namespace std;
 
 /* constructors/destructor */
-Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph) {
+Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_more(false) {
 }
 
 /* methods */
 void Weapon::analyze() {
-	if (saiph->inventory_changed)
+	if (saiph->inventory_changed || wield_more) {
+		wield_more = true;
 		wieldWeapon();
-
+	}
 }
 
 void Weapon::parseMessages(const string &messages) {
-	if (sequence == 0 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_WIELD, 0) != string::npos) {
+	if (saiph->world->question && !command2.empty() && messages.find(WEAPON_WHAT_TO_WIELD, 0) != string::npos) {
 		/* wield a weapon */
-		++sequence;
-	} else if (sequence > 0) {
-		clearCommands();
+		command = command2;
+		command2.clear();
+		priority = PRIORITY_CONTINUE_ACTION;
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+	} else if (command == WIELD && !command2.empty()) {
+		/* in case we didn't get to wield the weapon */
+		priority = WEAPON_WIELD_PRIORITY;
 	}
 }
 
@@ -66,9 +70,10 @@ void Weapon::wieldWeapon() {
 	}
 	if (best_key == 0 || (wielded != 0 && saiph->inventory[wielded].name == saiph->inventory[best_key].name)) {
 		/* wielding best weapon or got no weapon to wield */
+		wield_more = false;
 		return;
 	}
-	setCommand(0, WEAPON_WIELD_PRIORITY, WIELD, true);
-	setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key));
-	sequence = 0;
+	command = WIELD;
+	command2 = best_key;
+	priority = WEAPON_WIELD_PRIORITY;
 }

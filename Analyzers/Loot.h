@@ -57,6 +57,9 @@ class Loot : public Analyzer {
 		std::map<int, ItemGroup> groups;
 		Request req;
 
-		int checkItem(const Item &item, bool wanted);
+		void checkInventory();
+		void checkStash();
+		int unwantedItem(const Item &item);
+		int wantedItem(const Item &item);
 };
 #endif

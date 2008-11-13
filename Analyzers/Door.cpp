@@ -1,12 +1,11 @@
 #include "Door.h"
-#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
 
 /* constructors/destructor */
-Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), unlock_tool_key(0) {
+Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), sequence(-1), unlock_tool_key(0) {
 }
 
 /* methods */
@@ -24,45 +23,54 @@ void Door::analyze() {
 		if (moves == 1) {
 			/* open/pick/kick door */
 			if (d->second != 1) {
-				setCommand(0, DOOR_OPEN_PRIORITY, OPEN);
-				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, move));
+				command = OPEN;
 			} else {
 				findUnlockingTool();
-				if (unlock_tool_key == 0) {
-					setCommand(0, DOOR_OPEN_PRIORITY, KICK);
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, move));
-				} else {
-					setCommand(0, DOOR_OPEN_PRIORITY, APPLY);
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, unlock_tool_key));
-					setCommand(2, PRIORITY_CONTINUE_ACTION, string(1, move));
-					setCommand(3, PRIORITY_CONTINUE_ACTION, YES); // yes, unlock the door
-				}
+				if (unlock_tool_key == 0)
+					command = KICK;
+				else
+					command = APPLY;
 			}
-			sequence = 0;
+			command2 = move;
 			cur_door = d->first;
+			priority = DOOR_OPEN_PRIORITY;
+			sequence = 0;
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
-			setCommand(0, DOOR_OPEN_PRIORITY, string(1, move));
-			sequence = 0;
+			command = move;
+			priority = DOOR_OPEN_PRIORITY;
 			least_moves = moves;
 		}
 	}
+	if (least_moves < INT_MAX)
+		return;
+	priority = ILLEGAL_PRIORITY;
+}
+
+void Door::complete() {
+	if (sequence == 0)
+		sequence = 1;
 }
 
 void Door::parseMessages(const string &messages) {
-	if (sequence == 0 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
+	if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
 		/* what to apply */
-		++sequence;
-	} else if (sequence >= 0 && sequence <= 1 && saiph->world->question && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+		command = unlock_tool_key;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (sequence == 1 && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
 		/* which direction we should open/pick/kick */
-		++sequence;
-	} else if (sequence == 2 && saiph->world->question && messages.find(MESSAGE_UNLOCK_IT, 0) != string::npos) {
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+		sequence = 2;
+	} else if (sequence == 2 && saiph->world->question && messages.find(DOOR_UNLOCK_IT, 0) != string::npos) {
 		/* unlock door? */
-		++sequence;
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
 		/* we're going to assume the door won't be locked anymore */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, UNKNOWN_SYMBOL_VALUE);
-	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
+		sequence = -1;
+	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, 1);
 	}

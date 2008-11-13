@@ -6,38 +6,38 @@
 using namespace std;
 
 /* constructors/destructor */
-Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0) {
+Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1), sequence(-1) {
 }
 
 /* methods */
-void Unihorn::complete() {
-	if (sequence == 0) {
-		/* multiple analyzers may (a)pply,
-		 * this way we know this analyzer "won" */
-		++sequence;
-	} else if (sequence == 1) {
-		/* we're gonna (a)pply the unihorn until
-		 * we get "Nothing happens", that's why
-		 * we set sequence back to 0 here */
+void Unihorn::analyze() {
+	if (apply_priority >= 0) {
+		findUnihorn();
+		if (unihorn_key == 0) {
+			/* lost unihorn somehow */
+			apply_priority = -1;
+			return;
+		}
+		/* unihorn failed last attempt, try again */
+		command = APPLY;
+		priority = apply_priority;
 		sequence = 0;
 	}
 }
 
+void Unihorn::complete() {
+	if (sequence == 0)
+		sequence = 1;
+}
+
 void Unihorn::parseMessages(const string &messages) {
 	if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
-		/* it is possible that our unihorn was stolen/lost/etc,
-		 * so we'll have to "find" it again */
-		findUnihorn();
-		if (unihorn_key == 0) {
-			/* damn, we lost it */
-			clearCommands();
-			/* we must close the "what to apply?" question */
-			setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
-			sequence = 0;
-		}
-	} else if (sequence >= 0 && messages.find(MESSAGE_NOTHING_HAPPENS, 0) != string::npos) {
-		/* no more bad stuff to fix */
-		clearCommands();
+		command = unihorn_key;
+		priority = PRIORITY_CONTINUE_ACTION;
+		sequence = 2;
+	} else if (sequence == 2 && messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
+		apply_priority = -1;
+		sequence = -1;
 	}
 }
 
@@ -47,8 +47,10 @@ bool Unihorn::request(const Request &request) {
 		if (unihorn_key == 0)
 			return false;
 		/* we got a unicorn horn */
-		setCommand(0, request.priority, APPLY, true);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, unihorn_key), true);
+		if (request.priority > apply_priority)
+			apply_priority = request.priority;
+		command = APPLY;
+		priority = apply_priority;
 		sequence = 0;
 		return true;
 	}

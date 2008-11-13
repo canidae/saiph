@@ -355,6 +355,10 @@ bool Saiph::run() {
 	/* analyzer stuff comes here */
 	Analyzer *best_analyzer = NULL;
 
+	/* clear priority from analyzers */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->priority = ILLEGAL_PRIORITY;
+
 	/* let analyzers parse messages */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->parseMessages(world->messages);
@@ -376,8 +380,8 @@ bool Saiph::run() {
 	/* find best analyzer */
 	int best_priority = ILLEGAL_PRIORITY;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->getPriority() > best_priority) {
-			best_priority = (*a)->getPriority();
+		if ((*a)->priority > best_priority) {
+			best_priority = (*a)->priority;
 			best_analyzer = *a;
 		}
 	}
@@ -396,29 +400,23 @@ bool Saiph::run() {
 	}
 
 	/* let an analyzer do its command */
-	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->getCommand() << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
-	world->executeCommand(best_analyzer->getCommand());
+	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
+	world->executeCommand(best_analyzer->command);
 	if (stuck_counter < 42) {
 		best_analyzer->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
-		Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->getCommand() << endl;
+		Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 		best_analyzer->fail();
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
-	last_command = best_analyzer->getCommand();
+	last_command = best_analyzer->command;
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;
-
-	/* clear old commands */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if (((*a) != best_analyzer || (*a)->wasLastCommand()) && !(*a)->rememberCommand())
-			(*a)->clearCommands();
-	}
 	return true;
 }
 

@@ -10,46 +10,46 @@ Vault::Vault(Saiph *saiph) : Analyzer("Vault"), saiph(saiph), drop_gold(false), 
 
 /* methods */
 void Vault::parseMessages(const string &messages) {
-	if (saiph->world->question && messages.find(MESSAGE_HELLO_STRANGER, 0) != string::npos) {
+	if (saiph->world->question && messages.find(VAULT_MESSAGE_STRANGER, 0) != string::npos) {
 		/* guard asking who we are */
 		/* if we got some means of getting out (teleportitis, wand of teleport, scroll of teleport, pick-axe),
 		 * then claim we're Croesus */
 		if (saiph->world->player.teleportitis) {
-			setCommand(0, PRIORITY_CONTINUE_ACTION, VAULT_CROESUS);
-			sequence = 0;
+			command = VAULT_CROESUS;
+			priority = PRIORITY_CONTINUE_ACTION;
 			return;
 		}
 		/* otherwise, tell our real name */
-		setCommand(0, PRIORITY_CONTINUE_ACTION, "saiph\n");
-		sequence = 0;
+		command = "saiph\n";
+		priority = PRIORITY_CONTINUE_ACTION;
 		drop_gold = true;
 	} else if (saiph->got_drop_menu && drop_gold) {
 		/* drop our gold */
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 			if (d->second.name != "gold piece")
 				continue;
-			setCommand(0, PRIORITY_SELECT_ITEM, string(1, d->first));
-			sequence = 0;
+			command = d->first;
+			priority = PRIORITY_SELECT_ITEM;
 			return;
 		}
 		/* we've probably selected our gold if we're here */
-		setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
-		sequence = 0;
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
 		look_at_ground = true;
 	} else if (drop_gold && !look_at_ground) {
 		/* bring up drop menu */
-		setCommand(0, VAULT_GO_OUT_PRIORITY, DROP);
-		sequence = 0;
+		command = DROP;
+		priority = VAULT_GO_OUT_PRIORITY;
 	} else if (look_at_ground) {
 		/* we'll look at ground after dropping the gold.
 		 * this makes us aware of the stash,
 		 * and the loot analyzer won't "visit" the stash after we move */
-		setCommand(0, PRIORITY_LOOK, LOOK);
-		sequence = 0;
+		command = LOOK;
+		priority = PRIORITY_LOOK;
 		drop_gold = false;
 		look_at_ground = false;
 		follow_guard = true;
-	} else if (messages.find(MESSAGE_GUARD_DISAPPEARS, 0) != string::npos) {
+	} else if (messages.find(VAULT_MESSAGE_DISAPPEAR, 0) != string::npos) {
 		/* guard is gone, stop following */
 		follow_guard = false;
 	} else if (follow_guard) {
@@ -66,10 +66,10 @@ void Vault::parseMessages(const string &messages) {
 			unsigned char move = saiph->shortestPath(m->first, true, &moves);
 			if (move != ILLEGAL_MOVE) {
 				if (moves == 1)
-					setCommand(0, VAULT_GO_OUT_PRIORITY, REST);
+					command = REST;
 				else
-					setCommand(0, VAULT_GO_OUT_PRIORITY, string(1, move));
-				sequence = 0;
+					command = move;
+				priority = VAULT_GO_OUT_PRIORITY;
 				return;
 			}
 		}

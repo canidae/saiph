@@ -20,5 +20,6 @@ class Excalibur : public Analyzer {
 	private:
 		Saiph *saiph;
 		bool excalibur_exists;
+		std::string command2;
 };
 #endif

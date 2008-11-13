@@ -45,13 +45,13 @@ void Scroll::parseMessages(const string &messages) {
 			return;
 		start += sizeof (SCROLL_CALL_SCROLL) - 1;
 		string name = messages.substr(start, stop - start);
-		Debug::notice() << "[Scroll     ] Asking for name for a " << name << " potion" << endl;
+		Debug::info() << "[Scroll     ] Asking for name for a " << name << " potion" << endl;
 		for (vector<string>::iterator a = appearance.begin(); a != appearance.end(); ++a) {
 			if (name != *a)
 				continue;
 			/* recognized the scroll */
-			setCommand(0, PRIORITY_CONTINUE_ACTION, "will you be my friend?\n");
-			sequence = 0;
+			command = "will you be my friend?\n";
+			priority = PRIORITY_CONTINUE_ACTION;
 		}
 	}
 }

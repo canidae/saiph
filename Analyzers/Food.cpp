@@ -1,5 +1,4 @@
 #include "Food.h"
-#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -7,6 +6,8 @@ using namespace std;
 
 /* constructors/destructor */
 Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
+	command2 = "";
+	priority = ILLEGAL_PRIORITY;
 	eat_order.push_back("partly eaten meatball");
 	eat_order.push_back("meatball");
 	eat_order.push_back("partly eaten meat ring");
@@ -253,21 +254,21 @@ void Food::analyze() {
 			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 				if (i->second.name == *f) {
 					/* and we got something to eat */
+					command = EAT;
+					command2 = i->first;
 					switch (saiph->world->player.hunger) {
 						case HUNGRY:
-							setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT, true);
+							priority = FOOD_EAT_HUNGRY_PRIORITY;
 							break;
 
 						case WEAK:
-							setCommand(0, FOOD_EAT_WEAK_PRIORITY, EAT, true);
+							priority = FOOD_EAT_WEAK_PRIORITY;
 							break;
 
 						default:
-							setCommand(0, FOOD_EAT_FAINTING_PRIORITY, EAT, true);
+							priority = FOOD_EAT_FAINTING_PRIORITY;
 							break;
 					}
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
-					sequence = 0;
 					return;
 				}
 			}
@@ -284,14 +285,14 @@ void Food::analyze() {
 		/* easter egg: eat bytes when [over]satiated */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name == "byte" || i->second.name == "bytes") {
-				setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
-				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
-				sequence = 0;
+				command = EAT;
+				command2 = i->first;
+				priority = FOOD_EAT_HUNGRY_PRIORITY;
 				return;
 			}
 		}
 	}
-	if (saiph->on_ground != NULL && saiph->world->player.hunger < SATIATED) {
+	if (saiph->on_ground != NULL && saiph->world->player.hunger < SATIATED && priority < FOOD_EAT_CORPSE_PRIORITY) {
 		map<Point, int>::iterator s = safe_eat_loc.find(saiph->position);
 		if (s != safe_eat_loc.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
@@ -305,11 +306,9 @@ void Food::analyze() {
 					/* there's a corpse in the stash, is it edible? */
 					if (safeToEat(i->name)) {
 						/* it is, and we know we can eat corpses on this position */
-						setCommand(0, FOOD_EAT_HUNGRY_PRIORITY, EAT);
-						setCommand(1, PRIORITY_CONTINUE_ACTION, i->name);
-						setCommand(2, PRIORITY_CONTINUE_ACTION, YES);
-						setCommand(3, PRIORITY_LOOK, LOOK, true);
-						sequence = 0;
+						command = EAT;
+						command2 = i->name;
+						priority = FOOD_EAT_HUNGRY_PRIORITY;
 						return;
 					}
 				}
@@ -318,41 +317,29 @@ void Food::analyze() {
 	}
 }
 
-void Food::complete() {
-	if (sequence == 2) {
-		/* when we eat a corpse we're not guaranteed a unique message,
-		 * however, sequence 2 is unique so if complete() is called and
-		 * sequence is 2 we know we just ate a corpse.
-		 * we'll need to look on floor after eating a corpse (check if
-		 * the corpse really is gone), so increase sequence by 1 */
-		++sequence;
-	} else if (sequence == 3) {
-		/* and if complete() is called when sequence is 3 it means we
-		 * looked at the floor after eating a corpse.
-		 * we need to clear this command manually, because we "remember" it */
-		clearCommands();
-	}
-}
-
 void Food::parseMessages(const string &messages) {
+	if (command2 == "ate corpse") {
+		/* just ate a corpse, we should look at ground */
+		priority = PRIORITY_LOOK;
+		command = LOOK;
+		command2.clear();
+		return;
+	}
 	string::size_type pos;
-	if (sequence == 0 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
-		/* eating something from inventory, next command specified what */
-		++sequence;
+	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
 		/* food gone, make inventory dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		return;
-	} else if (sequence == 0 && ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos)) {
-		/* asks if we should eat the stuff on the floor.
-		 * next command got the name of the corpse we want to eat */
-		++sequence;
+	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos) {
+		/* asks if we should eat the stuff on the floor */
+		priority = PRIORITY_CONTINUE_ACTION;
 		map<Point, int>::iterator s = safe_eat_loc.find(saiph->position);
 		if (s == safe_eat_loc.end() || s->second + FOOD_CORPSE_EAT_TIME <= saiph->world->player.turn) {
 			/* this corpse is rotten */
-			clearCommands();
-			setCommand(0, PRIORITY_CONTINUE_ACTION, NO);
-			sequence = 0;
+			command = NO;
 			return;
 		}
 		string::size_type pos2 = pos;
@@ -361,9 +348,7 @@ void Food::parseMessages(const string &messages) {
 			pos = messages.find(FOOD_EAT_ONE_1, 0);
 			if (pos == string::npos) {
 				/* this shouldn't happen */
-				clearCommands();
-				setCommand(0, PRIORITY_CONTINUE_ACTION, NO);
-				sequence = 0;
+				command = NO;
 				return;
 			} else {
 				pos += sizeof (FOOD_EAT_ONE_1) - 1;
@@ -372,16 +357,11 @@ void Food::parseMessages(const string &messages) {
 			pos += sizeof (FOOD_EAT_IT_1) - 1;
 		}
 		Item item(messages.substr(pos, pos2 - pos));
-		if (getCommand() == item.name) {
-			/* this is the corpse we want to eat.
-			 * next sequence in this chain is YES, increase sequence */
-			++sequence;
+		if (command2 == item.name) {
+			command = YES;
+			command2 = "ate corpse";
 		} else {
-			/* hmm, this is not the corpse we wish to eat.
-			 * set the first command to NO (instead of the original EAT)
-			 * and sequence to 0 so this block will be called again. */
-			setCommand(0, PRIORITY_CONTINUE_ACTION, NO);
-			sequence = 0;
+			command = NO;
 		}
 		return;
 	} else if ((pos = messages.find(FOOD_YOU_KILL, 0)) != string::npos || (pos = messages.find(FOOD_YOU_DESTROY, 0) != string::npos)) {
@@ -425,26 +405,21 @@ void Food::parseMessages(const string &messages) {
 		}
 	} else if (saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
 		/* we should stop eating when we get this message */
-		clearCommands();
-		setCommand(0, PRIORITY_CONTINUE_ACTION, YES);
-		sequence = 0;
-	} else if (messages.find(MESSAGE_NOTHING_TO_EAT, 0) != string::npos) {
-		/* this shouldn't happen, but it does :\ */
-		Debug::warning() << "We got message '" MESSAGE_NOTHING_TO_EAT "', we shouldn't get that" << endl;
-		clearCommands();
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
 	}
 }
 
 bool Food::request(const Request &request) {
 	if (request.request == REQUEST_EAT) {
-		if (request.priority < getPriority())
+		if (request.priority < priority)
 			return false;
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name != request.data)
 				continue;
-			setCommand(0, request.priority, EAT, true);
-			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, i->first));
-			sequence = 0;
+			command = EAT;
+			command2 = i->first;
+			priority = request.priority;
 			return true;
 		}
 	}

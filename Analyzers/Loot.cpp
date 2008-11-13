@@ -12,27 +12,29 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 /* methods */
 void Loot::analyze() {
 	/* check inventory/stash if it's dirty */
+	if (priority >= PRIORITY_LOOK)
+		return;
 	if (dirty_inventory) {
-		setCommand(0, PRIORITY_LOOK, INVENTORY, true);
-		sequence = 0;
+		checkInventory();
 		return;
 	}
 	if (dirty_stash) {
-		setCommand(0, PRIORITY_LOOK, LOOK, true);
-		sequence = 0;
+		checkStash();
 		return;
 	}
 	/* this is a hack for the rogue level where stairs look like '%' */
 	if (saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
 		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(saiph->position);
 		if (s != saiph->levels[saiph->position.level].stashes.end() && s->second.top_symbol == '%' && saiph->levels[saiph->position.level].dungeonmap[s->first.row][s->first.col] != STAIRS_UP && saiph->levels[saiph->position.level].dungeonmap[s->first.row][s->first.col] != STAIRS_DOWN) {
-			setCommand(0, PRIORITY_LOOK, LOOK, true);
-			sequence = 0;
+			command = LOOK;
+			priority = PRIORITY_LOOK;
 			return;
 		}
 	}
 
 	/* loot stash we're standing on */
+	if (priority >= LOOT_LOOT_STASH_PRIORITY)
+		return;
 	if (saiph->on_ground != NULL) {
 		/* if we see a white '@' then don't loot */
 		bool doloot = true;
@@ -49,24 +51,26 @@ void Loot::analyze() {
 		}
 		if (doloot) {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-				if (checkItem(*i, true) == 0)
+				if (wantedItem(*i) == 0)
 					continue;
-				setCommand(0, LOOT_LOOT_STASH_PRIORITY, PICKUP);
-				sequence = 0;
+				command = PICKUP;
+				priority = LOOT_LOOT_STASH_PRIORITY;
 				return;
 			}
 		}
 	}
 
 	/* drop unwanted stuff on STAIRS_UP and get safe Elbereth there */
+	if (priority >= LOOT_DROP_ITEMS_PRIORITY)
+		return;
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
 		/* standing on stairs, drop unwanted stuff if any */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (checkItem(i->second, false) == 0)
+			if (unwantedItem(i->second) == 0)
 				continue;
 			/* we got unwanted stuff */
-			setCommand(0, LOOT_DROP_ITEMS_PRIORITY, DROP);
-			sequence = 0;
+			command = DROP;
+			priority = LOOT_DROP_ITEMS_PRIORITY;
 			return;
 		}
 		/* TODO: get down elbereth if there's a stash here */
@@ -74,7 +78,7 @@ void Loot::analyze() {
 		/* we're not standing on stairs, but we're burdened or worse.
 		 * go to stairs if we got unwanted stuff */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (checkItem(i->second, false) == 0)
+			if (unwantedItem(i->second) == 0)
 				continue;
 			/* we got unwanted stuff */
 			map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin();
@@ -82,8 +86,8 @@ void Loot::analyze() {
 				int moves = 0;
 				unsigned char move = saiph->shortestPath(up->first, false, &moves);
 				if (move != ILLEGAL_MOVE) {
-					setCommand(0, LOOT_DROP_ITEMS_PRIORITY, string(1, move));
-					sequence = 0;
+					command = move;
+					priority = LOOT_DROP_ITEMS_PRIORITY;
 					return;
 				}
 			}
@@ -91,6 +95,8 @@ void Loot::analyze() {
 		}
 	}
 
+	if (priority >= LOOT_VISIT_STASH_PRIORITY || saiph->world->player.hallucinating)
+		return;
 	/* visit new/changed stashes unless hallucinating */
 	int min_moves = INT_MAX;
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
@@ -106,30 +112,26 @@ void Loot::analyze() {
 		} else if (move != ILLEGAL_MOVE && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			setCommand(0, LOOT_VISIT_STASH_PRIORITY, string(1, move));
-			sequence = 0;
+			command = move;
+			priority = LOOT_VISIT_STASH_PRIORITY;
 		}
 	}
 }
 
 void Loot::complete() {
-	if (dirty_inventory && sequence == 0) {
+	if (dirty_inventory && command == INVENTORY) {
 		/* we're showing our inventory */
 		showing_inventory = true;
-	} else if (!dirty_inventory && dirty_stash && sequence == 0) {
+	} else if (dirty_stash && command == LOOK) {
 		/* looked at ground, stash is no longer dirty */
 		dirty_stash = false;
-		clearCommands();
-	} else if (rememberCommand()) {
-		/* we're probably at the rogue level, looking for stairs */
-		clearCommands();
 	}
 }
 
 void Loot::fail() {
 	/* most likely, we're trying to loot something in the wall */
-	if (!dirty_inventory && !dirty_stash && sequence == 0) {
-		Point moving_to = saiph->moveToPoint((unsigned char) commands[0].data[0]);
+	if (command.size() == 1) {
+		Point moving_to =saiph->moveToPoint((unsigned char) command[0]);
 		if (moving_to != saiph->position) {
 			/* we'll not so elegantly solve this by making the tile we attempt to move to unpassable */
 			saiph->levels[saiph->position.level].dungeonmap[moving_to.row][moving_to.col] = UNKNOWN_TILE_UNPASSABLE;
@@ -141,26 +143,26 @@ void Loot::parseMessages(const string &messages) {
 	if (saiph->got_pickup_menu) {
 		/* looting */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			int wanted = checkItem(p->second, true);
+			int wanted = wantedItem(p->second);
 			if (wanted == 0) {
 				/* pick up none */
 				continue;
 			} else if (wanted >= p->second.count) {
 				/* pick up all */
-				setCommand(0, PRIORITY_SELECT_ITEM, string(1, p->first));
+				command = p->first;
 			} else {
 				/* pick up some */
 				stringstream tmp;
 				tmp << wanted << p->first;
-				setCommand(0, PRIORITY_SELECT_ITEM, tmp.str());
+				command = tmp.str();
 			}
-			sequence = 0;
+			priority = PRIORITY_SELECT_ITEM;
 			return;
 		}
 		/* if we're here, we should get next page or close list */
 		showing_pickup = true;
-		setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
-		sequence = 0;
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
 	} else if (saiph->got_drop_menu) {
 		showing_drop = true;
 		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
@@ -168,7 +170,7 @@ void Loot::parseMessages(const string &messages) {
 			for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 				if (d->second.name == "gold piece")
 					continue; // don't drop gold
-				int unwanted = checkItem(d->second, false);
+				int unwanted = unwantedItem(d->second);
 				/* we'll "cheat" a bit here:
 				 * we "forget" what we've marked to be dropped,
 				 * so we'll reduce the item count in our inventory when we select it */
@@ -178,25 +180,25 @@ void Loot::parseMessages(const string &messages) {
 				} else if (unwanted >= d->second.count) {
 					/* drop all */
 					saiph->inventory[d->first].count = 0;
-					setCommand(0, PRIORITY_SELECT_ITEM, string(1, d->first));
+					command = d->first;
 				} else {
 					/* drop some */
 					saiph->inventory[d->first].count -= unwanted;
 					stringstream tmp;
 					tmp << unwanted << d->first;
-					setCommand(0, PRIORITY_SELECT_ITEM, tmp.str());
+					command = tmp.str();
 				}
-				sequence = 0;
+				priority = PRIORITY_SELECT_ITEM;
 				return;
 			}
 			/* if we're here, we should get next page or close list */
-			setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
-			sequence = 0;
+			command = CLOSE_PAGE;
+			priority = PRIORITY_CLOSE_PAGE;
 		}
 	} else if (saiph->world->menu && showing_inventory) {
 		/* we should close the page of the inventory we're showing */
-		setCommand(0, PRIORITY_CLOSE_PAGE, CLOSE_PAGE);
-		sequence = 0;
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
 		return;
 	} else if (!saiph->world->menu) {
 		if (showing_inventory) {
@@ -208,33 +210,33 @@ void Loot::parseMessages(const string &messages) {
 			saiph->request(req);
 		} else if (showing_pickup) {
 			/* we just had a pickup menu. check stash */
-			dirty_stash = true;
+			checkStash();
 			showing_pickup = false;
 		} else if (showing_drop) {
 			/* we just had a drop menu. check stash and inventory */
-			dirty_inventory = true;
-			dirty_stash = true;
+			checkInventory();
+			checkStash();
 			showing_drop = false;
 		}
 	}
 	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_SEVERAL_MORE_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_MORE_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. check stash */
-		dirty_stash = true;
+		checkStash();
 	}
 	if (messages.find(LOOT_STOLE, 0) != string::npos) {
 		/* some monster stole something, we should check our inventory */
-		dirty_inventory = true;
+		checkInventory();
 	}
 }
 
 bool Loot::request(const Request &request) {
 	if (request.request == REQUEST_DIRTY_INVENTORY) {
 		/* someone wants to mark our inventory as dirty */
-		dirty_inventory = true;
+		checkInventory();
 		return true;
 	} else if (request.request == REQUEST_DIRTY_STASH) {
 		/* someone wants to mark stash at our position dirty */
-		dirty_stash = true;
+		checkStash();
 		return true;
 	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
 		/* set total amount of items in the given group */
@@ -262,15 +264,31 @@ bool Loot::request(const Request &request) {
 }
 
 /* private methods */
-int Loot::checkItem(const Item &item, bool wanted) {
-	/* return how many we we should pick up of given item */
-	if (!wanted && !item.additional.empty())
+void Loot::checkInventory() {
+	dirty_inventory = true;
+	if (priority >= PRIORITY_LOOK)
+		return;
+	command = INVENTORY;
+	priority = PRIORITY_LOOK;
+}
+
+void Loot::checkStash() {
+	dirty_stash = true;
+	if (priority >= PRIORITY_LOOK)
+		return;
+	command = LOOK;
+	priority = PRIORITY_LOOK;
+}
+
+int Loot::unwantedItem(const Item &item) {
+	/* return how many we we should drop of given item */
+	if (!item.additional.empty())
 		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
 	map<string, ItemWanted>::iterator i = items.find(item.name);
 	if (i == items.end())
-		return (wanted ? 0 : item.count); // item is not in our list
+		return item.count; // item is not in our list
 	if ((item.beatitude & i->second.beatitude) == 0)
-		return (wanted ? 0 : item.count); // item does not have a beatitude we'll accept
+		return item.count; // item does not have a beatitude we'll accept
 	/* groups */
 	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
 		/* figure out how many items we already got in this group */
@@ -293,14 +311,14 @@ int Loot::checkItem(const Item &item, bool wanted) {
 		}
 		if (!item_in_group)
 			continue;
-		if ((wanted && count >= g->second.amount) || (!wanted && count <= g->second.amount))
+		if (count <= g->second.amount)
 			return 0;
 		else
-			return (wanted ? g->second.amount - count : count - g->second.amount);
+			return count - g->second.amount;
 	}
 	/* solitary items */
 	if (i->second.amount <= 0)
-		return (wanted ? 0 : item.count); // we don't desire this item
+		return item.count; // we don't desire this item
 	/* figure out how many we got of this item already */
 	int count = 0;
 	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
@@ -308,8 +326,58 @@ int Loot::checkItem(const Item &item, bool wanted) {
 			continue;
 		count += in->second.count;
 	}
-	if ((wanted && count >= i->second.amount) || (!wanted && count <= i->second.amount))
+	if (count <= i->second.amount)
 		return 0;
 	else
-		return (wanted ? i->second.amount - count : count - i->second.amount);
+		return count - i->second.amount;
+}
+
+int Loot::wantedItem(const Item &item) {
+	/* return how many we we should pick up of given item */
+	map<string, ItemWanted>::iterator i = items.find(item.name);
+	if (i == items.end())
+		return 0; // item is not in our list
+	if ((item.beatitude & i->second.beatitude) == 0)
+		return 0; // item does not have a beatitude we'll accept
+	/* groups */
+	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
+		/* figure out how many items we already got in this group */
+		int count = 0;
+		int item_in_group = false;
+		for (vector<string>::iterator gi = g->second.items.begin(); gi != g->second.items.end(); ++gi) {
+			for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
+				if (in->second.name != *gi)
+					continue;
+				count += in->second.count;
+			}
+			if (*gi == item.name) {
+				/* item is in group.
+				 * we'll also break here so she'll pick up better items in group,
+				 * even if that means she'll exceed the limit.
+				 * otherwise she won't pick up eg. elven daggers when she's full on orcish daggers */
+				item_in_group = true;
+				break;
+			}
+		}
+		if (!item_in_group)
+			continue;
+		if (count >= g->second.amount)
+			return 0;
+		else
+			return g->second.amount - count;
+	}
+	/* solitary items */
+	if (i->second.amount <= 0)
+		return 0; // we don't desire this item
+	/* figure out how many we got of this item already */
+	int count = 0;
+	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
+		if (in->second.name != item.name)
+			continue;
+		count += in->second.count;
+	}
+	if (count >= i->second.amount)
+		return 0;
+	else
+		return i->second.amount - count;
 }

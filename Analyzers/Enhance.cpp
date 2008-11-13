@@ -5,26 +5,32 @@
 using namespace std;
 
 /* constructors/destructor */
-Enhance::Enhance(Saiph *saiph) : Analyzer("Enhance"), saiph(saiph) {
+Enhance::Enhance(Saiph *saiph) : Analyzer("Enhance"), saiph(saiph), do_enhance(true), got_enhance_menu(false) {
 }
 
 /* methods */
 void Enhance::parseMessages(const string &messages) {
-	if (messages.find(MESSAGE_FEEL_MORE_CONFIDENT, 0) != string::npos) {
-		setCommand(0, PRIORITY_LOOK, ENHANCE, true);
-		setCommand(1, PRIORITY_LOOK, CLOSE_PAGE);
-		sequence = 0;
-	} else if (sequence == 0 && (messages.find(MESSAGE_CURRENT_SKILLS, 0) != string::npos || messages.find(MESSAGE_PICK_A_SKILL, 0) != string::npos)) {
-		/* enhance menu just popped up, increase sequence */
-		++sequence;
+	if (messages.find(ENHANCE_MESSAGE_CONFIDENT, 0) != string::npos) {
+		do_enhance = true;
+	} else if (messages.find(ENHANCE_CURRENT_SKILLS, 0) != string::npos || messages.find(ENHANCE_PICK_A_SKILL, 0) != string::npos) {
+		got_enhance_menu = true;
 	}
-	if (sequence > 0) {
-		if (saiph->world->menu) {
-			/* showing enhance menu, enhance "a" for now */
-			if (messages.find("  a - ", 0) != string::npos)
-				setCommand(1, PRIORITY_CONTINUE_ACTION, "a");
-			else
-				setCommand(1, PRIORITY_CONTINUE_ACTION, CLOSE_PAGE);
-		}
+	if (got_enhance_menu && !saiph->world->menu) {
+		/* no longer showing a menu, make those booleans false */
+		do_enhance = false;
+		got_enhance_menu = false;
+	} else if (do_enhance && !saiph->world->menu) {
+		/* request that the enhance menu is shown */
+		command = ENHANCE_ENHANCE;
+		priority = PRIORITY_LOOK;
+	} else if (got_enhance_menu && saiph->world->menu) {
+		/* showing enhance menu.
+		 * enhance 'a' for now.
+		 * search for "  a - ", if not found set command = " " */
+		if (messages.find("  a - ", 0) != string::npos)
+			command = "a";
+		else
+			command = " ";
+		priority = PRIORITY_CONTINUE_ACTION;
 	}
 }

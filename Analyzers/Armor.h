@@ -28,7 +28,9 @@ class Armor : public Analyzer {
 
 	private:
 		Saiph *saiph;
+		bool wear_more;
 		std::vector<WearArmor> armor[ARMOR_SLOTS];
+		std::string command2;
 		Request req;
 
 		void wearArmor();

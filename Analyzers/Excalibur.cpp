@@ -5,12 +5,14 @@
 using namespace std;
 
 /* constructors/destructor */
-Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excalibur_exists(false) {
+Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excalibur_exists(false), command2("") {
 }
 
 /* methods */
 void Excalibur::analyze() {
-	if (excalibur_exists || saiph->world->player.experience < 5)
+	if (excalibur_exists)
+		return;
+	if (saiph->world->player.experience < 5)
 		return;
 	/* do we have a long sword? */
 	unsigned char got_long_sword = ILLEGAL_ITEM;
@@ -29,29 +31,31 @@ void Excalibur::analyze() {
 		return; // don't know of any fountains
 	if (move == MOVE_NOWHERE) {
 		/* standing on (in?) fountain, dip */
-		setCommand(0, EXCALIBUR_DIP_PRIORITY, DIP);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, got_long_sword));
-		setCommand(2, PRIORITY_CONTINUE_ACTION, YES); // yes, dip in fountain
-		sequence = 0;
+		command = DIP;
+		command2 = got_long_sword;
+		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
 		/* move towards fountain */
-		setCommand(0, EXCALIBUR_DIP_PRIORITY, string(1, move));
-		sequence = 0;
+		command = move;
+		command2.clear();
+		priority = EXCALIBUR_DIP_PRIORITY;
 	}
 }
 
 void Excalibur::parseMessages(const string &messages) {
 	if (excalibur_exists)
 		return;
-	if (sequence == 0 && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
+	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
-		++sequence;
-	} else if (sequence == 1 && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (command != "" && command2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
 		/* if we want to dip in fountain? sure */
-		++sequence;
+		command = YES;
+		command2.clear();
+		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
 		/* alright! */
 		excalibur_exists = true;
-		clearCommands();
 	}
 }

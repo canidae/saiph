@@ -5,22 +5,35 @@
 using namespace std;
 
 /* constructors/destructor */
-Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph) {
+Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_more(false) {
 }
 
 /* methods */
 void Armor::analyze() {
-	if (saiph->inventory_changed)
+	if (saiph->inventory_changed || wear_more) {
+		wear_more = true;
 		wearArmor();
+	}
 }
 
 void Armor::parseMessages(const string &messages) {
-	if (sequence == 0 && saiph->world->question && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
-		/* wear or take off something */
-		++sequence;
+	if (saiph->world->question && !command2.empty() && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
+		/* take off or wear something */
+		command = command2;
+		command2.clear();
+		priority = PRIORITY_CONTINUE_ACTION;
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+	} else if (!saiph->world->question && !command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
+		/* took off last piece of armor (no "what do you want to take off?" question then) */
+		command2.clear();
+		/* request dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
+	} else if (command == WEAR) {
+		/* in case we didn't get to wear the armor */
+		priority = ARMOR_WEAR_PRIORITY;
 	}
 }
 
@@ -83,33 +96,36 @@ void Armor::wearArmor() {
 			/* are we wearing a cloak? */
 			if (worn[ARMOR_CLOAK] != 0) {
 				/* yes, we must take it off first */
-				setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF, true);
-				setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[ARMOR_CLOAK]));
-				sequence = 0;
+				command = TAKE_OFF;
+				command2 = worn[ARMOR_CLOAK];
+				priority = ARMOR_WEAR_PRIORITY;
 				return;
 			}
 			if (s == ARMOR_SHIRT) {
 				/* are we wearing a suit? */
 				if (worn[ARMOR_SUIT] != 0) {
 					/* yes, we must take it off first */
-					setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF, true);
-					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[ARMOR_SUIT]));
-					sequence = 0;
+					command = TAKE_OFF;
+					command2 = worn[ARMOR_SUIT];
+					priority = ARMOR_WEAR_PRIORITY;
 					return;
 				}
 			}
 		}
 		if (worn[s] != 0) {
 			/* we'll have to take this armor off first */
-			setCommand(0, ARMOR_WEAR_PRIORITY, TAKE_OFF, true);
-			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, worn[s]));
-			sequence = 0;
+			command = TAKE_OFF;
+			command2 = worn[s];
+			priority = ARMOR_WEAR_PRIORITY;
 			return;
 		}
 		/* we should put on this piece of armor */
-		setCommand(0, ARMOR_WEAR_PRIORITY, WEAR, true);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key[s]));
-		sequence = 0;
+		command = WEAR;
+		command2 = best_key[s];
+		priority = ARMOR_WEAR_PRIORITY;
 		return;
 	}
+	/* nothing to wear */
+	wear_more = false;
+	command.clear();
 }

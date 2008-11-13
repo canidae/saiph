@@ -19,8 +19,8 @@ bool Pray::request(const Request &request) {
 	if (request.request == REQUEST_PRAY) {
 		if (last_pray_turn + PRAY_PRAYER_TIMEOUT <= saiph->world->player.turn) {
 			/* it's (probably) safe to pray */
-			setCommand(0, request.priority, PRAY);
-			sequence = 0;
+			priority = request.priority;
+			command = PRAY;
 			return true;
 		}
 	}

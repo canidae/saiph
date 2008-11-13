@@ -5,7 +5,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Ring::Ring(Saiph *saiph) : Analyzer("Ring"), saiph(saiph) {
+Ring::Ring(Saiph *saiph) : Analyzer("Ring"), saiph(saiph), command2("") {
 }
 
 /* methods */
@@ -15,12 +15,14 @@ void Ring::analyze() {
 }
 
 void Ring::parseMessages(const string &messages) {
-	if (sequence == 0 && saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
+	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
 		/* put on or remove a ring */
-		++sequence;
-	} else if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHICH_RING_FINGER, 0) != string::npos) {
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && messages.find(MESSAGE_WHICH_RING_FINGER, 0) != string::npos) {
 		/* need to specify which finger the ring should go on */
-		++sequence;
+		command = "l";
+		priority = PRIORITY_CONTINUE_ACTION;
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
@@ -81,19 +83,17 @@ void Ring::wearRing() {
 		return; // already wearing just as good or better rings
 	if (ring_on_right != 0 && ring_on_left != 0) {
 		/* must remove one ring before we can put on the new ring */
-		setCommand(0, RING_WEAR_PRIORITY, REMOVE, true);
+		command = REMOVE;
+		priority = RING_WEAR_PRIORITY;
 		/* in case we get question about which ring to remove */
 		if (ring_on_right_pri < ring_on_left_pri)
-			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, ring_on_left));
+			command2 = ring_on_left;
 		else
-			setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, ring_on_right));
-		sequence = 0;
+			command2 = ring_on_right;
 	} else {
 		/* no need to remove any rings, just put on the new ring */
-		setCommand(0, RING_WEAR_PRIORITY, PUT_ON, true);
-		setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, best_key));
-		/* in case we get question about which hand to put ring on */
-		setCommand(2, PRIORITY_CONTINUE_ACTION, "l");
-		sequence = 0;
+		priority = RING_WEAR_PRIORITY;
+		command =  PUT_ON;
+		command2 = best_key;
 	}
 }
