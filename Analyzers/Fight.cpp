@@ -13,6 +13,7 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
+		clearCommands();
 		setCommand(0, FIGHT_ATTACK_PRIORITY, string(1, MOVE_NW));
 		sequence = 0;
 		return;
@@ -42,6 +43,7 @@ void Fight::analyze() {
 					/* got thrown weapons */
 					if (commands[0].priority == FIGHT_ATTACK_PRIORITY && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
 						continue; // already got a target
+					clearCommands();
 					setCommand(0, FIGHT_ATTACK_PRIORITY, THROW);
 					setCommand(1, PRIORITY_CONTINUE_ACTION, string(1, got_thrown));
 					setCommand(2, PRIORITY_CONTINUE_ACTION, string(1, in_line));
@@ -62,10 +64,13 @@ void Fight::analyze() {
 			continue; // we know of a monster closer than this one
 		if (moves == 1 && distance == min_distance && sequence >= 0 && commands[sequence].priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
-		if (blue_e)
+		if (blue_e) {
+			clearCommands();
 			setCommand(0, FIGHT_BLUE_E_PRIORITY, string(1, move));
-		else
+		} else {
+			clearCommands();
 			setCommand(0, (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY, string(1, move));
+		}
 		sequence = 0;
 		min_distance = distance;
 		min_moves = moves;
