@@ -1,8 +1,8 @@
-#ifndef RING_H
-#define RING_H
+#ifndef AMULET_H
+#define AMULET_H
 /* priorities */
-#define RING_PICKUP_PRIORITY 425
-#define RING_WEAR_PRIORITY 225
+#define AMULET_PICKUP_PRIORITY 425
+#define AMULET_WEAR_PRIORITY 225
 
 #include <string>
 #include <vector>
@@ -10,17 +10,17 @@
 #include "../Globals.h"
 #include "../Request.h"
 
-/* struct for wearing ring */
-struct WearRing {
+/* struct for wearing amulet */
+struct WearAmulet {
 	int beatitude;
 	std::string name;
 };
 
 class Saiph;
 
-class Ring : public Analyzer {
+class Amulet : public Analyzer {
 	public:
-		Ring(Saiph *saiph);
+		Amulet(Saiph *saiph);
 
 		void analyze();
 		void complete();
@@ -30,11 +30,11 @@ class Ring : public Analyzer {
 	private:
 		Saiph *saiph;
 		std::string command2;
-		std::vector<WearRing> rings;
-		bool wear_ring;
+		std::vector<WearAmulet> amulets;
+		bool wear_amulet;
 		int sequence;
 		Request req;
 
-		void wearRing();
+		void wearAmulet();
 };
 #endif

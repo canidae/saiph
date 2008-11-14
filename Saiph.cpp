@@ -9,6 +9,7 @@
 #include "Stash.h"
 #include "World.h"
 /* analyzers */
+#include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
 #include "Analyzers/Door.h"
@@ -72,6 +73,7 @@ Saiph::Saiph(int interface) {
 	stuck_counter = 0;
 
 	/* Analyzers */
+	analyzers.push_back(new Amulet(this));
 	analyzers.push_back(new Armor(this));
 	analyzers.push_back(new Beatitude(this));
 	analyzers.push_back(new Door(this));
@@ -676,7 +678,46 @@ void Saiph::dumpMaps() {
 				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
 		}
 	}
+	/* status & inventory */
+	cout << (unsigned char) 27 << "[1;82H";
+	cout << "Cold " << world->player.cold_resistance;
+	cout << ", Disintegration " << world->player.disintegration_resistance;
+	cout << ", Fire " << world->player.fire_resistance;
+	cout << ", Poisin " << world->player.poison_resistance;
+	cout << ", Shock " << world->player.shock_resistance;
+	cout << ", Sleep " << world->player.sleep_resistance;
+	cout << (unsigned char) 27 << "[2;82H";
+	cout << "Telepathy " << world->player.telepathy;
+	cout << ", Teleport control " << world->player.teleport_control;
+	cout << ", Teleportitis " << world->player.teleportitis;
+	cout << ", Lycantrophy " << world->player.lycanthropy;
+	cout << ", Hurt leg " << world->player.hurt_leg;
+	cout << (unsigned char) 27 << "[3;82H";
+	cout << "=== Inventory ===";
+	int ir = 0;
+	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 50; ++i) {
+		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+		cout << i->first;
+		cout << " - " << i->second.count;
+		cout << " " << (i->second.beatitude == BLESSED ? "blessed" : (i->second.beatitude == CURSED ? "cursed" : (i->second.beatitude == UNCURSED ? "uncursed" : "unknown")));
+		cout << (i->second.greased ? " greased" : "");
+		cout << (i->second.fixed ? " fixed" : "");
+		cout << " dmg(" << i->second.damage << ")";
+		if (i->second.enchantment >= 0)
+			cout << " +" << i->second.enchantment;
+		else
+			cout << " " << i->second.enchantment;
+		cout << " " << i->second.name;
+		if (i->second.named != "")
+			cout << " (" << i->second.named << ")";
+		if (i->second.additional != "")
+			cout << " (" << i->second.additional << ")";
+		++ir;
+	}
+
 	/* world map as the bot sees it */
+	/*
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
@@ -687,7 +728,9 @@ void Saiph::dumpMaps() {
 				cout << (unsigned char) 27 << "[m";
 		}
 	}
+	*/
 	/* path map */
+	/*
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
@@ -700,6 +743,7 @@ void Saiph::dumpMaps() {
 				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
 		}
 	}
+	*/
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
@@ -757,7 +801,7 @@ void Saiph::parseMessages(const string &messages) {
 /* main */
 int main() {
 	Debug::open("saiph.log");
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
