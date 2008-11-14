@@ -404,6 +404,9 @@ bool Saiph::run() {
 	}
 
 	/* let an analyzer do its command */
+	cout << (unsigned char) 27 << "[1;82H";
+	cout << best_analyzer->name << " (priority " << best_priority << "): " << best_analyzer->command;
+	cout.flush();
 	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
 	if (stuck_counter < 42) {
@@ -679,24 +682,24 @@ void Saiph::dumpMaps() {
 		}
 	}
 	/* status & inventory */
-	cout << (unsigned char) 27 << "[1;82H";
+	cout << (unsigned char) 27 << "[2;82H";
 	cout << "Cold " << world->player.cold_resistance;
 	cout << ", Disintegration " << world->player.disintegration_resistance;
 	cout << ", Fire " << world->player.fire_resistance;
-	cout << ", Poisin " << world->player.poison_resistance;
+	cout << ", Poison " << world->player.poison_resistance;
 	cout << ", Shock " << world->player.shock_resistance;
 	cout << ", Sleep " << world->player.sleep_resistance;
-	cout << (unsigned char) 27 << "[2;82H";
+	cout << (unsigned char) 27 << "[3;82H";
 	cout << "Telepathy " << world->player.telepathy;
 	cout << ", Teleport control " << world->player.teleport_control;
 	cout << ", Teleportitis " << world->player.teleportitis;
-	cout << ", Lycantrophy " << world->player.lycanthropy;
+	cout << ", Lycanthropy " << world->player.lycanthropy;
 	cout << ", Hurt leg " << world->player.hurt_leg;
-	cout << (unsigned char) 27 << "[3;82H";
+	cout << (unsigned char) 27 << "[4;82H";
 	cout << "=== Inventory ===";
 	int ir = 0;
-	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 50; ++i) {
-		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
+	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 45; ++i) {
+		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		cout << i->first;
 		cout << " - " << i->second.count;
@@ -801,7 +804,7 @@ void Saiph::parseMessages(const string &messages) {
 /* main */
 int main() {
 	Debug::open("saiph.log");
-	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
+	Saiph *saiph = new Saiph(CONNECTION_TELNET);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
