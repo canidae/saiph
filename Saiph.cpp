@@ -406,6 +406,9 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	cout << (unsigned char) 27 << "[1;82H";
 	cout << best_analyzer->name << " (priority " << best_priority << "): " << best_analyzer->command;
+	/* return cursor back to where it was */
+	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
+	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
 	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
@@ -747,10 +750,6 @@ void Saiph::dumpMaps() {
 		}
 	}
 	*/
-	/* return cursor back to where it was */
-	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
-	/* and flush cout. if we don't do this our output looks like garbage */
-	cout.flush();
 }
 
 void Saiph::parseMessages(const string &messages) {
