@@ -292,7 +292,7 @@ void Food::analyze() {
 			}
 		}
 	}
-	if (saiph->on_ground != NULL && saiph->world->player.hunger < SATIATED && priority < FOOD_EAT_CORPSE_PRIORITY) {
+	if (saiph->on_ground != NULL && priority < FOOD_EAT_CORPSE_PRIORITY) {
 		map<Point, int>::iterator s = safe_eat_loc.find(saiph->position);
 		if (s != safe_eat_loc.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
@@ -304,7 +304,7 @@ void Food::analyze() {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (i->name.find(FOOD_CORPSES, i->name.size() - sizeof (FOOD_CORPSES) + 1) != string::npos || i->name.find(FOOD_CORPSE, i->name.size() - sizeof (FOOD_CORPSE) + 1) != string::npos) {
 					/* there's a corpse in the stash, is it edible? */
-					if (safeToEat(i->name)) {
+					if ((saiph->world->player.hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
 						/* it is, and we know we can eat corpses on this position */
 						command = EAT;
 						command2 = i->name;
