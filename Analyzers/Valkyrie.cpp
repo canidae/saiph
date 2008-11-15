@@ -11,6 +11,7 @@ void Valkyrie::init() {
 	setupAmulet(groupstart);
 	setupArmor(groupstart);
 	setupFood(groupstart);
+	setupPotion(groupstart);
 	setupRing(groupstart);
 	setupTool(groupstart);
 	setupWand(groupstart);
@@ -61,11 +62,12 @@ void Valkyrie::setupAmulet(int &groupstart) {
 
 	/* tell the amulet analyzer which amulets we wish to wear */
 	req.request = REQUEST_AMULET_WEAR;
-	req.status = BLESSED | UNCURSED;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
         req.data = "amulet of life saving";
 	saiph->request(req);
         req.data = "amulet of reflection";
 	saiph->request(req);
+	req.status = BLESSED | UNCURSED;
         req.data = "amulet of ESP";
 	saiph->request(req);
         req.data = "amulet of magical breathing";
@@ -689,6 +691,25 @@ void Valkyrie::setupFood(int &groupstart) {
         req.data = "meatball";
 	saiph->request(req);
         req.data = "partly eaten meatball";
+	saiph->request(req);
+}
+
+void Valkyrie::setupPotion(int &groupstart) {
+	/* create a group for potions */
+	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
+	req.value = groupstart++;
+	req.data = "10";
+	saiph->request(req);
+	/* add potions, most useful first */
+	req.request = REQUEST_ITEM_GROUP_ADD;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+        req.data = "potion of gain level";
+	saiph->request(req);
+        req.data = "potion of full healing";
+	saiph->request(req);
+        req.data = "potion of extra healing";
+	saiph->request(req);
+        req.data = "potion of healing";
 	saiph->request(req);
 }
 

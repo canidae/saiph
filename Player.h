@@ -53,6 +53,8 @@ class Player {
 		bool lycanthropy;
 		/* hurt leg */
 		bool hurt_leg;
+		/* polymorphed */
+		bool polymorphed;
 
 		Player();
 

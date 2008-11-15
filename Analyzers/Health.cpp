@@ -12,17 +12,22 @@ void Health::analyze() {
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;
 	if (hp > 0 && hp < hp_max * 3 / 5) {
-		/* hp below 60%. heal up */
+		/* hp below 60%. try elberething */
 		req.request = REQUEST_ELBERETH_OR_REST;
 		req.priority = HEALTH_REST_FOR_HP_LOW;
 		resting = true;
 		if (!saiph->request(req)) {
-			/* elbereth won't work... how about pray? */
-			if (hp < 6 || hp < hp_max / 7) {
-				/* our hp is low enough, at least */
-				req.request = REQUEST_PRAY;
-				req.priority = HEALTH_PRAY_FOR_HP;
-				saiph->request(req);
+			/* no? try quaffing */
+			req.request = REQUEST_QUAFF_HEALING;
+			req.priority = HEALTH_QUAFF_FOR_HP;
+			if (!saiph->request(req)) {
+				/* elbereth/quaffing won't work... how about pray? */
+				if (hp < 6 || hp < hp_max / 7) {
+					/* our hp is low enough, at least */
+					req.request = REQUEST_PRAY;
+					req.priority = HEALTH_PRAY_FOR_HP;
+					saiph->request(req);
+				}
 			}
 		}
 	}
@@ -66,6 +71,12 @@ void Health::analyze() {
 			req.request = REQUEST_PRAY;
 			saiph->request(req);
 		}
+	}
+	if (saiph->world->player.polymorphed) {
+		/* cure polymorph */
+		req.request = REQUEST_PRAY;
+		req.priority = HEALTH_CURE_POLYMORPH;
+		saiph->request(req);
 	}
 	if (prev_st < saiph->world->player.strength || prev_dx < saiph->world->player.dexterity || prev_co < saiph->world->player.constitution || prev_in < saiph->world->player.intelligence || prev_wi < saiph->world->player.wisdom || prev_ch < saiph->world->player.charisma) {
 		/* we lost some stats. apply unihorn */

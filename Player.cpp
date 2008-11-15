@@ -52,6 +52,8 @@ Player::Player() {
 	lycanthropy = false;
 	/* hurt leg */
 	hurt_leg = false;
+	/* polymorphed */
+	polymorphed = false;
 }
 
 /* methods */

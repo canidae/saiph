@@ -798,6 +798,10 @@ void Saiph::parseMessages(const string &messages) {
 		world->player.hurt_leg = true;
 	if (messages.find(SAIPH_LEG_IS_BETTER, 0) != string::npos)
 		world->player.hurt_leg = false;
+	if (messages.find(SAIPH_POLYMORPH, 0) != string::npos)
+		world->player.polymorphed = true;
+	if (messages.find(SAIPH_UNPOLYMORPH, 0) != string::npos)
+		world->player.polymorphed = false;
 }
 
 /* main */

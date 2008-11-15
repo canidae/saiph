@@ -43,6 +43,8 @@
 #define SAIPH_HURT_LEFT_LEG "  Your left leg is in no shape for kicking.  "
 #define SAIPH_HURT_RIGHT_LEG "  Your right leg is in no shape for kicking.  "
 #define SAIPH_LEG_IS_BETTER "  Your leg feels somewhat better.  "
+#define SAIPH_POLYMORPH "  You turn into "
+#define SAIPH_UNPOLYMORPH "  You return to "
 
 #include <fstream>
 #include <map>

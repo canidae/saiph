@@ -1,12 +1,13 @@
 #include "Potion.h"
 #include "../Debug.h"
+#include "../Request.h"
 #include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
 
 /* constructors/destructor */
-Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph) {
+Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph), command2("") {
 	appearance.push_back("black");
 	appearance.push_back("brilliant blue");
 	appearance.push_back("brown");
@@ -36,6 +37,20 @@ Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph) {
 }
 
 /* methods */
+void Potion::analyze() {
+	if (saiph->world->player.experience > 10 && priority < POTION_QUAFF_GAIN_LEVEL) {
+		/* see if we got a potion of gain level and quaff it */
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name != "potion of gain level")
+				continue;
+			/* cool, we do */
+			command = QUAFF;
+			priority = POTION_QUAFF_GAIN_LEVEL;
+			command2 = i->first;
+		}
+	}
+}
+
 void Potion::parseMessages(const string &messages) {
 	if (saiph->world->question) {
 		string::size_type stop = messages.find(POTION_CALL_END, 0);
@@ -60,5 +75,25 @@ void Potion::parseMessages(const string &messages) {
 			command = "hello :)\n";
 			priority = PRIORITY_CONTINUE_ACTION;
 		}
+	} else if (command2 != "" && messages.find(MESSAGE_WHAT_TO_DRINK, 0) != string::npos) {
+		/* quaff the potion */
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+		command2.clear();
 	}
+}
+
+bool Potion::request(const Request &request) {
+	if (request.request == REQUEST_QUAFF_HEALING) {
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name != "potion of healing" && i->second.name != "potion of extra healing" && i->second.name != "potion of full healing")
+				continue;
+			/* just pick the first healing potion for now */
+			command = QUAFF;
+			priority = request.priority;
+			command2 = i->first;
+			return true;
+		}
+	}
+	return false;
 }
