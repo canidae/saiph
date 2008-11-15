@@ -52,16 +52,16 @@ void Amulet::wearAmulet() {
 	int best_amulet = INT_MAX;
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		for (vector<WearAmulet>::size_type w = 0; w < amulets.size(); ++w) {
-			if (i->second.additional.find("being worn", 0) == 0) {
+			if (amulets[w].name != i->second.name || (int) w >= best_amulet) {
+				continue;
+			} else if ((amulets[w].beatitude & i->second.beatitude) == 0) {
+				continue;
+			} else if (i->second.additional.find("being worn", 0) == 0) {
 				amulet_worn = i->first;
 				if (i->second.beatitude == CURSED)
 					amulet_cursed = true;
 				continue;
 			}
-			if (amulets[w].name != i->second.name || (int) w >= best_amulet)
-				continue;
-			else if ((amulets[w].beatitude & i->second.beatitude) == 0)
-				continue;
 			best_key = i->first;
 			best_amulet = w;
 		}
