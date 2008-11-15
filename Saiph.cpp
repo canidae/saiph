@@ -398,18 +398,23 @@ bool Saiph::run() {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
 	} else if (best_analyzer == NULL) {
-		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching" << endl;
-		world->executeCommand("s");
+		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 100 times" << endl;
+		cout << (unsigned char) 27 << "[1;82H";
+		cout << "No idea what to do: 100s";
+		/* return cursor back to where it was */
+		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
+		world->executeCommand("100s");
 		return true;
 	}
 
-	/* let an analyzer do its command */
+	/* print what we're doing */
 	cout << (unsigned char) 27 << "[1;82H";
 	cout << best_analyzer->name << " (priority " << best_priority << "): " << best_analyzer->command;
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
+	/* let an analyzer do its command */
 	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
 	if (stuck_counter < 42) {

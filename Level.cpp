@@ -532,6 +532,23 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	if (!passable[s])
 		return false;
 	unsigned char m = monstermap[to.row][to.col];
+	if (monster[m]) {
+		if (m == '@') {
+			/* we'll allow pathing through unseen priests */
+			map<Point, Monster>::iterator mon = monsters.find(to);
+			if (mon == monsters.end())
+				return false;
+			if (mon->second.visible)
+				return false;
+			if (!mon->second.priest)
+				return false;
+		} else if (m == PET) {
+			/* we'll allow pathing through pets too */
+		} else {
+			/* all other monsters we won't path through */
+			return false;
+		}
+	}
 	if (monster[m] && m != PET)
 		return false; // can't path through monsters (except pets)
 	bool cardinal_move = (to.row == from.row || to.col == from.col);

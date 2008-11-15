@@ -36,16 +36,11 @@ void Loot::analyze() {
 	if (priority >= LOOT_LOOT_STASH_PRIORITY)
 		return;
 	if (saiph->on_ground != NULL) {
-		/* if we see a white '@' then don't loot */
+		/* if we see a shopkeeper then don't loot */
 		bool doloot = true;
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-			if (m->second.symbol != '@' || m->second.color != WHITE || !m->second.visible)
+			if (!m->second.shopkeeper || !m->second.visible)
 				continue;
-			/* if there's an altar within 10 moves, then we'll allow looting */
-			int moves = 0;
-			unsigned char move = saiph->shortestPath(ALTAR, true, &moves);
-			if (move != ILLEGAL_MOVE && moves <= 10)
-				continue; // altar nearby
 			doloot = false;
 			break;
 		}
@@ -225,6 +220,9 @@ void Loot::parseMessages(const string &messages) {
 	}
 	if (messages.find(LOOT_STOLE, 0) != string::npos) {
 		/* some monster stole something, we should check our inventory */
+		checkInventory();
+	} else if (messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos) {
+		/* some of our inventory was destroyed. check it */
 		checkInventory();
 	}
 }

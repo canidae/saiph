@@ -12,23 +12,36 @@ void Health::analyze() {
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;
 	if (hp > 0 && hp < hp_max * 3 / 5) {
-		/* hp below 60%. try elberething */
-		req.request = REQUEST_ELBERETH_OR_REST;
-		req.priority = HEALTH_REST_FOR_HP_LOW;
-		resting = true;
-		if (!saiph->request(req)) {
-			/* no? try quaffing */
+		/* hp below 60%, do something! */
+		bool doing_something = false;
+		if (hp < 6 || hp < hp_max / 7) {
+			/* try quaffing healing potion or praying */
 			req.request = REQUEST_QUAFF_HEALING;
 			req.priority = HEALTH_QUAFF_FOR_HP;
-			if (!saiph->request(req)) {
-				/* elbereth/quaffing won't work... how about pray? */
-				if (hp < 6 || hp < hp_max / 7) {
-					/* our hp is low enough, at least */
-					req.request = REQUEST_PRAY;
-					req.priority = HEALTH_PRAY_FOR_HP;
-					saiph->request(req);
-				}
+			if (saiph->request(req)) {
+				doing_something = true;
+			} else {
+				/* quaffing won't work... how about pray? */
+				req.request = REQUEST_PRAY;
+				req.priority = HEALTH_PRAY_FOR_HP;
+				if (saiph->request(req))
+					doing_something = true;
 			}
+		}
+		if (!doing_something) {
+			/* try elberething */
+			req.request = REQUEST_ELBERETH_OR_REST;
+			req.priority = HEALTH_REST_FOR_HP_LOW;
+			if (saiph->request(req))
+				resting = true;
+		} else {
+			/* turn off resting if we pray/quaff.
+			 * in case we quaff a healing potion and end up with 80% hp,
+			 * so that we won't continue elberething in an attempt to get
+			 * 90% or more.
+			 * when we quaff it usually means we're in trouble, can't
+			 * waste time elberething then */
+			resting = false;
 		}
 	}
 	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {

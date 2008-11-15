@@ -52,7 +52,12 @@ void Potion::analyze() {
 }
 
 void Potion::parseMessages(const string &messages) {
-	if (saiph->world->question) {
+	if (command2 != "" && messages.find(MESSAGE_WHAT_TO_DRINK, 0) != string::npos) {
+		/* quaff the potion */
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+		command2.clear();
+	} else if (saiph->world->question) {
 		string::size_type stop = messages.find(POTION_CALL_END, 0);
 		if (stop == string::npos)
 			return;
@@ -75,11 +80,6 @@ void Potion::parseMessages(const string &messages) {
 			command = "hello :)\n";
 			priority = PRIORITY_CONTINUE_ACTION;
 		}
-	} else if (command2 != "" && messages.find(MESSAGE_WHAT_TO_DRINK, 0) != string::npos) {
-		/* quaff the potion */
-		command = command2;
-		priority = PRIORITY_CONTINUE_ACTION;
-		command2.clear();
 	}
 }
 

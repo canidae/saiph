@@ -171,6 +171,9 @@
 /* messages */
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_CURRENT_SKILLS "  Current skills:  "
+#define MESSAGE_DESTROY_POTION " boils and explodes!  "
+#define MESSAGE_DESTROY_RING " turns to dust and vanishes!  "
+#define MESSAGE_DESTROY_WAND " breaks apart and explodes!  "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "

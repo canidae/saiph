@@ -297,8 +297,8 @@ void Food::analyze() {
 		if (s != safe_eat_loc.end() && s->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
 			for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-				if (m->second.symbol == '@' && m->second.color == WHITE && m->second.visible)
-					return; // we see a white '@', don't eat (nor loot)
+				if (m->second.shopkeeper && m->second.visible)
+					return; // we see a shopkeeper, don't eat
 			}
 			/* there are items here, we should look for corpses to eat */
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {

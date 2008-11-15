@@ -376,6 +376,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "set of silver dragon scales";
 	saiph->request(req);
+	/*
         req.data = "set of black dragon scales";
 	saiph->request(req);
         req.data = "set of yellow dragon scales";
@@ -390,6 +391,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
         req.data = "set of white dragon scales";
 	saiph->request(req);
+	*/
 	req.status = BLESSED | UNCURSED;
         req.data = "dwarvish mithril-coat";
 	saiph->request(req);
@@ -1044,9 +1046,11 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.data = "dart";
 	req.value = 200;
 	saiph->request(req);
+	/* not using pick-axes yet
 	req.data = "pick-axe";
 	req.value = 1;
 	saiph->request(req);
+	*/
 
 	/* add thrown weapons in the order we want to throw them.
 	 * currently we'll throw them in the order we wish to get rid of stuff,
