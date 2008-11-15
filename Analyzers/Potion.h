@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
+#include "../Request.h"
 
 class Request;
 class Saiph;
@@ -26,5 +27,6 @@ class Potion : public Analyzer {
 		Saiph *saiph;
 		std::vector<std::string> appearance;
 		std::string command2;
+		Request req;
 };
 #endif

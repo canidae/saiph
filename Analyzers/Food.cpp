@@ -327,6 +327,20 @@ void Food::parseMessages(const string &messages) {
 	}
 	string::size_type pos;
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
+		if (command2.size() > 1) {
+			/* sometimes (eating troll that arise) we try to eat
+			 * a corpse that's gone.
+			 * if command2.size() > 1 we meant to eat a corpse,
+			 * but they we wouldn't be here.
+			 * we must clear command2 & set command to CLOSE_PAGE */
+			command2.clear();
+			command = CLOSE_PAGE;
+			priority = PRIORITY_CONTINUE_ACTION;
+			/* also mark stash as dirty */
+			req.request = REQUEST_DIRTY_STASH;
+			saiph->request(req);
+			return;
+		}
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* food gone, make inventory dirty */
@@ -460,8 +474,10 @@ bool Food::safeToEat(const string &corpse) {
 		return false;
 	else if ((c->second & FOOD_LYCANTHROPY) != 0)
 		return false;
+	/* mimic for some turns isn't that bad, is it?
 	else if ((c->second & FOOD_MIMIC) != 0)
 		return false;
+	*/
 	else if ((c->second & FOOD_PETRIFY) != 0)
 		return false;
 	else if ((c->second & FOOD_POISONOUS) != 0 && !saiph->world->player.poison_resistance)

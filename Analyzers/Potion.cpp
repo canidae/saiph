@@ -57,6 +57,9 @@ void Potion::parseMessages(const string &messages) {
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
 		command2.clear();
+		/* mark inventory as dirty */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 	} else if (saiph->world->question) {
 		string::size_type stop = messages.find(POTION_CALL_END, 0);
 		if (stop == string::npos)
