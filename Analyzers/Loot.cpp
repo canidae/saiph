@@ -46,7 +46,7 @@ void Loot::analyze() {
 		}
 		if (doloot) {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-				if (wantedItem(*i) == 0)
+				if (pickupItem(*i) == 0)
 					continue;
 				command = PICKUP;
 				priority = LOOT_LOOT_STASH_PRIORITY;
@@ -61,7 +61,7 @@ void Loot::analyze() {
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
 		/* standing on stairs, drop unwanted stuff if any */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (unwantedItem(i->second) == 0)
+			if (dropItem(i->second) == 0)
 				continue;
 			/* we got unwanted stuff */
 			command = DROP;
@@ -73,7 +73,7 @@ void Loot::analyze() {
 		/* we're not standing on stairs, but we're burdened or worse.
 		 * go to stairs if we got unwanted stuff */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (unwantedItem(i->second) == 0)
+			if (dropItem(i->second) == 0)
 				continue;
 			/* we got unwanted stuff */
 			map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin();
@@ -138,7 +138,7 @@ void Loot::parseMessages(const string &messages) {
 	if (saiph->got_pickup_menu) {
 		/* looting */
 		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			int wanted = wantedItem(p->second);
+			int wanted = pickupItem(p->second);
 			if (wanted == 0) {
 				/* pick up none */
 				continue;
@@ -165,7 +165,7 @@ void Loot::parseMessages(const string &messages) {
 			for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 				if (d->second.name == "gold piece")
 					continue; // don't drop gold
-				int unwanted = unwantedItem(d->second);
+				int unwanted = dropItem(d->second);
 				/* we'll "cheat" a bit here:
 				 * we "forget" what we've marked to be dropped,
 				 * so we'll reduce the item count in our inventory when we select it */
@@ -278,17 +278,27 @@ void Loot::checkStash() {
 	priority = PRIORITY_LOOK;
 }
 
-int Loot::unwantedItem(const Item &item) {
-	/* return how many we we should drop of given item */
+int Loot::dropItem(const Item &item) {
+	/* return how many items of this type should be dropped */
 	if (!item.additional.empty())
 		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
 	if (item.name.find("(", 0) != string::npos)
 		return 0; // even more of a hack; thoroughly rotted thoroughly burned iron helm (being wo
+	return pickupOrDropItem(item, true);
+}
+
+int Loot::pickupItem(const Item &item) {
+	/* return how many items of this type should be picked up */
+	return pickupOrDropItem(item, false);
+}
+
+int Loot::pickupOrDropItem(const Item &item, bool drop) {
+	/* helper method for dropItem() and pickupItem() */
 	map<string, ItemWanted>::iterator i = items.find(item.name);
 	if (i == items.end())
-		return item.count; // item is not in our list
+		return (drop ? item.count: 0); // item is not in our list
 	if ((item.beatitude & i->second.beatitude) == 0)
-		return item.count; // item does not have a beatitude we'll accept
+		return (drop ? item.count: 0); // item does not have a beatitude we'll accept
 	/* groups */
 	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
 		/* figure out how many items we already got in this group */
@@ -312,13 +322,13 @@ int Loot::unwantedItem(const Item &item) {
 		if (!item_in_group)
 			continue;
 		if (count <= g->second.amount)
-			return 0;
+			return (drop ? 0 : g->second.amount - count);
 		else
-			return count - g->second.amount;
+			return (drop ? count - g->second.amount : 0);
 	}
 	/* solitary items */
 	if (i->second.amount <= 0)
-		return item.count; // we don't desire this item
+		return (drop ? item.count : 0); // we don't desire this item
 	/* figure out how many we got of this item already */
 	int count = 0;
 	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
@@ -327,57 +337,7 @@ int Loot::unwantedItem(const Item &item) {
 		count += in->second.count;
 	}
 	if (count <= i->second.amount)
-		return 0;
+		return (drop ? 0 : i->second.amount - count);
 	else
-		return count - i->second.amount;
-}
-
-int Loot::wantedItem(const Item &item) {
-	/* return how many we we should pick up of given item */
-	map<string, ItemWanted>::iterator i = items.find(item.name);
-	if (i == items.end())
-		return 0; // item is not in our list
-	if ((item.beatitude & i->second.beatitude) == 0)
-		return 0; // item does not have a beatitude we'll accept
-	/* groups */
-	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
-		/* figure out how many items we already got in this group */
-		int count = 0;
-		int item_in_group = false;
-		for (vector<string>::iterator gi = g->second.items.begin(); gi != g->second.items.end(); ++gi) {
-			for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-				if (in->second.name != *gi)
-					continue;
-				count += in->second.count;
-			}
-			if (*gi == item.name) {
-				/* item is in group.
-				 * we'll also break here so she'll pick up better items in group,
-				 * even if that means she'll exceed the limit.
-				 * otherwise she won't pick up eg. elven daggers when she's full on orcish daggers */
-				item_in_group = true;
-				break;
-			}
-		}
-		if (!item_in_group)
-			continue;
-		if (count >= g->second.amount)
-			return 0;
-		else
-			return g->second.amount - count;
-	}
-	/* solitary items */
-	if (i->second.amount <= 0)
-		return 0; // we don't desire this item
-	/* figure out how many we got of this item already */
-	int count = 0;
-	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-		if (in->second.name != item.name)
-			continue;
-		count += in->second.count;
-	}
-	if (count >= i->second.amount)
-		return 0;
-	else
-		return i->second.amount - count;
+		return (drop ? count - i->second.amount : 0);
 }

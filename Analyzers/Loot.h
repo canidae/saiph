@@ -2,7 +2,7 @@
 #define LOOT_H
 /* priorities */
 #define LOOT_LOOT_STASH_PRIORITY 450
-#define LOOT_DROP_ITEMS_PRIORITY 225
+#define LOOT_DROP_ITEMS_PRIORITY 245
 #define LOOT_VISIT_STASH_PRIORITY 250
 #define LOOT_PROTECT_STAIR_STASH_PRIORITY 550
 /* messages */
@@ -59,7 +59,8 @@ class Loot : public Analyzer {
 
 		void checkInventory();
 		void checkStash();
-		int unwantedItem(const Item &item);
-		int wantedItem(const Item &item);
+		int dropItem(const Item &item);
+		int pickupItem(const Item &item);
+		int pickupOrDropItem(const Item &item, bool drop);
 };
 #endif
