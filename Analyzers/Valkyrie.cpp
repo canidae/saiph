@@ -846,7 +846,7 @@ void Valkyrie::setupTool(int &groupstart) {
 	/* unihorn */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.value = 10;
+	req.value = 3;
 	req.data = "unicorn horn";
 	saiph->request(req);
 
@@ -1001,7 +1001,7 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	/* create a group for thrown weapons */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
 	req.value = groupstart++;
-	req.data = "20";
+	req.data = "15";
 	saiph->request(req);
 	/* add weapons to the group, best weapon first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -1044,7 +1044,7 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dart";
-	req.value = 200;
+	req.value = 50;
 	saiph->request(req);
 	/* not using pick-axes yet
 	req.data = "pick-axe";

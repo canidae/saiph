@@ -282,6 +282,8 @@ int Loot::unwantedItem(const Item &item) {
 	/* return how many we we should drop of given item */
 	if (!item.additional.empty())
 		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
+	if (item.name.find("(", 0) != string::npos)
+		return 0; // even more of a hack; thoroughly rotted thoroughly burned iron helm (being wo
 	map<string, ItemWanted>::iterator i = items.find(item.name);
 	if (i == items.end())
 		return item.count; // item is not in our list
