@@ -322,8 +322,40 @@ unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_m
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {
-	/* remap ambigous symbols */
-	symbol = uniquemap[symbol][color];
+	if (branch == BRANCH_ROGUE) {
+		/* we need a special symbol remapping for rogue level */
+		switch ((char) symbol) {
+			case '+':
+				symbol = OPEN_DOOR;
+				break;
+
+			case ':':
+				symbol = FOOD;
+				break;
+
+			case ']':
+				symbol = ARMOR;
+				break;
+
+			case '*':
+				symbol = GOLD;
+				break;
+
+			case ',':
+				symbol = AMULET;
+				break;
+
+			case '%':
+				symbol = ROGUE_STAIRS;
+				break;
+
+			default:
+				break;
+		}
+	} else {
+		/* remap ambigous symbols */
+		symbol = uniquemap[symbol][color];
+	}
 	if (dungeon[symbol] || (symbol == SOLID_ROCK && dungeonmap[point.row][point.col] == CORRIDOR)) {
 		/* update the map showing static stuff */
 		setDungeonSymbol(point, symbol);
@@ -568,8 +600,6 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 			else if (branch == BRANCH_SOKOBAN)
 				return false; // in sokoban we can't pass by boulders diagonally
 		}
-		if (branch == BRANCH_ROGUE)
-		      return false; // level that is hard to parse. only allowing cardinal moves makes it easier?
 		//if (polymorphed_to_grid_bug)
 		//      return false;
 	}
