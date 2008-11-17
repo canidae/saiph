@@ -390,6 +390,7 @@ bool Saiph::run() {
 					 * we could be trying to move diagonally into a door we're
 					 * unaware of because of an item blocking the door symbol.
 					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+					Debug::warning() << SAIPH_DEBUG_NAME << "Unable to move diagonally, marking target diagonally unpassable" << endl;
 					to = directionToPoint((unsigned char) best_analyzer->command[1]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
 					was_move = true;
@@ -401,6 +402,7 @@ bool Saiph::run() {
 				case W:
 					/* moving cardinally failed, possibly item in wall.
 					 * make the tile UNKNOWN_TILE_UNPASSABLE */
+					Debug::warning() << SAIPH_DEBUG_NAME << "Unable to move cardinally, marking target unpassable" << endl;
 					to = directionToPoint((unsigned char) best_analyzer->command[1]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
 					was_move = true;
