@@ -38,8 +38,7 @@ void Door::analyze() {
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
-			command = MOVE;
-			command.push_back(dir);
+			command = dir;
 			priority = DOOR_OPEN_PRIORITY;
 			least_moves = moves;
 		}

@@ -81,8 +81,7 @@ void Loot::analyze() {
 				int moves = 0;
 				unsigned char dir = saiph->shortestPath(up->first, false, &moves);
 				if (dir != ILLEGAL_DIRECTION) {
-					command = MOVE;
-					command.push_back(dir);
+					command = dir;
 					priority = LOOT_DROP_ITEMS_PRIORITY;
 					return;
 				}
@@ -108,8 +107,7 @@ void Loot::analyze() {
 		} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			command = MOVE;
-			command.push_back(dir);
+			command = dir;
 			priority = LOOT_VISIT_STASH_PRIORITY;
 		}
 	}

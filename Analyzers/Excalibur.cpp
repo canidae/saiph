@@ -36,8 +36,7 @@ void Excalibur::analyze() {
 		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
 		/* move towards fountain */
-		command = MOVE;
-		command.push_back(dir);
+		command = dir;
 		command2.clear();
 		priority = EXCALIBUR_DIP_PRIORITY;
 	}

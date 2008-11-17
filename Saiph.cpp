@@ -379,9 +379,11 @@ bool Saiph::run() {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
 		bool was_move = false;
-		if (best_analyzer->command.size() == 2 && (best_analyzer->command.substr(0, 1) == MOVE || best_analyzer->command.substr(0, 1) == LOOT_MOVE)) {
+		if (best_analyzer->command.size() == 1 && last_command == best_analyzer->command) {
+			/* command is movement, and so was last_command.
+			 * it's likely that we're moving */
 			Point to;
-			switch (best_analyzer->command[1]) {
+			switch (best_analyzer->command[0]) {
 				case NW:
 				case NE:
 				case SW:
@@ -390,7 +392,7 @@ bool Saiph::run() {
 					 * we could be trying to move diagonally into a door we're
 					 * unaware of because of an item blocking the door symbol.
 					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-					to = directionToPoint((unsigned char) best_analyzer->command[1]);
+					to = directionToPoint((unsigned char) best_analyzer->command[0]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
 					was_move = true;
 					break;
@@ -401,7 +403,7 @@ bool Saiph::run() {
 				case W:
 					/* moving cardinally failed, possibly item in wall.
 					 * make the tile UNKNOWN_TILE_UNPASSABLE */
-					to = directionToPoint((unsigned char) best_analyzer->command[1]);
+					to = directionToPoint((unsigned char) best_analyzer->command[0]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
 					was_move = true;
 					break;

@@ -90,8 +90,6 @@
 #define INVENTORY "i"
 #define KICK ""
 #define LOOK ":"
-#define LOOT_MOVE "1" // moving with "m<dir>" won't give "you see here", so we "1<dir>" instead (2 chars needed for failed move detection)
-#define MOVE "m"
 #define OPEN "o"
 #define PICKUP ","
 #define PRAY "#pray\n"

@@ -28,13 +28,10 @@ void Explore::analyze() {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE) {
-					command = MOVE;
-					command.push_back(UP);
-				} else {
-					command = MOVE;
-					command.push_back(dir);
-				}
+				if (dir == NOWHERE)
+					command = UP;
+				else
+					command = dir;
 				priority = EXPLORE_UNKNOWN_STAIRS;
 				return;
 			}
@@ -45,13 +42,10 @@ void Explore::analyze() {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE) {
-					command = MOVE;
-					command.push_back(DOWN);
-				} else {
-					command = MOVE;
-					command.push_back(dir);
-				}
+				if (dir == NOWHERE)
+					command = DOWN;
+				else
+					command = dir;
 				priority = EXPLORE_UNKNOWN_STAIRS;
 				return;
 			}
@@ -155,12 +149,10 @@ void Explore::analyze() {
 			continue;
 		if (dir == ILLEGAL_DIRECTION)
 			continue;
-		if (dir == NOWHERE) {
+		if (dir == NOWHERE)
 			command = SEARCH;
-		} else {
-			command = MOVE;
-			command.push_back(dir);
-		}
+		else
+			command = dir;
 		priority = cur_priority;
 		best_moves = moves;
 	}
@@ -170,13 +162,10 @@ void Explore::analyze() {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(up->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE) {
-					command = MOVE;
-					command.push_back(UP);
-				} else {
-					command = MOVE;
-					command.push_back(dir);
-				}
+				if (dir == NOWHERE)
+					command = UP;
+				else
+					command = dir;
 				priority = EXPLORE_DESCEND;
 				break;
 			}
@@ -190,13 +179,10 @@ void Explore::analyze() {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE) {
-					command = MOVE;
-					command.push_back(DOWN);
-				} else {
-					command = MOVE;
-					command.push_back(dir);
-				}
+				if (dir == NOWHERE)
+					command = DOWN;
+				else
+					command = dir;
 				priority = EXPLORE_DESCEND;
 				break;
 			}

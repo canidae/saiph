@@ -65,12 +65,10 @@ void Vault::parseMessages(const string &messages) {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(m->first, true, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
-				if (moves == 1) {
+				if (moves == 1)
 					command = REST;
-				} else {
-					command = MOVE;
-					command.push_back(dir);
-				}
+				else
+					command = dir;
 				priority = VAULT_GO_OUT_PRIORITY;
 				return;
 			}

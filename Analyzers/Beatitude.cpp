@@ -43,8 +43,7 @@ void Beatitude::analyze() {
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
 	} else {
 		/* move towards altar */
-		command = MOVE;
-		command.push_back(dir);
+		command = dir;
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;
 	}
 }
