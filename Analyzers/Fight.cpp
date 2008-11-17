@@ -68,7 +68,7 @@ void Fight::analyze() {
 			priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
 		min_distance = distance;
 		min_moves = moves;
-		command = (moves == 1 ? FIGHT : MOVE);
+		command = FIGHT;
 		command.push_back(dir);
 	}
 }
