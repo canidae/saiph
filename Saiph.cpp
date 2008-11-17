@@ -243,52 +243,6 @@ const string &Saiph::farlook(const Point &target) {
 	return farlook_command;
 }
 
-Point Saiph::moveToPoint(unsigned char move) {
-	/* return the position we'd be at if we do the given move */
-	Point pos = position;
-	switch (move) {
-		case 'y':
-			--pos.row;
-			--pos.col;
-			break;
-
-		case 'k':
-			--pos.row;
-			break;
-
-		case 'u':
-			--pos.row;
-			++pos.col;
-			break;
-
-		case 'l':
-			++pos.col;
-			break;
-
-		case 'n':
-			++pos.row;
-			++pos.col;
-			break;
-
-		case 'j':
-			++pos.row;
-			break;
-
-		case 'b':
-			++pos.row;
-			--pos.col;
-			break;
-
-		case 'h':
-			--pos.col;
-			break;
-	}
-	if (pos.row >= MAP_ROW_BEGIN && pos.row <= MAP_ROW_END && pos.col >= MAP_COL_BEGIN && pos.col <= MAP_COL_END)
-		return pos;
-	else
-		return position;
-}
-
 bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return false;
@@ -400,6 +354,7 @@ bool Saiph::run() {
 	} else if (best_analyzer == NULL) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 100 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		cout << "No idea what to do: 100s";
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
@@ -409,6 +364,7 @@ bool Saiph::run() {
 
 	/* print what we're doing */
 	cout << (unsigned char) 27 << "[1;82H";
+	cout << (unsigned char) 27 << "[K"; // erase everything to the right
 	cout << best_analyzer->name << " (priority " << best_priority << "): " << best_analyzer->command;
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
@@ -417,12 +373,27 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
 	world->executeCommand(best_analyzer->command);
-	if (stuck_counter < 42) {
+	if (stuck_counter < 8) {
 		best_analyzer->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
-		Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
-		best_analyzer->fail();
+		/* let's see if we're moving somewhere */
+		if (best_analyzer->command == MOVE_NW || best_analyzer->command == MOVE_NE || best_analyzer->command == MOVE_SW || best_analyzer->command == MOVE_SE) {
+			/* moving diagonally failed.
+			 * we could be trying to move diagonally into a door we're
+			 * unaware of because of an item blocking the door symbol.
+			 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+			Point to = directionToPoint((unsigned char) best_analyzer->command[1]);
+			levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
+		} else if (best_analyzer->command == MOVE_N || best_analyzer->command == MOVE_E || best_analyzer->command == MOVE_W || best_analyzer->command == MOVE_S) {
+			/* moving cardinally failed, possibly item in wall.
+			 * make the tile UNKNOWN_TILE_UNPASSABLE */
+			Point to = directionToPoint((unsigned char) best_analyzer->command[1]);
+			levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
+		} else {
+			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
+			best_analyzer->fail();
+		}
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
@@ -674,6 +645,52 @@ bool Saiph::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_
 	else if (levels[position.level].monstermap[point.row][point.col] != ILLEGAL_MONSTER && levels[position.level].monsters[point].visible)
 		return false;
 	return true;
+}
+
+Point Saiph::directionToPoint(unsigned char direction) {
+	/* return the position we'd be at if we do the given move */
+	Point pos = position;
+	switch (direction) {
+		case NW:
+			--pos.row;
+			--pos.col;
+			break;
+
+		case N:
+			--pos.row;
+			break;
+
+		case NE:
+			--pos.row;
+			++pos.col;
+			break;
+
+		case E:
+			++pos.col;
+			break;
+
+		case SE:
+			++pos.row;
+			++pos.col;
+			break;
+
+		case S:
+			++pos.row;
+			break;
+
+		case SW:
+			++pos.row;
+			--pos.col;
+			break;
+
+		case W:
+			--pos.col;
+			break;
+	}
+	if (pos.row >= MAP_ROW_BEGIN && pos.row <= MAP_ROW_END && pos.col >= MAP_COL_BEGIN && pos.col <= MAP_COL_END)
+		return pos;
+	else
+		return position;
 }
 
 void Saiph::dumpMaps() {

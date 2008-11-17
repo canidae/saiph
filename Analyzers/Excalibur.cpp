@@ -26,17 +26,18 @@ void Excalibur::analyze() {
 		return;
 	/* path to nearest fountain */
 	int moves = 0;
-	unsigned char move = saiph->shortestPath(FOUNTAIN, false, &moves);
-	if (move == ILLEGAL_DIRECTION)
+	unsigned char dir = saiph->shortestPath(FOUNTAIN, false, &moves);
+	if (dir == ILLEGAL_DIRECTION)
 		return; // don't know of any fountains
-	if (move == NOWHERE) {
+	if (dir == NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;
 		priority = EXCALIBUR_DIP_PRIORITY;
 	} else {
 		/* move towards fountain */
-		command = move;
+		command = MOVE;
+		command.push_back(dir);
 		command2.clear();
 		priority = EXCALIBUR_DIP_PRIORITY;
 	}

@@ -83,7 +83,6 @@ class Saiph {
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 		const std::string &farlook(const Point &target);
-		Point moveToPoint(unsigned char move);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
@@ -103,6 +102,7 @@ class Saiph {
 
 		void detectPosition();
 		bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
+		Point directionToPoint(unsigned char direction);
 		void dumpMaps();
 		void parseMessages(const std::string &messages);
 };

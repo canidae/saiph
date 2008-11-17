@@ -68,10 +68,6 @@ void Level::parseMessages(const string &messages) {
 			setDungeonSymbol(saiph->position, ALTAR, CHAOTIC);
 		else
 			setDungeonSymbol(saiph->position, ALTAR, LAWFUL);
-	} else if (dungeonmap[saiph->position.row][saiph->position.col] == UNKNOWN_TILE) {
-		/* when we've checked messages for static dungeon features and not found anything,
-		 * then we can set the tile to UNKNOWN_TILE_DIAGONALLY_PASSABLE if the tile is UNKNOWN_TILE */
-		setDungeonSymbol(saiph->position, UNKNOWN_TILE_DIAGONALLY_PASSABLE);
 	}
 
 	/* item parsing */
@@ -587,8 +583,8 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	if (!cardinal_move) {
 		if (s == OPEN_DOOR || dungeonmap[from.row][from.col] == OPEN_DOOR)
 			return false; // diagonally in/out of door
-		if (s == UNKNOWN_TILE || dungeonmap[from.row][from.col] == UNKNOWN_TILE)
-			return false; // don't know what tile this is, it may be a door. no diagonal movement
+		if (s == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || dungeonmap[from.row][from.col] == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
+			return false; // don't know what tile this is, but we know we can't pass it diagonally
 		unsigned char sc1 = dungeonmap[to.row][from.col];
 		unsigned char sc2 = dungeonmap[from.row][to.col];
 		if (!passable[sc1] && !passable[sc2]) {
@@ -676,7 +672,7 @@ void Level::init() {
 	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
 	passable[(unsigned char) TRAP] = true;
 	passable[(unsigned char) UNKNOWN_TILE] = true;
-	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_PASSABLE] = true;
+	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
 	passable[(unsigned char) WEAPON] = true;
 	passable[(unsigned char) ARMOR] = true;
 	passable[(unsigned char) RING] = true;

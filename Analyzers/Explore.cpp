@@ -26,12 +26,14 @@ void Explore::analyze() {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			int moves = 0;
-			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_DIRECTION) {
-				if (move == NOWHERE)
-					command = UP;
-				else
-					command = move;
+			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (dir == NOWHERE) {
+					command = MOVE_UP;
+				} else {
+					command = MOVE;
+					command.push_back(dir);
+				}
 				priority = EXPLORE_UNKNOWN_STAIRS;
 				return;
 			}
@@ -40,12 +42,14 @@ void Explore::analyze() {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			int moves = 0;
-			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_DIRECTION) {
-				if (move == NOWHERE)
-					command = DOWN;
-				else
-					command = move;
+			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (dir == NOWHERE) {
+					command = MOVE_DOWN;
+				} else {
+					command = MOVE;
+					command.push_back(dir);
+				}
 				priority = EXPLORE_UNKNOWN_STAIRS;
 				return;
 			}
@@ -126,7 +130,7 @@ void Explore::analyze() {
 				break;
 
 			case UNKNOWN_TILE:
-			case UNKNOWN_TILE_DIAGONALLY_PASSABLE:
+			case UNKNOWN_TILE_DIAGONALLY_UNPASSABLE:
 				if (!visited[saiph->position.level][e->row][e->col]) {
 					/* visit this place */
 					cur_priority = EXPLORE_VISIT_UNKNOWN_TILE;
@@ -143,16 +147,18 @@ void Explore::analyze() {
 			continue;
 		}
 		int moves = 0;
-		unsigned char move = saiph->shortestPath(*e, false, &moves);
+		unsigned char dir = saiph->shortestPath(*e, false, &moves);
 		++e;
 		if (cur_priority == priority && moves > best_moves)
 			continue;
-		if (move == ILLEGAL_DIRECTION)
+		if (dir == ILLEGAL_DIRECTION)
 			continue;
-		if (move == NOWHERE)
+		if (dir == NOWHERE) {
 			command = SEARCH;
-		else
-			command = move;
+		} else {
+			command = MOVE;
+			command.push_back(dir);
+		}
 		priority = cur_priority;
 		best_moves = moves;
 	}
@@ -160,12 +166,14 @@ void Explore::analyze() {
 		/* if we're in the mines, go up */
 		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++up) {
 			int moves = 0;
-			unsigned char move = saiph->shortestPath(up->first, false, &moves);
-			if (move != ILLEGAL_DIRECTION) {
-				if (move == NOWHERE)
-					command = UP;
-				else
-					command = move;
+			unsigned char dir = saiph->shortestPath(up->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (dir == NOWHERE) {
+					command = MOVE_UP;
+				} else {
+					command = MOVE;
+					command.push_back(dir);
+				}
 				priority = EXPLORE_DESCEND;
 				break;
 			}
@@ -177,12 +185,14 @@ void Explore::analyze() {
 			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
 				continue; // avoid mines
 			int moves = 0;
-			unsigned char move = saiph->shortestPath(down->first, false, &moves);
-			if (move != ILLEGAL_DIRECTION) {
-				if (move == NOWHERE)
-					command = DOWN;
-				else
-					command = move;
+			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (dir == NOWHERE) {
+					command = MOVE_DOWN;
+				} else {
+					command = MOVE;
+					command.push_back(dir);
+				}
 				priority = EXPLORE_DESCEND;
 				break;
 			}
@@ -197,8 +207,8 @@ void Explore::complete() {
 
 void Explore::inspect(const Point &point) {
 	unsigned char ds = saiph->levels[saiph->position.level].dungeonmap[point.row][point.col];
-	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_PASSABLE)
-		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_PASSABLE
+	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
+		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_UNPASSABLE
 	explore.push_back(point);
 }
 

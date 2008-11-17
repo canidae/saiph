@@ -17,8 +17,8 @@ void Door::analyze() {
 	int least_moves = INT_MAX;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
 		int moves = -1;
-		unsigned char move = saiph->shortestPath(d->first, true, &moves);
-		if (move == ILLEGAL_DIRECTION)
+		unsigned char dir = saiph->shortestPath(d->first, true, &moves);
+		if (dir == ILLEGAL_DIRECTION)
 			continue;
 		if (moves == 1) {
 			/* open/pick/kick door */
@@ -31,14 +31,15 @@ void Door::analyze() {
 				else
 					command = APPLY;
 			}
-			command2 = move;
+			command2 = dir;
 			cur_door = d->first;
 			priority = DOOR_OPEN_PRIORITY;
 			sequence = 0;
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
-			command = move;
+			command = MOVE;
+			command.push_back(dir);
 			priority = DOOR_OPEN_PRIORITY;
 			least_moves = moves;
 		}

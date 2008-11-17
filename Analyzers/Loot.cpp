@@ -79,9 +79,10 @@ void Loot::analyze() {
 			map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin();
 			if (up != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end()) {
 				int moves = 0;
-				unsigned char move = saiph->shortestPath(up->first, false, &moves);
-				if (move != ILLEGAL_DIRECTION) {
-					command = move;
+				unsigned char dir = saiph->shortestPath(up->first, false, &moves);
+				if (dir != ILLEGAL_DIRECTION) {
+					command = MOVE;
+					command.push_back(dir);
 					priority = LOOT_DROP_ITEMS_PRIORITY;
 					return;
 				}
@@ -100,14 +101,15 @@ void Loot::analyze() {
 			continue; // stash is unchanged
 		/* new or changed stash, visit it if it's closer */
 		int moves = 0;
-		unsigned char move = saiph->shortestPath(s->first, false, &moves);
-		if (move == NOWHERE) {
+		unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+		if (dir == NOWHERE) {
 			/* standing on stash, update turn_changed */
 			visit_stash[saiph->position] = s->second.turn_changed;
-		} else if (move != ILLEGAL_DIRECTION && moves < min_moves) {
+		} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			command = move;
+			command = MOVE;
+			command.push_back(dir);
 			priority = LOOT_VISIT_STASH_PRIORITY;
 		}
 	}
@@ -120,17 +122,6 @@ void Loot::complete() {
 	} else if (dirty_stash && command == LOOK) {
 		/* looked at ground, stash is no longer dirty */
 		dirty_stash = false;
-	}
-}
-
-void Loot::fail() {
-	/* most likely, we're trying to loot something in the wall */
-	if (command.size() == 1) {
-		Point moving_to = saiph->moveToPoint((unsigned char) command[0]);
-		if (moving_to != saiph->position) {
-			/* we'll not so elegantly solve this by making the tile we attempt to move to unpassable */
-			saiph->levels[saiph->position.level].dungeonmap[moving_to.row][moving_to.col] = UNKNOWN_TILE_UNPASSABLE;
-		}
 	}
 }
 

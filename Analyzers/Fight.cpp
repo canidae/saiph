@@ -53,8 +53,8 @@ void Fight::analyze() {
 		}
 		/* we couldn't throw something at the monster, try moving to or melee it */
 		int moves = 0;
-		unsigned char move = saiph->shortestPath(m->first, true, &moves);
-		if (move == ILLEGAL_DIRECTION)
+		unsigned char dir = saiph->shortestPath(m->first, true, &moves);
+		if (dir == ILLEGAL_DIRECTION)
 			continue; // unable to path to monster
 		if (moves > 1 && priority > FIGHT_MOVE_PRIORITY)
 			continue; // we must move to monster, but we got something else with higher priority
@@ -68,7 +68,8 @@ void Fight::analyze() {
 			priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
 		min_distance = distance;
 		min_moves = moves;
-		command = move;
+		command = FIGHT;
+		command.push_back(dir);
 	}
 }
 

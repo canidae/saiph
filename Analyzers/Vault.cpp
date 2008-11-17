@@ -63,12 +63,14 @@ void Vault::parseMessages(const string &messages) {
 			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
 				continue;
 			int moves = 0;
-			unsigned char move = saiph->shortestPath(m->first, true, &moves);
-			if (move != ILLEGAL_DIRECTION) {
-				if (moves == 1)
+			unsigned char dir = saiph->shortestPath(m->first, true, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (moves == 1) {
 					command = REST;
-				else
-					command = move;
+				} else {
+					command = MOVE;
+					command.push_back(dir);
+				}
 				priority = VAULT_GO_OUT_PRIORITY;
 				return;
 			}

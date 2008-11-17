@@ -41,7 +41,6 @@ class Loot : public Analyzer {
 
 		void analyze();
 		void complete();
-		void fail();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
