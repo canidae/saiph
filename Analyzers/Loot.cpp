@@ -115,18 +115,17 @@ void Loot::analyze() {
 				min_moves = 0;
 				command = LOOK;
 				priority = PRIORITY_LOOK;
-				/* no point checking remaining stashes, none
-				 * will have higher priority nor are nearer */
-				break;
 			} else {
 				/* we've seen stuff on the ground here,
 				 * mark stash as visited */
 				visit_stash[saiph->position] = s->second.turn_changed;
 			}
+			/* no point checking remaining stashes, none is nearer */
+			break;
 		} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			command = (moves == 1 ? LOOT_MOVE : MOVE);
+			command = LOOT_MOVE;
 			command.push_back(dir);
 			priority = LOOT_VISIT_STASH_PRIORITY;
 		}
