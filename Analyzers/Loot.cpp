@@ -80,7 +80,7 @@ void Loot::analyze() {
 			if (up != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end()) {
 				int moves = 0;
 				unsigned char move = saiph->shortestPath(up->first, false, &moves);
-				if (move != ILLEGAL_MOVE) {
+				if (move != ILLEGAL_DIRECTION) {
 					command = move;
 					priority = LOOT_DROP_ITEMS_PRIORITY;
 					return;
@@ -101,10 +101,10 @@ void Loot::analyze() {
 		/* new or changed stash, visit it if it's closer */
 		int moves = 0;
 		unsigned char move = saiph->shortestPath(s->first, false, &moves);
-		if (move == MOVE_NOWHERE) {
+		if (move == NOWHERE) {
 			/* standing on stash, update turn_changed */
 			visit_stash[saiph->position] = s->second.turn_changed;
-		} else if (move != ILLEGAL_MOVE && moves < min_moves) {
+		} else if (move != ILLEGAL_DIRECTION && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
 			command = move;
@@ -126,7 +126,7 @@ void Loot::complete() {
 void Loot::fail() {
 	/* most likely, we're trying to loot something in the wall */
 	if (command.size() == 1) {
-		Point moving_to =saiph->moveToPoint((unsigned char) command[0]);
+		Point moving_to = saiph->moveToPoint((unsigned char) command[0]);
 		if (moving_to != saiph->position) {
 			/* we'll not so elegantly solve this by making the tile we attempt to move to unpassable */
 			saiph->levels[saiph->position.level].dungeonmap[moving_to.row][moving_to.col] = UNKNOWN_TILE_UNPASSABLE;

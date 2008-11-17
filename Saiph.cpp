@@ -129,39 +129,39 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks, bool ignore_boul
 	/* is the target in a direct line from the player? */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
 		/* outside map */
-		return ILLEGAL_MOVE;
+		return ILLEGAL_DIRECTION;
 	} else if (point == position) {
 		/* eh? don't do this */
-		return MOVE_NOWHERE;
+		return NOWHERE;
 	} else if (point.row == position.row) {
 		/* aligned horizontally */
 		if (point.col > position.col) {
 			while (--point.col > position.col) {
 				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_MOVE;
+					return ILLEGAL_DIRECTION;
 			}
-			return MOVE_E;
+			return E;
 		} else {
 			while (++point.col < position.col) {
 				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_MOVE;
+					return ILLEGAL_DIRECTION;
 			}
-			return MOVE_W;
+			return W;
 		}
 	} else if (point.col == position.col) {
 		/* aligned vertically */
 		if (point.row > position.row) {
 			while (--point.row > position.row) {
 				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_MOVE;
+					return ILLEGAL_DIRECTION;
 			}
-			return MOVE_S;
+			return S;
 		} else {
 			while (++point.row < position.row) {
 				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_MOVE;
+					return ILLEGAL_DIRECTION;
 			}
-			return MOVE_N;
+			return N;
 		}
 	} else if (abs(point.row - position.row) == abs(point.col - position.col)) {
 		/* aligned diagonally */
@@ -170,36 +170,36 @@ unsigned char Saiph::directLine(Point point, bool ignore_sinks, bool ignore_boul
 				while (--point.row > position.row) {
 					--point.col;
 					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_MOVE;
+						return ILLEGAL_DIRECTION;
 				}
-				return MOVE_SE;
+				return SE;
 			} else {
 				while (--point.row > position.row) {
 					++point.col;
 					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_MOVE;
+						return ILLEGAL_DIRECTION;
 				}
-				return MOVE_SW;
+				return SW;
 			}
 		} else {
 			if (point.col > position.col) {
 				while (++point.row < position.row) {
 					--point.col;
 					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_MOVE;
+						return ILLEGAL_DIRECTION;
 				}
-				return MOVE_NE;
+				return NE;
 			} else {
 				while (++point.row < position.row) {
 					++point.col;
 					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_MOVE;
+						return ILLEGAL_DIRECTION;
 				}
-				return MOVE_NW;
+				return NW;
 			}
 		}
 	}
-	return ILLEGAL_MOVE;
+	return ILLEGAL_DIRECTION;
 }
 
 const string &Saiph::farlook(const Point &target) {
@@ -209,32 +209,32 @@ const string &Saiph::farlook(const Point &target) {
 	while (cursor != target) {
 		unsigned char move;
 		if (cursor.row < target.row && cursor.col < target.col) {
-			move = MOVE_SE;
+			move = SE;
 			++cursor.row;
 			++cursor.col;
 		} else if (cursor.row < target.row && cursor.col > target.col) {
-			move = MOVE_SW;
+			move = SW;
 			++cursor.row;
 			--cursor.col;
 		} else if (cursor.row > target.row && cursor.col < target.col) {
-			move = MOVE_NE;
+			move = NE;
 			--cursor.row;
 			++cursor.col;
 		} else if (cursor.row > target.row && cursor.col > target.col) {
-			move = MOVE_NW;
+			move = NW;
 			--cursor.row;
 			--cursor.col;
 		} else if (cursor.row < target.row) {
-			move = MOVE_S;
+			move = S;
 			++cursor.row;
 		} else if (cursor.row > target.row) {
-			move = MOVE_N;
+			move = N;
 			--cursor.row;
 		} else if (cursor.col < target.col) {
-			move = MOVE_E;
+			move = E;
 			++cursor.col;
 		} else {
-			move = MOVE_W;
+			move = W;
 			--cursor.col;
 		}
 		farlook_command.push_back(move);
@@ -439,9 +439,9 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	/* returns next move in shortest path from player to nearest symbol.
 	 * also sets amount of moves to the target */
 	if (!Level::track_symbol[symbol])
-		return ILLEGAL_MOVE;
+		return ILLEGAL_DIRECTION;
 	int least_moves = INT_MAX;
-	unsigned char best_move = ILLEGAL_MOVE;
+	unsigned char best_move = ILLEGAL_DIRECTION;
 	int level_queue[levels.size()];
 	int level_moves[levels.size()];
 	int level_move[levels.size()];
@@ -452,7 +452,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	int level_count = 1;
 	level_queue[0] = position.level;
 	level_moves[0] = 0;
-	level_move[0] = MOVE_NOWHERE;
+	level_move[0] = NOWHERE;
 	level_added[position.level] = true;
 	int tmp_moves = 0;
 	Debug::info() << SAIPH_DEBUG_NAME << "Pathing to nearest '" << symbol << "'" << endl;
@@ -461,7 +461,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
 			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
 			tmp_moves += level_moves[pivot];
-			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
+			if (move != ILLEGAL_DIRECTION && tmp_moves < least_moves) {
 				/* this symbol is closer than the previously found one */
 				Debug::info() << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << endl;
 				least_moves = tmp_moves;
@@ -482,10 +482,10 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			if (level_added[s->second])
 				continue; // already added this level
 			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
-			if (move == MOVE_NOWHERE)
-				move = MOVE_UP;
+			if (move == NOWHERE)
+				move = UP;
 			tmp_moves += level_moves[pivot];
-			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
+			if (move != ILLEGAL_DIRECTION && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
 				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
@@ -509,10 +509,10 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			if (level_added[s->second])
 				continue; // already added this level
 			unsigned char move = levels[level_queue[pivot]].shortestPath(s->first, allow_illegal_last_move, &tmp_moves);
-			if (move == MOVE_NOWHERE)
-				move = MOVE_DOWN;
+			if (move == NOWHERE)
+				move = DOWN;
 			tmp_moves += level_moves[pivot];
-			if (move != ILLEGAL_MOVE && tmp_moves < least_moves) {
+			if (move != ILLEGAL_DIRECTION && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
 				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
@@ -538,13 +538,13 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 	/* returns next move in shortest path from player to target.
 	 * also sets amount of moves to the target */
 	if (target.level < 0 || target.level >= (int) levels.size())
-		return ILLEGAL_MOVE; // outside the map
+		return ILLEGAL_DIRECTION; // outside the map
 	if (target.level == position.level) {
 		/* target on same level */
 		return levels[position.level].shortestPath(target, allow_illegal_last_move, moves);
 	}
 	/* pathing to another level */
-	return ILLEGAL_MOVE;
+	return ILLEGAL_DIRECTION;
 }
 
 unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {

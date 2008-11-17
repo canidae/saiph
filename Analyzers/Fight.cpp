@@ -13,7 +13,7 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
-		command = MOVE_NW; // doesn't matter which direction
+		command = NW; // doesn't matter which direction
 		priority = FIGHT_ATTACK_PRIORITY;
 		return;
 	}
@@ -34,7 +34,7 @@ void Fight::analyze() {
 		if (((!blue_e && distance > 1) || (blue_e && distance == 1)) && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			/* monster is within throw distance, or it's a blue 'e' and distance is 1 */
 			unsigned char in_line = saiph->directLine(m->first, false, true);
-			if (in_line != ILLEGAL_MOVE) {
+			if (in_line != ILLEGAL_DIRECTION) {
 				/* we got a direct line to the monster */
 				if (got_thrown == FIGHT_NOT_CHECKED_THROWN_WEAPONS)
 					got_thrown = gotThrown();
@@ -54,7 +54,7 @@ void Fight::analyze() {
 		/* we couldn't throw something at the monster, try moving to or melee it */
 		int moves = 0;
 		unsigned char move = saiph->shortestPath(m->first, true, &moves);
-		if (move == ILLEGAL_MOVE)
+		if (move == ILLEGAL_DIRECTION)
 			continue; // unable to path to monster
 		if (moves > 1 && priority > FIGHT_MOVE_PRIORITY)
 			continue; // we must move to monster, but we got something else with higher priority

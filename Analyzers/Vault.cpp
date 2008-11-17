@@ -64,7 +64,7 @@ void Vault::parseMessages(const string &messages) {
 				continue;
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(m->first, true, &moves);
-			if (move != ILLEGAL_MOVE) {
+			if (move != ILLEGAL_DIRECTION) {
 				if (moves == 1)
 					command = REST;
 				else

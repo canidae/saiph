@@ -27,9 +27,9 @@ void Explore::analyze() {
 				continue; // we know where these stairs lead
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_MOVE) {
-				if (move == MOVE_NOWHERE)
-					command = MOVE_UP;
+			if (move != ILLEGAL_DIRECTION) {
+				if (move == NOWHERE)
+					command = UP;
 				else
 					command = move;
 				priority = EXPLORE_UNKNOWN_STAIRS;
@@ -41,9 +41,9 @@ void Explore::analyze() {
 				continue; // we know where these stairs lead
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(s->first, false, &moves);
-			if (move != ILLEGAL_MOVE) {
-				if (move == MOVE_NOWHERE)
-					command = MOVE_DOWN;
+			if (move != ILLEGAL_DIRECTION) {
+				if (move == NOWHERE)
+					command = DOWN;
 				else
 					command = move;
 				priority = EXPLORE_UNKNOWN_STAIRS;
@@ -147,9 +147,9 @@ void Explore::analyze() {
 		++e;
 		if (cur_priority == priority && moves > best_moves)
 			continue;
-		if (move == ILLEGAL_MOVE)
+		if (move == ILLEGAL_DIRECTION)
 			continue;
-		if (move == MOVE_NOWHERE)
+		if (move == NOWHERE)
 			command = SEARCH;
 		else
 			command = move;
@@ -161,9 +161,9 @@ void Explore::analyze() {
 		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++up) {
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(up->first, false, &moves);
-			if (move != ILLEGAL_MOVE) {
-				if (move == MOVE_NOWHERE)
-					command = MOVE_UP;
+			if (move != ILLEGAL_DIRECTION) {
+				if (move == NOWHERE)
+					command = UP;
 				else
 					command = move;
 				priority = EXPLORE_DESCEND;
@@ -178,9 +178,9 @@ void Explore::analyze() {
 				continue; // avoid mines
 			int moves = 0;
 			unsigned char move = saiph->shortestPath(down->first, false, &moves);
-			if (move != ILLEGAL_MOVE) {
-				if (move == MOVE_NOWHERE)
-					command = MOVE_DOWN;
+			if (move != ILLEGAL_DIRECTION) {
+				if (move == NOWHERE)
+					command = DOWN;
 				else
 					command = move;
 				priority = EXPLORE_DESCEND;

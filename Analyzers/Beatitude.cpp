@@ -10,7 +10,7 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 
 /* methods */
 void Beatitude::analyze() {
-	unsigned char move = ILLEGAL_MOVE;
+	unsigned char move = ILLEGAL_DIRECTION;
 	if (!check_beatitude && saiph->inventory_changed) {
 		/* how many of our items needs to be checked? */
 		int items_to_beatify = 0;
@@ -21,7 +21,7 @@ void Beatitude::analyze() {
 		if (items_to_beatify >= BEATITUDE_DROP_ALTAR_MIN) {
 			int moves = 0;
 			move = saiph->shortestPath(ALTAR, false, &moves);
-			if (move == ILLEGAL_MOVE)
+			if (move == ILLEGAL_DIRECTION)
 				return; // don't know of any altars
 			items_to_beatify -= moves * BEATITUDE_DROP_ALTAR_ADD_PER_1000_MOVE / 1000;
 			if (items_to_beatify >= BEATITUDE_DROP_ALTAR_MIN)
@@ -31,13 +31,13 @@ void Beatitude::analyze() {
 	if (!check_beatitude)
 		return;
 	/* path to nearest altar (if we haven't already) */
-	if (move == ILLEGAL_MOVE) {
+	if (move == ILLEGAL_DIRECTION) {
 		int moves = 0;
 		move = saiph->shortestPath(ALTAR, false, &moves);
 	}
-	if (move == ILLEGAL_MOVE)
+	if (move == ILLEGAL_DIRECTION)
 		return; // don't know of any altars
-	if (move == MOVE_NOWHERE) {
+	if (move == NOWHERE) {
 		/* we're standing on the altar, drop items */
 		command = DROP;
 		priority = BEATITUDE_DROP_ALTAR_PRIORITY;

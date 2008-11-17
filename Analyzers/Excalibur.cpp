@@ -27,9 +27,9 @@ void Excalibur::analyze() {
 	/* path to nearest fountain */
 	int moves = 0;
 	unsigned char move = saiph->shortestPath(FOUNTAIN, false, &moves);
-	if (move == ILLEGAL_MOVE)
+	if (move == ILLEGAL_DIRECTION)
 		return; // don't know of any fountains
-	if (move == MOVE_NOWHERE) {
+	if (move == NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;

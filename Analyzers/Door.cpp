@@ -18,7 +18,7 @@ void Door::analyze() {
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
 		int moves = -1;
 		unsigned char move = saiph->shortestPath(d->first, true, &moves);
-		if (move == ILLEGAL_MOVE)
+		if (move == ILLEGAL_DIRECTION)
 			continue;
 		if (moves == 1) {
 			/* open/pick/kick door */
