@@ -103,12 +103,29 @@ void Loot::analyze() {
 		int moves = 0;
 		unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 		if (dir == NOWHERE) {
-			/* standing on stash, update turn_changed */
-			visit_stash[saiph->position] = s->second.turn_changed;
+			/* supposedly there's a stash here */
+			if (saiph->on_ground == NULL) {
+				/* we expected a stash, but we haven't seen any items.
+				 * this may happen in two different scenarios:
+				 * 1. we moved using "m<dir>" here, possibly for fighting
+				 *    a monster. we won't get "You see here..." then.
+				 * 2. we're at the rogue level, symbols are messed up.
+				 *
+				 * we should look, but not mark stash as visited */
+				min_moves = 0;
+				command = LOOK;
+				priority = PRIORITY_LOOK;
+			} else {
+				/* we've seen stuff on the ground here,
+				 * mark stash as visited */
+				visit_stash[saiph->position] = s->second.turn_changed;
+			}
+			/* no point checking remaining stashes, none is nearer */
+			break;
 		} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
-			command = MOVE;
+			command = LOOT_MOVE;
 			command.push_back(dir);
 			priority = LOOT_VISIT_STASH_PRIORITY;
 		}

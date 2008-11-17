@@ -378,19 +378,38 @@ bool Saiph::run() {
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
-		if (best_analyzer->command == MOVE_NW || best_analyzer->command == MOVE_NE || best_analyzer->command == MOVE_SW || best_analyzer->command == MOVE_SE) {
-			/* moving diagonally failed.
-			 * we could be trying to move diagonally into a door we're
-			 * unaware of because of an item blocking the door symbol.
-			 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-			Point to = directionToPoint((unsigned char) best_analyzer->command[1]);
-			levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
-		} else if (best_analyzer->command == MOVE_N || best_analyzer->command == MOVE_E || best_analyzer->command == MOVE_W || best_analyzer->command == MOVE_S) {
-			/* moving cardinally failed, possibly item in wall.
-			 * make the tile UNKNOWN_TILE_UNPASSABLE */
-			Point to = directionToPoint((unsigned char) best_analyzer->command[1]);
-			levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
-		} else {
+		bool was_move = false;
+		if (best_analyzer->command.size() == 2 && (best_analyzer->command.substr(0, 1) == MOVE || best_analyzer->command.substr(0, 1) == LOOT_MOVE)) {
+			Point to;
+			switch (best_analyzer->command[1]) {
+				case NW:
+				case NE:
+				case SW:
+				case SE:
+					/* moving diagonally failed.
+					 * we could be trying to move diagonally into a door we're
+					 * unaware of because of an item blocking the door symbol.
+					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+					to = directionToPoint((unsigned char) best_analyzer->command[1]);
+					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
+					was_move = true;
+					break;
+
+				case N:
+				case E:
+				case S:
+				case W:
+					/* moving cardinally failed, possibly item in wall.
+					 * make the tile UNKNOWN_TILE_UNPASSABLE */
+					to = directionToPoint((unsigned char) best_analyzer->command[1]);
+					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
+					was_move = true;
+					break;
+			}
+		}
+		if (!was_move) {
+			/* apparently it wasn't a failed movement,
+			 * that means an analyzer is screwing up */
 			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 			best_analyzer->fail();
 		}

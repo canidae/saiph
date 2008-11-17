@@ -29,7 +29,8 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE) {
-					command = MOVE_UP;
+					command = MOVE;
+					command.push_back(UP);
 				} else {
 					command = MOVE;
 					command.push_back(dir);
@@ -45,7 +46,8 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE) {
-					command = MOVE_DOWN;
+					command = MOVE;
+					command.push_back(DOWN);
 				} else {
 					command = MOVE;
 					command.push_back(dir);
@@ -169,7 +171,8 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(up->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE) {
-					command = MOVE_UP;
+					command = MOVE;
+					command.push_back(UP);
 				} else {
 					command = MOVE;
 					command.push_back(dir);
@@ -188,7 +191,8 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE) {
-					command = MOVE_DOWN;
+					command = MOVE;
+					command.push_back(DOWN);
 				} else {
 					command = MOVE;
 					command.push_back(dir);
