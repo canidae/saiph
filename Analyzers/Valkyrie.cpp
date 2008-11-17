@@ -76,11 +76,6 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	saiph->request(req);
 	req.data = "Amulet of Yendor";
 	saiph->request(req);
-
-	/* easter egg */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "square amulet"; // it's hip to be square
-	saiph->request(req);
 }
 
 void Valkyrie::setupArmor(int &groupstart) {
@@ -843,11 +838,6 @@ void Valkyrie::setupRing(int &groupstart) {
 	req.data = "ring of regeneration";
 	saiph->request(req);
 	req.data = "ring of protection";
-	saiph->request(req);
-
-	/* easter egg */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "gold ring"; // my precious
 	saiph->request(req);
 }
 
