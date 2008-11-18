@@ -22,15 +22,6 @@ void Loot::analyze() {
 		checkStash();
 		return;
 	}
-	/* this is a hack for the rogue level where stairs look like '%' */
-	if (saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
-		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(saiph->position);
-		if (s != saiph->levels[saiph->position.level].stashes.end() && s->second.top_symbol == ROGUE_STAIRS && saiph->levels[saiph->position.level].dungeonmap[s->first.row][s->first.col] != STAIRS_UP && saiph->levels[saiph->position.level].dungeonmap[s->first.row][s->first.col] != STAIRS_DOWN) {
-			command = LOOK;
-			priority = PRIORITY_LOOK;
-			return;
-		}
-	}
 
 	/* loot stash we're standing on */
 	if (priority >= LOOT_LOOT_STASH_PRIORITY)
