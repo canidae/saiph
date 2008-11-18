@@ -35,7 +35,7 @@ void Loot::analyze() {
 	/* loot stash we're standing on */
 	if (priority >= LOOT_LOOT_STASH_PRIORITY)
 		return;
-	if (saiph->on_ground != NULL) {
+	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT) {
 		/* if we see a shopkeeper then don't loot */
 		bool doloot = true;
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
