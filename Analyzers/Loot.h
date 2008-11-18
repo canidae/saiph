@@ -11,6 +11,7 @@
 #define LOOT_MANY_MORE_OBJECTS_HERE "  There are many more objects here.  "
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define LOOT_STOLE " stole "
+#define LOOT_STEALS " steals "
 
 #include <map>
 #include <string>

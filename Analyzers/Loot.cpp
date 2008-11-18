@@ -201,7 +201,7 @@ void Loot::parseMessages(const string &messages) {
 		/* several/many objects here. check stash */
 		checkStash();
 	}
-	if (messages.find(LOOT_STOLE, 0) != string::npos) {
+	if (messages.find(LOOT_STOLE, 0) != string::npos || messages.find(LOOT_STEALS, 0) != string::npos) {
 		/* some monster stole something, we should check our inventory */
 		checkInventory();
 	} else if (messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos) {
