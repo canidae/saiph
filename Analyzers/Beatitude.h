@@ -8,7 +8,7 @@
 #define BEATITUDE_DROP_ALTAR_MIN 2
 #define BEATITUDE_DROP_ALTAR_ADD_PER_1000_MOVE 32
 /* priorities */
-#define BEATITUDE_DROP_ALTAR_PRIORITY 225
+#define BEATITUDE_DROP_ALTAR_PRIORITY 230
 
 #include <string>
 #include "../Analyzer.h"
