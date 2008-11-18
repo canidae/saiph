@@ -69,8 +69,8 @@ void Loot::analyze() {
 			return;
 		}
 		/* TODO: get down elbereth if there's a stash here */
-	} else if (saiph->world->player.encumbrance > UNENCUMBERED) {
-		/* we're not standing on stairs, but we're burdened or worse.
+	} else if (saiph->world->player.encumbrance > UNENCUMBERED || saiph->inventory.size() >= KNAPSACK_LIMIT) {
+		/* we're not standing on stairs, but we're burdened or worse or knapsack is full.
 		 * go to stairs if we got unwanted stuff */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (dropItem(i->second) == 0)
@@ -126,22 +126,25 @@ void Loot::complete() {
 void Loot::parseMessages(const string &messages) {
 	if (saiph->got_pickup_menu) {
 		/* looting */
-		for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-			int wanted = pickupItem(p->second);
-			if (wanted == 0) {
-				/* pick up none */
-				continue;
-			} else if (wanted >= p->second.count) {
-				/* pick up all */
-				command = p->first;
-			} else {
-				/* pick up some */
-				stringstream tmp;
-				tmp << wanted << p->first;
-				command = tmp.str();
+		if (saiph->inventory.size() < KNAPSACK_LIMIT) {
+			/* we should have room for it in the knapsack */
+			for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
+				int wanted = pickupItem(p->second);
+				if (wanted == 0) {
+					/* pick up none */
+					continue;
+				} else if (wanted >= p->second.count) {
+					/* pick up all */
+					command = p->first;
+				} else {
+					/* pick up some */
+					stringstream tmp;
+					tmp << wanted << p->first;
+					command = tmp.str();
+				}
+				priority = PRIORITY_SELECT_ITEM;
+				return;
 			}
-			priority = PRIORITY_SELECT_ITEM;
-			return;
 		}
 		/* if we're here, we should get next page or close list */
 		showing_pickup = true;

@@ -15,6 +15,7 @@
 #define BRANCH_WIZARD 5
 #define BRANCH_ASTRAL 6
 #define BRANCH_QUEST 7
+#define KNAPSACK_LIMIT 52
 /* unknown tracked symbol value */
 #define UNKNOWN_SYMBOL_VALUE INT_MIN
 /* colors & attributes */
