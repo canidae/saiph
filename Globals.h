@@ -3,6 +3,7 @@
 /* dungeon limits */
 #define ROWS 24
 #define COLS 80
+#define LEVELS 128 // max amount of unique levels
 #define MAP_COL_BEGIN 0 // where the actual map width start
 #define MAP_COL_END 79 // where the actual map width end
 #define MAP_ROW_BEGIN 1 // where the actual map height begin

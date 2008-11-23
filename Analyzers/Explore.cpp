@@ -7,21 +7,30 @@ using namespace std;
 
 /* constructors/destructor */
 Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
-	memset(search, 0, sizeof (search));
-	memset(visited, false, sizeof (visited));
+	/* clear search map */
+	for (int l = 0; l < LEVELS; ++l) {
+		for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
+			for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c)
+				search[l][r][c] = 0;
+		}
+	}
 }
 
 /* methods */
 void Explore::analyze() {
 	/* figure out which place to explore */
-	if (saiph->world->player.blind || saiph->world->player.hallucinating || saiph->world->player.stunned)
-		return; // no exploring while blind/hallu/stun
-	/* make the place the player stands on "visited" */
-	visited[saiph->position.level][saiph->world->player.row][saiph->world->player.col] = true;
-	if (priority < EXPLORE_UNKNOWN_STAIRS && saiph->levels[saiph->position.level].depth != 1) {
-		/* explore unknown stairs on level, unless we're on depth 1.
-		 * there's only 1 stairs down on dlvl 1, and we don't want her to escape */
-		/* go up first (or we'll never check the upstairs) */
+	if (saiph->world->player.blind || saiph->world->player.hallucinating || saiph->world->player.stunned || saiph->world->player.confused)
+		return; // no exploring while blind/hallu/stun/conf
+
+	/* make the place the player stands on fully searched */
+	search[saiph->position.level][saiph->position.row][saiph->position.col] = EXPLORE_FULLY_SEARCHED;
+
+	/* where do you want to go today? */
+	unsigned char best_move = 0;
+
+	/* explore upstairs */
+	if (priority < EXPLORE_PRIORITY_STAIRS_UP && saiph->levels[saiph->position.level].depth != 1) {
+		/* explore upstairs unless on depth 1 */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
@@ -29,13 +38,162 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE)
-					command = UP;
+					best_move = UP;
 				else
-					command = dir;
-				priority = EXPLORE_UNKNOWN_STAIRS;
-				return;
+					best_move = dir;
+				priority = EXPLORE_PRIORITY_STAIRS_UP;
+				break;
 			}
 		}
+	}
+
+	if (priority <= EXPLORE_PRIORITY_EXPLORE) {
+		int min_moves = INT_MAX;
+		int best_type = INT_MAX;
+		for (map<Point, unsigned char>::iterator w = saiph->levels[saiph->position.level].walkable.begin(); w != saiph->levels[saiph->position.level].walkable.end(); ++w) {
+			/* get the symbol to the east, north, south and west */
+			unsigned char hs = (w->first.col - 1 < MAP_COL_BEGIN ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row][w->first.col - 1]);
+			unsigned char js = (w->first.row + 1 > MAP_ROW_END ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row + 1][w->first.col]);
+			unsigned char ks = (w->first.row - 1 < MAP_ROW_BEGIN ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row - 1][w->first.col]);
+			unsigned char ls = (w->first.col + 1 > MAP_COL_END ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row][w->first.col + 1]);
+
+			/* get wall/solid rock/search count and unpassable directions */
+			int search_count = 0;
+			int solid_rock_count = 0;
+			int wall_count = 0;
+			bool hu = false;
+			bool ju = false;
+			bool ku = false;
+			bool lu = false;
+			if (hs == SOLID_ROCK) {
+				++solid_rock_count;
+				search_count += (w->first.col - 1 < MAP_COL_BEGIN ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row][w->first.col - 1]);
+				hu = true;
+			}
+			if (js == SOLID_ROCK) {
+				++solid_rock_count;
+				search_count += (w->first.row + 1 > MAP_ROW_END ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row + 1][w->first.col]);
+				ju = true;
+			}
+			if (ks == SOLID_ROCK) {
+				++solid_rock_count;
+				search_count += (w->first.row - 1 < MAP_ROW_BEGIN ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row - 1][w->first.col]);
+				ku = true;
+			}
+			if (ls == SOLID_ROCK) {
+				++solid_rock_count;
+				search_count += (w->first.col + 1 > MAP_COL_END ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row][w->first.col + 1]);
+				lu = true;
+			}
+			if (hs == VERTICAL_WALL || hs == HORIZONTAL_WALL) {
+				++wall_count;
+				search_count += (w->first.col - 1 < MAP_COL_BEGIN ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row][w->first.col - 1]);
+				hu = true;
+			}
+			if (js == HORIZONTAL_WALL || js == VERTICAL_WALL) {
+				++wall_count;
+				search_count += (w->first.row + 1 > MAP_ROW_END ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row + 1][w->first.col]);
+				ju = true;
+			}
+			if (ks == HORIZONTAL_WALL || ks == VERTICAL_WALL) {
+				++wall_count;
+				search_count += (w->first.row - 1 < MAP_ROW_BEGIN ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row - 1][w->first.col]);
+				ku = true;
+			}
+			if (ls == VERTICAL_WALL || ls == HORIZONTAL_WALL) {
+				++wall_count;
+				search_count += (w->first.col + 1 > MAP_COL_END ? EXPLORE_FULLY_SEARCHED : search[saiph->position.level][w->first.row][w->first.col + 1]);
+				lu = true;
+			}
+
+
+			/* get search count for point */
+			int point_search_count = search[saiph->position.level][w->first.row][w->first.col];
+
+			/* find out what "type" this place is.
+			 * a "type" pretty much just mean which order to explore places.
+			 * we should explore places in this order:
+			 * 0. visit unlit rooms (and search dead ends)
+			 * 1. visit all corridor squares (and search dead ends)
+			 * - descend if stairs found -
+			 * 2. search corridor corners & room corners
+			 * 3. search triway corridors & room walls
+			 * 4. search dead ends again
+			 *
+			 * rinse & repeat step 2-4
+			 */
+			int type = INT_MAX;
+			int intervals;
+			bool corner = !((!hu && !lu) || (!ju && !ku));
+			if (solid_rock_count + wall_count > 0)
+				intervals = search_count / EXPLORE_SEARCH_INTERVAL / (solid_rock_count + wall_count);
+			else
+				intervals = 0;
+			if (w->second == CORRIDOR) {
+				/* point is in a corridor */
+				if (point_search_count < EXPLORE_FULLY_SEARCHED) {
+					/* not visited, visit it */
+					type = 1;
+				} else {
+					/* visited, search? */
+					if (wall_count + solid_rock_count == 3) {
+						/* dead end */
+						if (intervals < 2)
+							type = 1; // search EXPLORE_SEARCH_INTERVAL * 2 the first time
+						else
+							type = 3 * (intervals - 1) + 1; // 4, 7, 10, 13, ...
+					} else if (wall_count + solid_rock_count == 2 && corner) {
+						/* corridor corner */
+						type = 3 * intervals + 2; // 2, 5, 8, 11, ...
+					} else if (wall_count + solid_rock_count == 1) {
+						/* triway corridor */
+						type = 3 * intervals + 3; // 3, 6, 9, 12, ...
+					}
+				}
+			} else {
+				/* probably in a room */
+				if (solid_rock_count > 0 && point_search_count < EXPLORE_FULLY_SEARCHED) {
+					type = 1; // solid rock next to point not visited, should visit
+				} else if (wall_count == 2 && solid_rock_count == 1) {
+					/* probably in doorway with no path out, search */
+					if (intervals < 2)
+						type = 1; // search EXPLORE_SEARCH_INTERVAL * 2 the first time
+					else
+						type = 3 * (intervals - 1) + 1; // 4, 7, 10, 13, ...
+				} else if (wall_count == 2 && solid_rock_count == 0 && corner) {
+					/* probably room corner */
+					type = 3 * intervals + 2; // 2, 5, 8, 11, ...
+				} else if (wall_count == 1 && solid_rock_count == 0) {
+					/* probably next to wall */
+					type = 3 * intervals + 3; // 3, 6, 9, 12, ...
+				}
+			}
+
+			/* check if this "type" is worse than what we already got */
+			if (type == INT_MAX || type > best_type)
+				continue;
+
+			int moves = 0;
+			unsigned char dir = saiph->shortestPath(w->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (type == best_type) {
+					/* same type as previous best, check distance */
+					if (moves > min_moves)
+						continue; // found a shorter path already
+					if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == CORRIDOR && moves == 1 && moves == min_moves && type == best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
+						continue; // prefer cardinal moves in corridors when distance is 1
+				}
+				min_moves = moves;
+				best_type = type;
+				best_move = dir;
+				priority = (type < 2 ? EXPLORE_PRIORITY_EXPLORE : EXPLORE_PRIORITY_SEARCH);
+			}
+		}
+	}
+
+	/* explore stairs down */
+	if (priority < EXPLORE_PRIORITY_STAIRS_DOWN) {
+		/* explore downstairs unless already exploring upstairs */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
@@ -43,136 +201,33 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE)
-					command = DOWN;
+					best_move = DOWN;
 				else
-					command = dir;
-				priority = EXPLORE_UNKNOWN_STAIRS;
-				return;
+					best_move = dir;
+				priority = EXPLORE_PRIORITY_STAIRS_DOWN;
+				break;
 			}
 		}
 	}
-	int best_moves = INT_MAX;
-	command.clear();
-	for (list<Point>::iterator e = explore.begin(); e != explore.end(); ) {
-		if (search[saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
-			/* this place is fully searched out. remove it from the list */
-			e = explore.erase(e);
-			continue;
-		}
-		unsigned char hs = saiph->levels[saiph->position.level].dungeonmap[e->row][e->col - 1];
-		unsigned char js = saiph->levels[saiph->position.level].dungeonmap[e->row + 1][e->col];
-		unsigned char ks = saiph->levels[saiph->position.level].dungeonmap[e->row - 1][e->col];
-		unsigned char ls = saiph->levels[saiph->position.level].dungeonmap[e->row][e->col + 1];
-		int cur_priority = 1;
-		int count = 0;
-		switch (saiph->levels[saiph->position.level].dungeonmap[e->row][e->col]) {
-			case CORRIDOR:
-				if (!visited[saiph->position.level][e->row][e->col]) {
-					cur_priority = EXPLORE_VISIT_CORRIDOR;
-					break;
-				}
-				if (hs == SOLID_ROCK || hs == VERTICAL_WALL || hs == HORIZONTAL_WALL)
-					++count;
-				if (js == SOLID_ROCK || js == VERTICAL_WALL || js == HORIZONTAL_WALL)
-					++count;
-				if (ks == SOLID_ROCK || ks == VERTICAL_WALL || ks == HORIZONTAL_WALL)
-					++count;
-				if (ls == SOLID_ROCK || ls == VERTICAL_WALL || ls == HORIZONTAL_WALL)
-					++count;
-				if (count == 3) {
-					/* dead end */
-					cur_priority = EXPLORE_SEARCH_CORRIDOR_DEAD_END;
-				} else if (!((hs != SOLID_ROCK && ls != SOLID_ROCK) || (js != SOLID_ROCK && ks != SOLID_ROCK))) {
-					/* turning corridor */
-					cur_priority = EXPLORE_SEARCH_CORRIDOR_CORNER;
-				} else {
-					/* this place is of no interest to us */
-					e = explore.erase(e);
-					continue;
-				}
-				break;
 
-			case OPEN_DOOR:
-				if (!visited[saiph->position.level][e->row][e->col]) {
-					cur_priority = EXPLORE_VISIT_OPEN_DOOR;
-					break;
-				}
-				if (hs == SOLID_ROCK || js == SOLID_ROCK || ks == SOLID_ROCK || ls == SOLID_ROCK) {
-					/* door with no exit */
-					cur_priority = EXPLORE_SEARCH_DOOR_DEAD_END;
-				} else {
-					/* door with exit, uninteresting */
-					e = explore.erase(e);
-					continue;
-				}
-				break;
-
-			case FLOOR:
-				if (visited[saiph->position.level][e->row][e->col] && search[saiph->position.level][e->row][e->col] >= EXPLORE_SEARCH_COUNT) {
-					/* been here & searched, uninteresting place */
-					e = explore.erase(e);
-					continue;
-				}
-				if (hs == SOLID_ROCK || js == SOLID_ROCK || ks == SOLID_ROCK || ls == SOLID_ROCK) {
-					/* next to unlit place */
-					cur_priority = EXPLORE_VISIT_UNLIT_AREA;
-				} else if ((hs == VERTICAL_WALL || ls == VERTICAL_WALL) && (js == HORIZONTAL_WALL || ks == HORIZONTAL_WALL)) {
-					/* corner of a room */
-					cur_priority = EXPLORE_SEARCH_ROOM_CORNER;
-				} else if (hs == VERTICAL_WALL || js == HORIZONTAL_WALL || ks == HORIZONTAL_WALL || ls == VERTICAL_WALL) {
-					/* wall next to floor */
-					cur_priority = EXPLORE_SEARCH_WALL;
-				}
-				break;
-
-			case UNKNOWN_TILE:
-			case UNKNOWN_TILE_DIAGONALLY_UNPASSABLE:
-				if (!visited[saiph->position.level][e->row][e->col]) {
-					/* visit this place */
-					cur_priority = EXPLORE_VISIT_UNKNOWN_TILE;
-					break;;
-				}
-
-			default:
-				/* this never happens */
-				e = explore.erase(e);
-				continue;
-		}
-		if (cur_priority < priority) {
-			++e;
-			continue;
-		}
-		int moves = 0;
-		unsigned char dir = saiph->shortestPath(*e, false, &moves);
-		++e;
-		if (cur_priority == priority && moves > best_moves)
-			continue;
-		if (dir == ILLEGAL_DIRECTION)
-			continue;
-		if (dir == NOWHERE)
-			command = SEARCH;
-		else
-			command = dir;
-		priority = cur_priority;
-		best_moves = moves;
-	}
-	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && priority < EXPLORE_DESCEND) {
-		/* if we're in the mines, go up */
+	/* if we're in the mines, go up */
+	if (priority < EXPLORE_PRIORITY_DESCEND && saiph->levels[saiph->position.level].branch == BRANCH_MINES) {
 		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++up) {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(up->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE)
-					command = UP;
+					best_move = UP;
 				else
-					command = dir;
-				priority = EXPLORE_DESCEND;
+					best_move = dir;
+				priority = EXPLORE_PRIORITY_DESCEND;
 				break;
 			}
 		}
 	}
-	if (priority < EXPLORE_DESCEND) {
-		/* descend */
+
+	/* descend */
+	if (priority < EXPLORE_PRIORITY_DESCEND) {
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
 			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
 				continue; // avoid mines
@@ -180,26 +235,39 @@ void Explore::analyze() {
 			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
 				if (dir == NOWHERE)
-					command = DOWN;
+					best_move = DOWN;
 				else
-					command = dir;
-				priority = EXPLORE_DESCEND;
+					best_move = dir;
+				priority = EXPLORE_PRIORITY_DESCEND;
 				break;
 			}
 		}
 	}
+
+	/* set command */
+	if (best_move != 0) {
+		if (best_move == NOWHERE)
+			command = SEARCH;
+		else
+			command = best_move;
+	}
 }
 
 void Explore::complete() {
-	if (command == SEARCH)
-		++search[saiph->position.level][saiph->world->player.row][saiph->world->player.col];
-}
-
-void Explore::inspect(const Point &point) {
-	unsigned char ds = saiph->levels[saiph->position.level].dungeonmap[point.row][point.col];
-	if (ds != CORRIDOR && ds != FLOOR && ds != OPEN_DOOR && ds != UNKNOWN_TILE && ds != UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
-		return; // we only care about CORRIDOR, FLOOR, OPEN_DOOR, UNKNOWN_TILE & UNKNOWN_TILE_DIAGONALLY_UNPASSABLE
-	explore.push_back(point);
+	if (command == SEARCH) {
+		/* increase search for all adjacent squares */
+		for (int r = saiph->position.row - 1; r <= saiph->position.row + 1; ++r) {
+			if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
+				continue;
+			for (int c = saiph->position.col - 1; c <= saiph->position.col + 1; ++c) {
+				if (c < MAP_COL_BEGIN || c > MAP_COL_END)
+					continue;
+				if (search[saiph->position.level][r][c] >= 255)
+					continue;
+				++search[saiph->position.level][r][c];
+			}
+		}
+	}
 }
 
 void Explore::parseMessages(const string &messages) {
@@ -208,4 +276,10 @@ void Explore::parseMessages(const string &messages) {
 		command = "><,";
 		priority = PRIORITY_CONTINUE_ACTION;
 	}
+	/* TODO
+	 * apply stethoscope to search for hidden door/passage.
+	 * You hear a hollow sound.  This must be a secret door! - probably not needed (we'll see the door)
+	 * You hear a hollow sound.  This must be a secret passage! - probably not needed (we'll see the passage)
+	 * You hear nothing special.
+	 * You hear your heart beat. */
 }

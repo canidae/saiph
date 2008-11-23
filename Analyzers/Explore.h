@@ -1,24 +1,17 @@
 #ifndef EXPLORE_H
 #define EXPLORE_H
 /* various */
-#define EXPLORE_SEARCH_COUNT 32 // how many times we should search a square
+#define EXPLORE_SEARCH_INTERVAL 16 // how many times we should search a square before moving on
+#define EXPLORE_FULLY_SEARCHED 255 // when we won't search a square ever again
 /* priorities */
-#define EXPLORE_DESCEND 35
-#define EXPLORE_VISIT_CORRIDOR 60
-#define EXPLORE_VISIT_OPEN_DOOR 60
-#define EXPLORE_VISIT_UNLIT_AREA 60
-#define EXPLORE_VISIT_UNKNOWN_TILE 25
-#define EXPLORE_SEARCH_CORRIDOR_DEAD_END 60
-#define EXPLORE_SEARCH_DOOR_DEAD_END 60
-#define EXPLORE_SEARCH_ROOM_CORNER 25
-#define EXPLORE_SEARCH_CORRIDOR_CORNER 10
-#define EXPLORE_SEARCH_WALL 10
-#define EXPLORE_UNKNOWN_STAIRS 100
-/* this should go */
-#define MAX_DUNGEON_DEPTH 64
+#define EXPLORE_PRIORITY_DESCEND 30
+#define EXPLORE_PRIORITY_EXPLORE 50
+#define EXPLORE_PRIORITY_SEARCH 20 // priority when stairs not found
+#define EXPLORE_PRIORITY_STAIRS_DOWN 40
+#define EXPLORE_PRIORITY_STAIRS_UP 60
 
-#include <list>
 #include <string>
+#include <vector>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Point.h"
@@ -31,13 +24,11 @@ class Explore : public Analyzer {
 
 		void analyze();
 		void complete();
-		void inspect(const Point &point);
 		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;
-		int search[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		bool visited[MAX_DUNGEON_DEPTH][MAP_ROW_END + 1][MAP_COL_END + 1];
-		std::list<Point> explore;
+		std::vector<int> explore_priorities;
+		unsigned char search[LEVELS][MAP_ROW_END + 1][MAP_COL_END + 1];
 };
 #endif

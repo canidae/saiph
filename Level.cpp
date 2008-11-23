@@ -219,6 +219,25 @@ void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value
 	if (track_symbol[symbol])
 		symbols[symbol][point] = value;
 	dungeonmap[point.row][point.col] = symbol;
+	switch (symbol) {
+		case SOLID_ROCK:
+		case VERTICAL_WALL:
+		case HORIZONTAL_WALL:
+		case CLOSED_DOOR:
+		case IRON_BARS:
+		case TREE:
+		case RAISED_DRAWBRIDGE:
+		case UNKNOWN_TILE_UNPASSABLE:
+			/* these tiles are unwalkable */
+			if (walkable.find(point) != walkable.end())
+				walkable.erase(point);
+			break;
+
+		default:
+			/* these tiles should be walkable */
+			walkable[point] = symbol;
+			break;
+	}
 }
 
 void Level::setDungeonSymbolValue(const Point &point, int value) {
