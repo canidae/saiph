@@ -180,7 +180,7 @@ void Explore::analyze() {
 					/* same type as previous best, check distance */
 					if (moves > min_moves)
 						continue; // found a shorter path already
-					if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == CORRIDOR && moves == 1 && moves == min_moves && type == best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
+					if (w->second == CORRIDOR && moves == 1 && moves == min_moves && type == best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
 						continue; // prefer cardinal moves in corridors when distance is 1
 				}
 				min_moves = moves;
