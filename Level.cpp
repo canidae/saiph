@@ -361,7 +361,12 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 				break;
 
 			case '%':
-				symbol = ROGUE_STAIRS;
+				/* set symbol to ROGUE_STAIRS if we don't know where the stairs lead.
+				 * if we do know where the stairs lead, then set the symbol accordingly */
+				if (dungeonmap[point.row][point.col] != STAIRS_DOWN && dungeonmap[point.row][point.col] != STAIRS_UP)
+					symbol = ROGUE_STAIRS;
+				else
+					symbol = dungeonmap[point.row][point.col];
 				break;
 
 			default:
@@ -674,6 +679,7 @@ void Level::init() {
 	track_symbol[(unsigned char) FOUNTAIN] = true;
 	track_symbol[(unsigned char) VERTICAL_WALL] = true;
 	track_symbol[(unsigned char) HORIZONTAL_WALL] = true;
+	track_symbol[(unsigned char) ROGUE_STAIRS] = true;
 	/* pathing & maps */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
@@ -692,6 +698,7 @@ void Level::init() {
 	passable[(unsigned char) TRAP] = true;
 	passable[(unsigned char) UNKNOWN_TILE] = true;
 	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
+	passable[(unsigned char) ROGUE_STAIRS] = true;
 	passable[(unsigned char) WEAPON] = true;
 	passable[(unsigned char) ARMOR] = true;
 	passable[(unsigned char) RING] = true;
@@ -731,6 +738,7 @@ void Level::init() {
 	dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
 	dungeon[(unsigned char) TRAP] = true;
 	dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
+	dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
 	pathcost[(unsigned char) ICE] = COST_ICE;
 	pathcost[(unsigned char) LAVA] = COST_LAVA;
 	pathcost[(unsigned char) PET] = COST_PET;

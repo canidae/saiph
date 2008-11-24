@@ -1,5 +1,6 @@
 #include <string.h>
 #include "Explore.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -27,6 +28,22 @@ void Explore::analyze() {
 
 	/* where do you want to go today? */
 	unsigned char best_move = 0;
+
+	/* find rogue stairs if we're on rogue level */
+	if (priority < EXPLORE_PRIORITY_ROGUE_STAIRS && saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
+		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[ROGUE_STAIRS].begin(); s != saiph->levels[saiph->position.level].symbols[ROGUE_STAIRS].end(); ++s) {
+			int moves = 0;
+			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (dir == NOWHERE)
+					best_move = string(LOOK)[0]; // slightly ugly, but meh
+				else
+					best_move = dir;
+				priority = EXPLORE_PRIORITY_ROGUE_STAIRS;
+				break;
+			}
+		}
+	}
 
 	/* explore upstairs */
 	if (priority < EXPLORE_PRIORITY_STAIRS_UP && saiph->levels[saiph->position.level].depth != 1) {

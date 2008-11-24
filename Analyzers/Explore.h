@@ -9,6 +9,7 @@
 #define EXPLORE_PRIORITY_SEARCH 20 // priority when stairs not found
 #define EXPLORE_PRIORITY_STAIRS_DOWN 40
 #define EXPLORE_PRIORITY_STAIRS_UP 60
+#define EXPLORE_PRIORITY_ROGUE_STAIRS 70 // priority to find rogue stairs
 
 #include <string>
 #include <vector>

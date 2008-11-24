@@ -350,19 +350,6 @@ bool Saiph::run() {
 	} else if (world->menu && best_analyzer == NULL) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
-	} else if (levels[position.level].branch == BRANCH_ROGUE && levels[position.level].dungeonmap[position.row][position.col] == ROGUE_STAIRS) {
-		/* hack-ish:
-		 * rogue level use same symbol for stairs ('%', but we've remapped it to ROGUE_STAIRS).
-		 * if we're on the rogue level and we're standing on ROGUE_STAIRS then look,
-		 * the parseMessages() in Level will replace ROGUE_STAIRS with UP_STAIRS or DOWN_STAIRS */
-		Debug::warning() << SAIPH_DEBUG_NAME << "I think i'm standing on stairs in the rogue level, looking" << endl;
-		cout << (unsigned char) 27 << "[1;82H";
-		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << "Looking for stairs at rogue level: :";
-		/* return cursor back to where it was */
-		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
-		world->executeCommand(LOOK);
-		return true;
 	} else if (best_analyzer == NULL) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 100 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
@@ -682,7 +669,7 @@ void Saiph::detectPosition() {
 				}
 			}
 		}
-		if (world->view[STATUS_ROW][8] == '*') {
+		if (levels[position.level].branch != BRANCH_ROGUE && world->view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
 			Debug::notice() << SAIPH_DEBUG_NAME << "Found the rogue level: " << position.level << endl;
 			levels[position.level].branch = BRANCH_ROGUE;
