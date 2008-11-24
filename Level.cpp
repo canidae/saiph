@@ -623,12 +623,10 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 		//if (polymorphed_to_grid_bug)
 		//      return false;
 	}
-	//if (blacklisted_move)
-	//      return false;
-	//if (s == LAVA && !levitating)
-	//      return false;
-	//if (s == WATER && (!levitating || !waterwalk))
-	//      return false;
+	if (s == LAVA) // && !levitating)
+	      return false;
+	if (s == WATER) // && (!levitating || !waterwalk))
+	      return false;
 	unsigned int newcost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	newcost += pathcost[s];
 	newcost += pathcost[m];
