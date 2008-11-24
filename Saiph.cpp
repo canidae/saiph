@@ -413,6 +413,9 @@ bool Saiph::run() {
 			 * that means an analyzer is screwing up */
 			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
 			best_analyzer->fail();
+		} else {
+			/* we moved somewhere, the place is marked unpassable, reset stuck_counter */
+			stuck_counter = 0;
 		}
 	}
 	if (last_turn == world->player.turn)
