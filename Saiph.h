@@ -94,7 +94,6 @@ class Saiph {
 		Connection *connection;
 		std::vector<Analyzer *> analyzers;
 		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
-		bool mines_found;
 		bool sokoban_found;
 		std::string farlook_command;
 		int last_turn;

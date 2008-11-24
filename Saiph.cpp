@@ -45,7 +45,6 @@ Saiph::Saiph(int interface) {
 	world = new World(connection);
 
 	/* bools for branches */
-	mines_found = false;
 	sokoban_found = false;
 
 	/* internal turn counter.
@@ -668,7 +667,7 @@ void Saiph::detectPosition() {
 			}
 
 		}
-		if (!mines_found && levels[position.level].branch == BRANCH_MAIN && (levels[position.level].depth >= 3 || levels[position.level].depth <= 5)) {
+		if (levels[position.level].branch == BRANCH_MAIN && (levels[position.level].depth >= 3 || levels[position.level].depth <= 5)) {
 			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
 			for (map<Point, int>::iterator hw = levels[position.level].symbols[HORIZONTAL_WALL].begin(); hw != levels[position.level].symbols[HORIZONTAL_WALL].end(); ++hw) {
 				if (hw->first.row <= MAP_ROW_BEGIN || hw->first.row >= MAP_ROW_END || hw->first.col <= MAP_COL_BEGIN || hw->first.col >= MAP_COL_END)
@@ -678,7 +677,6 @@ void Saiph::detectPosition() {
 				if (levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col + 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col + 1] == HORIZONTAL_WALL) {
 					/* we're in the mines */
 					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
-					mines_found = true;
 					levels[position.level].branch = BRANCH_MINES;
 					break;
 				}
