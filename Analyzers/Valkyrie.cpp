@@ -20,10 +20,10 @@ void Valkyrie::init() {
 
 /* private methods */
 void Valkyrie::setupAmulet(int &groupstart) {
-	/* 1 of each unidentified amulet */
+	/* 10 of each unidentified amulet */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.value = 1;
+	req.value = 10;
 	req.data = "circular amulet";
 	saiph->request(req);
 	req.data = "spherical amulet";
@@ -43,10 +43,10 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	req.data = "octagonal amulet";
 	saiph->request(req);
 
-	/* and one of each useful amulet */
+	/* and 10 of each identified amulet */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.value = 1;
+	req.value = 10;
 	req.data = "amulet of ESP";
 	saiph->request(req);
 	req.data = "amulet of life saving";
@@ -58,6 +58,14 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	req.data = "amulet of unchanging";
 	saiph->request(req);
 	req.data = "Amulet of Yendor";
+	saiph->request(req);
+	req.data = "amulet versus poison";
+	saiph->request(req);
+	req.data = "amulet of change";
+	saiph->request(req);
+	req.data = "amulet of restful sleep";
+	saiph->request(req);
+	req.data = "amulet of strangulation";
 	saiph->request(req);
 
 	/* tell the amulet analyzer which amulets we wish to wear */
@@ -75,6 +83,8 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	req.data = "amulet of unchanging";
 	saiph->request(req);
 	req.data = "Amulet of Yendor";
+	saiph->request(req);
+	req.data = "amulet versus poison";
 	saiph->request(req);
 }
 
