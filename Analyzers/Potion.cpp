@@ -60,6 +60,10 @@ void Potion::parseMessages(const string &messages) {
 		/* mark inventory as dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+	} else if (saiph->world->question && messages.find(MESSAGE_DRINK_FROM_FOUNTAIN, 0) != string::npos) {
+		/* drink from fountain? no, let's not */
+		command = NO;
+		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (saiph->world->question) {
 		string::size_type stop = messages.find(POTION_CALL_END, 0);
 		if (stop == string::npos)
