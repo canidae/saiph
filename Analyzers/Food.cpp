@@ -281,16 +281,6 @@ void Food::analyze() {
 			req.priority = FOOD_PRAY_FOR_FOOD;
 			saiph->request(req);
 		}
-	} else if (saiph->world->player.hunger > CONTENT) {
-		/* easter egg: eat bytes when [over]satiated */
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (i->second.name == "byte" || i->second.name == "bytes") {
-				command = EAT;
-				command2 = i->first;
-				priority = FOOD_EAT_HUNGRY_PRIORITY;
-				return;
-			}
-		}
 	}
 	if (saiph->on_ground != NULL && priority < FOOD_EAT_CORPSE_PRIORITY) {
 		map<Point, int>::iterator s = safe_eat_loc.find(saiph->position);
