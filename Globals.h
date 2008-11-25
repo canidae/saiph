@@ -173,7 +173,9 @@
 #define PRIORITY_MAX 999
 #define PRIORITY_MIN 0
 /* messages */
+#define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
+#define MESSAGE_CRAWL_OUT_OF_PIT "  You crawl to the edge of the pit.  "
 #define MESSAGE_CURRENT_SKILLS "  Current skills:  "
 #define MESSAGE_DESTROY_POTION " boils and explodes!  "
 #define MESSAGE_DESTROY_RING " turns to dust and vanishes!  "

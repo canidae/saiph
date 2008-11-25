@@ -5,7 +5,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), sequence(-1), unlock_tool_key(0) {
+Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), sequence(-1), unlock_tool_key(0), in_a_pit(false) {
 }
 
 /* methods */
@@ -13,6 +13,17 @@ void Door::analyze() {
 	/* open closed doors */
 	if (saiph->world->player.hurt_leg)
 		return; // don't open doors when our leg is hurt
+	if (in_a_pit) {
+		/* we're possibly in a pit.
+		 * most common way to get out of pits is to crawl out,
+		 * but she might get teleported out or levitate out.
+		 * so we'll check if her position has changed, if it has
+		 * then she's probably no longer in a pit */
+		if (position != saiph->position)
+			in_a_pit = false; // no longer in the pit
+		else
+			return; // still in the pit
+	}
 	/* go to nearest closed door and get it open somehow */
 	int least_moves = INT_MAX;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
@@ -32,7 +43,7 @@ void Door::analyze() {
 					command = APPLY;
 			}
 			command2 = dir;
-			cur_door = d->first;
+			position = d->first;
 			priority = DOOR_OPEN_PRIORITY;
 			sequence = 0;
 			return;
@@ -68,11 +79,18 @@ void Door::parseMessages(const string &messages) {
 		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* we're going to assume the door won't be locked anymore */
-		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, UNKNOWN_SYMBOL_VALUE);
+		saiph->levels[saiph->position.level].setDungeonSymbolValue(position, UNKNOWN_SYMBOL_VALUE);
 		sequence = -1;
 	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
-		saiph->levels[saiph->position.level].setDungeonSymbolValue(cur_door, 1);
+		saiph->levels[saiph->position.level].setDungeonSymbolValue(position, 1);
+	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
+		/* we're in a pit, can't reach door from here */
+		in_a_pit = true;
+		position = saiph->position;
+	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
+		/* crawled out of pit */
+		in_a_pit = false;
 	}
 }
 

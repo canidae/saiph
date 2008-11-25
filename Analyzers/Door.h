@@ -23,9 +23,10 @@ class Door : public Analyzer {
 	private:
 		Saiph *saiph;
 		std::string command2;
-		Point cur_door;
+		Point position;
 		int sequence;
 		unsigned char unlock_tool_key;
+		bool in_a_pit;
 
 		void findUnlockingTool();
 };
