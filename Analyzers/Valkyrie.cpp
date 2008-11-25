@@ -1,5 +1,6 @@
 #include "Valkyrie.h"
 #include "../Saiph.h"
+#include "../World.h"
 
 /* constructors/destructor */
 Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph) {
@@ -16,6 +17,9 @@ void Valkyrie::init() {
 	setupTool(groupstart);
 	setupWand(groupstart);
 	setupWeapon(groupstart);
+
+	/* set the cold resistance all valks start with */
+	saiph->world->player.cold_resistance = true;
 }
 
 /* private methods */
