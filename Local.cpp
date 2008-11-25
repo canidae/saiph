@@ -1,6 +1,12 @@
 #include <stdlib.h>
 #include <fcntl.h>
+
+#ifdef __APPLE__
+#include <util.h>
+#else
 #include <pty.h>
+#endif
+
 #include "Debug.h"
 #include "Globals.h"
 #include "Local.h"

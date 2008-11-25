@@ -1,6 +1,3 @@
-# run it like this:
-# make clean && make && export NETHACKOPTIONS=@/home/canidae/projects/saiph/nethackrc && ./saiph 2>err.log
-
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g
@@ -31,3 +28,8 @@ World.o: World.h World.cpp
 clean:
 	$(RM) *.o *.gch saiph
 	$(MAKE) -C Analyzers clean
+
+#Launch game
+game:
+	echo -e '\e[8;50;160t' # Sets the terminal size
+	./saiph 2> err.log

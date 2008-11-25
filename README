@@ -9,3 +9,20 @@ Installation:
 saiph is in a git repository. it's coded on and meant for linux.
 you can fetch the code this way:
 git clone http://exent.net/~canidae/saiph/.git
+
+
+Running:
+--------
+Depending on whether you wish to run remotely or locally, edit Saiph.cpp and
+change between CONNECTION_TELNET and CONNECTION_LOCAL in
+"Saiph *saiph = new Saiph(CONNECTION_TELNET);" (near the bottom of the file).
+
+If you're running locally you'll have to do this once:
+ export NETHACKOPTIONS=@<path to nethackrc>
+
+Then build & start the bot:
+ make clean && make
+ ./saiph
+
+Optionally start the game this way:
+ make game
