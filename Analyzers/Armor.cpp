@@ -17,6 +17,7 @@ void Armor::analyze() {
 }
 
 void Armor::parseMessages(const string &messages) {
+	string::size_type pos;
 	if (saiph->world->question && !command2.empty() && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
 		/* take off or wear something */
 		command = command2;
@@ -34,7 +35,57 @@ void Armor::parseMessages(const string &messages) {
 	} else if (command == WEAR) {
 		/* in case we didn't get to wear the armor */
 		priority = ARMOR_WEAR_PRIORITY;
+	} else if (saiph->world->question && (pos = messages.find(MESSAGE_FOOCUBUS_QUESTION, 0)) != string::npos) {
+		/* A foocubus wants to remove something. Check the beatitude of
+		 * that piece of armor! */
+		command = NO;
+		priority = PRIORITY_CONTINUE_ACTION;
+		if (messages.find(" cloak, ", pos) == pos
+				|| messages.find(" wrapping, ", pos) == pos
+				|| messages.find(" robe, ", pos) == pos
+				|| messages.find(" apron, ", pos) == pos
+				|| messages.find(" smock, ", pos) == pos) {
+			/* Remove the cloak? (yes, these are all the cases) */
+			/* also take off cloak if suit or shirt is cursed */
+			if (isCursed(ARMOR_CLOAK) || isCursed(ARMOR_SUIT) || isCursed(ARMOR_SHIRT))
+				command = YES;
+		} else if (messages.find(" suit, ", pos) == pos) {
+			/* Remove the suit? */
+			/* also take off suit if shirt is cursed */
+			if (isCursed(ARMOR_SUIT) || isCursed(ARMOR_SHIRT))
+				command = YES;
+		} else if (messages.find(" boots, ", pos) == pos) {
+			/* Remove the boots? */
+			if (isCursed(ARMOR_BOOTS))
+				command = YES;
+		} else if (messages.find(" gloves, ", pos) == pos) {
+			/* Remove the gloves? */
+			if (isCursed(ARMOR_GLOVES))
+				command = YES;
+		} else if (messages.find(" shield, ", pos) == pos) {
+			/* Remove the shield? */
+			if (isCursed(ARMOR_SHIELD))
+				command = YES;
+		} else if (messages.find(" helmet, ", pos) == pos) {
+			/* Remove the helmet? */
+			if (isCursed(ARMOR_HELMET))
+				command = YES;
+		} else if (messages.find(" shirt, ", pos) == pos) {
+			/* Remove the shirt? */
+			if (isCursed(ARMOR_SHIRT))
+				command = YES;
+		}
+		/* Request dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
+	} else if (messages.find(MESSAGE_FOOCUBUS_REMOVE, 0) != string::npos) {
+		/* A foocubus removed something without asking us. */
+		/* Request dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 	}
+
+
 }
 
 bool Armor::request(const Request &request) {
@@ -52,26 +103,36 @@ bool Armor::request(const Request &request) {
 }
 
 /* private methods */
+bool Armor::isCursed(int armor_slot) {
+	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		if (i->second.additional != "being worn")
+			continue;
+		for (vector<WearArmor>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
+			if (armor[armor_slot][a].name != i->second.name)
+				continue;
+			return i->second.beatitude == CURSED;
+		}
+	}
+
+	/* Couldn't find something on that slot? */
+	return false;
+}
+
 void Armor::wearArmor() {
 	/* put on or change armor (which means we'll have to take something off) */
 	/* check that we're (still) wearing our preferred armor */
 	unsigned char worn[ARMOR_SLOTS] = {0};
 	unsigned char best_key[ARMOR_SLOTS] = {0};
 	int best_armor[ARMOR_SLOTS];
-	bool is_cursed[ARMOR_SLOTS];
-	for (int s = 0; s < ARMOR_SLOTS; ++s) {
+	for (int s = 0; s < ARMOR_SLOTS; ++s)
 		best_armor[s] = INT_MAX;
-		is_cursed[s] = false;
-	}
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
 			for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
 				if (armor[s][a].name != i->second.name)
 					continue;
-				if (i->second.additional == "being worn") {
+				if (i->second.additional == "being worn")
 					worn[s] = i->first;
-					is_cursed[s] = (i->second.beatitude == CURSED);
-				}
 				if ((int) a >= best_armor[s])
 					continue;
 				if ((armor[s][a].beatitude & i->second.beatitude) == 0)
@@ -84,12 +145,12 @@ void Armor::wearArmor() {
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
 			continue; // wearing best armor or got no armor to wield
-		if (is_cursed[s])
+		if (isCursed(s))
 			continue; // the item we're wearing in this slot it cursed and cannot be taken off
 		if (s == ARMOR_SUIT || s == ARMOR_SHIRT) {
 			/* wish to put on shirt or suit.
 			 * if cloak or suit is cursed, this can't be done */
-			if (is_cursed[ARMOR_CLOAK] || (s == ARMOR_SHIRT && is_cursed[ARMOR_SUIT])) {
+			if (isCursed(ARMOR_CLOAK) || (s == ARMOR_SHIRT && isCursed(ARMOR_SUIT))) {
 				/* cloak is cursed, or suit is cursed and we're putting on a shirt */
 				continue;
 			}

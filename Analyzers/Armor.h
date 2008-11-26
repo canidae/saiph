@@ -33,6 +33,7 @@ class Armor : public Analyzer {
 		std::string command2;
 		Request req;
 
+		bool isCursed(int armor_slot);
 		void wearArmor();
 };
 #endif
