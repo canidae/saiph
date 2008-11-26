@@ -46,11 +46,7 @@ void Elbereth::parseMessages(const string &messages) {
 		sequence = 1;
 	} else if (sequence == 1 && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos)) {
 		priority = PRIORITY_CONTINUE_ACTION;
-		/* engrave "ElberethElbereth" if we're appending, only "Elbereth" otherwise */
-		if (append)
-			command = ELBERETH_ELBERETH ELBERETH_ELBERETH "\n";
-		else
-			command = ELBERETH_ELBERETH "\n";
+		command = ELBERETH_ELBERETH "\n";
 		sequence = -1;
 	}
 	/* figure out if something is engraved here */
