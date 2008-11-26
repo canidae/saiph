@@ -71,6 +71,7 @@ class Saiph {
 		Stash *on_ground;
 		Coordinate position;
 		std::string last_command;
+		int best_priority;
 		int internal_turn;
 		bool engulfed;
 		bool inventory_changed;
