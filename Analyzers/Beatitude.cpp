@@ -10,6 +10,9 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 
 /* methods */
 void Beatitude::analyze() {
+	if (saiph->world->player.blind)
+		return; // no buc-testing while blind
+
 	unsigned char dir = ILLEGAL_DIRECTION;
 	int moves = 0;
 	if (!check_beatitude && saiph->inventory_changed) {
