@@ -1,6 +1,7 @@
 #include "Beatitude.h"
 #include "../Globals.h"
 #include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
