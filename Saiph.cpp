@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <stdlib.h>
 #include <iostream>
 #include "Analyzer.h"
@@ -34,6 +35,11 @@
 #include "Analyzers/Wish.h"
 
 using namespace std;
+
+/* function used for sorting analyzers descending */
+bool sortAnalyzers(const Analyzer *a, const Analyzer *b) {
+	return a->priority > b->priority;
+}
 
 /* constructors/destructor */
 Saiph::Saiph(int interface) {
@@ -310,7 +316,7 @@ bool Saiph::run() {
 	dumpMaps();
 
 	/* analyzer stuff comes here */
-	Analyzer *best_analyzer = NULL;
+	int best_analyzer = -1;
 
 	/* clear priority from analyzers */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
@@ -335,22 +341,22 @@ bool Saiph::run() {
 	}
 
 	/* find best analyzer */
-	int best_priority = ILLEGAL_PRIORITY;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->priority > best_priority) {
-			best_priority = (*a)->priority;
-			best_analyzer = *a;
+	best_priority = ILLEGAL_PRIORITY;
+	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
+		if (analyzers[a]->priority > best_priority) {
+			best_priority = analyzers[a]->priority;
+			best_analyzer = a;
 		}
 	}
 
 	/* check if we got a command */
-	if (world->question && best_analyzer == NULL) {
+	if (world->question && best_analyzer < 0) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		return false;
-	} else if (world->menu && best_analyzer == NULL) {
+	} else if (world->menu && best_analyzer < 0) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
-	} else if (best_analyzer == NULL) {
+	} else if (best_analyzer < 0) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 100 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
@@ -364,25 +370,25 @@ bool Saiph::run() {
 	/* print what we're doing */
 	cout << (unsigned char) 27 << "[1;82H";
 	cout << (unsigned char) 27 << "[K"; // erase everything to the right
-	cout << best_analyzer->name << " (priority " << best_priority << "): " << best_analyzer->command;
+	cout << analyzers[best_analyzer]->name << " (priority " << best_priority << "): " << analyzers[best_analyzer]->command;
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
 	/* let an analyzer do its command */
-	Debug::notice() << COMMAND_DEBUG_NAME << "'" << best_analyzer->command << "' from analyzer " << best_analyzer->name << " with priority " << best_priority << endl;
-	world->executeCommand(best_analyzer->command);
+	Debug::notice() << COMMAND_DEBUG_NAME << "'" << analyzers[best_analyzer]->command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
+	world->executeCommand(analyzers[best_analyzer]->command);
 	if (stuck_counter < 42) {
-		best_analyzer->complete();
+		analyzers[best_analyzer]->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
 		bool was_move = false;
-		if (best_analyzer->command.size() == 1 && last_command == best_analyzer->command) {
+		if (analyzers[best_analyzer]->command.size() == 1 && last_command == analyzers[best_analyzer]->command) {
 			/* command is movement, and so was last_command.
 			 * it's likely that we're moving */
 			Point to;
-			switch (best_analyzer->command[0]) {
+			switch (analyzers[best_analyzer]->command[0]) {
 				case NW:
 				case NE:
 				case SW:
@@ -391,7 +397,7 @@ bool Saiph::run() {
 					 * we could be trying to move diagonally into a door we're
 					 * unaware of because of an item blocking the door symbol.
 					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-					to = directionToPoint((unsigned char) best_analyzer->command[0]);
+					to = directionToPoint((unsigned char) analyzers[best_analyzer]->command[0]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
 					was_move = true;
 					break;
@@ -402,7 +408,7 @@ bool Saiph::run() {
 				case W:
 					/* moving cardinally failed, possibly item in wall.
 					 * make the tile UNKNOWN_TILE_UNPASSABLE */
-					to = directionToPoint((unsigned char) best_analyzer->command[0]);
+					to = directionToPoint((unsigned char) analyzers[best_analyzer]->command[0]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
 					was_move = true;
 					break;
@@ -411,8 +417,8 @@ bool Saiph::run() {
 		if (!was_move) {
 			/* apparently it wasn't a failed movement,
 			 * that means an analyzer is screwing up */
-			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << best_analyzer->name << ". Priority was " << best_priority << " and command was: " << best_analyzer->command << endl;
-			best_analyzer->fail();
+			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << analyzers[best_analyzer]->name << ". Priority was " << best_priority << " and command was: " << analyzers[best_analyzer]->command << endl;
+			analyzers[best_analyzer]->fail();
 		} else {
 			/* we moved somewhere, the place is marked unpassable, reset stuck_counter */
 			stuck_counter = 0;
@@ -422,7 +428,7 @@ bool Saiph::run() {
 		stuck_counter++;
 	else
 		stuck_counter = 0;
-	last_command = best_analyzer->command;
+	last_command = analyzers[best_analyzer]->command;
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;

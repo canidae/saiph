@@ -11,16 +11,16 @@ void Health::analyze() {
 	/* do something if our health is low */
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;
-	if (hp > 0 && hp < hp_max * 3 / 5) {
-		/* hp below 60%, do something! */
+	if (hp > 0 && hp < hp_max * 4 / 7) {
+		/* hp below 4/7 (about 57%), do something! */
 		bool doing_something = false;
-		if (hp < 6 || hp < hp_max / 7) {
-			/* try quaffing healing potion or praying */
+		if (hp < hp_max * 2 / 7) {
+			/* try quaffing healing potion */
 			req.request = REQUEST_QUAFF_HEALING;
 			req.priority = HEALTH_QUAFF_FOR_HP;
 			if (saiph->request(req)) {
 				doing_something = true;
-			} else {
+			} else if (hp < 6 || hp < hp_max / 7) {
 				/* quaffing won't work... how about pray? */
 				req.request = REQUEST_PRAY;
 				req.priority = HEALTH_PRAY_FOR_HP;
@@ -63,8 +63,8 @@ void Health::analyze() {
 	}
 	if (resting) {
 		/* still resting */
-		if (hp > hp_max * 9 / 10) {
-			resting = false; // enough hp (>90%) to continue our journey
+		if (hp > hp_max * 6 / 7) {
+			resting = false; // enough hp (greater than about 86%) to continue our journey
 		} else {
 			req.request = REQUEST_ELBERETH_OR_REST;
 			req.priority = HEALTH_REST_FOR_HP_HIGH;
