@@ -432,12 +432,6 @@ bool Saiph::run() {
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;
-
-	/* sort analyzers if best analyzer is not the first analyzer */
-	if (best_analyzer != 0)
-		sort(analyzers.begin(), analyzers.end(), sortAnalyzers);
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		Debug::info() << (*a)->name << " - " << (*a)->priority << endl;
 	return true;
 }
 
