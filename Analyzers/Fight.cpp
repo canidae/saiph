@@ -56,13 +56,13 @@ void Fight::analyze() {
 		unsigned char dir = saiph->shortestPath(m->first, true, &moves);
 		if (dir == ILLEGAL_DIRECTION)
 			continue; // unable to path to monster
-		if (moves > 1 && priority > FIGHT_MOVE_PRIORITY)
-			continue; // we must move to monster, but we got something else with higher priority
-		if (moves > min_moves)
+		else if (moves > 1 && (priority > FIGHT_MOVE_PRIORITY || saiph->world->player.blind))
+			continue; // we must move to monster, but we got something else with higher priority or are blind
+		else if (moves > min_moves)
 			continue; // we know of a monster closer than this one
-		if (moves == 1 && distance == min_distance && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
+		else if (moves == 1 && distance == min_distance && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
-		if (blue_e)
+		else if (blue_e)
 			priority = FIGHT_BLUE_E_PRIORITY;
 		else
 			priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
