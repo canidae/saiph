@@ -13,6 +13,8 @@ void Door::analyze() {
 	/* open closed doors */
 	if (saiph->world->player.hurt_leg)
 		return; // don't open doors when our leg is hurt
+	else if (saiph->world->player.blind)
+		return; // don't move when blind
 	if (in_a_pit) {
 		/* we're possibly in a pit.
 		 * most common way to get out of pits is to crawl out,
