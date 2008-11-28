@@ -20,6 +20,7 @@ class Health : public Analyzer {
 		Health(Saiph *saiph);
 
 		void analyze();
+		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;

@@ -196,6 +196,8 @@
 #define MESSAGE_FOR_WHAT_DO_YOU_WISH "  For what do you wish?  "
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
 #define MESSAGE_HELLO_STRANGER "  \"Hello stranger, who are you?\" -  "
+#define MESSAGE_LIMBS_ARE_STIFFENING "  Your limbs are stiffening.  "
+#define MESSAGE_LIMBS_TURNED_TO_STONE "  Your limbs have turned to stone.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_NOTHING_HAPPENS "  Nothing happens.  "
@@ -203,6 +205,7 @@
 #define MESSAGE_PICK_A_SKILL "  Pick a skill to advance:  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
+#define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
 #define MESSAGE_TEXT_BURNED "  Some text has been burned into the floor here.  "
 #define MESSAGE_TEXT_DIGGED "  Something is engraved here on the floor.  "

@@ -2,6 +2,8 @@
 #include "../Saiph.h"
 #include "../World.h"
 
+using namespace std;
+
 /* constructors/destructor */
 Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), prev_st(INT_MAX), prev_dx(INT_MAX), prev_co(INT_MAX), prev_in(INT_MAX), prev_wi(INT_MAX), prev_ch(INT_MAX) {
 }
@@ -103,4 +105,22 @@ void Health::analyze() {
 	prev_in = saiph->world->player.intelligence;
 	prev_wi = saiph->world->player.wisdom;
 	prev_ch = saiph->world->player.charisma;
+}
+
+void Health::parseMessages(const string &messages) {
+	if (messages.find(MESSAGE_SLOWING_DOWN, 0) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING, 0) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE, 0) != string::npos) {
+		/* bloody *trice, this is bad */
+		req.request = REQUEST_EAT;
+		req.priority = HEALTH_CURE_DEADLY;
+		req.data = "partly eaten lizard corpse";
+		if (!saiph->request(req)) {
+			/* no? try again non-partly eaten */
+			req.data = "lizard corpse";
+			if (!saiph->request(req)) {
+				/* oh crap */
+				req.request = REQUEST_PRAY;
+				saiph->request(req);
+			}
+		}
+	}
 }
