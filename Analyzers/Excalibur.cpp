@@ -5,14 +5,12 @@
 using namespace std;
 
 /* constructors/destructor */
-Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), excalibur_exists(false), command2("") {
+Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), command2("") {
 }
 
 /* methods */
 void Excalibur::analyze() {
-	if (excalibur_exists)
-		return;
-	else if (saiph->world->player.experience < 5)
+	if (saiph->world->player.experience < 5)
 		return;
 	else if (saiph->world->player.blind)
 		return; // don't move when blind
@@ -45,8 +43,6 @@ void Excalibur::analyze() {
 }
 
 void Excalibur::parseMessages(const string &messages) {
-	if (excalibur_exists)
-		return;
 	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
 		command = command2;
@@ -58,6 +54,8 @@ void Excalibur::parseMessages(const string &messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
 		/* alright! */
-		excalibur_exists = true;
+		expired = true; // delete this analyzer from analyzers
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 	}
 }

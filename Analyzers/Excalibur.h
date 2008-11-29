@@ -7,6 +7,7 @@
 
 #include <string>
 #include "../Analyzer.h"
+#include "../Request.h"
 
 class Saiph;
 
@@ -19,7 +20,7 @@ class Excalibur : public Analyzer {
 
 	private:
 		Saiph *saiph;
-		bool excalibur_exists;
+		Request req;
 		std::string command2;
 };
 #endif

@@ -5,7 +5,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command("") {
+Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command(""), expired(false) {
 	/* methods will be called in this order:
 	 * 0. init (once, after all analyzers have been created)
 	 * 1. parseMessages

@@ -11,6 +11,7 @@ class Analyzer {
 		std::string name;
 		int priority;
 		std::string command;
+		bool expired;
 	
 		Analyzer(std::string name);
 		virtual ~Analyzer();
