@@ -316,47 +316,57 @@ bool Saiph::run() {
 	dumpMaps();
 
 	/* analyzer stuff comes here */
-	int best_analyzer = -1;
+	vector<Analyzer *>::iterator best_analyzer = analyzers.end();
+	best_priority = ILLEGAL_PRIORITY;
 
-	/* clear priority from analyzers */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+	/* remove expired analyzers, clear priority and parse messages */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
+		if ((*a)->expired) {
+			/* expired analyzer, remove it */
+			delete *a;
+			a = analyzers.erase(a);
+			continue;
+		}
 		(*a)->priority = ILLEGAL_PRIORITY;
-
-	/* let analyzers parse messages */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->parseMessages(world->messages);
+		if ((*a)->priority > best_priority) {
+			best_priority = (*a)->priority;
+			best_analyzer = a;
+		}
+		++a;
+	}
 
 	/* inspect the dungeon */
 	if (!world->question && !world->menu && !engulfed) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c) {
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
 				(*a)->inspect(*c);
+			if ((*a)->priority > best_priority) {
+				best_priority = (*a)->priority;
+				best_analyzer = a;
+			}
 		}
 	}
 
 	/* call analyze() in analyzers */
 	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 			(*a)->analyze();
-	}
-
-	/* find best analyzer */
-	best_priority = ILLEGAL_PRIORITY;
-	for (vector<Analyzer *>::size_type a = 0; a < analyzers.size(); ++a) {
-		if (analyzers[a]->priority > best_priority) {
-			best_priority = analyzers[a]->priority;
-			best_analyzer = a;
+			if ((*a)->priority > best_priority) {
+				best_priority = (*a)->priority;
+				best_analyzer = a;
+			}
 		}
 	}
 
 	/* check if we got a command */
-	if (world->question && best_analyzer < 0) {
+	if (world->question && best_analyzer == analyzers.end()) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		return false;
-	} else if (world->menu && best_analyzer < 0) {
+	} else if (world->menu && best_analyzer == analyzers.end()) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
-	} else if (best_analyzer < 0) {
+	} else if (best_analyzer == analyzers.end()) {
 		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 100 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
@@ -370,25 +380,25 @@ bool Saiph::run() {
 	/* print what we're doing */
 	cout << (unsigned char) 27 << "[1;82H";
 	cout << (unsigned char) 27 << "[K"; // erase everything to the right
-	cout << analyzers[best_analyzer]->name << " (priority " << best_priority << "): " << analyzers[best_analyzer]->command;
+	cout << (*best_analyzer)->name << " (priority " << best_priority << "): " << (*best_analyzer)->command;
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
 	/* let an analyzer do its command */
-	Debug::notice() << COMMAND_DEBUG_NAME << "'" << analyzers[best_analyzer]->command << "' from analyzer " << analyzers[best_analyzer]->name << " with priority " << best_priority << endl;
-	world->executeCommand(analyzers[best_analyzer]->command);
+	Debug::notice() << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
+	world->executeCommand((*best_analyzer)->command);
 	if (stuck_counter < 42) {
-		analyzers[best_analyzer]->complete();
+		(*best_analyzer)->complete();
 	} else {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
 		bool was_move = false;
-		if (analyzers[best_analyzer]->command.size() == 1 && last_command == analyzers[best_analyzer]->command) {
+		if ((*best_analyzer)->command.size() == 1 && last_command == (*best_analyzer)->command) {
 			/* command is movement, and so was last_command.
 			 * it's likely that we're moving */
 			Point to;
-			switch (analyzers[best_analyzer]->command[0]) {
+			switch ((*best_analyzer)->command[0]) {
 				case NW:
 				case NE:
 				case SW:
@@ -397,7 +407,7 @@ bool Saiph::run() {
 					 * we could be trying to move diagonally into a door we're
 					 * unaware of because of an item blocking the door symbol.
 					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-					to = directionToPoint((unsigned char) analyzers[best_analyzer]->command[0]);
+					to = directionToPoint((unsigned char) (*best_analyzer)->command[0]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
 					was_move = true;
 					break;
@@ -408,7 +418,7 @@ bool Saiph::run() {
 				case W:
 					/* moving cardinally failed, possibly item in wall.
 					 * make the tile UNKNOWN_TILE_UNPASSABLE */
-					to = directionToPoint((unsigned char) analyzers[best_analyzer]->command[0]);
+					to = directionToPoint((unsigned char) (*best_analyzer)->command[0]);
 					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
 					was_move = true;
 					break;
@@ -417,18 +427,17 @@ bool Saiph::run() {
 		if (!was_move) {
 			/* apparently it wasn't a failed movement,
 			 * that means an analyzer is screwing up */
-			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << analyzers[best_analyzer]->name << ". Priority was " << best_priority << " and command was: " << analyzers[best_analyzer]->command << endl;
-			analyzers[best_analyzer]->fail();
-		} else {
-			/* we moved somewhere, the place is marked unpassable, reset stuck_counter */
-			stuck_counter = 0;
+			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
+			(*best_analyzer)->fail();
 		}
+		/* reset stuck_counter */
+		stuck_counter = 0;
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
-	last_command = analyzers[best_analyzer]->command;
+	last_command = (*best_analyzer)->command;
 	last_turn = world->player.turn;
 	if (best_priority < PRIORITY_MAX)
 		++internal_turn;
