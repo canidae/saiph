@@ -20,7 +20,6 @@ class Analyzer {
 		virtual void complete();
 		virtual void fail();
 		virtual void init();
-		virtual void inspect(const Point &point);
 		virtual void parseMessages(const std::string &messages);
 		virtual bool request(const Request &request);
 };

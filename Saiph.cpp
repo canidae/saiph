@@ -336,18 +336,6 @@ bool Saiph::run() {
 		++a;
 	}
 
-	/* inspect the dungeon */
-	if (!world->question && !world->menu && !engulfed) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
-				(*a)->inspect(*c);
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
-				best_analyzer = a;
-			}
-		}
-	}
-
 	/* call analyze() in analyzers */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
@@ -356,6 +344,14 @@ bool Saiph::run() {
 				best_priority = (*a)->priority;
 				best_analyzer = a;
 			}
+		}
+	}
+
+	/* need to check priority once more, because of requests */
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if ((*a)->priority > best_priority) {
+			best_priority = (*a)->priority;
+			best_analyzer = a;
 		}
 	}
 
