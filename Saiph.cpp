@@ -323,6 +323,7 @@ bool Saiph::run() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 		if ((*a)->expired) {
 			/* expired analyzer, remove it */
+			Debug::notice() << "Analyzer " << (*a)->name << " is expired and will be removed" << endl;
 			delete *a;
 			a = analyzers.erase(a);
 			continue;
