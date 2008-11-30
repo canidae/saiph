@@ -279,9 +279,11 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 	/* helper method for dropItem() and pickupItem() */
 	map<string, ItemWanted>::iterator i = items.find(item.name);
 	if (i == items.end())
-		return (drop ? item.count: 0); // item is not in our list
+		return (drop ? item.count : 0); // item is not in our list
 	if ((item.beatitude & i->second.beatitude) == 0)
-		return (drop ? item.count: 0); // item does not have a beatitude we'll accept
+		return (drop ? item.count : 0); // item does not have a beatitude we'll accept
+	if (item.named == DISCARD)
+		return (drop ? item.count : 0); // item is named "discard", we don't want the item
 	/* groups */
 	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
 		/* figure out how many items we already got in this group */

@@ -199,6 +199,8 @@
 #define PRIORITY_LOOK 1000
 #define PRIORITY_MAX 999
 #define PRIORITY_MIN 0
+/* discard item */
+#define DISCARD "discard"
 /* messages */
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
