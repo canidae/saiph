@@ -43,6 +43,8 @@ class World {
 	private:
 		Connection *connection;
 		bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
+		bool inverse;
+		bool bold;
 		char data[BUFFER_SIZE];
 		int data_size;
 		std::string msg_str; // helps fetching messages

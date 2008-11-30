@@ -411,7 +411,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	if (monster[symbol] && point != saiph->position) {
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
-		if (symbol == INVERSE)
+		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 			msymbol = PET;
 		else
 			msymbol = symbol;
@@ -424,7 +424,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			if (m->second.symbol != msymbol || m->second.color != color)
 				continue; // not the same monster
 			unsigned char old_symbol;
-			if (symbol == INVERSE)
+			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 				old_symbol = PET;
 			else
 				old_symbol = saiph->world->view[m->first.row][m->first.col];
@@ -457,18 +457,19 @@ void Level::updateMonsters() {
 	 * and make monsters we can't see !visible */
 	for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ) {
 		unsigned char symbol;
-		if (saiph->world->color[m->first.row][m->first.col] == INVERSE)
+		int color = saiph->world->color[m->first.row][m->first.col];
+		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 			symbol = PET;
 		else
 			symbol = saiph->world->view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (symbol == m->second.symbol && saiph->world->color[m->first.row][m->first.col] == m->second.color);
+		m->second.visible = (symbol == m->second.symbol && color == m->second.color);
 		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
 		}
-		if (m->first != saiph->position && symbol == m->second.symbol && saiph->world->color[m->first.row][m->first.col] == m->second.color) {
+		if (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color) {
 			/* we can still see the monster */
 			++m;
 			continue;

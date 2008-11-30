@@ -288,8 +288,10 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* detect player position */
-	if (!world->menu && !engulfed)
+	if (!world->menu && !engulfed) {
+		Debug::info() << "Detecting position: " << world->player.level << " - " << world->menu << " - " << engulfed << " - " << world->question << endl;
 		detectPosition();
+	}
 
 	/* global message parsing */
 	parseMessages(world->messages);
@@ -323,7 +325,7 @@ bool Saiph::run() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 		if ((*a)->expired) {
 			/* expired analyzer, remove it */
-			Debug::notice() << "Analyzer " << (*a)->name << " is expired and will be removed" << endl;
+			Debug::notice() << "Analyzer " << (*a)->name << " has expired and will be removed" << endl;
 			delete *a;
 			a = analyzers.erase(a);
 			continue;

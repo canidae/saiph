@@ -45,7 +45,7 @@ void MonsterInfo::parseMessages(const string &messages) {
 				look_at->second.attitude = HOSTILE;
 			pos += sizeof (" (") - 1;
 		}
-		if (pos != string::npos && pos < messages.size() && look_at->second.symbol == '@' && look_at->second.color == WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z')
+		if (pos != string::npos && pos < messages.size() && look_at->second.symbol == '@' && look_at->second.color == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z')
 			look_at->second.shopkeeper = true; // shopkeepers are always white @, and their names are capitalized
 		else
 			look_at->second.shopkeeper = false;

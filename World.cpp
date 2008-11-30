@@ -19,6 +19,8 @@ World::World(Connection *connection) : connection(connection) {
 	messages = "  ";
 	cur_page = -1;
 	max_page = -1;
+	inverse = false;
+	bold = false;
 	menu = false;
 	question = false;
 	last_menu = Point(-1, -1);
@@ -278,7 +280,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				/* DEC Private Mode Reset? :s */
 				break;
 			} else if (data[*pos] == 'm') {
-				/* character attribute (bold, inverted, color, etc) */
+				/* character attribute (bold, inverse, color, etc) */
 				if (divider > 0) {
 					Debug::error() << WORLD_DEBUG_NAME << "Unsupported character color" << &data[*pos] << endl;
 					exit(15);
@@ -293,7 +295,27 @@ void World::handleEscapeSequence(int *pos, int *color) {
 					Debug::error() << WORLD_DEBUG_NAME << "Expected numeric value for character attribute: " << &data[*pos] << endl;
 					exit(14);
 				}
-				*color = value;
+				switch (value) {
+					case NO_COLOR:
+						bold = false;
+						inverse = false;
+						break;
+
+					case BOLD:
+						bold = true;
+						break;
+
+					case INVERSE:
+						inverse = true;
+						break;
+
+					default:
+						if (bold)
+							value += BOLD_OFFSET;
+						if (inverse)
+							value += INVERSE_OFFSET;
+						*color = value;
+				}
 				break;
 			} else if (data[*pos] == 'r') {
 				/* this is some scrolling crap, ignore it */
