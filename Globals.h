@@ -250,6 +250,7 @@
 #define MESSAGE_WHAT_TO_WEAR "  What do you want to wear? "
 #define MESSAGE_WHAT_TO_WIELD "  What do you want to wield? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
+#define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off
 #define MESSAGE_FOOCUBUS_QUESTION "  \"Shall I remove your " // followed by what he/she wants to remove.
