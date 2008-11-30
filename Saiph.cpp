@@ -319,9 +319,9 @@ bool Saiph::run() {
 
 	/* analyzer stuff comes here */
 	vector<Analyzer *>::iterator best_analyzer = analyzers.end();
-	best_priority = ILLEGAL_PRIORITY;
+	int best_priority = ILLEGAL_PRIORITY;
 
-	/* remove expired analyzers, clear priority and parse messages */
+	/* remove expired analyzers and parse messages */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 		if ((*a)->expired) {
 			/* expired analyzer, remove it */
@@ -330,7 +330,9 @@ bool Saiph::run() {
 			a = analyzers.erase(a);
 			continue;
 		}
-		(*a)->priority = ILLEGAL_PRIORITY;
+		/* we'll set priority to best_priority.
+		 * this way analyzers can check "if (priority >= PRIORITY_MY_TASK) return" */
+		(*a)->priority = best_priority;
 		(*a)->parseMessages(world->messages);
 		if ((*a)->priority > best_priority) {
 			best_priority = (*a)->priority;
@@ -342,6 +344,9 @@ bool Saiph::run() {
 	/* call analyze() in analyzers */
 	if (!world->question && !world->menu) {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+			/* we'll set priority to best_priority.
+			 * this way analyzers can check "if (priority >= PRIORITY_MY_TASK) return" */
+			(*a)->priority = best_priority;
 			(*a)->analyze();
 			if ((*a)->priority > best_priority) {
 				best_priority = (*a)->priority;
