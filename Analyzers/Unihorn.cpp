@@ -60,10 +60,10 @@ bool Unihorn::request(const Request &request) {
 /* private methods */
 void Unihorn::findUnihorn() {
 	map<unsigned char, Item>::iterator u = saiph->inventory.find(unihorn_key);
-	if (u != saiph->inventory.end() && u->second.beatitude != CURSED &&  u->second.beatitude != BEATITUDE_UNKNOWN && u->second.name == "unicorn horn")
+	if (u != saiph->inventory.end() && u->second.beatitude != CURSED && u->second.beatitude != BEATITUDE_UNKNOWN && u->second.name == "unicorn horn")
 		return;
 	for (u = saiph->inventory.begin(); u != saiph->inventory.end(); ++u) {
-		if (u->second.beatitude == CURSED || u->second.beatitude != BEATITUDE_UNKNOWN || u->second.name != "unicorn horn")
+		if (u->second.beatitude == CURSED || u->second.beatitude == BEATITUDE_UNKNOWN || u->second.name != "unicorn horn")
 			continue;
 		/* this should be a unihorn */
 		unihorn_key = u->first;
