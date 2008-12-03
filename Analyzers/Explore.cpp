@@ -15,6 +15,7 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 				search[l][r][c] = 0;
 		}
 	}
+	mines_explored = false;
 }
 
 /* methods */
@@ -208,7 +209,7 @@ void Explore::analyze() {
 		}
 	}
 
-	/* explore stairs down */
+	/* explore downstairs */
 	if (priority < EXPLORE_PRIORITY_STAIRS_DOWN) {
 		/* explore downstairs unless already exploring upstairs */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++s) {
@@ -227,46 +228,47 @@ void Explore::analyze() {
 		}
 	}
 
-	/* if we're in the mines, go up */
-	if (priority < EXPLORE_PRIORITY_DESCEND && saiph->levels[saiph->position.level].branch == BRANCH_MINES) {
-		for (map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); up != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++up) {
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(up->first, false, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE)
-					best_move = UP;
-				else
-					best_move = dir;
-				priority = EXPLORE_PRIORITY_DESCEND;
-				break;
+	/* travel */
+	if (priority < EXPLORE_PRIORITY_TRAVEL) {
+		unsigned char move = ILLEGAL_DIRECTION;
+		if (!mines_explored) {
+			/* explore mines */
+			move = exploreMines();
+		/* add more "goals" here */
+		} else {
+			/* no goals, go to main dungeon and descend */
+			if (saiph->levels[saiph->position.level].branch != BRANCH_MAIN) {
+				/* not in main dungeon, get out */
+				int moves = 0;
+				move = saiph->shortestPath(saiph->branch_main, false, &moves);
+			} else {
+				/* in main dungeon, descend */
+				for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
+					if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch != BRANCH_MAIN)
+						continue; // avoid other branches than main
+					int moves = 0;
+					move = saiph->shortestPath(down->first, false, &moves);
+					if (move == NOWHERE)
+						move = DOWN;
+					break;
+				}
 			}
 		}
-	}
-
-	/* descend */
-	if (priority < EXPLORE_PRIORITY_DESCEND) {
-		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
-			if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch == BRANCH_MINES)
-				continue; // avoid mines
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE)
-					best_move = DOWN;
-				else
-					best_move = dir;
-				priority = EXPLORE_PRIORITY_DESCEND;
-				break;
-			}
+		/* set best_move & priority */
+		if (move != ILLEGAL_DIRECTION) {
+			best_move = move;
+			priority = EXPLORE_PRIORITY_TRAVEL;
 		}
 	}
 
 	/* set command */
-	if (best_move != 0) {
+	if (best_move != ILLEGAL_DIRECTION) {
 		if (best_move == NOWHERE)
 			command = SEARCH;
 		else
 			command = best_move;
+	} else {
+		priority = ILLEGAL_PRIORITY;
 	}
 }
 
@@ -299,4 +301,32 @@ void Explore::parseMessages(const string &messages) {
 	 * You hear a hollow sound.  This must be a secret passage! - probably not needed (we'll see the passage)
 	 * You hear nothing special.
 	 * You hear your heart beat. */
+}
+
+/* private methods */
+unsigned char Explore::exploreMines() {
+	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES) {
+		/* we're in the mines, but haven't found mine's end yet */
+		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
+			int moves = 0;
+			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
+			if (dir == NOWHERE)
+				return DOWN;
+			else
+				return dir;
+		}
+		if (saiph->levels[saiph->position.level].depth >= 10 && saiph->levels[saiph->position.level].depth <= 13) {
+			Debug::notice() << "Mine's End presumably found" << endl;
+			mines_explored = true; // possibly at mine's end
+		}
+	} else if (saiph->branch_mines.level != -1) {
+		/* we've seen the mines, but we're not in the mines and haven't explored it.
+		 * path to the mines */
+		int moves = 0;
+		return saiph->shortestPath(saiph->branch_mines, false, &moves);
+	} else {
+		/* we're not in the mines nor have we seen the mines */
+		/* TODO */
+	}
+	return ILLEGAL_DIRECTION;
 }
