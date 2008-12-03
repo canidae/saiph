@@ -378,6 +378,7 @@ bool Saiph::run() {
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 		world->executeCommand("100s");
+		++internal_turn;
 		return true;
 	}
 
@@ -652,6 +653,7 @@ void Saiph::detectPosition() {
 		position.row = world->player.row;
 		position.col = world->player.col;
 		position.level = levels.size();
+		branch_main = position;
 		levels.push_back(Level(this, world->player.level));
 		levelmap[world->player.level].push_back(position.level);
 		return;
@@ -668,11 +670,13 @@ void Saiph::detectPosition() {
 				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
+				branch_sokoban = position;
 			} else if (levels[position.level].dungeonmap[8][34] == BOULDER && levels[position.level].dungeonmap[8][42] == BOULDER && levels[position.level].dungeonmap[9][34] == BOULDER && levels[position.level].dungeonmap[9][41] == BOULDER && levels[position.level].dungeonmap[10][42] == BOULDER && levels[position.level].dungeonmap[13][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[15][41] == BOULDER && levels[position.level].dungeonmap[16][40] == BOULDER && levels[position.level].dungeonmap[16][42] == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
+				branch_sokoban = position;
 			}
 
 		}
@@ -687,6 +691,7 @@ void Saiph::detectPosition() {
 					/* we're in the mines */
 					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
 					levels[position.level].branch = BRANCH_MINES;
+					branch_mines = position;
 					break;
 				}
 			}

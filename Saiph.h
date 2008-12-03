@@ -70,6 +70,9 @@ class Saiph {
 		std::map<unsigned char, Item> drop;
 		Stash *on_ground;
 		Coordinate position;
+		Coordinate branch_main;
+		Coordinate branch_mines;
+		Coordinate branch_sokoban;
 		std::string last_command;
 		int internal_turn;
 		bool engulfed;
