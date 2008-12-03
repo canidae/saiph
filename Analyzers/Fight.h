@@ -4,7 +4,7 @@
 #define FIGHT_REALLY_ATTACK "Really attack"
 /* priorities */
 #define FIGHT_ATTACK_PRIORITY 450
-#define FIGHT_BLUE_E_PRIORITY 30
+#define FIGHT_BLUE_E_PRIORITY 15
 #define FIGHT_MOVE_PRIORITY 325
 #define FIGHT_PICKUP_PRIORITY 425
 /* used for finding thrown weapons */
