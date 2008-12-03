@@ -13,8 +13,10 @@ void MonsterInfo::analyze() {
 	if (last_check_internal_turn != saiph->internal_turn)
 		look_at = saiph->levels[saiph->position.level].monsters.begin();
 	for (; look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
-		if (!look_at->second.visible && look_at->second.symbol != '@' && look_at->second.symbol != 'A' && (look_at->second.symbol != 'H' || look_at->second.color != YELLOW))
-			continue;
+		if (!look_at->second.visible)
+			continue; // monster not visible
+		else if (look_at->second.symbol != '@' && look_at->second.symbol != 'A' && (look_at->second.symbol != 'H' || look_at->second.color != YELLOW))
+			continue; // not an interesting monster
 		int distance = max(abs(look_at->first.row - saiph->position.row), abs(look_at->first.col - saiph->position.col));
 		if (look_at->second.attitude == ATTITUDE_UNKNOWN || (distance == 1 && look_at->second.attitude == FRIENDLY)) {
 			last_check_internal_turn = saiph->internal_turn;
