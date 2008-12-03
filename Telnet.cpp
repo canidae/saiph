@@ -87,7 +87,7 @@ Telnet::~Telnet() {
 /* methods */
 int Telnet::retrieve(char *buffer, int count) {
 	/* sleep a bit in case of very low latency */
-	usleep(50000);
+	usleep(10000);
 	/* this is borrowed from TAEB:
 	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
 	 * then we'll just read until last bytes equal [?, ?, ?] */
