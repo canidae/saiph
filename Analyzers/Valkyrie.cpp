@@ -684,10 +684,12 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
 	req.data = "partly eaten melon";
 	saiph->request(req);
+	/* this kills her too often, and we got plenty food
 	req.data = "tripe ration";
 	saiph->request(req);
 	req.data = "partly eaten tripe ration";
 	saiph->request(req);
+	*/
 	req.data = "lichen corpse";
 	saiph->request(req);
 	req.data = "partly eaten lichen corpse";
