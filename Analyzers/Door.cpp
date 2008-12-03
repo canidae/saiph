@@ -29,6 +29,12 @@ void Door::analyze() {
 	/* go to nearest closed door and get it open somehow */
 	int least_moves = INT_MAX;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
+		if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && d->second == 1) {
+			/* don't kick/pick doors when we're in the mines */
+			findUnlockingTool();
+			if (unlock_tool_key == 0 || (saiph->inventory[unlock_tool_key].name != "skeleton key" && saiph->inventory[unlock_tool_key].name != "key"))
+				continue; // no key in inventory
+		}
 		int moves = -1;
 		unsigned char dir = saiph->shortestPath(d->first, true, &moves);
 		if (dir == ILLEGAL_DIRECTION)
