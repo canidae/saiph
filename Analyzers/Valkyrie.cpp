@@ -220,6 +220,8 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* add helmets, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.data = "The Mitre of Holiness";
+	saiph->request(req);
 	req.data = "helm of telepathy";
 	saiph->request(req);
 	req.data = "helm of brilliance";
@@ -895,6 +897,29 @@ void Valkyrie::setupTool(int &groupstart) {
 	saiph->request(req);
 	req.data = "credit card";
 	saiph->request(req);
+
+	/* artifact tools */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 1;
+	req.data = "The Orb of Detection";
+	saiph->request(req);
+	req.data = "The Orb of Detection";
+	saiph->request(req);
+	req.data = "The Heart of Ahriman";
+	saiph->request(req);
+	req.data = "The Magic Mirror of Merlin";
+	saiph->request(req);
+	req.data = "The Eyes of the Overworld";
+	saiph->request(req);
+	req.data = "The Master Key of Thievery";
+	saiph->request(req);
+	req.data = "The Platinum Yendorian Express Card";
+	saiph->request(req);
+	req.data = "The Orb of Fate";
+	saiph->request(req);
+	req.data = "The Eye of the Aethiopica";
+	saiph->request(req);
 }
 
 void Valkyrie::setupWand(int &groupstart) {
@@ -1055,6 +1080,59 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.data = "long sword";
 	saiph->request(req);
 
+	/* pick up every artifact weapon */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 1;
+	req.data = "Cleaver";
+	saiph->request(req);
+	req.data = "Demonbane";
+	saiph->request(req);
+	req.data = "Dragonbane";
+	saiph->request(req);
+	req.data = "Excalibur";
+	saiph->request(req);
+	req.data = "Fire Brand";
+	saiph->request(req);
+	req.data = "Frost Brand";
+	saiph->request(req);
+	req.data = "Giantslayer";
+	saiph->request(req);
+	req.data = "Grayswandir";
+	saiph->request(req);
+	req.data = "Grimtooth";
+	saiph->request(req);
+	req.data = "Longbow of Diana";
+	saiph->request(req);
+	req.data = "Magicbane";
+	saiph->request(req);
+	req.data = "Mjollnir";
+	saiph->request(req);
+	req.data = "Ogresmasher";
+	saiph->request(req);
+	req.data = "Orcrist";
+	saiph->request(req);
+	req.data = "Sceptre of Might";
+	saiph->request(req);
+	req.data = "Snickersnee";
+	saiph->request(req);
+	req.data = "Staff of Aesculapius";
+	saiph->request(req);
+	req.data = "Sting";
+	saiph->request(req);
+	req.data = "Stormbringer";
+	saiph->request(req);
+	req.data = "Sunsword";
+	saiph->request(req);
+	req.data = "Trollsbane";
+	saiph->request(req);
+	req.data = "Tsurugi of Muramasa";
+	saiph->request(req);
+	req.data = "Vorpal Blade";
+	saiph->request(req);
+	req.data = "Werebane";
+	saiph->request(req);
+
 	/* set other weapons we wish to pick up that is not in a group */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
@@ -1062,10 +1140,10 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.value = 50;
 	saiph->request(req);
 	/* not using pick-axes yet
-	   req.data = "pick-axe";
-	   req.value = 1;
-	   saiph->request(req);
-	   */
+	req.data = "pick-axe";
+	req.value = 1;
+	saiph->request(req);
+	*/
 
 	/* add thrown weapons in the order we want to throw them.
 	 * currently we'll throw them in the order we wish to get rid of stuff,
@@ -1094,11 +1172,43 @@ void Valkyrie::setupWeapon(int &groupstart) {
 
 	/* and set which weapons we prefer wielding */
 	req.request = REQUEST_WEAPON_WIELD;
-	/* allow wielding cursed Excalibur */
+	/* allow wielding artifact weapons of all beatitudes */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.data = "Grayswandir";
+	saiph->request(req);
+	req.data = "Fire Brand";
+	saiph->request(req);
+	req.data = "Frost Brand";
+	saiph->request(req);
+	req.data = "Mjollnir";
+	saiph->request(req);
 	req.data = "Excalibur";
 	saiph->request(req);
-	/* we don't want to wield a cursed long sword (we'll gamble on unknown, though) */
+	req.data = "Sunsword";
+	saiph->request(req);
+	req.data = "Snickersnee";
+	saiph->request(req);
+	req.data = "Werebane";
+	saiph->request(req);
+	req.data = "Demonbane";
+	saiph->request(req);
+	req.data = "Dragonbane";
+	saiph->request(req);
+	/* then wield common weapons, blessed/uncursed first */
+	req.status = BLESSED | UNCURSED;
+	req.data = "long sword";
+	saiph->request(req);
+	req.data = "pick-axe";
+	saiph->request(req);
+	req.data = "silver dagger";
+	saiph->request(req);
+	req.data = "elven dagger";
+	saiph->request(req);
+	req.data = "dagger";
+	saiph->request(req);
+	req.data = "orcish dagger";
+	saiph->request(req);
+	/* finally fall back to weapons of unknown beatitude */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "long sword";
 	saiph->request(req);
