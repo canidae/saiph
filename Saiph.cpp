@@ -371,13 +371,13 @@ bool Saiph::run() {
 		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
 	} else if (best_analyzer == analyzers.end()) {
-		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 100 times" << endl;
+		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << "No idea what to do: 100s";
+		cout << "No idea what to do: 42s";
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
-		world->executeCommand("100s");
+		world->executeCommand("42s");
 		++internal_turn;
 		return true;
 	}
