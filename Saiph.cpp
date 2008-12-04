@@ -339,15 +339,30 @@ bool Saiph::run() {
 			(*a)->priority = best_priority;
 		/* parse messages */
 		(*a)->parseMessages(world->messages);
-		/* analyze */
-		if (!world->question && !world->menu)
-			(*a)->analyze();
 		/* set best_priority if this analyzer has higher priority */
 		if ((*a)->priority > best_priority) {
 			best_priority = (*a)->priority;
 			best_analyzer = a;
 		}
 		++a;
+	}
+
+	/* analyze */
+	if (!world->question && !world->menu) {
+		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+			/* set analyzer's priority to best_priority.
+			 * this way analyzer should just check if priority is greater than
+			 * the priority of whatever subtask they're about to do */
+			if ((*a)->priority < best_priority)
+				(*a)->priority = best_priority;
+			/* analyze */
+			(*a)->analyze();
+			/* set best_priority if this analyzer has higher priority */
+			if ((*a)->priority > best_priority) {
+				best_priority = (*a)->priority;
+				best_analyzer = a;
+			}
+		}
 	}
 
 	/* need to check priority once more, because of requests */
