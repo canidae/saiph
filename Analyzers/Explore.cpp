@@ -323,7 +323,19 @@ unsigned char Explore::exploreMines() {
 		/* we've seen the mines, but we're not in the mines and haven't explored it.
 		 * path to the mines */
 		int moves = 0;
-		return saiph->shortestPath(saiph->branch_mines, false, &moves);
+		unsigned char move = saiph->shortestPath(saiph->branch_mines, false, &moves);
+		if (move != ILLEGAL_DIRECTION)
+			return move;
+		/* this may happen, for example when she can't find the path there.
+		 * just descend for now, regardless of which branch we're in */
+		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
+			int moves = 0;
+			move = saiph->shortestPath(down->first, false, &moves);
+			if (move == NOWHERE)
+				move = DOWN;
+			break;
+		}
+		return move;
 	} else {
 		/* we're not in the mines nor have we seen the mines */
 		if (saiph->levels[saiph->position.level].depth > 4) {
