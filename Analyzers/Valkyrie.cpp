@@ -1174,13 +1174,13 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.request = REQUEST_WEAPON_WIELD;
 	/* allow wielding artifact weapons of all beatitudes */
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.data = "Mjollnir";
+	saiph->request(req);
 	req.data = "Grayswandir";
 	saiph->request(req);
 	req.data = "Fire Brand";
 	saiph->request(req);
 	req.data = "Frost Brand";
-	saiph->request(req);
-	req.data = "Mjollnir";
 	saiph->request(req);
 	req.data = "Excalibur";
 	saiph->request(req);
