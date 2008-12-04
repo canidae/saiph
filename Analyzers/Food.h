@@ -2,7 +2,6 @@
 #define FOOD_H
 /* some text */
 #define FOOD_CORPSE " corpse"
-#define FOOD_CORPSES " corpses"
 #define FOOD_EAT_IT_1 "  There is "
 #define FOOD_EAT_IT_2 " here; eat it? "
 #define FOOD_EAT_ONE_1 "  There are "

@@ -292,7 +292,7 @@ void Food::analyze() {
 			}
 			/* there are items here, we should look for corpses to eat */
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-				if (i->name.find(FOOD_CORPSES, i->name.size() - sizeof (FOOD_CORPSES) + 1) != string::npos || i->name.find(FOOD_CORPSE, i->name.size() - sizeof (FOOD_CORPSE) + 1) != string::npos) {
+				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
 					/* there's a corpse in the stash, is it edible? */
 					if ((saiph->world->player.hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
 						/* it is, and we know we can eat corpses on this position */
