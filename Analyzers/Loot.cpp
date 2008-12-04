@@ -207,6 +207,9 @@ void Loot::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos) {
 		/* some of our inventory was destroyed. check it */
 		checkInventory();
+	} else if (messages.find(SAIPH_POLYMORPH, 0) != string::npos) {
+		/* we polymorphed, check inventory */
+		checkInventory();
 	}
 }
 
