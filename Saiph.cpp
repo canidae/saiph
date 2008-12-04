@@ -320,6 +320,8 @@ bool Saiph::run() {
 	/* analyzer stuff comes here */
 	vector<Analyzer *>::iterator best_analyzer = analyzers.end();
 	int best_priority = ILLEGAL_PRIORITY;
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* remove expired analyzers and parse messages */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
@@ -330,29 +332,22 @@ bool Saiph::run() {
 			a = analyzers.erase(a);
 			continue;
 		}
-		/* we'll set priority to best_priority.
-		 * this way analyzers can check "if (priority >= PRIORITY_MY_TASK) return" */
-		(*a)->priority = best_priority;
+		/* set analyzer's priority to best_priority.
+		 * this way analyzer should just check if priority is greater than
+		 * the priority of whatever subtask they're about to do */
+		if ((*a)->priority < best_priority)
+			(*a)->priority = best_priority;
+		/* parse messages */
 		(*a)->parseMessages(world->messages);
+		/* analyze */
+		if (!world->question && !world->menu)
+			(*a)->analyze();
+		/* set best_priority if this analyzer has higher priority */
 		if ((*a)->priority > best_priority) {
 			best_priority = (*a)->priority;
 			best_analyzer = a;
 		}
 		++a;
-	}
-
-	/* call analyze() in analyzers */
-	if (!world->question && !world->menu) {
-		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-			/* we'll set priority to best_priority.
-			 * this way analyzers can check "if (priority >= PRIORITY_MY_TASK) return" */
-			(*a)->priority = best_priority;
-			(*a)->analyze();
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
-				best_analyzer = a;
-			}
-		}
 	}
 
 	/* need to check priority once more, because of requests */
