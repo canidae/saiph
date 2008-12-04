@@ -326,7 +326,26 @@ unsigned char Explore::exploreMines() {
 		return saiph->shortestPath(saiph->branch_mines, false, &moves);
 	} else {
 		/* we're not in the mines nor have we seen the mines */
-		/* TODO */
+		if (saiph->levels[saiph->position.level].depth > 4) {
+			/* crap, we're below level 4 and haven't seen the mines? */
+			/* FIXME: need to find the mines, not just descend */
+			for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
+				int moves = 0;
+				unsigned char move = saiph->shortestPath(down->first, false, &moves);
+				if (move == NOWHERE)
+					move = DOWN;
+				return move;
+			}
+		} else {
+			/* we're still not below level 4, just descend */
+			for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
+				int moves = 0;
+				unsigned char move = saiph->shortestPath(down->first, false, &moves);
+				if (move == NOWHERE)
+					move = DOWN;
+				return move;
+			}
+		}
 	}
 	return ILLEGAL_DIRECTION;
 }
