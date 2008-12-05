@@ -178,14 +178,6 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* add cloaks, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "cloak of magic resistance";
-	saiph->request(req);
-	req.data = "cloak of protection";
-	saiph->request(req);
-	req.data = "cloak of displacement";
-	saiph->request(req);
-	req.data = "cloak of invisibility";
-	saiph->request(req);
 	req.data = "piece of cloth";
 	saiph->request(req);
 	req.data = "opera cloak";
@@ -193,6 +185,14 @@ void Valkyrie::setupArmor(int &groupstart) {
 	req.data = "ornamental cope";
 	saiph->request(req);
 	req.data = "tattered cape";
+	saiph->request(req);
+	req.data = "cloak of magic resistance";
+	saiph->request(req);
+	req.data = "cloak of protection";
+	saiph->request(req);
+	req.data = "cloak of displacement";
+	saiph->request(req);
+	req.data = "cloak of invisibility";
 	saiph->request(req);
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "oilskin cloak";
