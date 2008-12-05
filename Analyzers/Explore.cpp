@@ -237,8 +237,8 @@ void Explore::analyze() {
 		/* add more "goals" here */
 		} else {
 			/* no goals, go to main dungeon and descend */
-			if (saiph->levels[saiph->position.level].branch != BRANCH_MAIN) {
-				/* not in main dungeon, get out */
+			if (saiph->levels[saiph->position.level].branch != BRANCH_MAIN && saiph->levels[saiph->position.level].branch != BRANCH_ROGUE) {
+				/* not in main dungeon or rogue level, get out */
 				int moves = 0;
 				move = saiph->shortestPath(saiph->branch_main, false, &moves);
 			} else {
