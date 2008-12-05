@@ -228,7 +228,9 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* add helmets, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "The Mitre of Holiness";
+	req.data = "Mitre of Holiness";
+	saiph->request(req);
+	req.data = "The Mitre of Holiness"; // "The" when unidentified
 	saiph->request(req);
 	req.data = "helm of telepathy";
 	saiph->request(req);
@@ -489,6 +491,10 @@ void Valkyrie::setupArmor(int &groupstart) {
 	/* helmet */
 	req.value = ARMOR_HELMET;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.data = "Mitre of Holiness";
+	saiph->request(req);
+	req.data = "The Mitre of Holiness"; // "The" when unidentified
+	saiph->request(req);
 	req.data = "helm of telepathy";
 	saiph->request(req);
 	req.data = "helm of brilliance";
@@ -932,24 +938,36 @@ void Valkyrie::setupTool(int &groupstart) {
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 1;
-	req.data = "The Orb of Detection";
+	req.data = "Orb of Detection";
 	saiph->request(req);
-	req.data = "The Orb of Detection";
+	req.data = "The Orb of Detection"; // "The" when unidentified
 	saiph->request(req);
+	/* neutral, will kill us
 	req.data = "The Heart of Ahriman";
 	saiph->request(req);
+	*/
 	req.data = "The Magic Mirror of Merlin";
 	saiph->request(req);
+	/* neutral, will kill us
 	req.data = "The Eyes of the Overworld";
 	saiph->request(req);
+	*/
+	/* chaotic, will kill us
 	req.data = "The Master Key of Thievery";
 	saiph->request(req);
+	*/
+	/* neutral, will kill us
 	req.data = "The Platinum Yendorian Express Card";
 	saiph->request(req);
-	req.data = "The Orb of Fate";
+	*/
+	req.data = "Orb of Fate";
 	saiph->request(req);
+	req.data = "The Orb of Fate"; // "The" when unidentified
+	saiph->request(req);
+	/* neutral, will kill us
 	req.data = "The Eye of the Aethiopica";
 	saiph->request(req);
+	*/
 }
 
 void Valkyrie::setupWand(int &groupstart) {
@@ -1132,8 +1150,12 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	saiph->request(req);
 	req.data = "Grimtooth";
 	saiph->request(req);
+	/* chaotic quest artifact, will evade our grasp
 	req.data = "Longbow of Diana";
 	saiph->request(req);
+	req.data = "The Longbow of Diana"; // "The" when unidentified
+	saiph->request(req);
+	*/
 	req.data = "Magicbane";
 	saiph->request(req);
 	req.data = "Mjollnir";
@@ -1144,10 +1166,16 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	saiph->request(req);
 	req.data = "Sceptre of Might";
 	saiph->request(req);
+	req.data = "The Sceptre of Might"; // "The" when unidentified
+	saiph->request(req);
 	req.data = "Snickersnee";
 	saiph->request(req);
+	/* neutral quest artifact, will evade our grasp
 	req.data = "Staff of Aesculapius";
 	saiph->request(req);
+	req.data = "The Staff of Aesculapius"; // "The" when unidentified
+	saiph->request(req);
+	*/
 	req.data = "Sting";
 	saiph->request(req);
 	req.data = "Stormbringer";
@@ -1157,6 +1185,8 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.data = "Trollsbane";
 	saiph->request(req);
 	req.data = "Tsurugi of Muramasa";
+	saiph->request(req);
+	req.data = "The Tsurugi of Muramasa"; // "The" when unidentified
 	saiph->request(req);
 	req.data = "Vorpal Blade";
 	saiph->request(req);

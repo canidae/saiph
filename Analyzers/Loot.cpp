@@ -294,7 +294,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 		int item_in_group = false;
 		for (vector<string>::iterator gi = g->second.items.begin(); gi != g->second.items.end(); ++gi) {
 			for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-				if (in->second.name != *gi)
+				if (in->second.name != *gi && in->second.named != *gi)
 					continue;
 				count += in->second.count;
 			}
@@ -320,7 +320,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 	/* figure out how many we got of this item already */
 	int count = 0;
 	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-		if (in->second.name != item.name)
+		if (in->second.name != item.name && in->second.named != item.name)
 			continue;
 		count += in->second.count;
 	}

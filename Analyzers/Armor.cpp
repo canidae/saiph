@@ -112,7 +112,7 @@ bool Armor::isCursed(int armor_slot) {
 		if (i->second.additional != "being worn")
 			continue;
 		for (vector<WearArmor>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
-			if (armor[armor_slot][a].name != i->second.name)
+			if (armor[armor_slot][a].name != i->second.name && armor[armor_slot][a].name != i->second.named)
 				continue;
 			return i->second.beatitude == CURSED;
 		}
@@ -133,7 +133,7 @@ void Armor::wearArmor() {
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
 			for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
-				if (armor[s][a].name != i->second.name)
+				if (armor[s][a].name != i->second.name && armor[s][a].name != i->second.named)
 					continue;
 				if (i->second.additional == "being worn")
 					worn[s] = i->first;

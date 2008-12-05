@@ -60,9 +60,9 @@ void Weapon::wieldWeapon() {
 			}
 		}
 		for (vector<WieldWeapon>::size_type w = 0; w < wield.size(); ++w) {
-			if (wield[w].name != i->second.name || (int) w >= best_weapon)
-				continue;
 			if ((wield[w].beatitude & i->second.beatitude) == 0)
+				continue;
+			if ((wield[w].name != i->second.name && wield[w].name != i->second.named) || (int) w >= best_weapon)
 				continue;
 			best_key = i->first;
 			best_weapon = w;
