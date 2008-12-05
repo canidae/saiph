@@ -9,6 +9,7 @@
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
+#define MAX_MONSTER_MOVE 3 // if a monster is more than this distance from where we last saw it, then it's probably a new monster
 /* messages */
 #define LEVEL_ALTAR_HERE "  There is an altar to "
 #define LEVEL_FOUNTAIN_DRIES_UP "  The fountain dries up!  "

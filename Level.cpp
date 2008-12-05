@@ -432,6 +432,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 				continue; // this monster already is on its square
 			/* see if this monster is closer than the last found monster */
 			int distance = max(abs(m->first.row - point.row), abs(m->first.col - point.col));
+			if (distance > MAX_MONSTER_MOVE)
+				continue; // too far away from where we last saw it, probably new monster
 			if (distance >= min_distance)
 				continue;
 			/* it is */
