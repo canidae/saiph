@@ -244,7 +244,7 @@ void Explore::analyze() {
 			} else {
 				/* in main dungeon, descend */
 				for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++down) {
-					if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch != BRANCH_MAIN)
+					if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch != BRANCH_MAIN && saiph->levels[saiph->position.level].branch != BRANCH_ROGUE)
 						continue; // avoid other branches than main
 					int moves = 0;
 					move = saiph->shortestPath(down->first, false, &moves);
