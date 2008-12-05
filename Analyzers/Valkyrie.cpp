@@ -211,6 +211,14 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "leather cloak";
 	saiph->request(req);
+	req.data = "dwarven cloak";
+	saiph->request(req);
+	req.data = "hooded cloak";
+	saiph->request(req);
+	req.data = "orcish cloak";
+	saiph->request(req);
+	req.data = "coarse mantelet";
+	saiph->request(req);
 
 	/* create helm group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
@@ -304,6 +312,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 	req.data = "Uruk-hai shield";
 	saiph->request(req);
 	req.data = "white-handed shield";
+	saiph->request(req);
+	req.data = "dwarvish roundshield";
+	saiph->request(req);
+	req.data = "large round shield";
+	saiph->request(req);
+	req.data = "large shield";
 	saiph->request(req);
 
 	/* create boot group */
@@ -404,7 +418,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	   saiph->request(req);
 	   req.data = "set of white dragon scales";
 	   saiph->request(req);
-	   */
+	*/
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dwarvish mithril-coat";
 	saiph->request(req);
@@ -462,6 +476,14 @@ void Valkyrie::setupArmor(int &groupstart) {
 	req.data = "apron";
 	saiph->request(req);
 	req.data = "leather cloak";
+	saiph->request(req);
+	req.data = "dwarven cloak";
+	saiph->request(req);
+	req.data = "hooded cloak";
+	saiph->request(req);
+	req.data = "orcish cloak";
+	saiph->request(req);
+	req.data = "coarse mantelet";
 	saiph->request(req);
 
 	/* helmet */
@@ -539,6 +561,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 	req.data = "Uruk-hai shield";
 	saiph->request(req);
 	req.data = "white-handed shield";
+	saiph->request(req);
+	req.data = "dwarvish roundshield";
+	saiph->request(req);
+	req.data = "large round shield";
+	saiph->request(req);
+	req.data = "large shield";
 	saiph->request(req);
 
 	/* boots */
@@ -700,6 +728,7 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
 	req.data = "partly eaten cream pie";
 	saiph->request(req);
+	/* we mostly find these in bones == cursed
 	req.data = "huge chunk of meat";
 	saiph->request(req);
 	req.data = "partly eaten huge chunk of meat";
@@ -716,6 +745,7 @@ void Valkyrie::setupFood(int &groupstart) {
 	saiph->request(req);
 	req.data = "partly eaten meatball";
 	saiph->request(req);
+	*/
 }
 
 void Valkyrie::setupPotion(int &groupstart) {
