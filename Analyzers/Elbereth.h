@@ -25,7 +25,6 @@ class Elbereth : public Analyzer {
 
 	private:
 		Saiph *saiph;
-		int sequence;
 		int last_look_internal_turn;
 		int elbereth_count;
 		bool burned;

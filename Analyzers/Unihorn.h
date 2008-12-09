@@ -17,7 +17,6 @@ class Unihorn : public Analyzer {
 		Unihorn(Saiph *saiph);
 
 		void analyze();
-		void complete();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
@@ -25,7 +24,6 @@ class Unihorn : public Analyzer {
 		Saiph *saiph;
 		unsigned char unihorn_key;
 		int apply_priority;
-		int sequence;
 
 		void findUnihorn();
 };

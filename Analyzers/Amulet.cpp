@@ -5,22 +5,17 @@
 using namespace std;
 
 /* constructors/destructor */
-Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph), command2(""), wear_amulet(false), sequence(-1) {
+Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph), command2(""), wear_amulet(false) {
 }
 
 /* methods */
 void Amulet::analyze() {
-	sequence = -1;
 	if (saiph->inventory_changed || wear_amulet)
 		wearAmulet();
 }
 
-void Amulet::complete() {
-	sequence = 1;
-}
-
 void Amulet::parseMessages(const string &messages) {
-	if (sequence == 1 && saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
+	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
 		/* put on or remove a amulet */
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;

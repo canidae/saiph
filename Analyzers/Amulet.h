@@ -23,7 +23,6 @@ class Amulet : public Analyzer {
 		Amulet(Saiph *saiph);
 
 		void analyze();
-		void complete();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
@@ -32,7 +31,6 @@ class Amulet : public Analyzer {
 		std::string command2;
 		std::vector<WearAmulet> amulets;
 		bool wear_amulet;
-		int sequence;
 		Request req;
 
 		void wearAmulet();

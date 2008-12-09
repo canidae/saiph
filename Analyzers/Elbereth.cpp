@@ -8,7 +8,6 @@ using namespace std;
 
 /* constructors/destructor */
 Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
-	sequence = -1;
 	last_look_internal_turn = 0;
 	elbereth_count = 0;
 	burned = false;
@@ -34,20 +33,16 @@ void Elbereth::complete() {
 
 void Elbereth::parseMessages(const string &messages) {
 	/* set up next command */
-	if (sequence == 0 && messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
+	if (messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = HANDS;
-		sequence = 1;
-	} else if (sequence == 1 && messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
-		/* we only get this step if there's something engraved here already.
-		 * thus, don't increase sequence */
+	} else if (messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
+		/* we only get this step if there's something engraved here already */
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = append ? YES : NO;
-		sequence = 1;
-	} else if (sequence == 1 && (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos)) {
+	} else if (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = ELBERETH_ELBERETH "\n";
-		sequence = -1;
 	}
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
@@ -100,7 +95,6 @@ bool Elbereth::request(const Request &request) {
 				append = (elbereth_count > 0); // append if 0 < elbereth_count < 3
 				command = ENGRAVE;
 				priority = request.priority;
-				sequence = 0;
 				return true;
 			} else {
 				/* hmm... we don't know how to handle digged elbereths that fades out */

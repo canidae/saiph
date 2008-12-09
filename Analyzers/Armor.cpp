@@ -88,8 +88,6 @@ void Armor::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 	}
-
-
 }
 
 bool Armor::request(const Request &request) {

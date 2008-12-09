@@ -23,7 +23,6 @@ class Ring : public Analyzer {
 		Ring(Saiph *saiph);
 
 		void analyze();
-		void complete();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
@@ -32,7 +31,6 @@ class Ring : public Analyzer {
 		std::string command2;
 		std::vector<WearRing> rings;
 		bool wear_ring;
-		int sequence;
 		Request req;
 
 		void wearRing();

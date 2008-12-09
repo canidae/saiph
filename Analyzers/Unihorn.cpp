@@ -6,7 +6,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1), sequence(-1) {
+Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(0), apply_priority(-1) {
 }
 
 /* methods */
@@ -21,23 +21,15 @@ void Unihorn::analyze() {
 		/* unihorn failed last attempt, try again */
 		command = APPLY;
 		priority = apply_priority;
-		sequence = 0;
 	}
 }
 
-void Unihorn::complete() {
-	if (sequence == 0)
-		sequence = 1;
-}
-
 void Unihorn::parseMessages(const string &messages) {
-	if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
+	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
 		command = unihorn_key;
 		priority = PRIORITY_CONTINUE_ACTION;
-		sequence = 2;
-	} else if (sequence == 2 && messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
+	} else if (messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
 		apply_priority = -1;
-		sequence = -1;
 	}
 }
 
@@ -51,7 +43,6 @@ bool Unihorn::request(const Request &request) {
 			apply_priority = request.priority;
 		command = APPLY;
 		priority = apply_priority;
-		sequence = 0;
 		return true;
 	}
 	return false;

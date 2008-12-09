@@ -5,22 +5,17 @@
 using namespace std;
 
 /* constructors/destructor */
-Ring::Ring(Saiph *saiph) : Analyzer("Ring"), saiph(saiph), command2(""), wear_ring(false), sequence(-1) {
+Ring::Ring(Saiph *saiph) : Analyzer("Ring"), saiph(saiph), command2(""), wear_ring(false) {
 }
 
 /* methods */
 void Ring::analyze() {
-	sequence = -1;
 	if (saiph->inventory_changed || wear_ring)
 		wearRing();
 }
 
-void Ring::complete() {
-	sequence = 1;
-}
-
 void Ring::parseMessages(const string &messages) {
-	if (sequence == 1 && saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
+	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
 		/* put on or remove a ring */
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -28,7 +23,7 @@ void Ring::parseMessages(const string &messages) {
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (sequence == 1 && saiph->world->question && messages.find(MESSAGE_WHICH_RING_FINGER, 0) != string::npos) {
+	} else if (saiph->world->question && messages.find(MESSAGE_WHICH_RING_FINGER, 0) != string::npos) {
 		/* need to specify which finger the ring should go on */
 		command = "l";
 		priority = PRIORITY_CONTINUE_ACTION;
