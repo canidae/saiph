@@ -318,11 +318,22 @@ bool Saiph::run() {
 	dumpMaps();
 
 	/* analyzer stuff comes here */
-	vector<Analyzer *>::iterator best_analyzer = analyzers.end();
+	/* reset priority */
 	int best_priority = ILLEGAL_PRIORITY;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->priority = ILLEGAL_PRIORITY;
 
+	/* if menu or question, let last analyzer parse it first */
+	if (world->menu || world->question) {
+		(*best_analyzer)->parseMessages(world->messages);
+		if ((*best_analyzer)->priority > best_priority)
+			best_priority = (*best_analyzer)->priority;
+		else
+			best_analyzer = analyzers.end();
+	} else {
+		/* reset best_analyzer */
+		best_analyzer = analyzers.end();
+	}
 	/* remove expired analyzers and parse messages */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 		if ((*a)->expired) {
