@@ -313,6 +313,11 @@ bool Saiph::run() {
 		levels[position.level].updateMonsters();
 		/* update pathmap */
 		levels[position.level].updatePathMap();
+	} else if (engulfed) {
+		/* we'll still need to update monster's "visible" while engulfed,
+		 * or she may attempt to farlook a monster */
+		for (map<Point, Monster>::iterator m = levels[position.level].monsters.begin(); m != levels[position.level].monsters.end(); ++m)
+			m->second.visible = false;
 	}
 	/* print maps so we see what we're doing */
 	dumpMaps();

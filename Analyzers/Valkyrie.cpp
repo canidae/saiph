@@ -211,7 +211,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "leather cloak";
 	saiph->request(req);
-	req.data = "dwarven cloak";
+	req.data = "dwarvish cloak";
 	saiph->request(req);
 	req.data = "hooded cloak";
 	saiph->request(req);
@@ -479,7 +479,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "leather cloak";
 	saiph->request(req);
-	req.data = "dwarven cloak";
+	req.data = "dwarvish cloak";
 	saiph->request(req);
 	req.data = "hooded cloak";
 	saiph->request(req);
