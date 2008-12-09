@@ -328,8 +328,8 @@ bool Saiph::run() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->priority = ILLEGAL_PRIORITY;
 
-	/* if menu or question, let last analyzer parse it first */
-	if (world->menu || world->question) {
+	/* if question, let last analyzer parse it first */
+	if (world->question) {
 		(*best_analyzer)->parseMessages(world->messages);
 		if ((*best_analyzer)->priority > best_priority)
 			best_priority = (*best_analyzer)->priority;
