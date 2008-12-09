@@ -84,6 +84,10 @@ void Door::parseMessages(const string &messages) {
 	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		saiph->levels[saiph->position.level].setDungeonSymbolValue(position, 1);
+	} else if (messages.find(DOOR_BREAK_SHOP_DOOR, 0) != string::npos) {
+		/* oops, we broke a shopkeepers door, better pay */
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
 		/* we're in a pit, can't reach door from here */
 		in_a_pit = true;

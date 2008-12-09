@@ -5,6 +5,7 @@
 /* messages */
 #define DOOR_DOOR_LOCKED "  This door is locked.  "
 #define DOOR_UNLOCK_IT "  Unlock it? [yn] (n)  "
+#define DOOR_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
 
 #include <string>
 #include "../Analyzer.h"
