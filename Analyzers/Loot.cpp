@@ -22,6 +22,12 @@ void Loot::analyze() {
 		checkStash();
 		return;
 	}
+	if (name_items.size() > 0 || call_items.size() > 0) {
+		/* we got items to name or call */
+		command = NAME;
+		priority = PRIORITY_LOOK;
+		return;
+	}
 
 	/* loot stash we're standing on */
 	if (priority >= LOOT_LOOT_STASH_PRIORITY)
