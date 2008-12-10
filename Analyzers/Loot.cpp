@@ -11,6 +11,10 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 
 /* methods */
 void Loot::analyze() {
+	if (saiph->on_ground != NULL) {
+		/* set visit_stash when we stand on a stash */
+		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
+	}
 	/* check inventory/stash if it's dirty */
 	if (priority >= PRIORITY_LOOK)
 		return;

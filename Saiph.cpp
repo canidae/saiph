@@ -290,10 +290,8 @@ bool Saiph::run() {
 		engulfed = false;
 
 	/* detect player position */
-	if (!world->menu && !engulfed) {
-		Debug::info() << "Detecting position: " << world->player.level << " - " << world->menu << " - " << engulfed << " - " << world->question << endl;
+	if (!world->menu && !engulfed)
 		detectPosition();
-	}
 
 	/* global message parsing */
 	parseMessages(world->messages);
