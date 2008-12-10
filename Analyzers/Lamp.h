@@ -11,13 +11,13 @@
 // Your oil lamp seems about to go out.
 // Your oil lamp has gone out.
 // Your lantern is getting dim.
-// Your lantern has run out of power.
+// Your lamp has run out of power.
 // Your lamp is now on.
 // Your lamp is now off.
 #define LAMP_NO_OIL "  This lamp has no oil.  "
 #define LAMP_LAMP_OUT "  Your lamp has gone out.  "
 #define LAMP_OIL_LAMP_OUT "  Your oil lamp has gone out.  "
-#define LAMP_LANTERN_OUT "  Your lantern has run out of power.  "
+#define LAMP_LANTERN_OUT "  Your lamp has run out of power.  "
 #define LAMP_TURNED_ON "  Your lamp is now on.  "
 #define LAMP_TURNED_OFF "  Your lamp is now off.  "
 /* threshold for turning lamp on/off */
