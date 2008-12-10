@@ -53,22 +53,40 @@ void Lamp::parseMessages(const string &messages) {
 		/* inventory changed, find lamp/lantern */
 		findLamp(); // inventory is changed and we got no lamp/lantern
 	}
-	if (messages.find(LAMP_TURNED_ON, 0) != string::npos || messages.find(LAMP_TURNED_OFF, 0) != string::npos) {
-		/* lamp turned on/off, update inventory */
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
+	if (messages.find(LAMP_TURNED_ON, 0) != string::npos) {
+		/* lamp/lantern turned on, set "additional" */
+		map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
+		if (l == saiph->inventory.end()) {
+			/* uh, what? */
+			req.request = REQUEST_DIRTY_INVENTORY;
+			saiph->request(req);
+		} else {
+			/* set "additional" */
+			l->second.additional = "lit";
+		}
+	} else if (messages.find(LAMP_TURNED_OFF, 0) != string::npos) {
+		/* lamp/lantern turned off, unset "additional" */
+		map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
+		if (l == saiph->inventory.end()) {
+			/* uh, what? */
+			req.request = REQUEST_DIRTY_INVENTORY;
+			saiph->request(req);
+		} else {
+			/* unset "additional" */
+			l->second.additional = "";
+		}
 	}
 }
 
 /* private methods */
 void Lamp::findLamp() {
 	map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
-	if (l != saiph->inventory.end() && (l->second.name == "lamp" || l->second.name == "oil lamp" || l->second.name == "brass lantern" || l->second.name == "magic lamp"))
+	if (l != saiph->inventory.end() && l->second.named != DISCARD && (l->second.name == "lamp" || l->second.name == "oil lamp" || l->second.name == "brass lantern" || l->second.name == "magic lamp"))
 		return;
 	for (l = saiph->inventory.begin(); l != saiph->inventory.end(); ++l) {
 		if (l->second.name != "lamp" && l->second.name != "oil lamp" && l->second.name != "brass lantern" && l->second.name != "magic lamp")
-			continue;
-		if (l->second.named == DISCARD)
+			continue; // not a lamp/lantern
+		else if (l->second.named == DISCARD)
 			continue; // probably depleted lamp/lantern
 		/* this should be a lamp/lantern */
 		lamp_key = l->first;
