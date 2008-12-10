@@ -197,10 +197,12 @@ void Loot::parseMessages(const string &messages) {
 			showing_drop = false;
 		}
 	}
+
 	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_SEVERAL_MORE_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_MORE_OBJECTS_HERE, 0) != string::npos) {
 		/* several/many objects here. check stash */
 		checkStash();
 	}
+
 	if (messages.find(LOOT_STOLE, 0) != string::npos || messages.find(LOOT_STEALS, 0) != string::npos) {
 		/* some monster stole something, we should check our inventory */
 		checkInventory();
@@ -209,6 +211,59 @@ void Loot::parseMessages(const string &messages) {
 		checkInventory();
 	} else if (messages.find(SAIPH_POLYMORPH, 0) != string::npos) {
 		/* we polymorphed, check inventory */
+		checkInventory();
+	}
+
+	if (saiph->world->question && messages.find(LOOT_NAME_INDIVIDUAL_OBECT, 0) == 0) {
+		/* name or call an item */
+		if (name_items.size() > 0)
+			command = YES;
+		else if (call_items.size() > 0)
+			command = NO;
+		else
+			command = CLOSE_PAGE; // shouldn't happen
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && messages.find(LOOT_ITEM_TO_NAME, 0) == 0) {
+		/* which item to name */
+		map<unsigned char, string>::iterator n = name_items.begin();
+		if (n == name_items.end())
+			command = CLOSE_PAGE; // shouldn't happen
+		else
+			command = n->first;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && messages.find(LOOT_ITEM_TO_CALL, 0) == 0) {
+		/* which item to call */
+		map<unsigned char, string>::iterator c = call_items.begin();
+		if (c == call_items.end())
+			command = CLOSE_PAGE; // shouldn't happen
+		else
+			command = c->first;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && messages.find(LOOT_WHAT_TO_NAME_ITEM, 0) == 0) {
+		/* what to name the item. we're gonna assume items aren't rearranged since last question */
+		map<unsigned char, string>::iterator n = name_items.begin();
+		if (n == name_items.end())
+			command = CLOSE_PAGE; // *really* shouldn't happen
+		else
+			command = n->second;
+		command.push_back('\n');
+		priority = PRIORITY_CONTINUE_ACTION;
+		/* it's extremely unlikely this last command fails, so remove it from name_items */
+		name_items.erase(n);
+		/* and check inventory */
+		checkInventory();
+	} else if (saiph->world->question && messages.find(LOOT_WHAT_TO_CALL_ITEM, 0) == 0) {
+		/* what to call the item. we're gonna assume items aren't rearranged since last question */
+		map<unsigned char, string>::iterator c = call_items.begin();
+		if (c == call_items.end())
+			command = CLOSE_PAGE; // *really* shouldn't happen
+		else
+			command = c->second;
+		command.push_back('\n');
+		priority = PRIORITY_CONTINUE_ACTION;
+		/* it's extremely unlikely this last command fails, so remove it from name_items */
+		call_items.erase(c);
+		/* and check inventory */
 		checkInventory();
 	}
 }
@@ -243,6 +298,18 @@ bool Loot::request(const Request &request) {
 		items[request.data].amount = request.value;
 		items[request.data].beatitude = request.status;
 		return true;
+	} else if (request.request == REQUEST_CALL_ITEM) {
+		call_items[request.key] = request.data;
+		if (priority < PRIORITY_LOOK) {
+			command = NAME;
+			priority = PRIORITY_LOOK;
+		}
+	} else if (request.request == REQUEST_NAME_ITEM) {
+		name_items[request.key] = request.data;
+		if (priority < PRIORITY_LOOK) {
+			command = NAME;
+			priority = PRIORITY_LOOK;
+		}
 	}
 	return false;
 }

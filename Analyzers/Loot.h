@@ -6,6 +6,11 @@
 #define LOOT_VISIT_STASH_PRIORITY 250
 #define LOOT_PROTECT_STAIR_STASH_PRIORITY 550
 /* messages */
+#define LOOT_NAME_INDIVIDUAL_OBECT "  Name an individual object? [ynq] (q)  "
+#define LOOT_ITEM_TO_NAME "  What do you want to name? "
+#define LOOT_ITEM_TO_CALL "  What do you want to call? "
+#define LOOT_WHAT_TO_NAME_ITEM "  What do you want to name this "
+#define LOOT_WHAT_TO_CALL_ITEM "  Call "
 #define LOOT_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "
 #define LOOT_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
 #define LOOT_MANY_MORE_OBJECTS_HERE "  There are many more objects here.  "
@@ -55,6 +60,8 @@ class Loot : public Analyzer {
 		std::map<Coordinate, int> visit_stash; // location, turn_changed
 		std::map<std::string, ItemWanted> items;
 		std::map<int, ItemGroup> groups;
+		std::map<unsigned char, std::string> call_items;
+		std::map<unsigned char, std::string> name_items;
 		Request req;
 
 		void checkInventory();
