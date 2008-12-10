@@ -23,7 +23,7 @@
 /* threshold for turning lamp on/off */
 #define LAMP_LIT_AREAS_THRESHOLD 0
 /* priorities */
-#define LAMP_PRIORITY_TOGGLE 100
+#define LAMP_PRIORITY_TOGGLE 300
 
 #include <string>
 #include "../Analyzer.h"
