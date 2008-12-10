@@ -4,11 +4,11 @@
 #define EXPLORE_SEARCH_INTERVAL 16 // how many times we should search a square before moving on
 #define EXPLORE_FULLY_SEARCHED 255 // when we won't search a square ever again
 /* priorities */
-#define EXPLORE_PRIORITY_EXPLORE 60 // priority when exploring a level
+#define EXPLORE_PRIORITY_EXPLORE 50 // priority when exploring a level
 #define EXPLORE_PRIORITY_ROGUE_STAIRS 70 // priority to find rogue stairs
 #define EXPLORE_PRIORITY_SEARCH 20 // priority when searching desperately
 #define EXPLORE_PRIORITY_STAIRS_DOWN 40 // priority for exploring unknown stairs down
-#define EXPLORE_PRIORITY_STAIRS_UP 50 // priority for exploring unknown stairs up
+#define EXPLORE_PRIORITY_STAIRS_UP 60 // priority for exploring unknown stairs up
 #define EXPLORE_PRIORITY_TRAVEL 30 // priority to travel somewhere
 
 #include <string>

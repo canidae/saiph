@@ -46,6 +46,25 @@ void Explore::analyze() {
 		}
 	}
 
+	/* explore upstairs */
+	if (priority < EXPLORE_PRIORITY_STAIRS_UP && saiph->levels[saiph->position.level].depth != 1) {
+		/* explore upstairs unless on depth 1 */
+		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			int moves = 0;
+			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+			if (dir != ILLEGAL_DIRECTION) {
+				if (dir == NOWHERE)
+					best_move = UP;
+				else
+					best_move = dir;
+				priority = EXPLORE_PRIORITY_STAIRS_UP;
+				break;
+			}
+		}
+	}
+
 	if (priority <= EXPLORE_PRIORITY_EXPLORE) {
 		int min_moves = INT_MAX;
 		int best_type = INT_MAX;
@@ -186,25 +205,6 @@ void Explore::analyze() {
 				best_type = type;
 				best_move = dir;
 				priority = (type < 2 ? EXPLORE_PRIORITY_EXPLORE : EXPLORE_PRIORITY_SEARCH);
-			}
-		}
-	}
-
-	/* explore upstairs */
-	if (priority < EXPLORE_PRIORITY_STAIRS_UP && saiph->levels[saiph->position.level].depth != 1) {
-		/* explore upstairs unless on depth 1 */
-		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
-			if (s->second != UNKNOWN_SYMBOL_VALUE)
-				continue; // we know where these stairs lead
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE)
-					best_move = UP;
-				else
-					best_move = dir;
-				priority = EXPLORE_PRIORITY_STAIRS_UP;
-				break;
 			}
 		}
 	}
