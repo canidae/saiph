@@ -18,6 +18,8 @@
 #define REQUEST_RING_WEAR 14
 #define REQUEST_AMULET_WEAR 15
 #define REQUEST_QUAFF_HEALING 16
+#define REQUEST_CALL_ITEM 17
+#define REQUEST_NAME_ITEM 18
 
 #include <string>
 #include "Coordinate.h"

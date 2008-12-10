@@ -21,6 +21,7 @@
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
+#include "Analyzers/Lamp.h"
 #include "Analyzers/Loot.h"
 #include "Analyzers/MonsterInfo.h"
 #include "Analyzers/Potion.h"
@@ -89,6 +90,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Food(this));
 	analyzers.push_back(new Health(this));
+	analyzers.push_back(new Lamp(this));
 	analyzers.push_back(new Loot(this));
 	analyzers.push_back(new MonsterInfo(this));
 	analyzers.push_back(new Potion(this));

@@ -119,6 +119,7 @@
 #define INVENTORY "i"
 #define KICK ""
 #define LOOK ":"
+#define NAME "#name\n"
 #define OPEN "o"
 #define PICKUP ","
 #define PRAY "#pray\n"

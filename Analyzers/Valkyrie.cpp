@@ -917,6 +917,19 @@ void Valkyrie::setupTool(int &groupstart) {
 	req.data = "magic marker";
 	saiph->request(req);
 
+	/* lamps & lanterns */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.value = 4;
+	req.data = "magic lamp";
+	saiph->request(req);
+	req.data = "lamp";
+	saiph->request(req);
+	req.data = "oil lamp";
+	saiph->request(req);
+	req.data = "brass lantern";
+	saiph->request(req);
+
 	/* key/lock pick/credit card */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
 	req.value = groupstart++;
