@@ -48,7 +48,7 @@ void Lamp::parseMessages(const string &messages) {
 		req.data = DISCARD;
 		req.key = lamp_key;
 		saiph->request(req);
-		findLamp();
+		lamp_key = 0;
 	} else if (saiph->inventory_changed && lamp_key == 0) {
 		/* inventory changed, find lamp/lantern */
 		findLamp(); // inventory is changed and we got no lamp/lantern
