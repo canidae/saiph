@@ -25,7 +25,7 @@ void Lamp::analyze() {
 		priority = LAMP_PRIORITY_TOGGLE;
 		return;
 	}
-	bool dark_area = isAreaDark();
+	bool dark_area = (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == CORRIDOR || isAreaDark());
 	if (dark_area && l->second.additional != "lit") {
 		/* should turn this lamp/lantern on */
 		command = APPLY;

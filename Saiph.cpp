@@ -895,7 +895,7 @@ void Saiph::dumpMaps() {
 			cout << " " << i->second.enchantment;
 		cout << " " << i->second.name;
 		if (i->second.named != "")
-			cout << " (" << i->second.named << ")";
+			cout << " [" << i->second.named << "]";
 		if (i->second.additional != "")
 			cout << " (" << i->second.additional << ")";
 		++ir;
