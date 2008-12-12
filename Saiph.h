@@ -6,15 +6,6 @@
 #define MESSAGES_DEBUG_NAME "[Messages   ] "
 #define REQUEST_DEBUG_NAME "[Request    ] "
 #define SAIPH_DEBUG_NAME "[Saiph      ] "
-/* pathing */
-#define COST_CARDINAL 2
-#define COST_DIAGONAL 3
-#define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
-#define COST_LAVA 512 // lava, hot!
-#define COST_PET 16 // try not to move onto pets
-#define COST_TRAP 128 // avoid traps
-#define COST_WATER 256 // avoid water if possible
-#define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
 /* messages */
 #define SAIPH_GAIN_COLD_RES1 "  You feel full of hot air.  "
 #define SAIPH_LOSE_COLD_RES1 "  You feel cooler!  "

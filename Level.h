@@ -8,7 +8,8 @@
 #define COST_PET 16 // try not to move onto pets
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
-#define PATHING_QUEUE_SIZE 4096 // max amount of nodes in pathing_queue
+#define PATHING_QUEUE_SIZE 16384 // max amount of nodes in pathing_queue
+/* max moves a monster can do before we think it's a new monster */
 #define MAX_MONSTER_MOVE 3 // if a monster is more than this distance from where we last saw it, then it's probably a new monster
 /* messages */
 #define LEVEL_ALTAR_HERE "  There is an altar to "
