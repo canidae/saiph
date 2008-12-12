@@ -504,49 +504,49 @@ void Level::updatePathMap() {
 		from = pathing_queue[curnode++];
 		/* check northwest node */
 		Point to(from.row - 1, from.col - 1);
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = NW;
 			pathing_queue[nodes++] = to;
 		}
 		/* check north node */
 		++to.col;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = N;
 			pathing_queue[nodes++] = to;
 		}
 		/* check northeast node */
 		++to.col;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = NE;
 			pathing_queue[nodes++] = to;
 		}
 		/* check east node */
 		++to.row;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = E;
 			pathing_queue[nodes++] = to;
 		}
 		/* check southeast node */
 		++to.row;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = SE;
 			pathing_queue[nodes++] = to;
 		}
 		/* check south node */
 		--to.col;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = S;
 			pathing_queue[nodes++] = to;
 		}
 		/* check southwest node */
 		--to.col;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = SW;
 			pathing_queue[nodes++] = to;
 		}
 		/* check west node */
 		--to.row;
-		if (updatePathMapHelper(to, from)) {
+		if (!monster[(unsigned char) saiph->world->view[to.row][to.col]] && updatePathMapHelper(to, from)) {
 			pathmap[to.row][to.col].move = W;
 			pathing_queue[nodes++] = to;
 		}
@@ -586,26 +586,6 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	unsigned char s = dungeonmap[to.row][to.col];
 	if (!passable[s])
 		return false;
-	unsigned char m = monstermap[to.row][to.col];
-	if (monster[m]) {
-		if (m == '@') {
-			/* we'll allow pathing through unseen priests */
-			map<Point, Monster>::iterator mon = monsters.find(to);
-			if (mon == monsters.end())
-				return false;
-			if (mon->second.visible)
-				return false;
-			if (!mon->second.priest)
-				return false;
-		} else if (m == PET) {
-			/* we'll allow pathing through pets too */
-		} else {
-			/* all other monsters we won't path through */
-			return false;
-		}
-	}
-	if (monster[m] && m != PET)
-		return false; // can't path through monsters (except pets)
 	bool cardinal_move = (to.row == from.row || to.col == from.col);
 	if (!cardinal_move) {
 		if (s == OPEN_DOOR || dungeonmap[from.row][from.col] == OPEN_DOOR)
@@ -632,7 +612,8 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	      return false;
 	unsigned int newcost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	newcost += pathcost[s];
-	newcost += pathcost[m];
+	if (monstermap[to.row][to.col] == PET)
+		newcost += COST_PET;
 	if (newcost < pathmap[to.row][to.col].cost) {
 		pathmap[to.row][to.col].nextrow = from.row;
 		pathmap[to.row][to.col].nextcol = from.col;
