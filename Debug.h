@@ -3,7 +3,7 @@
 
 extern "C" {
 #include <sys/stat.h>
-};
+}
 #include <fstream>
 #include <iostream>
 #include <string>
