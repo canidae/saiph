@@ -216,7 +216,7 @@ void Loot::parseMessages(const string &messages) {
 	if (messages.find(LOOT_STOLE, 0) != string::npos || messages.find(LOOT_STEALS, 0) != string::npos) {
 		/* some monster stole something, we should check our inventory */
 		checkInventory();
-	} else if (messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DESTROY_POTION_FIRE, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2, 0) != string::npos || messages.find(MESSAGE_DESTROY_RING, 0) != string::npos || messages.find(MESSAGE_DESTROY_RING2, 0) != string::npos || messages.find(MESSAGE_DESTROY_WAND, 0) != string::npos || messages.find(MESSAGE_DESTROY_WAND2, 0) != string::npos) {
 		/* some of our inventory was destroyed. check it */
 		checkInventory();
 	} else if (messages.find(SAIPH_POLYMORPH, 0) != string::npos) {
