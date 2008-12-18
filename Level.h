@@ -5,7 +5,7 @@
 #define COST_DIAGONAL 3
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
-#define COST_PET 16 // try not to move onto pets
+#define COST_MONSTER 64 // try not to path through monsters
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 16384 // max amount of nodes in pathing_queue

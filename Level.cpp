@@ -610,12 +610,12 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	      return false;
 	if (s == WATER) // && (!levitating || !waterwalk))
 	      return false;
-	if (monster[(unsigned char) saiph->world->view[to.row][to.col]] && abs(saiph->position.row - to.row) <= 1 && abs(saiph->position.col - to.col) <= 1)
+	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(saiph->position.row - to.row) <= 1 && abs(saiph->position.col - to.col) <= 1)
 		return false; // don't path through monster next to her
 	unsigned int newcost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	newcost += pathcost[s];
-	if (monstermap[to.row][to.col] == PET)
-		newcost += COST_PET;
+	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER)
+		newcost += COST_MONSTER;
 	if (newcost < pathmap[to.row][to.col].cost) {
 		pathmap[to.row][to.col].nextrow = from.row;
 		pathmap[to.row][to.col].nextcol = from.col;
@@ -725,7 +725,6 @@ void Level::init() {
 	dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
 	pathcost[(unsigned char) ICE] = COST_ICE;
 	pathcost[(unsigned char) LAVA] = COST_LAVA;
-	pathcost[(unsigned char) PET] = COST_PET;
 	pathcost[(unsigned char) TRAP] = COST_TRAP;
 	pathcost[(unsigned char) WATER] = COST_WATER;
 	/* remapping ambigous symbols */
