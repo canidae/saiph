@@ -1,4 +1,5 @@
 *.log
 *.o
 .*
+gmon.out
 saiph
