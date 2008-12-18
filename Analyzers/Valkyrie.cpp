@@ -136,20 +136,6 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "set of silver dragon scales";
 	saiph->request(req);
-	req.data = "set of black dragon scales";
-	saiph->request(req);
-	req.data = "set of yellow dragon scales";
-	saiph->request(req);
-	req.data = "set of green dragon scales";
-	saiph->request(req);
-	req.data = "set of orange dragon scales";
-	saiph->request(req);
-	req.data = "set of red dragon scales";
-	saiph->request(req);
-	req.data = "set of blue dragon scales";
-	saiph->request(req);
-	req.data = "set of white dragon scales";
-	saiph->request(req);
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dwarvish mithril-coat";
 	saiph->request(req);
@@ -405,22 +391,6 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "set of silver dragon scales";
 	saiph->request(req);
-	/*
-	   req.data = "set of black dragon scales";
-	   saiph->request(req);
-	   req.data = "set of yellow dragon scales";
-	   saiph->request(req);
-	   req.data = "set of green dragon scales";
-	   saiph->request(req);
-	   req.data = "set of orange dragon scales";
-	   saiph->request(req);
-	   req.data = "set of red dragon scales";
-	   saiph->request(req);
-	   req.data = "set of blue dragon scales";
-	   saiph->request(req);
-	   req.data = "set of white dragon scales";
-	   saiph->request(req);
-	*/
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dwarvish mithril-coat";
 	saiph->request(req);
@@ -775,6 +745,7 @@ void Valkyrie::setupPotion(int &groupstart) {
 
 void Valkyrie::setupRing(int &groupstart) {
 	/* 2 of each unidentified ring */
+	/*
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 2;
@@ -834,8 +805,10 @@ void Valkyrie::setupRing(int &groupstart) {
 	saiph->request(req);
 	req.data = "emerald ring";
 	saiph->request(req);
+	*/
 
 	/* and one of each useful ring */
+	/*
 	req.request = REQUEST_ITEM_PICKUP;
 	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 1;
@@ -877,6 +850,7 @@ void Valkyrie::setupRing(int &groupstart) {
 	saiph->request(req);
 	req.data = "ring of teleport control";
 	saiph->request(req);
+	*/
 
 	/* tell the ring analyzer which rings we wish to wear */
 	req.request = REQUEST_RING_WEAR;
@@ -987,7 +961,7 @@ void Valkyrie::setupWand(int &groupstart) {
 	/* create a group for wands */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
 	req.value = groupstart++;
-	req.data = "20";
+	req.data = "10";
 	saiph->request(req);
 	/* add wands to the group, best wand first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
