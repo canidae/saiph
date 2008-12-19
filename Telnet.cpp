@@ -73,6 +73,12 @@ Telnet::Telnet() {
 	size = retrieve(discard, TELNET_BUFFER_SIZE);
 	transmit(password);
 	size = retrieve(discard, TELNET_BUFFER_SIZE);
+	/* 19th december 2008 sporkhack was added to nao,
+	 * giving us one more menu.
+	 * send "1" for nethack and hope it'll still work
+	 * on other servers */
+	transmit("1");
+	size = retrieve(discard, TELNET_BUFFER_SIZE);
 
 	/* and start a game */
 	start();
