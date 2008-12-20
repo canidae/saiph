@@ -29,7 +29,8 @@ class Request {
 		int request;
 		int priority;
 		int value;
-		int status;
+		int beatitude;
+		bool sustain;
 		unsigned char key;
 		std::string data;
 		Coordinate coordinate;

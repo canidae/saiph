@@ -30,7 +30,7 @@ bool Amulet::request(const Request &request) {
 	if (request.request == REQUEST_AMULET_WEAR) {
 		/* player wish to wear this amulet */
 		WearAmulet wr;
-		wr.beatitude = request.status;
+		wr.beatitude = request.beatitude;
 		wr.name = request.data;
 		amulets.push_back(wr);
 		return true;

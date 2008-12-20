@@ -3,30 +3,29 @@
 #include "../World.h"
 
 /* constructors/destructor */
-Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph) {
+Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph), loot_group(0) {
 }
 
 /* methods */
 void Valkyrie::init() {
-	int groupstart = 0;
-	setupAmulet(groupstart);
-	setupArmor(groupstart);
-	setupFood(groupstart);
-	setupPotion(groupstart);
-	setupRing(groupstart);
-	setupTool(groupstart);
-	setupWand(groupstart);
-	setupWeapon(groupstart);
+	setupAmulet();
+	setupArmor();
+	setupFood();
+	setupPotion();
+	setupRing();
+	setupTool();
+	setupWand();
+	setupWeapon();
 
 	/* set the cold resistance all valks start with */
 	saiph->world->player.cold_resistance = true;
 }
 
 /* private methods */
-void Valkyrie::setupAmulet(int &groupstart) {
+void Valkyrie::setupAmulet() {
 	/* 10 of each unidentified amulet */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 10;
 	req.data = "circular amulet";
 	saiph->request(req);
@@ -49,7 +48,7 @@ void Valkyrie::setupAmulet(int &groupstart) {
 
 	/* and 10 of each identified amulet */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 10;
 	req.data = "amulet of ESP";
 	saiph->request(req);
@@ -74,12 +73,12 @@ void Valkyrie::setupAmulet(int &groupstart) {
 
 	/* tell the amulet analyzer which amulets we wish to wear */
 	req.request = REQUEST_AMULET_WEAR;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "amulet of life saving";
 	saiph->request(req);
 	req.data = "amulet of reflection";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "amulet of ESP";
 	saiph->request(req);
 	req.data = "amulet of magical breathing";
@@ -92,15 +91,15 @@ void Valkyrie::setupAmulet(int &groupstart) {
 	saiph->request(req);
 }
 
-void Valkyrie::setupArmor(int &groupstart) {
+void Valkyrie::setupArmor() {
 	/* create shirt group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add shirts, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "T-shirt";
 	saiph->request(req);
 	req.data = "Hawaiian shirt";
@@ -108,12 +107,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* create suit group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add suits, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "gray dragon scale mail";
 	saiph->request(req);
 	req.data = "silver dragon scale mail";
@@ -136,7 +135,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "set of silver dragon scales";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dwarvish mithril-coat";
 	saiph->request(req);
 	req.data = "elven mithril-coat";
@@ -158,12 +157,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* create cloak group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add cloaks, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "piece of cloth";
 	saiph->request(req);
 	req.data = "opera cloak";
@@ -180,7 +179,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "cloak of invisibility";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "oilskin cloak";
 	saiph->request(req);
 	req.data = "slippery cloak";
@@ -208,12 +207,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* create helm group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add helmets, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "Mitre of Holiness";
 	saiph->request(req);
 	req.data = "The Mitre of Holiness"; // "The" when unidentified
@@ -222,7 +221,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "helm of brilliance";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dwarvish iron helm";
 	saiph->request(req);
 	req.data = "hard hat";
@@ -250,17 +249,17 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* create glove group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add gloves, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "pair of gauntlets of power";
 	saiph->request(req);
 	req.data = "pair of gauntlets of dexterity";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "pair of padded gloves";
 	saiph->request(req);
 	req.data = "pair of riding gloves";
@@ -274,17 +273,17 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* create shield group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add shields, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "shield of reflection";
 	saiph->request(req);
 	req.data = "polished silver shield";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "elven shield";
 	saiph->request(req);
 	req.data = "blue shield";
@@ -310,16 +309,16 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* create boot group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* add boots, most useful first.
 	 * note: not adding levitation boots since we're not handling levitation yet */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "pair of speed boots";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "pair of water walking boots";
 	saiph->request(req);
 	req.data = "pair of jumping boots";
@@ -359,7 +358,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	req.request = REQUEST_ARMOR_WEAR;
 
 	/* shirt */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.value = ARMOR_SHIRT;
 	req.data = "T-shirt";
 	saiph->request(req);
@@ -368,7 +367,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* suit */
 	req.value = ARMOR_SUIT;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "gray dragon scale mail";
 	saiph->request(req);
 	req.data = "silver dragon scale mail";
@@ -391,12 +390,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "set of silver dragon scales";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dwarvish mithril-coat";
 	saiph->request(req);
 	req.data = "elven mithril-coat";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "studded leather armor";
 	saiph->request(req);
 	req.data = "leather armor";
@@ -414,7 +413,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* cloak */
 	req.value = ARMOR_CLOAK;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "piece of cloth";
 	saiph->request(req);
 	req.data = "opera cloak";
@@ -431,7 +430,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "cloak of invisibility";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "oilskin cloak";
 	saiph->request(req);
 	req.data = "slippery cloak";
@@ -440,7 +439,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "faded pall";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "robe";
 	saiph->request(req);
 	req.data = "alchemy smock";
@@ -460,7 +459,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* helmet */
 	req.value = ARMOR_HELMET;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "Mitre of Holiness";
 	saiph->request(req);
 	req.data = "The Mitre of Holiness"; // "The" when unidentified
@@ -469,7 +468,7 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 	req.data = "helm of brilliance";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "dwarvish iron helm";
 	saiph->request(req);
 	req.data = "hard hat";
@@ -497,12 +496,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* gloves */
 	req.value = ARMOR_GLOVES;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "pair of gauntlets of power";
 	saiph->request(req);
 	req.data = "pair of gauntlets of dexterity";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "pair of padded gloves";
 	saiph->request(req);
 	req.data = "pair of riding gloves";
@@ -516,12 +515,12 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* shield */
 	req.value = ARMOR_SHIELD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "shield of reflection";
 	saiph->request(req);
 	req.data = "polished silver shield";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "elven shield";
 	saiph->request(req);
 	req.data = "blue shield";
@@ -547,17 +546,17 @@ void Valkyrie::setupArmor(int &groupstart) {
 
 	/* boots */
 	req.value = ARMOR_BOOTS;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "pair of speed boots";
 	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "pair of water walking boots";
 	saiph->request(req);
 	req.data = "pair of jumping boots";
 	saiph->request(req);
 	req.data = "pair of kicking boots";
 	saiph->request(req);
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "pair of mud boots";
 	saiph->request(req);
 	req.data = "pair of buckled boots";
@@ -588,10 +587,10 @@ void Valkyrie::setupArmor(int &groupstart) {
 	saiph->request(req);
 }
 
-void Valkyrie::setupFood(int &groupstart) {
+void Valkyrie::setupFood() {
 	/* first some food items we don't really want for food, but beneficial effects */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 10;
 	req.data = "lizard corpse";
 	saiph->request(req);
@@ -612,12 +611,12 @@ void Valkyrie::setupFood(int &groupstart) {
 
 	/* create a group for food */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "100";
 	saiph->request(req);
 	/* add food, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "lembas wafer";
 	saiph->request(req);
 	req.data = "partly eaten lembas wafer";
@@ -724,15 +723,15 @@ void Valkyrie::setupFood(int &groupstart) {
 	*/
 }
 
-void Valkyrie::setupPotion(int &groupstart) {
+void Valkyrie::setupPotion() {
 	/* create a group for potions */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "10";
 	saiph->request(req);
 	/* add potions, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "potion of gain level";
 	saiph->request(req);
 	req.data = "potion of full healing";
@@ -743,11 +742,11 @@ void Valkyrie::setupPotion(int &groupstart) {
 	saiph->request(req);
 }
 
-void Valkyrie::setupRing(int &groupstart) {
+void Valkyrie::setupRing() {
 	/* 2 of each unidentified ring */
 	/*
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 2;
 	req.data = "pearl ring";
 	saiph->request(req);
@@ -810,7 +809,7 @@ void Valkyrie::setupRing(int &groupstart) {
 	/* and one of each useful ring */
 	/*
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 1;
 	req.data = "ring of protection";
 	saiph->request(req);
@@ -854,7 +853,7 @@ void Valkyrie::setupRing(int &groupstart) {
 
 	/* tell the ring analyzer which rings we wish to wear */
 	req.request = REQUEST_RING_WEAR;
-	req.status = BLESSED | UNCURSED;
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "ring of free action";
 	saiph->request(req);
 	req.data = "ring of conflict";
@@ -869,31 +868,31 @@ void Valkyrie::setupRing(int &groupstart) {
 	saiph->request(req);
 }
 
-void Valkyrie::setupTool(int &groupstart) {
+void Valkyrie::setupTool() {
 	/* unihorn */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.value = 3;
 	req.data = "unicorn horn";
 	saiph->request(req);
 
 	/* stethoscope */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.value = 1;
 	req.data = "stethoscope";
 	saiph->request(req);
 
 	/* magic marker */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 10;
 	req.data = "magic marker";
 	saiph->request(req);
 
 	/* lamps & lanterns */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 4;
 	req.data = "magic lamp";
 	saiph->request(req);
@@ -906,12 +905,12 @@ void Valkyrie::setupTool(int &groupstart) {
 
 	/* key/lock pick/credit card */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "1";
 	saiph->request(req);
 	/* most useful unlocking device first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "skeleton key";
 	saiph->request(req);
 	req.data = "key";
@@ -923,7 +922,7 @@ void Valkyrie::setupTool(int &groupstart) {
 
 	/* artifact tools */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 1;
 	req.data = "Orb of Detection";
 	saiph->request(req);
@@ -957,15 +956,15 @@ void Valkyrie::setupTool(int &groupstart) {
 	*/
 }
 
-void Valkyrie::setupWand(int &groupstart) {
+void Valkyrie::setupWand() {
 	/* create a group for wands */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "10";
 	saiph->request(req);
 	/* add wands to the group, best wand first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.data = "wand of wishing";
 	saiph->request(req);
 	req.data = "wand of death";
@@ -1072,15 +1071,137 @@ void Valkyrie::setupWand(int &groupstart) {
 	saiph->request(req);
 }
 
-void Valkyrie::setupWeapon(int &groupstart) {
+void Valkyrie::setupWeapon() {
+	/* set up weapons for Weapon analyzer */
+	req.request = REQUEST_WEAPON_WIELD;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = true; // never drop the following weapons
+	req.data = "Mjollnir";
+	req.priority = 100;
+	saiph->request(req);
+	req.data = "Grayswandir";
+	req.priority = 95;
+	saiph->request(req);
+	req.data = "Fire Brand";
+	req.priority = 94;
+	saiph->request(req);
+	req.data = "Frost Brand";
+	req.priority = 94;
+	saiph->request(req);
+	req.data = "Excalibur";
+	req.priority = 93;
+	saiph->request(req);
+	req.data = "Sunsword";
+	req.priority = 92;
+	saiph->request(req);
+	req.data = "Snickersnee";
+	req.priority = 91;
+	saiph->request(req);
+	req.data = "Werebane";
+	req.priority = 90;
+	saiph->request(req);
+	req.data = "Demonbane";
+	req.priority = 90;
+	saiph->request(req);
+	req.data = "Dragonbane";
+	req.priority = 90;
+	saiph->request(req);
+	/* then wield common weapons, blessed/uncursed first */
+	req.beatitude = BLESSED | UNCURSED;
+	req.sustain = false; // drop the following weapons if we find better weapons
+	req.data = "long sword";
+	req.priority = 15;
+	saiph->request(req);
+	req.data = "pick-axe";
+	req.priority = 13;
+	saiph->request(req);
+	req.data = "silver dagger";
+	req.priority = 10;
+	saiph->request(req);
+	req.data = "elven dagger";
+	req.priority = 10;
+	saiph->request(req);
+	req.data = "dagger";
+	req.priority = 9;
+	saiph->request(req);
+	req.data = "orcish dagger";
+	req.priority = 9;
+	saiph->request(req);
+	/* finally fall back to weapons of unknown beatitude */
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.data = "long sword";
+	req.priority = 8;
+	saiph->request(req);
+	req.data = "pick-axe";
+	req.priority = 7;
+	saiph->request(req);
+	req.data = "silver dagger";
+	req.priority = 6;
+	saiph->request(req);
+	req.data = "elven dagger";
+	req.priority = 5;
+	saiph->request(req);
+	req.data = "dagger";
+	req.priority = 4;
+	saiph->request(req);
+	req.data = "orcish dagger";
+	req.priority = 3;
+	saiph->request(req);
+	/* we won't use these weapons, we just pick them up for fun */
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = true; // don't drop them
+	req.priority = INT_MIN;
+	req.data = "Cleaver";
+	saiph->request(req);
+	req.data = "Giantslayer";
+	saiph->request(req);
+	req.data = "Grimtooth";
+	saiph->request(req);
+	/* chaotic quest artifact, will evade our grasp
+	req.data = "Longbow of Diana";
+	saiph->request(req);
+	req.data = "The Longbow of Diana"; // "The" when unidentified
+	saiph->request(req);
+	*/
+	req.data = "Magicbane";
+	saiph->request(req);
+	req.data = "Ogresmasher";
+	saiph->request(req);
+	req.data = "Orcrist";
+	saiph->request(req);
+	req.data = "Sceptre of Might";
+	saiph->request(req);
+	req.data = "The Sceptre of Might"; // "The" when unidentified
+	saiph->request(req);
+	/* neutral quest artifact, will evade our grasp
+	req.data = "Staff of Aesculapius";
+	saiph->request(req);
+	req.data = "The Staff of Aesculapius"; // "The" when unidentified
+	saiph->request(req);
+	*/
+	req.data = "Sting";
+	saiph->request(req);
+	req.data = "Stormbringer";
+	saiph->request(req);
+	req.data = "Trollsbane";
+	saiph->request(req);
+	req.data = "Tsurugi of Muramasa";
+	saiph->request(req);
+	req.data = "The Tsurugi of Muramasa"; // "The" when unidentified
+	saiph->request(req);
+	req.data = "Vorpal Blade";
+	saiph->request(req);
+
+
+	/* FIXME: make an own function for thrown weapons */
 	/* create a group for thrown weapons */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
+	req.value = loot_group++;
 	req.data = "15";
 	saiph->request(req);
 	/* add weapons to the group, best weapon first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "silver dagger";
 	saiph->request(req);
 	req.data = "elven dagger";
@@ -1100,97 +1221,12 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.data = "orcish spear";
 	saiph->request(req);
 
-	/* create a group for weapons we wish to wield too */
-	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = groupstart++;
-	req.data = "1"; // we'll only keep 1 weapon for the time being
-	saiph->request(req);
-	/* add the weapons */
-	req.request = REQUEST_ITEM_GROUP_ADD;
-	/* allow picking up cursed excalibur */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "Excalibur";
-	saiph->request(req);
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.data = "long sword";
-	saiph->request(req);
-
-	/* pick up every artifact weapon */
-	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.value = 1;
-	req.data = "Cleaver";
-	saiph->request(req);
-	req.data = "Demonbane";
-	saiph->request(req);
-	req.data = "Dragonbane";
-	saiph->request(req);
-	req.data = "Excalibur";
-	saiph->request(req);
-	req.data = "Fire Brand";
-	saiph->request(req);
-	req.data = "Frost Brand";
-	saiph->request(req);
-	req.data = "Giantslayer";
-	saiph->request(req);
-	req.data = "Grayswandir";
-	saiph->request(req);
-	req.data = "Grimtooth";
-	saiph->request(req);
-	/* chaotic quest artifact, will evade our grasp
-	req.data = "Longbow of Diana";
-	saiph->request(req);
-	req.data = "The Longbow of Diana"; // "The" when unidentified
-	saiph->request(req);
-	*/
-	req.data = "Magicbane";
-	saiph->request(req);
-	req.data = "Mjollnir";
-	saiph->request(req);
-	req.data = "Ogresmasher";
-	saiph->request(req);
-	req.data = "Orcrist";
-	saiph->request(req);
-	req.data = "Sceptre of Might";
-	saiph->request(req);
-	req.data = "The Sceptre of Might"; // "The" when unidentified
-	saiph->request(req);
-	req.data = "Snickersnee";
-	saiph->request(req);
-	/* neutral quest artifact, will evade our grasp
-	req.data = "Staff of Aesculapius";
-	saiph->request(req);
-	req.data = "The Staff of Aesculapius"; // "The" when unidentified
-	saiph->request(req);
-	*/
-	req.data = "Sting";
-	saiph->request(req);
-	req.data = "Stormbringer";
-	saiph->request(req);
-	req.data = "Sunsword";
-	saiph->request(req);
-	req.data = "Trollsbane";
-	saiph->request(req);
-	req.data = "Tsurugi of Muramasa";
-	saiph->request(req);
-	req.data = "The Tsurugi of Muramasa"; // "The" when unidentified
-	saiph->request(req);
-	req.data = "Vorpal Blade";
-	saiph->request(req);
-	req.data = "Werebane";
-	saiph->request(req);
-
 	/* set other weapons we wish to pick up that is not in a group */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "dart";
 	req.value = 50;
 	saiph->request(req);
-	/* not using pick-axes yet
-	req.data = "pick-axe";
-	req.value = 1;
-	saiph->request(req);
-	*/
 
 	/* add thrown weapons in the order we want to throw them.
 	 * currently we'll throw them in the order we wish to get rid of stuff,
@@ -1215,58 +1251,5 @@ void Valkyrie::setupWeapon(int &groupstart) {
 	req.data = "silver dagger";
 	saiph->request(req);
 	req.data = "dart";
-	saiph->request(req);
-
-	/* and set which weapons we prefer wielding */
-	req.request = REQUEST_WEAPON_WIELD;
-	/* allow wielding artifact weapons of all beatitudes */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.data = "Mjollnir";
-	saiph->request(req);
-	req.data = "Grayswandir";
-	saiph->request(req);
-	req.data = "Fire Brand";
-	saiph->request(req);
-	req.data = "Frost Brand";
-	saiph->request(req);
-	req.data = "Excalibur";
-	saiph->request(req);
-	req.data = "Sunsword";
-	saiph->request(req);
-	req.data = "Snickersnee";
-	saiph->request(req);
-	req.data = "Werebane";
-	saiph->request(req);
-	req.data = "Demonbane";
-	saiph->request(req);
-	req.data = "Dragonbane";
-	saiph->request(req);
-	/* then wield common weapons, blessed/uncursed first */
-	req.status = BLESSED | UNCURSED;
-	req.data = "long sword";
-	saiph->request(req);
-	req.data = "pick-axe";
-	saiph->request(req);
-	req.data = "silver dagger";
-	saiph->request(req);
-	req.data = "elven dagger";
-	saiph->request(req);
-	req.data = "dagger";
-	saiph->request(req);
-	req.data = "orcish dagger";
-	saiph->request(req);
-	/* finally fall back to weapons of unknown beatitude */
-	req.status = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.data = "long sword";
-	saiph->request(req);
-	req.data = "pick-axe";
-	saiph->request(req);
-	req.data = "silver dagger";
-	saiph->request(req);
-	req.data = "elven dagger";
-	saiph->request(req);
-	req.data = "dagger";
-	saiph->request(req);
-	req.data = "orcish dagger";
 	saiph->request(req);
 }

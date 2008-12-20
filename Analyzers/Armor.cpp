@@ -96,7 +96,7 @@ bool Armor::request(const Request &request) {
 		if (request.value < 0 || request.value >= ARMOR_SLOTS)
 			return false;
 		WearArmor wa;
-		wa.beatitude = request.status;
+		wa.beatitude = request.beatitude;
 		wa.name = request.data;
 		armor[request.value].push_back(wa);
 		return true;

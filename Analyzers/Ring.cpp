@@ -38,7 +38,7 @@ bool Ring::request(const Request &request) {
 	if (request.request == REQUEST_RING_WEAR) {
 		/* player wish to wear this ring */
 		WearRing wr;
-		wr.beatitude = request.status;
+		wr.beatitude = request.beatitude;
 		wr.name = request.data;
 		rings.push_back(wr);
 		return true;

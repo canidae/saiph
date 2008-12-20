@@ -290,8 +290,6 @@ bool Loot::request(const Request &request) {
 	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
 		/* set total amount of items in the given group */
 		int amount = atoi(request.data.c_str());
-		if (amount <= 0)
-			return false; // group is useless with 0 or fewer items
 		groups[request.value].amount = amount;
 		return true;
 	} else if (request.request == REQUEST_ITEM_GROUP_ADD) {
@@ -299,14 +297,14 @@ bool Loot::request(const Request &request) {
 		if (items.find(request.data) == items.end()) {
 			/* we need to add an entry about this item */
 			items[request.data].amount = 0;
-			items[request.data].beatitude = request.status;
+			items[request.data].beatitude = request.beatitude;
 		}
 		groups[request.value].items.push_back(request.data);
 		return true;
 	} else if (request.request == REQUEST_ITEM_PICKUP) {
 		/* pick up items that are not part of a group */
 		items[request.data].amount = request.value;
-		items[request.data].beatitude = request.status;
+		items[request.data].beatitude = request.beatitude;
 		return true;
 	} else if (request.request == REQUEST_CALL_ITEM) {
 		call_items[request.key] = request.data;

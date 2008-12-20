@@ -15,14 +15,15 @@ class Valkyrie : public Analyzer {
 	private:
 		Saiph *saiph;
 		Request req;
+		int loot_group;
 
-		void setupAmulet(int &groupstart);
-		void setupArmor(int &groupstart);
-		void setupFood(int &groupstart);
-		void setupPotion(int &groupstart);
-		void setupRing(int &groupstart);
-		void setupTool(int &groupstart);
-		void setupWand(int &groupstart);
-		void setupWeapon(int &groupstart);
+		void setupAmulet();
+		void setupArmor();
+		void setupFood();
+		void setupPotion();
+		void setupRing();
+		void setupTool();
+		void setupWand();
+		void setupWeapon();
 };
 #endif
