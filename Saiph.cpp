@@ -266,7 +266,7 @@ bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
-	Debug::notice() << REQUEST_DEBUG_NAME << request.request << ", " << request.priority << ", " << request.value << ", " << (char) request.key << ", " << request.data << ", (" << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
+	Debug::notice() << REQUEST_DEBUG_NAME << request.request << ", " << request.priority << ", " << request.value << ", " << request.beatitude << ", " << request.sustain << ", " << (char) request.key << ", " << request.data << ", (" << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->request(request) && !status)

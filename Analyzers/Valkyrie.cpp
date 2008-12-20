@@ -1076,6 +1076,7 @@ void Valkyrie::setupWeapon() {
 	req.request = REQUEST_WEAPON_WIELD;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = true; // never drop the following weapons
+	req.value = 1; // only keep 1 of each weapon for now
 	req.data = "Mjollnir";
 	req.priority = 100;
 	saiph->request(req);
@@ -1150,7 +1151,7 @@ void Valkyrie::setupWeapon() {
 	/* we won't use these weapons, we just pick them up for fun */
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = true; // don't drop them
-	req.priority = INT_MIN;
+	req.priority = 0;
 	req.data = "Cleaver";
 	saiph->request(req);
 	req.data = "Giantslayer";

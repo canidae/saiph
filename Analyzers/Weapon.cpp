@@ -19,11 +19,11 @@ void Weapon::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		wield_weapon = false;
+	} else if (saiph->inventory_changed || wield_weapon) {
+		wieldWeapon();
 	} else if (command == WIELD && !command2.empty()) {
 		/* in case we didn't get to wield the weapon */
 		priority = WEAPON_WIELD_PRIORITY;
-	} else if (saiph->inventory_changed || wield_weapon) {
-		wieldWeapon();
 	}
 }
 
@@ -33,13 +33,15 @@ bool Weapon::request(const Request &request) {
 		WeaponData wd;
 		wd.beatitude = request.beatitude;
 		wd.priority = request.priority;
+		wd.amount = request.value;
 		wd.keep = request.sustain;
 		wd.name = request.data;
 		weapons.push_back(wd);
 		/* tell loot analyzer to pick up this weapon too */
 		req.request = REQUEST_ITEM_PICKUP;
-		req.value = 1;
+		req.value = request.value;
 		req.beatitude = request.beatitude | BEATITUDE_UNKNOWN;
+		req.data = request.data;
 		saiph->request(req);
 		return true;
 	}
@@ -64,14 +66,17 @@ void Weapon::wieldWeapon() {
 		for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 			if ((w->beatitude & i->second.beatitude) == 0)
 				continue;
-			if ((w->name != i->second.name && w->name != i->second.named) || w->priority + i->second.enchantment > best_priority)
+			if ((w->name != i->second.name && w->name != i->second.named) || w->priority + i->second.enchantment - i->second.damage < best_priority)
 				continue;
 			best_key = i->first;
-			best_priority = w->priority + i->second.enchantment;
+			best_priority = w->priority + i->second.enchantment - i->second.damage;
 		}
 	}
 	if (best_key == 0 || (wielded == best_key)) {
 		/* wielding best weapon or got no weapon to wield */
+		command.clear();
+		command2.clear();
+		priority = ILLEGAL_PRIORITY;
 		wield_weapon = false;
 		return;
 	}
@@ -84,11 +89,12 @@ void Weapon::wieldWeapon() {
 	for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 		req.request = REQUEST_ITEM_PICKUP;
 		req.beatitude = w->beatitude | BEATITUDE_UNKNOWN;
+		req.data = w->name;
 		if (w->keep || w->priority + 7 > best_priority) {
 			/* we [still] want this weapon.
 			 * in case we lost a good weapon and now wield a less good
 			 * weapon we'll need to tell Loot to pick up this weapon */
-			req.value = 1;
+			req.value = w->amount;
 		} else {
 			/* we don't want to keep this weapon and it'll never
 			 * be better than the weapon we currently got */

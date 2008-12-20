@@ -14,6 +14,7 @@
 struct WeaponData {
 	int beatitude; // beatitudes we'll accept
 	int priority; // wield weapon with highest priority, priority += enchantment
+	int amount; // how many of this weapon we want
 	bool keep; // if we should drop weapons with lower priority than what we're wield
 	std::string name;
 };
