@@ -94,8 +94,8 @@ void Valkyrie::setupAmulet() {
 void Valkyrie::setupArmor() {
 	/* create shirt group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add shirts, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -107,8 +107,8 @@ void Valkyrie::setupArmor() {
 
 	/* create suit group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add suits, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -157,8 +157,8 @@ void Valkyrie::setupArmor() {
 
 	/* create cloak group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add cloaks, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -207,8 +207,8 @@ void Valkyrie::setupArmor() {
 
 	/* create helm group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add helmets, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -249,8 +249,8 @@ void Valkyrie::setupArmor() {
 
 	/* create glove group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add gloves, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -273,8 +273,8 @@ void Valkyrie::setupArmor() {
 
 	/* create shield group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add shields, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -309,8 +309,8 @@ void Valkyrie::setupArmor() {
 
 	/* create boot group */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* add boots, most useful first.
 	 * note: not adding levitation boots since we're not handling levitation yet */
@@ -611,8 +611,8 @@ void Valkyrie::setupFood() {
 
 	/* create a group for food */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "100";
+	req.key = loot_group++;
+	req.value = 100;
 	saiph->request(req);
 	/* add food, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -726,8 +726,8 @@ void Valkyrie::setupFood() {
 void Valkyrie::setupPotion() {
 	/* create a group for potions */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "10";
+	req.key = loot_group++;
+	req.value = 10;
 	saiph->request(req);
 	/* add potions, most useful first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -905,8 +905,8 @@ void Valkyrie::setupTool() {
 
 	/* key/lock pick/credit card */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "1";
+	req.key = loot_group++;
+	req.value = 1;
 	saiph->request(req);
 	/* most useful unlocking device first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -959,8 +959,8 @@ void Valkyrie::setupTool() {
 void Valkyrie::setupWand() {
 	/* create a group for wands */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "10";
+	req.key = loot_group++;
+	req.value = 10;
 	saiph->request(req);
 	/* add wands to the group, best wand first */
 	req.request = REQUEST_ITEM_GROUP_ADD;
@@ -1113,9 +1113,11 @@ void Valkyrie::setupWeapon() {
 	req.data = "long sword";
 	req.priority = 15;
 	saiph->request(req);
+	/* makes her oscillate into shops
 	req.data = "pick-axe";
 	req.priority = 13;
 	saiph->request(req);
+	*/
 	req.data = "silver dagger";
 	req.priority = 10;
 	saiph->request(req);
@@ -1133,9 +1135,11 @@ void Valkyrie::setupWeapon() {
 	req.data = "long sword";
 	req.priority = 8;
 	saiph->request(req);
+	/* makes her oscillate into shops
 	req.data = "pick-axe";
 	req.priority = 7;
 	saiph->request(req);
+	*/
 	req.data = "silver dagger";
 	req.priority = 6;
 	saiph->request(req);
@@ -1197,8 +1201,8 @@ void Valkyrie::setupWeapon() {
 	/* FIXME: make an own function for thrown weapons */
 	/* create a group for thrown weapons */
 	req.request = REQUEST_ITEM_GROUP_SET_AMOUNT;
-	req.value = loot_group++;
-	req.data = "15";
+	req.key = loot_group++;
+	req.value = 15;
 	saiph->request(req);
 	/* add weapons to the group, best weapon first */
 	req.request = REQUEST_ITEM_GROUP_ADD;

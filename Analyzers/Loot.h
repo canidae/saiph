@@ -59,7 +59,7 @@ class Loot : public Analyzer {
 		bool showing_drop;
 		std::map<Coordinate, int> visit_stash; // location, turn_changed
 		std::map<std::string, ItemWanted> items;
-		std::map<int, ItemGroup> groups;
+		std::map<unsigned char, ItemGroup> groups;
 		std::map<unsigned char, std::string> call_items;
 		std::map<unsigned char, std::string> name_items;
 		Request req;

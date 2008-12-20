@@ -289,8 +289,7 @@ bool Loot::request(const Request &request) {
 		return true;
 	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
 		/* set total amount of items in the given group */
-		int amount = atoi(request.data.c_str());
-		groups[request.value].amount = amount;
+		groups[request.key].amount = request.value;
 		return true;
 	} else if (request.request == REQUEST_ITEM_GROUP_ADD) {
 		/* add item to group */
@@ -299,7 +298,7 @@ bool Loot::request(const Request &request) {
 			items[request.data].amount = 0;
 			items[request.data].beatitude = request.beatitude;
 		}
-		groups[request.value].items.push_back(request.data);
+		groups[request.key].items.push_back(request.data);
 		return true;
 	} else if (request.request == REQUEST_ITEM_PICKUP) {
 		/* pick up items that are not part of a group */
@@ -363,7 +362,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 	if (item.named == DISCARD)
 		return (drop ? item.count : 0); // item is named "discard", we don't want the item
 	/* groups */
-	for (map<int, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
+	for (map<unsigned char, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
 		/* figure out how many items we already got in this group */
 		int count = 0;
 		int item_in_group = false;

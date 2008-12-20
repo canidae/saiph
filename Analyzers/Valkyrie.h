@@ -15,7 +15,7 @@ class Valkyrie : public Analyzer {
 	private:
 		Saiph *saiph;
 		Request req;
-		int loot_group;
+		unsigned char loot_group;
 
 		void setupAmulet();
 		void setupArmor();
