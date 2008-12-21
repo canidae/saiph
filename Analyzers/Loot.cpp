@@ -70,25 +70,6 @@ void Loot::analyze() {
 			return;
 		}
 		/* TODO: get down elbereth if there's a stash here */
-	} else if (saiph->world->player.encumbrance > UNENCUMBERED || saiph->inventory.size() >= KNAPSACK_LIMIT) {
-		/* we're not standing on stairs, but we're burdened or worse or knapsack is full.
-		 * go to stairs if we got unwanted stuff */
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (dropItem(i->second) == 0)
-				continue;
-			/* we got unwanted stuff */
-			map<Point, int>::iterator up = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin();
-			if (up != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end()) {
-				int moves = 0;
-				unsigned char dir = saiph->shortestPath(up->first, false, &moves);
-				if (dir != ILLEGAL_DIRECTION) {
-					command = dir;
-					priority = LOOT_DROP_ITEMS_PRIORITY;
-					return;
-				}
-			}
-			break;
-		}
 	}
 
 	if (priority >= LOOT_VISIT_STASH_PRIORITY || saiph->world->player.hallucinating || saiph->world->player.blind)
