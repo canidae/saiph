@@ -1,5 +1,4 @@
 #include "Analyzer.h"
-#include "Debug.h"
 #include "Globals.h"
 
 using namespace std;

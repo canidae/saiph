@@ -14,6 +14,7 @@
 #include "../Analyzer.h"
 
 class Item;
+class Request;
 class Saiph;
 
 class Beatitude : public Analyzer {
@@ -22,6 +23,7 @@ class Beatitude : public Analyzer {
 
 		void analyze();
 		void parseMessages(const std::string &messages);
+		bool request(const Request &request);
 
 	private:
 		Saiph *saiph;

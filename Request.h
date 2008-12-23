@@ -20,6 +20,7 @@
 #define REQUEST_QUAFF_HEALING 16
 #define REQUEST_CALL_ITEM 17
 #define REQUEST_NAME_ITEM 18
+#define REQUEST_BEATIFY_ITEMS 19
 
 #include <string>
 #include "Coordinate.h"

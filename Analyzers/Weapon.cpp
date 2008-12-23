@@ -19,9 +19,6 @@ void Weapon::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		wield_weapon = false;
-	} else if (command == WIELD && !command2.empty()) {
-		/* in case we didn't get to wield the weapon */
-		priority = WEAPON_WIELD_PRIORITY;
 	} else if (saiph->inventory_changed || wield_weapon) {
 		wieldWeapon();
 	}

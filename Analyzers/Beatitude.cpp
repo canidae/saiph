@@ -1,5 +1,6 @@
 #include "Beatitude.h"
 #include "../Globals.h"
+#include "../Request.h"
 #include "../Saiph.h"
 #include "../World.h"
 
@@ -11,6 +12,7 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 
 /* methods */
 void Beatitude::analyze() {
+	/* TODO: this should go, other analyzers will have to request beatifying items */
 	if (saiph->world->player.blind)
 		return; // no buc-testing while blind
 
@@ -37,15 +39,6 @@ void Beatitude::analyze() {
 	/* path to nearest altar (if we haven't already) */
 	if (dir == ILLEGAL_DIRECTION)
 		dir = saiph->shortestPath(ALTAR, true, &moves);
-	if (moves == 1) {
-		/* we pathed to the altar allowing last move to be illegal,
-		 * eg. priest standing on altar.
-		 * when we're 1 step away we'll path again, not allowing
-		 * last move to be illegal (to avoid hitting priest) */
-		/* FIXME
-		 * if eg. a boulder is on the altar, we're screwed */
-		dir = saiph->shortestPath(ALTAR, false, &moves);
-	}
 	if (dir == ILLEGAL_DIRECTION)
 		return; // don't know of any altars
 	if (dir == NOWHERE) {
@@ -75,6 +68,14 @@ void Beatitude::parseMessages(const string &messages) {
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_PAGE;
 	}
+}
+
+bool Beatitude::request(const Request &request) {
+	if (request.request == REQUEST_BEATIFY_ITEMS) {
+		check_beatitude = true;
+		return true;
+	}
+	return false;
 }
 
 /* private methods */

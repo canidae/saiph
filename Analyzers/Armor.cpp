@@ -25,9 +25,6 @@ void Armor::parseMessages(const string &messages) {
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (command == WEAR) {
-		/* in case we didn't get to wear the armor */
-		priority = ARMOR_WEAR_PRIORITY;
 	} else if (saiph->world->question && (pos = messages.find(MESSAGE_FOOCUBUS_QUESTION, 0)) != string::npos) {
 		/* A foocubus wants to remove something. Check the beatitude of
 		 * that piece of armor! */
@@ -82,6 +79,9 @@ void Armor::parseMessages(const string &messages) {
 		saiph->request(req);
 	} else if (saiph->inventory_changed || wear_armor) {
 		wearArmor();
+	} else if (command == WEAR) {
+		/* in case we didn't get to wear the armor */
+		priority = ARMOR_WEAR_PRIORITY;
 	}
 }
 
@@ -148,6 +148,27 @@ void Armor::wearArmor() {
 			}
 		}
 	}
+
+	for (int s = 0; s < ARMOR_SLOTS; ++s) {
+		/* tell Loot to drop unwanted armor */
+		for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
+			req.request = REQUEST_ITEM_PICKUP;
+			req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
+			req.data = a->name;
+			if (a->keep || a->priority + 0 > best_armor[s]) {
+				/* we [still] want this armor.
+				 * in case we lost good armor and now wear less good
+				 * armor we'll need to tell Loot to pick up this armor */
+				req.value = a->amount;
+			} else {
+				/* we don't want to keep this armor and it'll never
+				 * be better than the armor we currently got */
+				req.value = 0;
+			}
+			saiph->request(req);
+		}
+	}
+
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
 			continue; // wearing best armor or got no armor to wield
@@ -191,24 +212,6 @@ void Armor::wearArmor() {
 		command2 = best_key[s];
 		priority = ARMOR_WEAR_PRIORITY;
 		wear_armor = true;
-
-		/* tell Loot to drop unwanted armor */
-		for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
-			req.request = REQUEST_ITEM_PICKUP;
-			req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
-			req.data = a->name;
-			if (a->keep || a->priority + 0 > best_armor[s]) {
-				/* we [still] want this armor.
-				 * in case we lost good armor and now wear less good
-				 * armor we'll need to tell Loot to pick up this armor */
-				req.value = a->amount;
-			} else {
-				/* we don't want to keep this armor and it'll never
-				 * be better than the armor we currently got */
-				req.value = 0;
-			}
-			saiph->request(req);
-		}
 		return;
 	}
 	/* nothing to wear */
