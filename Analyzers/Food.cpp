@@ -229,11 +229,8 @@ void Food::analyze() {
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	prev_monster_loc.clear();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-		map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.find(m->first);
-		if (s != saiph->levels[saiph->position.level].stashes.end()) {
-			/* there's a stash here, might be an old corpse in it, don't gamble */
-			continue;
-		}
+		if (saiph->levels[saiph->position.level].stashes.find(m->first) != saiph->levels[saiph->position.level].stashes.end())
+			continue; // there's a stash here, might be an old corpse in it, don't gamble
 		prev_monster_loc[m->first] = m->second.symbol;
 	}
 	/* are we hungry? */
@@ -363,20 +360,19 @@ void Food::parseMessages(const string &messages) {
 		 * but now is a stash instead */
 		if (messages.rfind("  The ", pos) != string::npos || messages.find("!  ", pos) != string::npos) {
 			for (map<Point, unsigned char>::iterator p = prev_monster_loc.begin(); p != prev_monster_loc.end(); ++p) {
-				if (saiph->levels[saiph->position.level].stashes.find(p->first) != saiph->levels[saiph->position.level].stashes.end()) {
-					/* there's a stash where we last saw the monster.
-					 * unless the monster symbol is 'Z', 'M' or 'V', it's probably not tainted.
-					 * we've already checked that it wasn't a stash here before the monster went there */
-					if (p->second == 'Z' || p->second == 'M' || p->second == 'V')
-						corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME; // tainted corpse
-					else if (corpse_loc.find(p->first) == corpse_loc.end())
+				if (p->second == 'Z' || p->second == 'M' || p->second == 'V') {
+					/* wherever monsters with symbol Z, M or V step, we'll mark as "tainted corpse" */
+					corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
+				} else if (saiph->levels[saiph->position.level].stashes.find(p->first) != saiph->levels[saiph->position.level].stashes.end()) {
+					/* there's a stash where we last saw the monster, may be corpse there */
+					if (corpse_loc.find(p->first) == corpse_loc.end())
 						corpse_loc[p->first] = saiph->world->player.turn;
 				}
 			}
 		}
-		/* also clear "corpse_loc" on squares where there are no items */
+		/* also clear "corpse_loc" on squares where there are no items nor monsters */
 		for (map<Point, int>::iterator c = corpse_loc.begin(); c != corpse_loc.end(); ++c) {
-			if (saiph->levels[saiph->position.level].stashes.find(c->first) == saiph->levels[saiph->position.level].stashes.end())
+			if (saiph->levels[saiph->position.level].monsters.find(c->first) == saiph->levels[saiph->position.level].monsters.end() && saiph->levels[saiph->position.level].stashes.find(c->first) == saiph->levels[saiph->position.level].stashes.end())
 				corpse_loc.erase(c->first);
 		}
 	} else if (saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {

@@ -11,8 +11,11 @@
 #include "../Request.h"
 
 /* struct for wearing armor */
-struct WearArmor {
-	int beatitude;
+struct ArmorData {
+	int beatitude; // beatitudes we'll accept
+	int priority; // wear armor with highest priority, priority += enchantment
+	int amount; // how many of this armor we want
+	bool keep; // if we should keep this armor even if we find better armor
 	std::string name;
 };
 
@@ -22,14 +25,13 @@ class Armor : public Analyzer {
 	public:
 		Armor(Saiph *saiph);
 
-		void analyze();
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
 		Saiph *saiph;
-		bool wear_more;
-		std::vector<WearArmor> armor[ARMOR_SLOTS];
+		bool wear_armor;
+		std::vector<ArmorData> armor[ARMOR_SLOTS];
 		std::string command2;
 		Request req;
 

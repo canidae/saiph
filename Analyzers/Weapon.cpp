@@ -19,11 +19,11 @@ void Weapon::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		wield_weapon = false;
-	} else if (saiph->inventory_changed || wield_weapon) {
-		wieldWeapon();
 	} else if (command == WIELD && !command2.empty()) {
 		/* in case we didn't get to wield the weapon */
 		priority = WEAPON_WIELD_PRIORITY;
+	} else if (saiph->inventory_changed || wield_weapon) {
+		wieldWeapon();
 	}
 }
 
@@ -66,7 +66,7 @@ void Weapon::wieldWeapon() {
 		for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 			if ((w->beatitude & i->second.beatitude) == 0)
 				continue;
-			if ((w->name != i->second.name && w->name != i->second.named) || w->priority + i->second.enchantment - i->second.damage < best_priority)
+			if ((w->name != i->second.name && w->name != i->second.named) || w->priority + i->second.enchantment - i->second.damage <= best_priority)
 				continue;
 			best_key = i->first;
 			best_priority = w->priority + i->second.enchantment - i->second.damage;

@@ -5,17 +5,10 @@
 using namespace std;
 
 /* constructors/destructor */
-Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_more(false) {
+Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_armor(false) {
 }
 
 /* methods */
-void Armor::analyze() {
-	if (saiph->inventory_changed || wear_more) {
-		wear_more = true;
-		wearArmor();
-	}
-}
-
 void Armor::parseMessages(const string &messages) {
 	string::size_type pos;
 	if (saiph->world->question && !command2.empty() && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
@@ -87,18 +80,29 @@ void Armor::parseMessages(const string &messages) {
 		/* took of last armor, mark inventory dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+	} else if (saiph->inventory_changed || wear_armor) {
+		wearArmor();
 	}
 }
 
 bool Armor::request(const Request &request) {
 	if (request.request == REQUEST_ARMOR_WEAR) {
 		/* player wish to wear this armor */
-		if (request.value < 0 || request.value >= ARMOR_SLOTS)
+		if ((int) request.key < 0 || (int) request.key >= ARMOR_SLOTS)
 			return false;
-		WearArmor wa;
-		wa.beatitude = request.beatitude;
-		wa.name = request.data;
-		armor[request.value].push_back(wa);
+		ArmorData ad;
+		ad.beatitude = request.beatitude;
+		ad.priority = request.priority;
+		ad.amount = request.value;
+		ad.keep = request.sustain;
+		ad.name = request.data;
+		armor[(int) request.key].push_back(ad);
+		/* tell the loot analyzer to pick up this armor too */
+		req.request = REQUEST_ITEM_PICKUP;
+		req.value = request.value;
+		req.beatitude = request.beatitude | BEATITUDE_UNKNOWN;
+		req.data = request.data;
+		saiph->request(req);
 		return true;
 	}
 	return false;
@@ -109,7 +113,7 @@ bool Armor::isCursed(int armor_slot) {
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		if (i->second.additional != "being worn")
 			continue;
-		for (vector<WearArmor>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
+		for (vector<ArmorData>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
 			if (armor[armor_slot][a].name != i->second.name && armor[armor_slot][a].name != i->second.named)
 				continue;
 			return i->second.beatitude == CURSED;
@@ -127,20 +131,20 @@ void Armor::wearArmor() {
 	unsigned char best_key[ARMOR_SLOTS] = {0};
 	int best_armor[ARMOR_SLOTS];
 	for (int s = 0; s < ARMOR_SLOTS; ++s)
-		best_armor[s] = INT_MAX;
+		best_armor[s] = INT_MIN;
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
-			for (vector<WearArmor>::size_type a = 0; a < armor[s].size(); ++a) {
-				if (armor[s][a].name != i->second.name && armor[s][a].name != i->second.named)
+			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
+				if (a->name != i->second.name && a->name != i->second.named)
 					continue;
 				if (i->second.additional == "being worn")
 					worn[s] = i->first;
-				if ((int) a >= best_armor[s])
+				if (a->priority + i->second.enchantment - i->second.damage <= best_armor[s])
 					continue;
-				if ((armor[s][a].beatitude & i->second.beatitude) == 0)
+				if ((a->beatitude & i->second.beatitude) == 0)
 					continue;
 				best_key[s] = i->first;
-				best_armor[s] = a;
+				best_armor[s] = a->priority + i->second.enchantment - i->second.damage;
 			}
 		}
 	}
@@ -186,9 +190,28 @@ void Armor::wearArmor() {
 		command = WEAR;
 		command2 = best_key[s];
 		priority = ARMOR_WEAR_PRIORITY;
+		wear_armor = true;
+
+		/* tell Loot to drop unwanted armor */
+		for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
+			req.request = REQUEST_ITEM_PICKUP;
+			req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
+			req.data = a->name;
+			if (a->keep || a->priority + 0 > best_armor[s]) {
+				/* we [still] want this armor.
+				 * in case we lost good armor and now wear less good
+				 * armor we'll need to tell Loot to pick up this armor */
+				req.value = a->amount;
+			} else {
+				/* we don't want to keep this armor and it'll never
+				 * be better than the armor we currently got */
+				req.value = 0;
+			}
+			saiph->request(req);
+		}
 		return;
 	}
 	/* nothing to wear */
-	wear_more = false;
+	wear_armor = false;
 	command.clear();
 }

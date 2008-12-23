@@ -369,6 +369,10 @@ void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
+	if (data_size <= 0) {
+		Debug::error() << "No data received, quitting" << endl;
+		exit(42);
+	}
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
 	/* also, we do this in two loops because otherwise it flickers a lot */

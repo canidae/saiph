@@ -699,7 +699,6 @@ void Level::init() {
 	passable[(unsigned char) IRON_BALL] = true;
 	passable[(unsigned char) CHAINS] = true;
 	passable[(unsigned char) VENOM] = true;
-	passable[(unsigned char) PET] = true;
 	dungeon[(unsigned char) VERTICAL_WALL] = true;
 	dungeon[(unsigned char) HORIZONTAL_WALL] = true;
 	dungeon[(unsigned char) FLOOR] = true;
