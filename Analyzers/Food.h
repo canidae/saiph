@@ -63,7 +63,7 @@ class Food : public Analyzer {
 		std::vector<std::string> eat_order;
 		std::map<std::string, int> corpse_data;
 		std::map<Point, unsigned char> prev_monster_loc;
-		std::map<Point, int> safe_eat_loc;
+		std::map<Point, int> corpse_loc;
 		Request req;
 
 		bool safeToEat(const std::string &corpse);
