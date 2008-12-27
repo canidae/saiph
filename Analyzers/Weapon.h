@@ -1,7 +1,5 @@
 #ifndef WEAPON_H
 #define WEAPON_H
-/* priorities */
-#define WEAPON_WIELD_PRIORITY 475
 /* messages */
 #define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
 

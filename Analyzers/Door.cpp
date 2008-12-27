@@ -52,12 +52,12 @@ void Door::analyze() {
 			}
 			command2 = dir;
 			position = d->first;
-			priority = DOOR_OPEN_PRIORITY;
+			priority = PRIORITY_DOOR_OPEN;
 			return;
 		} else if (moves < least_moves) {
 			/* go to door */
 			command = dir;
-			priority = DOOR_OPEN_PRIORITY;
+			priority = PRIORITY_DOOR_OPEN;
 			least_moves = moves;
 		}
 	}

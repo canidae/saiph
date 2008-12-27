@@ -1,10 +1,5 @@
 #ifndef LOOT_H
 #define LOOT_H
-/* priorities */
-#define LOOT_LOOT_STASH_PRIORITY 450
-#define LOOT_DROP_ITEMS_PRIORITY 245
-#define LOOT_VISIT_STASH_PRIORITY 250
-#define LOOT_PROTECT_STAIR_STASH_PRIORITY 550
 /* messages */
 #define LOOT_NAME_INDIVIDUAL_OBECT "  Name an individual object? [ynq] (q)  "
 #define LOOT_ITEM_TO_NAME "  What do you want to name? "

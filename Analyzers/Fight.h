@@ -2,11 +2,6 @@
 #define FIGHT_H
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
-/* priorities */
-#define FIGHT_ATTACK_PRIORITY 450
-#define FIGHT_BLUE_E_PRIORITY 15
-#define FIGHT_MOVE_PRIORITY 325
-#define FIGHT_PICKUP_PRIORITY 425
 /* used for finding thrown weapons */
 #define FIGHT_NOT_CHECKED_THROWN_WEAPONS 0
 #define FIGHT_NO_THROWN_WEAPONS 1

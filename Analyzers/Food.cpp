@@ -244,15 +244,15 @@ void Food::analyze() {
 					command2 = i->first;
 					switch (saiph->world->player.hunger) {
 						case HUNGRY:
-							priority = FOOD_EAT_HUNGRY_PRIORITY;
+							priority = PRIORITY_FOOD_EAT_HUNGRY;
 							break;
 
 						case WEAK:
-							priority = FOOD_EAT_WEAK_PRIORITY;
+							priority = PRIORITY_FOOD_EAT_WEAK;
 							break;
 
 						default:
-							priority = FOOD_EAT_FAINTING_PRIORITY;
+							priority = PRIORITY_FOOD_EAT_FAINTING;
 							break;
 					}
 					return;
@@ -264,11 +264,11 @@ void Food::analyze() {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
 			req.request = REQUEST_PRAY;
-			req.priority = FOOD_PRAY_FOR_FOOD;
+			req.priority = PRIORITY_FOOD_PRAY_FOR_FOOD;
 			saiph->request(req);
 		}
 	}
-	if (saiph->on_ground != NULL && priority < FOOD_EAT_CORPSE_PRIORITY) {
+	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE) {
 		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
 		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
@@ -284,7 +284,7 @@ void Food::analyze() {
 						/* it is, and we know we can eat corpses on this position */
 						command = EAT;
 						command2 = i->name;
-						priority = FOOD_EAT_HUNGRY_PRIORITY;
+						priority = PRIORITY_FOOD_EAT_CORPSE;
 						return;
 					}
 				}

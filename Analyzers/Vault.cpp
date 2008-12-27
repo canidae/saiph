@@ -39,7 +39,7 @@ void Vault::parseMessages(const string &messages) {
 	} else if (drop_gold && !look_at_ground) {
 		/* bring up drop menu */
 		command = DROP;
-		priority = VAULT_GO_OUT_PRIORITY;
+		priority = PRIORITY_VAULT_GO_OUT;
 	} else if (look_at_ground) {
 		/* we'll look at ground after dropping the gold.
 		 * this makes us aware of the stash,
@@ -69,7 +69,7 @@ void Vault::parseMessages(const string &messages) {
 					command = REST;
 				else
 					command = dir;
-				priority = VAULT_GO_OUT_PRIORITY;
+				priority = PRIORITY_VAULT_GO_OUT;
 				return;
 			}
 		}

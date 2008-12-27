@@ -33,12 +33,12 @@ void Excalibur::analyze() {
 		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;
-		priority = EXCALIBUR_DIP_PRIORITY;
+		priority = PRIORITY_EXCALIBUR_DIP;
 	} else {
 		/* move towards fountain */
 		command = dir;
 		command2.clear();
-		priority = EXCALIBUR_DIP_PRIORITY;
+		priority = PRIORITY_EXCALIBUR_DIP;
 	}
 }
 

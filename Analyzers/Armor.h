@@ -1,8 +1,5 @@
 #ifndef ARMOR_H
 #define ARMOR_H
-/* priorities */
-#define ARMOR_PICKUP_PRIORITY 425
-#define ARMOR_WEAR_PRIORITY 225
 
 #include <string>
 #include <vector>

@@ -92,7 +92,7 @@ void Ring::wearRing() {
 	if (ring_on_right != 0 && ring_on_left != 0) {
 		/* must remove one ring before we can put on the new ring */
 		command = REMOVE;
-		priority = RING_WEAR_PRIORITY;
+		priority = PRIORITY_RING_WEAR;
 		/* in case we get question about which ring to remove */
 		if (ring_on_right_pri < ring_on_left_pri)
 			command2 = ring_on_left;
@@ -100,7 +100,7 @@ void Ring::wearRing() {
 			command2 = ring_on_right;
 	} else {
 		/* no need to remove any rings, just put on the new ring */
-		priority = RING_WEAR_PRIORITY;
+		priority = PRIORITY_RING_WEAR;
 		command =  PUT_ON;
 		command2 = best_key;
 	}

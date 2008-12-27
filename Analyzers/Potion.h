@@ -1,7 +1,5 @@
 #ifndef POTION_H
 #define POTION_H
-/* priorities */
-#define POTION_QUAFF_GAIN_LEVEL 400
 /* messages */
 #define POTION_CALL_END " potion:  "
 #define POTION_CALL_POTION1 "  Call a "

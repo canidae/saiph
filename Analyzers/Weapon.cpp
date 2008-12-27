@@ -61,9 +61,16 @@ void Weapon::wieldWeapon() {
 			}
 		}
 		for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
+			if (w->name != i->second.name && w->name != i->second.named)
+				continue;
+			else if (w->beatitude == BEATITUDE_UNKNOWN) {
+				/* weapon with unknown beatitude, request it beatified */
+				req.request = REQUEST_BEATIFY_ITEMS;
+				saiph->request(req);
+			}
 			if ((w->beatitude & i->second.beatitude) == 0)
 				continue;
-			if ((w->name != i->second.name && w->name != i->second.named) || w->priority + i->second.enchantment - i->second.damage <= best_priority)
+			else if (w->priority + i->second.enchantment - i->second.damage <= best_priority)
 				continue;
 			best_key = i->first;
 			best_priority = w->priority + i->second.enchantment - i->second.damage;
@@ -80,14 +87,14 @@ void Weapon::wieldWeapon() {
 	wield_weapon = true;
 	command = WIELD;
 	command2 = best_key;
-	priority = WEAPON_WIELD_PRIORITY;
+	priority = PRIORITY_WEAPON_WIELD;
 
 	/* tell Loot to drop unwanted weapons */
 	for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 		req.request = REQUEST_ITEM_PICKUP;
 		req.beatitude = w->beatitude | BEATITUDE_UNKNOWN;
 		req.data = w->name;
-		if (w->keep || w->priority + 7 > best_priority) {
+		if (w->keep || w->priority + 7 >= best_priority) {
 			/* we [still] want this weapon.
 			 * in case we lost a good weapon and now wield a less good
 			 * weapon we'll need to tell Loot to pick up this weapon */

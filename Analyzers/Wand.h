@@ -1,7 +1,5 @@
 #ifndef WAND_H
 #define WAND_H
-/* priorities */
-#define WAND_PICKUP_PRIORITY 425
 
 #include <string>
 #include "../Analyzer.h"

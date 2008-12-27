@@ -2,8 +2,6 @@
 #define EXCALIBUR_H
 /* long sword */
 #define EXCALIBUR_LONG_SWORD "long sword"
-/* priorities */
-#define EXCALIBUR_DIP_PRIORITY 225
 
 #include <string>
 #include "../Analyzer.h"

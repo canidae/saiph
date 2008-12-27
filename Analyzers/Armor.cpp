@@ -81,7 +81,7 @@ void Armor::parseMessages(const string &messages) {
 		wearArmor();
 	} else if (command == WEAR) {
 		/* in case we didn't get to wear the armor */
-		priority = ARMOR_WEAR_PRIORITY;
+		priority = PRIORITY_ARMOR_WEAR;
 	}
 }
 
@@ -137,11 +137,16 @@ void Armor::wearArmor() {
 			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
 				if (a->name != i->second.name && a->name != i->second.named)
 					continue;
-				if (i->second.additional == "being worn")
+				else if (i->second.additional == "being worn")
 					worn[s] = i->first;
+				if (a->beatitude == BEATITUDE_UNKNOWN) {
+					/* armor with unknown beatitude, request it beatified */
+					req.request = REQUEST_BEATIFY_ITEMS;
+					saiph->request(req);
+				}
 				if (a->priority + i->second.enchantment - i->second.damage <= best_armor[s])
 					continue;
-				if ((a->beatitude & i->second.beatitude) == 0)
+				else if ((a->beatitude & i->second.beatitude) == 0)
 					continue;
 				best_key[s] = i->first;
 				best_armor[s] = a->priority + i->second.enchantment - i->second.damage;
@@ -155,7 +160,7 @@ void Armor::wearArmor() {
 			req.request = REQUEST_ITEM_PICKUP;
 			req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
 			req.data = a->name;
-			if (a->keep || a->priority + 0 > best_armor[s]) {
+			if (a->keep || a->priority + 0 >= best_armor[s]) {
 				/* we [still] want this armor.
 				 * in case we lost good armor and now wear less good
 				 * armor we'll need to tell Loot to pick up this armor */
@@ -186,7 +191,7 @@ void Armor::wearArmor() {
 				/* yes, we must take it off first */
 				command = TAKE_OFF;
 				command2 = worn[ARMOR_CLOAK];
-				priority = ARMOR_WEAR_PRIORITY;
+				priority = PRIORITY_ARMOR_WEAR;
 				return;
 			}
 			if (s == ARMOR_SHIRT) {
@@ -195,7 +200,7 @@ void Armor::wearArmor() {
 					/* yes, we must take it off first */
 					command = TAKE_OFF;
 					command2 = worn[ARMOR_SUIT];
-					priority = ARMOR_WEAR_PRIORITY;
+					priority = PRIORITY_ARMOR_WEAR;
 					return;
 				}
 			}
@@ -204,13 +209,13 @@ void Armor::wearArmor() {
 			/* we'll have to take this armor off first */
 			command = TAKE_OFF;
 			command2 = worn[s];
-			priority = ARMOR_WEAR_PRIORITY;
+			priority = PRIORITY_ARMOR_WEAR;
 			return;
 		}
 		/* we should put on this piece of armor */
 		command = WEAR;
 		command2 = best_key[s];
-		priority = ARMOR_WEAR_PRIORITY;
+		priority = PRIORITY_ARMOR_WEAR;
 		wear_armor = true;
 		return;
 	}

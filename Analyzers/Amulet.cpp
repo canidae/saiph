@@ -67,12 +67,12 @@ void Amulet::wearAmulet() {
 	if (amulet_worn != 0) {
 		/* must take off amulet we're wearing first */
 		command = REMOVE;
-		priority = AMULET_WEAR_PRIORITY;
+		priority = PRIORITY_AMULET_WEAR;
 		command2 = amulet_worn;
 	} else {
 		/* put on best amulet */
 		command = PUT_ON;
-		priority = AMULET_WEAR_PRIORITY;
+		priority = PRIORITY_AMULET_WEAR;
 		command2 = best_key;
 	}
 }

@@ -9,7 +9,7 @@ using namespace std;
 /* constructors/destructor */
 Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 	/* clear search map */
-	for (int l = 0; l < LEVELS; ++l) {
+	for (int l = 0; l < EXPLORE_LEVELS; ++l) {
 		for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 			for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c)
 				search[l][r][c] = 0;
@@ -31,7 +31,7 @@ void Explore::analyze() {
 	unsigned char best_move = 0;
 
 	/* find rogue stairs if we're on rogue level */
-	if (priority < EXPLORE_PRIORITY_ROGUE_STAIRS && saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
+	if (priority < PRIORITY_EXPLORE_FIND_ROGUE_STAIRS && saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[ROGUE_STAIRS].begin(); s != saiph->levels[saiph->position.level].symbols[ROGUE_STAIRS].end(); ++s) {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
@@ -40,14 +40,14 @@ void Explore::analyze() {
 					best_move = string(LOOK)[0]; // slightly ugly, but meh
 				else
 					best_move = dir;
-				priority = EXPLORE_PRIORITY_ROGUE_STAIRS;
+				priority = PRIORITY_EXPLORE_FIND_ROGUE_STAIRS;
 				break;
 			}
 		}
 	}
 
 	/* explore upstairs */
-	if (priority < EXPLORE_PRIORITY_STAIRS_UP && saiph->levels[saiph->position.level].depth != 1) {
+	if (priority < PRIORITY_EXPLORE_STAIRS_UP && saiph->levels[saiph->position.level].depth != 1) {
 		/* explore upstairs unless on depth 1 */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_UP].end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
@@ -59,13 +59,13 @@ void Explore::analyze() {
 					best_move = UP;
 				else
 					best_move = dir;
-				priority = EXPLORE_PRIORITY_STAIRS_UP;
+				priority = PRIORITY_EXPLORE_STAIRS_UP;
 				break;
 			}
 		}
 	}
 
-	if (priority <= EXPLORE_PRIORITY_EXPLORE) {
+	if (priority < PRIORITY_EXPLORE_EXPLORE) {
 		int min_moves = INT_MAX;
 		int best_type = INT_MAX;
 		for (map<Point, unsigned char>::iterator w = saiph->levels[saiph->position.level].walkable.begin(); w != saiph->levels[saiph->position.level].walkable.end(); ++w) {
@@ -204,13 +204,13 @@ void Explore::analyze() {
 				min_moves = moves;
 				best_type = type;
 				best_move = dir;
-				priority = (type < 2 ? EXPLORE_PRIORITY_EXPLORE : EXPLORE_PRIORITY_SEARCH);
+				priority = (type < 2 ? PRIORITY_EXPLORE_EXPLORE : PRIORITY_EXPLORE_SEARCH);
 			}
 		}
 	}
 
 	/* explore downstairs */
-	if (priority < EXPLORE_PRIORITY_STAIRS_DOWN) {
+	if (priority < PRIORITY_EXPLORE_STAIRS_DOWN) {
 		/* explore downstairs unless already exploring upstairs */
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[STAIRS_DOWN].end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
@@ -222,14 +222,14 @@ void Explore::analyze() {
 					best_move = DOWN;
 				else
 					best_move = dir;
-				priority = EXPLORE_PRIORITY_STAIRS_DOWN;
+				priority = PRIORITY_EXPLORE_STAIRS_DOWN;
 				break;
 			}
 		}
 	}
 
 	/* travel */
-	if (priority < EXPLORE_PRIORITY_TRAVEL) {
+	if (priority < PRIORITY_EXPLORE_TRAVEL) {
 		unsigned char move = ILLEGAL_DIRECTION;
 		if (!mines_explored) {
 			/* explore mines */
@@ -257,7 +257,7 @@ void Explore::analyze() {
 		/* set best_move & priority */
 		if (move != ILLEGAL_DIRECTION) {
 			best_move = move;
-			priority = EXPLORE_PRIORITY_TRAVEL;
+			priority = PRIORITY_EXPLORE_TRAVEL;
 		}
 	}
 

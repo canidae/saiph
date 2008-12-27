@@ -15,9 +15,10 @@ void Loot::analyze() {
 		/* set visit_stash when we stand on a stash */
 		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
 	}
-	/* check inventory/stash if it's dirty */
-	if (priority >= PRIORITY_LOOK)
+	/* already got a higher priority or are we burdened or worse? */
+	if (priority >= PRIORITY_LOOK || saiph->world->player.encumbrance >= BURDENED)
 		return;
+	/* check inventory/stash if it's dirty */
 	if (dirty_inventory) {
 		checkInventory();
 		return;
@@ -34,7 +35,7 @@ void Loot::analyze() {
 	}
 
 	/* loot stash we're standing on */
-	if (priority >= LOOT_LOOT_STASH_PRIORITY)
+	if (priority >= PRIORITY_LOOT_LOOT_STASH)
 		return;
 	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT) {
 		/* if we see a shopkeeper then don't loot */
@@ -50,14 +51,14 @@ void Loot::analyze() {
 				if (pickupItem(*i) == 0)
 					continue;
 				command = PICKUP;
-				priority = LOOT_LOOT_STASH_PRIORITY;
+				priority = PRIORITY_LOOT_LOOT_STASH;
 				return;
 			}
 		}
 	}
 
 	/* drop unwanted stuff on STAIRS_UP and get safe Elbereth there */
-	if (priority >= LOOT_DROP_ITEMS_PRIORITY)
+	if (priority >= PRIORITY_LOOT_DROP_ITEMS)
 		return;
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
 		/* standing on stairs, drop unwanted stuff if any */
@@ -66,13 +67,13 @@ void Loot::analyze() {
 				continue;
 			/* we got unwanted stuff */
 			command = DROP;
-			priority = LOOT_DROP_ITEMS_PRIORITY;
+			priority = PRIORITY_LOOT_DROP_ITEMS;
 			return;
 		}
 		/* TODO: get down elbereth if there's a stash here */
 	}
 
-	if (priority >= LOOT_VISIT_STASH_PRIORITY || saiph->world->player.hallucinating || saiph->world->player.blind)
+	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind)
 		return;
 	/* visit new/changed stashes unless hallucinating or blind */
 	int min_moves = INT_MAX;
@@ -90,7 +91,7 @@ void Loot::analyze() {
 			/* move towards stash */
 			min_moves = moves;
 			command = dir;
-			priority = LOOT_VISIT_STASH_PRIORITY;
+			priority = PRIORITY_LOOT_VISIT_STASH;
 		}
 	}
 }

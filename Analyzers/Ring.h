@@ -1,8 +1,5 @@
 #ifndef RING_H
 #define RING_H
-/* priorities */
-#define RING_PICKUP_PRIORITY 425
-#define RING_WEAR_PRIORITY 225
 
 #include <string>
 #include <vector>

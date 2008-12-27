@@ -145,13 +145,13 @@ void Valkyrie::setupArmor() {
 	req.data = "white dragon scale mail";
 	req.priority = 12;
 	saiph->request(req);
+	req.beatitude = BLESSED | UNCURSED;
 	req.data = "dwarvish mithril-coat";
 	req.priority = 8;
 	saiph->request(req);
 	req.data = "elven mithril-coat";
 	req.priority = 7;
 	saiph->request(req);
-	req.beatitude = BLESSED | UNCURSED;
 	req.data = "splint mail";
 	req.priority = 6;
 	saiph->request(req);

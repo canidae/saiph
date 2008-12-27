@@ -1,8 +1,5 @@
 #ifndef AMULET_H
 #define AMULET_H
-/* priorities */
-#define AMULET_PICKUP_PRIORITY 425
-#define AMULET_WEAR_PRIORITY 225
 
 #include <string>
 #include <vector>

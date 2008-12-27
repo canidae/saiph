@@ -13,13 +13,6 @@
 #define FOOD_YOU_KILL "  You kill the "
 /* how old corpses may be */
 #define FOOD_CORPSE_EAT_TIME 30
-/* priorities */
-#define FOOD_EAT_CORPSE_PRIORITY 435
-#define FOOD_PICKUP_PRIORITY 425
-#define FOOD_EAT_HUNGRY_PRIORITY 350
-#define FOOD_EAT_WEAK_PRIORITY 725
-#define FOOD_EAT_FAINTING_PRIORITY 750
-#define FOOD_PRAY_FOR_FOOD 950
 /* effects we should avoid unless we're protected */
 #define FOOD_PICKUP_INSTEAD 0x00001 // used for lichen & lizard corpses
 #define FOOD_ACIDIC 0x00002

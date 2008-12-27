@@ -19,13 +19,13 @@ void Health::analyze() {
 		if (hp < hp_max * 2 / 7) {
 			/* try quaffing healing potion */
 			req.request = REQUEST_QUAFF_HEALING;
-			req.priority = HEALTH_QUAFF_FOR_HP;
+			req.priority = PRIORITY_HEALTH_QUAFF_FOR_HP;
 			if (saiph->request(req)) {
 				doing_something = true;
 			} else if (hp < 6 || hp < hp_max / 7) {
 				/* quaffing won't work... how about pray? */
 				req.request = REQUEST_PRAY;
-				req.priority = HEALTH_PRAY_FOR_HP;
+				req.priority = PRIORITY_HEALTH_PRAY_FOR_HP;
 				if (saiph->request(req))
 					doing_something = true;
 			}
@@ -33,7 +33,7 @@ void Health::analyze() {
 		if (!doing_something) {
 			/* try elberething */
 			req.request = REQUEST_ELBERETH_OR_REST;
-			req.priority = HEALTH_REST_FOR_HP_LOW;
+			req.priority = PRIORITY_HEALTH_REST_FOR_HP_LOW;
 			if (saiph->request(req))
 				resting = true;
 		} else {
@@ -49,17 +49,17 @@ void Health::analyze() {
 	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {
 		/* apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
-		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? HEALTH_CURE_DEADLY : HEALTH_CURE_NON_DEADLY;
+		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
 		if (!saiph->request(req) && (saiph->world->player.foodpoisoned || saiph->world->player.ill)) {
 			/* crap. it's deadly, and unihorn won't work. try eating eucalyptus leaf */
 			req.request = REQUEST_EAT;
-			req.priority = HEALTH_CURE_DEADLY;
+			req.priority = PRIORITY_HEALTH_CURE_DEADLY;
 			req.data = "eucalyptus leaf";
 			if (saiph->request(req))
 				return; // yay, it'll work
 			/* no eucalyptus leaf, try praying */
 			req.request = REQUEST_PRAY;
-			req.priority = HEALTH_CURE_DEADLY;
+			req.priority = PRIORITY_HEALTH_CURE_DEADLY;
 			saiph->request(req);
 		}
 	}
@@ -69,7 +69,7 @@ void Health::analyze() {
 			resting = false; // enough hp (greater than about 86%) to continue our journey
 		} else {
 			req.request = REQUEST_ELBERETH_OR_REST;
-			req.priority = HEALTH_REST_FOR_HP_HIGH;
+			req.priority = PRIORITY_HEALTH_REST_FOR_HP_HIGH;
 			if (!saiph->request(req)) {
 				/* noone would handle our request.
 				 * we're bones */
@@ -79,7 +79,7 @@ void Health::analyze() {
 	if (saiph->world->player.lycanthropy) {
 		/* cure lycanthropy */
 		req.request = REQUEST_EAT;
-		req.priority = HEALTH_CURE_LYCANTHROPY;
+		req.priority = PRIORITY_HEALTH_CURE_LYCANTHROPY;
 		req.data = "sprig of wolfsbane";
 		if (!saiph->request(req)) {
 			/* no? try praying instead */
@@ -90,13 +90,13 @@ void Health::analyze() {
 	if (saiph->world->player.polymorphed) {
 		/* cure polymorph */
 		req.request = REQUEST_PRAY;
-		req.priority = HEALTH_CURE_POLYMORPH;
+		req.priority = PRIORITY_HEALTH_CURE_POLYMORPH;
 		saiph->request(req);
 	}
 	if (prev_st < saiph->world->player.strength || prev_dx < saiph->world->player.dexterity || prev_co < saiph->world->player.constitution || prev_in < saiph->world->player.intelligence || prev_wi < saiph->world->player.wisdom || prev_ch < saiph->world->player.charisma) {
 		/* we lost some stats. apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
-		req.priority = HEALTH_CURE_NON_DEADLY;
+		req.priority = PRIORITY_HEALTH_CURE_NON_DEADLY;
 		saiph->request(req);
 	}
 	prev_st = saiph->world->player.strength;
@@ -111,7 +111,7 @@ void Health::parseMessages(const string &messages) {
 	if (messages.find(MESSAGE_SLOWING_DOWN, 0) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING, 0) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE, 0) != string::npos) {
 		/* bloody *trice, this is bad */
 		req.request = REQUEST_EAT;
-		req.priority = HEALTH_CURE_DEADLY;
+		req.priority = PRIORITY_HEALTH_CURE_DEADLY;
 		req.data = "partly eaten lizard corpse";
 		if (!saiph->request(req)) {
 			/* no? try again non-partly eaten */

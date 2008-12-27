@@ -1,9 +1,9 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
+
 /* dungeon limits */
 #define ROWS 24
 #define COLS 80
-#define LEVELS 128 // max amount of unique levels
 #define MAP_COL_BEGIN 0 // where the actual map width start
 #define MAP_COL_END 79 // where the actual map width end
 #define MAP_ROW_BEGIN 1 // where the actual map height begin
@@ -17,8 +17,10 @@
 #define BRANCH_ASTRAL 6
 #define BRANCH_QUEST 7
 #define KNAPSACK_LIMIT 52
+
 /* unknown tracked symbol value */
 #define UNKNOWN_SYMBOL_VALUE INT_MIN
+
 /* colors & attributes */
 #define NO_COLOR 0
 #define BOLD 1
@@ -57,19 +59,23 @@
 #define INVERSE_BOLD_MAGENTA 105
 #define INVERSE_BOLD_CYAN 106
 #define INVERSE_BOLD_WHITE 107
+
 /* beatitude */
 #define BEATITUDE_UNKNOWN 0x1
 #define CURSED 0x2
 #define UNCURSED 0x4
 #define BLESSED 0x8
+
 /* alignment */
 #define CHAOTIC -1
 #define NEUTRAL 0
 #define LAWFUL 1
+
 /* attitude */
 #define ATTITUDE_UNKNOWN 0x1
 #define HOSTILE 0x2
 #define FRIENDLY 0x4
+
 /* encumbrance */
 #define UNENCUMBERED 0
 #define BURDENED 1
@@ -77,6 +83,7 @@
 #define STRAINED 3
 #define OVERTAXED 4
 #define OVERLOADED 5
+
 /* hunger */
 #define FAINTING -3
 #define WEAK -2
@@ -84,6 +91,7 @@
 #define CONTENT 0
 #define SATIATED 1
 #define OVERSATIATED 2
+
 /* armor slots */
 #define ARMOR_SLOTS 7
 #define ARMOR_SHIRT 0
@@ -93,6 +101,7 @@
 #define ARMOR_GLOVES 4
 #define ARMOR_HELMET 5
 #define ARMOR_SHIELD 6
+
 /* directions */
 #define ILLEGAL_DIRECTION 0
 #define NW 'y'
@@ -106,6 +115,7 @@
 #define UP '<'
 #define DOWN '>'
 #define NOWHERE '.'
+
 /* commands */
 #define ILLEGAL_ACTION 0
 #define APPLY "a"
@@ -136,6 +146,7 @@
 #define HANDS "-"
 #define NO "n"
 #define YES "y"
+
 /* dungeon symbols */
 #define SOLID_ROCK ' '
 #define VERTICAL_WALL '|'
@@ -163,6 +174,7 @@
 #define UNKNOWN_TILE_DIAGONALLY_UNPASSABLE 137
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
+
 /* item symbols */
 #define ILLEGAL_ITEM 0
 #define WEAPON ')'
@@ -182,26 +194,76 @@
 #define IRON_BALL '`'
 #define CHAINS '`'
 #define VENOM '`'
+
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
 #define PET 140
-/* priorities */
-/*    0-199: explore/random/do stuff we normally wouldn't do (melee floating eye)
- *  200-399: move around, eg. attacking & looting
- *  400-599: don't move. engrave for protection, attack if not moving and protected, feed, etc
- *  600-799: don't panic, rest for hp, fix bad stuff
- *  800-999: panic, all hell is loose, pray, teleport, get the hell away
- * 1000->  : zero-turn actions, defined below
- */
+
+/* priorities
+ * "global" priorities got the structure:
+ * PRIORITY_<what_to_do>
+ * examples:
+ * PRIORITY_CONTINUE_ACTION
+ * PRIORITY_LOOK
+ *
+ * "analyzer" priorities got the structure:
+ * PRIORITY_<analyzer>_<what_to_do>
+ * examples:
+ * PRIORITY_BEATITUDE_DROP_ALTAR
+ * PRIORITY_WEAPON_WIELD */
+/* illegal, max & min */
 #define ILLEGAL_PRIORITY -1
+#define PRIORITY_MAX 999
+#define PRIORITY_MIN 0
+/* 1000->  : zero-turn actions */
 #define PRIORITY_CONTINUE_ACTION 1003
 #define PRIORITY_SELECT_ITEM 1002
 #define PRIORITY_CLOSE_PAGE 1001
 #define PRIORITY_LOOK 1000
-#define PRIORITY_MAX 999
-#define PRIORITY_MIN 0
+/* 800-999: panic, all hell is loose, pray, teleport, get the hell away */
+#define PRIORITY_VAULT_GO_OUT 999
+#define PRIORITY_FOOD_PRAY_FOR_FOOD 950
+#define PRIORITY_HEALTH_CURE_DEADLY 900
+#define PRIORITY_HEALTH_PRAY_FOR_HP 900
+/* 600-799: don't panic, rest for hp, fix bad stuff */
+#define PRIORITY_FOOD_EAT_FAINTING 750
+#define PRIORITY_FOOD_EAT_WEAK 725
+#define PRIORITY_HEALTH_REST_FOR_HP_LOW 700
+#define PRIORITY_HEALTH_QUAFF_FOR_HP 700
+/* 400-599: don't move. engrave for protection, attack if not moving and protected, feed, etc */
+#define PRIORITY_HEALTH_REST_FOR_HP_HIGH 500
+#define PRIORITY_WEAPON_WIELD 475
+#define PRIORITY_FIGHT_ATTACK 450
+#define PRIORITY_HEALTH_CURE_NON_DEADLY 450
+#define PRIORITY_LOOT_LOOT_STASH 450
+#define PRIORITY_FOOD_EAT_CORPSE 435
+#define PRIORITY_HEALTH_CURE_LYCANTHROPY 400
+#define PRIORITY_HEALTH_CURE_POLYMORPH 400
+#define PRIORITY_POTION_QUAFF_GAIN_LEVEL 400
+/* 200-399: move around, eg. attacking & looting */
+#define PRIORITY_FOOD_EAT_HUNGRY 350
+#define PRIORITY_FIGHT_MOVE 325
+#define PRIORITY_LAMP_TOGGLE 300
+#define PRIORITY_LOOT_VISIT_STASH 250
+#define PRIORITY_LOOT_DROP_ITEMS 245
+#define PRIORITY_BEATITUDE_DROP_ALTAR 230
+#define PRIORITY_AMULET_WEAR 225
+#define PRIORITY_ARMOR_WEAR 225
+#define PRIORITY_EXCALIBUR_DIP 225
+#define PRIORITY_RING_WEAR 225
+/* 0-199: explore/random/do stuff we normally wouldn't do (melee floating eye) */
+#define PRIORITY_DOOR_OPEN 150
+#define PRIORITY_EXPLORE_FIND_ROGUE_STAIRS 70
+#define PRIORITY_EXPLORE_STAIRS_UP 60
+#define PRIORITY_EXPLORE_EXPLORE 50
+#define PRIORITY_EXPLORE_STAIRS_DOWN 40
+#define PRIORITY_EXPLORE_TRAVEL 30
+#define PRIORITY_EXPLORE_SEARCH 20
+#define PRIORITY_FIGHT_BLUE_E 15
+
 /* discard item */
 #define DISCARD "discard"
+
 /* messages */
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "

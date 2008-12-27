@@ -15,7 +15,7 @@ void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (saiph->engulfed) {
 		command = NW; // doesn't matter which direction
-		priority = FIGHT_ATTACK_PRIORITY;
+		priority = PRIORITY_FIGHT_ATTACK;
 		return;
 	}
 	/* fight monsters */
@@ -41,9 +41,9 @@ void Fight::analyze() {
 					got_thrown = gotThrown();
 				if (got_thrown != FIGHT_NO_THROWN_WEAPONS) {
 					/* got thrown weapons */
-					if (priority == FIGHT_ATTACK_PRIORITY && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
+					if (priority == PRIORITY_FIGHT_ATTACK && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
 						continue; // already got a target
-					priority = FIGHT_ATTACK_PRIORITY;
+					priority = PRIORITY_FIGHT_ATTACK;
 					min_distance = distance;
 					command = THROW;
 					command2 = got_thrown;
@@ -57,16 +57,16 @@ void Fight::analyze() {
 		unsigned char dir = saiph->shortestPath(m->first, true, &moves);
 		if (dir == ILLEGAL_DIRECTION)
 			continue; // unable to path to monster
-		else if (moves > 1 && (priority > FIGHT_MOVE_PRIORITY || saiph->world->player.blind))
+		else if (moves > 1 && (priority > PRIORITY_FIGHT_MOVE || saiph->world->player.blind))
 			continue; // we must move to monster, but we got something else with higher priority or are blind
 		else if (moves > min_moves)
 			continue; // we know of a monster closer than this one
-		else if (moves == 1 && distance == min_distance && priority == FIGHT_ATTACK_PRIORITY && m->second.symbol != '@' && m->second.symbol != 'A')
+		else if (moves == 1 && distance == min_distance && priority == PRIORITY_FIGHT_ATTACK && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
 		else if (blue_e)
-			priority = FIGHT_BLUE_E_PRIORITY;
+			priority = PRIORITY_FIGHT_BLUE_E;
 		else
-			priority = (moves == 1) ? FIGHT_ATTACK_PRIORITY : FIGHT_MOVE_PRIORITY;
+			priority = (moves == 1) ? PRIORITY_FIGHT_ATTACK : PRIORITY_FIGHT_MOVE;
 		min_distance = distance;
 		min_moves = moves;
 		command = (moves == 1 ? FIGHT : ""); // always fight using F when distance is 1
