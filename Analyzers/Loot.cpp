@@ -15,8 +15,8 @@ void Loot::analyze() {
 		/* set visit_stash when we stand on a stash */
 		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
 	}
-	/* already got a higher priority or are we burdened or worse? */
-	if (priority >= PRIORITY_LOOK || saiph->world->player.encumbrance >= BURDENED)
+	/* check that we don't have anything more important to do */
+	if (priority >= PRIORITY_LOOK)
 		return;
 	/* check inventory/stash if it's dirty */
 	if (dirty_inventory) {
@@ -34,10 +34,10 @@ void Loot::analyze() {
 		return;
 	}
 
-	/* loot stash we're standing on */
+	/* loot stash we're standing on unless full knapsack or burdened */
 	if (priority >= PRIORITY_LOOT_LOOT_STASH)
 		return;
-	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT) {
+	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT && saiph->world->player.encumbrance < BURDENED) {
 		/* if we see a shopkeeper then don't loot */
 		bool doloot = true;
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
