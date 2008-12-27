@@ -200,13 +200,13 @@
 #define PET 140
 
 /* priorities
- * "global" priorities got the structure:
+ * "global" priorities structure:
  * PRIORITY_<what_to_do>
  * examples:
  * PRIORITY_CONTINUE_ACTION
  * PRIORITY_LOOK
  *
- * "analyzer" priorities got the structure:
+ * "analyzer" priorities structure:
  * PRIORITY_<analyzer>_<what_to_do>
  * examples:
  * PRIORITY_BEATITUDE_DROP_ALTAR

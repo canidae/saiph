@@ -30,6 +30,8 @@ void Unihorn::parseMessages(const string &messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (messages.find(UNIHORN_NOTHING_HAPPENS, 0) != string::npos) {
 		apply_priority = -1;
+	} else if (saiph->inventory_changed) {
+		findUnihorn();
 	}
 }
 
@@ -54,8 +56,13 @@ void Unihorn::findUnihorn() {
 	if (u != saiph->inventory.end() && u->second.beatitude != CURSED && u->second.beatitude != BEATITUDE_UNKNOWN && u->second.name == "unicorn horn")
 		return;
 	for (u = saiph->inventory.begin(); u != saiph->inventory.end(); ++u) {
-		if (u->second.beatitude == CURSED || u->second.beatitude == BEATITUDE_UNKNOWN || u->second.name != "unicorn horn")
+		if (u->second.beatitude == CURSED || u->second.name != "unicorn horn") {
 			continue;
+		} else if (u->second.beatitude == BEATITUDE_UNKNOWN) {
+			/* don't know beatitude of unihorn, request it beatified */
+			req.request = REQUEST_BEATIFY_ITEMS;
+			saiph->request(req);
+		}
 		/* this should be a unihorn */
 		unihorn_key = u->first;
 		return;

@@ -8,6 +8,7 @@
 
 #include <string>
 #include "../Analyzer.h"
+#include "../Request.h"
 
 class Request;
 class Saiph;
@@ -22,6 +23,7 @@ class Unihorn : public Analyzer {
 
 	private:
 		Saiph *saiph;
+		Request req;
 		unsigned char unihorn_key;
 		int apply_priority;
 
