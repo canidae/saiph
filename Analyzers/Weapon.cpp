@@ -63,7 +63,7 @@ void Weapon::wieldWeapon() {
 		for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 			if (w->name != i->second.name && w->name != i->second.named) {
 				continue;
-			} else if (w->beatitude == BEATITUDE_UNKNOWN) {
+			} else if (i->second.beatitude == BEATITUDE_UNKNOWN) {
 				/* weapon with unknown beatitude, request it beatified */
 				req.request = REQUEST_BEATIFY_ITEMS;
 				saiph->request(req);

@@ -139,7 +139,7 @@ void Armor::wearArmor() {
 					continue;
 				else if (i->second.additional == "being worn")
 					worn[s] = i->first;
-				if (a->beatitude == BEATITUDE_UNKNOWN) {
+				if (i->second.beatitude == BEATITUDE_UNKNOWN) {
 					/* armor with unknown beatitude, request it beatified */
 					req.request = REQUEST_BEATIFY_ITEMS;
 					saiph->request(req);
