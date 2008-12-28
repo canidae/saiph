@@ -42,9 +42,10 @@ void Beatitude::parseMessages(const string &messages) {
 			priority = PRIORITY_SELECT_ITEM;
 			return;
 		}
-		/* if we got this far, we've selected everything we don't know beatitude of (on this page).
-		 * Loot analyzer will close the page for us */
+		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
 		check_beatitude = false;
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
 	}
 }
 
