@@ -262,7 +262,7 @@
 #define PRIORITY_FIGHT_BLUE_E 15
 
 /* discard item */
-#define DISCARD "discard"
+#define DISCARD "DISCARD"
 
 /* messages */
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
