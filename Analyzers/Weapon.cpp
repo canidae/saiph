@@ -19,9 +19,9 @@ void Weapon::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		wield_weapon = false;
-	}
-	if (saiph->inventory_changed || wield_weapon)
+	} else if (saiph->inventory_changed || wield_weapon) {
 		wieldWeapon();
+	}
 }
 
 bool Weapon::request(const Request &request) {

@@ -77,9 +77,9 @@ void Armor::parseMessages(const string &messages) {
 		/* took of last armor, mark inventory dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	}
-	if (saiph->inventory_changed || wear_armor)
+	} else if (saiph->inventory_changed || wear_armor) {
 		wearArmor();
+	}
 }
 
 bool Armor::request(const Request &request) {
