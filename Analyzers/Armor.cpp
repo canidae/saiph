@@ -171,6 +171,7 @@ void Armor::wearArmor() {
 		}
 	}
 
+	wear_armor = true;
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
 			continue; // wearing best armor or got no armor to wield
@@ -213,7 +214,6 @@ void Armor::wearArmor() {
 		command = WEAR;
 		command2 = best_key[s];
 		priority = PRIORITY_ARMOR_WEAR;
-		wear_armor = true;
 		return;
 	}
 	/* nothing to wear */
