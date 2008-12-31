@@ -61,7 +61,7 @@ void Weapon::wieldWeapon() {
 			}
 		}
 		for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
-			if (w->name != i->second.name && w->name != i->second.named) {
+			if (w->name != i->second.name) {
 				continue;
 			} else if (i->second.beatitude == BEATITUDE_UNKNOWN) {
 				/* weapon with unknown beatitude, request it beatified */

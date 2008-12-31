@@ -341,7 +341,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 		return (drop ? item.count : 0); // item is not in our list
 	if ((item.beatitude & i->second.beatitude) == 0)
 		return (drop ? item.count : 0); // item does not have a beatitude we'll accept
-	if (item.named == DISCARD)
+	if (item.name == DISCARD)
 		return (drop ? item.count : 0); // item is named "discard", we don't want the item
 	/* groups */
 	for (map<unsigned char, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
@@ -350,7 +350,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 		int item_in_group = false;
 		for (vector<string>::iterator gi = g->second.items.begin(); gi != g->second.items.end(); ++gi) {
 			for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-				if (in->second.name != *gi && in->second.named != *gi)
+				if (in->second.name != *gi)
 					continue;
 				count += in->second.count;
 			}
@@ -376,7 +376,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 	/* figure out how many we got of this item already */
 	int count = 0;
 	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-		if (in->second.name != item.name && in->second.named != item.name)
+		if (in->second.name != item.name)
 			continue;
 		count += in->second.count;
 	}

@@ -74,13 +74,11 @@ void Lamp::parseMessages(const string &messages) {
 /* private methods */
 void Lamp::findLamp() {
 	map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
-	if (l != saiph->inventory.end() && l->second.named != DISCARD && l->second.additional != LAMP_LIT && (l->second.name == "lamp" || l->second.name == "oil lamp" || l->second.name == "brass lantern" || l->second.name == "magic lamp"))
+	if (l != saiph->inventory.end() && l->second.additional != LAMP_LIT && (l->second.name == "lamp" || l->second.name == "oil lamp" || l->second.name == "brass lantern" || l->second.name == "magic lamp"))
 		return;
 	for (l = saiph->inventory.begin(); l != saiph->inventory.end(); ++l) {
 		if (l->second.name != "lamp" && l->second.name != "oil lamp" && l->second.name != "brass lantern" && l->second.name != "magic lamp")
 			continue; // not a lamp/lantern
-		else if (l->second.named == DISCARD)
-			continue; // probably depleted lamp/lantern
 		else if (l->second.additional == LAMP_LIT)
 			continue; // already lit, we turn on every lamp/lantern so skip this
 		/* this should be a lamp/lantern */

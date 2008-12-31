@@ -5,7 +5,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), named(""), additional("") {
+Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -128,19 +128,30 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 			name.erase(pos - 1); // no need for this in name, and remove last space before "(" too
 		}
 	}
-	/* extract "named" */
+	/* if items are named something (else than "blessed", "uncursed" or "cursed"), replace name with that */
 	pos = name.rfind(ITEM_NAMED, name.size() - 1);
 	if (pos != string::npos) {
-		named = name.substr(pos + sizeof (ITEM_NAMED) - 1);
-		if (beatitude == BEATITUDE_UNKNOWN) {
-			if (named == "blessed")
-				beatitude = BLESSED;
-			else if (named == "uncursed")
-				beatitude = UNCURSED;
-			else if (named == "cursed")
-				beatitude = CURSED;
+		string named = name.substr(pos + sizeof (ITEM_NAMED) - 1);
+		int tmpbeatitude = BEATITUDE_UNKNOWN;
+		if (named == "blessed")
+			tmpbeatitude = BLESSED;
+		else if (named == "uncursed")
+			tmpbeatitude = UNCURSED;
+		else if (named == "cursed")
+			tmpbeatitude = CURSED;
+		if (tmpbeatitude != BEATITUDE_UNKNOWN) {
+			/* item was named "blessed", "uncursed" or "cursed".
+			 * unless we already know beatitude we should set beatitude
+			 * and clear "named" */
+			if (beatitude == BEATITUDE_UNKNOWN)
+				beatitude = tmpbeatitude;
+			named.clear();
 		}
-		name.erase(pos);
+		/* if items are named something (else than "blessed", "uncursed" or "cursed"), replace name with that */
+		if (!named.empty())
+			name = named;
+		else
+			name.erase(pos);
 	}
 	/* if items are called something, replace name with that */
 	pos = name.rfind(ITEM_CALLED, name.size() - 1);
@@ -170,5 +181,5 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	name.replace(start, stop, word);
 }
 
-Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), named(""), additional("") {
+Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
 }

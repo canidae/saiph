@@ -34,7 +34,6 @@ class Item {
 		bool fixed;
 		int damage;
 		int enchantment;
-		std::string named;
 		std::string additional;
 
 		Item(const std::string &text);
