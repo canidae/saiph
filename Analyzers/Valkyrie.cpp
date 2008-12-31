@@ -254,9 +254,6 @@ void Valkyrie::setupArmor() {
 	req.data = "Mitre of Holiness";
 	req.priority = 20;
 	saiph->request(req);
-	req.data = "The Mitre of Holiness"; // "The" when unidentified
-	req.priority = 20;
-	saiph->request(req);
 	req.data = "helm of telepathy";
 	req.priority = 15;
 	saiph->request(req);
@@ -774,32 +771,28 @@ void Valkyrie::setupTool() {
 	req.value = 1;
 	req.data = "Orb of Detection";
 	saiph->request(req);
-	req.data = "The Orb of Detection"; // "The" when unidentified
-	saiph->request(req);
 	/* neutral, will kill us
-	req.data = "The Heart of Ahriman";
+	req.data = "Heart of Ahriman";
 	saiph->request(req);
 	*/
-	req.data = "The Magic Mirror of Merlin";
+	req.data = "Magic Mirror of Merlin";
 	saiph->request(req);
 	/* neutral, will kill us
-	req.data = "The Eyes of the Overworld";
+	req.data = "Eyes of the Overworld";
 	saiph->request(req);
 	*/
 	/* chaotic, will kill us
-	req.data = "The Master Key of Thievery";
+	req.data = "Master Key of Thievery";
 	saiph->request(req);
 	*/
 	/* neutral, will kill us
-	req.data = "The Platinum Yendorian Express Card";
+	req.data = "Platinum Yendorian Express Card";
 	saiph->request(req);
 	*/
 	req.data = "Orb of Fate";
 	saiph->request(req);
-	req.data = "The Orb of Fate"; // "The" when unidentified
-	saiph->request(req);
 	/* neutral, will kill us
-	req.data = "The Eye of the Aethiopica";
+	req.data = "Eye of the Aethiopica";
 	saiph->request(req);
 	*/
 }
@@ -1013,8 +1006,6 @@ void Valkyrie::setupWeapon() {
 	/* chaotic quest artifact, will evade our grasp
 	req.data = "Longbow of Diana";
 	saiph->request(req);
-	req.data = "The Longbow of Diana"; // "The" when unidentified
-	saiph->request(req);
 	*/
 	req.data = "Magicbane";
 	saiph->request(req);
@@ -1024,12 +1015,8 @@ void Valkyrie::setupWeapon() {
 	saiph->request(req);
 	req.data = "Sceptre of Might";
 	saiph->request(req);
-	req.data = "The Sceptre of Might"; // "The" when unidentified
-	saiph->request(req);
 	/* neutral quest artifact, will evade our grasp
 	req.data = "Staff of Aesculapius";
-	saiph->request(req);
-	req.data = "The Staff of Aesculapius"; // "The" when unidentified
 	saiph->request(req);
 	*/
 	req.data = "Sting";
@@ -1039,8 +1026,6 @@ void Valkyrie::setupWeapon() {
 	req.data = "Trollsbane";
 	saiph->request(req);
 	req.data = "Tsurugi of Muramasa";
-	saiph->request(req);
-	req.data = "The Tsurugi of Muramasa"; // "The" when unidentified
 	saiph->request(req);
 	req.data = "Vorpal Blade";
 	saiph->request(req);

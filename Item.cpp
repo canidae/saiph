@@ -139,6 +139,8 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 			tmpbeatitude = UNCURSED;
 		else if (named == "cursed")
 			tmpbeatitude = CURSED;
+		else if (named.find("The ", 0) == 0)
+			named = named.substr(4);
 		if (tmpbeatitude != BEATITUDE_UNKNOWN) {
 			/* item was named "blessed", "uncursed" or "cursed".
 			 * unless we already know beatitude we should set beatitude
