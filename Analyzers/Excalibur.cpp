@@ -14,6 +14,8 @@ void Excalibur::analyze() {
 		return;
 	else if (saiph->world->player.blind)
 		return; // don't move when blind
+	else if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && saiph->levels[saiph->position.level].depth >= 5)
+		return; // don't dip in mines if we're on depth 5 or lower
 	/* do we have a long sword? */
 	unsigned char got_long_sword = ILLEGAL_ITEM;
 	for(map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
