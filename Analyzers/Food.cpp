@@ -360,10 +360,9 @@ void Food::parseMessages(const string &messages) {
 				if (p->second == 'Z' || p->second == 'M' || p->second == 'V') {
 					/* wherever monsters with symbol Z, M or V die, we'll mark as "tainted corpse" */
 					corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
-				} else {
+				} else if (corpse_loc.find(p->first) == corpse_loc.end()) {
 					/* monster probably leaves an edible corpse */
-					if (corpse_loc.find(p->first) == corpse_loc.end())
-						corpse_loc[p->first] = saiph->world->player.turn;
+					corpse_loc[p->first] = saiph->world->player.turn;
 				}
 			}
 		}

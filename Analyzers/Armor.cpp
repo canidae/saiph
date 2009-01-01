@@ -211,7 +211,7 @@ void Armor::wearArmor() {
 				req.request = REQUEST_ITEM_PICKUP;
 				req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
 				req.data = a->name;
-				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS + worn_priority_modifier >= best_armor[s]) {
+				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS + worn_priority_modifier > best_armor[s]) {
 					/* we [still] want this armor.
 					 * in case we lost good armor and now wear less good
 					 * armor we'll need to tell Loot to pick up this armor */
