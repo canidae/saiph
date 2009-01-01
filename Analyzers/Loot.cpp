@@ -283,7 +283,7 @@ bool Loot::request(const Request &request) {
 		/* pick up items that are not part of a group */
 		items[request.data].amount = request.value;
 		items[request.data].beatitude = request.beatitude;
-		items[request.data].only_unknown_enchantment = request.unknown_enchantment;
+		items[request.data].only_unknown_enchantment = request.only_unknown_enchantment;
 		return true;
 	} else if (request.request == REQUEST_CALL_ITEM) {
 		call_items[request.key] = request.data;

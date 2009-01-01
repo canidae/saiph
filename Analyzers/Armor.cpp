@@ -210,23 +210,19 @@ void Armor::wearArmor() {
 		/* tell Loot what armor we [still] want */
 		req.request = REQUEST_ITEM_PICKUP;
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
-			int worn_priority_modifier = 0;
 			map<unsigned char, Item>::iterator i = saiph->inventory.find(worn[s]);
-			if (i != saiph->inventory.end())
-				worn_priority_modifier += i->second.enchantment - i->second.damage;
 			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
-				int score = a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS + worn_priority_modifier;
-				if (a->keep || score > best_armor[s]) {
+				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS > best_armor[s]) {
 					/* we [still] want this armor */
 					req.value = carry_amount[s];
 					if (i != saiph->inventory.end() && a->name == i->second.name)
 						req.value++; // if we wear a elven armor, allow carrying one more than carry_armor
-					req.unknown_enchantment = (score - best_armor[s] < ARMOR_UNKNOWN_ENCHANTMENT_BONUS);
+					req.only_unknown_enchantment = (a->priority < best_armor[s]);
 				} else {
 					/* we don't want to keep this armor and it'll never
 					 * be better than the armor we currently got */
 					req.value = 0;
-					req.unknown_enchantment = false;
+					req.only_unknown_enchantment = false;
 				}
 				req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
 				req.data = a->name;

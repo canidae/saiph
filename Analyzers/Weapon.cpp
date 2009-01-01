@@ -38,7 +38,7 @@ bool Weapon::request(const Request &request) {
 		req.request = REQUEST_ITEM_PICKUP;
 		req.value = request.value;
 		req.beatitude = request.beatitude | BEATITUDE_UNKNOWN;
-		req.unknown_enchantment = false;
+		req.only_unknown_enchantment = false;
 		req.data = request.data;
 		saiph->request(req);
 		return true;
@@ -92,7 +92,7 @@ void Weapon::wieldWeapon() {
 
 	/* tell Loot to drop unwanted weapons */
 	req.request = REQUEST_ITEM_PICKUP;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 		req.beatitude = w->beatitude | BEATITUDE_UNKNOWN;
 		req.data = w->name;

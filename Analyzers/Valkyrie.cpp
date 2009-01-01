@@ -26,7 +26,7 @@ void Valkyrie::setupAmulet() {
 	/* 10 of each unidentified amulet */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 10;
 	req.data = "circular amulet";
 	saiph->request(req);
@@ -50,7 +50,7 @@ void Valkyrie::setupAmulet() {
 	/* and 10 of each identified amulet */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 10;
 	req.data = "amulet of ESP";
 	saiph->request(req);
@@ -444,7 +444,7 @@ void Valkyrie::setupFood() {
 	/* first some food items we don't really want for food, but beneficial effects */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 10;
 	req.data = "lizard corpse";
 	saiph->request(req);
@@ -601,7 +601,7 @@ void Valkyrie::setupRing() {
 	/*
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 2;
 	req.data = "pearl ring";
 	saiph->request(req);
@@ -665,7 +665,7 @@ void Valkyrie::setupRing() {
 	/*
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 1;
 	req.data = "ring of protection";
 	saiph->request(req);
@@ -728,7 +728,7 @@ void Valkyrie::setupTool() {
 	/* unihorn */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 3;
 	req.data = "unicorn horn";
 	saiph->request(req);
@@ -737,7 +737,7 @@ void Valkyrie::setupTool() {
 	/* currently not used, need to fix this in explore
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 1;
 	req.data = "stethoscope";
 	saiph->request(req);
@@ -747,7 +747,7 @@ void Valkyrie::setupTool() {
 	/* currently not used
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 10;
 	req.data = "magic marker";
 	saiph->request(req);
@@ -756,7 +756,7 @@ void Valkyrie::setupTool() {
 	/* lamps & lanterns */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 5;
 	req.data = "magic lamp";
 	saiph->request(req);
@@ -787,7 +787,7 @@ void Valkyrie::setupTool() {
 	/* artifact tools */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.value = 1;
 	req.data = "Orb of Detection";
 	saiph->request(req);
@@ -1082,7 +1082,7 @@ void Valkyrie::setupWeapon() {
 	/* set other weapons we wish to pick up that is not in a group */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
-	req.unknown_enchantment = false;
+	req.only_unknown_enchantment = false;
 	req.data = "dart";
 	req.value = 50;
 	saiph->request(req);
