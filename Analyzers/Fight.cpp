@@ -26,11 +26,9 @@ void Fight::analyze() {
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
-		if (m->second.attitude == FRIENDLY)
+		else if (m->second.attitude == FRIENDLY)
 			continue; // don't attack friendlies
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
-		if (distance > min_distance)
-			continue; // we'll always attack nearest monster
 		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
 		if (((!blue_e && distance > 1) || (blue_e && distance == 1)) && m->second.visible && distance <= saiph->world->player.strength / 2) {
 			/* monster is within throw distance, or it's a blue 'e' and distance is 1 */
