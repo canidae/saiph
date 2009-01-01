@@ -223,6 +223,7 @@
 /* 800-999: panic, all hell is loose, pray, teleport, get the hell away */
 #define PRIORITY_VAULT_GO_OUT 999
 #define PRIORITY_FOOD_PRAY_FOR_FOOD 950
+#define PRIORITY_HEALTH_CURE_POLYMORPH 925
 #define PRIORITY_HEALTH_CURE_DEADLY 900
 #define PRIORITY_HEALTH_PRAY_FOR_HP 900
 /* 600-799: don't panic, rest for hp, fix bad stuff */
@@ -238,7 +239,6 @@
 #define PRIORITY_LOOT_LOOT_STASH 450
 #define PRIORITY_FOOD_EAT_CORPSE 435
 #define PRIORITY_HEALTH_CURE_LYCANTHROPY 400
-#define PRIORITY_HEALTH_CURE_POLYMORPH 400
 #define PRIORITY_POTION_QUAFF_GAIN_LEVEL 400
 /* 200-399: move around, eg. attacking & looting */
 #define PRIORITY_FOOD_EAT_HUNGRY 350
