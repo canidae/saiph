@@ -62,6 +62,7 @@ void Unihorn::findUnihorn() {
 			/* don't know beatitude of unihorn, request it beatified */
 			req.request = REQUEST_BEATIFY_ITEMS;
 			saiph->request(req);
+			continue; // don't apply unicorn with unknown beatitude either
 		}
 		/* this should be a unihorn */
 		unihorn_key = u->first;

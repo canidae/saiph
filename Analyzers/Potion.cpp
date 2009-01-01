@@ -65,9 +65,11 @@ void Potion::parseMessages(const string &messages) {
 		command = NO;
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (saiph->world->question) {
-		string::size_type stop = messages.find(POTION_CALL_END, 0);
+		string::size_type stop = messages.rfind(POTION_CALL_END);
+		Debug::info() << "Potion checking for question about naming potion" << endl;
 		if (stop == string::npos)
 			return;
+		Debug::info() << "Found ' potion:  '" << endl;
 		string::size_type start = messages.rfind(POTION_CALL_POTION1, stop);
 		if (start == string::npos) {
 			start = messages.rfind(POTION_CALL_POTION2, stop);
