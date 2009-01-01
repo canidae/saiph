@@ -215,11 +215,17 @@ void Armor::wearArmor() {
 				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS > best_armor[s]) {
 					/* we [still] want this armor */
 					req.value = carry_amount[s];
-					if (i != saiph->inventory.end() && a->name == i->second.name)
-						req.value++; // if we wear a elven armor, allow carrying one more than carry_armor
-					req.only_unknown_enchantment = (a->priority < best_armor[s]);
+					if (i != saiph->inventory.end() && a->name == i->second.name) {
+						/* allow carrying 1 more of what we're wearing,
+						 * but don't carry things we know enchantment of */
+						req.value++;
+						req.only_unknown_enchantment = true;
+					} else {
+						/* only carry armor which may be better than what we got */
+						req.only_unknown_enchantment = (a->priority < best_armor[s]);
+					}
 				} else {
-					/* we don't want to keep this armor and it'll never
+					/* we don't want to keep this armor as it'll never
 					 * be better than the armor we currently got */
 					req.value = 0;
 					req.only_unknown_enchantment = false;
