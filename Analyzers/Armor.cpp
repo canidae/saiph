@@ -157,7 +157,7 @@ void Armor::wearArmor() {
 	bool last_wear_armor = wear_armor;
 	wear_armor = false;
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
-		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
+		if (worn[s] == best_key[s])
 			continue; // wearing best armor or got no armor to wield
 		if (isCursed(s))
 			continue; // the item we're wearing in this slot it cursed and cannot be taken off
@@ -219,7 +219,9 @@ void Armor::wearArmor() {
 				if (a->keep || score > best_armor[s]) {
 					/* we [still] want this armor */
 					req.value = carry_amount[s];
-					req.unknown_enchantment = (score - best_armor[s] <= ARMOR_UNKNOWN_ENCHANTMENT_BONUS);
+					if (i != saiph->inventory.end() && a->name == i->second.name)
+						req.value++; // if we wear a elven armor, allow carrying one more than carry_armor
+					req.unknown_enchantment = (score - best_armor[s] < ARMOR_UNKNOWN_ENCHANTMENT_BONUS);
 				} else {
 					/* we don't want to keep this armor and it'll never
 					 * be better than the armor we currently got */

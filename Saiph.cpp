@@ -300,6 +300,14 @@ bool Saiph::run() {
 	Debug::notice() << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	levels[position.level].parseMessages(world->messages);
 
+	/* more debugging */
+	if (world->question)
+		Debug::notice() << SAIPH_DEBUG_NAME << "Question asked" << endl;
+	if (world->menu)
+		Debug::notice() << SAIPH_DEBUG_NAME << "Menu shown" << endl;
+	if (engulfed)
+		Debug::notice() << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
+
 	/* set the on_ground pointer if there's loot here */
 	if (levels[position.level].stashes.find(position) != levels[position.level].stashes.end())
 		on_ground = &levels[position.level].stashes[position];
