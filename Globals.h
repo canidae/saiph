@@ -174,6 +174,7 @@
 #define UNKNOWN_TILE_DIAGONALLY_UNPASSABLE 137
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
+#define MINES_FOUNTAIN 140
 
 /* item symbols */
 #define ILLEGAL_ITEM 0
@@ -197,7 +198,7 @@
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
-#define PET 140
+#define PET 141
 
 /* priorities
  * "global" priorities structure:

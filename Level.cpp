@@ -375,6 +375,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	} else {
 		/* remap ambigous symbols */
 		symbol = uniquemap[symbol][color];
+		if (branch == BRANCH_MINES && symbol == FOUNTAIN)
+			symbol = MINES_FOUNTAIN;
 	}
 	if (dungeon[symbol] || (symbol == SOLID_ROCK && dungeonmap[point.row][point.col] == CORRIDOR)) {
 		/* update the map showing static stuff */
