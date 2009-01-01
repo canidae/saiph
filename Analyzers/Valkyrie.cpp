@@ -101,6 +101,7 @@ void Valkyrie::setupArmor() {
 	/* shirt */
 	req.key = ARMOR_SHIRT;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.sustain = false;
 	req.value = 1;
 	req.data = "T-shirt";
 	req.priority = 10;
@@ -112,6 +113,7 @@ void Valkyrie::setupArmor() {
 	/* suit */
 	req.key = ARMOR_SUIT;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = false;
 	req.value = 1;
 	req.data = "gray dragon scale mail";
 	req.priority = 20;
@@ -185,6 +187,7 @@ void Valkyrie::setupArmor() {
 	/* cloak */
 	req.key = ARMOR_CLOAK;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = true;
 	req.value = 1;
 	req.data = "piece of cloth";
 	req.priority = 20;
@@ -218,6 +221,7 @@ void Valkyrie::setupArmor() {
 	req.priority = 15;
 	saiph->request(req);
 	req.beatitude = BLESSED | UNCURSED;
+	req.sustain = false;
 	req.data = "elven cloak";
 	req.priority = 10;
 	saiph->request(req);
@@ -252,6 +256,7 @@ void Valkyrie::setupArmor() {
 	/* helmet */
 	req.key = ARMOR_HELMET;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = false;
 	req.value = 1;
 	req.data = "Mitre of Holiness";
 	req.priority = 20;
@@ -303,6 +308,7 @@ void Valkyrie::setupArmor() {
 	/* gloves */
 	req.key = ARMOR_GLOVES;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = false;
 	req.value = 1;
 	req.data = "pair of gauntlets of power";
 	req.priority = 20;
@@ -330,6 +336,7 @@ void Valkyrie::setupArmor() {
 	/* shield */
 	req.key = ARMOR_SHIELD;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = false;
 	req.value = 1;
 	req.data = "shield of reflection";
 	req.priority = 20;
@@ -375,6 +382,7 @@ void Valkyrie::setupArmor() {
 	/* boots */
 	req.key = ARMOR_BOOTS;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
+	req.sustain = true;
 	req.value = 1;
 	req.data = "pair of speed boots";
 	req.priority = 20;
@@ -384,9 +392,6 @@ void Valkyrie::setupArmor() {
 	req.priority = 15;
 	saiph->request(req);
 	req.data = "pair of jumping boots";
-	req.priority = 15;
-	saiph->request(req);
-	req.data = "pair of kicking boots";
 	req.priority = 15;
 	saiph->request(req);
 	req.beatitude = BLESSED | UNCURSED;
@@ -402,6 +407,7 @@ void Valkyrie::setupArmor() {
 	req.data = "pair of snow boots";
 	req.priority = 10;
 	saiph->request(req);
+	req.sustain = false;
 	req.data = "pair of hiking boots";
 	req.priority = 10;
 	saiph->request(req);
