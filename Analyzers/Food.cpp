@@ -228,11 +228,8 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 void Food::analyze() {
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-		if (saiph->levels[saiph->position.level].stashes.find(m->first) != saiph->levels[saiph->position.level].stashes.end())
-			continue; // there's a stash here, might be an old corpse in it, don't gamble
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m)
 		prev_monster_loc[m->first] = m->second.symbol;
-	}
 	/* are we hungry? */
 	if (saiph->world->player.hunger <= WEAK) {
 		/* yes, we are */
@@ -361,10 +358,10 @@ void Food::parseMessages(const string &messages) {
 		if (messages.rfind("  The ", pos) != string::npos || messages.find("!  ", pos) != string::npos) {
 			for (map<Point, unsigned char>::iterator p = prev_monster_loc.begin(); p != prev_monster_loc.end(); ++p) {
 				if (p->second == 'Z' || p->second == 'M' || p->second == 'V') {
-					/* wherever monsters with symbol Z, M or V step, we'll mark as "tainted corpse" */
+					/* wherever monsters with symbol Z, M or V die, we'll mark as "tainted corpse" */
 					corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
-				} else if (saiph->levels[saiph->position.level].stashes.find(p->first) != saiph->levels[saiph->position.level].stashes.end()) {
-					/* there's a stash where we last saw the monster, may be corpse there */
+				} else {
+					/* monster probably leaves an edible corpse */
 					if (corpse_loc.find(p->first) == corpse_loc.end())
 						corpse_loc[p->first] = saiph->world->player.turn;
 				}

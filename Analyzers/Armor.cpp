@@ -154,31 +154,7 @@ void Armor::wearArmor() {
 		}
 	}
 
-	for (int s = 0; s < ARMOR_SLOTS; ++s) {
-		int worn_priority_modifier = 0;
-		map<unsigned char, Item>::iterator i = saiph->inventory.find(worn[s]);
-		if (i != saiph->inventory.end())
-			worn_priority_modifier += i->second.enchantment - i->second.damage;
-		/* tell Loot to drop unwanted armor */
-		for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
-			req.request = REQUEST_ITEM_PICKUP;
-			req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
-			req.data = a->name;
-			if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS + worn_priority_modifier >= best_armor[s]) {
-				/* we [still] want this armor.
-				 * in case we lost good armor and now wear less good
-				 * armor we'll need to tell Loot to pick up this armor */
-				req.value = carry_amount[s];
-			} else {
-				/* we don't want to keep this armor and it'll never
-				 * be better than the armor we currently got */
-				req.value = 0;
-			}
-			saiph->request(req);
-		}
-	}
-
-	wear_armor = true;
+	wear_armor = false;
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (best_key[s] == 0 || (worn[s] != 0 && saiph->inventory[worn[s]].name == saiph->inventory[best_key[s]].name))
 			continue; // wearing best armor or got no armor to wield
@@ -196,8 +172,8 @@ void Armor::wearArmor() {
 				/* yes, we must take it off first */
 				command = TAKE_OFF;
 				command2 = worn[ARMOR_CLOAK];
-				priority = PRIORITY_ARMOR_WEAR;
-				return;
+				wear_armor = true;
+				break;
 			}
 			if (s == ARMOR_SHIRT) {
 				/* are we wearing a suit? */
@@ -205,8 +181,8 @@ void Armor::wearArmor() {
 					/* yes, we must take it off first */
 					command = TAKE_OFF;
 					command2 = worn[ARMOR_SUIT];
-					priority = PRIORITY_ARMOR_WEAR;
-					return;
+					wear_armor = true;
+					break;
 				}
 			}
 		}
@@ -214,16 +190,42 @@ void Armor::wearArmor() {
 			/* we'll have to take this armor off first */
 			command = TAKE_OFF;
 			command2 = worn[s];
-			priority = PRIORITY_ARMOR_WEAR;
-			return;
+			wear_armor = true;
+			break;
 		}
 		/* we should put on this piece of armor */
 		command = WEAR;
 		command2 = best_key[s];
-		priority = PRIORITY_ARMOR_WEAR;
-		return;
+		wear_armor = true;
+		break;
 	}
-	/* nothing to wear */
-	wear_armor = false;
-	command.clear();
+	if (wear_armor) {
+		priority = PRIORITY_ARMOR_WEAR;
+		/* tell Loot to drop unwanted armor */
+		for (int s = 0; s < ARMOR_SLOTS; ++s) {
+			int worn_priority_modifier = 0;
+			map<unsigned char, Item>::iterator i = saiph->inventory.find(worn[s]);
+			if (i != saiph->inventory.end())
+				worn_priority_modifier += i->second.enchantment - i->second.damage;
+			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
+				req.request = REQUEST_ITEM_PICKUP;
+				req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
+				req.data = a->name;
+				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS + worn_priority_modifier >= best_armor[s]) {
+					/* we [still] want this armor.
+					 * in case we lost good armor and now wear less good
+					 * armor we'll need to tell Loot to pick up this armor */
+					req.value = carry_amount[s];
+				} else {
+					/* we don't want to keep this armor and it'll never
+					 * be better than the armor we currently got */
+					req.value = 0;
+				}
+				saiph->request(req);
+			}
+		}
+	} else {
+		/* nothing to wear */
+		command.clear();
+	}
 }

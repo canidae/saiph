@@ -110,23 +110,23 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		enchantment = name[pos + 1] - '0'; // assuming no item is enchanted beyond +9
 		pos += 3;
 		/* if we know enchantment, we (probably) know that it's uncursed unless it says otherwise */
-		/* trying to comment out this
-		 * i believe some stuff don't say "uncursed" after dropping them on an altar,
-		 * so this is probably going to fail miserably
+		/* sadly certain items won't say "uncursed" after dropping them on an altar
+		 * for example, the dagger valks start with is such an item.
+		 * to prevent her from dropping it over & over again,
+		 * we'll say items we know enchantment off, we also "know" is uncursed */
 		if (beatitude == BEATITUDE_UNKNOWN)
 			beatitude = UNCURSED;
-		 */
 	} else if (name[pos] == '-') {
 		unknown_enchantment = false;
 		enchantment = 0 - (name[pos + 1] - '0'); // assuming no item is enchanted beyond -9
 		pos += 3;
 		/* if we know enchantment, we (probably) know that it's uncursed unless it says otherwise */
-		/* trying to comment out this
-		 * i believe some stuff don't say "uncursed" after dropping them on an altar,
-		 * so this is probably going to fail miserably
+		/* sadly certain items won't say "uncursed" after dropping them on an altar
+		 * for example, the dagger valks start with is such an item.
+		 * to prevent her from dropping it over & over again,
+		 * we'll say items we know enchantment off, we also "know" is uncursed */
 		if (beatitude == BEATITUDE_UNKNOWN)
 			beatitude = UNCURSED;
-		 */
 	}
 	/* erase up to pos as we've extracted all the info up to item name */
 	name.erase(0, pos);
