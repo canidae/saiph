@@ -85,15 +85,15 @@ void Armor::parseMessages(const string &messages) {
 bool Armor::request(const Request &request) {
 	if (request.request == REQUEST_ARMOR_WEAR) {
 		/* player wish to wear this armor */
-		if ((int) request.key < 0 || (int) request.key >= ARMOR_SLOTS)
+		if (request.key < 0 || request.key >= ARMOR_SLOTS)
 			return false;
+		carry_amount[request.key] = request.value;
 		ArmorData ad;
 		ad.beatitude = request.beatitude;
 		ad.priority = request.priority;
-		ad.amount = request.value;
 		ad.keep = request.sustain;
 		ad.name = request.data;
-		armor[(int) request.key].push_back(ad);
+		armor[request.key].push_back(ad);
 		/* tell the loot analyzer to pick up this armor too */
 		req.request = REQUEST_ITEM_PICKUP;
 		req.value = request.value;
@@ -141,27 +141,34 @@ void Armor::wearArmor() {
 					req.request = REQUEST_BEATIFY_ITEMS;
 					saiph->request(req);
 				}
-				if (a->priority + i->second.enchantment - i->second.damage <= best_armor[s])
+				int score = priority + i->second.enchantment - i->second.damage;
+				if (i->second.unknown_enchantment)
+					score += ARMOR_UNKNOWN_ENCHANTMENT_BONUS;
+				if (score <= best_armor[s])
 					continue;
 				else if ((a->beatitude & i->second.beatitude) == 0)
 					continue;
 				best_key[s] = i->first;
-				best_armor[s] = a->priority + i->second.enchantment - i->second.damage;
+				best_armor[s] = score;
 			}
 		}
 	}
 
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
+		int worn_priority_modifier = 0;
+		map<unsigned char, Item>::iterator i = saiph->inventory.find(worn[s]);
+		if (i != saiph->inventory.end())
+			worn_priority_modifier += i->second.enchantment - i->second.damage;
 		/* tell Loot to drop unwanted armor */
 		for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
 			req.request = REQUEST_ITEM_PICKUP;
 			req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
 			req.data = a->name;
-			if (a->keep || a->priority + 0 >= best_armor[s]) {
+			if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS + worn_priority_modifier >= best_armor[s]) {
 				/* we [still] want this armor.
 				 * in case we lost good armor and now wear less good
 				 * armor we'll need to tell Loot to pick up this armor */
-				req.value = a->amount;
+				req.value = carry_amount[s];
 			} else {
 				/* we don't want to keep this armor and it'll never
 				 * be better than the armor we currently got */

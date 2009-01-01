@@ -1,6 +1,8 @@
 #ifndef ARMOR_H
 #define ARMOR_H
 
+#define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3
+
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
@@ -11,7 +13,6 @@
 struct ArmorData {
 	int beatitude; // beatitudes we'll accept
 	int priority; // wear armor with highest priority, priority += enchantment
-	int amount; // how many of this armor we want
 	bool keep; // if we should keep this armor even if we find better armor
 	std::string name;
 };
@@ -28,6 +29,7 @@ class Armor : public Analyzer {
 	private:
 		Saiph *saiph;
 		bool wear_armor;
+		int carry_amount[ARMOR_SLOTS];
 		std::vector<ArmorData> armor[ARMOR_SLOTS];
 		std::string command2;
 		Request req;

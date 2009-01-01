@@ -722,23 +722,27 @@ void Valkyrie::setupTool() {
 	saiph->request(req);
 
 	/* stethoscope */
+	/* currently not used, need to fix this in explore
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.value = 1;
 	req.data = "stethoscope";
 	saiph->request(req);
+	*/
 
 	/* magic marker */
+	/* currently not used
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.value = 10;
 	req.data = "magic marker";
 	saiph->request(req);
+	*/
 
 	/* lamps & lanterns */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
-	req.value = 4;
+	req.value = 5;
 	req.data = "magic lamp";
 	saiph->request(req);
 	req.data = "lamp";

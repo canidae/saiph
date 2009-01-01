@@ -33,6 +33,7 @@ class Item {
 		bool greased;
 		bool fixed;
 		int damage;
+		bool unknown_enchantment;
 		int enchantment;
 		std::string additional;
 
