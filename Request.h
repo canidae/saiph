@@ -32,6 +32,7 @@ class Request {
 		int value;
 		int beatitude;
 		bool sustain;
+		bool unknown_enchantment;
 		unsigned char key;
 		std::string data;
 		Coordinate coordinate;

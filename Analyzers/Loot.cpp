@@ -279,6 +279,7 @@ bool Loot::request(const Request &request) {
 			/* we need to add an entry about this item */
 			items[request.data].amount = 0;
 			items[request.data].beatitude = request.beatitude;
+			items[request.data].only_unknown_enchantment = false;
 		}
 		groups[request.key].items.push_back(request.data);
 		return true;
@@ -286,6 +287,7 @@ bool Loot::request(const Request &request) {
 		/* pick up items that are not part of a group */
 		items[request.data].amount = request.value;
 		items[request.data].beatitude = request.beatitude;
+		items[request.data].only_unknown_enchantment = request.unknown_enchantment;
 		return true;
 	} else if (request.request == REQUEST_CALL_ITEM) {
 		call_items[request.key] = request.data;
@@ -373,6 +375,8 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 	/* solitary items */
 	if (i->second.amount <= 0)
 		return (drop ? item.count : 0); // we don't desire this item
+	if (i->second.only_unknown_enchantment && !item.unknown_enchantment)
+		return (drop ? item.count : 0); // we only want this item if it got unknown enchantment, this is not the case
 	/* figure out how many we got of this item already */
 	int count = 0;
 	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {

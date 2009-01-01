@@ -26,6 +26,7 @@
 struct ItemWanted {
 	int amount;
 	int beatitude;
+	bool only_unknown_enchantment;
 };
 
 /* struct for groups */
