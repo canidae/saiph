@@ -5,21 +5,17 @@
 using namespace std;
 
 /* constructors/destructor */
-MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph), last_check_internal_turn(-1) {
+MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph) {
 }
 
 /* methods */
 void MonsterInfo::analyze() {
-	if (last_check_internal_turn != saiph->internal_turn)
-		look_at = saiph->levels[saiph->position.level].monsters.begin();
-	for (; look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
+	for (look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
 		if (!look_at->second.visible)
 			continue; // monster not visible
 		else if (look_at->second.symbol != '@' && look_at->second.symbol != 'A' && (look_at->second.symbol != 'H' || look_at->second.color != YELLOW))
 			continue; // not an interesting monster
-		int distance = max(abs(look_at->first.row - saiph->position.row), abs(look_at->first.col - saiph->position.col));
-		if (look_at->second.attitude == ATTITUDE_UNKNOWN || (distance == 1 && look_at->second.attitude == FRIENDLY)) {
-			last_check_internal_turn = saiph->internal_turn;
+		if (look_at->second.attitude == ATTITUDE_UNKNOWN) {
 			command = saiph->farlook(look_at->first);
 			priority = PRIORITY_LOOK;
 			return;
@@ -55,7 +51,9 @@ void MonsterInfo::parseMessages(const string &messages) {
 			look_at->second.minotaur = true;
 		else
 			look_at->second.minotaur = false;
-		/* increase look_at or we'll look at the same monster repeatedly */
-		++look_at;
+	} else if (messages.find(" gets angry!", 0) != string::npos) {
+		/* uh oh, we pissed someone off, make everyone's attitude unknown */
+		for (map<Point, Monster>::iterator look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at)
+			look_at->second.attitude = ATTITUDE_UNKNOWN;
 	}
 }

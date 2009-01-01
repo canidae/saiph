@@ -18,6 +18,5 @@ class MonsterInfo : public Analyzer {
 	private:
 		Saiph *saiph;
 		std::map<Point, Monster>::iterator look_at;
-		int last_check_internal_turn;
 };
 #endif
