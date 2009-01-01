@@ -141,12 +141,12 @@ void Armor::wearArmor() {
 					req.request = REQUEST_BEATIFY_ITEMS;
 					saiph->request(req);
 				}
-				int score = priority + i->second.enchantment - i->second.damage;
+				if ((a->beatitude & i->second.beatitude) == 0)
+					continue;
+				int score = a->priority + i->second.enchantment - i->second.damage;
 				if (i->second.unknown_enchantment)
 					score += ARMOR_UNKNOWN_ENCHANTMENT_BONUS;
 				if (score <= best_armor[s])
-					continue;
-				else if ((a->beatitude & i->second.beatitude) == 0)
 					continue;
 				best_key[s] = i->first;
 				best_armor[s] = score;
