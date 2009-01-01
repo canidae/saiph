@@ -11,10 +11,6 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 
 /* methods */
 void Loot::analyze() {
-	if (saiph->on_ground != NULL) {
-		/* set visit_stash when we stand on a stash */
-		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
-	}
 	/* check that we don't have anything more important to do */
 	if (priority >= PRIORITY_LOOK)
 		return;
@@ -73,9 +69,9 @@ void Loot::analyze() {
 		/* TODO: get down elbereth if there's a stash here */
 	}
 
-	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind)
+	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
 		return;
-	/* visit new/changed stashes unless hallucinating or blind */
+	/* visit new/changed stashes unless hallucinating, blind or too encumbered */
 	int min_moves = INT_MAX;
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
 		map<Coordinate, int>::iterator v = visit_stash.find(Coordinate(saiph->position.level, s->first));
