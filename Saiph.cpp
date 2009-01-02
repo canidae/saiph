@@ -916,8 +916,10 @@ void Saiph::dumpMaps() {
 		cout << " dmg(" << i->second.damage << ")";
 		if (i->second.enchantment >= 0)
 			cout << " +" << i->second.enchantment;
-		else
+		else if (!i->second.unknown_enchantment)
 			cout << " " << i->second.enchantment;
+		else
+			cout << " ±?";
 		cout << " " << i->second.name;
 		if (i->second.additional != "")
 			cout << " (" << i->second.additional << ")";
