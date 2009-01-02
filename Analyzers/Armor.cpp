@@ -226,7 +226,7 @@ void Armor::wearArmor() {
 						req.only_unknown_enchantment = true;
 					} else {
 						/* only carry armor which may be better than what we got */
-						req.only_unknown_enchantment = (a->priority < best_armor[s]);
+						req.only_unknown_enchantment = (a->priority <= best_armor[s]);
 					}
 				} else {
 					/* we don't want to keep this armor as it'll never
