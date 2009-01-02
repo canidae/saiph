@@ -112,25 +112,25 @@ void Loot::analyze() {
 	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
 		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
 			Coordinate stash(level, s->first);
-			if (saiph->levels[level].stashes.find(stash) == saiph->levels[level].stashes.end())
-				continue; // this stash is gone
 			map<Coordinate, int>::iterator v = visit_stash.find(stash);
 			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
 				/* stash is unchanged, but does it contain something nifty? */
+				/* due to shops, we can't do this atm :(
 				for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
 					if (pickupItem(*i) == 0)
 						continue; // don't want this item
-					/* we want this item, is stash closer than previous stash? */
+					// we want this item, is stash closer than previous stash?
 					int moves = 0;
 					unsigned char dir = saiph->shortestPath(stash, false, &moves);
 					if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
-						/* move towards stash */
+						// move towards stash
 						min_moves = moves;
 						command = dir;
 						priority = PRIORITY_LOOT_VISIT_STASH;
 						visit_old_stash = stash;
 					}
 				}
+				*/
 			} else {
 				/* unvisited stash, visit it if it's closer */
 				int moves = 0;
