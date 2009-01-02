@@ -92,7 +92,7 @@ void Loot::analyze() {
 		}
 	}
 
-	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != STAIRS_DOWN || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
+	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
 		return;
 	/* set "visit_old_stash" when we're standing on downstairs */
 	if (visit_old_stash.level >= 0 && visit_old_stash.level < (int) saiph->levels.size()) {
@@ -108,6 +108,8 @@ void Loot::analyze() {
 			}
 		}
 	}
+	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != STAIRS_DOWN)
+		return;
 	min_moves = INT_MAX;
 	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
 		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
