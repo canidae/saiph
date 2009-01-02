@@ -212,6 +212,8 @@ void Level::parseMessages(const string &messages) {
 
 void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value) {
 	/* since we're gonna track certain symbols we'll use an own method for this */
+	if (symbol == FOUNTAIN && branch == BRANCH_MINES)
+		symbol = MINES_FOUNTAIN; // to avoid dipping & such
 	if (dungeonmap[point.row][point.col] == symbol)
 		return; // no change
 	if (track_symbol[dungeonmap[point.row][point.col]])
@@ -375,8 +377,6 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	} else {
 		/* remap ambigous symbols */
 		symbol = uniquemap[symbol][color];
-		if (branch == BRANCH_MINES && symbol == FOUNTAIN)
-			symbol = MINES_FOUNTAIN;
 	}
 	if (dungeon[symbol] || (symbol == SOLID_ROCK && dungeonmap[point.row][point.col] == CORRIDOR)) {
 		/* update the map showing static stuff */
