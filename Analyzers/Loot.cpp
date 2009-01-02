@@ -14,6 +14,8 @@ void Loot::analyze() {
 	if (saiph->on_ground != NULL) {
 		/* set visit_stash when we stand on a stash */
 		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
+		if (visit_old_stash == saiph->position)
+			visit_old_stash.level = -1;
 	}
 	/* check that we don't have anything more important to do */
 	if (priority >= PRIORITY_LOOK)
