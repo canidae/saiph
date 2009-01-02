@@ -11,6 +11,10 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 
 /* methods */
 void Loot::analyze() {
+	if (saiph->on_ground != NULL) {
+		/* set visit_stash when we stand on a stash */
+		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
+	}
 	/* check that we don't have anything more important to do */
 	if (priority >= PRIORITY_LOOK)
 		return;
@@ -80,10 +84,7 @@ void Loot::analyze() {
 		/* unvisited stash, visit it if it's closer */
 		int moves = 0;
 		unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-		if (dir == NOWHERE) {
-			/* standing on stash, update turn_changed */
-			visit_stash[saiph->position] = s->second.turn_changed;
-		} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
+		if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
 			/* move towards stash */
 			min_moves = moves;
 			command = dir;
@@ -99,10 +100,7 @@ void Loot::analyze() {
 		if (s != saiph->levels[visit_old_stash.level].stashes.end()) {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(visit_old_stash, false, &moves);
-			if (dir == NOWHERE) {
-				/* standing on stash, update turn_changed */
-				visit_stash[saiph->position] = s->second.turn_changed;
-			} else if (dir != ILLEGAL_DIRECTION) {
+			if (dir != NOWHERE && dir != ILLEGAL_DIRECTION) {
 				/* move towards stash */
 				command = dir;
 				priority = PRIORITY_LOOT_VISIT_STASH;
@@ -123,10 +121,7 @@ void Loot::analyze() {
 					/* we want this item, is stash closer than previous stash? */
 					int moves = 0;
 					unsigned char dir = saiph->shortestPath(stash, false, &moves);
-					if (dir == NOWHERE) {
-						/* standing on stash, update turn_changed */
-						visit_stash[saiph->position] = s->second.turn_changed;
-					} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
+					if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
 						/* move towards stash */
 						min_moves = moves;
 						command = dir;
@@ -134,15 +129,11 @@ void Loot::analyze() {
 						visit_old_stash = stash;
 					}
 				}
-				continue;
 			} else {
 				/* unvisited stash, visit it if it's closer */
 				int moves = 0;
 				unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-				if (dir == NOWHERE) {
-					/* standing on stash, update turn_changed */
-					visit_stash[saiph->position] = s->second.turn_changed;
-				} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
+				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
 					/* move towards stash */
 					min_moves = moves;
 					command = dir;
