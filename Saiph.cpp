@@ -608,7 +608,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 		level_move[0] = NOWHERE;
 		level_added[position.level] = true;
 		int tmp_moves = 0;
-		Debug::info() << SAIPH_DEBUG_NAME << "Pathing to " << target.level << ", " << target.row << ", " << target.col << endl;
+		Debug::info() << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target.level << ", " << target.row << ", " << target.col << endl;
 		while (pivot < level_count) {
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level) {
@@ -680,6 +680,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 
 unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* pathing on same level */
+	Debug::info() << SAIPH_DEBUG_NAME << "Pathing to " << target.row << ", " << target.col << endl;
 	return levels[position.level].shortestPath(target, allow_illegal_last_move, moves);
 }
 

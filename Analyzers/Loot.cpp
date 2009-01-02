@@ -112,6 +112,8 @@ void Loot::analyze() {
 	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
 		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
 			Coordinate stash(level, s->first);
+			if (saiph->levels[level].stashes.find(stash) == saiph->levels[level].stashes.end())
+				continue; // this stash is gone
 			map<Coordinate, int>::iterator v = visit_stash.find(stash);
 			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
 				/* stash is unchanged, but does it contain something nifty? */
