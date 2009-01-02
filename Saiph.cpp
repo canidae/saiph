@@ -914,12 +914,12 @@ void Saiph::dumpMaps() {
 		cout << (i->second.greased ? " greased" : "");
 		cout << (i->second.fixed ? " fixed" : "");
 		cout << " dmg(" << i->second.damage << ")";
-		if (i->second.enchantment >= 0)
-			cout << " +" << i->second.enchantment;
-		else if (!i->second.unknown_enchantment)
-			cout << " " << i->second.enchantment;
-		else
-			cout << " ±?";
+		if (!i->second.unknown_enchantment) {
+			if (i->second.enchantment >= 0)
+				cout << " +" << i->second.enchantment;
+			else
+				cout << " " << i->second.enchantment;
+		}
 		cout << " " << i->second.name;
 		if (i->second.additional != "")
 			cout << " (" << i->second.additional << ")";
