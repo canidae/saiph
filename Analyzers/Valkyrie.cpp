@@ -102,7 +102,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_SHIRT;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.sustain = false;
-	req.value = 1;
+	req.value = 3; // allow carrying up to 3 shirts, we'll drop 2 when we know the enchantment
 	req.data = "T-shirt";
 	req.priority = 10;
 	saiph->request(req);
@@ -114,7 +114,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_SUIT;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = false;
-	req.value = 1;
+	req.value = 1; // heavy stuff, only carry 1 at a time
 	req.data = "gray dragon scale mail";
 	req.priority = 20;
 	saiph->request(req);
@@ -188,7 +188,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_CLOAK;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = true;
-	req.value = 1;
+	req.value = 3; // allow carrying up to 3 cloaks, we'll drop 2 when we know the enchantment
 	req.data = "piece of cloth";
 	req.priority = 20;
 	saiph->request(req);
@@ -257,7 +257,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_HELMET;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = false;
-	req.value = 1;
+	req.value = 3; // allow carrying up to 3 helmets, we'll drop 2 when we know the enchantment
 	req.data = "Mitre of Holiness";
 	req.priority = 20;
 	saiph->request(req);
@@ -309,7 +309,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_GLOVES;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = false;
-	req.value = 1;
+	req.value = 3; // allow carrying up to 3 gloves, we'll drop 2 when we know the enchantment
 	req.data = "pair of gauntlets of power";
 	req.priority = 20;
 	saiph->request(req);
@@ -337,7 +337,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_SHIELD;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = false;
-	req.value = 1;
+	req.value = 2; // allow carrying up to 2 shields, we'll drop 1 when we know the enchantment
 	req.data = "shield of reflection";
 	req.priority = 20;
 	saiph->request(req);
@@ -383,7 +383,7 @@ void Valkyrie::setupArmor() {
 	req.key = ARMOR_BOOTS;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
 	req.sustain = true;
-	req.value = 1;
+	req.value = 3; // allow carrying up to 3 boots, we'll drop 2 when we know the enchantment
 	req.data = "pair of speed boots";
 	req.priority = 20;
 	saiph->request(req);

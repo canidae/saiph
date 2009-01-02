@@ -68,11 +68,13 @@ void Armor::parseMessages(const string &messages) {
 		/* Request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+		wear_armor = true;
 	} else if (messages.find(MESSAGE_FOOCUBUS_REMOVE, 0) != string::npos) {
 		/* A foocubus removed something without asking us. */
 		/* Request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+		wear_armor = true;
 	} else if (messages.find(MESSAGE_YOU_FINISH_TAKING_OFF, 0) != string::npos) {
 		/* took of last armor, mark inventory dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
