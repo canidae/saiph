@@ -134,7 +134,7 @@ void Loot::analyze() {
 			} else {
 				/* unvisited stash, visit it if it's closer */
 				int moves = 0;
-				unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+				unsigned char dir = saiph->shortestPath(stash, false, &moves);
 				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
 					/* move towards stash */
 					min_moves = moves;
