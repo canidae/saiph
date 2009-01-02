@@ -85,7 +85,7 @@ void Armor::parseMessages(const string &messages) {
 bool Armor::request(const Request &request) {
 	if (request.request == REQUEST_ARMOR_WEAR) {
 		/* player wish to wear this armor */
-		if (request.key < 0 || request.key >= ARMOR_SLOTS)
+		if (request.key >= ARMOR_SLOTS)
 			return false;
 		carry_amount[request.key] = request.value;
 		ArmorData ad;
