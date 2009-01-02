@@ -28,6 +28,8 @@ void Fight::analyze() {
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude == FRIENDLY)
 			continue; // don't attack friendlies
+		else if (m->second.symbol == 'u' && ((m->second.color == BOLD_WHITE && saiph->world->player.alignment == LAWFUL) || (m->second.color == WHITE && saiph->world->player.alignment == NEUTRAL) || (m->second.color == BLUE && saiph->world->player.alignment == CHAOTIC)))
+			continue; // don't attack unicorns of same alignment
 		int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
 		bool blue_e = (m->second.symbol == 'e' && m->second.color == BLUE);
 		if (((!blue_e && distance > 1) || (blue_e && distance == 1)) && m->second.visible && distance <= saiph->world->player.strength / 2) {
