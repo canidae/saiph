@@ -898,11 +898,9 @@ void Saiph::dumpMaps() {
 	if (world->player.polymorphed)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
 
-	cout << (unsigned char) 27 << "[4;82H";
-	cout << "=== Inventory ===";
 	int ir = 0;
-	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 45; ++i) {
-		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
+	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 46; ++i) {
+		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		if (i->second.beatitude == BLESSED)
 			cout << (unsigned char) 27 << "[32m";
@@ -926,7 +924,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[m";
 		++ir;
 	}
-	for (; ir < 45; ++ir) {
+	for (; ir < 46; ++ir) {
 		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 	}
