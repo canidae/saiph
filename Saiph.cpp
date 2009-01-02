@@ -871,24 +871,45 @@ void Saiph::dumpMaps() {
 	}
 	/* status & inventory */
 	cout << (unsigned char) 27 << "[2;82H";
-	cout << "Cold " << world->player.cold_resistance;
-	cout << ", Disintegration " << world->player.disintegration_resistance;
-	cout << ", Fire " << world->player.fire_resistance;
-	cout << ", Poison " << world->player.poison_resistance;
-	cout << ", Shock " << world->player.shock_resistance;
-	cout << ", Sleep " << world->player.sleep_resistance;
+	if (world->player.cold_resistance)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
+	if (world->player.disintegration_resistance)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
+	if (world->player.fire_resistance)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
+	if (world->player.poison_resistance)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
+	if (world->player.shock_resistance)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
+	if (world->player.sleep_resistance)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
+
 	cout << (unsigned char) 27 << "[3;82H";
-	cout << "Telepathy " << world->player.telepathy;
-	cout << ", Teleport control " << world->player.teleport_control;
-	cout << ", Teleportitis " << world->player.teleportitis;
-	cout << ", Lycanthropy " << world->player.lycanthropy;
-	cout << ", Hurt leg " << world->player.hurt_leg;
+	if (world->player.telepathy)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
+	if (world->player.teleport_control)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
+	if (world->player.teleportitis)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
+	if (world->player.lycanthropy)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
+	if (world->player.hurt_leg)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
+	if (world->player.polymorphed)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
+
 	cout << (unsigned char) 27 << "[4;82H";
 	cout << "=== Inventory ===";
 	int ir = 0;
 	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 45; ++i) {
 		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+		if (i->second.beatitude == BLESSED)
+			cout << (unsigned char) 27 << "[32m";
+		else if (i->second.beatitude == CURSED)
+			cout << (unsigned char) 27 << "[31m";
+		else if (i->second.beatitude == UNCURSED)
+			cout << (unsigned char) 27 << "[33m";
 		cout << i->first;
 		cout << " - " << i->second.count;
 		cout << " " << (i->second.beatitude == BLESSED ? "blessed" : (i->second.beatitude == CURSED ? "cursed" : (i->second.beatitude == UNCURSED ? "uncursed" : "unknown")));
@@ -902,7 +923,12 @@ void Saiph::dumpMaps() {
 		cout << " " << i->second.name;
 		if (i->second.additional != "")
 			cout << " (" << i->second.additional << ")";
+		cout << (unsigned char) 27 << "[m";
 		++ir;
+	}
+	for (; ir < 45; ++ir) {
+		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 	}
 
 	/* world map as the bot sees it */
