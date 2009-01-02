@@ -77,7 +77,7 @@ void Loot::analyze() {
 		map<Coordinate, int>::iterator v = visit_stash.find(Coordinate(saiph->position.level, s->first));
 		if (v != visit_stash.end() && v->second == s->second.turn_changed)
 			continue; // stash is unchanged
-		/* new or changed stash, visit it if it's closer */
+		/* unvisited stash, visit it if it's closer */
 		int moves = 0;
 		unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 		if (dir == NOWHERE) {
@@ -88,6 +88,68 @@ void Loot::analyze() {
 			min_moves = moves;
 			command = dir;
 			priority = PRIORITY_LOOT_VISIT_STASH;
+		}
+	}
+
+	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != STAIRS_DOWN || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
+		return;
+	/* set "visit_old_stash" when we're standing on downstairs */
+	if (visit_old_stash.level >= 0 && visit_old_stash.level < (int) saiph->levels.size()) {
+		map<Point, Stash>::iterator s = saiph->levels[visit_old_stash.level].stashes.find(visit_old_stash);
+		if (s != saiph->levels[visit_old_stash.level].stashes.end()) {
+			int moves = 0;
+			unsigned char dir = saiph->shortestPath(visit_old_stash, false, &moves);
+			if (dir == NOWHERE) {
+				/* standing on stash, update turn_changed */
+				visit_stash[saiph->position] = s->second.turn_changed;
+			} else if (dir != ILLEGAL_DIRECTION) {
+				/* move towards stash */
+				command = dir;
+				priority = PRIORITY_LOOT_VISIT_STASH;
+				return;
+			}
+		}
+	}
+	min_moves = INT_MAX;
+	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
+		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
+			Coordinate stash(level, s->first);
+			map<Coordinate, int>::iterator v = visit_stash.find(stash);
+			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
+				/* stash is unchanged, but does it contain something nifty? */
+				for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
+					if (pickupItem(*i) == 0)
+						continue; // don't want this item
+					/* we want this item, is stash closer than previous stash? */
+					int moves = 0;
+					unsigned char dir = saiph->shortestPath(stash, false, &moves);
+					if (dir == NOWHERE) {
+						/* standing on stash, update turn_changed */
+						visit_stash[saiph->position] = s->second.turn_changed;
+					} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
+						/* move towards stash */
+						min_moves = moves;
+						command = dir;
+						priority = PRIORITY_LOOT_VISIT_STASH;
+						visit_old_stash = stash;
+					}
+				}
+				continue;
+			} else {
+				/* unvisited stash, visit it if it's closer */
+				int moves = 0;
+				unsigned char dir = saiph->shortestPath(s->first, false, &moves);
+				if (dir == NOWHERE) {
+					/* standing on stash, update turn_changed */
+					visit_stash[saiph->position] = s->second.turn_changed;
+				} else if (dir != ILLEGAL_DIRECTION && moves < min_moves) {
+					/* move towards stash */
+					min_moves = moves;
+					command = dir;
+					priority = PRIORITY_LOOT_VISIT_STASH;
+					visit_old_stash = stash;
+				}
+			}
 		}
 	}
 }

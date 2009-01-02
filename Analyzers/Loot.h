@@ -59,6 +59,7 @@ class Loot : public Analyzer {
 		std::map<unsigned char, std::string> call_items;
 		std::map<unsigned char, std::string> name_items;
 		Request req;
+		Coordinate visit_old_stash;
 
 		void checkInventory();
 		void checkStash();
