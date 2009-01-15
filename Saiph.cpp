@@ -107,6 +107,9 @@ Saiph::Saiph(int interface) {
 	/* run init in analyzers */
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->init();
+
+	/* set best_analyzer */
+	best_analyzer = analyzers.end();
 }
 
 Saiph::~Saiph() {
@@ -337,7 +340,7 @@ bool Saiph::run() {
 		(*a)->priority = ILLEGAL_PRIORITY;
 
 	/* if question, let last analyzer parse it first */
-	if (world->question) {
+	if (world->question && best_analyzer != analyzers.end()) {
 		(*best_analyzer)->parseMessages(world->messages);
 		if ((*best_analyzer)->priority > best_priority)
 			best_priority = (*best_analyzer)->priority;
