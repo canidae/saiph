@@ -291,7 +291,7 @@ void Food::analyze() {
 }
 
 void Food::parseMessages(const string &messages) {
-	if (command2 == "ate corpse") {
+	if (!saiph->world->question && command2 == "ate corpse") {
 		/* just ate a corpse, we should look at ground */
 		priority = PRIORITY_LOOK;
 		command = LOOK;
