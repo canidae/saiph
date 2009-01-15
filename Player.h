@@ -56,6 +56,9 @@ class Player {
 		/* polymorphed */
 		bool polymorphed;
 
+		/* going shopping */
+		bool inside_shop;
+
 		Player();
 
 		bool parseAttributeRow(const char *attributerow);

@@ -974,11 +974,9 @@ void Valkyrie::setupWeapon() {
 	req.data = "long sword";
 	req.priority = 15;
 	saiph->request(req);
-	/* makes her oscillate into shops
 	req.data = "pick-axe";
 	req.priority = 13;
 	saiph->request(req);
-	*/
 	req.data = "silver dagger";
 	req.priority = 10;
 	saiph->request(req);
@@ -996,11 +994,9 @@ void Valkyrie::setupWeapon() {
 	req.data = "long sword";
 	req.priority = 8;
 	saiph->request(req);
-	/* makes her oscillate into shops
 	req.data = "pick-axe";
 	req.priority = 7;
 	saiph->request(req);
-	*/
 	req.data = "silver dagger";
 	req.priority = 6;
 	saiph->request(req);

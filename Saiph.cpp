@@ -28,6 +28,7 @@
 #include "Analyzers/Pray.h"
 #include "Analyzers/Ring.h"
 #include "Analyzers/Scroll.h"
+#include "Analyzers/Shop.h"
 #include "Analyzers/Unihorn.h"
 #include "Analyzers/Valkyrie.h"
 #include "Analyzers/Vault.h"
@@ -97,6 +98,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Ring(this));
 	analyzers.push_back(new Scroll(this));
+	analyzers.push_back(new Shop(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
 	analyzers.push_back(new Vault(this));

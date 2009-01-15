@@ -40,15 +40,8 @@ void Loot::analyze() {
 	if (priority >= PRIORITY_LOOT_LOOT_STASH)
 		return;
 	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT && saiph->world->player.encumbrance < BURDENED) {
-		/* if we see a shopkeeper then don't loot */
-		bool doloot = true;
-		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-			if (!m->second.shopkeeper || !m->second.visible)
-				continue;
-			doloot = false;
-			break;
-		}
-		if (doloot) {
+		/* if we're in a shop, don't loot */
+		if (!saiph->world->player.inside_shop) {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (pickupItem(*i) == 0)
 					continue;
@@ -121,18 +114,20 @@ void Loot::analyze() {
 			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
 				/* stash is unchanged, but does it contain something nifty? */
 				/* due to shops, we can't do this atm :(
-				for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
-					if (pickupItem(*i) == 0)
-						continue; // don't want this item
-					// we want this item, is stash closer than previous stash?
-					int moves = 0;
-					unsigned char dir = saiph->shortestPath(stash, false, &moves);
-					if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
-						// move towards stash
-						min_moves = moves;
-						command = dir;
-						priority = PRIORITY_LOOT_VISIT_STASH;
-						visit_old_stash = stash;
+				if (!saiph->world->player.inside_shop) {
+					for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
+						if (pickupItem(*i) == 0)
+							continue; // don't want this item
+						// we want this item, is stash closer than previous stash?
+						int moves = 0;
+						unsigned char dir = saiph->shortestPath(stash, false, &moves);
+						if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+							// move towards stash
+							min_moves = moves;
+							command = dir;
+							priority = PRIORITY_LOOT_VISIT_STASH;
+							visit_old_stash = stash;
+						}
 					}
 				}
 				*/
