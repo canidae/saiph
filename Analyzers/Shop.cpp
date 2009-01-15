@@ -98,6 +98,8 @@ void Shop::parseMessages(const string &messages) {
 }
 
 void Shop::analyze() {
+	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR)
+		return; // not standing on FLOOR, not in shop or shop already detected
 	bool inside_shop = false;
 
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {

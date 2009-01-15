@@ -55,7 +55,8 @@ class Player {
 		bool hurt_leg;
 		/* polymorphed */
 		bool polymorphed;
-
+		/* engulfed */
+		bool engulfed;
 		/* going shopping */
 		bool inside_shop;
 

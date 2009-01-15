@@ -62,9 +62,6 @@ Saiph::Saiph(int interface) {
 	/* clear last_command */
 	last_command = "";
 
-	/* engulfed */
-	engulfed = false;
-
 	/* inventory changed */
 	inventory_changed = false;
 
@@ -290,12 +287,12 @@ bool Saiph::run() {
 
 	/* check if we're engulfed */
 	if (world->player.row > MAP_ROW_BEGIN && world->player.row < MAP_ROW_END && world->player.col > MAP_COL_BEGIN && world->player.col < MAP_COL_END && world->view[world->player.row - 1][world->player.col - 1] == '/' && world->view[world->player.row - 1][world->player.col + 1] == '\\' && world->view[world->player.row + 1][world->player.col - 1] == '\\' && world->view[world->player.row + 1][world->player.col + 1] == '/')
-		engulfed = true;
+		world->player.engulfed = true;
 	else
-		engulfed = false;
+		world->player.engulfed = false;
 
 	/* detect player position */
-	if (!world->menu && !engulfed)
+	if (!world->menu && !world->player.engulfed)
 		detectPosition();
 
 	/* global message parsing */
@@ -310,7 +307,7 @@ bool Saiph::run() {
 		Debug::notice() << SAIPH_DEBUG_NAME << "Question asked" << endl;
 	if (world->menu)
 		Debug::notice() << SAIPH_DEBUG_NAME << "Menu shown" << endl;
-	if (engulfed)
+	if (world->player.engulfed)
 		Debug::notice() << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
 	/* set the on_ground pointer if there's loot here */
@@ -318,7 +315,7 @@ bool Saiph::run() {
 		on_ground = &levels[position.level].stashes[position];
 
 	/* update level */
-	if (!world->menu && !engulfed) {
+	if (!world->menu && !world->player.engulfed) {
 		/* update changed symbols */
 		for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
 			levels[position.level].updateMapPoint(*c, (unsigned char) world->view[c->row][c->col], world->color[c->row][c->col]);
@@ -326,7 +323,7 @@ bool Saiph::run() {
 		levels[position.level].updateMonsters();
 		/* update pathmap */
 		levels[position.level].updatePathMap();
-	} else if (engulfed) {
+	} else if (world->player.engulfed) {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster */
 		for (map<Point, Monster>::iterator m = levels[position.level].monsters.begin(); m != levels[position.level].monsters.end(); ++m)

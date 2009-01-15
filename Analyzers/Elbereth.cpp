@@ -120,7 +120,7 @@ bool Elbereth::canEngrave() {
 	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
 		return false;
 	/* check that we're not engulfed */
-	if (saiph->engulfed)
+	if (saiph->world->player.engulfed)
 		return false;
 	/* check that the monsters around us respects elbereth */
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m!= saiph->levels[saiph->position.level].monsters.end(); ++m) {

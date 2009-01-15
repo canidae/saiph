@@ -13,7 +13,7 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 /* methods */
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
-	if (saiph->engulfed) {
+	if (saiph->world->player.engulfed) {
 		command = NW; // doesn't matter which direction
 		priority = PRIORITY_FIGHT_ATTACK;
 		return;

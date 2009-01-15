@@ -66,7 +66,6 @@ class Saiph {
 		Coordinate branch_sokoban;
 		std::string last_command;
 		int internal_turn;
-		bool engulfed;
 		bool inventory_changed;
 		bool got_pickup_menu;
 		bool got_drop_menu;

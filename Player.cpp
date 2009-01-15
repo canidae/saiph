@@ -54,6 +54,8 @@ Player::Player() {
 	hurt_leg = false;
 	/* polymorphed */
 	polymorphed = false;
+	/* engulfed */
+	engulfed = false;
 	/* going shopping */
 	inside_shop = false;
 }
