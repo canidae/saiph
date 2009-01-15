@@ -214,13 +214,16 @@ void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value
 	/* since we're gonna track certain symbols we'll use an own method for this */
 	if (symbol == FOUNTAIN && branch == BRANCH_MINES)
 		symbol = MINES_FOUNTAIN; // to avoid dipping & such
-	if (dungeonmap[point.row][point.col] == symbol)
+	if (symbol == FLOOR && dungeonmap[point.row][point.col] == SHOP_TILE)
+		return; // don't overwrite SHOP_TILE with FLOOR
+	else if (dungeonmap[point.row][point.col] == symbol)
 		return; // no change
 	if (track_symbol[dungeonmap[point.row][point.col]])
 		symbols[dungeonmap[point.row][point.col]].erase(point);
 	if (track_symbol[symbol])
 		symbols[symbol][point] = value;
 	dungeonmap[point.row][point.col] = symbol;
+	/* TODO: this stuff is only used by Explore, is it useful? */
 	switch (symbol) {
 		case SOLID_ROCK:
 		case VERTICAL_WALL:
@@ -666,7 +669,7 @@ void Level::init() {
 	track_symbol[(unsigned char) VERTICAL_WALL] = true;
 	track_symbol[(unsigned char) HORIZONTAL_WALL] = true;
 	track_symbol[(unsigned char) ROGUE_STAIRS] = true;
-	/* pathing & maps */
+	/* stuff we can walk on */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
 	passable[(unsigned char) CORRIDOR] = true;
@@ -685,6 +688,8 @@ void Level::init() {
 	passable[(unsigned char) UNKNOWN_TILE] = true;
 	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
 	passable[(unsigned char) ROGUE_STAIRS] = true;
+	passable[(unsigned char) MINES_FOUNTAIN] = true;
+	passable[(unsigned char) SHOP_TILE] = true;
 	passable[(unsigned char) WEAPON] = true;
 	passable[(unsigned char) ARMOR] = true;
 	passable[(unsigned char) RING] = true;
@@ -701,6 +706,7 @@ void Level::init() {
 	passable[(unsigned char) IRON_BALL] = true;
 	passable[(unsigned char) CHAINS] = true;
 	passable[(unsigned char) VENOM] = true;
+	/* dungeon layout */
 	dungeon[(unsigned char) VERTICAL_WALL] = true;
 	dungeon[(unsigned char) HORIZONTAL_WALL] = true;
 	dungeon[(unsigned char) FLOOR] = true;
@@ -724,8 +730,13 @@ void Level::init() {
 	dungeon[(unsigned char) TRAP] = true;
 	dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
 	dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
+	dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
+	dungeon[(unsigned char) SHOP_TILE] = true; // unique, but static
+	/* cost for pathing on certain tiles */
+	pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
 	pathcost[(unsigned char) ICE] = COST_ICE;
 	pathcost[(unsigned char) LAVA] = COST_LAVA;
+	pathcost[(unsigned char) MINES_FOUNTAIN] = COST_FOUNTAIN;
 	pathcost[(unsigned char) TRAP] = COST_TRAP;
 	pathcost[(unsigned char) WATER] = COST_WATER;
 	/* remapping ambigous symbols */
