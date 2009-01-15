@@ -47,7 +47,7 @@ void Shop::parseMessages(const string &messages) {
 				command = N;
 			}
 		}
-		priority = PRIORITY_CONTINUE_ACTION;
+		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
 
 		Debug::notice() << "[Shop       ] moving in direction " << command << endl;
 		state = SHOP_MOVE_AWAY;
@@ -55,7 +55,7 @@ void Shop::parseMessages(const string &messages) {
 
 		/* shopkeeper asking us to drop our tools */
 		command = DROP;
-		priority = PRIORITY_CONTINUE_ACTION;
+		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
 
 		state = SHOP_DROP_TOOLS;
 		Debug::notice() << "[Shop       ] opening drop menu" << endl;
