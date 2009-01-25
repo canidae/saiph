@@ -61,6 +61,14 @@ void Lamp::parseMessages(const string &messages) {
 		/* inventory changed, find lamp/lantern */
 		findLamp();
 		if (remove_lamp && lamp_key != 0) {
+			map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
+			if (l->second.name == "lamp") {
+				/* ordinary lamp, name it "oil lamp" so we can detect magic lamps */
+				req.request = REQUEST_CALL_ITEM;
+				req.data = "oil lamp";
+				req.key = lamp_key;
+				saiph->request(req);
+			}
 			req.request = REQUEST_NAME_ITEM;
 			req.data = DISCARD;
 			req.key = lamp_key;
