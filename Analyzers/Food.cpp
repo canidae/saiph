@@ -367,9 +367,12 @@ void Food::parseMessages(const string &messages) {
 			}
 		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
-		for (map<Point, int>::iterator c = corpse_loc.begin(); c != corpse_loc.end(); ++c) {
-			if (saiph->levels[saiph->position.level].monsters.find(c->first) == saiph->levels[saiph->position.level].monsters.end() && saiph->levels[saiph->position.level].stashes.find(c->first) == saiph->levels[saiph->position.level].stashes.end())
-				corpse_loc.erase(c->first);
+		for (map<Point, int>::iterator c = corpse_loc.begin(); c != corpse_loc.end(); ) {
+			if (saiph->levels[saiph->position.level].monsters.find(c->first) == saiph->levels[saiph->position.level].monsters.end() && saiph->levels[saiph->position.level].stashes.find(c->first) == saiph->levels[saiph->position.level].stashes.end()) {
+				corpse_loc.erase(c++);
+				continue;
+			}
+			++c;
 		}
 	} else if (saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
 		/* we should stop eating when we get this message */
