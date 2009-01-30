@@ -214,9 +214,7 @@ void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value
 	/* since we're gonna track certain symbols we'll use an own method for this */
 	if (symbol == FOUNTAIN && branch == BRANCH_MINES)
 		symbol = MINES_FOUNTAIN; // to avoid dipping & such
-	if (symbol == FLOOR && dungeonmap[point.row][point.col] == SHOP_TILE)
-		return; // don't overwrite SHOP_TILE with FLOOR
-	else if (dungeonmap[point.row][point.col] == symbol)
+	if (dungeonmap[point.row][point.col] == symbol)
 		return; // no change
 	if (track_symbol[dungeonmap[point.row][point.col]])
 		symbols[dungeonmap[point.row][point.col]].erase(point);
