@@ -687,7 +687,6 @@ void Level::init() {
 	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
 	passable[(unsigned char) ROGUE_STAIRS] = true;
 	passable[(unsigned char) MINES_FOUNTAIN] = true;
-	passable[(unsigned char) SHOP_TILE] = true;
 	passable[(unsigned char) WEAPON] = true;
 	passable[(unsigned char) ARMOR] = true;
 	passable[(unsigned char) RING] = true;
@@ -729,7 +728,6 @@ void Level::init() {
 	dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
 	dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
 	dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
-	dungeon[(unsigned char) SHOP_TILE] = true; // unique, but static
 	/* cost for pathing on certain tiles */
 	pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
 	pathcost[(unsigned char) ICE] = COST_ICE;

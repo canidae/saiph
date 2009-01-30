@@ -57,7 +57,7 @@ class Level {
 		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		std::map<Point, Monster> monsters;
 		std::map<Point, Stash> stashes;
-		std::map<unsigned char, std::map<Point, int> > symbols;
+		std::map<Point, int> symbols[UCHAR_MAX + 1];
 		std::map<Point, unsigned char> walkable;
 		std::string name;
 		int depth;
