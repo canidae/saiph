@@ -261,9 +261,9 @@ unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min
 	 * - descend if stairs found -
 	 * 2. search corridor corners & room corners
 	 * 3. search triway corridors & room walls
-	 * 4. search dead ends again
+	 * 4. search dead ends
 	 *
-	 * rinse & repeat step 2-4
+	 * repeat step 2-4
 	 */
 	int type = INT_MAX;
 	int intervals;
@@ -272,7 +272,7 @@ unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min
 		intervals = search_count / EXPLORE_SEARCH_INTERVAL / (solid_rock_count + wall_count);
 	else
 		intervals = 0;
-	if (w->second == CORRIDOR) {
+	if (saiph->levels[saiph->position.level].dungeonmap[w->first.row][w->first.col] == CORRIDOR) {
 		/* point is in a corridor */
 		if (point_search_count < EXPLORE_FULLY_SEARCHED) {
 			/* not visited, visit it */
@@ -324,7 +324,7 @@ unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min
 		/* same type as previous best, check distance */
 		if (moves > *min_moves)
 			return ILLEGAL_DIRECTION; // found a shorter path already
-		if (w->second == CORRIDOR && moves == 1 && moves == *min_moves && type == *best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
+		if (saiph->levels[saiph->position.level].dungeonmap[w->first.row + 1][w->first.col] == CORRIDOR && moves == 1 && moves == *min_moves && type == *best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
 			return ILLEGAL_DIRECTION; // prefer cardinal moves in corridors when distance is 1
 	}
 	*min_moves = moves;
