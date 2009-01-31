@@ -61,7 +61,7 @@ void Loot::analyze() {
 			if (dropItem(i->second) == 0)
 				continue;
 			/* we got unwanted stuff */
-			command = DROP;
+			command = DROP_MENU;
 			priority = PRIORITY_LOOT_DROP_ITEMS;
 			return;
 		}

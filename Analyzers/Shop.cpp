@@ -8,136 +8,114 @@
 using namespace std;
 
 /* constructors/destructor */
-Shop::Shop(Saiph *saiph) : Analyzer("Shop"), saiph(saiph), direction(ILLEGAL_DIRECTION), state(SHOP_IDLE) {
+Shop::Shop(Saiph *saiph) : Analyzer("Shop"), saiph(saiph), drop_pick_axe(false), look_at_ground(false) {
 }
 
 /* methods */
 void Shop::parseMessages(const string &messages) {
-	if (messages.find(SHOP_MESSAGE_PICKAXE, 0) != string::npos || messages.find(SHOP_MESSAGE_PICKAXE_PLURAL, 0) != string::npos || messages.find(SHOP_MESSAGE_MATTOCK, 0) != string::npos || messages.find(SHOP_MESSAGE_MATTOCK_PLURAL, 0) != string::npos || messages.find(SHOP_MESSAGE_TOOLS, 0) != string::npos || messages.find(SHOP_MESSAGE_ANGRY_PICKAXE, 0) != string::npos || messages.find(SHOP_MESSAGE_ANGRY_PICKAXE_PLURAL, 0) != string::npos || messages.find(SHOP_MESSAGE_ANGRY_MATTOCK, 0) != string::npos || messages.find(SHOP_MESSAGE_ANGRY_MATTOCK_PLURAL, 0) != string::npos || messages.find(SHOP_MESSAGE_ANGRY_TOOLS, 0) != string::npos) {
-		/* Find where the shopkeeper is standing. He should be right next to us blocking the door. */
-		Point sk_pos;
-		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-			if (!m->second.shopkeeper || !m->second.visible)
-				continue;
+	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
+		/* we're most likely standing in a doorway, next to a shopkeeper.
+		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
+		int moves = 0;
+		unsigned char dir = ILLEGAL_DIRECTION;
+		dir = saiph->shortestPath(CORRIDOR, false, &moves);
+		if (dir == ILLEGAL_DIRECTION)
+			dir = saiph->shortestPath(FLOOR, false, &moves);
 
-			int distance = max(abs(m->first.row - saiph->position.row), abs(m->first.col - saiph->position.col));
-			if (distance == 1) {
-				/* Hopefully there are no places where two shopkeepers will be next to us. */
-				sk_pos = m->first;
-				break;
-			}
-		}
-
-		exit = saiph->position;
-
-		if (sk_pos.row == saiph->position.row) {
-			if (sk_pos.col > saiph->position.col) {
-				direction = E;
-				command = W;
-			} else {
-				direction = W;
-				command = E;
-			}
-		} else {
-			if (sk_pos.row > saiph->position.row) {
-				direction = N;
-				command = S;
-			} else {
-				direction = S;
-				command = N;
-			}
-		}
-		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
-
-		Debug::notice() << "[Shop       ] moving in direction " << command << endl;
-		state = SHOP_MOVE_AWAY;
-	} else if ((state == SHOP_MOVE_AWAY) && (exit != saiph->position)) {
-
-		/* shopkeeper asking us to drop our tools */
-		command = DROP;
-		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
-
-		state = SHOP_DROP_TOOLS;
-		Debug::notice() << "[Shop       ] opening drop menu" << endl;
-	} else if (saiph->got_drop_menu && (state != SHOP_IDLE)) {
-		/* drop our tools */
-		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-			if (d->second.name != "pick-axe" && d->second.name != "mattock")
-				continue;
-			command = d->first;
-			priority = PRIORITY_SELECT_ITEM;
-			Debug::notice() << "[Shop       ] trying to drop digging tool: " << command << endl;
+		if (dir == ILLEGAL_DIRECTION) {
+			/* this is bad */
+			Debug::warning() << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
 			return;
 		}
-		/* we've probably selected our gold if we're here */
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_PAGE;
 
-		state = SHOP_LOOK_AT_GROUND;
-		Debug::notice() << "[Shop       ] closing drop menu" << endl;
-	} else if (state == SHOP_LOOK_AT_GROUND) {
+		drop_pick_axe = true;
+		command = dir;
+		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
+	} else if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_DROP, 0) == 0 && drop_pick_axe) {
+		/* drop our tools */
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name != "pick-axe" && i->second.name != "mattock")
+				continue;
+			command = i->first;
+			priority = PRIORITY_CONTINUE_ACTION;
+			drop_pick_axe = false;
+			look_at_ground = true;
+			return;
+		}
+	} else if (drop_pick_axe) {
+		/* we should've moved away from shopkeeper now, drop the pick-axe */
+		command = DROP;
+		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
+	} else if (look_at_ground) {
 		/* we'll look at ground after dropping the tools.
 		 * this makes us aware of the stash,
 		 * and the loot analyzer won't "visit" the stash after we move */
 		command = LOOK;
 		priority = PRIORITY_LOOK;
-
-		state = SHOP_MOVE_INTO_SHOP;
-		Debug::notice() << "[Shop       ] looking at the ground" << endl;
-	} else if (state == SHOP_MOVE_INTO_SHOP) {
-		command = direction;
-		priority = PRIORITY_SHOP_ENTER;
-
-		Debug::notice() << "[Shop       ] moving direction " << direction << endl;
-
-		/* If we're at the exit, mark us as browsing since we're entering this turn */
-		// Should this be set in the analyze step? */
-		if (exit == saiph->position)
-			state = SHOP_BROWSING;
 	}
 }
 
 void Shop::analyze() {
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR)
-		return; // not standing on FLOOR, not in shop or shop already detected
-	bool inside_shop = false;
+		return; // not standing on FLOOR, no shop here
 
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
+		/* FIXME:
+		 * what if we fall into a shop on an item we want?
+		 * this is what probably will happen:
+		 * MonsterInfo analyzer farlooks shk
+		 * Loot picks up the item
+		 * Shop marks tiles as SHOP_TILE.
+		 *
+		 * this one is tricky */
 		if (!m->second.shopkeeper || !m->second.visible)
 			continue;
 
-		/* Figure out of we're in the same room as the shopkeeper */
-		int top = m->first.row;
-		int bottom = m->first.row;
-		int left = m->first.col;
-		int right = m->first.col;
+		/* Figure out if we're in the same room as the shopkeeper */
+		int north = m->first.row;
+		int south = m->first.row;
+		int west = m->first.col;
+		int east = m->first.col;
 
 		unsigned char symbol = 0;
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[--top][m->first.col];
-		while ((symbol != HORIZONTAL_WALL) && (symbol != OPEN_DOOR) && (top >= 0))
-			symbol = saiph->levels[saiph->position.level].dungeonmap[--top][m->first.col];
+		/* FIXME:
+		 * what if we encounter a really large shop like this:
+		 *    -----
+		 *    [?%!|
+		 *   .?!%(|
+		 *  |.((/[|
+		 * #@@(%"!|
+		 *  |./[%%|
+		 *   ------
+		 *
+		 * eg. we don't see the top horizontal wall,
+		 * then this will fail.
+		 * however, it'll only make the shop larger than it really is,
+		 * which is better than if it makes the shop too small */
+		symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
+		while (symbol != HORIZONTAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && north > MAP_ROW_BEGIN)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[++bottom][m->first.col];
-		while ((symbol != HORIZONTAL_WALL) && (symbol != OPEN_DOOR) && (bottom <= MAP_ROW_END))
-			symbol = saiph->levels[saiph->position.level].dungeonmap[++bottom][m->first.col];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[++south][m->first.col];
+		while (symbol != HORIZONTAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && south < MAP_ROW_END)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[++south][m->first.col];
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--left];
-		while ((symbol != VERTICAL_WALL) && (symbol != OPEN_DOOR) && (left >= 0))
-			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--left];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--west];
+		while (symbol != VERTICAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && west > MAP_COL_BEGIN)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--west];
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++right];
-		while ((symbol != VERTICAL_WALL) && (symbol != OPEN_DOOR) && (right <= MAP_COL_END))
-			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++right];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++east];
+		while (symbol != VERTICAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && east < MAP_COL_END)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++east];
 
-		if (saiph->position.row > top && saiph->position.row < bottom && saiph->position.col > left && saiph->position.col < right)
-			inside_shop = true;
+		Debug::notice() << "[Shop       ] bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
 
-		Debug::notice() << "[Shop       ] bounds are (" << top << ", " << left << ", " << bottom << ", " << right << "), inside? " << inside_shop << endl;
+		/* mark all tiles within boundaries as SHOP_TILE */
+		Point p;
+		for (p.row = north + 1; p.row < south; ++p.row) {
+			for (p.col = west + 1; p.col < east; ++p.col)
+				saiph->levels[saiph->position.level].setDungeonSymbol(p, SHOP_TILE);
+		}
 	}
-
-	saiph->world->player.inside_shop = inside_shop;
-
-	if (saiph->world->player.inside_shop && exit == saiph->position && state == SHOP_BROWSING)
-		state = SHOP_IDLE;
 }

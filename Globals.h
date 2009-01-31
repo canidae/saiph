@@ -121,7 +121,8 @@
 #define APPLY "a"
 #define CLOSE_PAGE " "
 #define DIP "#dip\n"
-#define DROP "D"
+#define DROP_MENU "D"
+#define DROP "d"
 #define EAT "e"
 #define ENGRAVE "E"
 #define ENHANCE "#enhance\n"
@@ -293,6 +294,8 @@
 #define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
+#define MESSAGE_FOOCUBUS_QUESTION "  \"Shall I remove your " // followed by what he/she wants to remove.
+#define MESSAGE_FOOCUBUS_REMOVE "  \"Take off your " // followed by what the foocubus removed.
 #define MESSAGE_FOR_INSTRUCTIONS "  (For instructions type a ?)  "
 #define MESSAGE_FOR_WHAT_DO_YOU_WISH "  For what do you wish?  "
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
@@ -316,6 +319,7 @@
 #define MESSAGE_WHAT_TO_APPLY "  What do you want to use or apply? "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? "
 #define MESSAGE_WHAT_TO_DRINK "  What do you want to drink? "
+#define MESSAGE_WHAT_TO_DROP "  What do you want to drop? "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? "
 #define MESSAGE_WHAT_TO_REMOVE "  What do you want to remove? "
 #define MESSAGE_WHAT_TO_PUT_ON "  What do you want to put on? "
@@ -327,7 +331,5 @@
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off
-#define MESSAGE_FOOCUBUS_QUESTION "  \"Shall I remove your " // followed by what he/she wants to remove.
-#define MESSAGE_FOOCUBUS_REMOVE "  \"Take off your " // followed by what the foocubus removed.
 
 #endif

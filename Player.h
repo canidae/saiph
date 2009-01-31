@@ -57,8 +57,6 @@ class Player {
 		bool polymorphed;
 		/* engulfed */
 		bool engulfed;
-		/* going shopping */
-		bool inside_shop;
 
 		Player();
 

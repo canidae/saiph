@@ -23,18 +23,10 @@ void Vault::parseMessages(const string &messages) {
 		command = "saiph\n";
 		priority = PRIORITY_CONTINUE_ACTION;
 		drop_gold = true;
-	} else if (saiph->got_drop_menu && drop_gold) {
+	} else if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_DROP, 0) == 0 && drop_gold) {
 		/* drop our gold */
-		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-			if (d->second.name != "gold piece")
-				continue;
-			command = d->first;
-			priority = PRIORITY_SELECT_ITEM;
-			return;
-		}
-		/* we've probably selected our gold if we're here */
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_PAGE;
+		command = "$";
+		priority = PRIORITY_CONTINUE_ACTION;
 		look_at_ground = true;
 	} else if (drop_gold && !look_at_ground) {
 		/* bring up drop menu */

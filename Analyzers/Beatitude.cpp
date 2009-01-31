@@ -25,7 +25,7 @@ void Beatitude::analyze() {
 	if (dir == ILLEGAL_DIRECTION)
 		return; // don't know of any altars
 	else if (dir == NOWHERE)
-		command = DROP; // we're standing on the altar, drop items
+		command = DROP_MENU; // we're standing on the altar, drop items
 	else
 		command = dir; // move towards altar
 	priority = PRIORITY_BEATITUDE_DROP_ALTAR;

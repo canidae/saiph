@@ -56,8 +56,6 @@ Player::Player() {
 	polymorphed = false;
 	/* engulfed */
 	engulfed = false;
-	/* going shopping */
-	inside_shop = false;
 }
 
 /* methods */
