@@ -491,8 +491,6 @@ bool Saiph::run() {
 unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path from player to nearest symbol.
 	 * also sets amount of moves to the target */
-	if (!Level::track_symbol[symbol])
-		return ILLEGAL_DIRECTION;
 	int least_moves = INT_MAX;
 	unsigned char best_move = ILLEGAL_DIRECTION;
 	int level_queue[levels.size()];

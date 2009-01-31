@@ -64,13 +64,11 @@ class Level {
 		int branch;
 
 		static bool passable[UCHAR_MAX + 1];
-		static bool track_symbol[UCHAR_MAX + 1];
 
 		Level(Saiph *saiph, std::string name, int branch = BRANCH_MAIN);
 
 		void parseMessages(const std::string &messages);
-		void setDungeonSymbol(const Point &point, unsigned char symbol, int value = UNKNOWN_SYMBOL_VALUE);
-		void setDungeonSymbolValue(const Point &point, int value = UNKNOWN_SYMBOL_VALUE);
+		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
 		void updateMapPoint(const Point &point, unsigned char symbol, int color);
 		void updateMonsters();

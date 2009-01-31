@@ -175,6 +175,7 @@
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
 #define MINES_FOUNTAIN 140
+#define SHOP_TILE 141
 
 /* item symbols */
 #define ILLEGAL_ITEM 0

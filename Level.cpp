@@ -10,7 +10,6 @@ using namespace std;
 /* initialize static variables */
 /* public */
 bool Level::passable[UCHAR_MAX + 1] = {false};
-bool Level::track_symbol[UCHAR_MAX + 1] = {false};
 /* private */
 Point Level::pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
 unsigned char Level::uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1] = {{0}};
@@ -62,12 +61,14 @@ void Level::parseMessages(const string &messages) {
 	else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE, 0) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE, 0) != string::npos)
 		setDungeonSymbol(saiph->position, UNKNOWN_TILE);
 	else if ((pos = messages.find(LEVEL_ALTAR_HERE, 0)) != string::npos) {
+		setDungeonSymbol(saiph->position, ALTAR);
+		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
-			setDungeonSymbol(saiph->position, ALTAR, NEUTRAL);
+			symbols[ALTAR][saiph->position] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
-			setDungeonSymbol(saiph->position, ALTAR, CHAOTIC);
+			symbols[ALTAR][saiph->position] = CHAOTIC;
 		else
-			setDungeonSymbol(saiph->position, ALTAR, LAWFUL);
+			symbols[ALTAR][saiph->position] = LAWFUL;
 	}
 
 	/* item parsing */
@@ -210,43 +211,17 @@ void Level::parseMessages(const string &messages) {
 	}
 }
 
-void Level::setDungeonSymbol(const Point &point, unsigned char symbol, int value) {
-	/* since we're gonna track certain symbols we'll use an own method for this */
-	if (symbol == FOUNTAIN && branch == BRANCH_MINES)
-		symbol = MINES_FOUNTAIN; // to avoid dipping & such
+void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
+	/* need to update both dungeonmap and symbols,
+	 * better keep it in a method */
 	if (dungeonmap[point.row][point.col] == symbol)
 		return; // no change
-	if (track_symbol[dungeonmap[point.row][point.col]])
-		symbols[dungeonmap[point.row][point.col]].erase(point);
-	if (track_symbol[symbol])
-		symbols[symbol][point] = value;
+	/* erase old symbol from symbols */
+	symbols[dungeonmap[point.row][point.col]].erase(point);
+	/* set new symbol in symbols */
+	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
+	/* update dungeonmap */
 	dungeonmap[point.row][point.col] = symbol;
-	/* TODO: this stuff is only used by Explore, is it useful? */
-	switch (symbol) {
-		case SOLID_ROCK:
-		case VERTICAL_WALL:
-		case HORIZONTAL_WALL:
-		case CLOSED_DOOR:
-		case IRON_BARS:
-		case TREE:
-		case RAISED_DRAWBRIDGE:
-		case UNKNOWN_TILE_UNPASSABLE:
-			/* these tiles are unwalkable */
-			if (walkable.find(point) != walkable.end())
-				walkable.erase(point);
-			break;
-
-		default:
-			/* these tiles should be walkable */
-			walkable[point] = symbol;
-			break;
-	}
-}
-
-void Level::setDungeonSymbolValue(const Point &point, int value) {
-	/* set the value of the symbol on given point */
-	if (track_symbol[dungeonmap[point.row][point.col]] && symbols[dungeonmap[point.row][point.col]].find(point) != symbols[dungeonmap[point.row][point.col]].end())
-		symbols[dungeonmap[point.row][point.col]][point] = value;
 }
 
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
@@ -378,6 +353,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	} else {
 		/* remap ambigous symbols */
 		symbol = uniquemap[symbol][color];
+		if (symbol == FOUNTAIN && branch == BRANCH_MINES)
+			symbol = MINES_FOUNTAIN; // to avoid dipping & such
 	}
 	if (dungeon[symbol] || (symbol == SOLID_ROCK && dungeonmap[point.row][point.col] == CORRIDOR)) {
 		/* update the map showing static stuff */
@@ -654,19 +631,6 @@ void Level::init() {
 	item[(unsigned char) IRON_BALL] = true;
 	item[(unsigned char) CHAINS] = true;
 	item[(unsigned char) VENOM] = true;
-	/* dungeon symbol tracking */
-	track_symbol[(unsigned char) OPEN_DOOR] = true;
-	track_symbol[(unsigned char) CLOSED_DOOR] = true;
-	track_symbol[(unsigned char) STAIRS_UP] = true;
-	track_symbol[(unsigned char) STAIRS_DOWN] = true;
-	track_symbol[(unsigned char) ALTAR] = true;
-	track_symbol[(unsigned char) GRAVE] = true;
-	track_symbol[(unsigned char) THRONE] = true;
-	track_symbol[(unsigned char) SINK] = true;
-	track_symbol[(unsigned char) FOUNTAIN] = true;
-	track_symbol[(unsigned char) VERTICAL_WALL] = true;
-	track_symbol[(unsigned char) HORIZONTAL_WALL] = true;
-	track_symbol[(unsigned char) ROGUE_STAIRS] = true;
 	/* stuff we can walk on */
 	passable[(unsigned char) FLOOR] = true;
 	passable[(unsigned char) OPEN_DOOR] = true;
