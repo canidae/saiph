@@ -40,8 +40,8 @@ void Loot::analyze() {
 	if (priority >= PRIORITY_LOOT_LOOT_STASH)
 		return;
 	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT && saiph->world->player.encumbrance < BURDENED) {
-		/* if we're in a shop, don't loot */
-		if (!saiph->world->player.inside_shop) {
+		/* only loot if we're not on a SHOP_TILE */
+		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != SHOP_TILE) {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (pickupItem(*i) == 0)
 					continue;
@@ -113,8 +113,7 @@ void Loot::analyze() {
 			map<Coordinate, int>::iterator v = visit_stash.find(stash);
 			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
 				/* stash is unchanged, but does it contain something nifty? */
-				/* due to shops, we can't do this atm :(
-				if (!saiph->world->player.inside_shop) {
+				if (saiph->levels[v->first.level].dungeonmap[v->first.row][v->first.col] != SHOP_TILE) {
 					for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
 						if (pickupItem(*i) == 0)
 							continue; // don't want this item
@@ -130,9 +129,10 @@ void Loot::analyze() {
 						}
 					}
 				}
-				*/
 			} else {
 				/* unvisited stash, visit it if it's closer */
+				/* what? isn't this already covered?
+				 * actually, no. this one cares about unvisited stashes on other levels too */
 				int moves = 0;
 				unsigned char dir = saiph->shortestPath(stash, false, &moves);
 				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {

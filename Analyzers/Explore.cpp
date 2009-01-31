@@ -36,10 +36,13 @@ void Explore::analyze() {
 			int moves = 0;
 			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
 			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE)
-					best_move = string(LOOK)[0]; // slightly ugly, but meh
-				else
+				if (dir == NOWHERE) {
+					command = LOOK;
+					priority = PRIORITY_LOOK;
+					return;
+				} else {
 					best_move = dir;
+				}
 				priority = PRIORITY_EXPLORE_FIND_ROGUE_STAIRS;
 				break;
 			}
