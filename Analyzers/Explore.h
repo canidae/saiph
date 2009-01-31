@@ -5,6 +5,7 @@
 #define EXPLORE_FULLY_SEARCHED 255 // when we won't search a square ever again
 #define EXPLORE_LEVELS 128 // max amount of unique levels (this should go)
 
+#include <map>
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
@@ -27,6 +28,7 @@ class Explore : public Analyzer {
 		unsigned char search[EXPLORE_LEVELS][MAP_ROW_END + 1][MAP_COL_END + 1];
 		bool mines_explored;
 
+		unsigned char calculatePointScore(std::map<Point, int>::iterator w, int *min_moves, int *best_type);
 		unsigned char exploreMines();
 };
 #endif
