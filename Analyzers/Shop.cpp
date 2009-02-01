@@ -61,31 +61,31 @@ void Shop::parseMessages(const string &messages) {
 }
 
 void Shop::analyze() {
-	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == SHOP_TILE) {
-		/* if we're standing on SHOP_TILE, check if we can see the shopkeeper.
-		 * if we can't we probably killed him/her, and then we should remove the SHOP_TILE */
-		bool shopkeeper_seen = false;
-		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-			if (!m->second.shopkeeper || !m->second.visible)
-				continue;
-			shopkeeper_seen = true;
-			break;
-		}
-		if (!shopkeeper_seen) {
-			/* can't see any shopkeeper, make the tile FLOOR */
-			/* FIXME:
-			 * this currently bugs. she's marking SHOP_TILE as FLOOR
-			 * and picks up items. why? */
-			//saiph->levels[saiph->position.level].setDungeonSymbol(saiph->position, FLOOR);
-			/* we should also look at floor so Loot gets a chance to
-			 * pick up the item as the last time Loot checked, this
-			 * tile was a SHOP_TILE */
-			command = LOOK;
-			priority = PRIORITY_CONTINUE_ACTION;
-			/* return because there's no need to check for a shopkeeper again */
-			return;
-		}
-	}
+	/* FIXME:
+	 * this currently bugs. she's marking SHOP_TILE as FLOOR
+	 * and picks up items. why? */
+//	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == SHOP_TILE) {
+//		/* if we're standing on SHOP_TILE, check if we can see the shopkeeper.
+//		 * if we can't we probably killed him/her, and then we should remove the SHOP_TILE */
+//		bool shopkeeper_seen = false;
+//		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
+//			if (!m->second.shopkeeper || !m->second.visible)
+//				continue;
+//			shopkeeper_seen = true;
+//			break;
+//		}
+//		if (!shopkeeper_seen) {
+//			/* can't see any shopkeeper, make the tile FLOOR */
+//			saiph->levels[saiph->position.level].setDungeonSymbol(saiph->position, FLOOR);
+//			/* we should also look at floor so Loot gets a chance to
+//			 * pick up the item as the last time Loot checked, this
+//			 * tile was a SHOP_TILE */
+//			command = LOOK;
+//			priority = PRIORITY_CONTINUE_ACTION;
+//			/* return because there's no need to check for a shopkeeper again */
+//			return;
+//		}
+//	}
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != UNKNOWN_TILE)
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 

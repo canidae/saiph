@@ -506,7 +506,6 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 	level_move[0] = NOWHERE;
 	level_added[position.level] = true;
 	int tmp_moves = 0;
-	Debug::info() << SAIPH_DEBUG_NAME << "Pathing to nearest '" << symbol << "'" << endl;
 	while (pivot < level_count) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
@@ -680,7 +679,6 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 
 unsigned char Saiph::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* pathing on same level */
-	Debug::info() << SAIPH_DEBUG_NAME << "Pathing to " << target.row << ", " << target.col << endl;
 	return levels[position.level].shortestPath(target, allow_illegal_last_move, moves);
 }
 
