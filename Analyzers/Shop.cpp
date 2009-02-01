@@ -114,22 +114,25 @@ void Shop::analyze() {
 		 * which is better than if it makes the shop too small.
 		 * still, this bug is very frequent. maybe something else is wrong? */
 		symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
-		while (symbol != HORIZONTAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && north > MAP_ROW_BEGIN)
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && north > MAP_ROW_BEGIN)
 			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
 
 		symbol = saiph->levels[saiph->position.level].dungeonmap[++south][m->first.col];
-		while (symbol != HORIZONTAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && south < MAP_ROW_END)
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && south < MAP_ROW_END)
 			symbol = saiph->levels[saiph->position.level].dungeonmap[++south][m->first.col];
 
 		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--west];
-		while (symbol != VERTICAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && west > MAP_COL_BEGIN)
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && west > MAP_COL_BEGIN)
 			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--west];
 
 		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++east];
-		while (symbol != VERTICAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && east < MAP_COL_END)
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && east < MAP_COL_END)
 			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++east];
 
 		Debug::notice() << "[Shop       ] bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
+
+		if (saiph->position.row <= north && saiph->position.row >= south && saiph->position.col <= west && saiph->position.col >= east)
+			return; // we're not in the shop
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		Point p;
