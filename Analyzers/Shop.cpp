@@ -74,6 +74,11 @@ void Shop::analyze() {
 		if (!shopkeeper_seen) {
 			/* can't see any shopkeeper, make the tile FLOOR */
 			saiph->levels[saiph->position.level].setDungeonSymbol(saiph->position, FLOOR);
+			/* we should also look at floor so Loot gets a chance to
+			 * pick up the item as the last time Loot checked, this
+			 * tile was a SHOP_TILE */
+			command = LOOK;
+			priority = PRIORITY_CONTINUE_ACTION;
 			/* return because there's no need to check for a shopkeeper again */
 			return;
 		}
@@ -82,14 +87,6 @@ void Shop::analyze() {
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-		/* FIXME:
-		 * what if we fall into a shop on an item we want?
-		 * this is what probably will happen:
-		 * - MonsterInfo analyzer farlooks shk
-		 * - Loot picks up the item
-		 * - Shop marks tiles as SHOP_TILE.
-		 *
-		 * this one is tricky */
 		if (!m->second.shopkeeper || !m->second.visible)
 			continue;
 
@@ -140,5 +137,10 @@ void Shop::analyze() {
 			for (p.col = west + 1; p.col < east; ++p.col)
 				saiph->levels[saiph->position.level].setDungeonSymbol(p, SHOP_TILE);
 		}
+		/* we should LOOK at floor to prevent Loot from picking
+		 * up an item if we fall into a shop on an item we want
+		 * before we get to mark the tiles as SHOP_TILE */
+		command = LOOK;
+		priority = PRIORITY_CONTINUE_ACTION;
 	}
 }
