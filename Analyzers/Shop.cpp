@@ -42,7 +42,7 @@ void Shop::parseMessages(const string &messages) {
 			look_at_ground = true;
 			return;
 		}
-	} else if (drop_pick_axe && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == CORRIDOR && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == FLOOR) {
+	} else if (drop_pick_axe && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != OPEN_DOOR) {
 		/* we should've moved away from shopkeeper now, drop the pick-axe */
 		command = DROP;
 		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
