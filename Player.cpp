@@ -56,6 +56,8 @@ Player::Player() {
 	polymorphed = false;
 	/* engulfed */
 	engulfed = false;
+	/* levitating */
+	levitating = false;
 }
 
 /* methods */
@@ -68,7 +70,7 @@ bool Player::parseAttributeRow(const char *attributerow) {
 		alignment = LAWFUL;
 	else if (effects[0][0] == 'N')
 		alignment = NEUTRAL;
-	else    
+	else
 		alignment = CHAOTIC;
 	return true;
 }

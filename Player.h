@@ -57,6 +57,8 @@ class Player {
 		bool polymorphed;
 		/* engulfed */
 		bool engulfed;
+		/* levitating */
+		bool levitating;
 
 		Player();
 

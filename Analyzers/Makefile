@@ -2,14 +2,16 @@
 
 CXX = g++
 RM = rm -f
-CXXFLAGS = -O0 -Wall -g -pg
-OBJECTS = Amulet.o Armor.o Beatitude.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Health.o Lamp.o Loot.o MonsterInfo.o Potion.o Pray.o Ring.o Scroll.o Shop.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
+CXXFLAGS = -O0 -Wall -g3 -gdwarf-2
+OBJECTS = Amulet.o Armor.o Beatitude.o Dig.o Donate.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Genocide.o Health.o Lamp.o Loot.o MonsterInfo.o Potion.o Pray.o Ring.o Rub.o Scroll.o Shop.o Throne.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
 
 analyzers: $(OBJECTS)
 
 Amulet.o: Amulet.h Amulet.cpp
 Armor.o: Armor.h Armor.cpp
 Beatitude.o: Beatitude.h Beatitude.cpp
+Dig.o: Dig.h Dig.cpp
+Donate.o: Donate.h Donate.cpp
 Door.o: Door.h Door.cpp
 Elbereth.o: Elbereth.h Elbereth.cpp
 Enhance.o: Enhance.h Enhance.cpp
@@ -17,6 +19,7 @@ Excalibur.o: Excalibur.h Excalibur.cpp
 Explore.o: Explore.h Explore.cpp
 Fight.o: Fight.h Fight.cpp
 Food.o: Food.h Food.cpp
+Genocide.o: Genocide.h Genocide.cpp
 Health.o: Health.h Health.cpp
 Lamp.o: Lamp.h Lamp.cpp
 Loot.o: Loot.h Loot.cpp
@@ -24,8 +27,10 @@ MonsterInfo.o: MonsterInfo.h MonsterInfo.cpp
 Potion.o: Potion.h Potion.cpp
 Pray.o: Pray.h Pray.cpp
 Ring.o: Ring.h Ring.cpp
+Rub.o: Rub.h Rub.cpp
 Scroll.o: Scroll.h Scroll.cpp
 Shop.o: Shop.h Shop.cpp
+Throne.o: Throne.h Throne.cpp
 Unihorn.o: Unihorn.h Unihorn.cpp
 Valkyrie.o: Valkyrie.h Valkyrie.cpp
 Vault.o: Vault.h Vault.cpp

@@ -13,6 +13,8 @@
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
+#include "Analyzers/Dig.h"
+#include "Analyzers/Donate.h"
 #include "Analyzers/Door.h"
 #include "Analyzers/Elbereth.h"
 #include "Analyzers/Enhance.h"
@@ -20,6 +22,7 @@
 #include "Analyzers/Explore.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
+#include "Analyzers/Genocide.h"
 #include "Analyzers/Health.h"
 #include "Analyzers/Lamp.h"
 #include "Analyzers/Loot.h"
@@ -27,8 +30,10 @@
 #include "Analyzers/Potion.h"
 #include "Analyzers/Pray.h"
 #include "Analyzers/Ring.h"
+#include "Analyzers/Rub.h"
 #include "Analyzers/Scroll.h"
 #include "Analyzers/Shop.h"
+#include "Analyzers/Throne.h"
 #include "Analyzers/Unihorn.h"
 #include "Analyzers/Valkyrie.h"
 #include "Analyzers/Vault.h"
@@ -80,6 +85,8 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Amulet(this));
 	analyzers.push_back(new Armor(this));
 	analyzers.push_back(new Beatitude(this));
+	analyzers.push_back(new Dig(this));
+	analyzers.push_back(new Donate(this));
 	analyzers.push_back(new Door(this));
 	analyzers.push_back(new Elbereth(this));
 	analyzers.push_back(new Enhance(this));
@@ -87,6 +94,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Explore(this));
 	analyzers.push_back(new Fight(this));
 	analyzers.push_back(new Food(this));
+	analyzers.push_back(new Genocide(this));
 	analyzers.push_back(new Health(this));
 	analyzers.push_back(new Lamp(this));
 	analyzers.push_back(new Loot(this));
@@ -94,8 +102,10 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Potion(this));
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Ring(this));
+	analyzers.push_back(new Rub(this));
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Shop(this));
+	analyzers.push_back(new Throne(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
 	analyzers.push_back(new Vault(this));
@@ -1016,6 +1026,10 @@ void Saiph::parseMessages(const string &messages) {
 		world->player.polymorphed = true;
 	if (messages.find(SAIPH_UNPOLYMORPH, 0) != string::npos)
 		world->player.polymorphed = false;
+	if (messages.find(SAIPH_BEGIN_LEVITATION, 0) != string::npos || messages.find(SAIPH_BEGIN_LEVITATION_PIT, 0) != string::npos)
+		world->player.levitating = true;
+	if (messages.find(SAIPH_END_LEVITATION, 0) != string::npos || messages.find(SAIPH_END_LEVITATION_SINK, 0) != string::npos)
+		world->player.levitating = false;
 }
 
 /* main */

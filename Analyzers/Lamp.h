@@ -48,6 +48,8 @@ class Lamp : public Analyzer {
 		Request req;
 		unsigned char lamp_key;
 		bool remove_lamp;
+		bool seen_oil_lamp;
+		bool seen_magic_lamp;
 
 		void findLamp();
 };

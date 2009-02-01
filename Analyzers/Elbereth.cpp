@@ -107,7 +107,8 @@ bool Elbereth::request(const Request &request) {
 
 /* private methods */
 bool Elbereth::canEngrave() {
-	/* TODO: check if we're levitating */
+	if (saiph->world->player.levitating)
+		return false;
 	/* check if there's a fountain/grave/altar here */
 	switch (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col]) {
 		case ALTAR:
@@ -123,7 +124,7 @@ bool Elbereth::canEngrave() {
 	if (saiph->world->player.engulfed)
 		return false;
 	/* check that the monsters around us respects elbereth */
-	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m!= saiph->levels[saiph->position.level].monsters.end(); ++m) {
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
 			/* monster is not next to player */
 			continue;

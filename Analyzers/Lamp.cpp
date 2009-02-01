@@ -6,7 +6,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Lamp::Lamp(Saiph *saiph) : Analyzer("Lamp"), saiph(saiph), lamp_key(0), remove_lamp(false) {
+Lamp::Lamp(Saiph *saiph) : Analyzer("Lamp"), saiph(saiph), lamp_key(0), remove_lamp(false), seen_oil_lamp(false), seen_magic_lamp(false) {
 }
 
 /* methods */
@@ -68,6 +68,7 @@ void Lamp::parseMessages(const string &messages) {
 				req.data = "oil lamp";
 				req.key = lamp_key;
 				saiph->request(req);
+				seen_oil_lamp = true;
 			}
 			req.request = REQUEST_NAME_ITEM;
 			req.data = DISCARD;
@@ -75,6 +76,19 @@ void Lamp::parseMessages(const string &messages) {
 			saiph->request(req);
 			remove_lamp = false;
 			lamp_key = 0;
+		}
+		/* look for a magic lamp -- DrS */
+		if (seen_oil_lamp && !seen_magic_lamp) {
+			map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
+			for (l = saiph->inventory.begin(); l != saiph->inventory.end(); ++l) {
+				if (l->second.name == "lamp") { /* this one must be magic */
+					req.request = REQUEST_CALL_ITEM;
+					req.data = "magic lamp";
+					req.key = l->first;
+					saiph->request(req);
+					seen_magic_lamp = true;
+				}
+			}
 		}
 	}
 }

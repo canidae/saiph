@@ -1,7 +1,7 @@
 CXX = g++
 RM = rm -f
-CXXFLAGS = -O0 -Wall -g -pg
-LDFLAGS = -lutil -g -pg
+CXXFLAGS = -O0 -Wall -g3 -gdwarf-2
+LDFLAGS = -lutil -g3 -gdwarf-2
 OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o Item.o Level.o Local.o Monster.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
 
 saiph: $(OBJECTS)

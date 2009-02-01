@@ -36,6 +36,10 @@
 #define SAIPH_LEG_IS_BETTER "  Your leg feels somewhat better.  "
 #define SAIPH_POLYMORPH "  You turn into "
 #define SAIPH_UNPOLYMORPH "  You return to "
+#define SAIPH_BEGIN_LEVITATION "  You start to float in the air!  "
+#define SAIPH_BEGIN_LEVITATION_PIT "  You float up, out of the pit!  "
+#define SAIPH_END_LEVITATION "  You float gently to the " //followed by kind of floor
+#define SAIPH_END_LEVITATION_SINK "  You crash to the " //followed by kind of floor
 
 #include <fstream>
 #include <map>

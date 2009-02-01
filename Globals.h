@@ -119,6 +119,7 @@
 /* commands */
 #define ILLEGAL_ACTION 0
 #define APPLY "a"
+#define CHAT "#chat\n"
 #define CLOSE_PAGE " "
 #define DIP "#dip\n"
 #define DROP_MENU "D"
@@ -137,12 +138,14 @@
 #define PUT_ON "P"
 #define QUAFF "q"
 #define REMOVE "R"
+#define RUB "#rub\n"
 #define REST "."
 #define SEARCH "s"
 #define TAKE_OFF "T"
 #define THROW "t"
 #define WEAR "W"
 #define WIELD "w"
+#define ZAP_WAND "z"
 /* common answers */
 #define HANDS "-"
 #define NO "n"
@@ -247,7 +250,11 @@
 #define PRIORITY_FOOD_EAT_HUNGRY 350
 #define PRIORITY_SHOP_DROP_DIGGING_TOOL 330
 #define PRIORITY_FIGHT_MOVE 325
+#define PRIORITY_DONATE_CHAT_TO_PRIEST 310
 #define PRIORITY_LAMP_TOGGLE 300
+#define PRIORITY_SHOP_ENTER 275
+#define PRIORITY_DIG_PATH 265
+#define PRIORITY_THRONE_SIT 260
 #define PRIORITY_LOOT_VISIT_STASH 250
 #define PRIORITY_LOOT_DROP_ITEMS 245
 #define PRIORITY_BEATITUDE_DROP_ALTAR 230
@@ -255,6 +262,9 @@
 #define PRIORITY_ARMOR_WEAR 225
 #define PRIORITY_EXCALIBUR_DIP 225
 #define PRIORITY_RING_WEAR 225
+#define PRIORITY_RUB_MAGIC_LAMP 225
+#define PRIORITY_WISH_ZAP_WAND 225
+#define PRIORITY_WAND_ENGRAVE_ID 215
 /* 0-199: explore/random/do stuff we normally wouldn't do (melee floating eye) */
 #define PRIORITY_DOOR_OPEN 150
 #define PRIORITY_EXPLORE_FIND_ROGUE_STAIRS 70
@@ -281,6 +291,7 @@
 #define MESSAGE_DESTROY_RING2 " turn to dust and vanish!  "
 #define MESSAGE_DESTROY_WAND " breaks apart and explodes!  "
 #define MESSAGE_DESTROY_WAND2 " break apart and explode!  "
+#define MESSAGE_DIG_DIRECTION "  In what direction do you want to dig? "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
 #define MESSAGE_DRINK_FROM_FOUNTAIN "  Drink from the fountain? [yn] (n)  "
@@ -320,8 +331,11 @@
 #define MESSAGE_WHAT_TO_DRINK "  What do you want to drink? "
 #define MESSAGE_WHAT_TO_DROP "  What do you want to drop? "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? "
+#define MESSAGE_WHAT_TO_GENOCIDE_UNCURSED "  What monster do you want to genocide? [type the name]  "
+#define MESSAGE_WHAT_TO_GENOCIDE_BLESSED  "  What class of monsters do you wish to genocide?  "
 #define MESSAGE_WHAT_TO_REMOVE "  What do you want to remove? "
 #define MESSAGE_WHAT_TO_PUT_ON "  What do you want to put on? "
+#define MESSAGE_WHAT_TO_RUB "  What do you want to rub? "
 #define MESSAGE_WHAT_TO_TAKE_OFF "  What do you want to take off? "
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? "
 #define MESSAGE_WHAT_TO_WEAR "  What do you want to wear? "
