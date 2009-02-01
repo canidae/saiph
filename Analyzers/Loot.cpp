@@ -15,7 +15,7 @@ void Loot::analyze() {
 		/* set visit_stash when we stand on a stash */
 		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
 		if (visit_old_stash == saiph->position)
-			visit_old_stash.level = -1;
+			visitOldStash(); // check if there are other old stashes we wish to visit
 	}
 	/* check that we don't have anything more important to do */
 	if (priority >= PRIORITY_LOOK)
@@ -106,45 +106,7 @@ void Loot::analyze() {
 	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != STAIRS_DOWN)
 		return;
 	/* set "visit_old_stash" when we're standing on downstairs */
-	min_moves = INT_MAX;
-	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
-		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
-			Coordinate stash(level, s->first);
-			map<Coordinate, int>::iterator v = visit_stash.find(stash);
-			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
-				/* stash is unchanged, but does it contain something nifty? */
-				if (saiph->levels[v->first.level].dungeonmap[v->first.row][v->first.col] != SHOP_TILE) {
-					for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
-						if (pickupItem(*i) == 0)
-							continue; // don't want this item
-						// we want this item, is stash closer than previous stash?
-						int moves = 0;
-						unsigned char dir = saiph->shortestPath(stash, false, &moves);
-						if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
-							// move towards stash
-							min_moves = moves;
-							command = dir;
-							priority = PRIORITY_LOOT_VISIT_STASH;
-							visit_old_stash = stash;
-						}
-					}
-				}
-			} else {
-				/* unvisited stash, visit it if it's closer */
-				/* what? isn't this already covered?
-				 * actually, no. this one cares about unvisited stashes on other levels too */
-				int moves = 0;
-				unsigned char dir = saiph->shortestPath(stash, false, &moves);
-				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
-					/* move towards stash */
-					min_moves = moves;
-					command = dir;
-					priority = PRIORITY_LOOT_VISIT_STASH;
-					visit_old_stash = stash;
-				}
-			}
-		}
-	}
+	visitOldStash();
 }
 
 void Loot::complete() {
@@ -439,4 +401,47 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 		return (drop ? 0 : i->second.amount - count);
 	else
 		return (drop ? count - i->second.amount : 0);
+}
+
+void Loot::visitOldStash() {
+	int min_moves = INT_MAX;
+	visit_old_stash.level = -1; // reset, in case there are no old stashes we wish to visit
+	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
+		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
+			Coordinate stash(level, s->first);
+			map<Coordinate, int>::iterator v = visit_stash.find(stash);
+			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
+				/* stash is unchanged, but does it contain something nifty? */
+				if (saiph->levels[v->first.level].dungeonmap[v->first.row][v->first.col] != SHOP_TILE) {
+					for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
+						if (pickupItem(*i) == 0)
+							continue; // don't want this item
+						// we want this item, is stash closer than previous stash?
+						int moves = 0;
+						unsigned char dir = saiph->shortestPath(stash, false, &moves);
+						if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+							// move towards stash
+							min_moves = moves;
+							command = dir;
+							priority = PRIORITY_LOOT_VISIT_STASH;
+							visit_old_stash = stash;
+						}
+					}
+				}
+			} else {
+				/* unvisited stash, visit it if it's closer */
+				/* what? isn't this already covered?
+				 * actually, no. this one cares about unvisited stashes on other levels too */
+				int moves = 0;
+				unsigned char dir = saiph->shortestPath(stash, false, &moves);
+				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+					/* move towards stash */
+					min_moves = moves;
+					command = dir;
+					priority = PRIORITY_LOOT_VISIT_STASH;
+					visit_old_stash = stash;
+				}
+			}
+		}
+	}
 }

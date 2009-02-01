@@ -66,5 +66,6 @@ class Loot : public Analyzer {
 		int dropItem(const Item &item);
 		int pickupItem(const Item &item);
 		int pickupOrDropItem(const Item &item, bool drop);
+		void visitOldStash();
 };
 #endif
