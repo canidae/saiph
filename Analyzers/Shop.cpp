@@ -114,10 +114,10 @@ void Shop::analyze() {
 		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && east < MAP_COL_END)
 			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][++east];
 
-		Debug::notice() << "[Shop       ] bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
-
-		if (m->first.row <= north && m->first.row >= south && m->first.col <= west && m->first.col >= east)
+		if (m->first.row <= north || m->first.row >= south || m->first.col <= west || m->first.col >= east)
 			return; // we're not in the same room as the shopkeeper
+
+		Debug::notice() << "[Shop       ] bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		Point p;
