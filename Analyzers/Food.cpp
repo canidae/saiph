@@ -265,15 +265,10 @@ void Food::analyze() {
 			saiph->request(req);
 		}
 	}
-	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE) {
+	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != SHOP_TILE) {
 		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
 		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */
-			for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-				if (m->second.shopkeeper && m->second.visible)
-					return; // we see a shopkeeper, don't eat
-			}
-			/* there are items here, we should look for corpses to eat */
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
 					/* there's a corpse in the stash, is it edible? */
