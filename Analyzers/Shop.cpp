@@ -90,49 +90,34 @@ void Shop::analyze() {
 		if (!m->second.shopkeeper || !m->second.visible)
 			continue;
 
-		/* Figure out if we're in the same room as the shopkeeper */
-		int north = m->first.row;
-		int south = m->first.row;
-		int west = m->first.col;
-		int east = m->first.col;
+		/* figure out if we're in the same room as the shopkeeper */
+		int north = saiph->position.row;
+		int south = saiph->position.row;
+		int west = saiph->position.col;
+		int east = saiph->position.col;
 
 		unsigned char symbol = 0;
 
-		/* FIXME:
-		 * what if we encounter a really large shop like this:
-		 *    -----
-		 *    [?%!|
-		 *   .?!%(|
-		 *  |.((/[|
-		 * #@@(%"!|
-		 *  |./[%%|
-		 *   ------
-		 *
-		 * eg. we don't see the top horizontal wall,
-		 * then this will fail.
-		 * however, it'll only make the shop larger than it really is,
-		 * which is better than if it makes the shop too small.
-		 * still, this bug is very frequent. maybe something else is wrong? */
-		symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && north > MAP_ROW_BEGIN)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && north > MAP_ROW_BEGIN)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][saiph->position.col];
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[++south][m->first.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && south < MAP_ROW_END)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[++south][m->first.col];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && south < MAP_ROW_END)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[++south][saiph->position.col];
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--west];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && west > MAP_COL_BEGIN)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][--west];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && west > MAP_COL_BEGIN)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][--west];
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++east];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE || symbol == SOLID_ROCK) && east < MAP_COL_END)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[m->first.row][++east];
+		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && east < MAP_COL_END)
+			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][++east];
 
 		Debug::notice() << "[Shop       ] bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
 
-		if (saiph->position.row <= north && saiph->position.row >= south && saiph->position.col <= west && saiph->position.col >= east)
-			return; // we're not in the shop
+		if (m->first.row <= north && m->first.row >= south && m->first.col <= west && m->first.col >= east)
+			return; // we're not in the same room as the shopkeeper
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		Point p;
