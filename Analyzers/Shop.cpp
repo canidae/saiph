@@ -42,7 +42,7 @@ void Shop::parseMessages(const string &messages) {
 			look_at_ground = true;
 			return;
 		}
-	} else if (drop_pick_axe) {
+	} else if (drop_pick_axe && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == CORRIDOR && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == FLOOR) {
 		/* we should've moved away from shopkeeper now, drop the pick-axe */
 		command = DROP;
 		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
@@ -50,22 +50,27 @@ void Shop::parseMessages(const string &messages) {
 		/* we'll look at ground after dropping the tools.
 		 * this makes us aware of the stash,
 		 * and the loot analyzer won't "visit" the stash after we move */
+		/* FIXME:
+		 * possibly not safe. what if another analyzer do something
+		 * with higher priority?
+		 * unlikely, but may be possible */
 		command = LOOK;
 		priority = PRIORITY_LOOK;
+		look_at_ground = false;
 	}
 }
 
 void Shop::analyze() {
-	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR)
-		return; // not standing on FLOOR, no shop here
+	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != UNKNOWN_TILE)
+		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		/* FIXME:
 		 * what if we fall into a shop on an item we want?
 		 * this is what probably will happen:
-		 * MonsterInfo analyzer farlooks shk
-		 * Loot picks up the item
-		 * Shop marks tiles as SHOP_TILE.
+		 * - MonsterInfo analyzer farlooks shk
+		 * - Loot picks up the item
+		 * - Shop marks tiles as SHOP_TILE.
 		 *
 		 * this one is tricky */
 		if (!m->second.shopkeeper || !m->second.visible)
@@ -92,7 +97,8 @@ void Shop::analyze() {
 		 * eg. we don't see the top horizontal wall,
 		 * then this will fail.
 		 * however, it'll only make the shop larger than it really is,
-		 * which is better than if it makes the shop too small */
+		 * which is better than if it makes the shop too small.
+		 * still, this bug is very frequent. maybe something else is wrong? */
 		symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
 		while (symbol != HORIZONTAL_WALL && symbol != OPEN_DOOR && symbol != CLOSED_DOOR && north > MAP_ROW_BEGIN)
 			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][m->first.col];
