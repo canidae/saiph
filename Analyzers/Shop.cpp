@@ -73,7 +73,10 @@ void Shop::analyze() {
 		}
 		if (!shopkeeper_seen) {
 			/* can't see any shopkeeper, make the tile FLOOR */
-			saiph->levels[saiph->position.level].setDungeonSymbol(saiph->position, FLOOR);
+			/* FIXME:
+			 * this currently bugs. she's marking SHOP_TILE as FLOOR
+			 * and picks up items. why? */
+			//saiph->levels[saiph->position.level].setDungeonSymbol(saiph->position, FLOOR);
 			/* we should also look at floor so Loot gets a chance to
 			 * pick up the item as the last time Loot checked, this
 			 * tile was a SHOP_TILE */
