@@ -13,11 +13,13 @@ class Dig : public Analyzer {
 
 	private:
 		Saiph* saiph;
-		unsigned char dig_direction;
+		unsigned char dig_direction, digging_tool;
 		int directionIs(int direction);
 		bool directionIsWall(int direction);
 		bool directionIsFloor(int direction);
 		int boulderInDirection();
+		bool isDiggingTool(Item i);
+		bool isDiggingTool(unsigned char letter);
 		unsigned char findDiggingTool();
 };
 #endif	
