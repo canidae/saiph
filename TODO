@@ -199,7 +199,10 @@ Vault
 Wand
 --------------------------------------------------------------------------------
 - does not handle wands that generate no message.
-- looks like it doesn't handle wand of magic missiles.
+- currently it appears to rely on Elbereth to write a message. it shouldn't do
+  this, the idea is that every analyzer should work independently.
+  also, Elbereth is only capable of engraving in dust with finger, engraving
+  with wand of digging makes the game crash.
 
 
 Weapon
