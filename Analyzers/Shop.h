@@ -7,6 +7,7 @@
 #include <string>
 #include "../Analyzer.h"
 #include "../Point.h"
+#include "../Request.h"
 
 class Saiph;
 
@@ -21,5 +22,6 @@ class Shop : public Analyzer {
 		Saiph *saiph;
 		bool drop_pick_axe;
 		bool look_at_ground;
+		Request req;
 };
 #endif

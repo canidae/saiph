@@ -42,6 +42,9 @@ void Shop::parseMessages(const string &messages) {
 			look_at_ground = true;
 			return;
 		}
+		/* request dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 	} else if (drop_pick_axe && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != OPEN_DOOR) {
 		/* we should've moved away from shopkeeper now, drop the pick-axe */
 		command = DROP;
