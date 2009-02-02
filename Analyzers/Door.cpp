@@ -28,7 +28,7 @@ void Door::analyze() {
 	}
 	/* go to nearest closed door and get it open somehow */
 	int least_moves = INT_MAX;
-	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[CLOSED_DOOR].end(); ++d) {
+	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].end(); ++d) {
 		if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && d->second == 1) {
 			/* don't kick/pick doors when we're in the mines */
 			findUnlockingTool();
@@ -80,10 +80,10 @@ void Door::parseMessages(const string &messages) {
 		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* we're going to assume the door won't be locked anymore */
-		saiph->levels[saiph->position.level].symbols[CLOSED_DOOR][position] = UNKNOWN_SYMBOL_VALUE;
+		saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][position] = UNKNOWN_SYMBOL_VALUE;
 	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
-		saiph->levels[saiph->position.level].symbols[CLOSED_DOOR][position] = 1;
+		saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][position] = 1;
 	} else if (messages.find(DOOR_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		command = YES;

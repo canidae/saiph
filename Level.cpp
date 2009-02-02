@@ -64,11 +64,11 @@ void Level::parseMessages(const string &messages) {
 		setDungeonSymbol(saiph->position, ALTAR);
 		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
-			symbols[ALTAR][saiph->position] = NEUTRAL;
+			symbols[(unsigned char) ALTAR][saiph->position] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
-			symbols[ALTAR][saiph->position] = CHAOTIC;
+			symbols[(unsigned char) ALTAR][saiph->position] = CHAOTIC;
 		else
-			symbols[ALTAR][saiph->position] = LAWFUL;
+			symbols[(unsigned char) ALTAR][saiph->position] = LAWFUL;
 	}
 
 	/* item parsing */

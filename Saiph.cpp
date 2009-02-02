@@ -535,7 +535,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			}
 		}
 		/* path to upstairs on level */
-		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_UP].end(); ++s) {
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
 			Debug::info() << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
@@ -562,7 +562,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			}
 		}
 		/* path to downstairs on level */
-		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_DOWN].end(); ++s) {
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 			Debug::info() << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
@@ -630,7 +630,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 				return level_move[level_queue[pivot]]; // return move towards correct stairs
 			}
 			/* path to upstairs on level */
-			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_UP].end(); ++s) {
+			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
 				Debug::info() << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
@@ -656,7 +656,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 				}
 			}
 			/* path to downstairs on level */
-			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[STAIRS_DOWN].end(); ++s) {
+			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 				Debug::info() << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
@@ -728,7 +728,7 @@ void Saiph::detectPosition() {
 		}
 		if (levels[position.level].branch == BRANCH_MAIN && levels[position.level].depth >= 3 && levels[position.level].depth <= 5) {
 			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
-			for (map<Point, int>::iterator hw = levels[position.level].symbols[HORIZONTAL_WALL].begin(); hw != levels[position.level].symbols[HORIZONTAL_WALL].end(); ++hw) {
+			for (map<Point, int>::iterator hw = levels[position.level].symbols[(unsigned char) HORIZONTAL_WALL].begin(); hw != levels[position.level].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++hw) {
 				if (hw->first.row <= MAP_ROW_BEGIN || hw->first.row >= MAP_ROW_END || hw->first.col <= MAP_COL_BEGIN || hw->first.col >= MAP_COL_END)
 					continue;
 				/* if we see horizontal walls adjacent to this point (except west & east),
@@ -756,11 +756,11 @@ void Saiph::detectPosition() {
 	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
 		/* we did stand on stairs down, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = levels[position.level].symbols[STAIRS_DOWN][position];
+		found = levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position];
 	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
 		/* we did stand on stairs up, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = levels[position.level].symbols[STAIRS_UP][position];
+		found = levels[position.level].symbols[(unsigned char) STAIRS_UP][position];
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
@@ -769,12 +769,12 @@ void Saiph::detectPosition() {
 			 * since walls can disappear, we'll allow a 80% match */
 			int total = 0;
 			int matched = 0;
-			for (map<Point, int>::iterator s = levels[*lm].symbols[VERTICAL_WALL].begin(); s != levels[*lm].symbols[VERTICAL_WALL].end(); ++s) {
+			for (map<Point, int>::iterator s = levels[*lm].symbols[(unsigned char) VERTICAL_WALL].begin(); s != levels[*lm].symbols[(unsigned char) VERTICAL_WALL].end(); ++s) {
 				if (world->view[s->first.row][s->first.col] == VERTICAL_WALL)
 					++matched;
 				++total;
 			}
-			for (map<Point, int>::iterator s = levels[*lm].symbols[HORIZONTAL_WALL].begin(); s != levels[*lm].symbols[HORIZONTAL_WALL].end(); ++s) {
+			for (map<Point, int>::iterator s = levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].begin(); s != levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++s) {
 				if (world->view[s->first.row][s->first.col] == HORIZONTAL_WALL)
 					++matched;
 				++total;
@@ -799,10 +799,10 @@ void Saiph::detectPosition() {
 	/* were we on stairs on last position? */
 	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
 		/* yes, we were on stairs down */
-		levels[position.level].symbols[STAIRS_DOWN][position] = found;
+		levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position] = found;
 	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
 		/* yes, we were on stairs up */
-		levels[position.level].symbols[STAIRS_UP][position] = found;
+		levels[position.level].symbols[(unsigned char) STAIRS_UP][position] = found;
 	}
 	position.row = world->player.row;
 	position.col = world->player.col;
