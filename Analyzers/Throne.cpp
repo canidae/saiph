@@ -35,6 +35,7 @@ void Throne::analyze() {
 			return;
 		//don't lose our gold
 		//TODO
+		command = SIT;
 	} else
 		command = dir;
 	priority = PRIORITY_THRONE_SIT;

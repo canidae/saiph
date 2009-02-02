@@ -141,6 +141,7 @@
 #define RUB "#rub\n"
 #define REST "."
 #define SEARCH "s"
+#define SIT "#sit\n"
 #define TAKE_OFF "T"
 #define THROW "t"
 #define WEAR "W"
