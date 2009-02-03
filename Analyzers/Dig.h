@@ -21,5 +21,6 @@ class Dig : public Analyzer {
 		bool isDiggingTool(Item i);
 		bool isDiggingTool(unsigned char letter);
 		unsigned char findDiggingTool();
+		bool freeWeaponHand();
 };
 #endif	
