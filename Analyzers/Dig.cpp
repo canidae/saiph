@@ -39,7 +39,7 @@ void Dig::parseMessages(const string& messages) {
 }
 
 void Dig::analyze() {
-	if (dig_direction) {
+	if (dig_direction && freeWeaponHand()) {
 		command = APPLY;
 		priority = PRIORITY_DIG_PATH;
 	}
@@ -130,4 +130,13 @@ int Dig::boulderInDirection() {
 	if (curlev.dungeonmap[row+1][col+1] == BOULDER)
 		return SE;
 	return 0;
+}
+
+bool Dig::freeWeaponHand() {
+	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		if (i->second.additional.find("weapon in ", 0) == 0 || i->second.additional == "wielded") {
+			return !(i->second.beatitude == CURSED);
+		}
+	}
+	return true; //not wielding anything
 }
