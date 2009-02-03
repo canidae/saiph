@@ -100,7 +100,7 @@ bool Dig::isDiggingTool(unsigned char letter) {
 	map<unsigned char, Item>::iterator i = saiph->inventory.find(letter);
 	if (i == saiph->inventory.end())
 		return false;
-	return isDiggingTool(i->first);
+	return isDiggingTool(i->second);
 }
 
 unsigned char Dig::findDiggingTool() {
