@@ -28,7 +28,6 @@ class Wand : public Analyzer {
 		void analyze();
 		void parseMessages(const std::string &messages);
 		void complete();
-		void fail();
 	private:
 		Saiph *saiph;
 		Request req;

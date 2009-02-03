@@ -122,10 +122,6 @@ bool Wand::isUnidentifiedWand(const Item& i) {
 	return false;
 }
 
-void Wand::fail() {
-	Debug::notice() << "[Wand       ] Pre-empted, did not engrave-ID" << endl;
-}
-
 void Wand::complete() {
 	req.request = REQUEST_DIRTY_INVENTORY;
 	saiph->request(req);
