@@ -10,6 +10,9 @@
 #define WAND_SPEED_MONSTER_MESSAGE "  The bugs on the floor speed up!  "
 #define WAND_STRIKING_MESSAGE "  The wand unsuccessfully fights your attempt to write.  "
 
+#define WAND_VANISHER_NAME "wand of vanishing"
+#define WAND_NO_EFFECT_NAME "wand of no engrave effect"
+
 #include <string>
 #include <vector>
 #include "../Analyzer.h"

@@ -41,7 +41,7 @@ Wand::Wand(Saiph *saiph) : Analyzer("Wand"), saiph(saiph), wand_key(0), processi
 void Wand::analyze() {
 	if (priority >= PRIORITY_WAND_ENGRAVE_ID || wand_key == 0 || saiph->world->player.blind || saiph->world->player.levitating)
 		return;
-	if (wand_key != 0) {//make sure it's still there and still a wand
+	if (saiph->inventory_changed && wand_key != 0) {//make sure it's still there and still a wand
 		map<unsigned char, Item>::iterator i = saiph->inventory.find(wand_key);
 		if (i == saiph->inventory.end() || !isUnidentifiedWand(i->second)) {
 			wand_key = 0;
@@ -52,7 +52,6 @@ void Wand::analyze() {
 		command = ENGRAVE;
 		priority = PRIORITY_WAND_ENGRAVE_ID;
 		Debug::notice() << "[Wand       ] Asking to engrave-ID " << saiph->inventory[wand_key].name << endl;
-		processing = true;
 	}
 }
 
@@ -69,6 +68,7 @@ void Wand::parseMessages(const string &messages) {
 	}
 	if (messages.find(MESSAGE_ENGRAVE_WITH) != string::npos) {
 		command = wand_key;
+		processing = true;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
 	}
@@ -77,7 +77,7 @@ void Wand::parseMessages(const string &messages) {
 	req.data = "";
 	//some of the wands auto-ID, so we only need to look for the other ones.
 	if (messages.find(WAND_VANISHER_MESSAGE) != string::npos)
-		req.data = "wand of vanishing"; //if we ever use BoHs, we need to see this
+		req.data = WAND_VANISHER_NAME; //if we ever use BoHs, we need to see this
 	if (messages.find(WAND_COLD_MESSAGE) != string::npos)
 		req.data = "wand of cold";
 	if (messages.find(WAND_SLEEP_DEATH_MESSAGE) != string::npos)
@@ -94,6 +94,13 @@ void Wand::parseMessages(const string &messages) {
 		req.data = "wand of striking";
 	if (req.data != "") {
 		Debug::notice() << "[Wand       ] Calling wand " << req.data << endl;
+		saiph->request(req);
+		processing = false;
+		wand_key = 0;
+	} else if (processing) {
+		//we engraved, but we didn't see a message, so it had no effect
+		Debug::notice() << "[Wand       ] Wand had no engrave message; naming as such" << endl;
+		req.data = WAND_NO_EFFECT_NAME;
 		saiph->request(req);
 		processing = false;
 		wand_key = 0;
