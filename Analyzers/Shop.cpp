@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stack>
 #include "Shop.h"
 #include "../Debug.h"
 #include "../Globals.h"
@@ -96,45 +97,81 @@ void Shop::analyze() {
 		if (!m->second.shopkeeper || !m->second.visible)
 			continue;
 
-		/* figure out if we're in the same room as the shopkeeper */
-		int north = saiph->position.row;
-		int south = saiph->position.row;
-		int west = saiph->position.col;
-		int east = saiph->position.col;
+		bool need_look = false;
 
-		unsigned char symbol = 0;
+		// We see a shopkeeper, so do a depth-first search to mark SHOP_TILEs
+		memset(&visited, 0, (MAP_ROW_END + 1) * (MAP_COL_END + 1) * sizeof(bool));
+		stack<Point> s;
+		stack<Point> door;
+		s.push(m->first);
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && north > MAP_ROW_BEGIN)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][saiph->position.col];
+		while (s.empty() == false) {
+			Point top = s.top();
+			s.pop();
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && south < MAP_ROW_END)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[++south][saiph->position.col];
+			if (top.row < MAP_ROW_BEGIN || top.row > MAP_ROW_END ||
+			    top.col < MAP_COL_BEGIN || top.col > MAP_COL_END ||
+			    visited[top.row][top.col])
+				continue;
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && west > MAP_COL_BEGIN)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][--west];
+			unsigned char symbol = saiph->levels[saiph->position.level].dungeonmap[top.row][top.col];
+			switch (symbol) {
+			case FLOOR:
+			case UNKNOWN_TILE:
+				Debug::notice() << "[Shop       ] Marking " << top << " as SHOP_TILE" << endl;
+				saiph->levels[saiph->position.level].setDungeonSymbol(top, SHOP_TILE);
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && east < MAP_COL_END)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][++east];
+				// If we're marking our current location as a shop, look at ground
+				if (top == (Point)saiph->position)
+					need_look = true;
 
-		if (m->first.row <= north || m->first.row >= south || m->first.col <= west || m->first.col >= east)
-			return; // we're not in the same room as the shopkeeper
+				// fall through to mark visited and allow neighbors to be examined
+			case SHOP_TILE:
+				visited[top.row][top.col] = true;
 
-		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
-
-		/* mark all tiles within boundaries as SHOP_TILE */
-		Point p;
-		for (p.row = north + 1; p.row < south; ++p.row) {
-			for (p.col = west + 1; p.col < east; ++p.col)
-				saiph->levels[saiph->position.level].setDungeonSymbol(p, SHOP_TILE);
+				s.push(Point(top.row + 1, top.col));
+				s.push(Point(top.row - 1, top.col));
+				s.push(Point(top.row, top.col + 1));
+				s.push(Point(top.row, top.col - 1));
+				break;
+			case OPEN_DOOR:
+			case CLOSED_DOOR:
+				door.push(Point(top.row + 1, top.col));
+				door.push(Point(top.row - 1, top.col));
+				door.push(Point(top.row, top.col + 1));
+				door.push(Point(top.row, top.col - 1));
+				break;
+			default:
+				break;
+			}
 		}
+
+#if 0 /* When we want to have a special tile, uncomment this */
+		/* Mark the tile just inside as a place we can't sell.
+		 * Find the SHOP_TILE next to the door and mark that.
+		 */
+
+		while (door.empty() == false) {
+			Point top = door.top();
+			door.pop();
+
+			if (top.row < MAP_ROW_BEGIN || top.row > MAP_ROW_END ||
+			    top.col < MAP_COL_BEGIN || top.col > MAP_COL_END)
+				continue;
+
+			if (saiph->levels[saiph->position.level].dungeonmap[top.row][top.col] == SHOP_TILE) {
+				saiph->levels[saiph->position.level].dungeonmap[top.row][top.col] == SHOP_TILE_NO_SELL;
+				break;
+			}
+		}
+#endif
+
 		/* we should LOOK at floor to prevent Loot from picking
 		 * up an item if we fall into a shop on an item we want
 		 * before we get to mark the tiles as SHOP_TILE */
-		command = LOOK;
-		priority = PRIORITY_CONTINUE_ACTION;
+		if (need_look) {
+			command = LOOK;
+			priority = PRIORITY_CONTINUE_ACTION;
+		}
 	}
 }
