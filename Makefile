@@ -5,7 +5,7 @@ LDFLAGS = -lutil -g3 -pg -gdwarf-2
 OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o Item.o Level.o Local.o Monster.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
 LIBRARIES = Analyzers/Analyzers.a
 
-all: analyzers saiph
+all: saiph
 
 analyzers:
 	$(MAKE) -C Analyzers
