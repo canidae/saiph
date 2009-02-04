@@ -5,7 +5,11 @@ RM = rm -f
 CXXFLAGS = -O0 -Wall -g3 -pg -gdwarf-2
 OBJECTS = Amulet.o Armor.o Beatitude.o Dig.o Donate.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Genocide.o Health.o Lamp.o Loot.o MonsterInfo.o Potion.o Pray.o Ring.o Rub.o Scroll.o Shop.o Throne.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
 
-analyzers: $(OBJECTS)
+all: Analyzers.a
+
+Analyzers.a: $(OBJECTS)
+	rm -f Analyzers.a
+	$(AR) cr Analyzers.a $(OBJECTS)
 
 Amulet.o: Amulet.h Amulet.cpp
 Armor.o: Armor.h Armor.cpp
@@ -40,4 +44,4 @@ Wish.o: Wish.h Wish.cpp
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.gch
+	$(RM) *.o *.gch *.a
