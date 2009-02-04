@@ -9,8 +9,23 @@ The project is GPLv2 licensed.
 Fetch code:
 -----------
 Given that you're reading this document there's a fair chance you've already
-downloaded the code, but nevertheless, fetch it from Git here:
-git clone http://exent.net/~canidae/saiph/.git
+downloaded the code, but nevertheless, fetch it with Git here:
+git clone http://projects.exent.net/saiph.git
+
+Also, there are several people working on saiph, you might want to add their
+repositories too:
+  Vidar Wahlberg: git://github.com/canidae/saiph.git
+Adrien Panhaleux: git://github.com/DainDwarf/saiph.git
+      Kenny Root: git://github.com/kruton/saiph.git
+ Jeffrey Bosboom: git://github.com/DrSunglasses/saiph.git
+
+You should add these to git using the following command:
+git remote add -f <nick> <url>
+Example: git remote add -f canidae git://github.com/canidae/saiph.git
+
+Then you can pull from the different repos with this command:
+git pull <nick> master
+Example: git pull canidae master
 
 
 Building & running:
