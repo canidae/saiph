@@ -28,3 +28,8 @@ bool Point::operator==(const Point &point) const {
 bool Point::operator!=(const Point &point) const {
 	return (row != point.row || col != point.col);
 }
+
+std::ostream& operator<<(std::ostream& os, Point& p) {
+	os << "(" << p.row << ", " << p.col << ")";
+	return os;
+}
