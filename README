@@ -20,12 +20,33 @@ Adrien Panhaleux: git://github.com/DainDwarf/saiph.git
  Jeffrey Bosboom: git://github.com/DrSunglasses/saiph.git
 
 You should add these to git using the following command:
-git remote add -f <nick> <url>
-Example: git remote add -f canidae git://github.com/canidae/saiph.git
+ git remote add -f <nick> <url>
+Example:
+ git remote add -f canidae git://github.com/canidae/saiph.git
 
 Then you can pull from the different repos with this command:
-git pull <nick> master
-Example: git pull canidae master
+ git pull <nick> master
+Example:
+ git pull canidae master
+
+
+Fetching changes from branches:
+-------------------------------
+This is probably wrong & outdated. Fix it if you can.
+
+Merge and accept everything:
+ git pull <branch> master
+Example:
+ git pull canidae master
+
+Cherry-pick commits:
+ git fetch <branch>
+ git log -p HEAD..FETCH_HEAD
+ git cherry-pick <commit>
+Example:
+ git fetch canidae
+ git log -p HEAD..FETCH_HEAD
+ git cherry-pick cf90ae9159759317d7721ca804cb091e90baa478
 
 
 Building & running:
