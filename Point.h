@@ -10,14 +10,13 @@ class Point {
 
 		Point(int row = -1, int col = -1);
 
-		bool operator<(const Point &point) const;
-		bool operator>(const Point &point) const;
-		bool operator<=(const Point &point) const;
-		bool operator>=(const Point &point) const;
-		bool operator==(const Point &point) const;
-		bool operator!=(const Point &point) const;
-		friend std::ostream& operator<<(std::ostream& os, Point& p);
+		bool operator<(const Point &p) const;
+		bool operator>(const Point &p) const;
+		bool operator<=(const Point &p) const;
+		bool operator>=(const Point &p) const;
+		bool operator==(const Point &p) const;
+		bool operator!=(const Point &p) const;
 };
 
-std::ostream& operator<<(std::ostream& os, Point& p);
+std::ostream &operator<<(std::ostream &os, Point &p);
 #endif
