@@ -1,8 +1,16 @@
+#include <stack>
 #include "Door.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
+
+#define QUEUE_NEIGHBORS(x, y) \
+	(x).push(Point((y).row + 1, (y).col));\
+	(x).push(Point((y).row - 1, (y).col));\
+	(x).push(Point((y).row, (y).col + 1));\
+	(x).push(Point((y).row, (y).col - 1));
 
 /* constructors/destructor */
 Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), unlock_tool_key(0), in_a_pit(false) {
@@ -29,19 +37,22 @@ void Door::analyze() {
 	/* go to nearest closed door and get it open somehow */
 	int least_moves = INT_MAX;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].end(); ++d) {
-		if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && d->second == 1) {
+		if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && d->second == DOOR_LOCKED) {
 			/* don't kick/pick doors when we're in the mines */
 			findUnlockingTool();
 			if (unlock_tool_key == 0 || (saiph->inventory[unlock_tool_key].name != "skeleton key" && saiph->inventory[unlock_tool_key].name != "key"))
 				continue; // no key in inventory
+		} else if (d->second == DOOR_SHOP_INVENTORY) {
+			// The door is to a shop closed for inventory. Maybe we should revisit later.
+			continue;
 		}
 		int moves = -1;
-		unsigned char dir = saiph->shortestPath(d->first, true, &moves);
+		unsigned char dir = saiph->shortestPath(d->first, false, &moves);
 		if (dir == ILLEGAL_DIRECTION)
 			continue;
-		if (moves == 1) {
+		if (moves == DOOR_LOCKED) {
 			/* open/pick/kick door */
-			if (d->second != 1) {
+			if (d->second != DOOR_LOCKED) {
 				command = OPEN;
 			} else {
 				findUnlockingTool();
@@ -96,6 +107,22 @@ void Door::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
 		/* crawled out of pit */
 		in_a_pit = false;
+	} else if (messages.find(DOOR_CLOSED_FOR_INVENTORY, 0) != string::npos) {
+		/* a shop that is closed for inventory */
+		stack<Point> door;
+
+		QUEUE_NEIGHBORS(door, saiph->position)
+
+		while (door.empty() == false) {
+			Point top = door.top();
+			door.pop();
+
+			if (saiph->levels[saiph->position.level].dungeonmap[top.row][top.col] == CLOSED_DOOR) {
+				Debug::notice() << "[Door       ] Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
+				saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][top] = DOOR_SHOP_INVENTORY;
+				break;
+			}
+		}
 	}
 }
 
