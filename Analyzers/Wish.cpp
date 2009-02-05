@@ -12,7 +12,12 @@ Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0
 
 /* methods */
 void Wish::parseMessages(const string &messages) {
-	if (messages.find(WISH_MESSAGE, 0) != string::npos) {
+	if (messages.find(MESSAGE_WHAT_TO_ZAP) != string::npos && wand_of_wishing_key) {
+		command = wand_of_wishing_key;
+		priority = PRIORITY_CONTINUE_ACTION;
+		return;
+	}
+	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
 		command = "3 blessed greased fixed +3 " + selectWish();
 		Debug::notice(saiph->last_turn) << WISH_DEBUG_NAME << "Wishing for " << command << endl;
 		command.append("\n");
