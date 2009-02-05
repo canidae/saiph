@@ -127,6 +127,7 @@
 #define EAT "e"
 #define ENGRAVE "E"
 #define ENHANCE "#enhance\n"
+#define ESCAPE "\x1b"
 #define FIGHT "F"
 #define INVENTORY "i"
 #define KICK ""
