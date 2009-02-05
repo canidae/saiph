@@ -6,12 +6,26 @@ using namespace std;
 
 /* constructors/destructor */
 Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_armor(false) {
+	resetCanWear();
 }
 
 /* methods */
 void Armor::parseMessages(const string &messages) {
 	string::size_type pos;
-	if (saiph->world->question && !command2.empty() && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
+
+	if (saiph->world->player.polymorphed != last_polymorphed) {
+		// We changed forms, so assume we can wear all types of armor again.
+		resetCanWear();
+
+		last_polymorphed = saiph->world->player.polymorphed;
+	}
+
+	if (!command2.empty() && messages.find(MESSAGE_DONT_EVEN_BOTHER, 0) != string::npos) {
+		/* We tried to wear something and it didn't work. Polymorphed? */
+		can_wear[last_armor_type] = false;
+		wear_armor = false;
+		command2.clear();
+	} else if (saiph->world->question && !command2.empty() && (messages.find(MESSAGE_WHAT_TO_WEAR, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_TAKE_OFF, 0) != string::npos)) {
 		/* take off or wear something */
 		command = command2;
 		command2.clear();
@@ -165,6 +179,8 @@ void Armor::wearArmor() {
 			continue; // wearing best armor or got no armor to wield
 		if (isCursed(s))
 			continue; // the item we're wearing in this slot it cursed and cannot be taken off
+		if (!can_wear[s])
+			continue; // we can't wear this in our current form
 		if (s == ARMOR_SUIT || s == ARMOR_SHIRT) {
 			/* wish to put on shirt or suit.
 			 * if cloak or suit is cursed, this can't be done */
@@ -201,6 +217,7 @@ void Armor::wearArmor() {
 		/* we should put on this piece of armor */
 		command = WEAR;
 		command2 = best_key[s];
+		last_armor_type = s;
 		wear_armor = true;
 		break;
 	}
@@ -240,4 +257,9 @@ void Armor::wearArmor() {
 			}
 		}
 	}
+}
+
+void Armor::resetCanWear() {
+	for (int a = 0; a < ARMOR_SLOTS; ++a)
+		can_wear[a] = true;
 }

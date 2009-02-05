@@ -32,6 +32,8 @@ class Weapon : public Analyzer {
 		std::vector<WeaponData> weapons;
 		std::string command2;
 		Request req;
+		bool can_wield_weapon;
+		bool last_polymorphed;
 
 		void wieldWeapon();
 };

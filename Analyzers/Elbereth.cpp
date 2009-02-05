@@ -15,6 +15,8 @@ Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
 	dusted = false;
 	frosted = false;
 	append = false;
+	can_hold_something = true;
+	last_polymorphed = false;
 	priority = ILLEGAL_PRIORITY;
 }
 
@@ -32,6 +34,11 @@ void Elbereth::complete() {
 }
 
 void Elbereth::parseMessages(const string &messages) {
+	if (last_polymorphed != saiph->world->player.polymorphed) {
+		/* we changed form. assume we can hold something to engrave */
+		can_hold_something = true;
+	}
+
 	/* set up next command */
 	if (messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -43,6 +50,9 @@ void Elbereth::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		command = ELBERETH_ELBERETH "\n";
+	} else if (messages.find(MESSAGE_YOU_CANT_HOLD, 0) != string::npos) {
+		/* we're in a form that can't hold anything to engrave */
+		can_hold_something = false;
 	}
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
@@ -88,6 +98,7 @@ bool Elbereth::request(const Request &request) {
 			if (((burned || digged) && elbereth_count > 0) || ((dusted || frosted) && elbereth_count >= 3)) {
 				/* we should rest */
 				command = "20" SEARCH;
+				ignore_next_prompts = 2;
 				priority = request.priority;
 				return true;
 			} else if (!burned && !digged && elbereth_count < 3) {
@@ -107,6 +118,8 @@ bool Elbereth::request(const Request &request) {
 
 /* private methods */
 bool Elbereth::canEngrave() {
+	if (!can_hold_something)
+		return false;
 	if (saiph->world->player.levitating)
 		return false;
 	/* check if there's a fountain/grave/altar here */
