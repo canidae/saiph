@@ -538,7 +538,7 @@ void Level::updatePathMap() {
 
 /* private methods */
 void Level::addItemToStash(const Point &point, const Item &item) {
-	Debug::notice() << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
+	Debug::notice(saiph->last_turn) << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
 	if (item.count <= 0)
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);

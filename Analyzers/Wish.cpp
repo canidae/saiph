@@ -14,7 +14,7 @@ Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0
 void Wish::parseMessages(const string &messages) {
 	if (messages.find(WISH_MESSAGE, 0) != string::npos) {
 		command = "3 blessed greased fixed +3 " + selectWish();
-		Debug::notice() << "[Wish       ] Wishing for " << command << endl;
+		Debug::notice(saiph->last_turn) << WISH_DEBUG_NAME << "Wishing for " << command << endl;
 		command.append("\n");
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;

@@ -1,6 +1,8 @@
 #ifndef WAND_H
 #define WAND_H
 
+#define WAND_DEBUG_NAME "Wand] "
+
 #define WAND_VANISHER_MESSAGE "  The engraving on the floor vanishes!  "
 #define WAND_COLD_MESSAGE "  A few ice cubes drop frm the wand.  "
 #define WAND_SLEEP_DEATH_MESSAGE "  The bugs on the floor stop moving!  "

@@ -133,7 +133,7 @@ Saiph::~Saiph() {
 bool Saiph::addItemToInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return false;
-	Debug::notice() << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
+	Debug::notice(last_turn) << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (inventory.find(key) != inventory.end()) {
 		/* existing item, add amount */
 		inventory[key].count += item.count;
@@ -268,7 +268,7 @@ bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	map<unsigned char, Item>::iterator i = inventory.find(key);
 	if (i == inventory.end())
 		return false;
-	Debug::notice() << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
+	Debug::notice(last_turn) << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (i->second.count > item.count)
 		i->second.count -= item.count; // we got more than we remove
 	else
@@ -278,7 +278,7 @@ bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 
 bool Saiph::request(const Request &request) {
 	/* request an action from any analyzer */
-	Debug::notice() << REQUEST_DEBUG_NAME << "req: " << request.request << ", pri: " << request.priority << ", val: " << request.value << ", bea: " << request.beatitude << ", sus: " << request.sustain << ", unk: " << request.only_unknown_enchantment << ", key: " << (char) request.key << ", dat: " << request.data << ", (" << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
+	Debug::notice(last_turn) << REQUEST_DEBUG_NAME << "req: " << request.request << ", pri: " << request.priority << ", val: " << request.value << ", bea: " << request.beatitude << ", sus: " << request.sustain << ", unk: " << request.only_unknown_enchantment << ", key: " << (char) request.key << ", dat: " << request.data << ", (" << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
 	bool status = false;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->request(request) && !status)
@@ -309,16 +309,16 @@ bool Saiph::run() {
 	parseMessages(world->messages);
 
 	/* level message parsing */
-	Debug::notice() << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
+	Debug::notice(last_turn) << MESSAGES_DEBUG_NAME << "'" << world->messages << "'" << endl;
 	levels[position.level].parseMessages(world->messages);
 
 	/* more debugging */
 	if (world->question)
-		Debug::notice() << SAIPH_DEBUG_NAME << "Question asked" << endl;
+		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Question asked" << endl;
 	if (world->menu)
-		Debug::notice() << SAIPH_DEBUG_NAME << "Menu shown" << endl;
+		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Menu shown" << endl;
 	if (world->player.engulfed)
-		Debug::notice() << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
+		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
 	/* set the on_ground pointer if there's loot here */
 	if (levels[position.level].stashes.find(position) != levels[position.level].stashes.end())
@@ -365,7 +365,7 @@ bool Saiph::run() {
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 			if ((*a)->expired) {
 				/* expired analyzer, remove it */
-				Debug::notice() << "Analyzer " << (*a)->name << " has expired and will be removed" << endl;
+				Debug::notice(last_turn) << "Analyzer " << (*a)->name << " has expired and will be removed" << endl;
 				delete *a;
 				a = analyzers.erase(a);
 				continue;
@@ -414,13 +414,13 @@ bool Saiph::run() {
 
 	/* check if we got a command */
 	if (world->question && best_analyzer == analyzers.end()) {
-		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
+		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		return false;
 	} else if (world->menu && best_analyzer == analyzers.end()) {
-		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
+		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		return false;
 	} else if (best_analyzer == analyzers.end()) {
-		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
+		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		cout << "No idea what to do: 42s";
@@ -440,7 +440,7 @@ bool Saiph::run() {
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
 	/* let an analyzer do its command */
-	Debug::notice() << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
+	Debug::notice(last_turn) << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
 	world->executeCommand((*best_analyzer)->command);
 	if (stuck_counter < 42) {
 		(*best_analyzer)->complete();
@@ -481,7 +481,7 @@ bool Saiph::run() {
 		if (!was_move) {
 			/* apparently it wasn't a failed movement,
 			 * that means an analyzer is screwing up */
-			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
+			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
 			(*best_analyzer)->fail();
 		}
 		/* reset stuck_counter */
@@ -523,7 +523,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			tmp_moves += level_moves[pivot];
 			if (move != ILLEGAL_DIRECTION && tmp_moves < least_moves) {
 				/* this symbol is closer than the previously found one */
-				Debug::info() << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << endl;
 				least_moves = tmp_moves;
 				if (pivot == 0) {
 					/* symbol is on current level, just set best_move to move */
@@ -536,7 +536,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 		}
 		/* path to upstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
-			Debug::info() << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
@@ -548,7 +548,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			if (move != ILLEGAL_DIRECTION && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
-				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
 				level_added[s->second] = true;
@@ -558,12 +558,12 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				level_move[s->second] = (pivot == 0) ? move : level_move[level_queue[pivot]];
 				++level_count;
 			} else {
-				Debug::info() << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
 			}
 		}
 		/* path to downstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
-			Debug::info() << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
@@ -575,7 +575,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 			if (move != ILLEGAL_DIRECTION && tmp_moves < least_moves) {
 				/* distance to these stairs are less than shortest path found so far.
 				 * we should check the level these stairs lead to as well */
-				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 				level_queue[level_count] = s->second;
 				level_moves[level_count] = tmp_moves;
 				level_added[s->second] = true;
@@ -585,7 +585,7 @@ unsigned char Saiph::shortestPath(unsigned char symbol, bool allow_illegal_last_
 				level_move[s->second] = (pivot == 0) ? move : level_move[level_queue[pivot]];
 				++level_count;
 			} else {
-				Debug::info() << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
 			}
 		}
 		++pivot;
@@ -617,7 +617,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 		level_move[0] = NOWHERE;
 		level_added[position.level] = true;
 		int tmp_moves = 0;
-		Debug::info() << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target.level << ", " << target.row << ", " << target.col << endl;
+		Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target.level << ", " << target.row << ", " << target.col << endl;
 		while (pivot < level_count) {
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level) {
@@ -626,12 +626,12 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 					return move; // can't path to target
 				tmp_moves += level_moves[pivot];
 				*moves = tmp_moves;
-				Debug::info() << SAIPH_DEBUG_NAME << "Found " << target.level << ", " << target.row << ", " << target.col << " in level " << *moves << " steps" << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found " << target.level << ", " << target.row << ", " << target.col << " in level " << *moves << " steps" << endl;
 				return level_move[level_queue[pivot]]; // return move towards correct stairs
 			}
 			/* path to upstairs on level */
 			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
-				Debug::info() << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
 				if (level_added[s->second])
@@ -642,7 +642,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 				tmp_moves += level_moves[pivot];
 				if (move != ILLEGAL_DIRECTION) {
 					/* we can path to these stairs, add them to queue */
-					Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 					level_queue[level_count] = s->second;
 					level_moves[level_count] = tmp_moves;
 					level_added[s->second] = true;
@@ -652,12 +652,12 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 					level_move[s->second] = (pivot == 0) ? move : level_move[level_queue[pivot]];
 					++level_count;
 				} else {
-					Debug::info() << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
 				}
 			}
 			/* path to downstairs on level */
 			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
-				Debug::info() << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
 				if (level_added[s->second])
@@ -668,7 +668,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 				tmp_moves += level_moves[pivot];
 				if (move != ILLEGAL_DIRECTION) {
 					/* we can path to these stairs, add them to queue */
-					Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 					level_queue[level_count] = s->second;
 					level_moves[level_count] = tmp_moves;
 					level_added[s->second] = true;
@@ -678,7 +678,7 @@ unsigned char Saiph::shortestPath(const Coordinate &target, bool allow_illegal_l
 					level_move[s->second] = (pivot == 0) ? move : level_move[level_queue[pivot]];
 					++level_count;
 				} else {
-					Debug::info() << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
 				}
 			}
 			++pivot;
@@ -713,13 +713,13 @@ void Saiph::detectPosition() {
 			/* look for sokoban level 1a or 1b */
 			if (levels[position.level].dungeonmap[8][37] == BOULDER && levels[position.level].dungeonmap[8][38] == BOULDER && levels[position.level].dungeonmap[8][43] == BOULDER && levels[position.level].dungeonmap[9][38] == BOULDER && levels[position.level].dungeonmap[9][39] == BOULDER && levels[position.level].dungeonmap[9][42] == BOULDER && levels[position.level].dungeonmap[9][44] == BOULDER && levels[position.level].dungeonmap[11][41] == BOULDER && levels[position.level].dungeonmap[14][39] == BOULDER && levels[position.level].dungeonmap[14][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[14][42] == BOULDER) {
 				/* sokoban 1a */
-				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << position.level << endl;
+				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 				branch_sokoban = position;
 			} else if (levels[position.level].dungeonmap[8][34] == BOULDER && levels[position.level].dungeonmap[8][42] == BOULDER && levels[position.level].dungeonmap[9][34] == BOULDER && levels[position.level].dungeonmap[9][41] == BOULDER && levels[position.level].dungeonmap[10][42] == BOULDER && levels[position.level].dungeonmap[13][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[15][41] == BOULDER && levels[position.level].dungeonmap[16][40] == BOULDER && levels[position.level].dungeonmap[16][42] == BOULDER) {
 				/* sokoban 1b */
-				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << position.level << endl;
+				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 				branch_sokoban = position;
@@ -735,7 +735,7 @@ void Saiph::detectPosition() {
 				 * then we're in the mines */
 				if (levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col + 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col + 1] == HORIZONTAL_WALL) {
 					/* we're in the mines */
-					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
+					Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
 					levels[position.level].branch = BRANCH_MINES;
 					branch_mines = position;
 					break;
@@ -744,7 +744,7 @@ void Saiph::detectPosition() {
 		}
 		if (levels[position.level].branch != BRANCH_ROGUE && world->view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
-			Debug::notice() << SAIPH_DEBUG_NAME << "Found the rogue level: " << position.level << endl;
+			Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found the rogue level: " << position.level << endl;
 			levels[position.level].branch = BRANCH_ROGUE;
 		}
 		return;
@@ -781,7 +781,7 @@ void Saiph::detectPosition() {
 			}
 			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
 				found = *lm;
-				Debug::notice() << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name << "'" << endl;
+				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name << "'" << endl;
 				break;
 			}
 		}
@@ -794,7 +794,7 @@ void Saiph::detectPosition() {
 		 * exception is rogue level, which really isn't a branch*/
 		levels.push_back(Level(this, level, (levels[position.level].branch != BRANCH_ROGUE) ? levels[position.level].branch : BRANCH_MAIN));
 		levelmap[level].push_back(found);
-		Debug::notice() << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
+		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
 	}
 	/* were we on stairs on last position? */
 	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {

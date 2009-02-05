@@ -24,7 +24,7 @@ void Shop::parseMessages(const string &messages) {
 
 		if (dir == ILLEGAL_DIRECTION) {
 			/* this is bad */
-			Debug::warning() << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
+			Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
 			return;
 		}
 
@@ -123,7 +123,7 @@ void Shop::analyze() {
 		if (m->first.row <= north || m->first.row >= south || m->first.col <= west || m->first.col >= east)
 			return; // we're not in the same room as the shopkeeper
 
-		Debug::notice() << "[Shop       ] bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
+		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		Point p;

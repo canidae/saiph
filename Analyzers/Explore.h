@@ -4,6 +4,7 @@
 #define EXPLORE_SEARCH_INTERVAL 16 // how many times we should search a square before moving on
 #define EXPLORE_FULLY_SEARCHED 255 // when we won't search a square ever again
 #define EXPLORE_LEVELS 128 // max amount of unique levels (this should go)
+#define EXPLORE_DEBUG_NAME "Explore] "
 
 #include <map>
 #include <string>

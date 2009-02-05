@@ -345,7 +345,7 @@ unsigned char Explore::exploreMines() {
 				return dir;
 		}
 		if (saiph->levels[saiph->position.level].depth >= 10 && saiph->levels[saiph->position.level].depth <= 13) {
-			Debug::notice() << "Mine's End presumably found" << endl;
+			Debug::notice(saiph->last_turn) << EXPLORE_DEBUG_NAME << "Mine's End presumably found" << endl;
 			mines_explored = true; // possibly at mine's end
 		}
 	} else if (saiph->branch_mines.level != -1) {

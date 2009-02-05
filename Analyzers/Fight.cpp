@@ -71,7 +71,7 @@ void Fight::analyze() {
 		min_moves = moves;
 		command = (moves == 1 ? FIGHT : ""); // always fight using F when distance is 1
 		command.push_back(dir);
-		Debug::info() << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
+		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
 	}
 }
 

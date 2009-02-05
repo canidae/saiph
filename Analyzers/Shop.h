@@ -1,6 +1,8 @@
 #ifndef SHOP_H
 #define SHOP_H
 
+#define SHOP_DEBUG_NAME "Shop] "
+
 #define SHOP_MESSAGE_LEAVE_TOOL "  \"Will you please leave your "
 #define SHOP_MESSAGE_LEAVE_TOOL_ANGRY "  \"Leave the "
 

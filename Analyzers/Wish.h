@@ -1,5 +1,6 @@
 #ifndef WISH_H
 #define WISH_H
+#define WISH_DEBUG_NAME "Wish] "
 /* messages */
 #define WISH_MESSAGE "  For what do you wish?  "
 

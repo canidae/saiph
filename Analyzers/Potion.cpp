@@ -66,10 +66,10 @@ void Potion::parseMessages(const string &messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (saiph->world->question) {
 		string::size_type stop = messages.rfind(POTION_CALL_END);
-		Debug::info() << "Potion checking for question about naming potion" << endl;
+		Debug::info(saiph->last_turn) << POTION_DEBUG_NAME << "Potion checking for question about naming potion" << endl;
 		if (stop == string::npos)
 			return;
-		Debug::info() << "Found ' potion:  '" << endl;
+		Debug::info(saiph->last_turn) << POTION_DEBUG_NAME << "Found ' potion:  '" << endl;
 		string::size_type start = messages.rfind(POTION_CALL_POTION1, stop);
 		if (start == string::npos) {
 			start = messages.rfind(POTION_CALL_POTION2, stop);
@@ -81,7 +81,7 @@ void Potion::parseMessages(const string &messages) {
 		if (start == string::npos)
 			return;
 		string name = messages.substr(start, stop - start);
-		Debug::notice() << "[Potion     ] Asking for name for a " << name << " potion" << endl;
+		Debug::notice(saiph->last_turn) << POTION_DEBUG_NAME << "Asking for name for a " << name << " potion" << endl;
 		for (vector<string>::iterator a = appearance.begin(); a != appearance.end(); ++a) {
 			if (name != *a)
 				continue;

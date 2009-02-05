@@ -16,21 +16,6 @@ bool Debug::close() {
 	return true;
 }
 
-ofstream &Debug::error() {
-	debugfile << "[" << printTime() << "] [ERROR  ] ";
-	return debugfile;
-}
-
-ofstream &Debug::info() {
-	debugfile << "[" << printTime() << "] [INFO   ] ";
-	return debugfile;
-}
-
-ofstream &Debug::notice() {
-	debugfile << "[" << printTime() << "] [NOTICE ] ";
-	return debugfile;
-}
-
 bool Debug::open(const string &file) {
 	if (initialized)
 		close();
@@ -39,10 +24,47 @@ bool Debug::open(const string &file) {
 	return true;
 }
 
-ofstream &Debug::warning() {
-	debugfile << "[" << printTime() << "] [WARNING] ";
+ofstream &Debug::error() {
+	debugfile << "<T-> " << printTime() << ": [ERROR:";
 	return debugfile;
 }
+
+ofstream &Debug::info() {
+	debugfile << "<T-> " << printTime() << ": [INFO:";
+	return debugfile;
+}
+
+ofstream &Debug::notice() {
+	debugfile << "<T-> " << printTime() << ": [NOTICE:";
+	return debugfile;
+}
+
+ofstream &Debug::warning() {
+	debugfile << "<T-> " << printTime() << ": [WARNING:";
+	return debugfile;
+}
+
+/* Surcharging previous functions to add turncount */
+ofstream &Debug::error(int turn) {
+	debugfile << "<T" << turn << "> " << printTime() << ": [ERROR:";
+	return debugfile;
+}
+
+ofstream &Debug::info(int turn) {
+	debugfile << "<T" << turn << "> " << printTime() << ": [INFO:";
+	return debugfile;
+}
+
+ofstream &Debug::notice(int turn) {
+	debugfile << "<T" << turn << "> " << printTime() << ": [NOTICE:";
+	return debugfile;
+}
+
+ofstream &Debug::warning(int turn) {
+	debugfile << "<T" << turn << "> " << printTime() << ": [WARNING:";
+	return debugfile;
+}
+
 
 /* private static methods */
 string &Debug::printTime() {
