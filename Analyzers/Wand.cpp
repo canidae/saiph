@@ -59,6 +59,9 @@ void Wand::parseMessages(const string &messages) {
 			if (wand_key == 0)
 				findUnidentifiedWands();
 		}
+		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR ||
+				saiph->world->player.levitating || saiph->world->player.blind)
+			return;
 		if (wand_key != 0)
 			state = WAND_STATE_DUST_X;
 	} //no else here.  deliberate.
