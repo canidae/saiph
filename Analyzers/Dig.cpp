@@ -17,8 +17,6 @@ void Dig::parseMessages(const string& messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		dig_direction = 0;
 	}
-	if (priority >= PRIORITY_DIG_PATH)
-		return;
 	if (saiph->inventory_changed) {
 		if (digging_tool != 0)
 			if (!isDiggingTool(digging_tool))
@@ -26,7 +24,7 @@ void Dig::parseMessages(const string& messages) {
 		if (digging_tool == 0)
 			digging_tool = findDiggingTool();
 	}
-	if (digging_tool == 0)
+	if (priority >= PRIORITY_DIG_PATH || digging_tool == 0)
 		return;
 	if (directionIsFloor(DOWN) && directionIsWall(N) && ((directionIsWall(W) && directionIsFloor(NW)) || (directionIsWall(E) && directionIsFloor(NE))))
 		dig_direction = N;
