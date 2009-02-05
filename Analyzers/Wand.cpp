@@ -106,7 +106,7 @@ void Wand::parseMessages(const string &messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (state == WAND_STATE_READY_TO_NAME) {
 		string name = WAND_NO_EFFECT_NAME;
-		for (vector<pair<string, string>>::size_type i = 0; i < wand_engrave_messages.size(); i++)
+		for (vector<pair<string, string> >::size_type i = 0; i < wand_engrave_messages.size(); i++)
 			if (messages.find(wand_engrave_messages[i].first) != string::npos)
 				name = wand_engrave_messages[i].second;
 		req.request = REQUEST_CALL_ITEM;
