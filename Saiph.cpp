@@ -415,10 +415,10 @@ bool Saiph::run() {
 	/* check if we got a command */
 	if (world->question && best_analyzer == analyzers.end()) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
-		return false;
+		world->executeCommand(string(1, (char) 27));
 	} else if (world->menu && best_analyzer == analyzers.end()) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
-		return false;
+		world->executeCommand(string(1, (char) 27));
 	} else if (best_analyzer == analyzers.end()) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
@@ -442,9 +442,7 @@ bool Saiph::run() {
 	/* let an analyzer do its command */
 	Debug::notice(last_turn) << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
 	world->executeCommand((*best_analyzer)->command);
-	if (stuck_counter < 42) {
-		(*best_analyzer)->complete();
-	} else {
+	if (stuck_counter % 42 == 41) {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
 		bool was_move = false;
@@ -484,8 +482,14 @@ bool Saiph::run() {
 			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
 			(*best_analyzer)->fail();
 		}
-		/* reset stuck_counter */
-		stuck_counter = 0;
+	} else if (stuck_counter > 168) {
+		/* failed too many times, #quit */
+		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+		world->executeCommand("#quit");
+		world->executeCommand(YES);
+		return false;
+	} else {
+		(*best_analyzer)->complete();
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
