@@ -13,7 +13,9 @@ Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(
 void Unihorn::analyze() {
 	if (apply_priority >= 0) {
 		findUnihorn();
-		if (unihorn_key == 0) {
+		/* we can't apply anything if we're overtaxed.
+		   TODO drop things to be able to use unihorn */
+		if (unihorn_key == 0 || saiph->world->player.encumbrance >= OVERTAXED) {
 			/* lost unihorn somehow */
 			apply_priority = -1;
 			return;
@@ -39,6 +41,10 @@ bool Unihorn::request(const Request &request) {
 	if (request.request == REQUEST_APPLY_UNIHORN) {
 		findUnihorn();
 		if (unihorn_key == 0)
+			return false;
+		/* we can't apply anything if we're overtaxed.
+		   TODO drop things to be able to use unihorn */
+		if (saiph->world->player.encumbrance >= OVERTAXED)
 			return false;
 		/* we got a unicorn horn */
 		if (request.priority > apply_priority)

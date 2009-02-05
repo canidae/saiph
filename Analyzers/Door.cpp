@@ -45,7 +45,8 @@ void Door::analyze() {
 				command = OPEN;
 			} else {
 				findUnlockingTool();
-				if (unlock_tool_key == 0)
+				/* we can't apply when we're overtaxed, but can still kick... */
+				if (unlock_tool_key == 0 || saiph->world->player.encumbrance >= OVERTAXED)
 					command = KICK;
 				else
 					command = APPLY;
