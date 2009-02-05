@@ -7,7 +7,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0) {
+Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0), zapping_wand(false) {
 }
 
 /* methods */
@@ -16,6 +16,11 @@ void Wish::parseMessages(const string &messages) {
 		command = "3 blessed greased fixed +3 " + selectWish();
 		Debug::notice(saiph->last_turn) << WISH_DEBUG_NAME << "Wishing for " << command << endl;
 		command.append("\n");
+		priority = PRIORITY_CONTINUE_ACTION;
+		return;
+	} else if (zapping_wand && messages.find(MESSAGE_WHAT_TO_ZAP, 0) != string::npos) {
+		zapping_wand = false;
+		command = wand_of_wishing_key;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
 	}
@@ -27,6 +32,7 @@ void Wish::parseMessages(const string &messages) {
 	reflectionShield = wearing("shield of reflection");
 	haveReflection = reflectionArmor || reflectionAmulet || reflectionShield;
 	if (saiph->inventory_changed) {
+		wand_of_wishing_key = 0;
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i)
 			if (i->second.name == "wand of wishing") {
 				wand_of_wishing_key = i->first;
@@ -40,6 +46,7 @@ void Wish::analyze() {
 	//since it has no idea of "this wand is empty"
 	if (wand_of_wishing_key != 0) {
 		if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
+			zapping_wand = true;
 			command = ZAP_WAND;
 			priority = PRIORITY_WISH_ZAP_WAND;
 		}

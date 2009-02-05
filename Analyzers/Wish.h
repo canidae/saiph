@@ -21,6 +21,7 @@ class Wish : public Analyzer {
 		bool MRarmor, MRcloak, haveMR;
 		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;
 		unsigned char wand_of_wishing_key;
+		bool zapping_wand;
 		std::string selectWish();
 		bool wearing(const std::string& name);
 };
