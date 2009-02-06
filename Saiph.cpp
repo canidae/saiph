@@ -416,9 +416,11 @@ bool Saiph::run() {
 	if (world->question && best_analyzer == analyzers.end()) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		world->executeCommand(string(1, (char) 27));
+		return true;
 	} else if (world->menu && best_analyzer == analyzers.end()) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		world->executeCommand(string(1, (char) 27));
+		return true;
 	} else if (best_analyzer == analyzers.end()) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
