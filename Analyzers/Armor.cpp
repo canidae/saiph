@@ -16,10 +16,8 @@ void Armor::parseMessages(const string &messages) {
 	if (saiph->world->player.polymorphed != last_polymorphed) {
 		// We changed forms, so assume we can wear all types of armor again.
 		resetCanWear();
-
 		last_polymorphed = saiph->world->player.polymorphed;
 	}
-
 	if (!command2.empty() && (messages.find(MESSAGE_DONT_EVEN_BOTHER, 0) != string::npos ||
 		messages.find(ARMOR_HAVE_NO_FEET, 0) != string::npos ||
 		messages.find(ARMOR_WONT_FIT_HORN, 0) != string::npos ||
@@ -36,7 +34,7 @@ void Armor::parseMessages(const string &messages) {
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (!saiph->world->question && !command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
+	} else if (!command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
 		/* took off last piece of armor (no "what do you want to take off?" question then) */
 		command2.clear();
 		/* request dirty inventory */
