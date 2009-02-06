@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "MonsterInfo.h"
 #include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
@@ -10,6 +11,8 @@ MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph) {
 
 /* methods */
 void MonsterInfo::analyze() {
+	if (saiph->world->player.hallucinating)
+		return; // if we're hallucinating, the output is garbage
 	for (look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
 		if (!look_at->second.visible)
 			continue; // monster not visible
