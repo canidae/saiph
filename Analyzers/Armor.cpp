@@ -20,7 +20,10 @@ void Armor::parseMessages(const string &messages) {
 		last_polymorphed = saiph->world->player.polymorphed;
 	}
 
-	if (!command2.empty() && messages.find(MESSAGE_DONT_EVEN_BOTHER, 0) != string::npos) {
+	if (!command2.empty() && (messages.find(MESSAGE_DONT_EVEN_BOTHER, 0) != string::npos ||
+		messages.find(ARMOR_HAVE_NO_FEET, 0) != string::npos ||
+		messages.find(ARMOR_WONT_FIT_HORN, 0) != string::npos ||
+		messages.find(ARMOR_TOO_MANY_HOOVES, 0) != string::npos)) {
 		/* We tried to wear something and it didn't work. Polymorphed? */
 		can_wear[last_armor_type] = false;
 		wear_armor = false;
