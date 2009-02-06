@@ -230,6 +230,10 @@ void Food::analyze() {
 	prev_monster_loc.clear();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m)
 		prev_monster_loc[m->first] = m->second.symbol;
+	/* we can't eat while acrrying too much.
+	   TODO drop things so we can eat */
+	if (saiph->world->player.encumbrance >= OVERTAXED)
+		return;
 	/* are we hungry? */
 	if (saiph->world->player.hunger <= WEAK) {
 		/* yes, we are */
