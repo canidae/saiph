@@ -484,7 +484,7 @@ bool Saiph::run() {
 			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
 			(*best_analyzer)->fail();
 		}
-	} else if (stuck_counter > 168) {
+	} else if (stuck_counter > 3160) { // == Map Rows * Map Cols * 2, in case we want to look at a lot of monsters
 		/* failed too many times, #quit */
 		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
 		world->executeCommand(string(1, (char) 27));
