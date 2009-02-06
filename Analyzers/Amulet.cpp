@@ -23,6 +23,10 @@ void Amulet::parseMessages(const string &messages) {
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+	} else if (!command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
+                /* request dirty inventory */
+                req.request = REQUEST_DIRTY_INVENTORY;
+                saiph->request(req);
 	}
 }
 
