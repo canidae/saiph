@@ -66,13 +66,16 @@ void Wand::parseMessages(const string &messages) {
 			state = WAND_STATE_DUST_X;
 	} //no else here.  deliberate.
 	if (state == WAND_STATE_DUST_X) {
-		if (messages.find(MESSAGE_ENGRAVE_ADD) != string::npos) {
+		if (messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 			command = YES;
 			priority = PRIORITY_CONTINUE_ACTION;
-		} else if (messages.find(MESSAGE_ENGRAVE_WITH) != string::npos) {
+		} else if (messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
 			command = HANDS;
 			priority = PRIORITY_CONTINUE_ACTION;
-		} else if (messages.find(MESSAGE_ENGRAVE_DUST) != string::npos) {
+		} else if (messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos ||
+				messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos ||
+				messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos ||
+				messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos) {
 			command = "x\n";
 			priority = PRIORITY_CONTINUE_ACTION;
 			state = WAND_STATE_WANTS_LOOK;
@@ -88,21 +91,33 @@ void Wand::parseMessages(const string &messages) {
 		}
 		command = LOOK;
 		priority = PRIORITY_LOOK;
+		state = WAND_STATE_CONFIRM_LOOK;
 	} else if (state == WAND_STATE_CONFIRM_LOOK) {
-		if (messages.find(MESSAGE_TEXT_DUSTED) != string::npos)
+		if (messages.find(MESSAGE_TEXT_DUSTED, 0) != string::npos ||
+			messages.find(MESSAGE_TEXT_FROSTED, 0) != string::npos)
 			state = WAND_STATE_ENGRAVING;
 		else
 			state = WAND_STATE_INIT;
 	} else if (state == WAND_STATE_ENGRAVING) {
-		if (messages.find(MESSAGE_ENGRAVE_ADD) != string::npos) {
+		if (messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 			command = YES;
-		} else if (messages.find(WAND_DIGGING_MESSAGE) != string::npos ||
-				messages.find(WAND_LIGHTNING_MESSAGE) != string::npos ||
-				messages.find(WAND_FIRE_MESSAGE) != string::npos) {
+		} else if (messages.find(WAND_DIGGING_MESSAGE, 0) != string::npos ||
+				messages.find(WAND_LIGHTNING_MESSAGE, 0) != string::npos ||
+				messages.find(WAND_FIRE_MESSAGE, 0) != string::npos) {
 			command = ESCAPE;
-		} else if (messages.find(MESSAGE_ENGRAVE_DUST) != string::npos) {
+			req.request = REQUEST_DIRTY_INVENTORY;
+			saiph->request(req);
+			wand_key = 0;
+			state = WAND_STATE_INIT;
+		} else if (messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos ||
+				messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos ||
+				messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos ||
+				messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos) {
 			command = "x\n";
 			state = WAND_STATE_READY_TO_NAME;
+		} else if (messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
+			priority = PRIORITY_CONTINUE_ACTION;
+			command = wand_key;
 		} else {
 			command = ENGRAVE;
 		}
@@ -110,7 +125,7 @@ void Wand::parseMessages(const string &messages) {
 	} else if (state == WAND_STATE_READY_TO_NAME) {
 		string name = WAND_NO_EFFECT_NAME;
 		for (vector<pair<string, string> >::size_type i = 0; i < wand_engrave_messages.size(); i++)
-			if (messages.find(wand_engrave_messages[i].first) != string::npos)
+			if (messages.find(wand_engrave_messages[i].first, 0) != string::npos)
 				name = wand_engrave_messages[i].second;
 		req.request = REQUEST_CALL_ITEM;
 		req.data = name;
@@ -133,13 +148,17 @@ void Wand::findUnidentifiedWands() {
 }
 
 bool Wand::isUnidentifiedWand(const Item& i) {
+	string::size_type split = i.name.find(" wand", 0);
+	if (split == string::npos)
+		return false;
+	string appearance = i.name.substr(0, split);
 	for (vector<string>::size_type j = 0; j < wand_appearances.size(); j++)
-		if (i.name == wand_appearances[j] + " wand")
+		if (appearance == wand_appearances[j])
 			return true;
 	return false;
 }
 
 bool Wand::isUnidentifiedWand(const unsigned char& c) {
 	map<unsigned char, Item>::iterator iter = saiph->inventory.find(c);
-	return iter == saiph->inventory.end() && isUnidentifiedWand(iter->second);
+	return iter != saiph->inventory.end() && isUnidentifiedWand(iter->second);
 }
