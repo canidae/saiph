@@ -485,7 +485,7 @@ bool Saiph::run() {
 	} else if (stuck_counter > 168) {
 		/* failed too many times, #quit */
 		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
-		world->executeCommand("#quit");
+		world->executeCommand(QUIT);
 		world->executeCommand(YES);
 		return false;
 	} else {

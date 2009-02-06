@@ -138,6 +138,7 @@
 #define PRAY "#pray\n"
 #define PUT_ON "P"
 #define QUAFF "q"
+#define QUIT "#quit\n"
 #define REMOVE "R"
 #define RUB "#rub\n"
 #define REST "."
