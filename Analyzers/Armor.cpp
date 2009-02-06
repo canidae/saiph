@@ -18,7 +18,6 @@ void Armor::parseMessages(const string &messages) {
 		resetCanWear();
 		last_polymorphed = saiph->world->player.polymorphed;
 	}
-
 	if (!command2.empty() && (messages.find(MESSAGE_DONT_EVEN_BOTHER, 0) != string::npos ||
 		messages.find(ARMOR_HAVE_NO_FEET, 0) != string::npos ||
 		messages.find(ARMOR_WONT_FIT_HORN, 0) != string::npos ||
