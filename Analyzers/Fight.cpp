@@ -39,7 +39,7 @@ void Fight::analyze() {
 				/* we got a direct line to the monster */
 				if (got_thrown == FIGHT_NOT_CHECKED_THROWN_WEAPONS)
 					got_thrown = gotThrown();
-				if (got_thrown != FIGHT_NO_THROWN_WEAPONS) {
+				if (got_thrown != FIGHT_NO_THROWN_WEAPONS && saiph->world->player.encumbrance <= BURDENED) {
 					/* got thrown weapons */
 					if (priority == PRIORITY_FIGHT_ATTACK && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
 						continue; // already got a target
