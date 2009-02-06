@@ -207,6 +207,18 @@ void Armor::wearArmor() {
 					break;
 				}
 			}
+		} else if (s == ARMOR_GLOVES) {
+			bool weapon_cursed = false;
+			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i)
+				if (i->second.additional.find("weapon in ", 0) == 0 || i->second.additional == "wielded")
+					if (i->second.beatitude == CURSED) {
+						weapon_cursed = true;
+						break;
+					}
+
+			/* weapon is cursed, we can't wear or take off gloves */
+			if (weapon_cursed)
+				continue;
 		}
 		if (worn[s] != 0) {
 			/* we'll have to take this armor off first */
