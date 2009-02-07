@@ -18,5 +18,5 @@ class Point {
 		bool operator!=(const Point &p) const;
 };
 
-std::ostream &operator<<(std::ostream &os, Point &p);
+std::ostream &operator<<(std::ostream &os, const Point& p);
 #endif
