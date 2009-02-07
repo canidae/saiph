@@ -30,6 +30,8 @@ void Donate::analyze() {
 		/* got enough money, standing on stairs down, find priest */
 		priest_loc.level = -1;
 		int least_moves = INT_MAX;
+	}
+	if (priest_loc.level == -1) {
 		for (int lev = 0; lev < (int) saiph->levels.size(); lev++) {
 			for (map<Point, Monster>::iterator i = saiph->levels[lev].monsters.begin(); i != saiph->levels[lev].monsters.end(); ++i) {
 				if (!i->second.priest)
