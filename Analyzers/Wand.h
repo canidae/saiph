@@ -5,7 +5,7 @@
 
 /* these don't auto-id; we must actually engrave */
 #define WAND_VANISHER_MESSAGE "  The engraving on the floor vanishes!  "
-#define WAND_COLD_MESSAGE "  A few ice cubes drop frm the wand.  "
+#define WAND_COLD_MESSAGE "  A few ice cubes drop from the wand.  "
 #define WAND_SLEEP_DEATH_MESSAGE "  The bugs on the floor stop moving!  "
 #define WAND_MAGIC_MISSILE_MESSAGE "  The floor is riddled by bullet holes!  "
 #define WAND_POLYMORPH_MESSAGE "  The engraving now reads: " //followed by random rumor
