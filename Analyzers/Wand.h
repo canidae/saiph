@@ -11,7 +11,7 @@
 #define WAND_POLYMORPH_MESSAGE "  The engraving now reads: " //followed by random rumor
 #define WAND_SLOW_MONSTER_MESSAGE "  The bugs on the floor slow down!  "
 #define WAND_SPEED_MONSTER_MESSAGE "  The bugs on the floor speed up!  "
-#define WAND_STRIKING_MESSAGE "  The wand unsuccessfully fights your attempt to write.  "
+#define WAND_STRIKING_MESSAGE "  The wand unsuccessfully fights your attempt to write!  "
 /* these auto-id before the engrave prompt, so cancel the engraving */
 #define WAND_DIGGING_MESSAGE " is a wand of digging!  "
 #define WAND_LIGHTNING_MESSAGE " is a wand of lightning!  "
