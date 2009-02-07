@@ -18,7 +18,7 @@ void MonsterInfo::analyze() {
 			continue; // monster not visible
 		else if (look_at->second.symbol != '@' && look_at->second.symbol != 'A' && (look_at->second.symbol != 'H' || look_at->second.color != YELLOW))
 			continue; // not an interesting monster
-		if (look_at->second.attitude == ATTITUDE_UNKNOWN || abs(saiph->position.row - look_at->first.row) == 1 || abs(saiph->position.col - look_at->first.col) == 1) {
+		if (look_at->second.attitude == ATTITUDE_UNKNOWN) {
 			command = saiph->farlook(look_at->first);
 			priority = PRIORITY_LOOK;
 			return;
