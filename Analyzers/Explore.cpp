@@ -68,6 +68,7 @@ void Explore::analyze() {
 		}
 	}
 
+	/* explore level */
 	if (priority < PRIORITY_EXPLORE_EXPLORE) {
 		int min_moves = INT_MAX;
 		int best_type = INT_MAX;
@@ -130,6 +131,17 @@ void Explore::analyze() {
 				/* not in main dungeon or rogue level, get out */
 				int moves = 0;
 				move = saiph->shortestPath(saiph->branch_main, false, &moves);
+				if (move == ILLEGAL_DIRECTION) {
+					/* crud, we can't reach the main dungeon... just head for upstairs */
+					for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
+						if (s->second != UNKNOWN_SYMBOL_VALUE && (saiph->levels[s->second].branch != BRANCH_MAIN && saiph->levels[s->second].branch != BRANCH_ROGUE))
+							continue; // we know where the stairs lead, and it's neither BRANCH_MAIN or BRANCH_ROGUE
+						moves = 0;
+						move = saiph->shortestPath(s->first, false, &moves);
+						if (move == NOWHERE)
+							best_move = UP;
+					}
+				}
 			} else {
 				/* in main dungeon, descend */
 				for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++down) {
