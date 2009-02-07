@@ -6,11 +6,11 @@
 
 class Throne : public Analyzer {
 	public:
-		Throne(Saiph* saiph);
-		void parseMessages(const std::string& messages);
+		Throne(Saiph *saiph);
+
 		void analyze();
 
 	private:
-		Saiph* saiph;
+		Saiph *saiph;
 };
 #endif
