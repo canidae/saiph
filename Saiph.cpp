@@ -320,10 +320,6 @@ bool Saiph::run() {
 	if (world->player.engulfed)
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
-	/* set the on_ground pointer if there's loot here */
-	if (levels[position.level].stashes.find(position) != levels[position.level].stashes.end())
-		on_ground = &levels[position.level].stashes[position];
-
 	/* update level */
 	if (!world->menu && !world->player.engulfed) {
 		/* update changed symbols */
@@ -341,6 +337,10 @@ bool Saiph::run() {
 	}
 	/* print maps so we see what we're doing */
 	dumpMaps();
+
+	/* set the on_ground pointer if there's loot here */
+	if (levels[position.level].stashes.find(position) != levels[position.level].stashes.end())
+		on_ground = &levels[position.level].stashes[position];
 
 	/* analyzer stuff comes here */
 	/* reset priority */
