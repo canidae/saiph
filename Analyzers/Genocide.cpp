@@ -1,5 +1,6 @@
 #include "Genocide.h"
 #include "../Globals.h"
+#include "../World.h"
 
 using namespace std;
 
