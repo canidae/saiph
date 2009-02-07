@@ -321,7 +321,7 @@ bool Saiph::run() {
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
 	/* update level */
-	if (!world->menu && !world->player.engulfed) {
+	if (!world->menu) {
 		if (!world->player.engulfed) {
 			/* update changed symbols */
 			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
