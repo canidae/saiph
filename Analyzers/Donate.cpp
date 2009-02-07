@@ -8,7 +8,7 @@ using namespace std;
 Donate::Donate(Saiph* saiph) : Analyzer("Donate"), saiph(saiph), priest_dir(ILLEGAL_DIRECTION), priest_loc() {
 }
 
-void Donate::parseMessages(const std::string& messages) {
+void Donate::parseMessages(const std::string &messages) {
 	if (priest_dir == ILLEGAL_DIRECTION)
 		return;
 	if (messages.find(DONATE_TALK_TO_WHOM) != string::npos) {
