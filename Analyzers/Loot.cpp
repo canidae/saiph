@@ -52,10 +52,10 @@ void Loot::analyze() {
 		}
 	}
 
-	/* drop unwanted stuff on STAIRS_UP or ALTAR */
+	/* drop unwanted stuff on STAIRS_UP and get safe Elbereth there */
 	if (priority >= PRIORITY_LOOT_DROP_ITEMS)
 		return;
-	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP || saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == ALTAR) {
+	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
 		/* standing on stairs, drop unwanted stuff if any */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (dropItem(i->second) == 0)
@@ -65,7 +65,7 @@ void Loot::analyze() {
 			priority = PRIORITY_LOOT_DROP_ITEMS;
 			return;
 		}
-		/* TODO: get down elbereth on STAIRS_UP if there's a stash there */
+		/* TODO: get down elbereth if there's a stash here */
 	}
 
 	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
