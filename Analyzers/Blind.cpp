@@ -1,4 +1,5 @@
 #include "Blind.h"
+#include "../Globals.h"
 #include "../Item.h"
 #include "../Saiph.h"
 #include "../World.h"

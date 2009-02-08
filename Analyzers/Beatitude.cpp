@@ -1,6 +1,6 @@
 #include "Beatitude.h"
 #include "../Globals.h"
-#include "../Items.h"
+#include "../Item.h"
 #include "../Request.h"
 #include "../Saiph.h"
 #include "../World.h"
