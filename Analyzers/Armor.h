@@ -2,6 +2,10 @@
 #define ARMOR_H
 
 #define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3
+/* various polymorph messages */
+#define ARMOR_HAVE_NO_FEET "  You have no feet...  "
+#define ARMOR_WONT_FIT_HORN " won't fit over your horn"
+#define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
 
 #include <string>
 #include <vector>
@@ -30,11 +34,15 @@ class Armor : public Analyzer {
 		Saiph *saiph;
 		bool wear_armor;
 		int carry_amount[ARMOR_SLOTS];
+		bool can_wear[ARMOR_SLOTS];
 		std::vector<ArmorData> armor[ARMOR_SLOTS];
 		std::string command2;
 		Request req;
+		int last_armor_type;
+		bool last_polymorphed;
 
 		bool isCursed(int armor_slot);
 		void wearArmor();
+		void resetCanWear();
 };
 #endif

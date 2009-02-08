@@ -45,7 +45,7 @@ void Scroll::parseMessages(const string &messages) {
 			return;
 		start += sizeof (SCROLL_CALL_SCROLL) - 1;
 		string name = messages.substr(start, stop - start);
-		Debug::info() << "[Scroll     ] Asking for name for a " << name << " scroll" << endl;
+		Debug::info(saiph->last_turn) << SCROLL_DEBUG_NAME << "Asking for name for a " << name << " scroll" << endl;
 		for (vector<string>::iterator a = appearance.begin(); a != appearance.end(); ++a) {
 			if (name != *a)
 				continue;

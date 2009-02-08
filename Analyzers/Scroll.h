@@ -1,5 +1,6 @@
 #ifndef SCROLL_H
 #define SCROLL_H
+#define SCROLL_DEBUG_NAME "Scroll] "
 /* messages */
 #define SCROLL_CALL_END ":  "
 #define SCROLL_CALL_SCROLL "  Call a scroll labeled "

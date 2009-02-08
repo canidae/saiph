@@ -1,14 +1,23 @@
 #include "Dig.h"
-#include "../World.h"
-#include "../Level.h"
+#include "../Coordinate.h"
 #include "../Globals.h"
+#include "../Item.h"
+#include "../Level.h"
+#include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
-Dig::Dig(Saiph* saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
+Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
 }
 
-void Dig::parseMessages(const string& messages) {
+void Dig::parseMessages(const string &messages) {
+	if (saiph->inventory_changed)
+		digging_tool = findDiggingTool();
+	if (priority >= PRIORITY_DIG_PATH || digging_tool == 0) {
+		dig_direction = 0;
+		return;
+	}
 	if (dig_direction && messages.find(MESSAGE_WHAT_TO_APPLY) != string::npos) {
 		command = digging_tool;
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -17,17 +26,6 @@ void Dig::parseMessages(const string& messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		dig_direction = 0;
 	}
-	if (priority >= PRIORITY_DIG_PATH)
-		return;
-	if (saiph->inventory_changed) {
-		if (digging_tool != 0)
-			if (!isDiggingTool(digging_tool))
-				digging_tool = 0;
-		if (digging_tool == 0)
-			digging_tool = findDiggingTool();
-	}
-	if (digging_tool == 0)
-		return;
 	if (directionIsFloor(DOWN) && directionIsWall(N) && ((directionIsWall(W) && directionIsFloor(NW)) || (directionIsWall(E) && directionIsFloor(NE))))
 		dig_direction = N;
 	else if (directionIsFloor(DOWN) && directionIsWall(S) && ((directionIsWall(W) && directionIsFloor(SW)) || (directionIsWall(E) && directionIsFloor(SE))))
@@ -40,6 +38,13 @@ void Dig::parseMessages(const string& messages) {
 
 void Dig::analyze() {
 	if (dig_direction && freeWeaponHand()) {
+		if (digging_tool != 0) {
+			if (!isDiggingTool(digging_tool)) {
+				/* we must have dropped our digging tool somewhere */
+				digging_tool = 0;
+				return;
+			}
+		}
 		command = APPLY;
 		priority = PRIORITY_DIG_PATH;
 	}
@@ -90,7 +95,7 @@ bool Dig::directionIsFloor(int direction) {
 	return directionIs(direction) == FLOOR;
 }
 
-bool Dig::isDiggingTool(Item i) {
+bool Dig::isDiggingTool(const Item &i) {
 	if ((i.name == "pick-axe" || i.name == "dwarvish mattock") && i.beatitude != CURSED)
 		return true;
 	return false;

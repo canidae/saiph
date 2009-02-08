@@ -1,7 +1,6 @@
 #ifndef WISH_H
 #define WISH_H
-/* messages */
-#define WISH_MESSAGE "  For what do you wish?  "
+#define WISH_DEBUG_NAME "Wish] "
 
 #include <string>
 #include <vector>
@@ -20,6 +19,7 @@ class Wish : public Analyzer {
 		bool MRarmor, MRcloak, haveMR;
 		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;
 		unsigned char wand_of_wishing_key;
+		bool zapping_wand;
 		std::string selectWish();
 		bool wearing(const std::string& name);
 };

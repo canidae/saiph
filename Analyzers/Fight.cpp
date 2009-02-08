@@ -39,7 +39,7 @@ void Fight::analyze() {
 				/* we got a direct line to the monster */
 				if (got_thrown == FIGHT_NOT_CHECKED_THROWN_WEAPONS)
 					got_thrown = gotThrown();
-				if (got_thrown != FIGHT_NO_THROWN_WEAPONS) {
+				if (got_thrown != FIGHT_NO_THROWN_WEAPONS && saiph->world->player.encumbrance <= BURDENED) {
 					/* got thrown weapons */
 					if (priority == PRIORITY_FIGHT_ATTACK && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
 						continue; // already got a target
@@ -71,7 +71,7 @@ void Fight::analyze() {
 		min_moves = moves;
 		command = (moves == 1 ? FIGHT : ""); // always fight using F when distance is 1
 		command.push_back(dir);
-		Debug::info() << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
+		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
 	}
 }
 

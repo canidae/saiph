@@ -127,6 +127,7 @@
 #define EAT "e"
 #define ENGRAVE "E"
 #define ENHANCE "#enhance\n"
+#define ESCAPE "\x1b"
 #define FIGHT "F"
 #define INVENTORY "i"
 #define KICK ""
@@ -137,6 +138,7 @@
 #define PRAY "#pray\n"
 #define PUT_ON "P"
 #define QUAFF "q"
+#define QUIT "#quit\n"
 #define REMOVE "R"
 #define RUB "#rub\n"
 #define REST "."
@@ -240,9 +242,9 @@
 #define PRIORITY_HEALTH_QUAFF_FOR_HP 700
 /* 400-599: don't move. engrave for protection, attack if not moving and protected, feed, etc */
 #define PRIORITY_HEALTH_REST_FOR_HP_HIGH 500
+#define PRIORITY_HEALTH_CURE_NON_DEADLY 480
 #define PRIORITY_WEAPON_WIELD 475
 #define PRIORITY_FIGHT_ATTACK 450
-#define PRIORITY_HEALTH_CURE_NON_DEADLY 450
 #define PRIORITY_LOOT_LOOT_STASH 450
 #define PRIORITY_FOOD_EAT_CORPSE 435
 #define PRIORITY_HEALTH_CURE_LYCANTHROPY 400
@@ -294,6 +296,8 @@
 #define MESSAGE_DESTROY_WAND2 " break apart and explode!  "
 #define MESSAGE_DIG_DIRECTION "  In what direction do you want to dig? "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
+#define MESSAGE_DONT_BE_RIDICULOUS "  Don't be ridiculous!  "
+#define MESSAGE_DONT_EVEN_BOTHER "  Don't even bother.  "
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
 #define MESSAGE_DRINK_FROM_FOUNTAIN "  Drink from the fountain? [yn] (n)  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
@@ -341,9 +345,12 @@
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? "
 #define MESSAGE_WHAT_TO_WEAR "  What do you want to wear? "
 #define MESSAGE_WHAT_TO_WIELD "  What do you want to wield? "
+#define MESSAGE_WHAT_TO_ZAP "  What do you want to zap? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
+#define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off
+
 
 #endif

@@ -398,8 +398,6 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			msymbol = PET;
 		else
 			msymbol = symbol;
-		/* set monster on monstermap */
-		monstermap[point.row][point.col] = msymbol;
 		/* find nearest monster */
 		int min_distance = INT_MAX;
 		map<Point, Monster>::iterator nearest = monsters.end();
@@ -411,8 +409,15 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 				old_symbol = PET;
 			else
 				old_symbol = saiph->world->view[m->first.row][m->first.col];
-			if (m->second.symbol == old_symbol && m->second.color == saiph->world->color[m->first.row][m->first.col])
+			if (m->second.symbol == old_symbol && m->second.color == saiph->world->color[m->first.row][m->first.col]) {
+				/* note about this "point == m->first":
+				 * the character for the monster may be updated even if it hasn't moved,
+				 * if this is the case, we should return and neither move nor add the
+				 * monster as that will screw up the data we know about the monster */
+				if (point == m->first)
+					return;
 				continue; // this monster already is on its square
+			}
 			/* see if this monster is closer than the last found monster */
 			int distance = max(abs(m->first.row - point.row), abs(m->first.col - point.col));
 			if (distance > MAX_MONSTER_MOVE)
@@ -434,6 +439,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			/* add monster */
 			monsters[point] = Monster(msymbol, color);
 		}
+		/* set monster on monstermap */
+		monstermap[point.row][point.col] = msymbol;
 	}
 }
 
@@ -449,13 +456,13 @@ void Level::updateMonsters() {
 			symbol = saiph->world->view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
 		m->second.visible = (symbol == m->second.symbol && color == m->second.color);
-		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
-			/* player is not next to where we last saw the monster */
+		if (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color) {
+			/* we can still see the monster */
 			++m;
 			continue;
 		}
-		if (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color) {
-			/* we can still see the monster */
+		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
+			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
 		}
@@ -538,7 +545,7 @@ void Level::updatePathMap() {
 
 /* private methods */
 void Level::addItemToStash(const Point &point, const Item &item) {
-	Debug::notice() << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
+	Debug::notice(saiph->last_turn) << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
 	if (item.count <= 0)
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);

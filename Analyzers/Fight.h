@@ -1,5 +1,6 @@
 #ifndef FIGHT_H
 #define FIGHT_H
+#define FIGHT_DEBUG_NAME "Fight] "
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
 /* used for finding thrown weapons */

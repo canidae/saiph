@@ -9,8 +9,35 @@ The project is GPLv2 licensed.
 Fetch code:
 -----------
 Given that you're reading this document there's a fair chance you've already
-downloaded the code, but nevertheless, fetch it from Git here:
-git clone http://exent.net/~canidae/saiph/.git
+downloaded the code, but nevertheless, fetch it with Git here:
+git clone http://projects.exent.net/saiph.git
+
+Also, there are several people working on saiph, you might want to add their
+repositories too:
+  Vidar Wahlberg: git://github.com/canidae/saiph.git
+Adrien Panhaleux: git://github.com/DainDwarf/saiph.git
+      Kenny Root: git://github.com/kruton/saiph.git
+ Jeffrey Bosboom: git://github.com/DrSunglasses/saiph.git
+
+You should add these to git using the following command:
+ git remote add -f <nick> <url>
+Example:
+ git remote add -f canidae git://github.com/canidae/saiph.git
+
+
+Keeping your repo updated:
+--------------------------
+You should pull regularly from http://projects.exent.net/saiph.git or
+git://github.com/canidae/saiph.git with this command:
+ git pull canidae master
+Replace "canidae" if you used another name for that repo.
+
+If some of the other repos got a patch you really want that hasn't been merged
+into the main repos, then you can get that patch with the following commands:
+ git fetch <nick>
+ git log HEAD..FETCH_HEAD
+ git show <commit>
+ git cherry-pick -x <commit>
 
 
 Building & running:
@@ -21,6 +48,9 @@ change between CONNECTION_TELNET and CONNECTION_LOCAL in
 
 If you're running locally you'll have to do this once before executing saiph:
  export NETHACKOPTIONS=@<path to nethackrc>
+
+You'll also need a terminal that's capable of displaying at least 160x50
+characters.
 
 Then build & start the bot:
  make clean && make

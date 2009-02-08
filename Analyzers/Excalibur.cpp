@@ -12,6 +12,8 @@ Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), comman
 void Excalibur::analyze() {
 	if (saiph->world->player.experience < 5)
 		return;
+	if (saiph->world->player.alignment != LAWFUL)
+		return;
 	else if (saiph->world->player.blind)
 		return; // don't move when blind
 	/* do we have a long sword? */

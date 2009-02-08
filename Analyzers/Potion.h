@@ -1,5 +1,6 @@
 #ifndef POTION_H
 #define POTION_H
+#define POTION_DEBUG_NAME "Potion] "
 /* messages */
 #define POTION_CALL_END " potion:  "
 #define POTION_CALL_POTION1 "  Call a "

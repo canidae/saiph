@@ -5,11 +5,26 @@
 using namespace std;
 
 /* constructors/destructor */
-Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_weapon(false) {
+Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_weapon(false), can_wield_weapon(true), last_polymorphed(false) {
 }
 
 /* methods */
 void Weapon::parseMessages(const string &messages) {
+	if (last_polymorphed != saiph->world->player.polymorphed) {
+		/* we polymorphed; assume we can wield unless determined otherwise */
+		can_wield_weapon = true;
+		last_polymorphed = saiph->world->player.polymorphed;
+	}
+
+	if (!command2.empty() && messages.find(MESSAGE_DONT_BE_RIDICULOUS, 0) != string::npos) {
+		/* we're polymorphed to a creature that can't wield weapons */
+		can_wield_weapon = false;
+		command.clear();
+		command2.clear();
+		priority = ILLEGAL_PRIORITY;
+		return;
+	}
+
 	if (saiph->world->question && !command2.empty() && messages.find(WEAPON_WHAT_TO_WIELD, 0) != string::npos) {
 		/* wield a weapon */
 		command = command2;
@@ -19,7 +34,7 @@ void Weapon::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 		wield_weapon = false;
-	} else if (saiph->inventory_changed || wield_weapon) {
+	} else if (can_wield_weapon && (saiph->inventory_changed || wield_weapon)) {
 		wieldWeapon();
 	}
 }
@@ -64,7 +79,8 @@ void Weapon::wieldWeapon() {
 		for (vector<WeaponData>::iterator w = weapons.begin(); w != weapons.end(); ++w) {
 			if (w->name != i->second.name) {
 				continue;
-			} else if (i->second.beatitude == BEATITUDE_UNKNOWN) {
+			} else if (i->second.beatitude == BEATITUDE_UNKNOWN &&
+					wielded != i->first) {
 				/* weapon with unknown beatitude, request it beatified */
 				req.request = REQUEST_BEATIFY_ITEMS;
 				saiph->request(req);

@@ -1,8 +1,8 @@
 #ifndef WORLD_H
 #define WORLD_H
 /* debug */
-#define WORLD_DEBUG_NAME "[World      ] "
-#define DATA_DEBUG_NAME "[Data       ] " // data from game, give that an unique name
+#define WORLD_DEBUG_NAME "World] "
+#define DATA_DEBUG_NAME "Data] " // data from game, give that an unique name
 /* buffer */
 #define BUFFER_SIZE 65536
 /* stuff for parsing attribute & status rows */

@@ -1,11 +1,11 @@
 #ifndef SAIPH_H
 #define SAIPH_H
 /* debug */
-#define COMMAND_DEBUG_NAME "[Command    ] "
-#define ITEMTRACKER_DEBUG_NAME "[ItemTracker] "
-#define MESSAGES_DEBUG_NAME "[Messages   ] "
-#define REQUEST_DEBUG_NAME "[Request    ] "
-#define SAIPH_DEBUG_NAME "[Saiph      ] "
+#define COMMAND_DEBUG_NAME "Command] "
+#define ITEMTRACKER_DEBUG_NAME "ItemTracker] "
+#define MESSAGES_DEBUG_NAME "Messages] "
+#define REQUEST_DEBUG_NAME "Request] "
+#define SAIPH_DEBUG_NAME "Saiph] "
 /* messages */
 #define SAIPH_GAIN_COLD_RES1 "  You feel full of hot air.  "
 #define SAIPH_LOSE_COLD_RES1 "  You feel cooler!  "
@@ -73,6 +73,7 @@ class Saiph {
 		bool inventory_changed;
 		bool got_pickup_menu;
 		bool got_drop_menu;
+		int last_turn;
 
 		Saiph(int interface);
 		~Saiph();
@@ -94,7 +95,6 @@ class Saiph {
 		std::vector<Analyzer *>::iterator best_analyzer;
 		bool sokoban_found;
 		std::string farlook_command;
-		int last_turn;
 		int stuck_counter;
 
 		void detectPosition();

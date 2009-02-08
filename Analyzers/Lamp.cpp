@@ -11,7 +11,7 @@ Lamp::Lamp(Saiph *saiph) : Analyzer("Lamp"), saiph(saiph), lamp_key(0), remove_l
 
 /* methods */
 void Lamp::analyze() {
-	if (priority >= PRIORITY_LAMP_TOGGLE || lamp_key == 0)
+	if (priority >= PRIORITY_LAMP_TOGGLE || lamp_key == 0 || saiph->world->player.encumbrance >= OVERTAXED)
 		return; // no lamp/lantern or got something more important to do
 	map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
 	if (l == saiph->inventory.end()) {

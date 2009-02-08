@@ -32,6 +32,8 @@ class Elbereth : public Analyzer {
 		bool dusted;
 		bool frosted;
 		bool append;
+		bool can_hold_something;
+		bool last_polymorphed;
 
 		bool canEngrave();
 };
