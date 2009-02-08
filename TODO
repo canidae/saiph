@@ -144,6 +144,10 @@ Lamp
 
 Loot
 --------------------------------------------------------------------------------
+- we must make sure that we check out inventory each time it's changed.
+  it's possible that we should look for messages like "you drop" and other
+  generic messages that tells us that inventory is changed, instead of having
+  the other analyzers telling Loot that the inventory is dirty.
 
 
 MonsterInfo
