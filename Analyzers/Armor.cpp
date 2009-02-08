@@ -1,4 +1,5 @@
 #include "Armor.h"
+#include "../Item.h"
 #include "../Saiph.h"
 #include "../World.h"
 

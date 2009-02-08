@@ -2,17 +2,16 @@
 #define ARMOR_H
 
 #define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3
+/* various polymorph messages */
+#define ARMOR_HAVE_NO_FEET "  You have no feet...  "
+#define ARMOR_WONT_FIT_HORN " won't fit over your horn"
+#define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
 
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Request.h"
-
-/* various polymorph messages */
-#define ARMOR_HAVE_NO_FEET "  You have no feet...  "
-#define ARMOR_WONT_FIT_HORN " won't fit over your horn"
-#define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
 
 /* struct for wearing armor */
 struct ArmorData {
