@@ -5,10 +5,10 @@
 
 using namespace std;
 
-Dig::Dig(Saiph* saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
+Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
 }
 
-void Dig::parseMessages(const string& messages) {
+void Dig::parseMessages(const string &messages) {
 	if (saiph->inventory_changed)
 		digging_tool = findDiggingTool();
 	if (priority >= PRIORITY_DIG_PATH || digging_tool == 0) {
