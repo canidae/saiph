@@ -1,11 +1,13 @@
 #include "Armor.h"
+#include "../Item.h"
+#include "../Player.h"
 #include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
 
 /* constructors/destructor */
-Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_armor(false) {
+Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_armor(false), last_armor_type(0), last_polymorphed(false) {
 	resetCanWear();
 }
 

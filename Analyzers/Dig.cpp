@@ -1,14 +1,17 @@
 #include "Dig.h"
-#include "../World.h"
-#include "../Level.h"
+#include "../Coordinate.h"
 #include "../Globals.h"
+#include "../Item.h"
+#include "../Level.h"
+#include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
-Dig::Dig(Saiph* saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
+Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
 }
 
-void Dig::parseMessages(const string& messages) {
+void Dig::parseMessages(const string &messages) {
 	if (saiph->inventory_changed)
 		digging_tool = findDiggingTool();
 	if (priority >= PRIORITY_DIG_PATH || digging_tool == 0) {
@@ -92,7 +95,7 @@ bool Dig::directionIsFloor(int direction) {
 	return directionIs(direction) == FLOOR;
 }
 
-bool Dig::isDiggingTool(Item i) {
+bool Dig::isDiggingTool(const Item &i) {
 	if ((i.name == "pick-axe" || i.name == "dwarvish mattock") && i.beatitude != CURSED)
 		return true;
 	return false;

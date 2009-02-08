@@ -13,6 +13,7 @@
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
+#include "Analyzers/Blind.h"
 #include "Analyzers/Dig.h"
 #include "Analyzers/Donate.h"
 #include "Analyzers/Door.h"
@@ -85,6 +86,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Amulet(this));
 	analyzers.push_back(new Armor(this));
 	analyzers.push_back(new Beatitude(this));
+	analyzers.push_back(new Blind(this));
 	analyzers.push_back(new Dig(this));
 	analyzers.push_back(new Donate(this));
 	analyzers.push_back(new Door(this));
@@ -321,19 +323,21 @@ bool Saiph::run() {
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
 	/* update level */
-	if (!world->menu && !world->player.engulfed) {
-		/* update changed symbols */
-		for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
-			levels[position.level].updateMapPoint(*c, (unsigned char) world->view[c->row][c->col], world->color[c->row][c->col]);
-		/* update monsters */
-		levels[position.level].updateMonsters();
-		/* update pathmap */
-		levels[position.level].updatePathMap();
-	} else if (world->player.engulfed) {
-		/* we'll still need to update monster's "visible" while engulfed,
-		 * or she may attempt to farlook a monster */
-		for (map<Point, Monster>::iterator m = levels[position.level].monsters.begin(); m != levels[position.level].monsters.end(); ++m)
-			m->second.visible = false;
+	if (!world->menu) {
+		if (!world->player.engulfed) {
+			/* update changed symbols */
+			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
+				levels[position.level].updateMapPoint(*c, (unsigned char) world->view[c->row][c->col], world->color[c->row][c->col]);
+			/* update monsters */
+			levels[position.level].updateMonsters();
+			/* update pathmap */
+			levels[position.level].updatePathMap();
+		} else {
+			/* we'll still need to update monster's "visible" while engulfed,
+			 * or she may attempt to farlook a monster */
+			for (map<Point, Monster>::iterator m = levels[position.level].monsters.begin(); m != levels[position.level].monsters.end(); ++m)
+				m->second.visible = false;
+		}
 	}
 	/* print maps so we see what we're doing */
 	dumpMaps();

@@ -24,29 +24,20 @@ You should add these to git using the following command:
 Example:
  git remote add -f canidae git://github.com/canidae/saiph.git
 
-Then you can pull from the different repos with this command:
- git pull <nick> master
-Example:
+
+Keeping your repo updated:
+--------------------------
+You should pull regularly from http://projects.exent.net/saiph.git or
+git://github.com/canidae/saiph.git with this command:
  git pull canidae master
+Replace "canidae" if you used another name for that repo.
 
-
-Fetching changes from branches:
--------------------------------
-This is probably wrong & outdated. Fix it if you can.
-
-Merge and accept everything:
- git pull <branch> master
-Example:
- git pull canidae master
-
-Cherry-pick commits:
- git fetch <branch>
- git log -p HEAD..FETCH_HEAD
- git cherry-pick <commit>
-Example:
- git fetch canidae
- git log -p HEAD..FETCH_HEAD
- git cherry-pick cf90ae9159759317d7721ca804cb091e90baa478
+If some of the other repos got a patch you really want that hasn't been merged
+into the main repos, then you can get that patch with the following commands:
+ git fetch <nick>
+ git log HEAD..FETCH_HEAD
+ git show <commit>
+ git cherry-pick -x <commit>
 
 
 Building & running:
@@ -57,6 +48,9 @@ change between CONNECTION_TELNET and CONNECTION_LOCAL in
 
 If you're running locally you'll have to do this once before executing saiph:
  export NETHACKOPTIONS=@<path to nethackrc>
+
+You'll also need a terminal that's capable of displaying at least 160x50
+characters.
 
 Then build & start the bot:
  make clean && make

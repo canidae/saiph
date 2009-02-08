@@ -753,6 +753,14 @@ void Valkyrie::setupTool() {
 	saiph->request(req);
 	*/
 
+	/* pick-axe */
+	req.request = REQUEST_ITEM_PICKUP;
+	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
+	req.only_unknown_enchantment = false;
+	req.value = 1;
+	req.data = "pick-axe";
+	saiph->request(req);
+
 	/* lamps & lanterns */
 	req.request = REQUEST_ITEM_PICKUP;
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED | CURSED;
@@ -974,9 +982,6 @@ void Valkyrie::setupWeapon() {
 	req.data = "long sword";
 	req.priority = 15;
 	saiph->request(req);
-	req.data = "pick-axe";
-	req.priority = 13;
-	saiph->request(req);
 	req.data = "silver dagger";
 	req.priority = 10;
 	saiph->request(req);
@@ -993,9 +998,6 @@ void Valkyrie::setupWeapon() {
 	req.beatitude = BEATITUDE_UNKNOWN | BLESSED | UNCURSED;
 	req.data = "long sword";
 	req.priority = 8;
-	saiph->request(req);
-	req.data = "pick-axe";
-	req.priority = 7;
 	saiph->request(req);
 	req.data = "silver dagger";
 	req.priority = 6;

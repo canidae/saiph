@@ -46,7 +46,7 @@ void Health::analyze() {
 			resting = false;
 		}
 	}
-	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {
+	if (saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {
 		/* apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
 		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
