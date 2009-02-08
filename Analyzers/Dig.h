@@ -7,13 +7,16 @@
 
 class Dig : public Analyzer {
 	public:
-		Dig(Saiph* saiph);
-		void parseMessages(const std::string& message);
+		Dig(Saiph *saiph);
+
+		void parseMessages(const std::string &message);
 		void analyze();
 
 	private:
 		Saiph* saiph;
-		unsigned char dig_direction, digging_tool;
+		unsigned char dig_direction;
+		unsigned char digging_tool;
+
 		int directionIs(int direction);
 		bool directionIsWall(int direction);
 		bool directionIsFloor(int direction);
