@@ -1,4 +1,6 @@
 #include "Blind.h"
+#include "../Item.h"
+#include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
@@ -27,12 +29,12 @@ bool Blind::request(const Request &request) {
 
 /* private methods */
 void Blind::findBlindingTool() {
-	map<unsigned char, Item>::iterator b = saiph->inventory.find(blinding_tool);
-	if (b != saiph->inventory.end() && isBlindingTool(b->second))
+	map<unsigned char, Item>::iterator i = saiph->inventory.find(blinding_tool);
+	if (i != saiph->inventory.end() && isBlindingTool(i->second))
 		return;
-	for (b = saiph->inventory.begin(); b != saiph->inventory.end(); ++b) {
-		if (isBlindingTool(b->second)) {
-			blinding_tool = b->first;
+	for (i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		if (isBlindingTool(i->second)) {
+			blinding_tool = i->first;
 			return;
 		}
 	}
