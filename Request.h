@@ -21,6 +21,8 @@
 #define REQUEST_CALL_ITEM 17
 #define REQUEST_NAME_ITEM 18
 #define REQUEST_BEATIFY_ITEMS 19
+#define REQUEST_BECOME_BLIND 20
+#define REQUEST_UNBLIND 21
 
 #include <string>
 #include "Coordinate.h"
