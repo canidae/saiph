@@ -1,6 +1,7 @@
 #include "Beatitude.h"
 #include "../Globals.h"
 #include "../Item.h"
+#include "../Player.h"
 #include "../Request.h"
 #include "../Saiph.h"
 #include "../World.h"

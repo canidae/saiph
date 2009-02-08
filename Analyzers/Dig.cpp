@@ -1,7 +1,10 @@
 #include "Dig.h"
-#include "../World.h"
-#include "../Level.h"
+#include "../Coordinate.h"
 #include "../Globals.h"
+#include "../Item.h"
+#include "../Level.h"
+#include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
@@ -92,7 +95,7 @@ bool Dig::directionIsFloor(int direction) {
 	return directionIs(direction) == FLOOR;
 }
 
-bool Dig::isDiggingTool(Item i) {
+bool Dig::isDiggingTool(const Item &i) {
 	if ((i.name == "pick-axe" || i.name == "dwarvish mattock") && i.beatitude != CURSED)
 		return true;
 	return false;
