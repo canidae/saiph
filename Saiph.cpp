@@ -13,6 +13,7 @@
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
+#include "Analyzers/Blind.h"
 #include "Analyzers/Dig.h"
 #include "Analyzers/Donate.h"
 #include "Analyzers/Door.h"
@@ -85,6 +86,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Amulet(this));
 	analyzers.push_back(new Armor(this));
 	analyzers.push_back(new Beatitude(this));
+	analyzers.push_back(new Blind(this));
 	analyzers.push_back(new Dig(this));
 	analyzers.push_back(new Donate(this));
 	analyzers.push_back(new Door(this));
