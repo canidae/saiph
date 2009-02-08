@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "Donate.h"
+#include "../Monster.h"
 #include "../Player.h"
+#include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;

@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "../Analyzer.h"
-#include "../Globals.h"
 #include "../Request.h"
 
 /* struct for wearing amulet */

@@ -29,7 +29,8 @@ Keeping your repo updated:
 --------------------------
 You should pull regularly from http://projects.exent.net/saiph.git or
 git://github.com/canidae/saiph.git with this command:
- git pull --rebase
+ git pull canidae master
+Replace "canidae" if you used another name for that repo.
 
 If some of the other repos got a patch you really want that hasn't been merged
 into the main repos, then you can get that patch with the following commands:

@@ -1,9 +1,11 @@
 #ifndef DIG_H
 #define	DIG_H
 
-#include "../Analyzer.h"
-#include "../Saiph.h"
 #include <string>
+#include "../Analyzer.h"
+
+class Item;
+class Saiph;
 
 class Dig : public Analyzer {
 	public:
@@ -13,7 +15,7 @@ class Dig : public Analyzer {
 		void analyze();
 
 	private:
-		Saiph* saiph;
+		Saiph *saiph;
 		unsigned char dig_direction;
 		unsigned char digging_tool;
 
@@ -21,7 +23,7 @@ class Dig : public Analyzer {
 		bool directionIsWall(int direction);
 		bool directionIsFloor(int direction);
 		int boulderInDirection();
-		bool isDiggingTool(Item i);
+		bool isDiggingTool(const Item &i);
 		bool isDiggingTool(unsigned char letter);
 		unsigned char findDiggingTool();
 		bool freeWeaponHand();

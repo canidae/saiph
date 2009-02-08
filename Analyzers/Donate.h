@@ -5,11 +5,14 @@
 #define DONATE_TALK_TO_WHOM "  Talk to whom? "
 
 #include "../Analyzer.h"
-#include "../Saiph.h"
+#include "../Coordinate.h"
+
+class Saiph;
 
 class Donate : public Analyzer {
 	public:
 		Donate(Saiph *saiph);
+
 		void parseMessages(const std::string &messages);
 		void analyze();
 
