@@ -12,6 +12,9 @@
 #define PATHING_QUEUE_SIZE 16384 // max amount of nodes in pathing_queue
 /* max moves a monster can do before we think it's a new monster */
 #define MAX_MONSTER_MOVE 3 // if a monster is more than this distance from where we last saw it, then it's probably a new monster
+/* how many turns before we'll "forget" "I" monsters */
+#define FORGET_I_MONSTER_TURNS 3
+/* debugging that should be moved to Debug in the future */
 #define LEVEL_DEBUG_NAME "Level] "
 /* messages */
 #define LEVEL_ALTAR_HERE "  There is an altar to "
