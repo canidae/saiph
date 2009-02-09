@@ -4,10 +4,20 @@
 #include "../Player.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Debug.h"
 
 using namespace std;
 
-Blind::Blind(Saiph *saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(false), blinding_tool(ILLEGAL_ITEM) {
+Blind::Blind(Saiph *saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(false), blinding_tool(ILLEGAL_ITEM), blind_priority(ILLEGAL_PRIORITY), unblind_priority(ILLEGAL_PRIORITY) {
+}
+
+void Blind::parseMessages(const string &messages) {
+	if (messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos ||
+			messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos) {
+		command = blinding_tool;
+		priority = PRIORITY_CONTINUE_ACTION;
+		willful_blindness = !willful_blindness;
+	}
 }
 
 void Blind::analyze() {
@@ -17,14 +27,45 @@ void Blind::analyze() {
 		req.request = REQUEST_APPLY_UNIHORN;
 		req.priority = PRIORITY_HEALTH_CURE_NON_DEADLY;
 		saiph->request(req);
+		return;
 	}
+	if (blind_priority) {
+		if (willful_blindness) {
+			blind_priority = 0;
+			return;
+		}
+		command = PUT_ON;
+		priority = blind_priority;
+	} else if (unblind_priority) {
+		if (!willful_blindness) {
+			unblind_priority = 0;
+			return;
+		}
+		command = REMOVE;
+		priority = blind_priority;
+	}
+}
+
+void Blind::complete() {
+	blind_priority = ILLEGAL_PRIORITY;
+	unblind_priority = ILLEGAL_PRIORITY;
 }
 
 bool Blind::request(const Request &request) {
 	if (request.request == REQUEST_BECOME_BLIND) {
-		/* TODO: put on blindfold/towel */
+		if (willful_blindness) {
+			Debug::warning(saiph->last_turn) << "Recieved REQUEST_BECOME_BLIND while already willfully blind" << endl;
+			return true;
+		}
+		if (blinding_tool == ILLEGAL_ITEM)
+			return false;
+		blind_priority = request.priority;
 	} else if (request.request == REQUEST_UNBLIND) {
-		/* TODO: remove blindfold/towel */
+		if (!saiph->world->player.blind) {
+			Debug::warning(saiph->last_turn) << "Recieved REQUEST_UNBLIND while already unblind" << endl;
+			return true;
+		}
+		unblind_priority = request.priority;
 	}
 	return false;
 }
