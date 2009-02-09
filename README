@@ -37,7 +37,7 @@ into the main repos, then you can get that patch with the following commands:
  git fetch <nick>
  git log HEAD..FETCH_HEAD
  git show <commit>
- git cherry-pick -x <commit>
+ git cherry-pick <commit>
 
 
 Building & running:
