@@ -34,6 +34,7 @@
 #include "Analyzers/Rub.h"
 #include "Analyzers/Scroll.h"
 #include "Analyzers/Shop.h"
+#include "Analyzers/Sokoban.h"
 #include "Analyzers/Throne.h"
 #include "Analyzers/Unihorn.h"
 #include "Analyzers/Valkyrie.h"
@@ -107,6 +108,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Rub(this));
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Shop(this));
+	analyzers.push_back(new Sokoban(this));
 	analyzers.push_back(new Throne(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
