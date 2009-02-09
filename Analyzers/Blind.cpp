@@ -12,11 +12,14 @@ Blind::Blind(Saiph *saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(
 }
 
 void Blind::parseMessages(const string &messages) {
-	if (messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos ||
-			messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos) {
+	if (messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos) {
 		command = blinding_tool;
 		priority = PRIORITY_CONTINUE_ACTION;
-		willful_blindness = !willful_blindness;
+		willful_blindness = true;
+	} else if (messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos) {
+		command = blinding_tool;
+		priority = PRIORITY_CONTINUE_ACTION;
+		willful_blindness = false;
 	}
 }
 
@@ -29,16 +32,16 @@ void Blind::analyze() {
 		saiph->request(req);
 		return;
 	}
-	if (blind_priority) {
+	if (blind_priority >= 0) {
 		if (willful_blindness) {
-			blind_priority = 0;
+			blind_priority = ILLEGAL_PRIORITY;
 			return;
 		}
 		command = PUT_ON;
 		priority = blind_priority;
-	} else if (unblind_priority) {
+	} else if (unblind_priority >= 0) {
 		if (!willful_blindness) {
-			unblind_priority = 0;
+			unblind_priority = ILLEGAL_PRIORITY;
 			return;
 		}
 		command = REMOVE;
@@ -54,7 +57,7 @@ void Blind::complete() {
 bool Blind::request(const Request &request) {
 	if (request.request == REQUEST_BECOME_BLIND) {
 		if (willful_blindness) {
-			Debug::warning(saiph->last_turn) << "Recieved REQUEST_BECOME_BLIND while already willfully blind" << endl;
+			Debug::notice(saiph->last_turn) << "Recieved REQUEST_BECOME_BLIND while already willfully blind" << endl;
 			return true;
 		}
 		if (blinding_tool == ILLEGAL_ITEM)
@@ -62,7 +65,7 @@ bool Blind::request(const Request &request) {
 		blind_priority = request.priority;
 	} else if (request.request == REQUEST_UNBLIND) {
 		if (!saiph->world->player.blind) {
-			Debug::warning(saiph->last_turn) << "Recieved REQUEST_UNBLIND while already unblind" << endl;
+			Debug::notice(saiph->last_turn) << "Recieved REQUEST_UNBLIND while already unblind" << endl;
 			return true;
 		}
 		unblind_priority = request.priority;
