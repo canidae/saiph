@@ -614,6 +614,8 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	      return false;
 	if (s == WATER) // && (!levitating || !waterwalk))
 	      return false;
+	if (s == TRAP && branch == BRANCH_SOKOBAN)
+		return false;
 	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(saiph->position.row - to.row) <= 1 && abs(saiph->position.col - to.col) <= 1)
 		return false; // don't path through monster next to her
 	unsigned int newcost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
