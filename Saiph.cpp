@@ -930,7 +930,12 @@ void Saiph::dumpMaps() {
 			cout << (unsigned char) 27 << "[33m";
 		cout << i->first;
 		cout << " - " << i->second.count;
-		cout << " " << (i->second.beatitude == BLESSED ? "blessed" : (i->second.beatitude == CURSED ? "cursed" : (i->second.beatitude == UNCURSED ? "uncursed" : "unknown")));
+		if (i->second.beatitude == BLESSED)
+			cout << " blessed";
+		else if (i->second.beatitude == CURSED)
+			cout << " cursed";
+		else if (i->second.beatitude == UNCURSED)
+			cout << " uncursed";
 		cout << (i->second.greased ? " greased" : "");
 		cout << (i->second.fixed ? " fixed" : "");
 		if (i->second.damage > 0) {

@@ -21,7 +21,12 @@ class Blind : public Analyzer {
 		Request req;
 		bool willful_blindness;
 		unsigned char blinding_tool;
+<<<<<<< HEAD:Analyzers/Blind.h
 		int blind_priority, unblind_priority;
+=======
+		int blind_priority;
+		int unblind_priority;
+>>>>>>> 0a81528b6310b228c32cb497e281392a09f5b404:Analyzers/Blind.h
 
 		void findBlindingTool();
 		bool isBlindingTool(const Item &item);
