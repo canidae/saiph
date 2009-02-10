@@ -81,11 +81,13 @@ class Saiph {
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 		const std::string &farlook(const Point &target);
+		unsigned char getDungeonSymbol();
 		unsigned char getDungeonSymbol(const Coordinate &coordinate);
 		unsigned char getDungeonSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
+		void setDungeonSymbol(unsigned char symbol);
 		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
@@ -109,6 +111,11 @@ class Saiph {
 };
 
 /* inline methods */
+inline unsigned char Saiph::getDungeonSymbol() {
+	/* return dungeon symbol at player position */
+	return levels[position.level].getDungeonSymbol(position);
+}
+
 inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
 	/* return dungeon symbol at given coordinate */
 	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
@@ -117,19 +124,24 @@ inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
 }
 
 inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
-	/* return dungeon symbol at given coordinate */
+	/* return dungeon symbol at given point on current level */
 	return levels[position.level].getDungeonSymbol(point);
 }
 
+inline void Saiph::setDungeonSymbol(unsigned char symbol) {
+	/* set dungeon symbol at player position */
+	levels[position.level].setDungeonSymbol(position, symbol);
+}
+
 inline void Saiph::setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol) {
-	/* return dungeon symbol at given coordinate */
+	/* set dungeon symbol at given coordinate */
 	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
 		return;
 	levels[coordinate.level].setDungeonSymbol(coordinate, symbol);
 }
 
 inline void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
-	/* return dungeon symbol at given coordinate */
+	/* set dungeon symbol at given point on current level */
 	levels[position.level].setDungeonSymbol(point, symbol);
 }
 
