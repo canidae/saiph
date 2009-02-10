@@ -47,7 +47,7 @@ void Door::analyze() {
 			continue;
 		}
 		int moves = -1;
-		unsigned char dir = saiph->shortestPath(d->first, false, &moves);
+		unsigned char dir = saiph->shortestPath(d->first, true, &moves);
 		if (dir == ILLEGAL_DIRECTION)
 			continue;
 		if (moves == DOOR_LOCKED) {
