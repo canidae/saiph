@@ -80,7 +80,7 @@ void Shop::analyze() {
 //		}
 //		if (!shopkeeper_seen) {
 //			/* can't see any shopkeeper, make the tile FLOOR */
-//			saiph->levels[saiph->position.level].setDungeonSymbol(saiph->position, FLOOR);
+//			saiph->levels[saiph->position.level].setDungeonSymbol(FLOOR);
 //			/* we should also look at floor so Loot gets a chance to
 //			 * pick up the item as the last time Loot checked, this
 //			 * tile was a SHOP_TILE */
