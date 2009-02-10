@@ -32,7 +32,7 @@ PUSH_RIGHT_N('D', 2) // done
 
 // C
 PUSH_DOWN('C')
-PUSH_RIGHT_N('C', 7)
+PUSH_RIGHT_N('C', 8)
 PUSH_DOWN_N('C', 7)
 PUSH_LEFT_N('C', 8)
 PUSH_UP_N('C', 4)
