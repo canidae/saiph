@@ -5,6 +5,7 @@
 #include <map>
 #include "../Analyzer.h"
 #include "../Point.h"
+#include "../Coordinate.h"
 #include "../Level.h"
 
 #define SOKOBAN_DEBUG_NAME "Sokoban] "
@@ -48,7 +49,7 @@ class Sokoban : public Analyzer {
 		bool started[SOKOBAN_LEVELS];
 
 		vector<Move>::iterator currentMove;
-		Point currentTarget;
+		Coordinate currentTarget;
 		bool moving;
 };
 #endif	

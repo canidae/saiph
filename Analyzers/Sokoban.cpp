@@ -61,17 +61,18 @@ void Sokoban::analyze() {
 			if (!started[level]) {
 				/* first time we've run on this level, so initialize our state */
 				currentMove = moves[level].begin();
+				currentTarget.level = saiph->position.level;
 				targetNextLocation(level, *currentMove);
 				started[level] = true;
 				moving = true;
 			}
 
-			if ((Point)saiph->position == currentTarget) {
-				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Got to target " << currentTarget << ", pushing boulder '" << currentMove->direction << "'" << endl;
+			if (saiph->position == currentTarget) {
+				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Got to target " << (Point)currentTarget << ", pushing boulder '" << currentMove->direction << "'" << endl;
 				command = currentMove->direction;
 				priority = PRIORITY_SOLVE_SOKOBAN;
 			} else {
-				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Trying to path to " << currentTarget << " from " << (Point)saiph->position << endl;
+				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Trying to path to " << (Point)currentTarget << " from " << (Point)saiph->position << endl;
 
 				int moves = 0;
 				unsigned char next_move = saiph->shortestPath(currentTarget, false, &moves);
