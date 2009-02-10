@@ -122,7 +122,7 @@ bool Elbereth::canEngrave() {
 	if (saiph->world->player.levitating)
 		return false;
 	/* check if there's a fountain/grave/altar here */
-	switch (saiph->getDungeonSymbol(saiph->position)) {
+	switch (saiph->getDungeonSymbol()) {
 		case ALTAR:
 		case GRAVE:
 		case FOUNTAIN:
