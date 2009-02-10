@@ -28,7 +28,7 @@ void Donate::analyze() {
 		return;
 	if (saiph->world->player.zorkmids < 400 * saiph->world->player.experience)
 		return;
-	if (saiph->getDungeonSymbol(saiph->position) == STAIRS_DOWN) {
+	if (saiph->getDungeonSymbol() == STAIRS_DOWN) {
 		/* got enough money, standing on stairs down, find priest */
 		priest_loc.level = -1;
 		int least_moves = INT_MAX;
