@@ -81,9 +81,13 @@ class Saiph {
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 		const std::string &farlook(const Point &target);
+		unsigned char getDungeonSymbol(const Coordinate &coordinate);
+		unsigned char getDungeonSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
+		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
+		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);

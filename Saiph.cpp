@@ -264,6 +264,18 @@ const string &Saiph::farlook(const Point &target) {
 	return farlook_command;
 }
 
+inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
+	/* return dungeon symbol at given coordinate */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return OUTSIDE_MAP;
+	return levels[coordinate.level].getDungeonSymbol(coordinate);
+}
+
+inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
+	/* return dungeon symbol at given coordinate */
+	return levels[position.level].getDungeonSymbol(point);
+}
+
 bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return false;

@@ -68,6 +68,7 @@ class Level {
 
 		Level(Saiph *saiph, std::string name, int branch = BRANCH_MAIN);
 
+		unsigned char getDungeonSymbol(const Point &point);
 		void parseMessages(const std::string &messages);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
