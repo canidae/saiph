@@ -51,7 +51,6 @@ void Dig::analyze() {
 }
 
 int Dig::directionIs(int direction) {
-	saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
 	int rowOffset = 0, colOffset = 0;
 	switch(direction) {
 		case NOWHERE:
@@ -83,7 +82,7 @@ int Dig::directionIs(int direction) {
 			colOffset = 1;
 			break;
 	}
-	return saiph->levels[saiph->position.level].dungeonmap[saiph->position.row+rowOffset][saiph->position.col+colOffset];
+	return saiph->getDungeonSymbol(Point(saiph->position.row + rowOffset, saiph->position.col + colOffset));
 }
 
 bool Dig::directionIsWall(int direction) {
@@ -116,23 +115,21 @@ unsigned char Dig::findDiggingTool() {
 }
 
 int Dig::boulderInDirection() {
-	Level curlev = saiph->levels[saiph->position.level];
-	int row = saiph->position.row, col = saiph->position.col;
-	if (curlev.dungeonmap[row-1][col-1] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row - 1, saiph->position.col - 1)) == BOULDER)
 		return NW;
-	if (curlev.dungeonmap[row-1][col] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row - 1, saiph->position.col)) == BOULDER)
 		return N;
-	if (curlev.dungeonmap[row-1][col+1] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row - 1, saiph->position.col + 1)) == BOULDER)
 		return NE;
-	if (curlev.dungeonmap[row][col-1] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row, saiph->position.col - 1)) == BOULDER)
 		return W;
-	if (curlev.dungeonmap[row][col+1] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row, saiph->position.col + 1)) == BOULDER)
 		return E;
-	if (curlev.dungeonmap[row+1][col-1] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row + 1, saiph->position.col-1)) == BOULDER)
 		return SW;
-	if (curlev.dungeonmap[row+1][col] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row + 1, saiph->position.col)) == BOULDER)
 		return S;
-	if (curlev.dungeonmap[row+1][col+1] == BOULDER)
+	if (saiph->getDungeonSymbol(Point(saiph->position.row + 1, saiph->position.col + 1)) == BOULDER)
 		return SE;
 	return 0;
 }
