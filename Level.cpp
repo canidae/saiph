@@ -33,12 +33,6 @@ Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch)
 }
 
 /* methods */
-inline unsigned char Level::getDungeonSymbol(const Point &point) {
-	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
-		return OUTSIDE_MAP;
-	return dungeonmap[point.row][point.col];
-}
-
 void Level::parseMessages(const string &messages) {
 	/* set inventory_changed to false */
 	saiph->inventory_changed = false;
@@ -215,21 +209,6 @@ void Level::parseMessages(const string &messages) {
 		}
 		saiph->inventory_changed = true;
 	}
-}
-
-inline void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
-	/* need to update both dungeonmap and symbols,
-	 * better keep it in a method */
-	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
-		return; // outside map
-	if (dungeonmap[point.row][point.col] == symbol)
-		return; // no change
-	/* erase old symbol from symbols */
-	symbols[dungeonmap[point.row][point.col]].erase(point);
-	/* set new symbol in symbols */
-	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
-	/* update dungeonmap */
-	dungeonmap[point.row][point.col] = symbol;
 }
 
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {

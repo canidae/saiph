@@ -107,4 +107,30 @@ class Saiph {
 		void dumpMaps();
 		void parseMessages(const std::string &messages);
 };
+
+/* inline methods */
+inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
+	/* return dungeon symbol at given coordinate */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return OUTSIDE_MAP;
+	return levels[coordinate.level].getDungeonSymbol(coordinate);
+}
+
+inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
+	/* return dungeon symbol at given coordinate */
+	return levels[position.level].getDungeonSymbol(point);
+}
+
+inline void Saiph::setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol) {
+	/* return dungeon symbol at given coordinate */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return;
+	levels[coordinate.level].setDungeonSymbol(coordinate, symbol);
+}
+
+inline void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
+	/* return dungeon symbol at given coordinate */
+	levels[position.level].setDungeonSymbol(point, symbol);
+}
+
 #endif
