@@ -827,7 +827,7 @@ bool Saiph::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_
 		return false;
 	else if (!ignore_sinks && symbol == SINK)
 		return false;
-	else if (levels[position.level].monstermap[point.row][point.col] != ILLEGAL_MONSTER && levels[position.level].monsters[point].visible)
+	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[position.level].monsters[point].visible)
 		return false;
 	return true;
 }
@@ -884,10 +884,11 @@ void Saiph::dumpMaps() {
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			unsigned char monster = getMonsterSymbol(p);
 			if (p.row == world->player.row && p.col == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[position.level].monstermap[p.row][p.col] != ILLEGAL_MONSTER)
-				cout << (unsigned char) (levels[position.level].monstermap[p.row][p.col]);
+			else if (monster != ILLEGAL_MONSTER)
+				cout << monster;
 			else
 				cout << getDungeonSymbol(p);
 		}

@@ -84,6 +84,8 @@ class Saiph {
 		unsigned char getDungeonSymbol();
 		unsigned char getDungeonSymbol(const Coordinate &coordinate);
 		unsigned char getDungeonSymbol(const Point &point);
+		unsigned char getMonsterSymbol(const Coordinate &coordinate);
+		unsigned char getMonsterSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
@@ -126,6 +128,18 @@ inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
 inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
 	/* return dungeon symbol at given point on current level */
 	return levels[position.level].getDungeonSymbol(point);
+}
+
+inline unsigned char Saiph::getMonsterSymbol(const Coordinate &coordinate) {
+	/* return monster symbol at given point on current level */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return ILLEGAL_MONSTER;
+	return levels[coordinate.level].getMonsterSymbol(coordinate);
+}
+
+inline unsigned char Saiph::getMonsterSymbol(const Point &point) {
+	/* return monster symbol at given point on current level */
+	return levels[position.level].getMonsterSymbol(point);
 }
 
 inline void Saiph::setDungeonSymbol(unsigned char symbol) {
