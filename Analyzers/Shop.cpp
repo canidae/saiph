@@ -45,7 +45,7 @@ void Shop::parseMessages(const string &messages) {
 		/* request dirty inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (drop_pick_axe && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != OPEN_DOOR) {
+	} else if (drop_pick_axe && saiph->getDungeonSymbol() != OPEN_DOOR) {
 		/* we should've moved away from shopkeeper now, drop the pick-axe */
 		command = DROP;
 		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
@@ -64,10 +64,11 @@ void Shop::parseMessages(const string &messages) {
 }
 
 void Shop::analyze() {
+	unsigned char symbol = saiph->getDungeonSymbol();
 	/* FIXME:
 	 * this currently bugs. she's marking SHOP_TILE as FLOOR
 	 * and picks up items. why? */
-//	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == SHOP_TILE) {
+//	if (symbol == SHOP_TILE) {
 //		/* if we're standing on SHOP_TILE, check if we can see the shopkeeper.
 //		 * if we can't we probably killed him/her, and then we should remove the SHOP_TILE */
 //		bool shopkeeper_seen = false;
@@ -89,7 +90,7 @@ void Shop::analyze() {
 //			return;
 //		}
 //	}
-	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != UNKNOWN_TILE)
+	if (symbol != FLOOR && symbol != UNKNOWN_TILE)
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
@@ -97,39 +98,39 @@ void Shop::analyze() {
 			continue;
 
 		/* figure out if we're in the same room as the shopkeeper */
-		int north = saiph->position.row;
-		int south = saiph->position.row;
-		int west = saiph->position.col;
-		int east = saiph->position.col;
+		Point nw = saiph->position;
+		Point se = saiph->position;
 
-		unsigned char symbol = 0;
+		/* find north corner */
+		symbol = saiph->getDungeonSymbol();
+		while (--nw.row && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+			symbol = saiph->getDungeonSymbol(nw);
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && north > MAP_ROW_BEGIN)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[--north][saiph->position.col];
+		/* find west corner */
+		symbol = saiph->getDungeonSymbol();
+		while (--nw.col && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+			symbol = saiph->getDungeonSymbol(nw);
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && south < MAP_ROW_END)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[++south][saiph->position.col];
+		/* find south corner */
+		symbol = saiph->getDungeonSymbol();
+		while (++se.row && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+			symbol = saiph->getDungeonSymbol(se);
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && west > MAP_COL_BEGIN)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][--west];
+		/* find east corner */
+		symbol = saiph->getDungeonSymbol();
+		while (++se.col && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+			symbol = saiph->getDungeonSymbol(se);
 
-		symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col];
-		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && east < MAP_COL_END)
-			symbol = saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][++east];
-
-		if (m->first.row <= north || m->first.row >= south || m->first.col <= west || m->first.col >= east)
+		if (m->first.row <= nw.row || m->first.col <= nw.col || m->first.row >= se.row || m->first.col >= se.col)
 			return; // we're not in the same room as the shopkeeper
 
-		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are (" << north << ", " << west << ", " << south << ", " << east << ")" << endl;
+		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are " << nw << " to " << se << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		Point p;
-		for (p.row = north + 1; p.row < south; ++p.row) {
-			for (p.col = west + 1; p.col < east; ++p.col)
-				saiph->levels[saiph->position.level].setDungeonSymbol(p, SHOP_TILE);
+		for (p.row = nw.row + 1; p.row < se.row; ++p.row) {
+			for (p.col = nw.col + 1; p.col < se.col; ++p.col)
+				saiph->setDungeonSymbol(p, SHOP_TILE);
 		}
 		/* we should LOOK at floor to prevent Loot from picking
 		 * up an item if we fall into a shop on an item we want
