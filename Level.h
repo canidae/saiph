@@ -55,7 +55,6 @@ class Saiph;
 class Level {
 	public:
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		std::map<Point, Monster> monsters;
 		std::map<Point, Stash> stashes;
@@ -78,6 +77,7 @@ class Level {
 
 	private:
 		Saiph *saiph;
+		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 
 		static Point pathing_queue[PATHING_QUEUE_SIZE];
 		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
