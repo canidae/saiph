@@ -1,66 +1,130 @@
-PUSH_LEFT_N('E', 3)
-PUSH_RIGHT_N('E', 5)
-PUSH_UP('E')
+PUSH_RIGHT_N('P', 3) 
+PUSH_UP('P') 
 
-PUSH_UP_N('G', 5)
+PUSH_RIGHT_N('O', 2)  // done
 
-PUSH_UP_N('N', 6)
-PUSH_RIGHT('N')
+PUSH_DOWN('N') 
+PUSH_LEFT_N('N', 5) 
 
-PUSH_LEFT_N('L', 5)
+PUSH_DOWN_N('B', 2) 
 
-PUSH_RIGHT('R')
+PUSH_LEFT('C') 
 
-PUSH_RIGHT_N('T', 2) // done
+PUSH_LEFT('M') 
 
-PUSH_RIGHT_N('S', 5) // done
+PUSH_UP('F') 
 
-PUSH_DOWN_N('M', 2)
-PUSH_RIGHT_N('M', 5) // done
+PUSH_LEFT_N('B', 2) 
 
-PUSH_DOWN('R')
-PUSH_RIGHT_N('R', 5) // done
+PUSH_DOWN('K') 
 
-PUSH_DOWN_N('K', 3)
-PUSH_RIGHT_N('K', 6) // done
+PUSH_RIGHT('M') 
+PUSH_DOWN('M') 
+PUSH_RIGHT_N('M', 3)  // done
 
-PUSH_RIGHT_N('L', 2)
-PUSH_DOWN_N('L', 2)
-PUSH_RIGHT_N('L', 7) // done
+PUSH_RIGHT_N('N', 7) 
+PUSH_UP_N('N', 2) 
+PUSH_RIGHT('N') 
+PUSH_DOWN('N') 
+PUSH_RIGHT_N('N', 4)  // done
 
-PUSH_DOWN_N('J', 3)
-PUSH_RIGHT_N('J', 10) // done
+PUSH_DOWN_N('K', 2) 
+PUSH_LEFT_N('K', 5) 
+PUSH_RIGHT_N('K', 7) 
+PUSH_UP_N('K', 2) 
+PUSH_RIGHT('K') 
+PUSH_DOWN('K') 
+PUSH_RIGHT_N('K', 5)  // done
 
-PUSH_UP('O')
-PUSH_RIGHT_N('O', 7)
-PUSH_DOWN_N('O', 2)
-PUSH_RIGHT_N('O', 9) // done
+PUSH_DOWN_N('L', 2) 
+PUSH_LEFT_N('L', 3) 
+PUSH_RIGHT_N('L', 7) 
+PUSH_UP_N('L', 2) 
+PUSH_RIGHT('L') 
+PUSH_DOWN('L') 
+PUSH_RIGHT_N('L', 6)  // done
 
-PUSH_UP('P')
-PUSH_RIGHT_N('P', 6)
-PUSH_DOWN_N('P', 2)
-PUSH_RIGHT_N('P', 10) // done
+PUSH_LEFT('P') 
+PUSH_DOWN('P') 
+PUSH_LEFT_N('P', 3) 
+PUSH_RIGHT_N('P', 7) 
+PUSH_UP_N('P', 2) 
+PUSH_RIGHT('P') 
+PUSH_DOWN('P') 
+PUSH_RIGHT_N('P', 7)  // done
 
-PUSH_LEFT('H')
-PUSH_DOWN('H')
-PUSH_RIGHT_N('H', 8)
-PUSH_DOWN_N('H', 2)
-PUSH_RIGHT_N('H', 11) // done
+PUSH_DOWN('I') 
+PUSH_RIGHT('I') 
+PUSH_DOWN_N('I', 3) 
+PUSH_LEFT_N('I', 5) 
+PUSH_RIGHT_N('I', 7) 
+PUSH_UP_N('I', 2) 
+PUSH_RIGHT('I') 
+PUSH_DOWN('I') 
+PUSH_RIGHT_N('I', 8)  // done
 
-PUSH_DOWN_N('G', 6)
-PUSH_RIGHT_N('G', 8)
-PUSH_DOWN_N('G', 2)
-PUSH_RIGHT_N('G', 12) // done
+PUSH_DOWN('C') 
 
-PUSH_LEFT('N')
-PUSH_DOWN_N('N', 5)
-PUSH_RIGHT_N('N', 8)
-PUSH_DOWN_N('N', 2)
-PUSH_RIGHT_N('N', 13) // done
+PUSH_LEFT('F') 
 
-PUSH_DOWN_N('A', 2)
-PUSH_LEFT('A')
-PUSH_DOWN_N('A', 4)
-PUSH_RIGHT_N('A', 8)
-PUSH_DOWN_N('A', 2)
-PUSH_RIGHT_N('A', 14) // done
+PUSH_UP('A') 
+
+PUSH_RIGHT('G') 
+
+PUSH_UP('D') 
+
+PUSH_RIGHT('E') 
+
+PUSH_DOWN_N('B', 3) 
+
+PUSH_DOWN('D') 
+
+PUSH_DOWN('A') 
+
+PUSH_RIGHT('B') 
+PUSH_DOWN_N('B', 3) 
+PUSH_LEFT_N('B', 5) 
+PUSH_RIGHT_N('B', 7) 
+PUSH_UP_N('B', 2) 
+PUSH_RIGHT('B') 
+PUSH_DOWN('B') 
+PUSH_RIGHT_N('B', 9)  // done
+
+PUSH_RIGHT_N('J', 4) 
+PUSH_DOWN_N('J', 3) 
+PUSH_LEFT_N('J', 5) 
+PUSH_RIGHT_N('J', 7) 
+PUSH_UP_N('J', 2) 
+PUSH_RIGHT('J') 
+PUSH_DOWN('J') 
+PUSH_RIGHT_N('J', 10)  // done
+
+PUSH_RIGHT('E') 
+PUSH_DOWN_N('E', 3) 
+PUSH_RIGHT('E') 
+PUSH_DOWN_N('E', 3) 
+PUSH_LEFT_N('E', 5) 
+PUSH_RIGHT_N('E', 7) 
+PUSH_UP_N('E', 2) 
+PUSH_RIGHT('E') 
+PUSH_DOWN('E') 
+PUSH_RIGHT_N('E', 11)  // done
+
+PUSH_RIGHT_N('H', 2) 
+PUSH_DOWN_N('H', 5) 
+PUSH_LEFT_N('H', 5) 
+PUSH_RIGHT_N('H', 7) 
+PUSH_UP_N('H', 2) 
+PUSH_RIGHT('H') 
+PUSH_DOWN('H') 
+PUSH_RIGHT_N('H', 12)  // done
+
+PUSH_RIGHT_N('G', 4) 
+PUSH_DOWN_N('G', 5) 
+PUSH_LEFT_N('G', 5) 
+PUSH_RIGHT_N('G', 7) 
+PUSH_UP_N('G', 2) 
+PUSH_RIGHT('G') 
+PUSH_DOWN('G') 
+PUSH_RIGHT_N('G', 13)  // done
+
