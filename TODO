@@ -122,6 +122,10 @@ Excalibur
 
 Explore
 --------------------------------------------------------------------------------
+- need stethoscope searching. this requires a change in the logic, instead of
+  looking at the sum of how much we've searched the surrounding blocks we'll
+  need to find the lowest value of searched for surrounding blocks, or she'll
+  apply the stethoscope on 1 wall and then move somewhere else.
 
 
 Fight
