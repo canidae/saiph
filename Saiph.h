@@ -84,7 +84,7 @@ class Saiph {
 		unsigned char getDungeonSymbol();
 		unsigned char getDungeonSymbol(const Coordinate &coordinate);
 		unsigned char getDungeonSymbol(const Point &point);
-		unsigned char getDungeonSymbol(char direction);
+		unsigned char getDungeonSymbol(unsigned char direction);
 		unsigned char getMonsterSymbol(const Coordinate &coordinate);
 		unsigned char getMonsterSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
@@ -131,7 +131,7 @@ inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
 	return levels[position.level].getDungeonSymbol(point);
 }
 
-inline unsigned char Saiph::getDungeonSymbol(char direction) {
+inline unsigned char Saiph::getDungeonSymbol(unsigned char direction) {
 	/* return dungeon symbol in given direction on current level */
 	switch (direction) {
 		case NW:
