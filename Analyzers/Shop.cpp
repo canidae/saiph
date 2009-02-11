@@ -125,7 +125,7 @@ void Shop::analyze() {
 			symbol = saiph->getDungeonSymbol(se);
 		--se.col;
 
-		if (m->first.row <= nw.row || m->first.col <= nw.col || m->first.row >= se.row || m->first.col >= se.col)
+		if (m->first.row < nw.row || m->first.col < nw.col || m->first.row > se.row || m->first.col > se.col)
 			return; // we're not in the same room as the shopkeeper
 
 		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are " << nw << " to " << se << endl;
