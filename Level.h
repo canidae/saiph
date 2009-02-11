@@ -4,6 +4,8 @@
 #define COST_CARDINAL 2
 #define COST_DIAGONAL 3
 #define COST_FOUNTAIN 4 // better not fight on fountains
+#define COST_GRAVE 4 // better not fight on graves
+#define COST_ALTAR 4 // better not fight on altars
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
 #define COST_MONSTER 64 // try not to path through monsters

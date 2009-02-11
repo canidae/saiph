@@ -64,14 +64,14 @@ void Fight::analyze() {
 		else if (moves == 1 && distance == min_distance && priority == PRIORITY_FIGHT_ATTACK && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
 		else if (blue_e)
-			priority = PRIORITY_FIGHT_BLUE_E;
+			priority = PRIORITY_FIGHT_MELEE_BLUE_E;
 		else
 			priority = (moves == 1) ? PRIORITY_FIGHT_ATTACK : PRIORITY_FIGHT_MOVE;
 		min_distance = distance;
 		min_moves = moves;
 		command = (moves == 1 ? FIGHT : ""); // always fight using F when distance is 1
 		command.push_back(dir);
-		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
+		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " " << m->first << ": " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
 	}
 }
 

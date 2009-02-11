@@ -26,7 +26,6 @@ Debug
 - should get rid of the extra "[Saiph     ]" and such. rather make new methods
   such as "Debug::data()" (to echo data from nethack), "Debug::analyzer(const
   string &name)" (to output debugging from analyzers), etc.
-- should produce a log that's colored nicely, or something.
 
 
 Item
@@ -59,6 +58,12 @@ Request
 
 Saiph
 --------------------------------------------------------------------------------
+- this class should probably have way more methods. examples:
+  + find key for slot with item (see private methods in Unihorn)
+  + figure out if wielded weapon/worn armor [on slot] is cursed, and thus
+    preventing us from eg. using a pick-axe, putting on rings, etc.
+  + method unreachable([Point|Coordinate]), needed in dig
+  + probably lots more...
 
 
 Stash
@@ -117,12 +122,15 @@ Excalibur
 
 Explore
 --------------------------------------------------------------------------------
-- moving diagonally when exploring corridors again. this was fixed some time
-  ago, but now the bug is back.
+- need stethoscope searching. this requires a change in the logic, instead of
+  looking at the sum of how much we've searched the surrounding blocks we'll
+  need to find the lowest value of searched for surrounding blocks, or she'll
+  apply the stethoscope on 1 wall and then move somewhere else.
 
 
 Fight
 --------------------------------------------------------------------------------
+- this analyzer is old and outdated. a good candidate for a complete rewrite.
 
 
 Food
@@ -152,8 +160,6 @@ Loot
 
 MonsterInfo
 --------------------------------------------------------------------------------
-- looks at monsters too often, this bug may be caused by something else than
-  this analyzer. looks like Level::monsters is cleared every now & then.
 
 
 Potion
