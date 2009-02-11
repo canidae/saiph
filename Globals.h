@@ -183,6 +183,7 @@
 #define ROGUE_STAIRS 139
 #define MINES_FOUNTAIN 140
 #define SHOP_TILE 141
+#define OUTSIDE_MAP 142
 
 /* item symbols */
 #define ILLEGAL_ITEM 0

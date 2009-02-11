@@ -81,9 +81,17 @@ class Saiph {
 		bool addItemToInventory(unsigned char key, const Item &item);
 		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 		const std::string &farlook(const Point &target);
+		unsigned char getDungeonSymbol();
+		unsigned char getDungeonSymbol(const Coordinate &coordinate);
+		unsigned char getDungeonSymbol(const Point &point);
+		unsigned char getMonsterSymbol(const Coordinate &coordinate);
+		unsigned char getMonsterSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
+		void setDungeonSymbol(unsigned char symbol);
+		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
+		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
@@ -103,4 +111,52 @@ class Saiph {
 		void dumpMaps();
 		void parseMessages(const std::string &messages);
 };
+
+/* inline methods */
+inline unsigned char Saiph::getDungeonSymbol() {
+	/* return dungeon symbol at player position */
+	return levels[position.level].getDungeonSymbol(position);
+}
+
+inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
+	/* return dungeon symbol at given coordinate */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return OUTSIDE_MAP;
+	return levels[coordinate.level].getDungeonSymbol(coordinate);
+}
+
+inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
+	/* return dungeon symbol at given point on current level */
+	return levels[position.level].getDungeonSymbol(point);
+}
+
+inline unsigned char Saiph::getMonsterSymbol(const Coordinate &coordinate) {
+	/* return monster symbol at given point on current level */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return ILLEGAL_MONSTER;
+	return levels[coordinate.level].getMonsterSymbol(coordinate);
+}
+
+inline unsigned char Saiph::getMonsterSymbol(const Point &point) {
+	/* return monster symbol at given point on current level */
+	return levels[position.level].getMonsterSymbol(point);
+}
+
+inline void Saiph::setDungeonSymbol(unsigned char symbol) {
+	/* set dungeon symbol at player position */
+	levels[position.level].setDungeonSymbol(position, symbol);
+}
+
+inline void Saiph::setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol) {
+	/* set dungeon symbol at given coordinate */
+	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+		return;
+	levels[coordinate.level].setDungeonSymbol(coordinate, symbol);
+}
+
+inline void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
+	/* set dungeon symbol at given point on current level */
+	levels[position.level].setDungeonSymbol(point, symbol);
+}
+
 #endif

@@ -211,19 +211,6 @@ void Level::parseMessages(const string &messages) {
 	}
 }
 
-void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
-	/* need to update both dungeonmap and symbols,
-	 * better keep it in a method */
-	if (dungeonmap[point.row][point.col] == symbol)
-		return; // no change
-	/* erase old symbol from symbols */
-	symbols[dungeonmap[point.row][point.col]].erase(point);
-	/* set new symbol in symbols */
-	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
-	/* update dungeonmap */
-	dungeonmap[point.row][point.col] = symbol;
-}
-
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path to target.
 	 * also sets "moves" to amount of moves required */
@@ -433,11 +420,12 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			/* remove monster from monstermap */
 			monstermap[nearest->first.row][nearest->first.col] = ILLEGAL_MONSTER;
 			/* update monster */
+			nearest->second.last_seen = saiph->world->player.turn;
 			monsters[point] = nearest->second;
 			monsters.erase(nearest);
 		} else {
 			/* add monster */
-			monsters[point] = Monster(msymbol, color);
+			monsters[point] = Monster(msymbol, color, saiph->world->player.turn);
 		}
 		/* set monster on monstermap */
 		monstermap[point.row][point.col] = msymbol;
@@ -455,13 +443,12 @@ void Level::updateMonsters() {
 		else
 			symbol = saiph->world->view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (symbol == m->second.symbol && color == m->second.color);
-		if (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color) {
-			/* we can still see the monster */
+		m->second.visible = (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color);
+		if (m->second.visible) {
+			/* monster still visible, don't remove it */
 			++m;
 			continue;
-		}
-		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
+		} else if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
@@ -600,6 +587,8 @@ bool Level::updatePathMapHelper(const Point &to, const Point &from) {
 	      return false;
 	if (s == WATER) // && (!levitating || !waterwalk))
 	      return false;
+	if (s == TRAP && branch == BRANCH_SOKOBAN)
+		return false;
 	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(saiph->position.row - to.row) <= 1 && abs(saiph->position.col - to.col) <= 1)
 		return false; // don't path through monster next to her
 	unsigned int newcost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);

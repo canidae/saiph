@@ -39,9 +39,10 @@ void Loot::analyze() {
 	/* loot stash we're standing on unless full knapsack or burdened */
 	if (priority >= PRIORITY_LOOT_LOOT_STASH)
 		return;
+	unsigned char symbol = saiph->getDungeonSymbol();
 	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT && saiph->world->player.encumbrance < BURDENED) {
 		/* only loot if we're not on a SHOP_TILE */
-		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != SHOP_TILE) {
+		if (symbol != SHOP_TILE) {
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (pickupItem(*i) == 0)
 					continue;
@@ -55,7 +56,7 @@ void Loot::analyze() {
 	/* drop unwanted stuff on STAIRS_UP and get safe Elbereth there */
 	if (priority >= PRIORITY_LOOT_DROP_ITEMS)
 		return;
-	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
+	if (symbol == STAIRS_UP) {
 		/* standing on stairs, drop unwanted stuff if any */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (dropItem(i->second) == 0)
@@ -103,7 +104,7 @@ void Loot::analyze() {
 			}
 		}
 	}
-	if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != STAIRS_DOWN)
+	if (symbol != STAIRS_DOWN)
 		return;
 	/* set "visit_old_stash" when we're standing on downstairs */
 	visitOldStash();
@@ -148,7 +149,7 @@ void Loot::parseMessages(const string &messages) {
 		priority = PRIORITY_CLOSE_PAGE;
 	} else if (saiph->got_drop_menu) {
 		showing_drop = true;
-		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] == STAIRS_UP) {
+		if (saiph->getDungeonSymbol() == STAIRS_UP) {
 			/* drop unwanted stuff */
 			for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
 				if (d->second.name == "gold piece")
@@ -412,7 +413,7 @@ void Loot::visitOldStash() {
 			map<Coordinate, int>::iterator v = visit_stash.find(stash);
 			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
 				/* stash is unchanged, but does it contain something nifty? */
-				if (saiph->levels[v->first.level].dungeonmap[v->first.row][v->first.col] != SHOP_TILE) {
+				if (saiph->getDungeonSymbol(v->first) != SHOP_TILE) {
 					for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
 						if (pickupItem(*i) == 0)
 							continue; // don't want this item

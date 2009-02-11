@@ -156,11 +156,8 @@ void Valkyrie::setupArmor() {
 	req.data = "elven mithril-coat";
 	req.priority = 7;
 	saiph->request(req);
-	req.data = "splint mail";
-	req.priority = 6;
-	saiph->request(req);
-	req.data = "bronze plate mail";
-	req.priority = 6;
+	req.data = "chain mail";
+	req.priority = 5;
 	saiph->request(req);
 	req.data = "scale mail";
 	req.priority = 4;
@@ -172,12 +169,6 @@ void Valkyrie::setupArmor() {
 	req.priority = 3;
 	saiph->request(req);
 	req.data = "leather armor";
-	req.priority = 2;
-	saiph->request(req);
-	req.data = "orcish ring mail";
-	req.priority = 2;
-	saiph->request(req);
-	req.data = "crude ring mail";
 	req.priority = 2;
 	saiph->request(req);
 	req.data = "leather jacket";
