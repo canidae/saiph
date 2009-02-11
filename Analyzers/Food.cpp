@@ -269,7 +269,7 @@ void Food::analyze() {
 			saiph->request(req);
 		}
 	}
-	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != SHOP_TILE) {
+	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->getDungeonSymbol() != SHOP_TILE) {
 		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
 		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
 			/* it's safe to eat corpses here */

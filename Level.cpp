@@ -211,19 +211,6 @@ void Level::parseMessages(const string &messages) {
 	}
 }
 
-void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
-	/* need to update both dungeonmap and symbols,
-	 * better keep it in a method */
-	if (dungeonmap[point.row][point.col] == symbol)
-		return; // no change
-	/* erase old symbol from symbols */
-	symbols[dungeonmap[point.row][point.col]].erase(point);
-	/* set new symbol in symbols */
-	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
-	/* update dungeonmap */
-	dungeonmap[point.row][point.col] = symbol;
-}
-
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path to target.
 	 * also sets "moves" to amount of moves required */

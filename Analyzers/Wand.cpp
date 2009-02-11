@@ -63,8 +63,7 @@ void Wand::parseMessages(const string &messages) {
 			if (wand_key == 0)
 				findUnidentifiedWands();
 		}
-		if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR ||
-				saiph->world->player.levitating || saiph->world->player.blind)
+		if (saiph->getDungeonSymbol() != FLOOR || saiph->world->player.levitating || saiph->world->player.blind)
 			return;
 		if (wand_key != 0)
 			state = WAND_STATE_DUST_X;
@@ -85,8 +84,7 @@ void Wand::parseMessages(const string &messages) {
 			state = WAND_STATE_WANTS_LOOK;
 		} else {
 			/* don't engrave if we're now where we can't or shouldn't */
-			if (saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR ||
-					saiph->world->player.levitating || saiph->world->player.blind)
+			if (saiph->getDungeonSymbol() != FLOOR || saiph->world->player.levitating || saiph->world->player.blind)
 				return;
 			command = ENGRAVE;
 			priority = PRIORITY_WAND_ENGRAVE_ID;
@@ -128,9 +126,7 @@ void Wand::parseMessages(const string &messages) {
 			command = wand_key;
 		} else {
 			/* make sure we didn't get interrupted */
-			if (wand_key == 0 || !isUnidentifiedWand(wand_key) ||
-					saiph->levels[saiph->position.level].dungeonmap[saiph->position.row][saiph->position.col] != FLOOR ||
-					saiph->world->player.levitating || saiph->world->player.blind) {
+			if (wand_key == 0 || !isUnidentifiedWand(wand_key) || saiph->getDungeonSymbol() != FLOOR || saiph->world->player.levitating || saiph->world->player.blind) {
 				wand_key = 0;
 				state = WAND_STATE_INIT;
 				return;

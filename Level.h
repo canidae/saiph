@@ -55,8 +55,6 @@ class Saiph;
 class Level {
 	public:
 		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		std::map<Point, Monster> monsters;
 		std::map<Point, Stash> stashes;
 		std::map<Point, int> symbols[UCHAR_MAX + 1];
@@ -68,6 +66,8 @@ class Level {
 
 		Level(Saiph *saiph, std::string name, int branch = BRANCH_MAIN);
 
+		unsigned char getDungeonSymbol(const Point &point);
+		unsigned char getMonsterSymbol(const Point &point);
 		void parseMessages(const std::string &messages);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);
 		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
@@ -77,6 +77,8 @@ class Level {
 
 	private:
 		Saiph *saiph;
+		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 
 		static Point pathing_queue[PATHING_QUEUE_SIZE];
 		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
@@ -92,4 +94,34 @@ class Level {
 
 		static void init();
 };
+
+/* inline methods */
+inline unsigned char Level::getDungeonSymbol(const Point &point) {
+	/* return dungeon symbol at given point */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
+		return OUTSIDE_MAP;
+	return dungeonmap[point.row][point.col];
+}
+
+inline unsigned char Level::getMonsterSymbol(const Point &point) {
+	/* return monster symbol at given point */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
+		return ILLEGAL_MONSTER;
+	return monstermap[point.row][point.col];
+}
+
+inline void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
+	/* need to update both dungeonmap and symbols,
+	 * better keep it in a method */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
+		return; // outside map
+	if (dungeonmap[point.row][point.col] == symbol)
+		return; // no change
+	/* erase old symbol from symbols */
+	symbols[dungeonmap[point.row][point.col]].erase(point);
+	/* set new symbol in symbols */
+	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
+	/* update dungeonmap */
+	dungeonmap[point.row][point.col] = symbol;
+}
 #endif

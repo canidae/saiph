@@ -211,10 +211,18 @@ void Explore::parseMessages(const string &messages) {
 /* private methods */
 unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min_moves, int *best_type) {
 	/* get the symbol to the east, north, south and west */
-	unsigned char hs = (w->first.col - 1 < MAP_COL_BEGIN ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row][w->first.col - 1]);
-	unsigned char js = (w->first.row + 1 > MAP_ROW_END ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row + 1][w->first.col]);
-	unsigned char ks = (w->first.row - 1 < MAP_ROW_BEGIN ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row - 1][w->first.col]);
-	unsigned char ls = (w->first.col + 1 > MAP_COL_END ? SOLID_ROCK : saiph->levels[saiph->position.level].dungeonmap[w->first.row][w->first.col + 1]);
+	Point p = w->first;
+	--p.col;
+	unsigned char hs = saiph->getDungeonSymbol(p);
+	++p.col;
+	++p.row;
+	unsigned char js = saiph->getDungeonSymbol(p);
+	--p.row;
+	++p.col;
+	unsigned char ls = saiph->getDungeonSymbol(p);
+	--p.row;
+	--p.col;
+	unsigned char ks = saiph->getDungeonSymbol(p);
 
 	/* get wall/solid rock/search count and unpassable directions */
 	int search_count = 0;
@@ -288,7 +296,7 @@ unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min
 		intervals = search_count / EXPLORE_SEARCH_INTERVAL / (solid_rock_count + wall_count);
 	else
 		intervals = 0;
-	if (saiph->levels[saiph->position.level].dungeonmap[w->first.row][w->first.col] == CORRIDOR) {
+	if (saiph->getDungeonSymbol(w->first) == CORRIDOR) {
 		/* point is in a corridor */
 		if (point_search_count < EXPLORE_FULLY_SEARCHED) {
 			/* not visited, visit it */
@@ -340,7 +348,7 @@ unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min
 		/* same type as previous best, check distance */
 		if (moves > *min_moves)
 			return ILLEGAL_DIRECTION; // found a shorter path already
-		if (saiph->levels[saiph->position.level].dungeonmap[w->first.row + 1][w->first.col] == CORRIDOR && moves == 1 && moves == *min_moves && type == *best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
+		if (saiph->getDungeonSymbol(w->first) == CORRIDOR && moves == 1 && moves == *min_moves && type == *best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
 			return ILLEGAL_DIRECTION; // prefer cardinal moves in corridors when distance is 1
 	}
 	*min_moves = moves;
