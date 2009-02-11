@@ -466,7 +466,7 @@ bool Saiph::run() {
 					 * unaware of because of an item blocking the door symbol.
 					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
 					to = directionToPoint((unsigned char) (*best_analyzer)->command[0]);
-					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_DIAGONALLY_UNPASSABLE;
+					setDungeonSymbol(to, UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
 					was_move = true;
 					break;
 
@@ -477,7 +477,7 @@ bool Saiph::run() {
 					/* moving cardinally failed, possibly item in wall.
 					 * make the tile UNKNOWN_TILE_UNPASSABLE */
 					to = directionToPoint((unsigned char) (*best_analyzer)->command[0]);
-					levels[position.level].dungeonmap[to.row][to.col] = UNKNOWN_TILE_UNPASSABLE;
+					setDungeonSymbol(to, UNKNOWN_TILE_UNPASSABLE);
 					was_move = true;
 					break;
 			}
@@ -488,7 +488,7 @@ bool Saiph::run() {
 			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
 			(*best_analyzer)->fail();
 		}
-	} else if (stuck_counter > 168) {
+	} else if (stuck_counter > 420) {
 		/* failed too many times, #quit */
 		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
 		world->executeCommand(string(1, (char) 27));
@@ -722,13 +722,13 @@ void Saiph::detectPosition() {
 		position.col = world->player.col;
 		if (!sokoban_found && levels[position.level].branch == BRANCH_MAIN && levels[position.level].depth >= 5 && levels[position.level].depth <= 9) {
 			/* look for sokoban level 1a or 1b */
-			if (levels[position.level].dungeonmap[8][37] == BOULDER && levels[position.level].dungeonmap[8][38] == BOULDER && levels[position.level].dungeonmap[8][43] == BOULDER && levels[position.level].dungeonmap[9][38] == BOULDER && levels[position.level].dungeonmap[9][39] == BOULDER && levels[position.level].dungeonmap[9][42] == BOULDER && levels[position.level].dungeonmap[9][44] == BOULDER && levels[position.level].dungeonmap[11][41] == BOULDER && levels[position.level].dungeonmap[14][39] == BOULDER && levels[position.level].dungeonmap[14][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[14][42] == BOULDER) {
+			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
 				/* sokoban 1a */
 				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 				branch_sokoban = position;
-			} else if (levels[position.level].dungeonmap[8][34] == BOULDER && levels[position.level].dungeonmap[8][42] == BOULDER && levels[position.level].dungeonmap[9][34] == BOULDER && levels[position.level].dungeonmap[9][41] == BOULDER && levels[position.level].dungeonmap[10][42] == BOULDER && levels[position.level].dungeonmap[13][40] == BOULDER && levels[position.level].dungeonmap[14][41] == BOULDER && levels[position.level].dungeonmap[15][41] == BOULDER && levels[position.level].dungeonmap[16][40] == BOULDER && levels[position.level].dungeonmap[16][42] == BOULDER) {
+			} else if (getDungeonSymbol(Point(8, 34)) == BOULDER && getDungeonSymbol(Point(8, 42)) == BOULDER && getDungeonSymbol(Point(9, 34)) == BOULDER && getDungeonSymbol(Point(9, 41)) == BOULDER && getDungeonSymbol(Point(10, 42)) == BOULDER && getDungeonSymbol(Point(13, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(15, 41)) == BOULDER && getDungeonSymbol(Point(16, 40)) == BOULDER && getDungeonSymbol(Point(16, 42)) == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << position.level << endl;
 				levels[position.level].branch = BRANCH_SOKOBAN;
@@ -744,7 +744,7 @@ void Saiph::detectPosition() {
 					continue;
 				/* if we see horizontal walls adjacent to this point (except west & east),
 				 * then we're in the mines */
-				if (levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row - 1][hw->first.col + 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col - 1] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col] == HORIZONTAL_WALL || levels[position.level].dungeonmap[hw->first.row + 1][hw->first.col + 1] == HORIZONTAL_WALL) {
+				if (getDungeonSymbol(Point(hw->first.row - 1, hw->first.col - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row - 1, hw->first.col)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row - 1, hw->first.col + 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col + 1)) == HORIZONTAL_WALL) {
 					/* we're in the mines */
 					Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
 					levels[position.level].branch = BRANCH_MINES;
@@ -763,12 +763,13 @@ void Saiph::detectPosition() {
 	/* level has changed.
 	 * we need to figure out if it's a new level or one we already know of */
 	int found = UNKNOWN_SYMBOL_VALUE;
+	unsigned char symbol = getDungeonSymbol();
 	/* maybe we already know where these stairs lead? */
-	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
+	if (symbol == STAIRS_DOWN) {
 		/* we did stand on stairs down, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
 		found = levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position];
-	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
+	} else if (symbol == STAIRS_UP) {
 		/* we did stand on stairs up, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
 		found = levels[position.level].symbols[(unsigned char) STAIRS_UP][position];
@@ -808,10 +809,10 @@ void Saiph::detectPosition() {
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
 	}
 	/* were we on stairs on last position? */
-	if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_DOWN) {
+	if (symbol == STAIRS_DOWN) {
 		/* yes, we were on stairs down */
 		levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position] = found;
-	} else if (levels[position.level].dungeonmap[position.row][position.col] == STAIRS_UP) {
+	} else if (symbol == STAIRS_UP) {
 		/* yes, we were on stairs up */
 		levels[position.level].symbols[(unsigned char) STAIRS_UP][position] = found;
 	}
@@ -821,11 +822,12 @@ void Saiph::detectPosition() {
 }
 
 bool Saiph::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders) {
-	if (!Level::passable[levels[position.level].dungeonmap[point.row][point.col]] && (!ignore_boulders || levels[position.level].dungeonmap[point.row][point.col] != BOULDER))
+	unsigned char symbol = getDungeonSymbol(point);
+	if (!Level::passable[symbol] && (!ignore_boulders || symbol != BOULDER))
 		return false;
-	else if (!ignore_sinks && levels[position.level].dungeonmap[point.row][point.col] == SINK)
+	else if (!ignore_sinks && symbol == SINK)
 		return false;
-	else if (levels[position.level].monstermap[point.row][point.col] != ILLEGAL_MONSTER && levels[position.level].monsters[point].visible)
+	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[position.level].monsters[point].visible)
 		return false;
 	return true;
 }
@@ -878,15 +880,17 @@ Point Saiph::directionToPoint(unsigned char direction) {
 
 void Saiph::dumpMaps() {
 	/* monsters */
-	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 26 << ";2H";
-		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			if (r == world->player.row && c == world->player.col)
+	Point p;
+	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			unsigned char monster = getMonsterSymbol(p);
+			if (p.row == world->player.row && p.col == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[position.level].monstermap[r][c] != ILLEGAL_MONSTER)
-				cout << (unsigned char) (levels[position.level].monstermap[r][c]);
+			else if (monster != ILLEGAL_MONSTER)
+				cout << monster;
 			else
-				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
+				cout << getDungeonSymbol(p);
 		}
 	}
 	/* status & inventory */
@@ -962,31 +966,18 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 	}
 
-	/* world map as the bot sees it */
-	/*
-	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 1 << ";82H";
-		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[35m";
-			cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
-			if (r == world->player.row && c == world->player.col)
-				cout << (unsigned char) 27 << "[m";
-		}
-	}
-	*/
 	/* path map */
 	/*
-	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
-		cout << (unsigned char) 27 << "[" << r + 26 << ";82H";
-		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c) {
-			if (r == world->player.row && c == world->player.col)
+	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			if (p.row == world->player.row && p.col == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[position.level].pathmap[r][c].move >= 'a' && levels[position.level].pathmap[r][c].move <= 'z')
-				//cout << (unsigned char) levels[position.level].pathmap.nodes[r][c].move;
-				cout << (char) (levels[position.level].pathmap[r][c].cost % 64 + 48);
+			else if (levels[position.level].pathmap[p.row][p.col].move >= 'a' && levels[position.level].pathmap[p.row][p.col].move <= 'z')
+				//cout << (unsigned char) levels[position.level].pathmap.nodes[p.row][p.col].move;
+				cout << (char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48);
 			else
-				cout << (unsigned char) (levels[position.level].dungeonmap[r][c]);
+				cout << getDungeonSymbol(p);
 		}
 	}
 	*/

@@ -211,19 +211,6 @@ void Level::parseMessages(const string &messages) {
 	}
 }
 
-void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
-	/* need to update both dungeonmap and symbols,
-	 * better keep it in a method */
-	if (dungeonmap[point.row][point.col] == symbol)
-		return; // no change
-	/* erase old symbol from symbols */
-	symbols[dungeonmap[point.row][point.col]].erase(point);
-	/* set new symbol in symbols */
-	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
-	/* update dungeonmap */
-	dungeonmap[point.row][point.col] = symbol;
-}
-
 unsigned char Level::shortestPath(const Point &target, bool allow_illegal_last_move, int *moves) {
 	/* returns next move in shortest path to target.
 	 * also sets "moves" to amount of moves required */
@@ -457,21 +444,7 @@ void Level::updateMonsters() {
 			symbol = saiph->world->view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
 		m->second.visible = (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color);
-		if (symbol == 'I') {
-			/* "I" monsters are unique. they won't disappear as easily as normal monsters,
-			 * so we'll need some special handling to prevent her from throwing away all
-			 * her ranged weapons. generally, "forget" the monster after some turns */
-			if (m->second.last_seen + FORGET_I_MONSTER_TURNS > saiph->world->player.turn) {
-				/* invisible monster is still fresh */
-				++m;
-				continue;
-			} else if (abs(saiph->position.row - m->first.row) <= 1 && abs(saiph->position.col - m->first.col) <= 1) {
-				/* we're next to the invisible monster, we won't remove it then either */
-				++m;
-				continue;
-			}
-			/* invisible monster is old, remove it from monsters & monstermap */
-		} else if (m->second.visible) {
+		if (m->second.visible) {
 			/* monster still visible, don't remove it */
 			++m;
 			continue;
