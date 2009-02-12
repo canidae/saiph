@@ -102,35 +102,39 @@ void Shop::analyze() {
 		Point nw = saiph->position;
 		Point se = saiph->position;
 
-		/* find north corner */
+		/* find north wall */
 		symbol = saiph->getDungeonSymbol();
-		while (--nw.row && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && --nw.row)
 			symbol = saiph->getDungeonSymbol(nw);
+		++nw.row;
 
-		/* find west corner */
+		/* find west wall */
 		symbol = saiph->getDungeonSymbol();
-		while (--nw.col && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && --nw.col)
 			symbol = saiph->getDungeonSymbol(nw);
+		++nw.col;
 
-		/* find south corner */
+		/* find south wall */
 		symbol = saiph->getDungeonSymbol();
-		while (++se.row && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && ++se.row)
 			symbol = saiph->getDungeonSymbol(se);
+		--se.row;
 
-		/* find east corner */
+		/* find east wall */
 		symbol = saiph->getDungeonSymbol();
-		while (++se.col && (symbol == FLOOR || symbol == UNKNOWN_TILE))
+		while ((symbol == FLOOR || symbol == UNKNOWN_TILE) && ++se.col)
 			symbol = saiph->getDungeonSymbol(se);
+		--se.col;
 
-		if (m->first.row <= nw.row || m->first.col <= nw.col || m->first.row >= se.row || m->first.col >= se.col)
+		if (m->first.row < nw.row || m->first.col < nw.col || m->first.row > se.row || m->first.col > se.col)
 			return; // we're not in the same room as the shopkeeper
 
 		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are " << nw << " to " << se << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		Point p;
-		for (p.row = nw.row + 1; p.row < se.row; ++p.row) {
-			for (p.col = nw.col + 1; p.col < se.col; ++p.col)
+		for (p.row = nw.row; p.row <= se.row; ++p.row) {
+			for (p.col = nw.col; p.col <= se.col; ++p.col)
 				saiph->setDungeonSymbol(p, SHOP_TILE);
 		}
 		/* we should LOOK at floor to prevent Loot from picking

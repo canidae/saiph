@@ -8,130 +8,88 @@
 
 using namespace std;
 
-Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), dig_direction(0), digging_tool(0) {
+Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITEM), dig_direction(NOWHERE) {
+}
+
+void Dig::analyze() {
+	/* TODO: no digging on no-dig levels */
+	if (priority >= PRIORITY_DIG_PATH || digging_tool == ILLEGAL_ITEM || saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN || !freeWeaponHand())
+		return;
+
+	if (dig_locations.size() <= 0) {
+		/* don't know where to dig, locate interesting dig locations */
+		/* boulders */
+		for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[BOULDER].begin(); b != saiph->levels[saiph->position.level].symbols[BOULDER].end(); ++b)
+			dig_locations.push_back(b->first);
+
+		/* TODO: FLOOR tiles we can't reach */
+
+		/* TODO: shortcuts */
+	}
+
+	/* dig nearest dig_location */
+	int least_moves = INT_MAX;
+	for (list<Point>::iterator d = dig_locations.begin(); d != dig_locations.end(); ) {
+		int moves = 0;
+		unsigned char dir = saiph->shortestPath(*d, true, &moves);
+		if (dir == ILLEGAL_DIRECTION || moves > least_moves) {
+			++d;
+			continue;
+		}
+		/* we're going to move or dig, set priority and least_moves */
+		priority = PRIORITY_DIG_PATH;
+		least_moves = moves;
+		if (moves == 1) {
+			/* next to location we want to dig, but do we still want to dig here? */
+			unsigned char symbol = saiph->getDungeonSymbol(*d);
+			if (symbol == BOULDER || symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL || symbol == SOLID_ROCK) {
+				/* yes, we do */
+				dig_direction = dir;
+				command = APPLY;
+			} else {
+				/* no, we can no longer dig on this location */
+				d = dig_locations.erase(d);
+				continue;
+			}
+			return; // no point iterating remaining list
+		} else {
+			/* move towards location to dig */
+			command = dir;
+		}
+		++d;
+	}
 }
 
 void Dig::parseMessages(const string &messages) {
 	if (saiph->inventory_changed)
-		digging_tool = findDiggingTool();
-	if (priority >= PRIORITY_DIG_PATH || digging_tool == 0) {
-		dig_direction = 0;
+		findDiggingTool();
+	if (priority >= PRIORITY_DIG_PATH || dig_direction == NOWHERE)
 		return;
-	}
-	if (dig_direction && messages.find(MESSAGE_WHAT_TO_APPLY) != string::npos) {
+	if (messages.find(MESSAGE_WHAT_TO_APPLY) != string::npos) {
 		command = digging_tool;
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (dig_direction && messages.find(MESSAGE_DIG_DIRECTION) != string::npos) {
+	} else if (messages.find(MESSAGE_DIG_DIRECTION) != string::npos) {
 		command = dig_direction;
 		priority = PRIORITY_CONTINUE_ACTION;
-		dig_direction = 0;
+		dig_direction = NOWHERE;
+		/* tell loot analyzer to check inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 	}
-	if (directionIsFloor(DOWN) && directionIsWall(N) && ((directionIsWall(W) && directionIsFloor(NW)) || (directionIsWall(E) && directionIsFloor(NE))))
-		dig_direction = N;
-	else if (directionIsFloor(DOWN) && directionIsWall(S) && ((directionIsWall(W) && directionIsFloor(SW)) || (directionIsWall(E) && directionIsFloor(SE))))
-		dig_direction = S;
-	else if (saiph->levels[saiph->position.level].branch != BRANCH_SOKOBAN && boulderInDirection() != 0)
-		dig_direction = boulderInDirection();
-	else
-		dig_direction = 0;
 }
 
-void Dig::analyze() {
-	if (dig_direction && freeWeaponHand()) {
-		if (digging_tool != 0) {
-			if (!isDiggingTool(digging_tool)) {
-				/* we must have dropped our digging tool somewhere */
-				digging_tool = 0;
-				return;
-			}
+/* private methods */
+void Dig::findDiggingTool() {
+	map<unsigned char, Item>::iterator i = saiph->inventory.find(digging_tool);
+	if (i != saiph->inventory.end() && isDiggingTool(i->second))
+		return;
+	for (i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		if (isDiggingTool(i->second)) {
+			digging_tool = i->first;
+			return;
 		}
-		command = APPLY;
-		priority = PRIORITY_DIG_PATH;
 	}
-}
-
-int Dig::directionIs(int direction) {
-	int rowOffset = 0, colOffset = 0;
-	switch(direction) {
-		case NOWHERE:
-		case DOWN:
-			break;
-		case NW:
-			rowOffset = -1;
-			colOffset = -1;
-			break;
-		case N:
-			rowOffset = -1;
-			break;
-		case NE:
-			rowOffset = -1;
-			colOffset = 1;
-			break;
-		case W:
-			colOffset = -1;
-			break;
-		case E:
-			colOffset = 1;
-			break;
-		case SW:
-			rowOffset = 1;
-			colOffset = -1;
-			break;
-		case SE:
-			rowOffset = 1;
-			colOffset = 1;
-			break;
-	}
-	return saiph->getDungeonSymbol(Point(saiph->position.row + rowOffset, saiph->position.col + colOffset));
-}
-
-bool Dig::directionIsWall(int direction) {
-	int type = directionIs(direction);
-	return type == VERTICAL_WALL || type == HORIZONTAL_WALL;
-}
-
-bool Dig::directionIsFloor(int direction) {
-	return directionIs(direction) == FLOOR;
-}
-
-bool Dig::isDiggingTool(const Item &i) {
-	if ((i.name == "pick-axe" || i.name == "dwarvish mattock") && i.beatitude != CURSED)
-		return true;
-	return false;
-}
-
-bool Dig::isDiggingTool(unsigned char letter) {
-	map<unsigned char, Item>::iterator i = saiph->inventory.find(letter);
-	if (i == saiph->inventory.end())
-		return false;
-	return isDiggingTool(i->second);
-}
-
-unsigned char Dig::findDiggingTool() {
-	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); i++)
-		if (isDiggingTool(i->second))
-			return i->first;
-	return 0;
-}
-
-int Dig::boulderInDirection() {
-	if (saiph->getDungeonSymbol(Point(saiph->position.row - 1, saiph->position.col - 1)) == BOULDER)
-		return NW;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row - 1, saiph->position.col)) == BOULDER)
-		return N;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row - 1, saiph->position.col + 1)) == BOULDER)
-		return NE;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row, saiph->position.col - 1)) == BOULDER)
-		return W;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row, saiph->position.col + 1)) == BOULDER)
-		return E;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row + 1, saiph->position.col-1)) == BOULDER)
-		return SW;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row + 1, saiph->position.col)) == BOULDER)
-		return S;
-	if (saiph->getDungeonSymbol(Point(saiph->position.row + 1, saiph->position.col + 1)) == BOULDER)
-		return SE;
-	return 0;
+	digging_tool = ILLEGAL_ITEM;
 }
 
 bool Dig::freeWeaponHand() {
@@ -142,3 +100,15 @@ bool Dig::freeWeaponHand() {
 	}
 	return true; //not wielding anything
 }
+
+bool Dig::isDiggingTool(const Item &item) {
+	if (item.beatitude == CURSED || item.name != "pick-axe")
+		return false;
+	if (item.beatitude == BEATITUDE_UNKNOWN) {
+		/* must beatify digging_tool first */
+		req.request = REQUEST_BEATIFY_ITEMS;
+		saiph->request(req);
+		return false;
+	}
+	return true;
+}                                                                                                                                                       

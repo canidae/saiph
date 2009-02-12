@@ -695,6 +695,8 @@ void Level::init() {
 	dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
 	/* cost for pathing on certain tiles */
 	pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
+	pathcost[(unsigned char) GRAVE] = COST_GRAVE;
+	pathcost[(unsigned char) ALTAR] = COST_ALTAR;
 	pathcost[(unsigned char) ICE] = COST_ICE;
 	pathcost[(unsigned char) LAVA] = COST_LAVA;
 	pathcost[(unsigned char) MINES_FOUNTAIN] = COST_FOUNTAIN;

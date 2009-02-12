@@ -193,5 +193,5 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	name.replace(start, stop, word);
 }
 
-Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), enchantment(0), additional("") {
+Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
 }
