@@ -1,10 +1,8 @@
 #include "Dig.h"
-#include "../Coordinate.h"
+#include "../Debug.h"
 #include "../Globals.h"
 #include "../Item.h"
-#include "../Level.h"
 #include "../Saiph.h"
-#include "../World.h"
 
 using namespace std;
 
