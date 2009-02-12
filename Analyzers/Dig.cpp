@@ -19,7 +19,7 @@ void Dig::analyze() {
 	if (dig_locations.size() <= 0) {
 		/* don't know where to dig, locate interesting dig locations */
 		/* boulders */
-		for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[BOULDER].begin(); b != saiph->levels[saiph->position.level].symbols[BOULDER].end(); ++b)
+		for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) BOULDER].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) BOULDER].end(); ++b)
 			dig_locations.push_back(b->first);
 
 		/* TODO: FLOOR tiles we can't reach */
