@@ -36,21 +36,21 @@ void Donate::analyze() {
 			for (map<Point, Monster>::iterator i = saiph->levels[lev].monsters.begin(); i != saiph->levels[lev].monsters.end(); ++i) {
 				if (!i->second.priest)
 					continue;
-				int moves = 0;
-				unsigned char dir = saiph->shortestPath(priest_loc, false, &moves);
-				if (dir == ILLEGAL_DIRECTION)
+				const PathNode &node = saiph->shortestPath(priest_loc);
+				if (node.dir == ILLEGAL_DIRECTION)
 					continue; // can't path to this priest
-				if (moves < least_moves) {
+				if (node.moves < least_moves) {
 					/* this priest is closer than the previous priest */
 					priest_loc = Coordinate(lev, i->first);
-					least_moves = moves;
+					least_moves = node.moves;
 				}
 			}
 		}
 	}
 	if (priest_loc.level != -1) {
 		int moves = 0;
-		priest_dir = saiph->shortestPath(priest_loc, false, &moves);
+		const PathNode &node = saiph->shortestPath(priest_loc);
+		priest_dir = node.dir;
 		if (priest_dir == ILLEGAL_DIRECTION)
 			return;
 		if (moves == 1)

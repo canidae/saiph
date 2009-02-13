@@ -22,14 +22,13 @@ void Beatitude::analyze() {
 		return; // no buc-testing while blind
 
 	/* path to nearest altar */
-	int moves = 0;
-	unsigned char dir = saiph->shortestPath(ALTAR, false, &moves);
-	if (dir == ILLEGAL_DIRECTION)
+	const PathNode &node = saiph->shortestPath(ALTAR);
+	if (node.dir == ILLEGAL_DIRECTION)
 		return; // don't know of any altars
-	else if (dir == NOWHERE)
+	else if (node.dir == NOWHERE)
 		command = DROP_MENU; // we're standing on the altar, drop items
 	else
-		command = dir; // move towards altar
+		command = node.dir; // move towards altar
 	priority = PRIORITY_BEATITUDE_DROP_ALTAR;
 }
 

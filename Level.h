@@ -49,6 +49,8 @@ class Saiph;
 
 class Level {
 	public:
+		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 		std::map<Point, Monster> monsters;
 		std::map<Point, Stash> stashes;
 		std::map<Point, int> symbols[UCHAR_MAX + 1];
@@ -72,9 +74,8 @@ class Level {
 	private:
 		Saiph *saiph;
 		PathNode pathnode_outside_map;
-		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+		PathNode pathnode_illegal_loc;
 		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
 
 		static Point pathing_queue[PATHING_QUEUE_SIZE];
 		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
@@ -125,6 +126,43 @@ inline const PathNode &Level::shortestPath(const Point &point) {
 	/* return a PathNode that tells us which direction to move to get to given point */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
 		return pathnode_outside_map;
-	return pathmap[point.row][point.col];
+	if (pathmap[point.row][point.col].dir != ILLEGAL_DIRECTION)
+		return pathmap[point.row][point.col];
+	/* point we want to reach is not passable, we'll need to see if any nearby square is reachable */
+	pathnode_illegal_loc = PathNode();
+	PathNode &best = pathnode_illegal_loc;
+	/* northwest */
+	Point p(point.row - 1, point.col - 1);
+	if (p.row >= MAP_ROW_BEGIN && p.col >= MAP_COL_BEGIN && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* north */
+	++p.col;
+	if (p.row >= MAP_ROW_BEGIN && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* northeast */
+	++p.col;
+	if (p.row >= MAP_ROW_BEGIN && p.col <= MAP_COL_END && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* east */
+	++p.row;
+	if (p.col <= MAP_COL_END && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* southeast */
+	++p.row;
+	if (p.row <= MAP_ROW_END && p.col <= MAP_COL_END && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* south */
+	--p.col;
+	if (p.row <= MAP_ROW_END && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* southwest */
+	--p.col;
+	if (p.row <= MAP_ROW_END && p.col >= MAP_COL_BEGIN && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	/* west */
+	--p.row;
+	if (p.col >= MAP_COL_BEGIN && pathmap[p.row][p.col].cost < best.cost)
+		best = pathmap[p.row][p.col];
+	return best;
 }
 #endif

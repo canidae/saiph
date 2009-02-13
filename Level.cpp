@@ -379,145 +379,149 @@ void Level::updatePathMap() {
 
 	/* create pathmap */
 	int curnode = 0;
-	int nodes = 1;
+	int nodes = 0;
 	unsigned int cost = 0;
 	Point from = saiph->position;
-	pathing_queue[0] = from;
-	pathmap[from.row][from.col].dir = NOWHERE;
-	pathmap[from.row][from.col].moves = 0;
-	pathmap[from.row][from.col].cost = 0;
 	
 	/* first move northwest node */
 	Point to(from.row - 1, from.col - 1);
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.row >= MAP_ROW_BEGIN && to.col >= MAP_COL_BEGIN) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, NW, 1, cost);
 	}
 	/* first move north node */
 	++to.col;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.row >= MAP_ROW_BEGIN) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, N, 1, cost);
 	}
 	/* first move northeast node */
 	++to.col;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.row >= MAP_ROW_BEGIN && to.col <= MAP_COL_END) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, NE, 1, cost);
 	}
 	/* first move east node */
 	++to.row;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.col <= MAP_COL_END) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, E, 1, cost);
 	}
 	/* first move southeast node */
 	++to.row;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.row <= MAP_ROW_END && to.col <= MAP_COL_END) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, SE, 1, cost);
 	}
 	/* first move south node */
 	--to.col;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.row <= MAP_ROW_END) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, S, 1, cost);
 	}
 	/* first move southwest node */
 	--to.col;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.row <= MAP_ROW_END && to.col >= MAP_COL_BEGIN) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, SW, 1, cost);
 	}
 	/* first move west node */
 	--to.row;
-	cost = updatePathMapHelper(to, from);
-	if (cost <= pathmap[to.row][to.col].cost) {
-		if (cost < pathmap[to.row][to.col].cost)
+	if (to.col >= MAP_COL_BEGIN) {
+		cost = updatePathMapHelper(to, from);
+		if (cost < UINT_MAX)
 			pathing_queue[nodes++] = to;
 		pathmap[to.row][to.col] = PathNode(from, W, 1, cost);
 	}
 
 	/* calculate remaining nodes */
 	while (curnode < nodes) {
-		from = pathing_queue[++curnode];
+		from = pathing_queue[curnode++];
 		/* check northwest node */
 		to = Point(from.row - 1, from.col - 1);
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.row >= MAP_ROW_BEGIN && to.col >= MAP_COL_BEGIN) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check north node */
 		++to.col;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.row >= MAP_ROW_BEGIN) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check northeast node */
 		++to.col;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.row >= MAP_ROW_BEGIN && to.col <= MAP_COL_END) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check east node */
 		++to.row;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.col <= MAP_COL_END) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check southeast node */
 		++to.row;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.row <= MAP_ROW_END && to.col <= MAP_COL_END) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check south node */
 		--to.col;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.row <= MAP_ROW_END) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check southwest node */
 		--to.col;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.row <= MAP_ROW_END && to.col >= MAP_COL_BEGIN) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 		/* check west node */
 		--to.row;
-		cost = updatePathMapHelper(to, from);
-		if (cost <= pathmap[to.row][to.col].cost) {
-			if (cost < pathmap[to.row][to.col].cost)
+		if (to.col >= MAP_COL_BEGIN) {
+			cost = updatePathMapHelper(to, from);
+			if (cost < pathmap[to.row][to.col].cost) {
 				pathing_queue[nodes++] = to;
-			pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			}
 		}
 	}
 }
@@ -550,8 +554,6 @@ void Level::clearStash(const Point &point) {
 unsigned int Level::updatePathMapHelper(const Point &to, const Point &from) {
 	/* helper method for updatePathMap()
 	 * return UINT_MAX if move is illegal, or the cost for reaching the node if move is legal */
-	if (to.row < MAP_ROW_BEGIN || to.row > MAP_ROW_END || to.col < MAP_COL_BEGIN || to.col > MAP_COL_END)
-		return UINT_MAX; // outside map
 	unsigned char s = dungeonmap[to.row][to.col];
 	if (!passable[s])
 		return UINT_MAX;

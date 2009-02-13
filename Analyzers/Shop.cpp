@@ -16,11 +16,12 @@ void Shop::parseMessages(const string &messages) {
 	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
 		/* we're most likely standing in a doorway, next to a shopkeeper.
 		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
-		int moves = 0;
 		unsigned char dir = ILLEGAL_DIRECTION;
-		dir = saiph->shortestPath(CORRIDOR, false, &moves);
-		if (dir == ILLEGAL_DIRECTION)
-			dir = saiph->shortestPath(FLOOR, false, &moves);
+		const PathNode &node = saiph->shortestPath(CORRIDOR);
+		if (node.dir == ILLEGAL_DIRECTION) {
+			const PathNode &node2 = saiph->shortestPath(FLOOR);
+			dir = node2.dir;
+		}
 
 		if (dir == ILLEGAL_DIRECTION) {
 			/* this is bad */

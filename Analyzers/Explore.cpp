@@ -33,15 +33,14 @@ void Explore::analyze() {
 	/* find rogue stairs if we're on rogue level */
 	if (priority < PRIORITY_EXPLORE_FIND_ROGUE_STAIRS && saiph->levels[saiph->position.level].branch == BRANCH_ROGUE) {
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[(unsigned char) ROGUE_STAIRS].begin(); s != saiph->levels[saiph->position.level].symbols[(unsigned char) ROGUE_STAIRS].end(); ++s) {
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE) {
+			const PathNode &node = saiph->shortestPath(s->first);
+			if (node.dir != ILLEGAL_DIRECTION) {
+				if (node.dir == NOWHERE) {
 					command = LOOK;
 					priority = PRIORITY_LOOK;
 					return;
 				} else {
-					best_move = dir;
+					best_move = node.dir;
 				}
 				priority = PRIORITY_EXPLORE_FIND_ROGUE_STAIRS;
 				break;
@@ -55,13 +54,12 @@ void Explore::analyze() {
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE)
+			const PathNode &node = saiph->shortestPath(s->first);
+			if (node.dir != ILLEGAL_DIRECTION) {
+				if (node.dir == NOWHERE)
 					best_move = UP;
 				else
-					best_move = dir;
+					best_move = node.dir;
 				priority = PRIORITY_EXPLORE_STAIRS_UP;
 				break;
 			}
@@ -105,13 +103,12 @@ void Explore::analyze() {
 		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); s != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (dir == NOWHERE)
+			const PathNode &node = saiph->shortestPath(s->first);
+			if (node.dir != ILLEGAL_DIRECTION) {
+				if (node.dir == NOWHERE)
 					best_move = DOWN;
 				else
-					best_move = dir;
+					best_move = node.dir;
 				priority = PRIORITY_EXPLORE_STAIRS_DOWN;
 				break;
 			}
@@ -129,16 +126,14 @@ void Explore::analyze() {
 			/* no goals, go to main dungeon and descend */
 			if (saiph->levels[saiph->position.level].branch != BRANCH_MAIN && saiph->levels[saiph->position.level].branch != BRANCH_ROGUE) {
 				/* not in main dungeon or rogue level, get out */
-				int moves = 0;
-				move = saiph->shortestPath(saiph->branch_main, false, &moves);
-				if (move == ILLEGAL_DIRECTION) {
+				const PathNode &node = saiph->shortestPath(saiph->branch_main);
+				if (node.dir == ILLEGAL_DIRECTION) {
 					/* crud, we can't reach the main dungeon... just head for upstairs */
 					for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_UP].begin(); s != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
 						if (s->second != UNKNOWN_SYMBOL_VALUE && (saiph->levels[s->second].branch != BRANCH_MAIN && saiph->levels[s->second].branch != BRANCH_ROGUE))
 							continue; // we know where the stairs lead, and it's neither BRANCH_MAIN or BRANCH_ROGUE
-						moves = 0;
-						move = saiph->shortestPath(s->first, false, &moves);
-						if (move == NOWHERE)
+						const PathNode &node = saiph->shortestPath(s->first);
+						if (node.dir == NOWHERE)
 							best_move = UP;
 					}
 				}
@@ -147,9 +142,8 @@ void Explore::analyze() {
 				for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++down) {
 					if (down->second != UNKNOWN_SYMBOL_VALUE && saiph->levels[down->second].branch != BRANCH_MAIN && saiph->levels[down->second].branch != BRANCH_ROGUE)
 						continue; // avoid other branches than main
-					int moves = 0;
-					move = saiph->shortestPath(down->first, false, &moves);
-					if (move == NOWHERE)
+					const PathNode &node = saiph->shortestPath(down->first);
+					if (node.dir == NOWHERE)
 						move = DOWN;
 					break;
 				}
@@ -336,33 +330,31 @@ unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min
 	if (type == INT_MAX || type > *best_type)
 		return ILLEGAL_DIRECTION;
 
-	int moves = 0;
-	unsigned char dir = saiph->shortestPath(w->first, false, &moves);
-	if (dir == ILLEGAL_DIRECTION)
-		return dir;
+	const PathNode &node = saiph->shortestPath(w->first);
+	if (node.dir == ILLEGAL_DIRECTION)
+		return node.dir;
 	if (type == *best_type) {
 		/* same type as previous best, check distance */
-		if (moves > *min_moves)
+		if (node.moves > *min_moves)
 			return ILLEGAL_DIRECTION; // found a shorter path already
-		if (saiph->getDungeonSymbol(w->first) == CORRIDOR && moves == 1 && moves == *min_moves && type == *best_type && (dir == NW || dir == NE || dir == SW || dir == SE))
+		if (saiph->getDungeonSymbol(w->first) == CORRIDOR && node.moves == 1 && node.moves == *min_moves && type == *best_type && (node.dir == NW || node.dir == NE || node.dir == SW || node.dir == SE))
 			return ILLEGAL_DIRECTION; // prefer cardinal moves in corridors when distance is 1
 	}
-	*min_moves = moves;
+	*min_moves = node.moves;
 	*best_type = type;
 	priority = (type < 2 ? PRIORITY_EXPLORE_EXPLORE : PRIORITY_EXPLORE_SEARCH);
-	return dir;
+	return node.dir;
 }
 
 unsigned char Explore::exploreMines() {
 	if (saiph->levels[saiph->position.level].branch == BRANCH_MINES) {
 		/* we're in the mines, but haven't found mine's end yet */
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++down) {
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(down->first, false, &moves);
-			if (dir == NOWHERE)
+			const PathNode &node = saiph->shortestPath(down->first);
+			if (node.dir == NOWHERE)
 				return DOWN;
 			else
-				return dir;
+				return node.dir;
 		}
 		if (saiph->levels[saiph->position.level].depth >= 10 && saiph->levels[saiph->position.level].depth <= 13) {
 			Debug::notice(saiph->last_turn) << EXPLORE_DEBUG_NAME << "Mine's End presumably found" << endl;
@@ -371,40 +363,36 @@ unsigned char Explore::exploreMines() {
 	} else if (saiph->branch_mines.level != -1) {
 		/* we've seen the mines, but we're not in the mines and haven't explored it.
 		 * path to the mines */
-		int moves = 0;
-		unsigned char move = saiph->shortestPath(saiph->branch_mines, false, &moves);
-		if (move != ILLEGAL_DIRECTION)
-			return move;
+		const PathNode &node = saiph->shortestPath(saiph->branch_mines);
+		if (node.dir != ILLEGAL_DIRECTION)
+			return node.dir;
 		/* this may happen, for example when she can't find the path there.
 		 * just descend for now, regardless of which branch we're in */
 		for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++down) {
-			int moves = 0;
-			move = saiph->shortestPath(down->first, false, &moves);
-			if (move == NOWHERE)
-				move = DOWN;
-			break;
+			const PathNode &node2 = saiph->shortestPath(down->first);
+			if (node2.dir == NOWHERE)
+				return DOWN;
+			else
+				return node2.dir;
 		}
-		return move;
 	} else {
 		/* we're not in the mines nor have we seen the mines */
 		if (saiph->levels[saiph->position.level].depth > 4) {
 			/* crap, we're below level 4 and haven't seen the mines? */
 			/* FIXME: need to find the mines, not just descend */
 			for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++down) {
-				int moves = 0;
-				unsigned char move = saiph->shortestPath(down->first, false, &moves);
-				if (move == NOWHERE)
-					move = DOWN;
-				return move;
+				const PathNode &node = saiph->shortestPath(down->first);
+				if (node.dir == NOWHERE)
+					return DOWN;
+				return node.dir;
 			}
 		} else {
 			/* we're still not below level 4, just descend */
 			for (map<Point, int>::iterator down = saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].begin(); down != saiph->levels[saiph->position.level].symbols[(unsigned char) STAIRS_DOWN].end(); ++down) {
-				int moves = 0;
-				unsigned char move = saiph->shortestPath(down->first, false, &moves);
-				if (move == NOWHERE)
-					move = DOWN;
-				return move;
+				const PathNode &node = saiph->shortestPath(down->first);
+				if (node.dir == NOWHERE)
+					return DOWN;
+				return node.dir;
 			}
 		}
 	}

@@ -78,12 +78,11 @@ void Loot::analyze() {
 		if (v != visit_stash.end() && v->second == s->second.turn_changed)
 			continue; // stash is unchanged
 		/* unvisited stash, visit it if it's closer */
-		int moves = 0;
-		unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-		if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+		const PathNode &node = saiph->shortestPath(s->first);
+		if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION && node.moves < min_moves) {
 			/* move towards stash */
-			min_moves = moves;
-			command = dir;
+			min_moves = node.moves;
+			command = node.dir;
 			priority = PRIORITY_LOOT_VISIT_STASH;
 		}
 	}
@@ -94,11 +93,10 @@ void Loot::analyze() {
 	if (visit_old_stash.level >= 0 && visit_old_stash.level < (int) saiph->levels.size()) {
 		map<Point, Stash>::iterator s = saiph->levels[visit_old_stash.level].stashes.find(visit_old_stash);
 		if (s != saiph->levels[visit_old_stash.level].stashes.end()) {
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(visit_old_stash, false, &moves);
-			if (dir != NOWHERE && dir != ILLEGAL_DIRECTION) {
+			const PathNode &node = saiph->shortestPath(visit_old_stash);
+			if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION) {
 				/* move towards stash */
-				command = dir;
+				command = node.dir;
 				priority = PRIORITY_LOOT_VISIT_STASH;
 				return;
 			}
@@ -418,12 +416,11 @@ void Loot::visitOldStash() {
 						if (pickupItem(*i) == 0)
 							continue; // don't want this item
 						// we want this item, is stash closer than previous stash?
-						int moves = 0;
-						unsigned char dir = saiph->shortestPath(stash, false, &moves);
-						if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+						const PathNode &node = saiph->shortestPath(stash);
+						if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION && node.moves < min_moves) {
 							// move towards stash
-							min_moves = moves;
-							command = dir;
+							min_moves = node.moves;
+							command = node.dir;
 							priority = PRIORITY_LOOT_VISIT_STASH;
 							visit_old_stash = stash;
 						}
@@ -433,12 +430,11 @@ void Loot::visitOldStash() {
 				/* unvisited stash, visit it if it's closer */
 				/* what? isn't this already covered?
 				 * actually, no. this one cares about unvisited stashes on other levels too */
-				int moves = 0;
-				unsigned char dir = saiph->shortestPath(stash, false, &moves);
-				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+				const PathNode &node = saiph->shortestPath(stash);
+				if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION && node.moves < min_moves) {
 					/* move towards stash */
-					min_moves = moves;
-					command = dir;
+					min_moves = node.moves;
+					command = node.dir;
 					priority = PRIORITY_LOOT_VISIT_STASH;
 					visit_old_stash = stash;
 				}

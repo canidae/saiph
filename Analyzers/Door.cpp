@@ -35,11 +35,10 @@ void Door::analyze() {
 			if (unlock_tool_key == 0 || (saiph->inventory[unlock_tool_key].name != "skeleton key" && saiph->inventory[unlock_tool_key].name != "key"))
 				continue; // no key in inventory
 		}
-		int moves = -1;
-		unsigned char dir = saiph->shortestPath(d->first, true, &moves);
-		if (dir == ILLEGAL_DIRECTION)
+		const PathNode &node = saiph->shortestPath(d->first);
+		if (node.dir == ILLEGAL_DIRECTION)
 			continue;
-		if (moves == 1) {
+		if (node.moves == 1) {
 			/* open/pick/kick door */
 			if (d->second != 1) {
 				command = OPEN;
@@ -51,15 +50,15 @@ void Door::analyze() {
 				else
 					command = APPLY;
 			}
-			command2 = dir;
+			command2 = node.dir;
 			position = d->first;
 			priority = PRIORITY_DOOR_OPEN;
 			return;
-		} else if (moves < least_moves) {
+		} else if (node.moves < least_moves) {
 			/* go to door */
-			command = dir;
+			command = node.dir;
 			priority = PRIORITY_DOOR_OPEN;
-			least_moves = moves;
+			least_moves = node.moves;
 		}
 	}
 	if (least_moves < INT_MAX)

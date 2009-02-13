@@ -54,13 +54,12 @@ void Vault::parseMessages(const string &messages) {
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
 				continue;
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(m->first, true, &moves);
-			if (dir != ILLEGAL_DIRECTION) {
-				if (moves == 1)
+			const PathNode &node = saiph->shortestPath(m->first);
+			if (node.dir != ILLEGAL_DIRECTION) {
+				if (node.moves == 1)
 					command = REST;
 				else
-					command = dir;
+					command = node.dir;
 				priority = PRIORITY_VAULT_GO_OUT;
 				return;
 			}
