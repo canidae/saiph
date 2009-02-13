@@ -12,6 +12,6 @@ class PathNode {
 		int moves;
 		unsigned int cost;
 
-		PathNode(const Point &next = Point(), unsigned char dir = ILLEGAL_DIRECTION, int moves = -1, unsigned int cost = UINT_MAX);
+		PathNode(const Point &next = Point(), unsigned char dir = ILLEGAL_DIRECTION, int moves = -1, unsigned int cost = UNREACHABLE);
 };
 #endif
