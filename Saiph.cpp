@@ -909,9 +909,9 @@ void Saiph::dumpMaps() {
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 				tmp.push_back('@');
 			} else if (levels[position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION) {
-				cout << (unsigned char) levels[position.level].pathmap[p.row][p.col].dir;
-				//cout << (char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48);
-				tmp.push_back((char) levels[position.level].pathmap[p.row][p.col].dir);
+				//cout << (unsigned char) levels[position.level].pathmap[p.row][p.col].dir;
+				cout << (char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48);
+				tmp.push_back((char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48));
 			} else {
 				cout << getDungeonSymbol(p);
 				tmp.push_back((char) getDungeonSymbol(p));

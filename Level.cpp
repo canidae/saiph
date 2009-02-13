@@ -382,6 +382,9 @@ void Level::updatePathMap() {
 	int nodes = 0;
 	unsigned int cost = 0;
 	Point from = saiph->position;
+	pathmap[from.row][from.col].dir = NOWHERE;
+	pathmap[from.row][from.col].moves = 0;
+	pathmap[from.row][from.col].cost = 0;
 	
 	/* first move northwest node */
 	Point to(from.row - 1, from.col - 1);
@@ -479,80 +482,88 @@ void Level::updatePathMap() {
 		to = Point(from.row - 1, from.col - 1);
 		if (to.row >= MAP_ROW_BEGIN && to.col >= MAP_COL_BEGIN) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check north node */
 		++to.col;
 		if (to.row >= MAP_ROW_BEGIN) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check northeast node */
 		++to.col;
 		if (to.row >= MAP_ROW_BEGIN && to.col <= MAP_COL_END) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check east node */
 		++to.row;
 		if (to.col <= MAP_COL_END) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check southeast node */
 		++to.row;
 		if (to.row <= MAP_ROW_END && to.col <= MAP_COL_END) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check south node */
 		--to.col;
 		if (to.row <= MAP_ROW_END) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check southwest node */
 		--to.col;
 		if (to.row <= MAP_ROW_END && to.col >= MAP_COL_BEGIN) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 		/* check west node */
 		--to.row;
 		if (to.col >= MAP_COL_BEGIN) {
 			cost = updatePathMapHelper(to, from);
-			if (cost <= pathmap[to.row][to.col].cost) {
-				if (cost < pathmap[to.row][to.col].cost)
-					pathing_queue[nodes++] = to;
+			if (cost < pathmap[to.row][to.col].cost) {
+				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
+			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
 			}
 		}
 	}
