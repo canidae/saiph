@@ -884,7 +884,6 @@ Point Saiph::directionToPoint(unsigned char direction) {
 void Saiph::dumpMaps() {
 	/* monsters */
 	Point p;
-	/*
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
@@ -897,34 +896,22 @@ void Saiph::dumpMaps() {
 				cout << getDungeonSymbol(p);
 		}
 	}
-	*/
 
 	/* path map */
+	/*
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
-		string tmp("");
-		string tmp2("");
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
-			if (p.row == world->player.row && p.col == world->player.col) {
+			if (p.row == world->player.row && p.col == world->player.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-				tmp.push_back('@');
-			} else if (levels[position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION) {
+			else if (levels[position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
 				//cout << (unsigned char) levels[position.level].pathmap[p.row][p.col].dir;
 				cout << (char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48);
-				tmp.push_back((char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48));
-			} else {
-				cout << getDungeonSymbol(p);
-				tmp.push_back((char) getDungeonSymbol(p));
-			}
-			if (p.row == world->player.row && p.col == world->player.col)
-				tmp2.push_back('@');
-			else if (levels[position.level].monstermap[p.row][p.col] != ILLEGAL_MONSTER)
-				tmp2.push_back((char) levels[position.level].monstermap[p.row][p.col]);
 			else
-				tmp2.push_back((char) (getDungeonSymbol(p) % 64 + 48));
+				cout << getDungeonSymbol(p);
 		}
-		Debug::notice() << tmp << " | " << tmp2 << endl;
 	}
+	*/
 
 	/* status & inventory */
 	cout << (unsigned char) 27 << "[2;82H";
