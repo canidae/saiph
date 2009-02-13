@@ -8,26 +8,30 @@ Coordinate::Coordinate(int level, const Point &point) : Point(point), level(leve
 }
 
 /* operator overloading */
-bool Coordinate::operator<(const Coordinate &coordinate) const {
-	return (level < coordinate.level || (level == coordinate.level && row < coordinate.row) || (level == coordinate.level && row == coordinate.row && col < coordinate.col));
+bool Coordinate::operator<(const Coordinate &c) const {
+	return (level < c.level || (level == c.level && row < c.row) || (level == c.level && row == c.row && col < c.col));
 }
 
-bool Coordinate::operator>(const Coordinate &coordinate) const {
-	return (level > coordinate.level || (level == coordinate.level && row > coordinate.row) || (level == coordinate.level && row == coordinate.row && col > coordinate.col));
+bool Coordinate::operator>(const Coordinate &c) const {
+	return (level > c.level || (level == c.level && row > c.row) || (level == c.level && row == c.row && col > c.col));
 }
 
-bool Coordinate::operator<=(const Coordinate &coordinate) const {
-	return (level < coordinate.level || (level == coordinate.level && row < coordinate.row) || (level == coordinate.level && row == coordinate.row && col <= coordinate.col));
+bool Coordinate::operator<=(const Coordinate &c) const {
+	return (level < c.level || (level == c.level && row < c.row) || (level == c.level && row == c.row && col <= c.col));
 }
 
-bool Coordinate::operator>=(const Coordinate &coordinate) const {
-	return (level > coordinate.level || (level == coordinate.level && row > coordinate.row) || (level == coordinate.level && row == coordinate.row && col >= coordinate.col));
+bool Coordinate::operator>=(const Coordinate &c) const {
+	return (level > c.level || (level == c.level && row > c.row) || (level == c.level && row == c.row && col >= c.col));
 }
 
-bool Coordinate::operator==(const Coordinate &coordinate) const {
-	return (level == coordinate.level && row == coordinate.row && col == coordinate.col);
+bool Coordinate::operator==(const Coordinate &c) const {
+	return (level == c.level && row == c.row && col == c.col);
 }
 
-bool Coordinate::operator!=(const Coordinate &coordinate) const {
-	return (level != coordinate.level || row != coordinate.row || col != coordinate.col);
+bool Coordinate::operator!=(const Coordinate &c) const {
+	return (level != c.level || row != c.row || col != c.col);
+}
+
+std::ostream &operator<<(std::ostream &os, const Coordinate &c) {
+	return os << "(" << c.level << ", " << c.row << ", " << c.col << ")";
 }
