@@ -62,7 +62,6 @@ Saiph
   + find key for slot with item (see private methods in Unihorn)
   + figure out if wielded weapon/worn armor [on slot] is cursed, and thus
     preventing us from eg. using a pick-axe, putting on rings, etc.
-  + method unreachable([Point|Coordinate]), needed in dig
   + probably lots more...
 
 

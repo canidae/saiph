@@ -104,7 +104,8 @@ void Wand::parseMessages(const string &messages) {
 			state = WAND_STATE_ENGRAVING;
 		else
 			state = WAND_STATE_INIT;
-	} else if (state == WAND_STATE_ENGRAVING) {
+	} //no else here
+	if (state == WAND_STATE_ENGRAVING) {
 		if (messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 			command = YES;
 		} else if (messages.find(WAND_DIGGING_MESSAGE, 0) != string::npos ||

@@ -87,6 +87,7 @@ class Saiph {
 		unsigned char getDungeonSymbol(unsigned char direction);
 		unsigned char getMonsterSymbol(const Coordinate &coordinate);
 		unsigned char getMonsterSymbol(const Point &point);
+		unsigned int getPathCost(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
@@ -178,6 +179,11 @@ inline unsigned char Saiph::getMonsterSymbol(const Coordinate &coordinate) {
 inline unsigned char Saiph::getMonsterSymbol(const Point &point) {
 	/* return monster symbol at given point on current level */
 	return levels[position.level].getMonsterSymbol(point);
+}
+
+inline unsigned int Saiph::getPathCost(const Point &point) {
+	/* return PathNode.cost for the given point */
+	return levels[position.level].getPathCost(point);
 }
 
 inline void Saiph::setDungeonSymbol(unsigned char symbol) {

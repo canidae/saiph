@@ -25,13 +25,7 @@ class Dig : public Analyzer {
 		std::list<Point> dig_locations;
 
 		void findDiggingTool();
-		bool isDiggingTool(const Item &item);
-
-		int directionIs(int direction);
-		bool directionIsWall(int direction);
-		bool directionIsFloor(int direction);
-		int boulderInDirection();
-		bool isDiggingTool(unsigned char letter);
 		bool freeWeaponHand();
+		bool isDiggingTool(const Item &item);
 };
 #endif	
