@@ -68,7 +68,7 @@ void Explore::analyze() {
 
 	/* explore level */
 	if (priority < PRIORITY_EXPLORE_EXPLORE) {
-		int min_moves = INT_MAX;
+		unsigned int min_moves = UNREACHABLE;
 		int best_type = INT_MAX;
 		unsigned char dir;
 		/* floor */
@@ -199,7 +199,7 @@ void Explore::parseMessages(const string &messages) {
 }
 
 /* private methods */
-unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, int *min_moves, int *best_type) {
+unsigned char Explore::calculatePointScore(map<Point, int>::iterator w, unsigned int *min_moves, int *best_type) {
 	/* get the symbol to the east, north, south and west */
 	Point p = w->first;
 	--p.col;

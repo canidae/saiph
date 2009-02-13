@@ -27,7 +27,7 @@ void Door::analyze() {
 			return; // still in the pit
 	}
 	/* go to nearest closed door and get it open somehow */
-	int least_moves = INT_MAX;
+	unsigned int least_moves = UNREACHABLE;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].end(); ++d) {
 		if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && d->second == 1) {
 			/* don't kick/pick doors when we're in the mines */

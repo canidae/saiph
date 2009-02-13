@@ -31,7 +31,7 @@ void Donate::analyze() {
 	if (saiph->getDungeonSymbol() == STAIRS_DOWN) {
 		/* got enough money, standing on stairs down, find priest */
 		priest_loc.level = -1;
-		int least_moves = INT_MAX;
+		unsigned int least_moves = UNREACHABLE;
 		for (int lev = 0; lev < (int) saiph->levels.size(); lev++) {
 			for (map<Point, Monster>::iterator i = saiph->levels[lev].monsters.begin(); i != saiph->levels[lev].monsters.end(); ++i) {
 				if (!i->second.priest)

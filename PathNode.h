@@ -9,9 +9,9 @@ class PathNode {
 	public:
 		Point next;
 		unsigned char dir;
-		int moves;
+		unsigned int moves;
 		unsigned int cost;
 
-		PathNode(const Point &next = Point(), unsigned char dir = ILLEGAL_DIRECTION, int moves = -1, unsigned int cost = UNREACHABLE);
+		PathNode(const Point &next = Point(), unsigned char dir = ILLEGAL_DIRECTION, unsigned int moves = UNREACHABLE, unsigned int cost = UNREACHABLE);
 };
 #endif

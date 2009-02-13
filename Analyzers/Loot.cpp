@@ -72,7 +72,7 @@ void Loot::analyze() {
 	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
 		return;
 	/* visit new/changed stashes unless hallucinating, blind or too encumbered */
-	int min_moves = INT_MAX;
+	unsigned int min_moves = UNREACHABLE;
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
 		map<Coordinate, int>::iterator v = visit_stash.find(Coordinate(saiph->position.level, s->first));
 		if (v != visit_stash.end() && v->second == s->second.turn_changed)
@@ -403,7 +403,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 }
 
 void Loot::visitOldStash() {
-	int min_moves = INT_MAX;
+	unsigned int min_moves = UNREACHABLE;
 	visit_old_stash.level = -1; // reset, in case there are no old stashes we wish to visit
 	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
 		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {

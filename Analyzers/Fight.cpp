@@ -21,7 +21,7 @@ void Fight::analyze() {
 	/* fight monsters */
 	unsigned char got_thrown = FIGHT_NOT_CHECKED_THROWN_WEAPONS;
 	int min_distance = INT_MAX;
-	int min_moves = INT_MAX;
+	unsigned int min_moves = UNREACHABLE;
 	map<Point, Monster>::iterator best_monster = saiph->levels[saiph->position.level].monsters.end();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
