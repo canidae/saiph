@@ -18,7 +18,7 @@
 #define BRANCH_QUEST 7
 #define KNAPSACK_LIMIT 52
 #define UNREACHABLE UINT_MAX
-#define REACHABLE UNREACHABLE - 1
+#define UNPASSABLE UNREACHABLE - 1
 
 /* unknown tracked symbol value */
 #define UNKNOWN_SYMBOL_VALUE INT_MIN

@@ -37,7 +37,7 @@ void Donate::analyze() {
 				if (!i->second.priest)
 					continue;
 				const PathNode &node = saiph->shortestPath(priest_loc);
-				if (node.dir == ILLEGAL_DIRECTION)
+				if (node.cost == UNREACHABLE)
 					continue; // can't path to this priest
 				if (node.moves < least_moves) {
 					/* this priest is closer than the previous priest */

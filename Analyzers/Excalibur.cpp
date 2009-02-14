@@ -28,8 +28,8 @@ void Excalibur::analyze() {
 		return;
 	/* path to nearest fountain */
 	const PathNode &node = saiph->shortestPath(FOUNTAIN);
-	if (node.dir == ILLEGAL_DIRECTION)
-		return; // don't know of any fountains
+	if (node.cost >= UNPASSABLE)
+		return; // can't get to any fountains
 	if (node.dir == NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		command = DIP;

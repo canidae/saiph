@@ -36,7 +36,7 @@ void Door::analyze() {
 				continue; // no key in inventory
 		}
 		const PathNode &node = saiph->shortestPath(d->first);
-		if (node.dir == ILLEGAL_DIRECTION)
+		if (node.cost >= UNPASSABLE)
 			continue;
 		if (node.moves == 1) {
 			/* open/pick/kick door */

@@ -394,7 +394,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, NW, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, NW, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, NW, 1, UNPASSABLE);
 		}
 	}
 	/* first move north node */
@@ -405,7 +405,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, N, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, N, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, N, 1, UNPASSABLE);
 		}
 	}
 	/* first move northeast node */
@@ -416,7 +416,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, NE, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, NE, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, NE, 1, UNPASSABLE);
 		}
 	}
 	/* first move east node */
@@ -427,7 +427,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, E, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, E, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, E, 1, UNPASSABLE);
 		}
 	}
 	/* first move southeast node */
@@ -438,7 +438,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, SE, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, SE, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, SE, 1, UNPASSABLE);
 		}
 	}
 	/* first move south node */
@@ -449,7 +449,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, S, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, S, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, S, 1, UNPASSABLE);
 		}
 	}
 	/* first move southwest node */
@@ -460,7 +460,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, SW, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, SW, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, SW, 1, UNPASSABLE);
 		}
 	}
 	/* first move west node */
@@ -471,7 +471,7 @@ void Level::updatePathMap() {
 			pathing_queue[nodes++] = to;
 			pathmap[to.row][to.col] = PathNode(from, W, 1, cost);
 		} else {
-			pathmap[to.row][to.col] = PathNode(from, W, 1, REACHABLE);
+			pathmap[to.row][to.col] = PathNode(from, W, 1, UNPASSABLE);
 		}
 	}
 
@@ -486,7 +486,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check north node */
@@ -497,7 +497,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check northeast node */
@@ -508,7 +508,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check east node */
@@ -519,7 +519,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check southeast node */
@@ -530,7 +530,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check south node */
@@ -541,7 +541,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check southwest node */
@@ -552,7 +552,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check west node */
@@ -563,7 +563,7 @@ void Level::updatePathMap() {
 				pathing_queue[nodes++] = to;
 				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, cost);
 			} else if (cost == pathmap[to.row][to.col].cost && cost == UNREACHABLE) {
-				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, REACHABLE);
+				pathmap[to.row][to.col] = PathNode(from, pathmap[from.row][from.col].dir, pathmap[from.row][from.col].moves + 1, UNPASSABLE);
 			}
 		}
 	}

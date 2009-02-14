@@ -18,18 +18,15 @@ void Shop::parseMessages(const string &messages) {
 		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
 		unsigned char dir = ILLEGAL_DIRECTION;
 		const PathNode &node = saiph->shortestPath(CORRIDOR);
-		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << node.dir << " - " << node.moves << " - " << node.cost << endl;
 		dir = node.dir;
-		if (dir == ILLEGAL_DIRECTION) {
+		if (node.cost >= UNPASSABLE) {
 			const PathNode &node2 = saiph->shortestPath(FLOOR);
-			Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << node2.dir << " - " << node2.moves << " - " << node2.cost << endl;
+			if (node2.cost >= UNPASSABLE) {
+				/* this is bad */
+				Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
+				return;
+			}
 			dir = node2.dir;
-		}
-
-		if (dir == ILLEGAL_DIRECTION) {
-			/* this is bad */
-			Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
-			return;
 		}
 
 		drop_pick_axe = true;

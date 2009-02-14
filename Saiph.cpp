@@ -527,17 +527,22 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
-			if (node.dir != ILLEGAL_DIRECTION && node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves) {
-				/* this symbol is closer than the previously found one */
-				best_pathnode = node;
-				if (pivot != 0) {
-					/* symbol is on another level, gotta modify this pathnode a bit */
-					best_pathnode.dir = level_pathnode[level_queue[pivot]].dir;
-					best_pathnode.moves += level_pathnode[level_queue[pivot]].moves;
-					best_pathnode.cost += level_pathnode[level_queue[pivot]].cost;
-				}
-				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << endl;
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << ": " << node.dir << " - " << node.moves << " - " << node.cost << endl;
+			if (node.cost == UNREACHABLE)
+				continue;
+			else if (node.cost == UNPASSABLE && node.moves > 1)
+				continue;
+			else if (node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves)
+				continue;
+			/* this symbol is closer than the previously found one */
+			best_pathnode = node;
+			if (pivot != 0) {
+				/* symbol is on another level, gotta modify this pathnode a bit */
+				best_pathnode.dir = level_pathnode[level_queue[pivot]].dir;
+				best_pathnode.moves += level_pathnode[level_queue[pivot]].moves;
+				best_pathnode.cost += level_pathnode[level_queue[pivot]].cost;
 			}
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Pathing to '" << symbol << "' on level " << level_queue[pivot] << endl;
 		}
 		/* path to upstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
@@ -547,27 +552,27 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			if (level_added[s->second])
 				continue; // already added this level
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
-			if (node.dir != ILLEGAL_DIRECTION && node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves) {
-				/* distance to these stairs is shorter than shortest path found so far.
-				 * we should check the level these stairs lead to as well */
-				level_added[s->second] = true;
-				level_queue[level_count++] = s->second;
-				if (pivot == 0) {
-					/* pathing to upstairs on level we're standing on */
-					level_pathnode[s->second] = node;
-					if (node.dir == NOWHERE)
-						level_pathnode[s->second].dir = UP;
-				} else {
-					/* pathing to upstairs on another level */
-					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
-					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
-					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
-				}
-				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+			if (node.cost >= UNPASSABLE)
+				continue;
+			else if (node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves)
+				continue;
+			/* distance to these stairs is shorter than shortest path found so far.
+			 * we should check the level these stairs lead to as well */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to upstairs on level we're standing on */
+				level_pathnode[s->second] = node;
+				if (node.dir == NOWHERE)
+					level_pathnode[s->second].dir = UP;
 			} else {
-				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+				/* pathing to upstairs on another level */
+				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+				level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+				level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+				level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
 			}
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
 		/* path to downstairs on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
@@ -577,27 +582,27 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			if (level_added[s->second])
 				continue; // already added this level
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
-			if (node.dir != ILLEGAL_DIRECTION && node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves) {
-				/* distance to these stairs is shorter than shortest path found so far.
-				 * we should check the level these stairs lead to as well */
-				level_added[s->second] = true;
-				level_queue[level_count++] = s->second;
-				if (pivot == 0) {
-					/* pathing to downstairs on level we're standing on */
-					level_pathnode[s->second] = node;
-					if (node.dir == NOWHERE)
-						level_pathnode[s->second].dir = DOWN;
-				} else {
-					/* pathing to downstairs on another level */
-					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
-					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
-					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
-				}
-				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+			if (node.cost >= UNPASSABLE)
+				continue;
+			else if (node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves)
+				continue;
+			/* distance to these stairs is shorter than shortest path found so far.
+			 * we should check the level these stairs lead to as well */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to downstairs on level we're standing on */
+				level_pathnode[s->second] = node;
+				if (node.dir == NOWHERE)
+					level_pathnode[s->second].dir = DOWN;
 			} else {
-				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+				/* pathing to downstairs on another level */
+				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+				level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+				level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+				level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
 			}
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
 		++pivot;
 	}
@@ -628,8 +633,10 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level) {
 				const PathNode &node = levels[level_queue[pivot]].shortestPath(target);
-				if (node.dir == ILLEGAL_DIRECTION)
-					return PathNode(); // can't path to target
+				if (node.cost == UNREACHABLE)
+					continue;
+				else if (node.cost == UNPASSABLE && node.moves > 1)
+					continue;
 				PathNode best_pathnode = node;
 				if (pivot != 0) {
 					/* symbol is on another level, gotta modify this pathnode a bit */
@@ -645,60 +652,56 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
-				if (level_added[s->second])
+				else if (level_added[s->second])
 					continue; // already added this level
 				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
-				if (node.dir != ILLEGAL_DIRECTION) {
-					/* distance to these stairs is shorter than shortest path found so far.
-					 * we should check the level these stairs lead to as well */
-					level_added[s->second] = true;
-					level_queue[level_count++] = s->second;
-					if (pivot == 0) {
-						/* pathing to upstairs on level we're standing on */
-						level_pathnode[s->second] = node;
-						if (node.dir == NOWHERE)
-							level_pathnode[s->second].dir = UP;
-					} else {
-						/* pathing to upstairs on another level */
-						level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-						level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
-						level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
-						level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
-					}
-					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+				if (node.cost >= UNPASSABLE)
+					continue;
+				/* distance to these stairs is shorter than shortest path found so far.
+				 * we should check the level these stairs lead to as well */
+				level_added[s->second] = true;
+				level_queue[level_count++] = s->second;
+				if (pivot == 0) {
+					/* pathing to upstairs on level we're standing on */
+					level_pathnode[s->second] = node;
+					if (node.dir == NOWHERE)
+						level_pathnode[s->second].dir = UP;
 				} else {
-					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+					/* pathing to upstairs on another level */
+					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
 				}
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 			}
 			/* path to downstairs on level */
 			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
-				if (level_added[s->second])
+				else if (level_added[s->second])
 					continue; // already added this level
 				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
-				if (node.dir != ILLEGAL_DIRECTION) {
-					/* distance to these stairs is shorter than shortest path found so far.
-					 * we should check the level these stairs lead to as well */
-					level_added[s->second] = true;
-					level_queue[level_count++] = s->second;
-					if (pivot == 0) {
-						/* pathing to downstairs on level we're standing on */
-						level_pathnode[s->second] = node;
-						if (node.dir == NOWHERE)
-							level_pathnode[s->second].dir = DOWN;
-					} else {
-						/* pathing to downstairs on another level */
-						level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-						level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
-						level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
-						level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
-					}
-					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+				if (node.cost >= UNPASSABLE)
+					continue;
+				/* distance to these stairs is shorter than shortest path found so far.
+				 * we should check the level these stairs lead to as well */
+				level_added[s->second] = true;
+				level_queue[level_count++] = s->second;
+				if (pivot == 0) {
+					/* pathing to downstairs on level we're standing on */
+					level_pathnode[s->second] = node;
+					if (node.dir == NOWHERE)
+						level_pathnode[s->second].dir = DOWN;
 				} else {
-					Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Unable to path to stairs" << endl;
+					/* pathing to downstairs on another level */
+					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
 				}
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 			}
 			++pivot;
 		}

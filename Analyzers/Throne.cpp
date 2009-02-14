@@ -16,7 +16,7 @@ void Throne::analyze() {
 	else if (saiph->world->player.hitpoints - saiph->world->player.hitpoints_max > 5)
 		return; // for the HP boost result
 	const PathNode &node = saiph->shortestPath(THRONE);
-	if (node.dir == ILLEGAL_DIRECTION)
+	if (node.cost >= UNPASSABLE)
 		return;
 	else if (node.dir == NOWHERE)
 		command = SIT;

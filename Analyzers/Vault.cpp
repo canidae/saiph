@@ -55,14 +55,14 @@ void Vault::parseMessages(const string &messages) {
 			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
 				continue;
 			const PathNode &node = saiph->shortestPath(m->first);
-			if (node.dir != ILLEGAL_DIRECTION) {
-				if (node.moves == 1)
-					command = REST;
-				else
-					command = node.dir;
-				priority = PRIORITY_VAULT_GO_OUT;
-				return;
-			}
+			if (node.cost >= UNPASSABLE)
+				continue;
+			if (node.moves == 1)
+				command = REST;
+			else
+				command = node.dir;
+			priority = PRIORITY_VAULT_GO_OUT;
+			return;
 		}
 	}
 }

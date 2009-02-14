@@ -79,7 +79,7 @@ void Loot::analyze() {
 			continue; // stash is unchanged
 		/* unvisited stash, visit it if it's closer */
 		const PathNode &node = saiph->shortestPath(s->first);
-		if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION && node.moves < min_moves) {
+		if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
 			/* move towards stash */
 			min_moves = node.moves;
 			command = node.dir;
@@ -94,7 +94,7 @@ void Loot::analyze() {
 		map<Point, Stash>::iterator s = saiph->levels[visit_old_stash.level].stashes.find(visit_old_stash);
 		if (s != saiph->levels[visit_old_stash.level].stashes.end()) {
 			const PathNode &node = saiph->shortestPath(visit_old_stash);
-			if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION) {
+			if (node.dir != NOWHERE && node.cost < UNPASSABLE) {
 				/* move towards stash */
 				command = node.dir;
 				priority = PRIORITY_LOOT_VISIT_STASH;
@@ -417,7 +417,7 @@ void Loot::visitOldStash() {
 							continue; // don't want this item
 						// we want this item, is stash closer than previous stash?
 						const PathNode &node = saiph->shortestPath(stash);
-						if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION && node.moves < min_moves) {
+						if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
 							// move towards stash
 							min_moves = node.moves;
 							command = node.dir;
@@ -431,7 +431,7 @@ void Loot::visitOldStash() {
 				/* what? isn't this already covered?
 				 * actually, no. this one cares about unvisited stashes on other levels too */
 				const PathNode &node = saiph->shortestPath(stash);
-				if (node.dir != NOWHERE && node.dir != ILLEGAL_DIRECTION && node.moves < min_moves) {
+				if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
 					/* move towards stash */
 					min_moves = node.moves;
 					command = node.dir;

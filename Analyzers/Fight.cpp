@@ -54,7 +54,7 @@ void Fight::analyze() {
 		}
 		/* we couldn't throw something at the monster, try moving to or melee it */
 		const PathNode &node = saiph->shortestPath(m->first);
-		if (node.dir == ILLEGAL_DIRECTION)
+		if (node.cost == UNREACHABLE)
 			continue; // unable to path to monster
 		else if (node.moves > 1 && (priority > PRIORITY_FIGHT_MOVE || saiph->world->player.blind))
 			continue; // we must move to monster, but we got something else with higher priority or are blind

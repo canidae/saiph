@@ -29,7 +29,7 @@ void Dig::analyze() {
 	unsigned int least_moves = UNREACHABLE;
 	for (list<Point>::iterator d = dig_locations.begin(); d != dig_locations.end(); ) {
 		const PathNode &node = saiph->shortestPath(*d);
-		if (node.dir == ILLEGAL_DIRECTION || node.moves > least_moves) {
+		if (node.cost >= UNPASSABLE || node.moves > least_moves) {
 			++d;
 			continue;
 		}
