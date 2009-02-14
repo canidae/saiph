@@ -147,36 +147,34 @@ void Loot::parseMessages(const string &messages) {
 		priority = PRIORITY_CLOSE_PAGE;
 	} else if (saiph->got_drop_menu) {
 		showing_drop = true;
-		if (saiph->getDungeonSymbol() == STAIRS_UP) {
-			/* drop unwanted stuff */
-			for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-				if (d->second.name == "gold piece")
-					continue; // don't drop gold
-				int unwanted = dropItem(d->second);
-				/* we'll "cheat" a bit here:
-				 * we "forget" what we've marked to be dropped,
-				 * so we'll reduce the item count in our inventory when we select it */
-				if (unwanted == 0) {
-					/* drop none */
-					continue;
-				} else if (unwanted >= d->second.count) {
-					/* drop all */
-					saiph->inventory[d->first].count = 0;
-					command = d->first;
-				} else {
-					/* drop some */
-					saiph->inventory[d->first].count -= unwanted;
-					stringstream tmp;
-					tmp << unwanted << d->first;
-					command = tmp.str();
-				}
-				priority = PRIORITY_SELECT_ITEM;
-				return;
+		/* drop unwanted stuff */
+		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
+			if (d->second.name == "gold piece")
+				continue; // don't drop gold
+			int unwanted = dropItem(d->second);
+			/* we'll "cheat" a bit here:
+			 * we "forget" what we've marked to be dropped,
+			 * so we'll reduce the item count in our inventory when we select it */
+			if (unwanted == 0) {
+				/* drop none */
+				continue;
+			} else if (unwanted >= d->second.count) {
+				/* drop all */
+				saiph->inventory[d->first].count = 0;
+				command = d->first;
+			} else {
+				/* drop some */
+				saiph->inventory[d->first].count -= unwanted;
+				stringstream tmp;
+				tmp << unwanted << d->first;
+				command = tmp.str();
 			}
-			/* if we're here, we should get next page or close list */
-			command = CLOSE_PAGE;
-			priority = PRIORITY_CLOSE_PAGE;
+			priority = PRIORITY_SELECT_ITEM;
+			return;
 		}
+		/* if we're here, we should get next page or close list */
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
 	} else if (saiph->world->menu && showing_inventory) {
 		/* we should close the page of the inventory we're showing */
 		command = CLOSE_PAGE;
