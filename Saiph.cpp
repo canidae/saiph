@@ -523,7 +523,6 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 	PathNode level_pathnode[levels.size()];
 	level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
 	while (pivot < level_count) {
-		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "symbol pathing: " << pivot << " - " << level_count << endl;
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
