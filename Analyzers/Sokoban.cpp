@@ -8,8 +8,6 @@
 
 using namespace std;
 
-#define CURRENT_LEVEL(x) saiph->levels[saiph->position.level].dungeonmap[(x).row][(x).col]
-
 Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false) {
 	// setup boulder locations
 	#include "Sokoban/boulders.h"
@@ -74,15 +72,14 @@ void Sokoban::analyze() {
 			} else {
 				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Trying to path to " << (Point)currentTarget << " from " << (Point)saiph->position << endl;
 
-				int moves = 0;
-				unsigned char next_move = saiph->shortestPath(currentTarget, false, &moves);
-				if (next_move == ILLEGAL_DIRECTION) {
+				const PathNode &node = saiph->shortestPath(currentTarget);
+				if (node.cost >= UNPASSABLE) {
 					Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "pathing failed" << endl;
 					return;
 				}
-				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Will arrive in " << moves << " moves" << endl;
+				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Will arrive in " << node.moves << " moves" << endl;
 				priority = PRIORITY_SOLVE_SOKOBAN;
-				command = next_move;
+				command = node.dir;
 			}
 		}
 	}
@@ -150,7 +147,7 @@ int Sokoban::whichSokobanLevel() {
 bool Sokoban::isSokobanLevel(int level) {
 	vector<Point> b = boulders[level];
 	for (vector<Point>::iterator i = b.begin(); i != b.end(); ++i)
-		if (CURRENT_LEVEL(*i) != BOULDER)
+		if (saiph->getDungeonSymbol(*i) != BOULDER)
 				return false;
 
 	return true;
