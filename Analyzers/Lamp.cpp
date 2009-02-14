@@ -62,6 +62,9 @@ void Lamp::parseMessages(const string &messages) {
 		findLamp();
 		if (remove_lamp && lamp_key != 0) {
 			map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
+			//if we started with an oil lamp, it's already ID'd
+			if (!seen_oil_lamp && l->second.name == "oil lamp")
+				seen_oil_lamp = true;
 			if (l->second.name == "lamp") {
 				/* ordinary lamp, name it "oil lamp" so we can detect magic lamps */
 				req.request = REQUEST_CALL_ITEM;
