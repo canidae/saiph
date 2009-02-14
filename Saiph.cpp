@@ -511,7 +511,7 @@ bool Saiph::run() {
 
 PathNode Saiph::shortestPath(unsigned char symbol) {
 	/* returns PathNode for shortest path from player to nearest symbol */
-	int pivot = 0;
+	int pivot = -1;
 	int level_count = 1;
 	PathNode best_pathnode;
 	int level_queue[levels.size()];
@@ -522,8 +522,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 	level_added[position.level] = true;
 	PathNode level_pathnode[levels.size()];
 	level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
-	while (pivot < level_count) {
-		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "symbol pathing: " << pivot << " - " << level_count << endl;
+	while (++pivot < level_count) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
@@ -532,7 +531,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 				continue;
 			else if (node.cost == UNPASSABLE && node.moves > 1)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
 				continue;
 			/* this symbol is closer than the previously found one */
 			best_pathnode = node;
@@ -554,7 +553,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -583,7 +582,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -602,7 +601,6 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			}
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
-		++pivot;
 	}
 	return best_pathnode;
 }
@@ -615,7 +613,7 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 		/* target on same level */
 		return levels[position.level].shortestPath(target);
 	} else {
-		int pivot = 0;
+		int pivot = -1;
 		int level_count = 1;
 		int level_queue[levels.size()];
 		level_queue[0] = position.level;
@@ -626,7 +624,7 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 		PathNode level_pathnode[levels.size()];
 		level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
 		Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target << endl;
-		while (pivot < level_count) {
+		while (++pivot < level_count) {
 			Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "interlevel pathing: " << pivot << " - " << level_count << endl;
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level) {
@@ -701,7 +699,6 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 				}
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 			}
-			++pivot;
 		}
 	}
 	return PathNode(); // symbol not found

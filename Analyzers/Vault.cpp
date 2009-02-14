@@ -55,7 +55,7 @@ void Vault::parseMessages(const string &messages) {
 			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
 				continue;
 			const PathNode &node = saiph->shortestPath(m->first);
-			if (node.cost >= UNPASSABLE)
+			if (node.cost == UNREACHABLE)
 				continue;
 			if (node.moves == 1)
 				command = REST;

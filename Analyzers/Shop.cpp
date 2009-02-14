@@ -129,10 +129,19 @@ void Shop::analyze() {
 		if (m->first.row < nw.row || m->first.col < nw.col || m->first.row > se.row || m->first.col > se.col)
 			return; // we're not in the same room as the shopkeeper
 
+		/* check that area assumed to be a shop does not contain VERTICAL_WALL or HORIZONTAL_WALL */
+		Point p;
+		for (p.row = nw.row; p.row <= se.row; ++p.row) {
+			for (p.col = nw.col; p.col <= se.col; ++p.col) {
+				symbol = saiph->getDungeonSymbol(p);
+				if (symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL)
+					return; // detected too large area as shop
+			}
+		}
+
 		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are " << nw << " to " << se << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
-		Point p;
 		for (p.row = nw.row; p.row <= se.row; ++p.row) {
 			for (p.col = nw.col; p.col <= se.col; ++p.col)
 				saiph->setDungeonSymbol(p, SHOP_TILE);
