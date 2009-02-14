@@ -15,13 +15,12 @@ void Throne::analyze() {
 		return; // don't get killed by an electric chair
 	else if (saiph->world->player.hitpoints - saiph->world->player.hitpoints_max > 5)
 		return; // for the HP boost result
-	int moves = 0;
-	unsigned char dir = saiph->shortestPath(THRONE, false, &moves);
-	if (dir == ILLEGAL_DIRECTION)
+	const PathNode &node = saiph->shortestPath(THRONE);
+	if (node.cost >= UNPASSABLE)
 		return;
-	else if (dir == NOWHERE)
+	else if (node.dir == NOWHERE)
 		command = SIT;
 	else
-		command = dir;
+		command = node.dir;
 	priority = PRIORITY_THRONE_SIT;
 }
