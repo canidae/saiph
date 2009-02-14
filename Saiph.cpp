@@ -521,9 +521,9 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 		level_added[a] = false;
 	level_added[position.level] = true;
 	PathNode level_pathnode[levels.size()];
-	level_pathnode[0] = best_pathnode;
-	level_pathnode[0].moves = 0;
+	level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
 	while (pivot < level_count) {
+		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "symbol pathing: " << pivot << " - " << level_count << endl;
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
@@ -532,7 +532,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 				continue;
 			else if (node.cost == UNPASSABLE && node.moves > 1)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves)
+			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
 				continue;
 			/* this symbol is closer than the previously found one */
 			best_pathnode = node;
@@ -554,7 +554,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves)
+			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -568,9 +568,8 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			} else {
 				/* pathing to upstairs on another level */
 				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-				level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
-				level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
-				level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
+				level_pathnode[s->second].moves += node.moves;
+				level_pathnode[s->second].cost += node.cost;
 			}
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
@@ -584,7 +583,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves < best_pathnode.moves)
+			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -598,9 +597,8 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			} else {
 				/* pathing to downstairs on another level */
 				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-				level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
-				level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
-				level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
+				level_pathnode[s->second].moves += node.moves;
+				level_pathnode[s->second].cost += node.cost;
 			}
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
@@ -626,10 +624,10 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 			level_added[a] = false;
 		level_added[position.level] = true;
 		PathNode level_pathnode[levels.size()];
-		level_pathnode[0] = PathNode();
-		level_pathnode[0].moves = 0;
+		level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
 		Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target << endl;
 		while (pivot < level_count) {
+			Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "interlevel pathing: " << pivot << " - " << level_count << endl;
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level) {
 				const PathNode &node = levels[level_queue[pivot]].shortestPath(target);

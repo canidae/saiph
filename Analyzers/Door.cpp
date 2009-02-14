@@ -36,8 +36,8 @@ void Door::analyze() {
 				continue; // no key in inventory
 		}
 		const PathNode &node = saiph->shortestPath(d->first);
-		if (node.cost >= UNPASSABLE)
-			continue;
+		if (node.cost == UNREACHABLE)
+			continue; // can't reach this door
 		if (node.moves == 1) {
 			/* open/pick/kick door */
 			if (d->second != 1) {
