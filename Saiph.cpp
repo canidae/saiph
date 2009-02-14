@@ -531,7 +531,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 				continue;
 			else if (node.cost == UNPASSABLE && node.moves > 1)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
 				continue;
 			/* this symbol is closer than the previously found one */
 			best_pathnode = node;
@@ -553,7 +553,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -582,7 +582,7 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			else if (node.moves + level_pathnode[level_queue[pivot]].moves >= best_pathnode.moves)
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
