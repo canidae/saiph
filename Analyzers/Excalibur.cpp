@@ -12,7 +12,7 @@ Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), comman
 void Excalibur::analyze() {
 	if (saiph->world->player.experience < 5)
 		return;
-	if (saiph->world->player.alignment != LAWFUL)
+	else if (saiph->world->player.alignment != LAWFUL)
 		return;
 	else if (saiph->world->player.blind)
 		return; // don't move when blind
@@ -27,18 +27,17 @@ void Excalibur::analyze() {
 	if (got_long_sword == ILLEGAL_ITEM)
 		return;
 	/* path to nearest fountain */
-	int moves = 0;
-	unsigned char dir = saiph->shortestPath(FOUNTAIN, false, &moves);
-	if (dir == ILLEGAL_DIRECTION)
-		return; // don't know of any fountains
-	if (dir == NOWHERE) {
+	const PathNode &node = saiph->shortestPath(FOUNTAIN);
+	if (node.cost >= UNPASSABLE)
+		return; // can't get to any fountains
+	if (node.dir == NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;
 		priority = PRIORITY_EXCALIBUR_DIP;
 	} else {
 		/* move towards fountain */
-		command = dir;
+		command = node.dir;
 		command2.clear();
 		priority = PRIORITY_EXCALIBUR_DIP;
 	}

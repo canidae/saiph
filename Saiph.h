@@ -87,16 +87,15 @@ class Saiph {
 		unsigned char getDungeonSymbol(unsigned char direction);
 		unsigned char getMonsterSymbol(const Coordinate &coordinate);
 		unsigned char getMonsterSymbol(const Point &point);
-		unsigned int getPathCost(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
-		void setDungeonSymbol(unsigned char symbol);
 		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);
-		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
-		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
-		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
+		void setDungeonSymbol(unsigned char symbol);
+		PathNode shortestPath(const Coordinate &target);
+		const PathNode &shortestPath(const Point &target);
+		PathNode shortestPath(unsigned char symbol);
 
 	private:
 		Connection *connection;
@@ -181,11 +180,6 @@ inline unsigned char Saiph::getMonsterSymbol(const Point &point) {
 	return levels[position.level].getMonsterSymbol(point);
 }
 
-inline unsigned int Saiph::getPathCost(const Point &point) {
-	/* return PathNode.cost for the given point */
-	return levels[position.level].getPathCost(point);
-}
-
 inline void Saiph::setDungeonSymbol(unsigned char symbol) {
 	/* set dungeon symbol at player position */
 	levels[position.level].setDungeonSymbol(position, symbol);
@@ -201,6 +195,11 @@ inline void Saiph::setDungeonSymbol(const Coordinate &coordinate, unsigned char 
 inline void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	/* set dungeon symbol at given point on current level */
 	levels[position.level].setDungeonSymbol(point, symbol);
+}
+
+inline const PathNode &Saiph::shortestPath(const Point &point) {
+	/* returns PathNode for shortest path from player to target */
+	return levels[position.level].shortestPath(point);
 }
 
 #endif

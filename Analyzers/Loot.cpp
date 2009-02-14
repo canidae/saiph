@@ -72,18 +72,17 @@ void Loot::analyze() {
 	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
 		return;
 	/* visit new/changed stashes unless hallucinating, blind or too encumbered */
-	int min_moves = INT_MAX;
+	unsigned int min_moves = UNREACHABLE;
 	for (map<Point, Stash>::iterator s = saiph->levels[saiph->position.level].stashes.begin(); s != saiph->levels[saiph->position.level].stashes.end(); ++s) {
 		map<Coordinate, int>::iterator v = visit_stash.find(Coordinate(saiph->position.level, s->first));
 		if (v != visit_stash.end() && v->second == s->second.turn_changed)
 			continue; // stash is unchanged
 		/* unvisited stash, visit it if it's closer */
-		int moves = 0;
-		unsigned char dir = saiph->shortestPath(s->first, false, &moves);
-		if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+		const PathNode &node = saiph->shortestPath(s->first);
+		if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
 			/* move towards stash */
-			min_moves = moves;
-			command = dir;
+			min_moves = node.moves;
+			command = node.dir;
 			priority = PRIORITY_LOOT_VISIT_STASH;
 		}
 	}
@@ -94,11 +93,10 @@ void Loot::analyze() {
 	if (visit_old_stash.level >= 0 && visit_old_stash.level < (int) saiph->levels.size()) {
 		map<Point, Stash>::iterator s = saiph->levels[visit_old_stash.level].stashes.find(visit_old_stash);
 		if (s != saiph->levels[visit_old_stash.level].stashes.end()) {
-			int moves = 0;
-			unsigned char dir = saiph->shortestPath(visit_old_stash, false, &moves);
-			if (dir != NOWHERE && dir != ILLEGAL_DIRECTION) {
+			const PathNode &node = saiph->shortestPath(visit_old_stash);
+			if (node.dir != NOWHERE && node.cost < UNPASSABLE) {
 				/* move towards stash */
-				command = dir;
+				command = node.dir;
 				priority = PRIORITY_LOOT_VISIT_STASH;
 				return;
 			}
@@ -149,36 +147,34 @@ void Loot::parseMessages(const string &messages) {
 		priority = PRIORITY_CLOSE_PAGE;
 	} else if (saiph->got_drop_menu) {
 		showing_drop = true;
-		if (saiph->getDungeonSymbol() == STAIRS_UP) {
-			/* drop unwanted stuff */
-			for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-				if (d->second.name == "gold piece")
-					continue; // don't drop gold
-				int unwanted = dropItem(d->second);
-				/* we'll "cheat" a bit here:
-				 * we "forget" what we've marked to be dropped,
-				 * so we'll reduce the item count in our inventory when we select it */
-				if (unwanted == 0) {
-					/* drop none */
-					continue;
-				} else if (unwanted >= d->second.count) {
-					/* drop all */
-					saiph->inventory[d->first].count = 0;
-					command = d->first;
-				} else {
-					/* drop some */
-					saiph->inventory[d->first].count -= unwanted;
-					stringstream tmp;
-					tmp << unwanted << d->first;
-					command = tmp.str();
-				}
-				priority = PRIORITY_SELECT_ITEM;
-				return;
+		/* drop unwanted stuff */
+		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
+			if (d->second.name == "gold piece")
+				continue; // don't drop gold
+			int unwanted = dropItem(d->second);
+			/* we'll "cheat" a bit here:
+			 * we "forget" what we've marked to be dropped,
+			 * so we'll reduce the item count in our inventory when we select it */
+			if (unwanted == 0) {
+				/* drop none */
+				continue;
+			} else if (unwanted >= d->second.count) {
+				/* drop all */
+				saiph->inventory[d->first].count = 0;
+				command = d->first;
+			} else {
+				/* drop some */
+				saiph->inventory[d->first].count -= unwanted;
+				stringstream tmp;
+				tmp << unwanted << d->first;
+				command = tmp.str();
 			}
-			/* if we're here, we should get next page or close list */
-			command = CLOSE_PAGE;
-			priority = PRIORITY_CLOSE_PAGE;
+			priority = PRIORITY_SELECT_ITEM;
+			return;
 		}
+		/* if we're here, we should get next page or close list */
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
 	} else if (saiph->world->menu && showing_inventory) {
 		/* we should close the page of the inventory we're showing */
 		command = CLOSE_PAGE;
@@ -405,7 +401,7 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 }
 
 void Loot::visitOldStash() {
-	int min_moves = INT_MAX;
+	unsigned int min_moves = UNREACHABLE;
 	visit_old_stash.level = -1; // reset, in case there are no old stashes we wish to visit
 	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
 		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
@@ -418,12 +414,11 @@ void Loot::visitOldStash() {
 						if (pickupItem(*i) == 0)
 							continue; // don't want this item
 						// we want this item, is stash closer than previous stash?
-						int moves = 0;
-						unsigned char dir = saiph->shortestPath(stash, false, &moves);
-						if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+						const PathNode &node = saiph->shortestPath(stash);
+						if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
 							// move towards stash
-							min_moves = moves;
-							command = dir;
+							min_moves = node.moves;
+							command = node.dir;
 							priority = PRIORITY_LOOT_VISIT_STASH;
 							visit_old_stash = stash;
 						}
@@ -433,12 +428,11 @@ void Loot::visitOldStash() {
 				/* unvisited stash, visit it if it's closer */
 				/* what? isn't this already covered?
 				 * actually, no. this one cares about unvisited stashes on other levels too */
-				int moves = 0;
-				unsigned char dir = saiph->shortestPath(stash, false, &moves);
-				if (dir != NOWHERE && dir != ILLEGAL_DIRECTION && moves < min_moves) {
+				const PathNode &node = saiph->shortestPath(stash);
+				if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
 					/* move towards stash */
-					min_moves = moves;
-					command = dir;
+					min_moves = node.moves;
+					command = node.dir;
 					priority = PRIORITY_LOOT_VISIT_STASH;
 					visit_old_stash = stash;
 				}

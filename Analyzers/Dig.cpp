@@ -26,23 +26,22 @@ void Dig::analyze() {
 	}
 
 	/* dig nearest dig_location */
-	int least_moves = INT_MAX;
+	unsigned int least_moves = UNREACHABLE;
 	for (list<Point>::iterator d = dig_locations.begin(); d != dig_locations.end(); ) {
-		int moves = 0;
-		unsigned char dir = saiph->shortestPath(*d, true, &moves);
-		if (dir == ILLEGAL_DIRECTION || moves > least_moves) {
+		const PathNode &node = saiph->shortestPath(*d);
+		if (node.cost == UNREACHABLE || node.moves > least_moves) {
 			++d;
 			continue;
 		}
 		/* we're going to move or dig, set priority and least_moves */
 		priority = PRIORITY_DIG_PATH;
-		least_moves = moves;
-		if (moves == 1) {
+		least_moves = node.moves;
+		if (node.moves == 1) {
 			/* next to location we want to dig, but do we still want to dig here? */
 			unsigned char symbol = saiph->getDungeonSymbol(*d);
 			if (symbol == BOULDER || symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL || symbol == SOLID_ROCK) {
 				/* yes, we do */
-				dig_direction = dir;
+				dig_direction = node.dir;
 				command = APPLY;
 			} else {
 				/* no, we can no longer dig on this location */
@@ -52,7 +51,7 @@ void Dig::analyze() {
 			return; // no point iterating remaining list
 		} else {
 			/* move towards location to dig */
-			command = dir;
+			command = node.dir;
 		}
 		++d;
 	}

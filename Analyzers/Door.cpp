@@ -35,7 +35,7 @@ void Door::analyze() {
 			return; // still in the pit
 	}
 	/* go to nearest closed door and get it open somehow */
-	int least_moves = INT_MAX;
+	unsigned int least_moves = UNREACHABLE;
 	for (map<Point, int>::iterator d = saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].begin(); d != saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR].end(); ++d) {
 		if (saiph->levels[saiph->position.level].branch == BRANCH_MINES && d->second == DOOR_LOCKED) {
 			/* don't kick/pick doors when we're in the mines */
@@ -46,11 +46,10 @@ void Door::analyze() {
 			// The door is to a shop closed for inventory. Maybe we should revisit later.
 			continue;
 		}
-		int moves = -1;
-		unsigned char dir = saiph->shortestPath(d->first, true, &moves);
-		if (dir == ILLEGAL_DIRECTION)
-			continue;
-		if (moves == DOOR_LOCKED) {
+		const PathNode &node = saiph->shortestPath(d->first);
+		if (node.cost == UNREACHABLE)
+			continue; // can't reach this door
+		if (node.moves == 1) {
 			/* open/pick/kick door */
 			if (d->second != DOOR_LOCKED) {
 				command = OPEN;
@@ -62,15 +61,15 @@ void Door::analyze() {
 				else
 					command = APPLY;
 			}
-			command2 = dir;
+			command2 = node.dir;
 			position = d->first;
 			priority = PRIORITY_DOOR_OPEN;
 			return;
-		} else if (moves < least_moves) {
+		} else if (node.moves < least_moves) {
 			/* go to door */
-			command = dir;
+			command = node.dir;
 			priority = PRIORITY_DOOR_OPEN;
-			least_moves = moves;
+			least_moves = node.moves;
 		}
 	}
 	if (least_moves < INT_MAX)

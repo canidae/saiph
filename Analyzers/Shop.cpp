@@ -17,16 +17,17 @@ void Shop::parseMessages(const string &messages) {
 	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
 		/* we're most likely standing in a doorway, next to a shopkeeper.
 		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
-		int moves = 0;
 		unsigned char dir = ILLEGAL_DIRECTION;
-		dir = saiph->shortestPath(CORRIDOR, false, &moves);
-		if (dir == ILLEGAL_DIRECTION)
-			dir = saiph->shortestPath(FLOOR, false, &moves);
-
-		if (dir == ILLEGAL_DIRECTION) {
-			/* this is bad */
-			Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
-			return;
+		const PathNode &node = saiph->shortestPath(CORRIDOR);
+		dir = node.dir;
+		if (node.cost >= UNPASSABLE) {
+			const PathNode &node2 = saiph->shortestPath(FLOOR);
+			if (node2.cost >= UNPASSABLE) {
+				/* this is bad */
+				Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
+				return;
+			}
+			dir = node2.dir;
 		}
 
 		drop_pick_axe = true;
@@ -129,10 +130,19 @@ void Shop::analyze() {
 		if (m->first.row < nw.row || m->first.col < nw.col || m->first.row > se.row || m->first.col > se.col)
 			return; // we're not in the same room as the shopkeeper
 
+		/* check that area assumed to be a shop does not contain VERTICAL_WALL or HORIZONTAL_WALL */
+		Point p;
+		for (p.row = nw.row; p.row <= se.row; ++p.row) {
+			for (p.col = nw.col; p.col <= se.col; ++p.col) {
+				symbol = saiph->getDungeonSymbol(p);
+				if (symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL)
+					return; // detected too large area as shop
+			}
+		}
+
 		Debug::notice(saiph->last_turn) << SHOP_DEBUG_NAME << "bounds are " << nw << " to " << se << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
-		Point p;
 		for (p.row = nw.row; p.row <= se.row; ++p.row) {
 			for (p.col = nw.col; p.col <= se.col; ++p.col)
 				saiph->setDungeonSymbol(p, SHOP_TILE);

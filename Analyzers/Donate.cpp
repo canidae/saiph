@@ -31,26 +31,26 @@ void Donate::analyze() {
 	if (saiph->getDungeonSymbol() == STAIRS_DOWN) {
 		/* got enough money, standing on stairs down, find priest */
 		priest_loc.level = -1;
-		int least_moves = INT_MAX;
+		unsigned int least_moves = UNREACHABLE;
 		for (int lev = 0; lev < (int) saiph->levels.size(); lev++) {
 			for (map<Point, Monster>::iterator i = saiph->levels[lev].monsters.begin(); i != saiph->levels[lev].monsters.end(); ++i) {
 				if (!i->second.priest)
 					continue;
-				int moves = 0;
-				unsigned char dir = saiph->shortestPath(priest_loc, false, &moves);
-				if (dir == ILLEGAL_DIRECTION)
+				const PathNode &node = saiph->shortestPath(priest_loc);
+				if (node.cost == UNREACHABLE)
 					continue; // can't path to this priest
-				if (moves < least_moves) {
+				if (node.moves < least_moves) {
 					/* this priest is closer than the previous priest */
 					priest_loc = Coordinate(lev, i->first);
-					least_moves = moves;
+					least_moves = node.moves;
 				}
 			}
 		}
 	}
 	if (priest_loc.level != -1) {
 		int moves = 0;
-		priest_dir = saiph->shortestPath(priest_loc, false, &moves);
+		const PathNode &node = saiph->shortestPath(priest_loc);
+		priest_dir = node.dir;
 		if (priest_dir == ILLEGAL_DIRECTION)
 			return;
 		if (moves == 1)
