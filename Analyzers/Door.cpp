@@ -3,6 +3,7 @@
 #include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Level.h"
 
 using namespace std;
 
@@ -116,9 +117,9 @@ void Door::parseMessages(const string &messages) {
 			Point top = door.top();
 			door.pop();
 
-			if (saiph->levels[saiph->position.level].dungeonmap[top.row][top.col] == CLOSED_DOOR) {
+			if (saiph->getDungeonSymbol(top) == CLOSED_DOOR) {
 				Debug::notice() << "[Door       ] Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
-				saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][top] = DOOR_SHOP_INVENTORY;
+				saiph->setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
 				break;
 			}
 		}
