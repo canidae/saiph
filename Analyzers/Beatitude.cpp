@@ -1,5 +1,4 @@
 #include "Beatitude.h"
-#include "../Debug.h"
 #include "../Globals.h"
 #include "../Item.h"
 #include "../Player.h"
@@ -23,16 +22,13 @@ void Beatitude::analyze() {
 		return; // no buc-testing while blind
 
 	/* path to nearest altar */
-	Debug::notice() << "looking for altar" << endl;
 	const PathNode &node = saiph->shortestPath(ALTAR);
-	Debug::notice() << "alter found? " << node.dir << " - " << node.moves << " - " << node.cost << " - " << UNPASSABLE << endl;
 	if (node.cost >= UNPASSABLE)
 		return; // don't know of any altars
 	else if (node.dir == NOWHERE)
 		command = DROP_MENU; // we're standing on the altar, drop items
 	else
 		command = node.dir; // move towards altar
-	Debug::notice() << "should beatitude" << endl;
 	priority = PRIORITY_BEATITUDE_DROP_ALTAR;
 }
 
