@@ -3,13 +3,9 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -g3 -pg -gdwarf-2
-OBJECTS = Amulet.o Armor.o Beatitude.o Blind.o Dig.o Donate.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Genocide.o Health.o Lamp.o Loot.o MonsterInfo.o Potion.o Pray.o Ring.o Rub.o Scroll.o Shop.o Sokoban.o Throne.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
+OBJECTS = Amulet.o Armor.o Beatitude.o Blind.o Dig.o Donate.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Genocide.o Health.o Lamp.o Loot.o MonsterInfo.o Potion.o Pray.o Ring.o Rub.o Scroll.o Shop.o Throne.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
 
-all: Analyzers.a
-
-Analyzers.a: $(OBJECTS)
-	rm -f Analyzers.a
-	$(AR) cr Analyzers.a $(OBJECTS)
+analyzers: $(OBJECTS)
 
 Amulet.o: Amulet.h Amulet.cpp
 Armor.o: Armor.h Armor.cpp
@@ -35,7 +31,6 @@ Ring.o: Ring.h Ring.cpp
 Rub.o: Rub.h Rub.cpp
 Scroll.o: Scroll.h Scroll.cpp
 Shop.o: Shop.h Shop.cpp
-Sokoban.o: Sokoban.h Sokoban.cpp
 Throne.o: Throne.h Throne.cpp
 Unihorn.o: Unihorn.h Unihorn.cpp
 Valkyrie.o: Valkyrie.h Valkyrie.cpp
@@ -46,4 +41,4 @@ Wish.o: Wish.h Wish.cpp
 
 .PHONY: clean
 clean:
-	$(RM) *.o *.gch *.a
+	$(RM) *.o *.gch

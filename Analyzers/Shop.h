@@ -8,7 +8,6 @@
 
 #include <string>
 #include "../Analyzer.h"
-#include "../Globals.h"
 #include "../Point.h"
 #include "../Request.h"
 
@@ -26,7 +25,5 @@ class Shop : public Analyzer {
 		bool drop_pick_axe;
 		bool look_at_ground;
 		Request req;
-
-		bool visited[MAP_ROW_END + 1][MAP_COL_END + 1];
 };
 #endif

@@ -193,10 +193,6 @@ void Explore::parseMessages(const string &messages) {
 		/* temporary hack for teleport control */
 		command = "><,";
 		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && messages.find(MESSAGE_TELEPORT_INSTRUCTIONS, 0) != string::npos) {
-		/* ignore the instructions */
-		command = "";
-		priority = PRIORITY_CONTINUE_ACTION;
 	}
 	/* TODO
 	 * apply stethoscope to search for hidden door/passage.

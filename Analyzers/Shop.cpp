@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stack>
 #include "Shop.h"
 #include "../Debug.h"
 #include "../Globals.h"

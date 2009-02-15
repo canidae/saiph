@@ -34,7 +34,6 @@
 #include "Analyzers/Rub.h"
 #include "Analyzers/Scroll.h"
 #include "Analyzers/Shop.h"
-#include "Analyzers/Sokoban.h"
 #include "Analyzers/Throne.h"
 #include "Analyzers/Unihorn.h"
 #include "Analyzers/Valkyrie.h"
@@ -108,7 +107,6 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Rub(this));
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Shop(this));
-	analyzers.push_back(new Sokoban(this));
 	analyzers.push_back(new Throne(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
@@ -490,7 +488,7 @@ bool Saiph::run() {
 			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
 			(*best_analyzer)->fail();
 		}
-	} else if (stuck_counter > 420) {
+	} else if (stuck_counter > 1680) {
 		/* failed too many times, #quit */
 		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
 		world->executeCommand(string(1, (char) 27));

@@ -3,15 +3,10 @@ RM = rm -f
 CXXFLAGS = -O0 -Wall -g3 -pg -gdwarf-2
 LDFLAGS = -lutil -g3 -pg -gdwarf-2
 OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
-LIBRARIES = Analyzers/Analyzers.a
 
-all: saiph
-
-analyzers:
+saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp
 	$(MAKE) -C Analyzers
-
-saiph: $(OBJECTS) analyzers $(LIBRARIES)
-	$(CXX) $(OBJECTS) $(LIBRARIES) $(LDFLAGS) -o saiph
+	$(CXX) $(OBJECTS) Analyzers/*.o $(LDFLAGS) -o saiph
 
 Analyzer.o: Analyzer.h Analyzer.cpp
 Connection.o: Connection.h Connection.cpp

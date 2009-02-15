@@ -276,7 +276,6 @@
 #define PRIORITY_EXPLORE_FIND_ROGUE_STAIRS 70
 #define PRIORITY_EXPLORE_STAIRS_UP 60
 #define PRIORITY_EXPLORE_EXPLORE 50
-#define PRIORITY_SOLVE_SOKOBAN 45
 #define PRIORITY_EXPLORE_STAIRS_DOWN 40
 #define PRIORITY_EXPLORE_TRAVEL 30
 #define PRIORITY_FIGHT_MELEE_BLUE_E 25
@@ -330,7 +329,6 @@
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
-#define MESSAGE_TELEPORT_INSTRUCTIONS "  (For instructions type a ?)  "
 #define MESSAGE_TEXT_BURNED "  Some text has been burned into the floor here.  "
 #define MESSAGE_TEXT_DIGGED "  Something is engraved here on the floor.  "
 #define MESSAGE_TEXT_DUSTED "  Something is written here in the dust.  "
