@@ -20,9 +20,33 @@ void Dig::analyze() {
 		for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) BOULDER].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) BOULDER].end(); ++b)
 			dig_locations.push_back(b->first);
 
-		/* TODO: FLOOR tiles we can't reach */
-
-		/* TODO: shortcuts */
+		/* dig free UNPASSABLE FLOOR tiles */
+		for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].end(); ++b) {
+			const PathNode &node = saiph->shortestPath(b->first);
+			if (node.cost != UNPASSABLE)
+				continue; // can either walk on it or not reach it
+			/* dig one of the N, W, E or S tile if we can reach it */
+			const PathNode north = saiph->shortestPath(Point(b->first.row - 1, b->first.col));
+			if (north.cost == UNPASSABLE) {
+				dig_locations.push_back(Point(b->first.row - 1, b->first.col));
+				continue;
+			}
+			const PathNode west = saiph->shortestPath(Point(b->first.row, b->first.col - 1));
+			if (west.cost == UNPASSABLE) {
+				dig_locations.push_back(Point(b->first.row, b->first.col - 1));
+				continue;
+			}
+			const PathNode east = saiph->shortestPath(Point(b->first.row, b->first.col + 1));
+			if (east.cost == UNPASSABLE) {
+				dig_locations.push_back(Point(b->first.row, b->first.col + 1));
+				continue;
+			}
+			const PathNode south = saiph->shortestPath(Point(b->first.row + 1, b->first.col));
+			if (south.cost == UNPASSABLE) {
+				dig_locations.push_back(Point(b->first.row + 1, b->first.col));
+				continue;
+			}
+		}
 	}
 
 	/* dig nearest dig_location */
