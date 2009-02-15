@@ -319,8 +319,10 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			int distance = max(abs(m->first.row - point.row), abs(m->first.col - point.col));
 			if (distance > MAX_MONSTER_MOVE)
 				continue; // too far away from where we last saw it, probably new monster
-			if (distance >= min_distance)
+			else if (distance >= min_distance)
 				continue;
+			else if ((m->second.priest || m->second.shopkeeper) && distance > 1)
+				continue; // shopkeepers and priests are very close to eachother in minetown
 			/* it is */
 			min_distance = distance;
 			nearest = m;
