@@ -52,6 +52,10 @@ void Wand::analyze() {
 }
 
 void Wand::parseMessages(const string &messages) {
+	if (messages.find(WAND_WORN_OUT_MESSAGE, 0) != string::npos) {
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
+	}
 	if (state == WAND_STATE_INIT) {
 		if (saiph->inventory_changed) {
 			if (wand_key != 0 && !isUnidentifiedWand(wand_key))

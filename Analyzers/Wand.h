@@ -17,6 +17,8 @@
 #define WAND_LIGHTNING_MESSAGE " is a wand of lightning!  "
 #define WAND_FIRE_MESSAGE " is a wand of fire!  "
 
+#define WAND_WORN_OUT_MESSAGE "  You wrest one last charge from the worn-out wand.  "
+
 #define WAND_VANISHER_NAME "wand of vanishing"
 #define WAND_SLEEP_DEATH_NAME "wand of sleep/death"
 #define WAND_NO_EFFECT_NAME "wand of no engrave effect"
