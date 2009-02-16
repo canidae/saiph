@@ -30,6 +30,7 @@
 #define LEVEL_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define LEVEL_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define LEVEL_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
+#define LEVEL_UNDIGGABLE "  is too hard to dig in"
 #define LEVEL_YOU_FEEL_HERE "  You feel here " // not two spaces here as it's followed by eg. "a lichen corpse"
 #define LEVEL_YOU_FEEL_NO_OBJECTS "  You feel no objects here.  "
 #define LEVEL_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
@@ -57,6 +58,7 @@ class Level {
 		std::string name;
 		int depth;
 		int branch;
+		bool undiggable;
 
 		static bool passable[UCHAR_MAX + 1];
 

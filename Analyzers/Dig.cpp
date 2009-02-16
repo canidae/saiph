@@ -10,8 +10,11 @@ Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITE
 }
 
 void Dig::analyze() {
-	/* TODO: no digging on no-dig levels */
-	if (priority >= PRIORITY_DIG_PATH || digging_tool == ILLEGAL_ITEM || saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN || !freeWeaponHand())
+	if (priority >= PRIORITY_DIG_PATH || digging_tool == ILLEGAL_ITEM)
+		return;
+	else if (saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN)
+		return;
+	else if (!freeWeaponHand())
 		return;
 
 	if (dig_locations.size() <= 0) {
@@ -21,30 +24,32 @@ void Dig::analyze() {
 			dig_locations.push_back(b->first);
 
 		/* dig free UNPASSABLE FLOOR tiles */
-		for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].end(); ++b) {
-			const PathNode &node = saiph->shortestPath(b->first);
-			if (node.cost != UNPASSABLE)
-				continue; // can either walk on it or not reach it
-			/* dig one of the N, W, E or S tile if we can reach it */
-			const PathNode north = saiph->shortestPath(Point(b->first.row - 1, b->first.col));
-			if (north.cost == UNPASSABLE) {
-				dig_locations.push_back(Point(b->first.row - 1, b->first.col));
-				continue;
-			}
-			const PathNode west = saiph->shortestPath(Point(b->first.row, b->first.col - 1));
-			if (west.cost == UNPASSABLE) {
-				dig_locations.push_back(Point(b->first.row, b->first.col - 1));
-				continue;
-			}
-			const PathNode east = saiph->shortestPath(Point(b->first.row, b->first.col + 1));
-			if (east.cost == UNPASSABLE) {
-				dig_locations.push_back(Point(b->first.row, b->first.col + 1));
-				continue;
-			}
-			const PathNode south = saiph->shortestPath(Point(b->first.row + 1, b->first.col));
-			if (south.cost == UNPASSABLE) {
-				dig_locations.push_back(Point(b->first.row + 1, b->first.col));
-				continue;
+		if (!saiph->levels[saiph->position.level].undiggable) {
+			for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].end(); ++b) {
+				const PathNode &node = saiph->shortestPath(b->first);
+				if (node.cost != UNPASSABLE)
+					continue; // can either walk on it or not reach it
+				/* dig one of the N, W, E or S tile if we can reach it */
+				const PathNode north = saiph->shortestPath(Point(b->first.row - 1, b->first.col));
+				if (north.cost == UNPASSABLE) {
+					dig_locations.push_back(Point(b->first.row - 1, b->first.col));
+					continue;
+				}
+				const PathNode west = saiph->shortestPath(Point(b->first.row, b->first.col - 1));
+				if (west.cost == UNPASSABLE) {
+					dig_locations.push_back(Point(b->first.row, b->first.col - 1));
+					continue;
+				}
+				const PathNode east = saiph->shortestPath(Point(b->first.row, b->first.col + 1));
+				if (east.cost == UNPASSABLE) {
+					dig_locations.push_back(Point(b->first.row, b->first.col + 1));
+					continue;
+				}
+				const PathNode south = saiph->shortestPath(Point(b->first.row + 1, b->first.col));
+				if (south.cost == UNPASSABLE) {
+					dig_locations.push_back(Point(b->first.row + 1, b->first.col));
+					continue;
+				}
 			}
 		}
 	}

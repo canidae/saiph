@@ -20,7 +20,7 @@ bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
 
 /* constructors/destructor */
-Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), saiph(saiph) {
+Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), undiggable(false), saiph(saiph) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
 			dungeonmap[a][b] = SOLID_ROCK;
@@ -46,21 +46,21 @@ void Level::parseMessages(const string &messages) {
 		clearStash(saiph->position);
 	/* parse messages that can help us find doors/staircases/etc. */
 	string::size_type pos;
-	if (messages.find(LEVEL_STAIRCASE_UP_HERE, 0) != string::npos)
+	if (messages.find(LEVEL_STAIRCASE_UP_HERE) != string::npos) {
 		setDungeonSymbol(saiph->position, STAIRS_UP);
-	else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE, 0) != string::npos)
+	} else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE) != string::npos) {
 		setDungeonSymbol(saiph->position, STAIRS_DOWN);
-	else if (messages.find(LEVEL_OPEN_DOOR_HERE, 0) != string::npos)
+	} else if (messages.find(LEVEL_OPEN_DOOR_HERE) != string::npos) {
 		setDungeonSymbol(saiph->position, OPEN_DOOR);
-	else if (messages.find(LEVEL_GRAVE_HERE, 0) != string::npos)
+	} else if (messages.find(LEVEL_GRAVE_HERE) != string::npos) {
 		setDungeonSymbol(saiph->position, GRAVE);
-	else if (messages.find(LEVEL_FOUNTAIN_HERE, 0) != string::npos)
+	} else if (messages.find(LEVEL_FOUNTAIN_HERE) != string::npos) {
 		setDungeonSymbol(saiph->position, FOUNTAIN);
-	else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP, 0) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2, 0) != string::npos)
+	} else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2) != string::npos) {
 		setDungeonSymbol(saiph->position, FLOOR);
-	else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE, 0) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE, 0) != string::npos)
+	} else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE) != string::npos) {
 		setDungeonSymbol(saiph->position, UNKNOWN_TILE);
-	else if ((pos = messages.find(LEVEL_ALTAR_HERE, 0)) != string::npos) {
+	} else if ((pos = messages.find(LEVEL_ALTAR_HERE)) != string::npos) {
 		setDungeonSymbol(saiph->position, ALTAR);
 		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
@@ -69,6 +69,8 @@ void Level::parseMessages(const string &messages) {
 			symbols[(unsigned char) ALTAR][saiph->position] = CHAOTIC;
 		else
 			symbols[(unsigned char) ALTAR][saiph->position] = LAWFUL;
+	} else if (messages.find(LEVEL_UNDIGGABLE) != string::npos) {
+		undiggable = true;
 	}
 
 	/* item parsing */
