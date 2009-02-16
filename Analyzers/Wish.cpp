@@ -12,7 +12,22 @@ Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0
 
 /* methods */
 void Wish::parseMessages(const string &messages) {
+	if (saiph->inventory_changed) {
+		wand_of_wishing_key = 0;
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name == "wand of wishing") {
+				wand_of_wishing_key = i->first;
+			}
+		}
+	}
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
+		MRarmor = wearing("gray dragon scale mail") || wearing("gray dragon scales");
+		MRcloak = wearing("cloak of magic resistance");
+		haveMR = MRarmor || MRcloak;
+		reflectionArmor = wearing("silver dragon scale mail") || wearing("silver dragon scales");
+		reflectionAmulet = wearing("amulet of reflection");
+		reflectionShield = wearing("shield of reflection");
+		haveReflection = reflectionArmor || reflectionAmulet || reflectionShield;
 		command = "3 blessed greased fixed +3 " + selectWish();
 		Debug::notice(saiph->last_turn) << WISH_DEBUG_NAME << "Wishing for " << command << endl;
 		command.append("\n");
@@ -23,20 +38,6 @@ void Wish::parseMessages(const string &messages) {
 		command = wand_of_wishing_key;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
-	}
-	MRarmor = wearing("gray dragon scale mail") || wearing("gray dragon scales");
-	MRcloak = wearing("cloak of magic resistance");
-	haveMR = MRarmor || MRcloak;
-	reflectionArmor = wearing("silver dragon scale mail") || wearing("silver dragon scales");
-	reflectionAmulet = wearing("amulet of reflection");
-	reflectionShield = wearing("shield of reflection");
-	haveReflection = reflectionArmor || reflectionAmulet || reflectionShield;
-	if (saiph->inventory_changed) {
-		wand_of_wishing_key = 0;
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i)
-			if (i->second.name == "wand of wishing") {
-				wand_of_wishing_key = i->first;
-			}
 	}
 }
 
@@ -56,14 +57,14 @@ void Wish::analyze() {
 string Wish::selectWish() {
 	//if (wish_from_wand && !have_charging)
 	//	return "3 scrolls of charging";
-	if (!haveReflection) {
-		if (MRarmor)
-			return "amulet of reflection";
-		return "silver dragon scale mail";
-	} else if (!haveMR) {
+	if (!haveMR) {
 		if (reflectionArmor)
 			return "cloak of magic resistance";
 		return "gray dragon scale mail";
+	} else if (!haveReflection) {
+		if (MRarmor)
+			return "amulet of reflection";
+		return "silver dragon scale mail";
 	} else if (!wearing("speed boots"))
 		return "speed boots";
 	else if (!wearing("gauntlets of power"))
