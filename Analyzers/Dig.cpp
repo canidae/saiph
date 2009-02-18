@@ -10,7 +10,7 @@ Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITE
 }
 
 void Dig::analyze() {
-	if (priority >= PRIORITY_DIG_PATH || digging_tool == ILLEGAL_ITEM)
+	if (priority >= PRIORITY_DIG_DOWN || digging_tool == ILLEGAL_ITEM)
 		return;
 	else if (saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN)
 		return;
@@ -62,9 +62,6 @@ void Dig::analyze() {
 			++d;
 			continue;
 		}
-		/* we're going to move or dig, set priority and least_moves */
-		priority = PRIORITY_DIG_PATH;
-		least_moves = node.moves;
 		if (node.moves == 1) {
 			/* next to location we want to dig, but do we still want to dig here? */
 			unsigned char symbol = saiph->getDungeonSymbol(*d);
@@ -77,12 +74,21 @@ void Dig::analyze() {
 				d = dig_locations.erase(d);
 				continue;
 			}
-			return; // no point iterating remaining list
 		} else {
 			/* move towards location to dig */
 			command = node.dir;
 		}
+		priority = PRIORITY_DIG_PATH;
+		least_moves = node.moves;
 		++d;
+	}
+
+	unsigned char symbol = saiph->getDungeonSymbol();
+	if (!saiph->levels[saiph->position.level].undiggable && symbol != SHOP_TILE && symbol != OPEN_DOOR && least_moves == UNREACHABLE) {
+		/* no place to dig, dig down instead */
+		dig_direction = DOWN;
+		command = APPLY;
+		priority = PRIORITY_DIG_DOWN;
 	}
 }
 

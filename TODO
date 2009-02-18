@@ -151,6 +151,8 @@ Lamp
 
 Loot
 --------------------------------------------------------------------------------
+- inventory handling is a mess!
+  how should we easily tell the Loot analyzer what items we want and don't want?
 - we must make sure that we check out inventory each time it's changed.
   it's possible that we should look for messages like "you drop" and other
   generic messages that tells us that inventory is changed, instead of having
