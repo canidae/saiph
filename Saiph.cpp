@@ -50,13 +50,16 @@ bool sortAnalyzers(const Analyzer *a, const Analyzer *b) {
 }
 
 /* constructors/destructor */
-Saiph::Saiph(int interface) {
+Saiph::Saiph(const string &directory, const int interface) {
 	connection = Connection::create(interface);
 	if (connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << interface << endl;
 		exit(1);
 	}
 	world = new World(connection);
+
+	/* current directory for loading files */
+	current_directory = directory;
 
 	/* bools for branches */
 	sokoban_found = false;
@@ -1041,10 +1044,73 @@ void Saiph::parseMessages(const string &messages) {
 		world->player.levitating = false;
 }
 
+string dirname(const string &path) {
+	size_t offset = path.find_last_of("/\\");
+
+	if (offset != string::npos) {
+		return path.substr(0, offset);
+	} else {
+		return "./";
+	}
+}
+
+void usage(const string &executable) {
+	cout << "Usage: " << executable << " [-l|-t] [-L <logfile>]" << endl;
+	cout << endl;
+	cout << "\t-l  Use local nethack executable" << endl;
+	cout << "\t-t  Use telnet nethack server" << endl;
+	cout << endl;
+	cout << "\t-L <logfile>  Log file to write Saiph output" << endl;
+}
+
 /* main */
-int main() {
-	Debug::open("saiph.log");
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+int main(int argc, const char *argv[]) {
+	int connection_type = CONNECTION_LOCAL;
+	string logfile = "saiph.log";
+
+	bool showUsage = false;
+	if (argc > 1) {
+		for (int a = 1; a < argc; ++a) {
+			if (strlen(argv[a]) < 2) {
+				showUsage = true;
+				continue;
+			}
+
+			if (argv[a][0] == '-') {
+				switch (argv[a][1]) {
+				case 'h':
+					showUsage = true;
+					break;
+				case 'l':
+					connection_type = CONNECTION_LOCAL;
+					break;
+				case 't':
+					connection_type = CONNECTION_TELNET;
+					break;
+				case 'L':
+					if (argc > ++a)
+						logfile = argv[a];
+					else
+						showUsage = true;
+					break;
+				default:
+					cout << "Invalid argument " << argv[a] << endl;
+					showUsage = true;
+					break;
+				}
+			} else {
+				cout << "Unknown argument specified." << endl;
+			}
+		}
+
+		if (showUsage) {
+			usage(argv[0]);
+			return 1;
+		}
+	}
+
+	Debug::open(logfile);
+	Saiph *saiph = new Saiph(dirname(argv[0]), connection_type);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
