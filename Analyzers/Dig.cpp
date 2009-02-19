@@ -89,6 +89,8 @@ void Dig::analyze() {
 	if (!saiph->levels[saiph->position.level].undiggable && canDigDownTile(symbol) && least_moves == UNREACHABLE) {
 		/* no place to dig, dig down instead */
 		dig_direction = DOWN;
+		last_dig_location = saiph->position;
+		last_dig_target = (Point)saiph->position;
 		command = APPLY;
 		priority = PRIORITY_DIG_DOWN;
 	}
@@ -119,6 +121,7 @@ void Dig::parseMessages(const string &messages) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
 	} else if (last_dig_location == saiph->position &&
+			last_dig_target != (Point)last_dig_location &&
  			(messages.find(DIG_TOO_HARD) != string::npos ||
 			messages.find(DIG_NOT_ENOUGH_ROOM) != string::npos)) {
 		/* our target is undiggable */
