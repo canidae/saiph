@@ -1,6 +1,7 @@
 #include <algorithm>
-#include <stdlib.h>
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
 #include "Analyzer.h"
 #include "Connection.h"
 #include "Debug.h"
@@ -1067,7 +1068,7 @@ void usage(const string &executable) {
 
 /* main */
 int main(int argc, const char *argv[]) {
-	int connection_type = CONNECTION_LOCAL;
+	int connection_type = CONNECTION_TELNET;
 	string logfile = "saiph.log";
 
 	bool showUsage = false;
