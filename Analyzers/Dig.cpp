@@ -69,6 +69,8 @@ void Dig::analyze() {
 				/* yes, we do */
 				dig_direction = node.dir;
 				command = APPLY;
+				last_dig_target = *d;
+				last_dig_location = saiph->position;
 			} else {
 				/* no, we can no longer dig on this location */
 				d = dig_locations.erase(d);
@@ -84,12 +86,23 @@ void Dig::analyze() {
 	}
 
 	unsigned char symbol = saiph->getDungeonSymbol();
-	if (!saiph->levels[saiph->position.level].undiggable && symbol != SHOP_TILE && symbol != OPEN_DOOR && least_moves == UNREACHABLE) {
+	if (!saiph->levels[saiph->position.level].undiggable && canDigDownTile(symbol) && least_moves == UNREACHABLE) {
 		/* no place to dig, dig down instead */
 		dig_direction = DOWN;
+		last_dig_location = saiph->position;
+		last_dig_target = (Point)saiph->position;
 		command = APPLY;
 		priority = PRIORITY_DIG_DOWN;
 	}
+}
+
+inline bool Dig::canDigDownTile(unsigned char symbol) {
+	return symbol != SHOP_TILE &&
+		symbol != OPEN_DOOR &&
+		symbol != STAIRS_DOWN &&
+		symbol != STAIRS_UP &&
+		symbol != ALTAR &&
+		symbol != THRONE;
 }
 
 void Dig::parseMessages(const string &messages) {
@@ -107,6 +120,12 @@ void Dig::parseMessages(const string &messages) {
 		/* tell loot analyzer to check inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
+	} else if (last_dig_location == saiph->position &&
+			last_dig_target != (Point)last_dig_location &&
+ 			(messages.find(DIG_TOO_HARD) != string::npos ||
+			messages.find(DIG_NOT_ENOUGH_ROOM) != string::npos)) {
+		/* our target is undiggable */
+		saiph->setDungeonSymbol(last_dig_target, UNKNOWN_TILE_UNPASSABLE);
 	}
 }
 

@@ -1,6 +1,10 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
+#include <limits.h>
+#include <map>
+#include <string>
+#include <vector>
 #include "Globals.h"
 
 class Monster {
@@ -14,6 +18,6 @@ class Monster {
 		bool priest;
 		bool minotaur;
 
-		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, int last_seen = -1, bool visible = false, int attitude = ATTITUDE_UNKNOWN, bool shopkeeper = false, bool priest = false, bool minotaur = false);
+		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, int last_seen = -1);
 };
 #endif

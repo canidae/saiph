@@ -75,7 +75,7 @@ class Saiph {
 		bool got_drop_menu;
 		int last_turn;
 
-		Saiph(int interface);
+		Saiph(const std::string &directory, const int interface);
 		~Saiph();
 
 		bool addItemToInventory(unsigned char key, const Item &item);
@@ -98,6 +98,8 @@ class Saiph {
 		PathNode shortestPath(unsigned char symbol);
 
 	private:
+		std::string current_directory;
+
 		Connection *connection;
 		std::vector<Analyzer *> analyzers;
 		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
