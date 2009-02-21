@@ -7,9 +7,6 @@
 /* armor properties */
 #define PROPERTY_MAGICRES
 #define PROPERTY_REFLECTION
-#define PROPERTY_MC3
-#define PROPERTY_MC2
-#define PROPERTY_MC1
 #define PROPERTY_FIRERES
 #define PROPERTY_COLDRES
 #define PROPERTY_SLEEPRES
@@ -33,18 +30,15 @@
 #define PROPERTY_VERYFAST
 #define PROPERTY_WATERWALKING
 #define PROPERTY_SLIPPERY /* oilskin cloak */
-//we've used 28 bits so far, 4 remain
+//we've used 25 bits so far, 7 remain
 
 class ArmorData : public ItemData {
 public:
-	ArmorData(const std::string& name, int cost, int weight, bool magic, int ac, unsigned int properties);
-	virtual char getClass() const {return ARMOR;}
-	virtual int getSlot()=0 const;
-	int getAC() const {return ac;}
-	unsigned int getProperties() const {return properties;}
+	ArmorData(const std::string& name, int cost, int weight, bool magic, int slot, int ac, int mc, unsigned int properties);
 	/* TODO: after materials get implemented, hindersCasting() and erodes() */
-private:
+	const int slot;
 	const int ac;
+	const int mc;
 	const unsigned int properties;
 };
 
