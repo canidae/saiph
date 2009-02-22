@@ -34,13 +34,12 @@
 
 class ArmorData : public ItemData {
 public:
-	ArmorData(const std::string& name, int cost, int weight, bool magic, int slot, int ac, int mc, unsigned int properties);
 	/* TODO: after materials get implemented, hindersCasting() and erodes() */
 	const int slot;
 	const int ac;
 	const int mc;
 	const unsigned int properties;
+
+	ArmorData(const std::string& name, int cost, int weight, bool magic, int slot, int ac, int mc, unsigned int properties);
 };
-
-#endif	/* _ARMORDATA_H */
-
+#endif
