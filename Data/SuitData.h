@@ -6,8 +6,7 @@
 
 class SuitData : public ArmorData {
 public:
-	SuitData(const std::string& name, int cost, int weight, bool magic, int ac, unsigned int properties);
-	virtual int getSlot() const {return ARMOR_SUIT;}
+	SuitData(const std::string& name, int cost, int weight, bool magic, int ac, int mc, unsigned int properties);
 }
 
 #endif	/* _SUITDATA_H */
