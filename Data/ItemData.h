@@ -43,6 +43,6 @@ public:
 	const char item_class;
 	const long long int properties;
 
-	ItemData(const std::string& name = "", int base_cost = 0, int weight = 0, char item_class = ILLEGAL_ITEM, long long int properties = PROPERTY_CLEAR);
+	ItemData(const std::string& name, int base_cost, int weight, char item_class, long long int properties);
 };
 #endif
