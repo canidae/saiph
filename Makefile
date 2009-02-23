@@ -4,9 +4,10 @@ CXXFLAGS = -O0 -Wall -g3 -pg -gdwarf-2
 LDFLAGS = -lutil -g3 -pg -gdwarf-2
 OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
 
-saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp
+saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp
 	$(MAKE) -C Analyzers
-	$(CXX) $(OBJECTS) Analyzers/*.o $(LDFLAGS) -o saiph
+	$(MAKE) -C Data
+	$(CXX) $(OBJECTS) Analyzers/*.o Data/*.o $(LDFLAGS) -o saiph
 
 Analyzer.o: Analyzer.h Analyzer.cpp
 Connection.o: Connection.h Connection.cpp
@@ -29,6 +30,7 @@ World.o: World.h World.cpp
 clean:
 	$(RM) *.o *.gch saiph
 	$(MAKE) -C Analyzers clean
+	$(MAKE) -C Data clean
 
 #Launch game
 game:
