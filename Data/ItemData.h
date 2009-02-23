@@ -2,17 +2,47 @@
 #define ITEMDATA_H
 
 #include <string>
+#include "../Globals.h"
 
-/* TODO: material? */
+/* properties */
+#define PROPERTY_CLEAR             0x0000000000000000LL
+#define PROPERTY_FIRE              0x0000000000000001LL
+#define PROPERTY_COLD              0x0000000000000002LL
+#define PROPERTY_SLEEP             0x0000000000000004LL
+#define PROPERTY_DISINT            0x0000000000000008LL
+#define PROPERTY_SHOCK             0x0000000000000010LL
+#define PROPERTY_POISON            0x0000000000000020LL
+#define PROPERTY_ACID              0x0000000000000040LL
+#define PROPERTY_STONE             0x0000000000000080LL
+#define PROPERTY_MAGICRES          0x0000000000000100LL
+#define PROPERTY_REFLECTION        0x0000000000000200LL
+#define PROPERTY_DISPLACEMENT      0x0000000000000400LL
+#define PROPERTY_INVISIBLE         0x0000000000000800LL
+#define PROPERTY_VISIBLE           0x0000000000001000LL
+#define PROPERTY_BRILLIANCE        0x0000000000002000LL
+#define PROPERTY_ESP               0x0000000000004000LL
+#define PROPERTY_STUPIDITY         0x0000000000008000LL
+#define PROPERTY_STRENGTH          0x0000000000010000LL
+#define PROPERTY_DEXTERITY         0x0000000000020000LL
+#define PROPERTY_FUMBLING          0x0000000000040000LL
+#define PROPERTY_JUMPING           0x0000000000080000LL
+#define PROPERTY_KICKING           0x0000000000100000LL
+#define PROPERTY_LEVITATION        0x0000000000200000LL
+#define PROPERTY_STEALTH           0x0000000000400000LL
+#define PROPERTY_VERYFAST          0x0000000000800000LL
+#define PROPERTY_WATERWALKING      0x0000000001000000LL
+#define PROPERTY_SLIPPERY          0x0000000002000000LL
+#define PROPERTY_MAGIC             0x0000000004000000LL
+#define PROPERTY_RANDOM_APPEARANCE 0x0000000008000000LL
 
 class ItemData {
 public:
 	const std::string name;
 	const int base_cost;
 	const int weight;
-	const bool magic;
 	const char item_class;
+	const long long int properties;
 
-	ItemData(const std::string& name, int base_cost, int weight, bool magic, char item_class);
+	ItemData(const std::string& name = "", int base_cost = 0, int weight = 0, char item_class = ILLEGAL_ITEM, long long int properties = PROPERTY_CLEAR);
 };
 #endif

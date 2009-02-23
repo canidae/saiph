@@ -1,6 +1,12 @@
 #ifndef MONSTERDATA_H
 #define MONSTERDATA_H
 
+#include <limits.h>
+#include <map>
+#include <string>
+#include <vector>
+#include "../Globals.h"
+
 #define A_NONE	        -128     /* the value range of type */
 
 #define AT_ANY          -1      /* fake attack; dmgtype_fromattack wildcard */
@@ -296,12 +302,6 @@
 #define G_NOCORPSE      0x0010          /* no corpse left ever */
 #define G_FREQ          0x0007          /* creation frequency mask */
 
-#include <limits.h>
-#include <map>
-#include <string>
-#include <vector>
-#include "Globals.h"
-
 class MonsterAttack {
 	public:
 		int type;
@@ -357,7 +357,7 @@ inline const MonsterData &MonsterData::getMonsterData(int id) {
 }
 
 inline const MonsterData &MonsterData::getMonsterData(unsigned char symbol, int color) {
-	if ((int) symbol < 0 || (int) symbol > UCHAR_MAX || color < 0 || color > INVERSE_BOLD_WHITE)
+	if (color < 0 || color > INVERSE_BOLD_WHITE)
 		return getMonsterData(0);
 	return getMonsterData(monster_symbol_mapping[symbol][color]);
 }
