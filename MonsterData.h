@@ -357,7 +357,7 @@ inline const MonsterData &MonsterData::getMonsterData(int id) {
 }
 
 inline const MonsterData &MonsterData::getMonsterData(unsigned char symbol, int color) {
-	if ((int) symbol < 0 || (int) symbol > UCHAR_MAX || color < 0 || color > INVERSE_BOLD_WHITE)
+	if (color < 0 || color > INVERSE_BOLD_WHITE)
 		return getMonsterData(0);
 	return getMonsterData(monster_symbol_mapping[symbol][color]);
 }

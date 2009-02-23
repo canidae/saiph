@@ -30,11 +30,11 @@ Connection *Connection::create(int interface) {
 }
 
 /* methods */
-int Connection::retrieve(char *buffer, int count) {
+int Connection::retrieve(char *, int) {
 	return 0;
 }
 
-int Connection::transmit(const string &data) {
+int Connection::transmit(const string &) {
 	return 0;
 }
 

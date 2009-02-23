@@ -33,9 +33,9 @@ void Analyzer::fail() {
 void Analyzer::init() {
 }
 
-void Analyzer::parseMessages(const string &messages) {
+void Analyzer::parseMessages(const string &) {
 }
 
-bool Analyzer::request(const Request &request) {
+bool Analyzer::request(const Request &) {
 	return false;
 }
