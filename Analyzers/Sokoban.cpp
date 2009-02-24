@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false) {
+Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false), pushFailures(0) {
 	loadLevels();
 
 	for (unsigned int a = 0; a < levels.size(); ++a) {
@@ -19,13 +19,25 @@ Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false
 }
 
 void Sokoban::parseMessages(const string &messages) {
-	if (moving && saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN) {
+	if (moving && currentTarget.level == saiph->position.level) {
+		if (messages.find(MESSAGE_PERHAPS_THATS_WHY, 0) != string::npos) {
+			if (++pushFailures > SOKOBAN_MAX_PUSH_FAILURES) {
+				/* TODO make Saiph come back after she gets more projectiles to throw */
+				moving = false;
+				return;
+			}
+			/* There is a monster behind the boulder, so try to wait for them to move and push again. */
+			command = IDLE;
+			priority = PRIORITY_SOLVE_SOKOBAN;
+			return;
+		}
 		int level = levelMap[saiph->position.level];
 		Point &boulder = levels[level].boulders[(*currentMove).boulder];
 		if ((Point)saiph->position == boulder) {
 			/* we made it to the square where the boulder was, so the bouler must be pushed */
 			moveBoulderToTarget(level, *currentMove);
 			++currentMove;
+			pushFailures = 0;
 			Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Moved boulder, going to move number " << currentMove - levels[level].solution.begin() << endl;
 			if (currentMove == levels[level].solution.end()) {
 				/* we've completed all our moves for this level */
@@ -42,6 +54,19 @@ void Sokoban::parseMessages(const string &messages) {
 void Sokoban::analyze() {
 	if (priority > PRIORITY_SOLVE_SOKOBAN)
 		return;
+	if (moving && currentTarget.level != saiph->position.level &&
+		pushFailures < SOKOBAN_MAX_PUSH_FAILURES) {
+		/* We must have fallen into one of the holes */
+		const PathNode &node = saiph->shortestPath(currentTarget);
+		if (node.cost >= UNPASSABLE) {
+			Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Couldn't return to current target level. Giving up for now." << endl;
+			return;
+		}
+		Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Attempting to move back to target level " << currentTarget.level << endl;
+		priority = PRIORITY_SOLVE_SOKOBAN;
+		command = node.dir;
+		return;
+	}
 	if (saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN) {
 		int level = levelMap[saiph->position.level];
 		if (level == 0) {

@@ -9,6 +9,7 @@
 #include "../Level.h"
 
 #define SOKOBAN_DEBUG_NAME "Sokoban] "
+#define SOKOBAN_MAX_PUSH_FAILURES 15
 
 using namespace std;
 
@@ -58,5 +59,6 @@ class Sokoban : public Analyzer {
 		vector<Move>::iterator currentMove;
 		Coordinate currentTarget;
 		bool moving;
+		int pushFailures;
 };
 #endif
