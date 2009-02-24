@@ -191,8 +191,6 @@ void Sokoban::loadLevels() {
 
 		if (loadBoulders(file, level.boulders) &&
 			loadSolutions(file, level.solution)) {
-
-			Debug::info() << SOKOBAN_DEBUG_NAME << "boulders:" << endl;
 			levels.push_back(level);
 		} else {
 			if (!file.eof())
