@@ -35,7 +35,7 @@ Scroll::Scroll(Saiph *saiph) : Analyzer("Scroll"), saiph(saiph) {
 }
 
 /* methods */
-void Scroll::parseMessages(const string &messages) {
+void Scroll::analyze(const string &messages) {
 	if (saiph->world->question) {
 		string::size_type start = messages.find(SCROLL_CALL_SCROLL, 0);
 		if (start == string::npos)

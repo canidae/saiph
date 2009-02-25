@@ -13,8 +13,7 @@ class Donate : public Analyzer {
 	public:
 		Donate(Saiph *saiph);
 
-		void parseMessages(const std::string &messages);
-		void analyze();
+		void analyze(const std::string &messages);
 
 	private:
 		Saiph *saiph;

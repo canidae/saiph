@@ -225,71 +225,7 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 }
 
 /* methods */
-void Food::analyze() {
-	/* update prev_monster_loc with seen monsters (not standing on a stash) */
-	prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m)
-		prev_monster_loc[m->first] = m->second.symbol;
-	/* we can't eat while acrrying too much.
-	   TODO drop things so we can eat */
-	if (saiph->world->player.encumbrance >= OVERTAXED)
-		return;
-	/* are we hungry? */
-	if (saiph->world->player.hunger <= WEAK) {
-		/* yes, we are */
-		for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-				if (i->second.name == *f) {
-					/* and we got something to eat */
-					command = EAT;
-					command2 = i->first;
-					switch (saiph->world->player.hunger) {
-						case HUNGRY:
-							priority = PRIORITY_FOOD_EAT_HUNGRY;
-							break;
-
-						case WEAK:
-							priority = PRIORITY_FOOD_EAT_WEAK;
-							break;
-
-						default:
-							priority = PRIORITY_FOOD_EAT_FAINTING;
-							break;
-					}
-					return;
-				}
-			}
-		}
-		/* hmm, nothing to eat, how bad is it? */
-		if (saiph->world->player.hunger <= WEAK) {
-			/* bad enough to pray for help.
-			 * if this doesn't work... help! */
-			req.request = REQUEST_PRAY;
-			req.priority = PRIORITY_FOOD_PRAY_FOR_FOOD;
-			saiph->request(req);
-		}
-	}
-	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->getDungeonSymbol() != SHOP_TILE) {
-		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
-		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
-			/* it's safe to eat corpses here */
-			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
-				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
-					/* there's a corpse in the stash, is it edible? */
-					if ((saiph->world->player.hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
-						/* it is, and we know we can eat corpses on this position */
-						command = EAT;
-						command2 = i->name;
-						priority = PRIORITY_FOOD_EAT_CORPSE;
-						return;
-					}
-				}
-			}
-		}
-	}
-}
-
-void Food::parseMessages(const string &messages) {
+void Food::analyze(const string &messages) {
 	if (!saiph->world->question && command2 == "ate corpse") {
 		/* just ate a corpse, we should look at ground */
 		priority = PRIORITY_LOOK;
@@ -377,6 +313,69 @@ void Food::parseMessages(const string &messages) {
 		/* we should stop eating when we get this message */
 		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
+	}
+	if (saiph->world->menu || saiph->world->question)
+		return;
+	/* update prev_monster_loc with seen monsters (not standing on a stash) */
+	prev_monster_loc.clear();
+	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m)
+		prev_monster_loc[m->first] = m->second.symbol;
+	/* we can't eat while acrrying too much.
+	   TODO drop things so we can eat */
+	if (saiph->world->player.encumbrance >= OVERTAXED)
+		return;
+	/* are we hungry? */
+	if (saiph->world->player.hunger <= WEAK) {
+		/* yes, we are */
+		for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
+			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+				if (i->second.name == *f) {
+					/* and we got something to eat */
+					command = EAT;
+					command2 = i->first;
+					switch (saiph->world->player.hunger) {
+						case HUNGRY:
+							priority = PRIORITY_FOOD_EAT_HUNGRY;
+							break;
+
+						case WEAK:
+							priority = PRIORITY_FOOD_EAT_WEAK;
+							break;
+
+						default:
+							priority = PRIORITY_FOOD_EAT_FAINTING;
+							break;
+					}
+					return;
+				}
+			}
+		}
+		/* hmm, nothing to eat, how bad is it? */
+		if (saiph->world->player.hunger <= WEAK) {
+			/* bad enough to pray for help.
+			 * if this doesn't work... help! */
+			req.request = REQUEST_PRAY;
+			req.priority = PRIORITY_FOOD_PRAY_FOR_FOOD;
+			saiph->request(req);
+		}
+	}
+	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->getDungeonSymbol() != SHOP_TILE) {
+		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
+		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
+			/* it's safe to eat corpses here */
+			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
+				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
+					/* there's a corpse in the stash, is it edible? */
+					if ((saiph->world->player.hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
+						/* it is, and we know we can eat corpses on this position */
+						command = EAT;
+						command2 = i->name;
+						priority = PRIORITY_FOOD_EAT_CORPSE;
+						return;
+					}
+				}
+			}
+		}
 	}
 }
 

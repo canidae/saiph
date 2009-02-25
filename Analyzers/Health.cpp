@@ -9,7 +9,24 @@ Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false),
 }
 
 /* methods */
-void Health::analyze() {
+void Health::analyze(const string &messages) {
+	if (messages.find(MESSAGE_SLOWING_DOWN, 0) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING, 0) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE, 0) != string::npos) {
+		/* bloody *trice, this is bad */
+		req.request = REQUEST_EAT;
+		req.priority = PRIORITY_HEALTH_CURE_DEADLY;
+		req.data = "partly eaten lizard corpse";
+		if (!saiph->request(req)) {
+			/* no? try again non-partly eaten */
+			req.data = "lizard corpse";
+			if (!saiph->request(req)) {
+				/* oh crap */
+				req.request = REQUEST_PRAY;
+				saiph->request(req);
+			}
+		}
+	}
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	/* do something if our health is low */
 	int hp = saiph->world->player.hitpoints;
 	int hp_max = saiph->world->player.hitpoints_max;
@@ -105,22 +122,4 @@ void Health::analyze() {
 	prev_in = saiph->world->player.intelligence;
 	prev_wi = saiph->world->player.wisdom;
 	prev_ch = saiph->world->player.charisma;
-}
-
-void Health::parseMessages(const string &messages) {
-	if (messages.find(MESSAGE_SLOWING_DOWN, 0) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING, 0) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE, 0) != string::npos) {
-		/* bloody *trice, this is bad */
-		req.request = REQUEST_EAT;
-		req.priority = PRIORITY_HEALTH_CURE_DEADLY;
-		req.data = "partly eaten lizard corpse";
-		if (!saiph->request(req)) {
-			/* no? try again non-partly eaten */
-			req.data = "lizard corpse";
-			if (!saiph->request(req)) {
-				/* oh crap */
-				req.request = REQUEST_PRAY;
-				saiph->request(req);
-			}
-		}
-	}
 }

@@ -10,7 +10,10 @@ Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true)
 }
 
 /* methods */
-void Loot::analyze() {
+void Loot::analyze(const std::string &messages) {
+	parseMessages(messages);
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	if (saiph->on_ground != NULL) {
 		/* set visit_stash when we stand on a stash */
 		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
@@ -116,6 +119,77 @@ void Loot::complete() {
 		/* looked at ground, stash is no longer dirty */
 		dirty_stash = false;
 	}
+}
+
+bool Loot::request(const Request &request) {
+	if (request.request == REQUEST_DIRTY_INVENTORY) {
+		/* someone wants to mark our inventory as dirty */
+		checkInventory();
+		return true;
+	} else if (request.request == REQUEST_DIRTY_STASH) {
+		/* someone wants to mark stash at our position dirty */
+		checkStash();
+		return true;
+	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
+		/* set total amount of items in the given group */
+		groups[request.key].amount = request.value;
+		return true;
+	} else if (request.request == REQUEST_ITEM_GROUP_ADD) {
+		/* add item to group */
+		if (items.find(request.data) == items.end()) {
+			/* we need to add an entry about this item */
+			items[request.data].amount = 0;
+			items[request.data].beatitude = request.beatitude;
+			items[request.data].only_unknown_enchantment = false;
+		}
+		groups[request.key].items.push_back(request.data);
+		return true;
+	} else if (request.request == REQUEST_ITEM_PICKUP) {
+		/* pick up items that are not part of a group */
+		items[request.data].amount = request.value;
+		items[request.data].beatitude = request.beatitude;
+		items[request.data].only_unknown_enchantment = request.only_unknown_enchantment;
+		return true;
+	} else if (request.request == REQUEST_CALL_ITEM) {
+		call_items[request.key] = request.data;
+		if (priority < PRIORITY_LOOK) {
+			command = NAME;
+			priority = PRIORITY_LOOK;
+		}
+	} else if (request.request == REQUEST_NAME_ITEM) {
+		name_items[request.key] = request.data;
+		if (priority < PRIORITY_LOOK) {
+			command = NAME;
+			priority = PRIORITY_LOOK;
+		}
+	}
+	return false;
+}
+
+/* private methods */
+void Loot::checkInventory() {
+	dirty_inventory = true;
+	if (priority >= PRIORITY_LOOK)
+		return;
+	command = INVENTORY;
+	priority = PRIORITY_LOOK;
+}
+
+void Loot::checkStash() {
+	dirty_stash = true;
+	if (priority >= PRIORITY_LOOK)
+		return;
+	command = LOOK;
+	priority = PRIORITY_LOOK;
+}
+
+int Loot::dropItem(const Item &item) {
+	/* return how many items of this type should be dropped */
+	if (!item.additional.empty())
+		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
+	if (item.name.find("(", 0) != string::npos)
+		return 0; // even more of a hack; thoroughly rotted thoroughly burned iron helm (being wo
+	return pickupOrDropItem(item, true);
 }
 
 void Loot::parseMessages(const string &messages) {
@@ -268,77 +342,6 @@ void Loot::parseMessages(const string &messages) {
 		/* and check inventory */
 		checkInventory();
 	}
-}
-
-bool Loot::request(const Request &request) {
-	if (request.request == REQUEST_DIRTY_INVENTORY) {
-		/* someone wants to mark our inventory as dirty */
-		checkInventory();
-		return true;
-	} else if (request.request == REQUEST_DIRTY_STASH) {
-		/* someone wants to mark stash at our position dirty */
-		checkStash();
-		return true;
-	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
-		/* set total amount of items in the given group */
-		groups[request.key].amount = request.value;
-		return true;
-	} else if (request.request == REQUEST_ITEM_GROUP_ADD) {
-		/* add item to group */
-		if (items.find(request.data) == items.end()) {
-			/* we need to add an entry about this item */
-			items[request.data].amount = 0;
-			items[request.data].beatitude = request.beatitude;
-			items[request.data].only_unknown_enchantment = false;
-		}
-		groups[request.key].items.push_back(request.data);
-		return true;
-	} else if (request.request == REQUEST_ITEM_PICKUP) {
-		/* pick up items that are not part of a group */
-		items[request.data].amount = request.value;
-		items[request.data].beatitude = request.beatitude;
-		items[request.data].only_unknown_enchantment = request.only_unknown_enchantment;
-		return true;
-	} else if (request.request == REQUEST_CALL_ITEM) {
-		call_items[request.key] = request.data;
-		if (priority < PRIORITY_LOOK) {
-			command = NAME;
-			priority = PRIORITY_LOOK;
-		}
-	} else if (request.request == REQUEST_NAME_ITEM) {
-		name_items[request.key] = request.data;
-		if (priority < PRIORITY_LOOK) {
-			command = NAME;
-			priority = PRIORITY_LOOK;
-		}
-	}
-	return false;
-}
-
-/* private methods */
-void Loot::checkInventory() {
-	dirty_inventory = true;
-	if (priority >= PRIORITY_LOOK)
-		return;
-	command = INVENTORY;
-	priority = PRIORITY_LOOK;
-}
-
-void Loot::checkStash() {
-	dirty_stash = true;
-	if (priority >= PRIORITY_LOOK)
-		return;
-	command = LOOK;
-	priority = PRIORITY_LOOK;
-}
-
-int Loot::dropItem(const Item &item) {
-	/* return how many items of this type should be dropped */
-	if (!item.additional.empty())
-		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
-	if (item.name.find("(", 0) != string::npos)
-		return 0; // even more of a hack; thoroughly rotted thoroughly burned iron helm (being wo
-	return pickupOrDropItem(item, true);
 }
 
 int Loot::pickupItem(const Item &item) {

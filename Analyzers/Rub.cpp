@@ -9,20 +9,14 @@ using namespace std;
 Rub::Rub(Saiph *saiph) : Analyzer("Rub"), saiph(saiph), magic_lamp_key(ILLEGAL_ITEM) {
 }
 
-void Rub::analyze() {
+void Rub::analyze(const string &messages) {
+	parseMessages(messages);
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	if (magic_lamp_key == ILLEGAL_ITEM)
 		return;
 	priority = PRIORITY_RUB_MAGIC_LAMP;
 	command = RUB;
-}
-
-void Rub::parseMessages(const string &messages) {
-	if (saiph->inventory_changed)
-		findMagicLamp();
-	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_RUB) != string::npos) {
-		command = magic_lamp_key;
-		priority = PRIORITY_CONTINUE_ACTION;
-	}
 }
 
 /* private methods */
@@ -49,4 +43,13 @@ bool Rub::isMagicLamp(const Item &item) {
 		return false;
 	}
 	return true;
+}
+
+void Rub::parseMessages(const string &messages) {
+	if (saiph->inventory_changed)
+		findMagicLamp();
+	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_RUB) != string::npos) {
+		command = magic_lamp_key;
+		priority = PRIORITY_CONTINUE_ACTION;
+	}
 }

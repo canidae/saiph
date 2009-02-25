@@ -19,9 +19,8 @@ class Explore : public Analyzer {
 	public:
 		Explore(Saiph *saiph);
 
-		void analyze();
+		void analyze(const std::string &messages);
 		void complete();
-		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;

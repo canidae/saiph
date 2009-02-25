@@ -10,21 +10,7 @@ Lamp::Lamp(Saiph *saiph) : Analyzer("Lamp"), saiph(saiph), lamp_key(0), remove_l
 }
 
 /* methods */
-void Lamp::analyze() {
-	if (priority >= PRIORITY_LAMP_TOGGLE || lamp_key == 0 || saiph->world->player.encumbrance >= OVERTAXED)
-		return; // no lamp/lantern or got something more important to do
-	map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
-	if (l == saiph->inventory.end()) {
-		/* hmm, this shouldn't happen */
-		lamp_key = 0;
-		return;
-	}
-	/* should turn this lamp/lantern on */
-	command = APPLY;
-	priority = PRIORITY_LAMP_TOGGLE;
-}
-
-void Lamp::parseMessages(const string &messages) {
+void Lamp::analyze(const string &messages) {
 	if (messages.find(LAMP_TURNED_ON, 0) != string::npos) {
 		/* lamp/lantern turned on, set "additional" */
 		map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
@@ -94,6 +80,19 @@ void Lamp::parseMessages(const string &messages) {
 			}
 		}
 	}
+	if (saiph->world->menu || saiph->world->question)
+		return;
+	if (priority >= PRIORITY_LAMP_TOGGLE || lamp_key == 0 || saiph->world->player.encumbrance >= OVERTAXED)
+		return; // no lamp/lantern or got something more important to do
+	map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);
+	if (l == saiph->inventory.end()) {
+		/* hmm, this shouldn't happen */
+		lamp_key = 0;
+		return;
+	}
+	/* should turn this lamp/lantern on */
+	command = APPLY;
+	priority = PRIORITY_LAMP_TOGGLE;
 }
 
 /* private methods */

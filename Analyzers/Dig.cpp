@@ -3,14 +3,38 @@
 #include "../Globals.h"
 #include "../Item.h"
 #include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
 Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITEM), dig_direction(NOWHERE) {
 }
 
-void Dig::analyze() {
-	if (priority >= PRIORITY_DIG_DOWN || digging_tool == ILLEGAL_ITEM)
+void Dig::analyze(const string &messages) {
+	if (saiph->inventory_changed)
+		findDiggingTool();
+	if (priority >= PRIORITY_DIG_PATH || dig_direction == NOWHERE)
+		return;
+	if (messages.find(MESSAGE_WHAT_TO_APPLY) != string::npos) {
+		command = digging_tool;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (messages.find(MESSAGE_DIG_DIRECTION) != string::npos) {
+		command = dig_direction;
+		priority = PRIORITY_CONTINUE_ACTION;
+		dig_direction = NOWHERE;
+		/* tell loot analyzer to check inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
+	} else if (last_dig_location == saiph->position &&
+			last_dig_target != (Point)last_dig_location &&
+ 			(messages.find(DIG_TOO_HARD) != string::npos ||
+			messages.find(DIG_NOT_ENOUGH_ROOM) != string::npos)) {
+		/* our target is undiggable */
+		saiph->setDungeonSymbol(last_dig_target, UNKNOWN_TILE_UNPASSABLE);
+	}
+	if (saiph->world->menu || saiph->world->question)
+		return;
+	else if (priority >= PRIORITY_DIG_DOWN || digging_tool == ILLEGAL_ITEM)
 		return;
 	else if (saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN)
 		return;
@@ -103,30 +127,6 @@ inline bool Dig::canDigDownTile(unsigned char symbol) {
 		symbol != STAIRS_UP &&
 		symbol != ALTAR &&
 		symbol != THRONE;
-}
-
-void Dig::parseMessages(const string &messages) {
-	if (saiph->inventory_changed)
-		findDiggingTool();
-	if (priority >= PRIORITY_DIG_PATH || dig_direction == NOWHERE)
-		return;
-	if (messages.find(MESSAGE_WHAT_TO_APPLY) != string::npos) {
-		command = digging_tool;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (messages.find(MESSAGE_DIG_DIRECTION) != string::npos) {
-		command = dig_direction;
-		priority = PRIORITY_CONTINUE_ACTION;
-		dig_direction = NOWHERE;
-		/* tell loot analyzer to check inventory */
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
-	} else if (last_dig_location == saiph->position &&
-			last_dig_target != (Point)last_dig_location &&
- 			(messages.find(DIG_TOO_HARD) != string::npos ||
-			messages.find(DIG_NOT_ENOUGH_ROOM) != string::npos)) {
-		/* our target is undiggable */
-		saiph->setDungeonSymbol(last_dig_target, UNKNOWN_TILE_UNPASSABLE);
-	}
 }
 
 /* private methods */

@@ -19,8 +19,7 @@ class Ring : public Analyzer {
 	public:
 		Ring(Saiph *saiph);
 
-		void analyze();
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
@@ -30,6 +29,7 @@ class Ring : public Analyzer {
 		bool wear_ring;
 		Request req;
 
+		void parseMessages(const std::string &messages);
 		void wearRing();
 };
 #endif

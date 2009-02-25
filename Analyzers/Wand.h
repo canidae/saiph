@@ -43,8 +43,8 @@ class Wand : public Analyzer {
 	public:
 		Wand(Saiph *saiph);
 
-		void analyze();
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
+
 	private:
 		Saiph *saiph;
 		Request req;

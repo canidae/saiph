@@ -12,59 +12,10 @@ Shop::Shop(Saiph *saiph) : Analyzer("Shop"), saiph(saiph), drop_pick_axe(false),
 }
 
 /* methods */
-void Shop::parseMessages(const string &messages) {
-	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
-		/* we're most likely standing in a doorway, next to a shopkeeper.
-		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
-		unsigned char dir = ILLEGAL_DIRECTION;
-		const PathNode &node = saiph->shortestPath(CORRIDOR);
-		dir = node.dir;
-		if (node.cost >= UNPASSABLE) {
-			const PathNode &node2 = saiph->shortestPath(FLOOR);
-			if (node2.cost >= UNPASSABLE) {
-				/* this is bad */
-				Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
-				return;
-			}
-			dir = node2.dir;
-		}
-
-		drop_pick_axe = true;
-		command = dir;
-		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
-	} else if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_DROP, 0) == 0 && drop_pick_axe) {
-		/* drop our tools */
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (i->second.name != "pick-axe" && i->second.name != "mattock")
-				continue;
-			command = i->first;
-			priority = PRIORITY_CONTINUE_ACTION;
-			drop_pick_axe = false;
-			look_at_ground = true;
-			return;
-		}
-		/* request dirty inventory */
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
-	} else if (drop_pick_axe && saiph->getDungeonSymbol() != OPEN_DOOR) {
-		/* we should've moved away from shopkeeper now, drop the pick-axe */
-		command = DROP;
-		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
-	} else if (look_at_ground) {
-		/* we'll look at ground after dropping the tools.
-		 * this makes us aware of the stash,
-		 * and the loot analyzer won't "visit" the stash after we move */
-		/* FIXME:
-		 * possibly not safe. what if another analyzer do something
-		 * with higher priority?
-		 * unlikely, but may be possible */
-		command = LOOK;
-		priority = PRIORITY_LOOK;
-		look_at_ground = false;
-	}
-}
-
-void Shop::analyze() {
+void Shop::analyze(const string &messages) {
+	parseMessages(messages);
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	unsigned char symbol = saiph->getDungeonSymbol();
 	/* FIXME:
 	 * this currently bugs. she's marking SHOP_TILE as FLOOR
@@ -151,5 +102,57 @@ void Shop::analyze() {
 		 * before we get to mark the tiles as SHOP_TILE */
 		command = LOOK;
 		priority = PRIORITY_CONTINUE_ACTION;
+	}
+}
+
+void Shop::parseMessages(const string &messages) {
+	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
+		/* we're most likely standing in a doorway, next to a shopkeeper.
+		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
+		unsigned char dir = ILLEGAL_DIRECTION;
+		const PathNode &node = saiph->shortestPath(CORRIDOR);
+		dir = node.dir;
+		if (node.cost >= UNPASSABLE) {
+			const PathNode &node2 = saiph->shortestPath(FLOOR);
+			if (node2.cost >= UNPASSABLE) {
+				/* this is bad */
+				Debug::warning(saiph->last_turn) << SHOP_DEBUG_NAME << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
+				return;
+			}
+			dir = node2.dir;
+		}
+
+		drop_pick_axe = true;
+		command = dir;
+		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
+	} else if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_DROP, 0) == 0 && drop_pick_axe) {
+		/* drop our tools */
+		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			if (i->second.name != "pick-axe" && i->second.name != "mattock")
+				continue;
+			command = i->first;
+			priority = PRIORITY_CONTINUE_ACTION;
+			drop_pick_axe = false;
+			look_at_ground = true;
+			return;
+		}
+		/* request dirty inventory */
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
+	} else if (drop_pick_axe && saiph->getDungeonSymbol() != OPEN_DOOR) {
+		/* we should've moved away from shopkeeper now, drop the pick-axe */
+		command = DROP;
+		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
+	} else if (look_at_ground) {
+		/* we'll look at ground after dropping the tools.
+		 * this makes us aware of the stash,
+		 * and the loot analyzer won't "visit" the stash after we move */
+		/* FIXME:
+		 * possibly not safe. what if another analyzer do something
+		 * with higher priority?
+		 * unlikely, but may be possible */
+		command = LOOK;
+		priority = PRIORITY_LOOK;
+		look_at_ground = false;
 	}
 }

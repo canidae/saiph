@@ -37,7 +37,10 @@ Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph), command2("") {
 }
 
 /* methods */
-void Potion::analyze() {
+void Potion::analyze(const string &messages) {
+	parseMessages(messages);
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	if (saiph->world->player.experience > 10 && priority < PRIORITY_POTION_QUAFF_GAIN_LEVEL) {
 		/* see if we got a potion of gain level and quaff it */
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {

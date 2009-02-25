@@ -8,7 +8,7 @@ using namespace std;
 Throne::Throne(Saiph *saiph) : Analyzer("Throne"), saiph(saiph) {
 }
 
-void Throne::analyze() {
+void Throne::analyze(const string &messages) {
 	if (priority >= PRIORITY_THRONE_SIT)
 		return;
 	else if (saiph->world->player.hitpoints < 7 || (!saiph->world->player.shock_resistance && saiph->world->player.hitpoints < 31))

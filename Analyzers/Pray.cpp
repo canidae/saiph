@@ -10,7 +10,7 @@ Pray::Pray(Saiph *saiph) : Analyzer("Pray"), saiph(saiph), last_pray_turn(0) {
 }
 
 /* methods */
-void Pray::parseMessages(const string &messages) {
+void Pray::analyze(const string &messages) {
 	if (messages.find(PRAY_FINISHED_PRAYING, 0) != string::npos)
 		last_pray_turn = saiph->world->player.turn;
 }

@@ -10,7 +10,7 @@ class Genocide : public Analyzer {
 	public:
 		Genocide(Saiph *saiph);
 
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
 
 	private:
 		Saiph *saiph;

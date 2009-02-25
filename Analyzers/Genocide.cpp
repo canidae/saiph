@@ -16,7 +16,7 @@ Genocide::Genocide(Saiph *saiph) : Analyzer("Genocide"), saiph(saiph) {
 	classes.push_back('R');
 }
 
-void Genocide::parseMessages(const string &messages) {
+void Genocide::analyze(const string &messages) {
 	if (!saiph->world->question)
 		return;
 	if (messages.find(MESSAGE_WHAT_TO_GENOCIDE_UNCURSED) != string::npos) {

@@ -9,7 +9,7 @@ Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_weapon(fa
 }
 
 /* methods */
-void Weapon::parseMessages(const string &messages) {
+void Weapon::analyze(const string &messages) {
 	if (last_polymorphed != saiph->world->player.polymorphed) {
 		/* we polymorphed; assume we can wield unless determined otherwise */
 		can_wield_weapon = true;

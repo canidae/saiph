@@ -23,8 +23,7 @@ class Door : public Analyzer {
 	public:
 		Door(Saiph *saiph);
 
-		void analyze();
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
 
 	private:
 		Saiph *saiph;

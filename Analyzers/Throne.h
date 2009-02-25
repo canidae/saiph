@@ -8,7 +8,7 @@ class Throne : public Analyzer {
 	public:
 		Throne(Saiph *saiph);
 
-		void analyze();
+		void analyze(const std::string &messages);
 
 	private:
 		Saiph *saiph;

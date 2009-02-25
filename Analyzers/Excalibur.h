@@ -13,8 +13,7 @@ class Excalibur : public Analyzer {
 	public:
 		Excalibur(Saiph *saiph);
 
-		void analyze();
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
 
 	private:
 		Saiph *saiph;

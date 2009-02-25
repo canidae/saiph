@@ -11,7 +11,7 @@ using namespace std;
 Blind::Blind(Saiph *saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(false), blinding_tool(ILLEGAL_ITEM), blind_priority(ILLEGAL_PRIORITY), unblind_priority(ILLEGAL_PRIORITY) {
 }
 
-void Blind::parseMessages(const string &messages) {
+void Blind::analyze(const string &messages) {
 	if (messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos) {
 		command = blinding_tool;
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -21,9 +21,6 @@ void Blind::parseMessages(const string &messages) {
 		priority = PRIORITY_CONTINUE_ACTION;
 		willful_blindness = false;
 	}
-}
-
-void Blind::analyze() {
 	if (saiph->inventory_changed)
 		findBlindingTool();
 	if (saiph->world->player.blind && !willful_blindness) {
@@ -32,6 +29,8 @@ void Blind::analyze() {
 		saiph->request(req);
 		return;
 	}
+	if (saiph->world->menu || saiph->world->question)
+		return; // menu or question, can't put on anything now
 	if (blind_priority >= 0) {
 		if (willful_blindness) {
 			blind_priority = ILLEGAL_PRIORITY;

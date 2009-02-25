@@ -18,8 +18,7 @@ class Potion : public Analyzer {
 	public:
 		Potion(Saiph *saiph);
 
-		void analyze();
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
@@ -27,5 +26,7 @@ class Potion : public Analyzer {
 		std::vector<std::string> appearance;
 		std::string command2;
 		Request req;
+
+		void parseMessages(const std::string &messages);
 };
 #endif

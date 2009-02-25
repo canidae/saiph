@@ -13,26 +13,7 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 }
 
 /* methods */
-void Beatitude::analyze() {
-	if (!check_beatitude)
-		return; // noone has requested beatifying items
-	else if (priority >= PRIORITY_BEATITUDE_DROP_ALTAR)
-		return; // got something more important to do
-	else if (saiph->world->player.blind)
-		return; // no buc-testing while blind
-
-	/* path to nearest altar */
-	const PathNode &node = saiph->shortestPath(ALTAR);
-	if (node.cost >= UNPASSABLE)
-		return; // don't know of any altars
-	else if (node.dir == NOWHERE)
-		command = DROP_MENU; // we're standing on the altar, drop items
-	else
-		command = node.dir; // move towards altar
-	priority = PRIORITY_BEATITUDE_DROP_ALTAR;
-}
-
-void Beatitude::parseMessages(const string &messages) {
+void Beatitude::analyze(const string &messages) {
 	if (saiph->got_drop_menu && saiph->getDungeonSymbol() == ALTAR) {
 		/* drop stuff we don't know beatitude of */
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
@@ -48,6 +29,24 @@ void Beatitude::parseMessages(const string &messages) {
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_PAGE;
 	}
+	if (saiph->world->menu || saiph->world->question)
+		return; // showing menu or question, can't move
+	else if (!check_beatitude)
+		return; // noone has requested beatifying items
+	else if (priority >= PRIORITY_BEATITUDE_DROP_ALTAR)
+		return; // got something more important to do
+	else if (saiph->world->player.blind)
+		return; // no buc-testing while blind
+
+	/* path to nearest altar */
+	const PathNode &node = saiph->shortestPath(ALTAR);
+	if (node.cost >= UNPASSABLE)
+		return; // don't know of any altars
+	else if (node.dir == NOWHERE)
+		command = DROP_MENU; // we're standing on the altar, drop items
+	else
+		command = node.dir; // move towards altar
+	priority = PRIORITY_BEATITUDE_DROP_ALTAR;
 }
 
 bool Beatitude::request(const Request &request) {

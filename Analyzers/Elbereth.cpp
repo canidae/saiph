@@ -33,7 +33,7 @@ void Elbereth::complete() {
 	}
 }
 
-void Elbereth::parseMessages(const string &messages) {
+void Elbereth::analyze(const string &messages) {
 	if (last_polymorphed != saiph->world->player.polymorphed) {
 		/* we changed form. assume we can hold something to engrave */
 		can_hold_something = true;

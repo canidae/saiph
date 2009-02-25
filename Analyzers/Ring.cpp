@@ -9,11 +9,27 @@ Ring::Ring(Saiph *saiph) : Analyzer("Ring"), saiph(saiph), command2(""), wear_ri
 }
 
 /* methods */
-void Ring::analyze() {
+void Ring::analyze(const string &messages) {
+	parseMessages(messages);
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	if (saiph->inventory_changed || wear_ring)
 		wearRing();
 }
 
+bool Ring::request(const Request &request) {
+	if (request.request == REQUEST_RING_WEAR) {
+		/* player wish to wear this ring */
+		WearRing wr;
+		wr.beatitude = request.beatitude;
+		wr.name = request.data;
+		rings.push_back(wr);
+		return true;
+	}
+	return false;
+}
+
+/* private methods */
 void Ring::parseMessages(const string &messages) {
 	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
 		/* put on or remove a ring */
@@ -34,19 +50,6 @@ void Ring::parseMessages(const string &messages) {
 	}
 }
 
-bool Ring::request(const Request &request) {
-	if (request.request == REQUEST_RING_WEAR) {
-		/* player wish to wear this ring */
-		WearRing wr;
-		wr.beatitude = request.beatitude;
-		wr.name = request.data;
-		rings.push_back(wr);
-		return true;
-	}
-	return false;
-}
-
-/* private methods */
 void Ring::wearRing() {
 	/* find out which rings we should wear */
 	unsigned char ring_on_right = 0;

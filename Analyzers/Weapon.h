@@ -23,7 +23,7 @@ class Weapon : public Analyzer {
 	public:
 		Weapon(Saiph *saiph);
 
-		void parseMessages(const std::string &messages);
+		void analyze(const std::string &messages);
 		bool request(const Request &request);
 
 	private:

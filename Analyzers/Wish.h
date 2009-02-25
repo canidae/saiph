@@ -12,14 +12,16 @@ class Wish : public Analyzer {
 	public:
 		Wish(Saiph *saiph);
 
-		void parseMessages(const std::string &messages);
-		void analyze();
+		void analyze(const std::string &messages);
+
 	private:
 		Saiph *saiph;
 		bool MRarmor, MRcloak, haveMR;
 		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;
 		unsigned char wand_of_wishing_key;
 		bool zapping_wand;
+
+		void parseMessages(const std::string &messages);
 		std::string selectWish();
 		bool wearing(const std::string& name);
 };

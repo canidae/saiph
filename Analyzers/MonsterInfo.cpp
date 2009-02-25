@@ -10,7 +10,10 @@ MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph) {
 }
 
 /* methods */
-void MonsterInfo::analyze() {
+void MonsterInfo::analyze(const string &messages) {
+	parseMessages(messages);
+	if (saiph->world->menu || saiph->world->question)
+		return;
 	if (saiph->world->player.hallucinating)
 		return; // if we're hallucinating, the output is garbage
 	for (look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {

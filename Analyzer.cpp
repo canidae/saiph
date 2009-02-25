@@ -5,37 +5,29 @@ using namespace std;
 
 /* constructors/destructor */
 Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command(""), expired(false) {
-	/* methods will be called in this order:
-	 * 0. init (once, after all analyzers have been created)
-	 * 1. parseMessages
-	 * 2. analyze (unless question or menu)
-	 * 3. complete/fail (only called for analyzer that got its command through)
-	 *
-	 * additionally, requests may come at any time */
 }
 
 Analyzer::~Analyzer() {
-	/* we must have a virtual destructor.
-	 * if we don't then the destructor of classes inheriting
-	 * this class won't be called upon destruction */
 }
 
 /* methods */
-void Analyzer::analyze() {
+void Analyzer::analyze(const string &) {
+	/* called each "frame" */
 }
 
 void Analyzer::complete() {
+	/* called when this analyzer "won" the priority race */
 }
 
 void Analyzer::fail() {
+	/* called if command from this analyzer repeatedly fail */
 }
 
 void Analyzer::init() {
-}
-
-void Analyzer::parseMessages(const string &) {
+	/* called once at startup */
 }
 
 bool Analyzer::request(const Request &) {
+	/* called each time an analyzer requests something */
 	return false;
 }
