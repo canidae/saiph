@@ -56,8 +56,7 @@
 #define MATERIAL_GLASS       ((unsigned int)(1 << 17))
 #define MATERIAL_GEMSTONE    ((unsigned int)(1 << 18))
 #define MATERIAL_MINERAL     ((unsigned int)(1 << 19))
-//only venom uses this, and we won't have venom in our inventory
-//#define MATERIAL_LIQUID      ((unsigned int)(1 << 20))
+#define MATERIAL_LIQUID      ((unsigned int)(1 << 20))
 
 class ItemData {
 public:
@@ -66,8 +65,8 @@ public:
 	const int weight;
 	const char item_class;
 	const int material;
-	const long long int properties;
+	const unsigned long long properties;
 
-	ItemData(const std::string& name, int base_cost, int weight, char item_class, int material, long long int properties);
+	ItemData(const std::string& name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
 };
 #endif

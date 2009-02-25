@@ -11,6 +11,6 @@ public:
 	const int ac;
 	const int mc;
 
-	ArmorData(const std::string& name, int cost, int weight, int material, int slot, int ac, int mc, long long int properties);
+	ArmorData(const std::string& name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
 };
 #endif
