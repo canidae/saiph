@@ -6,6 +6,6 @@
 
 class SuitData : public ArmorData {
 public:
-	SuitData(const std::string& name, int cost, int weight, long long int properties, int ac, int mc);
+	SuitData(const std::string& name, int cost, int weight, int material, int ac, int mc, long long int properties);
 };
 #endif

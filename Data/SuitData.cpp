@@ -1,6 +1,5 @@
 #include "SuitData.h"
 
-SuitData::SuitData(const std::string& name, int cost, int weight, long long int properties, int ac, int mc) : ArmorData(name, cost, weight, properties, ARMOR_SUIT, ac, mc) {
+SuitData::SuitData(const std::string& name, int cost, int weight, int material, int ac, int mc, long long int properties) : ArmorData(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
 }
 
-//someArmorVector.push_back(new SuitData("gray dragon scale mail", 900, 40, PROPERTY_MAGICRES, 9, 0));

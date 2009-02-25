@@ -5,35 +5,59 @@
 #include "../Globals.h"
 
 /* properties */
-#define PROPERTY_CLEAR             0x0000000000000000LL
-#define PROPERTY_FIRE              0x0000000000000001LL
-#define PROPERTY_COLD              0x0000000000000002LL
-#define PROPERTY_SLEEP             0x0000000000000004LL
-#define PROPERTY_DISINT            0x0000000000000008LL
-#define PROPERTY_SHOCK             0x0000000000000010LL
-#define PROPERTY_POISON            0x0000000000000020LL
-#define PROPERTY_ACID              0x0000000000000040LL
-#define PROPERTY_STONE             0x0000000000000080LL
-#define PROPERTY_MAGICRES          0x0000000000000100LL
-#define PROPERTY_REFLECTION        0x0000000000000200LL
-#define PROPERTY_DISPLACEMENT      0x0000000000000400LL
-#define PROPERTY_INVISIBLE         0x0000000000000800LL
-#define PROPERTY_VISIBLE           0x0000000000001000LL
-#define PROPERTY_BRILLIANCE        0x0000000000002000LL
-#define PROPERTY_ESP               0x0000000000004000LL
-#define PROPERTY_STUPIDITY         0x0000000000008000LL
-#define PROPERTY_STRENGTH          0x0000000000010000LL
-#define PROPERTY_DEXTERITY         0x0000000000020000LL
-#define PROPERTY_FUMBLING          0x0000000000040000LL
-#define PROPERTY_JUMPING           0x0000000000080000LL
-#define PROPERTY_KICKING           0x0000000000100000LL
-#define PROPERTY_LEVITATION        0x0000000000200000LL
-#define PROPERTY_STEALTH           0x0000000000400000LL
-#define PROPERTY_VERYFAST          0x0000000000800000LL
-#define PROPERTY_WATERWALKING      0x0000000001000000LL
-#define PROPERTY_SLIPPERY          0x0000000002000000LL
-#define PROPERTY_MAGIC             0x0000000004000000LL
-#define PROPERTY_RANDOM_APPEARANCE 0x0000000008000000LL
+#define PROPERTY_CLEAR             ((unsigned long long) (1LL << 0))
+#define PROPERTY_FIRE              ((unsigned long long) (1LL << 1))
+#define PROPERTY_COLD              ((unsigned long long) (1LL << 2))
+#define PROPERTY_SLEEP             ((unsigned long long) (1LL << 3))
+#define PROPERTY_DISINT            ((unsigned long long) (1LL << 4))
+#define PROPERTY_SHOCK             ((unsigned long long) (1LL << 5))
+#define PROPERTY_POISON            ((unsigned long long) (1LL << 6))
+#define PROPERTY_ACID              ((unsigned long long) (1LL << 7))
+#define PROPERTY_STONE             ((unsigned long long) (1LL << 8))
+#define PROPERTY_MAGICRES          ((unsigned long long) (1LL << 9))
+#define PROPERTY_REFLECTION        ((unsigned long long) (1LL << 10))
+#define PROPERTY_DISPLACEMENT      ((unsigned long long) (1LL << 11))
+#define PROPERTY_INVISIBLE         ((unsigned long long) (1LL << 12))
+#define PROPERTY_VISIBLE           ((unsigned long long) (1LL << 13))
+#define PROPERTY_BRILLIANCE        ((unsigned long long) (1LL << 14))
+#define PROPERTY_ESP               ((unsigned long long) (1LL << 15))
+#define PROPERTY_STUPIDITY         ((unsigned long long) (1LL << 16))
+#define PROPERTY_STRENGTH          ((unsigned long long) (1LL << 17))
+#define PROPERTY_DEXTERITY         ((unsigned long long) (1LL << 18))
+#define PROPERTY_FUMBLING          ((unsigned long long) (1LL << 19))
+#define PROPERTY_JUMPING           ((unsigned long long) (1LL << 20))
+#define PROPERTY_KICKING           ((unsigned long long) (1LL << 21))
+#define PROPERTY_LEVITATION        ((unsigned long long) (1LL << 22))
+#define PROPERTY_STEALTH           ((unsigned long long) (1LL << 23))
+#define PROPERTY_VERYFAST          ((unsigned long long) (1LL << 24))
+#define PROPERTY_WATERWALKING      ((unsigned long long) (1LL << 25))
+#define PROPERTY_SLIPPERY          ((unsigned long long) (1LL << 26))
+#define PROPERTY_MAGIC             ((unsigned long long) (1LL << 27))
+#define PROPERTY_RANDOM_APPEARANCE ((unsigned long long) (1LL << 28))
+
+/* material */
+#define MATERIAL_WAX         ((unsigned int)(1 << 0))
+#define MATERIAL_VEGGY       ((unsigned int)(1 << 1))
+#define MATERIAL_FLESH       ((unsigned int)(1 << 2))
+#define MATERIAL_PAPER       ((unsigned int)(1 << 3))
+#define MATERIAL_CLOTH       ((unsigned int)(1 << 4))
+#define MATERIAL_LEATHER     ((unsigned int)(1 << 5))
+#define MATERIAL_WOOD        ((unsigned int)(1 << 6))
+#define MATERIAL_BONE        ((unsigned int)(1 << 7))
+#define MATERIAL_DRAGON_HIDE ((unsigned int)(1 << 8))
+#define MATERIAL_IRON        ((unsigned int)(1 << 9))
+#define MATERIAL_METAL       ((unsigned int)(1 << 10))
+#define MATERIAL_COPPER      ((unsigned int)(1 << 11))
+#define MATERIAL_SILVER      ((unsigned int)(1 << 12))
+#define MATERIAL_GOLD        ((unsigned int)(1 << 13))
+#define MATERIAL_PLATINUM    ((unsigned int)(1 << 14))
+#define MATERIAL_MITHRIL     ((unsigned int)(1 << 15))
+#define MATERIAL_PLASTIC     ((unsigned int)(1 << 16))
+#define MATERIAL_GLASS       ((unsigned int)(1 << 17))
+#define MATERIAL_GEMSTONE    ((unsigned int)(1 << 18))
+#define MATERIAL_MINERAL     ((unsigned int)(1 << 19))
+//only venom uses this, and we won't have venom in our inventory
+//#define MATERIAL_LIQUID      ((unsigned int)(1 << 20))
 
 class ItemData {
 public:
@@ -41,8 +65,9 @@ public:
 	const int base_cost;
 	const int weight;
 	const char item_class;
+	const int material;
 	const long long int properties;
 
-	ItemData(const std::string& name, int base_cost, int weight, char item_class, long long int properties);
+	ItemData(const std::string& name, int base_cost, int weight, char item_class, int material, long long int properties);
 };
 #endif
