@@ -7,6 +7,4 @@ class ShirtData : public ArmorData {
 public:
 	ShirtData(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 };
-
-#endif	/* _SHIRTDATA_H */
-
+#endif
