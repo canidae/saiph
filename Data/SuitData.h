@@ -2,7 +2,6 @@
 #define	_SUITDATA_H
 
 #include "ArmorData.h"
-#include "../Globals.h"
 
 class SuitData : public ArmorData {
 public:
