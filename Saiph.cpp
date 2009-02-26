@@ -10,6 +10,8 @@
 #include "Saiph.h"
 #include "Stash.h"
 #include "World.h"
+/* data */
+#include "Data/MonsterData.h"
 /* analyzers */
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
@@ -1113,6 +1115,7 @@ int main(int argc, const char *argv[]) {
 	}
 
 	Debug::open(logfile);
+	MonsterData::init();
 	Saiph *saiph = new Saiph(dirname(argv[0]), connection_type);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;

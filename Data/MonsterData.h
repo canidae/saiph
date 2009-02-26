@@ -336,8 +336,8 @@ class MonsterData {
 		int color;
 
 		static const MonsterData &getMonsterData(int id);
-		static const MonsterData &getMonsterData(unsigned char symbol, int color);
-		static const MonsterData &getMonsterData(const std::string &name);
+		static int getMonsterData(unsigned char symbol, int color);
+		static int getMonsterData(const std::string &name);
 		static void init();
 
 	private:
@@ -356,16 +356,16 @@ inline const MonsterData &MonsterData::getMonsterData(int id) {
 	return monsters[id];
 }
 
-inline const MonsterData &MonsterData::getMonsterData(unsigned char symbol, int color) {
+inline int MonsterData::getMonsterData(unsigned char symbol, int color) {
 	if (color < 0 || color > INVERSE_BOLD_WHITE)
-		return getMonsterData(0);
-	return getMonsterData(monster_symbol_mapping[symbol][color]);
+		return 0;
+	return monster_symbol_mapping[symbol][color];
 }
 
-inline const MonsterData &MonsterData::getMonsterData(const std::string &name) {
+inline int MonsterData::getMonsterData(const std::string &name) {
 	std::map<std::string, int>::iterator m = monster_name_mapping.find(name);
 	if (m == monster_name_mapping.end())
-		return getMonsterData(0);
-	return getMonsterData(m->second);
+		return 0;
+	return m->second;
 }
 #endif

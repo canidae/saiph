@@ -9,6 +9,7 @@
 
 class Monster {
 	public:
+		int id;
 		unsigned char symbol;
 		int color;
 		int last_seen;
