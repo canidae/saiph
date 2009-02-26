@@ -9,25 +9,8 @@ Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), comman
 }
 
 /* methods */
-void Excalibur::analyze(const string &messages) {
-	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
-		/* what to dip... the long sword ofcourse! */
-		command = command2;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (command != "" && command2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
-		/* if we want to dip in fountain? sure */
-		command = YES;
-		command2.clear();
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
-		/* alright! */
-		expired = true; // delete this analyzer from analyzers
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
-	}
-	if (saiph->world->menu || saiph->world->question)
-		return;
-	else if (saiph->world->player.experience < 5)
+void Excalibur::analyze() {
+	if (saiph->world->player.experience < 5)
 		return;
 	else if (saiph->world->player.alignment != LAWFUL)
 		return;
@@ -57,5 +40,23 @@ void Excalibur::analyze(const string &messages) {
 		command = node.dir;
 		command2.clear();
 		priority = PRIORITY_EXCALIBUR_DIP;
+	}
+}
+
+void Excalibur::parseMessages(const string &messages) {
+	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
+		/* what to dip... the long sword ofcourse! */
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (command != "" && command2 != "" && messages.find(MESSAGE_DIP_IN_FOUNTAIN, 0) != string::npos) {
+		/* if we want to dip in fountain? sure */
+		command = YES;
+		command2.clear();
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (messages.find(MESSAGE_RECEIVED_EXCALIBUR, 0) != string::npos) {
+		/* alright! */
+		expired = true; // delete this analyzer from analyzers
+		req.request = REQUEST_DIRTY_INVENTORY;
+		saiph->request(req);
 	}
 }

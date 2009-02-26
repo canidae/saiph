@@ -29,17 +29,16 @@ struct SokobanLevel {
 class Sokoban : public Analyzer {
 	public:
 		Sokoban(Saiph *saiph);
-
-		void analyze(const std::string &messages);
-
 		bool isSokobanLevel(void);
 		bool isSokobanLevel(unsigned int level);
 		int whichSokobanLevel();
 
+		void analyze(void);
+		void parseMessages(const std::string &messages);
+
 	private:
 		void targetNextLocation(int level, const Move &move);
 		void moveBoulderToTarget(int level, const Move &move);
-		void parseMessages(const std::string &messages);
 
 		void loadLevels();
 		bool loadBoulders(ifstream &file, vector<Point> &boulders);

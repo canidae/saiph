@@ -11,7 +11,8 @@ class Blind : public Analyzer {
 	public:
 		Blind(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void parseMessages(const std::string &messages);
+		void analyze();
 		void complete();
 		bool request(const Request &request);
 

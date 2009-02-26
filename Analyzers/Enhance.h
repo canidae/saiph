@@ -16,7 +16,7 @@ class Enhance : public Analyzer {
 	public:
 		Enhance(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;

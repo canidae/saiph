@@ -17,14 +17,13 @@ class Shop : public Analyzer {
 	public:
 		Shop(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
+		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;
 		bool drop_pick_axe;
 		bool look_at_ground;
 		Request req;
-
-		void parseMessages(const std::string &messages);
 };
 #endif

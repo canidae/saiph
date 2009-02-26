@@ -3,9 +3,8 @@
 
 #include "Sokoban.h"
 #include "../Globals.h"
-#include "../Point.h"
 #include "../Saiph.h"
-#include "../World.h"
+#include "../Point.h"
 #include "../Debug.h"
 
 using namespace std;
@@ -40,10 +39,7 @@ void Sokoban::parseMessages(const string &messages) {
 	}
 }
 
-void Sokoban::analyze(const string &messages) {
-	parseMessages(messages);
-	if (saiph->world->menu || saiph->world->question)
-		return;
+void Sokoban::analyze() {
 	if (priority > PRIORITY_SOLVE_SOKOBAN)
 		return;
 	if (saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN) {

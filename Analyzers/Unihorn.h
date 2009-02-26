@@ -18,7 +18,8 @@ class Unihorn : public Analyzer {
 	public:
 		Unihorn(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
@@ -28,7 +29,6 @@ class Unihorn : public Analyzer {
 		int apply_priority;
 		int unihorn_use_turn;
 
-		void parseMessages(const std::string &messages);
 		void findUnihorn();
 		bool isUnihorn(const Item &item);
 };

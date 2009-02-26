@@ -11,59 +11,9 @@ Door::Door(Saiph *saiph) : Analyzer("Door"), saiph(saiph), command2(""), unlock_
 }
 
 /* methods */
-void Door::analyze(const string &messages) {
-	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
-		/* what to apply */
-		command = unlock_tool_key;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
-		/* which direction we should open/pick/kick */
-		command = command2;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && messages.find(DOOR_UNLOCK_IT, 0) != string::npos) {
-		/* unlock door? */
-		command = YES;
-		priority = PRIORITY_CONTINUE_ACTION;
-		/* we're going to assume the door won't be locked anymore */
-		saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][position] = UNKNOWN_SYMBOL_VALUE;
-	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
-		/* door is locked, set the value to 1 */
-		saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][position] = 1;
-	} else if (messages.find(DOOR_BREAK_SHOP_DOOR, 0) != string::npos) {
-		/* oops, we broke a shopkeepers door, better pay */
-		command = YES;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
-		/* we're in a pit, can't reach door from here */
-		in_a_pit = true;
-		position = saiph->position;
-	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
-		/* crawled out of pit */
-		in_a_pit = false;
-	} else if (messages.find(DOOR_CLOSED_FOR_INVENTORY, 0) != string::npos) {
-		/* a shop that is closed for inventory */
-		stack<Point> door;
-
-		door.push(Point(saiph->position.row + 1, saiph->position.col));
-		door.push(Point(saiph->position.row - 1, saiph->position.col));
-		door.push(Point(saiph->position.row, saiph->position.col + 1));
-		door.push(Point(saiph->position.row, saiph->position.col - 1));
-
-		while (door.empty() == false) {
-			Point top = door.top();
-			door.pop();
-
-			if (saiph->getDungeonSymbol(top) == CLOSED_DOOR) {
-				Debug::notice(saiph->last_turn) << DOOR_DEBUG_NAME << "Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
-				saiph->setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
-				break;
-			}
-		}
-	}
+void Door::analyze() {
 	/* open closed doors */
-	if (saiph->world->menu || saiph->world->question)
-		return;
-	else if (saiph->world->player.hurt_leg)
+	if (saiph->world->player.hurt_leg)
 		return; // don't open doors when our leg is hurt
 	else if (saiph->world->player.blind)
 		return; // don't move when blind
@@ -119,6 +69,57 @@ void Door::analyze(const string &messages) {
 	if (least_moves < INT_MAX)
 		return;
 	priority = ILLEGAL_PRIORITY;
+}
+
+void Door::parseMessages(const string &messages) {
+	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY, 0) != string::npos) {
+		/* what to apply */
+		command = unlock_tool_key;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+		/* which direction we should open/pick/kick */
+		command = command2;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && messages.find(DOOR_UNLOCK_IT, 0) != string::npos) {
+		/* unlock door? */
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
+		/* we're going to assume the door won't be locked anymore */
+		saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][position] = UNKNOWN_SYMBOL_VALUE;
+	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
+		/* door is locked, set the value to 1 */
+		saiph->levels[saiph->position.level].symbols[(unsigned char) CLOSED_DOOR][position] = 1;
+	} else if (messages.find(DOOR_BREAK_SHOP_DOOR, 0) != string::npos) {
+		/* oops, we broke a shopkeepers door, better pay */
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
+		/* we're in a pit, can't reach door from here */
+		in_a_pit = true;
+		position = saiph->position;
+	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
+		/* crawled out of pit */
+		in_a_pit = false;
+	} else if (messages.find(DOOR_CLOSED_FOR_INVENTORY, 0) != string::npos) {
+		/* a shop that is closed for inventory */
+		stack<Point> door;
+
+		door.push(Point(saiph->position.row + 1, saiph->position.col));
+		door.push(Point(saiph->position.row - 1, saiph->position.col));
+		door.push(Point(saiph->position.row, saiph->position.col + 1));
+		door.push(Point(saiph->position.row, saiph->position.col - 1));
+
+		while (door.empty() == false) {
+			Point top = door.top();
+			door.pop();
+
+			if (saiph->getDungeonSymbol(top) == CLOSED_DOOR) {
+				Debug::notice(saiph->last_turn) << DOOR_DEBUG_NAME << "Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
+				saiph->setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
+				break;
+			}
+		}
+	}
 }
 
 /* private methods */

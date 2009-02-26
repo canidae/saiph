@@ -27,7 +27,7 @@ class Armor : public Analyzer {
 	public:
 		Armor(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:

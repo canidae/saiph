@@ -13,25 +13,8 @@ Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_
 }
 
 /* methods */
-void Beatitude::analyze(const string &messages) {
-	if (saiph->got_drop_menu && saiph->getDungeonSymbol() == ALTAR) {
-		/* drop stuff we don't know beatitude of */
-		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-			if (!beatify(d->second))
-				continue;
-			/* mark this */
-			command = d->first;
-			priority = PRIORITY_SELECT_ITEM;
-			return;
-		}
-		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
-		check_beatitude = false;
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_PAGE;
-	}
-	if (saiph->world->menu || saiph->world->question)
-		return; // showing menu or question, can't move
-	else if (!check_beatitude)
+void Beatitude::analyze() {
+	if (!check_beatitude)
 		return; // noone has requested beatifying items
 	else if (priority >= PRIORITY_BEATITUDE_DROP_ALTAR)
 		return; // got something more important to do
@@ -47,6 +30,24 @@ void Beatitude::analyze(const string &messages) {
 	else
 		command = node.dir; // move towards altar
 	priority = PRIORITY_BEATITUDE_DROP_ALTAR;
+}
+
+void Beatitude::parseMessages(const string &messages) {
+	if (saiph->got_drop_menu && saiph->getDungeonSymbol() == ALTAR) {
+		/* drop stuff we don't know beatitude of */
+		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
+			if (!beatify(d->second))
+				continue;
+			/* mark this */
+			command = d->first;
+			priority = PRIORITY_SELECT_ITEM;
+			return;
+		}
+		/* if we got this far, we've selected everything we don't know beatitude of (on this page) */
+		check_beatitude = false;
+		command = CLOSE_PAGE;
+		priority = PRIORITY_CLOSE_PAGE;
+	}
 }
 
 bool Beatitude::request(const Request &request) {

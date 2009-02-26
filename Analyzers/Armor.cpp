@@ -12,7 +12,7 @@ Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_armor(false),
 }
 
 /* methods */
-void Armor::analyze(const string &messages) {
+void Armor::parseMessages(const string &messages) {
 	string::size_type pos;
 
 	if (saiph->world->player.polymorphed != last_polymorphed) {

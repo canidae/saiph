@@ -15,7 +15,7 @@ class Scroll : public Analyzer {
 	public:
 		Scroll(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void parseMessages(const std::string &messages);
 
 	private:
 		std::vector<std::string> appearance;

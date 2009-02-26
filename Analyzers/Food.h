@@ -46,7 +46,8 @@ class Food : public Analyzer {
 	public:
 		Food(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:

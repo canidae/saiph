@@ -12,7 +12,8 @@ class Rub : public Analyzer {
 	public:
 		Rub(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
+		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;
@@ -21,6 +22,5 @@ class Rub : public Analyzer {
 
 		void findMagicLamp();
 		bool isMagicLamp(const Item &item);
-		void parseMessages(const std::string &messages);
 };
 #endif

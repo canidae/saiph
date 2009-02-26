@@ -10,10 +10,7 @@ Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(
 }
 
 /* methods */
-void Unihorn::analyze(const string &messages) {
-	parseMessages(messages);
-	if (saiph->world->menu || saiph->world->question)
-		return;
+void Unihorn::analyze() {
 	if (apply_priority >= 0 && unihorn_key != ILLEGAL_ITEM && unihorn_use_turn <= saiph->world->player.turn && saiph->world->player.encumbrance < OVERTAXED) {
 		/* unihorn failed last attempt, try again */
 		command = APPLY;

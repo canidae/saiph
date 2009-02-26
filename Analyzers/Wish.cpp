@@ -1,9 +1,8 @@
-#include <string>
 #include "Wish.h"
 #include "../Globals.h"
 #include "../Saiph.h"
-#include "../World.h"
 #include "../Debug.h"
+#include <string>
 
 using namespace std;
 
@@ -12,21 +11,6 @@ Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0
 }
 
 /* methods */
-void Wish::analyze(const string &messages) {
-	parseMessages(messages);
-	if (saiph->world->menu || saiph->world->question)
-		return;
-	//if we have a wand of wishing, we need to decide if we should zap
-	//TODO: get charging and recharge it; currently it'll wrest it before charging
-	//since it has no idea of "this wand is empty"
-	if (wand_of_wishing_key != 0) {
-		if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
-			zapping_wand = true;
-			command = ZAP_WAND;
-			priority = PRIORITY_WISH_ZAP_WAND;
-		}
-	}
-}
 void Wish::parseMessages(const string &messages) {
 	if (saiph->inventory_changed) {
 		wand_of_wishing_key = 0;
@@ -54,6 +38,19 @@ void Wish::parseMessages(const string &messages) {
 		command = wand_of_wishing_key;
 		priority = PRIORITY_CONTINUE_ACTION;
 		return;
+	}
+}
+
+void Wish::analyze() {
+	//if we have a wand of wishing, we need to decide if we should zap
+	//TODO: get charging and recharge it; currently it'll wrest it before charging
+	//since it has no idea of "this wand is empty"
+	if (wand_of_wishing_key != 0) {
+		if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
+			zapping_wand = true;
+			command = ZAP_WAND;
+			priority = PRIORITY_WISH_ZAP_WAND;
+		}
 	}
 }
 

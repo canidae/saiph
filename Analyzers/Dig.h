@@ -18,7 +18,8 @@ class Dig : public Analyzer {
 	public:
 		Dig(Saiph *saiph);
 
-		void analyze(const std::string &message);
+		void analyze();
+		void parseMessages(const std::string &message);
 
 	private:
 		Request req;

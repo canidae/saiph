@@ -358,9 +358,9 @@ bool Saiph::run() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		(*a)->priority = ILLEGAL_PRIORITY;
 
-	/* if question, let last analyzer analyze it first */
+	/* if question, let last analyzer parse it first */
 	if (world->question && best_analyzer != analyzers.end()) {
-		(*best_analyzer)->analyze(world->messages);
+		(*best_analyzer)->parseMessages(world->messages);
 		if ((*best_analyzer)->priority > best_priority)
 			best_priority = (*best_analyzer)->priority;
 		else
@@ -371,7 +371,7 @@ bool Saiph::run() {
 	}
 
 	if (best_analyzer == analyzers.end()) {
-		/* remove expired analyzers and analyze */
+		/* remove expired analyzers and parse messages */
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 			if ((*a)->expired) {
 				/* expired analyzer, remove it */
@@ -385,14 +385,32 @@ bool Saiph::run() {
 			 * the priority of whatever subtask they're about to do */
 			if ((*a)->priority < best_priority)
 				(*a)->priority = best_priority;
-			/* analyze */
-			(*a)->analyze(world->messages);
+			/* parse messages */
+			(*a)->parseMessages(world->messages);
 			/* set best_priority if this analyzer has higher priority */
 			if ((*a)->priority > best_priority) {
 				best_priority = (*a)->priority;
 				best_analyzer = a;
 			}
 			++a;
+		}
+
+		/* analyze */
+		if (!world->question && !world->menu) {
+			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+				/* set analyzer's priority to best_priority.
+				 * this way analyzer should just check if priority is greater than
+				 * the priority of whatever subtask they're about to do */
+				if ((*a)->priority < best_priority)
+					(*a)->priority = best_priority;
+				/* analyze */
+				(*a)->analyze();
+				/* set best_priority if this analyzer has higher priority */
+				if ((*a)->priority > best_priority) {
+					best_priority = (*a)->priority;
+					best_analyzer = a;
+				}
+			}
 		}
 
 		/* need to check priority once more, because of requests */

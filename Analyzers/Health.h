@@ -10,7 +10,8 @@ class Health : public Analyzer {
 	public:
 		Health(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
+		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;

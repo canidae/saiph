@@ -47,7 +47,11 @@ Wand::Wand(Saiph *saiph) : Analyzer("Wand"), saiph(saiph), wand_key(0), state(WA
 }
 
 /* methods */
-void Wand::analyze(const string &messages) {
+void Wand::analyze() {
+
+}
+
+void Wand::parseMessages(const string &messages) {
 	if (messages.find(WAND_WORN_OUT_MESSAGE, 0) != string::npos) {
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);

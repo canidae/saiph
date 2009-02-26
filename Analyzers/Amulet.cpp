@@ -11,7 +11,12 @@ Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph), command2(""), w
 }
 
 /* methods */
-void Amulet::analyze(const string &messages) {
+void Amulet::analyze() {
+	if (saiph->inventory_changed || wear_amulet)
+		wearAmulet();
+}
+
+void Amulet::parseMessages(const string &messages) {
 	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
 		/* put on or remove a amulet */
 		command = command2;
@@ -25,8 +30,6 @@ void Amulet::analyze(const string &messages) {
                 req.request = REQUEST_DIRTY_INVENTORY;
                 saiph->request(req);
 	}
-	if (saiph->inventory_changed || wear_amulet)
-		wearAmulet();
 }
 
 bool Amulet::request(const Request &request) {

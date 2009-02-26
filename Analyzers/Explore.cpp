@@ -19,23 +19,9 @@ Explore::Explore(Saiph *saiph) : Analyzer("Explore"), saiph(saiph) {
 }
 
 /* methods */
-void Explore::analyze(const string &messages) {
-	if (saiph->world->question && messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
-		/* temporary hack for teleport control */
-		command = "><,";
-		priority = PRIORITY_CONTINUE_ACTION;
-	}
-	/* TODO
-	 * apply stethoscope to search for hidden door/passage.
-	 * You hear a hollow sound.  This must be a secret door! - probably not needed (we'll see the door)
-	 * You hear a hollow sound.  This must be a secret passage! - probably not needed (we'll see the passage)
-	 * You hear nothing special.
-	 * You hear your heart beat. */
-
+void Explore::analyze() {
 	/* figure out which place to explore */
-	if (saiph->world->menu || saiph->world->question)
-		return;
-	else if (saiph->world->player.blind || saiph->world->player.hallucinating || saiph->world->player.stunned || saiph->world->player.confused)
+	if (saiph->world->player.blind || saiph->world->player.hallucinating || saiph->world->player.stunned || saiph->world->player.confused)
 		return; // no exploring while blind/hallu/stun/conf
 
 	/* make the place the player stands on fully searched */
@@ -200,6 +186,20 @@ void Explore::complete() {
 			}
 		}
 	}
+}
+
+void Explore::parseMessages(const string &messages) {
+	if (saiph->world->question && messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
+		/* temporary hack for teleport control */
+		command = "><,";
+		priority = PRIORITY_CONTINUE_ACTION;
+	}
+	/* TODO
+	 * apply stethoscope to search for hidden door/passage.
+	 * You hear a hollow sound.  This must be a secret door! - probably not needed (we'll see the door)
+	 * You hear a hollow sound.  This must be a secret passage! - probably not needed (we'll see the passage)
+	 * You hear nothing special.
+	 * You hear your heart beat. */
 }
 
 /* private methods */

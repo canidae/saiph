@@ -12,12 +12,11 @@ class MonsterInfo : public Analyzer {
 	public:
 		MonsterInfo(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
+		void parseMessages(const std::string &messages);
 
 	private:
 		Saiph *saiph;
 		std::map<Point, Monster>::iterator look_at;
-
-		void parseMessages(const std::string &messages);
 };
 #endif

@@ -16,10 +16,11 @@ class Analyzer {
 		Analyzer(std::string name);
 		virtual ~Analyzer();
 
-		virtual void analyze(const std::string &messages);
+		virtual void analyze();
 		virtual void complete();
 		virtual void fail();
 		virtual void init();
+		virtual void parseMessages(const std::string &messages);
 		virtual bool request(const Request &request);
 };
 #endif

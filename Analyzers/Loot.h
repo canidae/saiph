@@ -41,8 +41,9 @@ class Loot : public Analyzer {
 	public:
 		Loot(Saiph *saiph);
 
-		void analyze(const std::string &messages);
+		void analyze();
 		void complete();
+		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
@@ -63,7 +64,6 @@ class Loot : public Analyzer {
 		void checkInventory();
 		void checkStash();
 		int dropItem(const Item &item);
-		void parseMessages(const std::string &messages);
 		int pickupItem(const Item &item);
 		int pickupOrDropItem(const Item &item, bool drop);
 		void visitOldStash();
