@@ -6,7 +6,7 @@ using namespace std;
 bool MonsterData::initialized = false;
 int MonsterData::monster_symbol_mapping[UCHAR_MAX + 1][INVERSE_BOLD_WHITE + 1] = {{0}};
 vector<MonsterData> MonsterData::monsters;
-std::map<std::string, int> MonsterData::monster_name_mapping;
+map<string, int> MonsterData::monster_name_mapping;
 
 /* constructors/destructors */
 MonsterData::MonsterData(std::string name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const MonsterAttack &ma0, const MonsterAttack &ma1, const MonsterAttack &ma2, const MonsterAttack &ma3, const MonsterAttack &ma4, const MonsterAttack &ma5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color) : name(name), symbol(symbol), difficulty(difficulty), move_rate(move_rate), armor_class(armor_class), magic_resistance(magic_resistance), alignment(alignment), geno_flags(geno_flags), weight(weight), nutrition(nutrition), extension(extension), sounds(sounds), size(size), resistances(resistances), resistances_conferred(resistances_conferred), m1(m1), m2(m2), m3(m3), color(color) {

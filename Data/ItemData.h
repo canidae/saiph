@@ -1,39 +1,39 @@
 #ifndef ITEMDATA_H
 #define ITEMDATA_H
 
+#include <map>
 #include <string>
 #include "../Globals.h"
 
 /* properties */
-#define PROPERTY_CLEAR             ((unsigned long long) (1LL << 0))
-#define PROPERTY_FIRE              ((unsigned long long) (1LL << 1))
-#define PROPERTY_COLD              ((unsigned long long) (1LL << 2))
-#define PROPERTY_SLEEP             ((unsigned long long) (1LL << 3))
-#define PROPERTY_DISINT            ((unsigned long long) (1LL << 4))
-#define PROPERTY_SHOCK             ((unsigned long long) (1LL << 5))
-#define PROPERTY_POISON            ((unsigned long long) (1LL << 6))
-#define PROPERTY_ACID              ((unsigned long long) (1LL << 7))
-#define PROPERTY_STONE             ((unsigned long long) (1LL << 8))
-#define PROPERTY_MAGICRES          ((unsigned long long) (1LL << 9))
-#define PROPERTY_REFLECTION        ((unsigned long long) (1LL << 10))
-#define PROPERTY_DISPLACEMENT      ((unsigned long long) (1LL << 11))
-#define PROPERTY_INVISIBLE         ((unsigned long long) (1LL << 12))
-#define PROPERTY_VISIBLE           ((unsigned long long) (1LL << 13))
-#define PROPERTY_BRILLIANCE        ((unsigned long long) (1LL << 14))
-#define PROPERTY_ESP               ((unsigned long long) (1LL << 15))
-#define PROPERTY_STUPIDITY         ((unsigned long long) (1LL << 16))
-#define PROPERTY_STRENGTH          ((unsigned long long) (1LL << 17))
-#define PROPERTY_DEXTERITY         ((unsigned long long) (1LL << 18))
-#define PROPERTY_FUMBLING          ((unsigned long long) (1LL << 19))
-#define PROPERTY_JUMPING           ((unsigned long long) (1LL << 20))
-#define PROPERTY_KICKING           ((unsigned long long) (1LL << 21))
-#define PROPERTY_LEVITATION        ((unsigned long long) (1LL << 22))
-#define PROPERTY_STEALTH           ((unsigned long long) (1LL << 23))
-#define PROPERTY_VERYFAST          ((unsigned long long) (1LL << 24))
-#define PROPERTY_WATERWALKING      ((unsigned long long) (1LL << 25))
-#define PROPERTY_SLIPPERY          ((unsigned long long) (1LL << 26))
-#define PROPERTY_MAGIC             ((unsigned long long) (1LL << 27))
-#define PROPERTY_RANDOM_APPEARANCE ((unsigned long long) (1LL << 28))
+#define PROPERTY_FIRE              ((unsigned long long) (1LL << 0))
+#define PROPERTY_COLD              ((unsigned long long) (1LL << 1))
+#define PROPERTY_SLEEP             ((unsigned long long) (1LL << 2))
+#define PROPERTY_DISINT            ((unsigned long long) (1LL << 3))
+#define PROPERTY_SHOCK             ((unsigned long long) (1LL << 4))
+#define PROPERTY_POISON            ((unsigned long long) (1LL << 5))
+#define PROPERTY_ACID              ((unsigned long long) (1LL << 6))
+#define PROPERTY_STONE             ((unsigned long long) (1LL << 7))
+#define PROPERTY_MAGICRES          ((unsigned long long) (1LL << 8))
+#define PROPERTY_REFLECTION        ((unsigned long long) (1LL << 9))
+#define PROPERTY_DISPLACEMENT      ((unsigned long long) (1LL << 10))
+#define PROPERTY_INVISIBLE         ((unsigned long long) (1LL << 11))
+#define PROPERTY_VISIBLE           ((unsigned long long) (1LL << 12))
+#define PROPERTY_BRILLIANCE        ((unsigned long long) (1LL << 13))
+#define PROPERTY_ESP               ((unsigned long long) (1LL << 14))
+#define PROPERTY_STUPIDITY         ((unsigned long long) (1LL << 15))
+#define PROPERTY_STRENGTH          ((unsigned long long) (1LL << 16))
+#define PROPERTY_DEXTERITY         ((unsigned long long) (1LL << 17))
+#define PROPERTY_FUMBLING          ((unsigned long long) (1LL << 18))
+#define PROPERTY_JUMPING           ((unsigned long long) (1LL << 19))
+#define PROPERTY_KICKING           ((unsigned long long) (1LL << 20))
+#define PROPERTY_LEVITATION        ((unsigned long long) (1LL << 21))
+#define PROPERTY_STEALTH           ((unsigned long long) (1LL << 22))
+#define PROPERTY_VERYFAST          ((unsigned long long) (1LL << 23))
+#define PROPERTY_WATERWALKING      ((unsigned long long) (1LL << 24))
+#define PROPERTY_SLIPPERY          ((unsigned long long) (1LL << 25))
+#define PROPERTY_MAGIC             ((unsigned long long) (1LL << 26))
+#define PROPERTY_RANDOM_APPEARANCE ((unsigned long long) (1LL << 27))
 
 /* material */
 #define MATERIAL_WAX         ((unsigned int)(1 << 0))
@@ -60,13 +60,14 @@
 
 class ItemData {
 public:
-	const std::string name;
-	const int base_cost;
-	const int weight;
-	const char item_class;
-	const int material;
-	const unsigned long long properties;
+	static std::map<std::string, ItemData> items;
+	std::string name;
+	int base_cost;
+	int weight;
+	char item_class;
+	int material;
+	unsigned long long properties;
 
-	ItemData(const std::string& name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
+	ItemData(const std::string &name = "", int base_cost = 0, int weight = 0, char item_class = ILLEGAL_ITEM, int material = 0, unsigned long long properties = 0);
 };
 #endif
