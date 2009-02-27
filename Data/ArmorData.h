@@ -8,10 +8,10 @@
 
 class ArmorData : public ItemData {
 public:
-	static std::map<std::string, ArmorData> armors;
-	int slot;
-	int ac;
-	int mc;
+	static std::map<std::string, ArmorData*> armors;
+	const int slot;
+	const int ac;
+	const int mc;
 
 	ArmorData(const std::string &name = "", int cost = 0, int weight = 0, int material = 0, int slot = 0, int ac = 0, int mc = 0, unsigned long long properties = 0);
 

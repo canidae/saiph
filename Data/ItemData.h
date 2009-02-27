@@ -60,13 +60,13 @@
 
 class ItemData {
 public:
-	static std::map<std::string, ItemData> items;
-	std::string name;
-	int base_cost;
-	int weight;
-	char item_class;
-	int material;
-	unsigned long long properties;
+	static std::map<std::string, ItemData*> items;
+	const std::string name;
+	const int base_cost;
+	const int weight;
+	const char item_class;
+	const int material;
+	const unsigned long long properties;
 
 	ItemData(const std::string &name = "", int base_cost = 0, int weight = 0, char item_class = ILLEGAL_ITEM, int material = 0, unsigned long long properties = 0);
 };

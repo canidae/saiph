@@ -7,7 +7,7 @@
 
 class SuitData : public ArmorData {
 public:
-	static std::map<std::string, SuitData> suits;
+	static std::map<std::string, SuitData*> suits;
 
 	SuitData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 };
