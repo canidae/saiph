@@ -1,7 +1,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -pg -gdwarf-2
-OBJECTS = ArmorData.o CloakData.o GlovesData.o ItemData.o MonsterData.o ShirtData.o SuitData.o
+OBJECTS = ArmorData.o CloakData.o GlovesData.o HelmetData.o ItemData.o MonsterData.o ShirtData.o SuitData.o
 
 analyzers: $(OBJECTS)
 
@@ -12,6 +12,7 @@ SuitData.o: SuitData.h SuitData.cpp
 ShirtData.o: ShirtData.h ShirtData.cpp
 GlovesData.o: GlovesData.h GlovesData.cpp
 CloakData.o: CloakData.h CloakData.cpp
+HelmetData.o: HelmetData.h HelmetData.cpp
 
 .PHONY: clean
 clean:
