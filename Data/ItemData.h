@@ -34,6 +34,7 @@
 #define PROPERTY_SLIPPERY          ((unsigned long long) (1LL << 25))
 #define PROPERTY_MAGIC             ((unsigned long long) (1LL << 26))
 #define PROPERTY_RANDOM_APPEARANCE ((unsigned long long) (1LL << 27))
+#define PROPERTY_CASTING_BONUS     ((unsigned long long) (1LL << 28))
 
 /* material */
 #define MATERIAL_WAX         ((unsigned int)(1 << 0))

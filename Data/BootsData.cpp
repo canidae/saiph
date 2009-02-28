@@ -26,13 +26,13 @@ void BootsData::init() {
 	create("low boots",            8,     10, MATERIAL_LEATHER, 1, 0, 0);
 	create("high boots",          12,     20, MATERIAL_LEATHER, 2, 0, 0);
 	create("iron shoes",          16,     50, MATERIAL_IRON,    2, 0, 0);
-	create("elven boots",          8,     15, MATERIAL_LEATHER, 1, 0, PROPERTY_STEALTH);
-	create("kicking boots",        8,     15, MATERIAL_IRON,    1, 0, PROPERTY_KICKING);
-	create("fumble boots",        30,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_FUMBLING);
-	create("levitation boots",    30,     15, MATERIAL_LEATHER, 1, 0, PROPERTY_LEVITATION);
-	create("jumping boots",       50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_JUMPING);
-	create("speed boots",         50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_VERYFAST);
-	create("water walking boots", 50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_WATERWALKING);
+	create("elven boots",          8,     15, MATERIAL_LEATHER, 1, 0, PROPERTY_STEALTH | PROPERTY_MAGIC);
+	create("kicking boots",        8,     15, MATERIAL_IRON,    1, 0, PROPERTY_KICKING | PROPERTY_MAGIC);
+	create("fumble boots",        30,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_FUMBLING | PROPERTY_MAGIC);
+	create("levitation boots",    30,     15, MATERIAL_LEATHER, 1, 0, PROPERTY_LEVITATION | PROPERTY_MAGIC);
+	create("jumping boots",       50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_JUMPING | PROPERTY_MAGIC);
+	create("speed boots",         50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_VERYFAST | PROPERTY_MAGIC);
+	create("water walking boots", 50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_WATERWALKING | PROPERTY_MAGIC);
 
 	//these appearances are constant
 	stuffInMaps("walking shoes", boots["low boots"]);

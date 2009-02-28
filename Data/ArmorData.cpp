@@ -11,5 +11,7 @@ ArmorData::ArmorData(const std::string &name, int cost, int weight, int material
 
 void ArmorData::init() {
 	ShirtData::init();
+	BootsData::init();
+	CloakData::init();
 	//TODO: fill out as more data is typed in
 }
