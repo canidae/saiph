@@ -9,6 +9,8 @@
 class ArmorData : public ItemData {
 public:
 	static std::map<std::string, ArmorData*> armors;
+	static void init();
+
 	const int slot;
 	const int ac;
 	const int mc;
