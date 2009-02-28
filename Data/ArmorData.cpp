@@ -1,5 +1,7 @@
 #include "ArmorData.h"
 #include "ShirtData.h"
+#include "BootsData.h"
+#include "CloakData.h"
 
 using namespace std;
 
