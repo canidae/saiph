@@ -3,22 +3,18 @@
 using namespace std;
 
 /* initialize static variables */
-map<string, BootsData*> BootsData::boots;
+map<string, BootsData *> BootsData::boots;
 
-BootsData::BootsData(const std::string &name = "", int cost = 0, int weight = 0, int material = 0, int ac = 0, int mc = 0, unsigned long long properties = 0) : ArmorData(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
+BootsData::BootsData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
 }
 
-namespace { //an anonymous namespace, to avoid linker errors from the various create()s
-	inline void stuffInMaps(const std::string& name, BootsData* foo) {
-		BootsData::boots[name] = foo;
-		ArmorData::armors[name] = foo;
-		ItemData::items[name] = foo;
-	}
-	
-	inline void create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-		BootsData* foo = new BootsData(name, cost, weight, material, ac, mc, properties);
-		stuffInMaps(foo->name, foo);
-	}
+void BootsData::addToMap(const std::string &name, BootsData *boots) {
+	BootsData::boots[name] = boots;
+	ArmorData::addToMap(name, boots);
+}
+
+void BootsData::create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+	addToMap(name, new BootsData(name, cost, weight, material, ac, mc, properties));
 }
 
 void BootsData::init() {
@@ -34,11 +30,11 @@ void BootsData::init() {
 	create("speed boots",         50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_VERYFAST | PROPERTY_MAGIC);
 	create("water walking boots", 50,     20, MATERIAL_LEATHER, 1, 0, PROPERTY_WATERWALKING | PROPERTY_MAGIC);
 
-	//these appearances are constant
-	stuffInMaps("walking shoes", boots["low boots"]);
-	stuffInMaps("jackboots", boots["high boots"]);
-	stuffInMaps("hard shoes", boots["iron shoes"]);
+	// these appearances are constant
+	addToMap("walking shoes", boots["low boots"]);
+	addToMap("jackboots", boots["high boots"]);
+	addToMap("hard shoes", boots["iron shoes"]);
 
-	//TODO: random appearances:
-	//buckled, combat, hiking, jungle, riding, snow, mud
+	// TODO: random appearances:
+	// buckled, combat, hiking, jungle, riding, snow, mud
 }

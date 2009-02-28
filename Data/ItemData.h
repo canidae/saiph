@@ -61,10 +61,7 @@
 
 class ItemData {
 public:
-	static std::map<std::string, ItemData*> items;
-	static void init();
-	static void destroy();
-
+	static std::map<std::string, ItemData *> items;
 	const std::string name;
 	const int base_cost;
 	const int weight;
@@ -72,7 +69,13 @@ public:
 	const int material;
 	const unsigned long long properties;
 
-	ItemData(const std::string &name = "", int base_cost = 0, int weight = 0, char item_class = ILLEGAL_ITEM, int material = 0, unsigned long long properties = 0);
+	ItemData(const std::string &name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
 	virtual ~ItemData() {}
+
+	static void init();
+	static void destroy();
+
+protected:
+	static void addToMap(const std::string &name, ItemData *item);
 };
 #endif

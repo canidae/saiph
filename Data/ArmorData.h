@@ -8,15 +8,17 @@
 
 class ArmorData : public ItemData {
 public:
-	static std::map<std::string, ArmorData*> armors;
-	static void init();
-
+	static std::map<std::string, ArmorData *> armors;
 	const int slot;
 	const int ac;
 	const int mc;
 
-	ArmorData(const std::string &name = "", int cost = 0, int weight = 0, int material = 0, int slot = 0, int ac = 0, int mc = 0, unsigned long long properties = 0);
+	ArmorData(const std::string &name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
+	virtual ~ArmorData() {}
 
-	/* TODO: after materials get implemented, hindersCasting() and erodes() */
+	static void init();
+
+protected:
+	static void addToMap(const std::string &name, ArmorData *armor);
 };
 #endif
