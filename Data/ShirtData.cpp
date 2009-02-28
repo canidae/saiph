@@ -8,11 +8,13 @@ map<string, ShirtData*> ShirtData::shirts;
 ShirtData::ShirtData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_SHIRT, ac, mc, properties) {
 }
 
-void create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	ShirtData* foo = new ShirtData(name, cost, weight, material, ac, mc, properties);
-	ShirtData::shirts[foo->name] = foo;
-	ArmorData::armors[foo->name] = foo;
-	ItemData::items[foo->name] = foo;
+namespace { //an anonymous namespace, to avoid linker errors from the various create()s
+	void create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+		ShirtData* foo = new ShirtData(name, cost, weight, material, ac, mc, properties);
+		ShirtData::shirts[foo->name] = foo;
+		ArmorData::armors[foo->name] = foo;
+		ItemData::items[foo->name] = foo;
+	}
 }
 
 void ShirtData::init() {

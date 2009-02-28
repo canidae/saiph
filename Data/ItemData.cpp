@@ -14,6 +14,10 @@ void ItemData::init() {
 }
 
 void ItemData::destroy() {
-	for (map<string, ItemData*>::iterator i = items.begin(); i != items.end(); i++)
+	for (map<string, ItemData*>::iterator i = items.begin(); i != items.end(); i++) {
 		delete i->second;
+		//we might have two mappings for the same ItemData* (e.g., "low boots"
+		//and "walking shoes" are the same item); make any double-deletes harmless
+		i->second = 0;
+	}
 }

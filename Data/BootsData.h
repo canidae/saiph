@@ -8,6 +8,7 @@
 class BootsData : public ArmorData {
 public:
 	static std::map<std::string, BootsData*> boots;
+	static void init();
 
 	BootsData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 };
