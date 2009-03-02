@@ -98,15 +98,15 @@ class Saiph {
 		PathNode shortestPath(unsigned char symbol);
 
 	private:
-		std::string current_directory;
-
 		Connection *connection;
 		std::vector<Analyzer *> analyzers;
 		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 		std::vector<Analyzer *>::iterator best_analyzer;
-		bool sokoban_found;
+		std::string current_directory;
 		std::string farlook_command;
+		bool sokoban_found;
 		int stuck_counter;
+		time_t start_time;
 
 		void detectPosition();
 		bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);

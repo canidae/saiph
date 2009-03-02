@@ -19,6 +19,8 @@ World::World(Connection *connection) : connection(connection) {
 	messages = "  ";
 	cur_page = -1;
 	max_page = -1;
+	command_count = 0;
+	frame_count = 0;
 	inverse = false;
 	bold = false;
 	menu = false;
@@ -42,6 +44,7 @@ bool World::executeCommand(const string &command) {
 		return false;
 	}
 	connection->transmit(command);
+	++command_count;
 	update();
 	return true;
 }
@@ -108,6 +111,7 @@ void World::fetchMessages() {
 		}
 		/* request the remaining messages */
 		connection->transmit(" ");
+		++command_count;
 		update();
 		return;
 	} else if (cursor.row == 0) {
@@ -461,4 +465,5 @@ void World::update() {
 	}
 	if (messages == "  ")
 		messages.clear(); // no messages
+	++frame_count;
 }

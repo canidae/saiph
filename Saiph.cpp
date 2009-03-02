@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <ctime>
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
@@ -88,6 +89,9 @@ Saiph::Saiph(const string &directory, const int interface) {
 	/* used to determine if we seem to be in a loop */
 	last_turn = 0;
 	stuck_counter = 0;
+
+	/* used for cps/fps/tps */
+	start_time = time(NULL);
 
 	/* Analyzers */
 	analyzers.push_back(new Amulet(this));
@@ -888,7 +892,21 @@ Point Saiph::directionToPoint(unsigned char direction) {
 }
 
 void Saiph::dumpMaps() {
-	/* monsters */
+	/* XXX: World echoes output from the game in the top left corner */
+	/* commands/frames/turns per second */
+	int seconds = (int) difftime(time(NULL), start_time);
+	if (seconds == 0)
+		++seconds;
+	int cps = world->command_count / seconds;
+	int fps = world->frame_count / seconds;
+	int tps = world->player.turn / seconds;
+	cout << (unsigned char) 27 << "[25;1H";
+	cout << "CPS/FPS/TPS: ";
+	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
+	cout << (unsigned char) 27 << "[35m" << fps << (unsigned char) 27 << "[0m/";
+	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m";
+
+	/* monsters and map as saiph sees it */
 	Point p;
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";

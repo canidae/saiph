@@ -33,6 +33,8 @@ class World {
 		std::string messages;
 		int cur_page;
 		int max_page;
+		int command_count;
+		int frame_count;
 		bool menu;
 		bool question;
 
