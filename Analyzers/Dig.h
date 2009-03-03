@@ -8,7 +8,6 @@
 #include "../Request.h"
 
 /* Dig messages */
-#define DIG_TOO_HARD " too hard to "
 #define DIG_NOT_ENOUGH_ROOM "  There isn't enough room to "
 
 class Item;
@@ -33,6 +32,5 @@ class Dig : public Analyzer {
 		void findDiggingTool();
 		bool freeWeaponHand();
 		bool isDiggingTool(const Item &item);
-		inline bool canDigDownTile(unsigned char symbol);
 };
 #endif	

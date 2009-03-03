@@ -3,6 +3,7 @@
 #include "../Globals.h"
 #include "../Item.h"
 #include "../Saiph.h"
+#include "../World.h"
 
 using namespace std;
 
@@ -11,6 +12,8 @@ Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITE
 
 void Dig::analyze() {
 	if (priority >= PRIORITY_DIG_DOWN || digging_tool == ILLEGAL_ITEM)
+		return;
+	else if (saiph->world->player.blind || saiph->world->player.hallucinating || saiph->world->player.stunned || saiph->world->player.confused)
 		return;
 	else if (saiph->levels[saiph->position.level].branch == BRANCH_SOKOBAN)
 		return;
@@ -65,7 +68,7 @@ void Dig::analyze() {
 		if (node.moves == 1) {
 			/* next to location we want to dig, but do we still want to dig here? */
 			unsigned char symbol = saiph->getDungeonSymbol(*d);
-			if (symbol == BOULDER || symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL || symbol == SOLID_ROCK) {
+			if (symbol == BOULDER || ((symbol == VERTICAL_WALL || symbol == HORIZONTAL_WALL || symbol == SOLID_ROCK) && !saiph->levels[saiph->position.level].undiggable)) {
 				/* yes, we do */
 				dig_direction = node.dir;
 				command = APPLY;
@@ -86,7 +89,7 @@ void Dig::analyze() {
 	}
 
 	unsigned char symbol = saiph->getDungeonSymbol();
-	if (!saiph->levels[saiph->position.level].undiggable && canDigDownTile(symbol) && least_moves == UNREACHABLE) {
+	if (!saiph->levels[saiph->position.level].undiggable && (symbol == FLOOR || symbol == CORRIDOR) && least_moves == UNREACHABLE) {
 		/* no place to dig, dig down instead */
 		dig_direction = DOWN;
 		last_dig_location = saiph->position;
@@ -94,15 +97,6 @@ void Dig::analyze() {
 		command = APPLY;
 		priority = PRIORITY_DIG_DOWN;
 	}
-}
-
-inline bool Dig::canDigDownTile(unsigned char symbol) {
-	return symbol != SHOP_TILE &&
-		symbol != OPEN_DOOR &&
-		symbol != STAIRS_DOWN &&
-		symbol != STAIRS_UP &&
-		symbol != ALTAR &&
-		symbol != THRONE;
 }
 
 void Dig::parseMessages(const string &messages) {
@@ -120,10 +114,7 @@ void Dig::parseMessages(const string &messages) {
 		/* tell loot analyzer to check inventory */
 		req.request = REQUEST_DIRTY_INVENTORY;
 		saiph->request(req);
-	} else if (last_dig_location == saiph->position &&
-			last_dig_target != (Point)last_dig_location &&
- 			(messages.find(DIG_TOO_HARD) != string::npos ||
-			messages.find(DIG_NOT_ENOUGH_ROOM) != string::npos)) {
+	} else if (last_dig_location == saiph->position && last_dig_target != last_dig_location && messages.find(DIG_NOT_ENOUGH_ROOM) != string::npos) {
 		/* our target is undiggable */
 		saiph->setDungeonSymbol(last_dig_target, UNKNOWN_TILE_UNPASSABLE);
 	}
@@ -146,7 +137,7 @@ void Dig::findDiggingTool() {
 bool Dig::freeWeaponHand() {
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		if (i->second.additional.find("weapon in ", 0) == 0 || i->second.additional == "wielded") {
-			return !(i->second.beatitude == CURSED);
+			return i->second.beatitude != CURSED;
 		}
 	}
 	return true; //not wielding anything
