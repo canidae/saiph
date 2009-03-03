@@ -1,6 +1,6 @@
 CXX = g++
 RM = rm -f
-CXXFLAGS = -O0 -Wall -Wextra -g3 -pg -gdwarf-2
+CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
 OBJECTS = ArmorData.o BootsData.o CloakData.o CorpseData.o FoodData.o GlovesData.o HelmetData.o ItemData.o MonsterData.o ShieldData.o ShirtData.o SuitData.o
 
 analyzers: $(OBJECTS)
