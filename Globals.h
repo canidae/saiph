@@ -131,6 +131,7 @@
 #define ENHANCE "#enhance\n"
 #define ESCAPE "\x1b"
 #define FIGHT "F"
+#define IDLE "."
 #define INVENTORY "i"
 #define KICK ""
 #define LOOK ":"
@@ -326,6 +327,7 @@
 #define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 #define MESSAGE_NOTHING_HAPPENS "  Nothing happens.  "
 #define MESSAGE_NOTHING_TO_EAT "  You don't have anything to eat.  "
+#define MESSAGE_PERHAPS_THATS_WHY "  Perhaps that's why you cannot move it.  "
 #define MESSAGE_PICK_A_SKILL "  Pick a skill to advance:  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
