@@ -87,7 +87,7 @@ void Loot::analyze() {
 		}
 	}
 
-	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED)
+	if (priority >= PRIORITY_LOOT_VISIT_STASH || saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED || saiph->inventory.size() >= KNAPSACK_LIMIT)
 		return;
 	/* go to "visit_old_stash" if it's set */
 	if (visit_old_stash.level >= 0 && visit_old_stash.level < (int) saiph->levels.size()) {
@@ -401,6 +401,8 @@ int Loot::pickupOrDropItem(const Item &item, bool drop) {
 }
 
 void Loot::visitOldStash() {
+	if (saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED || saiph->inventory.size() >= KNAPSACK_LIMIT)
+		return;
 	unsigned int min_moves = UNREACHABLE;
 	visit_old_stash.level = -1; // reset, in case there are no old stashes we wish to visit
 	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
