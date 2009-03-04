@@ -1,6 +1,7 @@
 #include "Food.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Data/CorpseData.h"
 
 using namespace std;
 
@@ -66,162 +67,6 @@ Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
 	eat_order.push_back("sprig of wolfsbane"); // will cure lycanthropy
 	eat_order.push_back("partly eaten lizard corpse"); // wil cure stoning
 	eat_order.push_back("lizard corpse"); // wil cure stoning
-
-	/* corpses */
-	corpse_data["abbot corpse"] = FOOD_HUMAN | FOOD_HALLUCINOGENIC;
-	corpse_data["acid blob corpse"] = FOOD_ACIDIC | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["acolyte corpse"] = FOOD_HUMAN;
-	corpse_data["aligned priest corpse"] = FOOD_HUMAN;
-	corpse_data["apprentice corpse"] = FOOD_HUMAN;
-	corpse_data["Arch Priest's corpse"] = FOOD_HUMAN;
-	corpse_data["archeologist corpse"] = FOOD_HUMAN;
-	corpse_data["attendant corpse"] = FOOD_HUMAN;
-	corpse_data["baby green dragon corpse"] = FOOD_POISONOUS;
-	corpse_data["baby yellow dragon corpse"] = FOOD_ACIDIC;
-	corpse_data["barbarian corpse"] = FOOD_HUMAN;
-	corpse_data["bat corpse"] = FOOD_STUN;
-	corpse_data["black naga corpse"] = FOOD_ACIDIC;
-	corpse_data["black naga hatchling corpse"] = FOOD_ACIDIC;
-	corpse_data["black pudding corpse"] = FOOD_ACIDIC;
-	corpse_data["blue jelly corpse"] = FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["brown mold corpse"] = FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["brown pudding corpse"] = FOOD_ACIDIC | FOOD_VEGETARIAN;
-	corpse_data["captain corpse"] = FOOD_HUMAN;
-	corpse_data["caveman corpse"] = FOOD_HUMAN;
-	corpse_data["cavewoman corpse"] = FOOD_HUMAN;
-	corpse_data["chameleon corpse"] = FOOD_POLYMORPH;
-	corpse_data["chickatrice corpse"] = FOOD_PETRIFY;
-	corpse_data["chieftain corpse"] = FOOD_HUMAN;
-	corpse_data["Chromatic Dragon's corpse"] = FOOD_POISONOUS;
-	corpse_data["cobra corpse"] = FOOD_POISONOUS;
-	corpse_data["cockatrice corpse"] = FOOD_PETRIFY;
-	corpse_data["Croesus' corpse"] = FOOD_HUMAN;
-	corpse_data["Death's corpse"] = FOOD_DIE;
-	corpse_data["dog corpse"] = FOOD_AGGRAVATE;
-	corpse_data["doppelganger corpse"] = FOOD_HUMAN | FOOD_POLYMORPH;
-	corpse_data["dwarf corpse"] = FOOD_DWARF;
-	corpse_data["dwarf king corpse"] = FOOD_DWARF;
-	corpse_data["dwarf lord corpse"] = FOOD_DWARF;
-	corpse_data["elf corpse"] = FOOD_ELF;
-	corpse_data["elf-lord corpse"] = FOOD_ELF;
-	corpse_data["Elvenking corpse"] = FOOD_ELF;
-	corpse_data["Famine's corpse"] = FOOD_DIE;
-	corpse_data["gelatinous corpse"] = FOOD_ACIDIC | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["giant bat corpse"] = FOOD_STUN;
-	corpse_data["giant beetle corpse"] = FOOD_POISONOUS;
-	corpse_data["giant mimic corpse"] = FOOD_MIMIC;
-	corpse_data["giant spider corpse"] = FOOD_POISONOUS;
-	corpse_data["gnome corpse"] = FOOD_GNOME;
-	corpse_data["gnome king corpse"] = FOOD_GNOME;
-	corpse_data["gnome lord corpse"] = FOOD_GNOME;
-	corpse_data["gnomish wizard corpse"] = FOOD_GNOME;
-	corpse_data["Grand Master's corpse"] = FOOD_HUMAN;
-	corpse_data["gray ooze corpse"] = FOOD_ACIDIC | FOOD_VEGETARIAN;
-	corpse_data["green dragon corpse"] = FOOD_POISONOUS;
-	corpse_data["green mold corpse"] = FOOD_ACIDIC | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["green slime corpse"] = FOOD_ACIDIC | FOOD_POISONOUS | FOOD_SLIME | FOOD_VEGETARIAN;
-	corpse_data["Green-elf corpse"] = FOOD_ELF;
-	corpse_data["gremlin corpse"] = FOOD_POISONOUS;
-	corpse_data["Grey-elf corpse"] = FOOD_ELF;
-	corpse_data["guard corpse"] = FOOD_HUMAN;
-	corpse_data["guardian naga corpse"] = FOOD_POISONOUS;
-	corpse_data["guide corpse"] = FOOD_HUMAN;
-	corpse_data["healer corpse"] = FOOD_HUMAN;
-	corpse_data["high priest corpse"] = FOOD_HUMAN;
-	corpse_data["Hippocrates' corpse"] = FOOD_HUMAN;
-	corpse_data["homunculus corpse"] = FOOD_POISONOUS;
-	corpse_data["housecat corpse"] = FOOD_AGGRAVATE;
-	corpse_data["human corpse"] = FOOD_HUMAN;
-	corpse_data["hunter corpse"] = FOOD_HUMAN;
-	corpse_data["jellyfish corpse"] = FOOD_POISONOUS;
-	corpse_data["Keystone Kop corpse"] = FOOD_HUMAN;
-	corpse_data["killer bee corpse"] = FOOD_POISONOUS;
-	corpse_data["King Arthur's corpse"] = FOOD_HUMAN;
-	corpse_data["kitten corpse"] = FOOD_AGGRAVATE;
-	corpse_data["knight corpse"] = FOOD_HUMAN;
-	corpse_data["kobold corpse"] = FOOD_POISONOUS;
-	corpse_data["kobold lord corpse"] = FOOD_POISONOUS;
-	corpse_data["kobold shaman corpse"] = FOOD_POISONOUS;
-	corpse_data["Kop Kaptain corpse"] = FOOD_HUMAN;
-	corpse_data["Kop Lieutenant corpse"] = FOOD_HUMAN;
-	corpse_data["Kop Sergeant corpse"] = FOOD_HUMAN;
-	corpse_data["large cat corpse"] = FOOD_AGGRAVATE;
-	corpse_data["large dog corpse"] = FOOD_AGGRAVATE;
-	corpse_data["large kobold corpse"] = FOOD_POISONOUS;
-	corpse_data["large mimic corpse"] = FOOD_MIMIC;
-	corpse_data["leprechaun corpse"] = FOOD_TELEPORTITIS;
-	corpse_data["lichen corpse"] = FOOD_PICKUP_INSTEAD | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["lieutenant corpse"] = FOOD_HUMAN;
-	corpse_data["little dog corpse"] = FOOD_AGGRAVATE;
-	corpse_data["lizard corpse"] = FOOD_PICKUP_INSTEAD;
-	corpse_data["Lord Carnarvon's corpse"] = FOOD_HUMAN;
-	corpse_data["Lord Sato's corpse"] = FOOD_HUMAN;
-	corpse_data["Master Assassin's corpse"] = FOOD_HUMAN;
-	corpse_data["Master Kaen's corpse"] = FOOD_HUMAN;
-	corpse_data["Master of Thieves' corpse"] = FOOD_HUMAN;
-	corpse_data["Medusa's corpse"] = FOOD_PETRIFY | FOOD_POISONOUS;
-	corpse_data["monk corpse"] = FOOD_HUMAN;
-	corpse_data["mountain nymph corpse"] = FOOD_TELEPORTITIS;
-	corpse_data["neanderthal corpse"] = FOOD_HUMAN;
-	corpse_data["Neferet the Green's corpse"] = FOOD_HUMAN;
-	corpse_data["ninja corpse"] = FOOD_HUMAN;
-	corpse_data["Norn's corpse"] = FOOD_HUMAN;
-	corpse_data["nurse corpse"] = FOOD_HUMAN;
-	corpse_data["ochre jelly corpse"] = FOOD_ACIDIC | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["Oracle's corpse"] = FOOD_HUMAN;
-	corpse_data["Orion's corpse"] = FOOD_HUMAN;
-	corpse_data["page corpse"] = FOOD_HUMAN;
-	corpse_data["Pelias' corpse"] = FOOD_HUMAN;
-	corpse_data["Pestilence's corpse"] = FOOD_DIE;
-	corpse_data["pit viper corpse"] = FOOD_POISONOUS;
-	corpse_data["priest corpse"] = FOOD_HUMAN;
-	corpse_data["priestess corpse"] = FOOD_HUMAN;
-	corpse_data["prisoner corpse"] = FOOD_HUMAN;
-	corpse_data["quantum mechanic corpse"] = FOOD_POISONOUS;
-	corpse_data["queen bee corpse"] = FOOD_POISONOUS;
-	corpse_data["quivering blob corpse"] = FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["rabid rat corpse"] = FOOD_POISONOUS;
-	corpse_data["ranger corpse"] = FOOD_HUMAN;
-	corpse_data["red mold corpse"] = FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["rogue corpse"] = FOOD_HUMAN;
-	corpse_data["roshi corpse"] = FOOD_HUMAN;
-	corpse_data["salamander corpse"] = FOOD_POISONOUS;
-	corpse_data["samurai corpse"] = FOOD_HUMAN;
-	corpse_data["scorpion corpse"] = FOOD_POISONOUS;
-	corpse_data["Scorpius' corpse"] = FOOD_POISONOUS;
-	corpse_data["sergeant corpse"] = FOOD_HUMAN;
-	corpse_data["Shaman Karnov's corpse"] = FOOD_HUMAN;
-	corpse_data["shopkeeper corpse"] = FOOD_HUMAN;
-	corpse_data["shrieker corpse"] = FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["small mimic corpse"] = FOOD_MIMIC;
-	corpse_data["snake corpse"] = FOOD_POISONOUS;
-	corpse_data["soldier corpse"] = FOOD_HUMAN;
-	corpse_data["soldier ant corpse"] = FOOD_POISONOUS;
-	corpse_data["spotted jelly corpse"] = FOOD_ACIDIC | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["stalker corpse"] = FOOD_STUN;
-	corpse_data["student corpse"] = FOOD_HUMAN;
-	corpse_data["tengu corpse"] = FOOD_TELEPORTITIS;
-	corpse_data["thug corpse"] = FOOD_HUMAN;
-	corpse_data["tourist corpse"] = FOOD_HUMAN;
-	corpse_data["Twoflower's corpse"] = FOOD_HUMAN;
-	corpse_data["valkyrie corpse"] = FOOD_HUMAN;
-	corpse_data["vampire bat corpse"] = FOOD_POISONOUS;
-	corpse_data["violet fungus corpse"] = FOOD_HALLUCINOGENIC | FOOD_VEGAN | FOOD_VEGETARIAN;
-	corpse_data["warrior corpse"] = FOOD_HUMAN;
-	corpse_data["watch captain corpse"] = FOOD_HUMAN;
-	corpse_data["watchman corpse"] = FOOD_HUMAN;
-	corpse_data["water moccasin corpse"] = FOOD_POISONOUS;
-	corpse_data["water nymph corpse"] = FOOD_TELEPORTITIS;
-	corpse_data["werejackal corpse"] = FOOD_HUMAN | FOOD_LYCANTHROPY | FOOD_POISONOUS;
-	corpse_data["wererat corpse"] = FOOD_HUMAN | FOOD_LYCANTHROPY | FOOD_POISONOUS;
-	corpse_data["werewolf corpse"] = FOOD_HUMAN | FOOD_LYCANTHROPY | FOOD_POISONOUS;
-	corpse_data["wizard corpse"] = FOOD_HUMAN;
-	corpse_data["Wizard of Yendor's corpse"] = FOOD_HUMAN | FOOD_TELEPORTITIS;
-	corpse_data["wood nymph corpse"] = FOOD_TELEPORTITIS;
-	corpse_data["Woodland-elf corpse"] = FOOD_ELF;
-	corpse_data["xan corpse"] = FOOD_POISONOUS;
-	corpse_data["yellow dragon corpse"] = FOOD_ACIDIC;
-	corpse_data["yellow mold corpse"] = FOOD_HALLUCINOGENIC | FOOD_POISONOUS | FOOD_VEGAN | FOOD_VEGETARIAN;
 }
 
 /* methods */
@@ -399,61 +244,89 @@ bool Food::request(const Request &request) {
 /* private methods */
 bool Food::safeToEat(const string &corpse) {
 	/* this method returns true if it's safe to eat given corpse */
-	map<string, int>::iterator c = corpse_data.find(corpse);
-	if (c == corpse_data.end())
-		return true;
-	else if ((c->second & FOOD_PICKUP_INSTEAD) != 0)
+	map<string, CorpseData *>::iterator c = CorpseData::corpses.find(corpse);
+	if (c == CorpseData::corpses.end())
 		return false;
 	/* acidic ain't so bad
-	else if ((c->second & FOOD_ACIDIC) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
 		return false;
 	*/
-	else if ((c->second & FOOD_AGGRAVATE) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_AGGRAVATE) != 0)
 		return false;
-	else if ((c->second & FOOD_DIE) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_DIE) != 0)
 		return false;
 	/* eat dwarves for now
-	else if ((c->second & FOOD_DWARF) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_DWARF) != 0)
 		return false;
 	*/
 	/* eat elves for now
-	else if ((c->second & FOOD_ELF) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_ELF) != 0)
 		return false;
 	*/
 	/* eat gnomes for now
-	else if ((c->second & FOOD_GNOME) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_GNOME) != 0)
 		return false;
 	*/
-	else if ((c->second & FOOD_HALLUCINOGENIC) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_HALLUCINOGENIC) != 0)
 		return false;
-	else if ((c->second & FOOD_HUMAN) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_HUMAN) != 0)
 		return false;
-	else if ((c->second & FOOD_LYCANTHROPY) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_LYCANTHROPY) != 0)
 		return false;
 	/* mimic for some turns isn't that bad, is it?
-	else if ((c->second & FOOD_MIMIC) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_MIMIC) != 0)
 		return false;
 	*/
-	else if ((c->second & FOOD_PETRIFY) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_PETRIFY) != 0)
 		return false;
-	else if ((c->second & FOOD_POISONOUS) != 0 && !saiph->world->player.poison_resistance)
+	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 && !saiph->world->player.poison_resistance)
 		return false;
-	else if ((c->second & FOOD_POLYMORPH) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_POLYMORPH) != 0)
 		return false;
-	else if ((c->second & FOOD_SLIME) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_SLIME) != 0)
 		return false;
-	else if ((c->second & FOOD_STUN) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_STUN) != 0)
 		return false;
 	/* teleportitis might be fun for a bot
-	else if ((c->second & FOOD_TELEPORTITIS) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_TELEPORTITIS) != 0)
 		return false;
 	*/
 	/* we're not vegan
-	else if ((c->second & FOOD_VEGAN) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_VEGAN) != 0)
 		return false;
 	*/
 	/* nor vegetarian
-	else if ((c->second & FOOD_VEGETARIAN) != 0)
+	else if ((c->second->eat_effects & EAT_EFFECT_VEGETARIAN) != 0)
+		return false;
+	*/
+	/* let's eat stuff that makes us strong
+	else if ((c->second->eat_effects & EAT_EFFECT_STRENGTH) != 0)
+		return false;
+	*/
+	/* and stuff that gives us a level
+	else if ((c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) != 0)
+		return false;
+	*/
+	/* and stuff that heals us
+	else if ((c->second->eat_effects & EAT_EFFECT_HEAL) != 0)
+		return false;
+	*/
+	else if ((c->second->eat_effects & EAT_EFFECT_SPEED_TOGGLE) != 0)
+		return false;
+	/* since we took out lizards from CorpseData, no monster got this effect
+	else if ((c->second->eat_effects & EAT_EFFECT_CURE_STONING) != 0)
+		return false;
+	*/
+	/* since we took out lichens from CorpseData, no monster got this effect
+	else if ((c->second->eat_effects & EAT_EFFECT_REDUCE_STUNNING) != 0)
+		return false;
+	*/
+	/* since we took out lichens from CorpseData, no monster got this effect
+	else if ((c->second->eat_effects & EAT_EFFECT_REDUCE_CONFUSION) != 0)
+		return false;
+	*/
+	/* sure, let's go invisible if we can
+	else if ((c->second->eat_effects & EAT_EFFECT_INVISIBILITY) != 0)
 		return false;
 	*/
 	return true;

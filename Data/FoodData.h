@@ -31,7 +31,6 @@
 #define EAT_EFFECT_REDUCE_STUNNING  (1 << 23)
 #define EAT_EFFECT_REDUCE_CONFUSION (1 << 24)
 #define EAT_EFFECT_INVISIBILITY     (1 << 25)
-#define EAT_EFFECT_NEVER_ROT        (1 << 26)
 
 class FoodData : public ItemData {
 public:
@@ -39,9 +38,8 @@ public:
 	const int nutrition;
 	const int eat_time;
 	const int eat_effects;
-	const int resistance_confer_probability;
 
-	FoodData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability);
+	FoodData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
 	~FoodData() {}
 
 	static void init();
@@ -50,6 +48,6 @@ protected:
 	static void addToMap(const std::string &name, FoodData *food);
 
 private:
-	static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability);
+	static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
 };
 #endif

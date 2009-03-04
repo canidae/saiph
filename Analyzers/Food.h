@@ -1,5 +1,12 @@
 #ifndef FOOD_H
 #define FOOD_H
+
+#include <map>
+#include <string>
+#include <vector>
+#include "../Analyzer.h"
+#include "../Request.h"
+
 /* some text */
 #define FOOD_CORPSE " corpse"
 #define FOOD_EAT_IT_1 "  There is "
@@ -34,12 +41,6 @@
 #define FOOD_VEGAN 0x20000
 #define FOOD_VEGETARIAN 0x40000
 
-#include <map>
-#include <string>
-#include <vector>
-#include "../Analyzer.h"
-#include "../Request.h"
-
 class Saiph;
 
 class Food : public Analyzer {
@@ -54,7 +55,6 @@ class Food : public Analyzer {
 		Saiph *saiph;
 		std::string command2;
 		std::vector<std::string> eat_order;
-		std::map<std::string, int> corpse_data;
 		std::map<Point, unsigned char> prev_monster_loc;
 		std::map<Point, int> corpse_loc;
 		Request req;

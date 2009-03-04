@@ -5,7 +5,7 @@ using namespace std;
 /* initialize static variables */
 map<string, CorpseData *> CorpseData::corpses;
 
-CorpseData::CorpseData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : FoodData(name, cost, weight, material, properties, nutrition, eat_time, eat_effects, resistance_confer_probability) {
+CorpseData::CorpseData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : FoodData(name, cost, weight, material, properties, nutrition, eat_time, eat_effects), resistance_confer_probability(resistance_confer_probability) {
 }
 
 void CorpseData::addToMap(const std::string &name, CorpseData *corpse) {
@@ -187,10 +187,8 @@ void CorpseData::init() {
 	create("large mimic", 400, EAT_EFFECT_MIMIC, 0);
 	create("leocrotta", 500, 0, 0);
 	create("leprechaun", 30, 0, 50);
-	create("lichen", 200, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN | EAT_EFFECT_NEVER_ROT, 0);
 	create("lieutenant", 400, EAT_EFFECT_HUMAN, 0);
 	create("little dog", 150, EAT_EFFECT_AGGRAVATE, 0);
-	create("lizard", 40, EAT_EFFECT_CURE_STONING | EAT_EFFECT_REDUCE_STUNNING | EAT_EFFECT_REDUCE_CONFUSION | EAT_EFFECT_NEVER_ROT, 0);
 	create("long worm", 500, 0, 0);
 	create("Lord Carnarvon", 400, EAT_EFFECT_HUMAN, 0);
 	create("Lord Sato", 400, EAT_EFFECT_HUMAN, 0);

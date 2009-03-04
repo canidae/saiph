@@ -9,6 +9,7 @@
 class CorpseData : public FoodData {
 public:
 	static std::map<std::string, CorpseData *> corpses;
+	const int resistance_confer_probability;
 
 	CorpseData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability);
 	~CorpseData() {}

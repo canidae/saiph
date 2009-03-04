@@ -1,5 +1,6 @@
 #include "ItemData.h"
 #include "ArmorData.h"
+#include "FoodData.h"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ void ItemData::addToMap(const std::string &name, ItemData *item) {
 
 void ItemData::init() {
 	ArmorData::init();
+	FoodData::init();
 }
 
 void ItemData::destroy() {
