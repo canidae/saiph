@@ -17,6 +17,8 @@ void MonsterInfo::analyze() {
 	for (look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
 		if (!look_at->second.visible)
 			continue; // monster not visible
+		else if (look_at->second.symbol == 'I')
+			continue; // don't farlook 'I' monsters
 		else if (look_at->second.data != NULL && look_at->second.symbol != '@' && look_at->second.symbol != 'A')
 			continue; // not an interesting monster
 		else if (look_at->second.attitude != ATTITUDE_UNKNOWN)
@@ -52,10 +54,11 @@ void MonsterInfo::parseMessages(const string &messages) {
 			look_at->second.priest = true;
 		else
 			look_at->second.priest = false;
-		if (look_at->second.data == NULL)
-			look_at->second.data = MonsterData::getMonsterData(messages.substr(pos, messages.find(")", pos) - pos));
-		if (look_at->second.data == NULL)
-			look_at->second.data = MonsterData::getMonsterData(messages.substr(pos, messages.find(" - ", pos) - pos));
+		string::size_type pos2 = messages.find(")", pos);
+		if (pos2 == string::npos)
+			pos2 = messages.find(" - ", pos);
+		if (pos2 != string::npos)
+			look_at->second.data = MonsterData::getMonsterData(messages.substr(pos, pos2 - pos));
 	} else if (messages.find(" gets angry!", 0) != string::npos) {
 		/* uh oh, we pissed someone off, make everyone's attitude unknown */
 		for (map<Point, Monster>::iterator look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at)
