@@ -367,8 +367,8 @@ bool Saiph::run() {
 	/* if question, let last analyzer parse it first */
 	if (world->question && best_analyzer != analyzers.end()) {
 		(*best_analyzer)->parseMessages(world->messages);
-		if ((*best_analyzer)->priority > best_priority)
-			best_priority = (*best_analyzer)->priority;
+		if ((*best_analyzer)->priority == PRIORITY_CONTINUE_ACTION)
+			best_priority = PRIORITY_CONTINUE_ACTION;
 		else
 			best_analyzer = analyzers.end();
 	} else {
