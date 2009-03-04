@@ -369,14 +369,9 @@ bool Saiph::run() {
 		(*best_analyzer)->parseMessages(world->messages);
 		if ((*best_analyzer)->priority == PRIORITY_CONTINUE_ACTION)
 			best_priority = PRIORITY_CONTINUE_ACTION;
-		else
-			best_analyzer = analyzers.end();
-	} else {
-		/* reset best_analyzer */
-		best_analyzer = analyzers.end();
 	}
 
-	if (best_analyzer == analyzers.end()) {
+	if (best_priority == ILLEGAL_PRIORITY) {
 		/* remove expired analyzers and parse messages */
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 			if ((*a)->expired) {
@@ -429,15 +424,15 @@ bool Saiph::run() {
 	}
 
 	/* check if we got a command */
-	if (world->question && best_analyzer == analyzers.end()) {
+	if (world->question && best_priority == ILLEGAL_PRIORITY) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		world->executeCommand(string(1, (char) 27));
 		return true;
-	} else if (world->menu && best_analyzer == analyzers.end()) {
+	} else if (world->menu && best_priority == ILLEGAL_PRIORITY) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		world->executeCommand(string(1, (char) 27));
 		return true;
-	} else if (best_analyzer == analyzers.end()) {
+	} else if (best_priority == ILLEGAL_PRIORITY) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
