@@ -3,6 +3,7 @@
 #include "../Request.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Data/MonsterData.h"
 
 using namespace std;
 
@@ -143,7 +144,7 @@ bool Elbereth::canEngrave() {
 		}
 		if (m->second.attitude == FRIENDLY)
 			continue;
-		if (m->second.symbol == '@' || m->second.symbol == 'A' || m->second.symbol == 'I' || m->second.minotaur)
+		if (m->second.data == NULL || (m->second.data->resistances & MR2_NO_ELBERETH) != 0)
 			return false; // elbereth won't be respected
 	}
 	return true;

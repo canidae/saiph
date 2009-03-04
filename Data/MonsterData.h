@@ -200,6 +200,7 @@
 #define MR2_DISPLACED   0x1000  /* displaced */
 #define MR2_STRENGTH    0x2000  /* gauntlets of power */
 #define MR2_FUMBLING    0x4000  /* clumsy */
+#define MR2_NO_ELBERETH 0x8000  /* ignores Elbereth */
 
 #define M1_FLY          0x00000001L     /* can fly or float */
 #define M1_SWIM         0x00000002L     /* can traverse water */
@@ -333,37 +334,40 @@ class MonsterData {
 		int m3;
 		int color;
 
-		static const MonsterData &getMonsterData(int id);
-		static int getMonsterID(unsigned char symbol, int color);
-		static int getMonsterID(const std::string &name);
+		static const MonsterData *getMonsterData(unsigned char symbol, int color);
+		static const MonsterData *getMonsterData(const std::string &name);
 		static void init();
+		static void destroy();
 
 	private:
 		static bool initialized;
 		static int monster_symbol_mapping[UCHAR_MAX + 1][INVERSE_BOLD_WHITE + 1];
 		static std::map<std::string, int> monster_name_mapping;
-		static std::vector<MonsterData> monsters;
+		static std::vector<MonsterData *> monsters;
 
-		MonsterData(std::string name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const MonsterAttack &ma0, const MonsterAttack &ma1, const MonsterAttack &ma2, const MonsterAttack &ma3, const MonsterAttack &ma4, const MonsterAttack &ma5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color);
+		MonsterData(const std::string &name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const MonsterAttack &ma0, const MonsterAttack &ma1, const MonsterAttack &ma2, const MonsterAttack &ma3, const MonsterAttack &ma4, const MonsterAttack &ma5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color);
+
+		static const MonsterData *getMonsterData(int id);
 };
 
 /* inline methods */
-inline const MonsterData &MonsterData::getMonsterData(int id) {
-	if (id < 0 || id > (int) monsters.size())
-		id = 0;
-	return monsters[id];
-}
-
-inline int MonsterData::getMonsterID(unsigned char symbol, int color) {
+inline const MonsterData *MonsterData::getMonsterData(unsigned char symbol, int color) {
 	if (color < 0 || color > INVERSE_BOLD_WHITE)
-		return 0;
-	return monster_symbol_mapping[symbol][color];
+		return NULL;
+	return getMonsterData(monster_symbol_mapping[symbol][color]);
 }
 
-inline int MonsterData::getMonsterID(const std::string &name) {
+inline const MonsterData *MonsterData::getMonsterData(const std::string &name) {
 	std::map<std::string, int>::iterator m = monster_name_mapping.find(name);
 	if (m == monster_name_mapping.end())
-		return 0;
-	return m->second;
+		return NULL;
+	return getMonsterData(m->second);
+}
+
+/* inline private methods */
+inline const MonsterData *MonsterData::getMonsterData(int id) {
+	if (id < 0 || id > (int) monsters.size())
+		return NULL;
+	return monsters[id];
 }
 #endif

@@ -14,15 +14,15 @@ void CorpseData::addToMap(const std::string &name, CorpseData *corpse) {
 }
 
 void CorpseData::create(const std::string &name, int nutrition, int eat_effects, int resistance_confer_probability) {
-	MonsterData monster = MonsterData::getMonsterData(MonsterData::getMonsterID(name));
-	if (monster.name.size() <= 0)
+	const MonsterData *monster = MonsterData::getMonsterData(name);
+	if (monster == NULL || monster->name.size() <= 0)
 		return;
-	string corpse_name = monster.name;
-	string partly_eaten_name = monster.name;
-	if (monster.name[0] >= 'A' && monster.name[0] <= 'Z' && (monster.geno_flags & G_GENO) != 0) {
+	string corpse_name = monster->name;
+	string partly_eaten_name = monster->name;
+	if (monster->name[0] >= 'A' && monster->name[0] <= 'Z' && (monster->geno_flags & G_GENO) != 0) {
 		/* unique monster that can't be genocided.
 		 * unique corpse name */
-		if (monster.name[monster.name.size() - 1] == 's') {
+		if (monster->name[monster->name.size() - 1] == 's') {
 			corpse_name.append("' corpse");
 			partly_eaten_name.append("' partly eaten corpse");
 		} else {
@@ -35,8 +35,8 @@ void CorpseData::create(const std::string &name, int nutrition, int eat_effects,
 		partly_eaten_name.append(" corpse");
 	}
 	int material = ((eat_effects & EAT_EFFECT_VEGETARIAN) == 0) ? MATERIAL_FLESH : MATERIAL_VEGGY;
-	addToMap(corpse_name, new CorpseData(corpse_name, 5, monster.weight, material, monster.resistances_conferred, nutrition, monster.weight / 64 + 3, eat_effects, resistance_confer_probability));
-	addToMap(partly_eaten_name, new CorpseData(partly_eaten_name, 0, monster.weight / 2, material, monster.resistances_conferred, nutrition / 2, (monster.weight / 64 + 3) / 2, eat_effects, resistance_confer_probability));
+	addToMap(corpse_name, new CorpseData(corpse_name, 5, monster->weight, material, monster->resistances_conferred, nutrition, monster->weight / 64 + 3, eat_effects, resistance_confer_probability));
+	addToMap(partly_eaten_name, new CorpseData(partly_eaten_name, 0, monster->weight / 2, material, monster->resistances_conferred, nutrition / 2, (monster->weight / 64 + 3) / 2, eat_effects, resistance_confer_probability));
 }
 
 void CorpseData::init() {

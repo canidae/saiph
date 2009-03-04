@@ -12,6 +12,7 @@
 #include "Stash.h"
 #include "World.h"
 /* data */
+#include "Data/ItemData.h"
 #include "Data/MonsterData.h"
 /* analyzers */
 #include "Analyzers/Amulet.h"
@@ -1134,6 +1135,7 @@ int main(int argc, const char *argv[]) {
 
 	Debug::open(logfile);
 	MonsterData::init();
+	ItemData::init();
 	Saiph *saiph = new Saiph(dirname(argv[0]), connection_type);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
@@ -1141,5 +1143,7 @@ int main(int argc, const char *argv[]) {
 		;
 	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
 	delete saiph;
+	ItemData::destroy();
+	MonsterData::destroy();
 	Debug::close();
 }

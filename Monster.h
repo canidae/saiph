@@ -7,9 +7,11 @@
 #include <vector>
 #include "Globals.h"
 
+class MonsterData;
+
 class Monster {
 	public:
-		int id;
+		const MonsterData *data;
 		unsigned char symbol;
 		int color;
 		int last_seen;
@@ -17,7 +19,6 @@ class Monster {
 		int attitude;
 		bool shopkeeper;
 		bool priest;
-		bool minotaur;
 
 		Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, int last_seen = -1);
 };

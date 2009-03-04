@@ -153,7 +153,7 @@ void Level::parseMessages(const string &messages) {
 		/* our inventory is empty. how did that happen? */
 		saiph->inventory.clear();
 		saiph->inventory_changed = true;
-	} else if ((pos = messages.find(".  ", 0)) != string::npos) {
+	} else if (messages.find(".  ") != string::npos) {
 		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
 		 * we'll need to handle this too somehow.
 		 * when we're burdened we'll get "  You have a little trouble lifting f - a lichen corpse.  ".
@@ -190,7 +190,7 @@ void Level::parseMessages(const string &messages) {
 			/* we probably picked up everything here, remove stash */
 			stashes.erase(saiph->position);
 		}
-	} else if ((pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
+	} else if (saiph->world->menu && (pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
 		/* we probably listed our inventory */
 		/* we're searching for " -  " because when we #enhance there are 2 spaces after the "-".
 		 * otherwise we'll confuse the inventory list with the enhance list, which is very bad */

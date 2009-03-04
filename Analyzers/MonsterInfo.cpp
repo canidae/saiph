@@ -2,6 +2,7 @@
 #include "MonsterInfo.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Data/MonsterData.h"
 
 using namespace std;
 
@@ -16,18 +17,19 @@ void MonsterInfo::analyze() {
 	for (look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
 		if (!look_at->second.visible)
 			continue; // monster not visible
-		else if (look_at->second.symbol != '@' && look_at->second.symbol != 'A' && (look_at->second.symbol != 'H' || look_at->second.color != YELLOW))
+		else if (look_at->second.data != NULL && look_at->second.symbol != '@' && look_at->second.symbol != 'A')
 			continue; // not an interesting monster
-		if (look_at->second.attitude == ATTITUDE_UNKNOWN) {
-			command = saiph->farlook(look_at->first);
-			priority = PRIORITY_LOOK;
-			return;
-		}
+		else if (look_at->second.attitude != ATTITUDE_UNKNOWN)
+			continue; // known attitude
+		/* farlook this monster */
+		command = saiph->farlook(look_at->first);
+		priority = PRIORITY_LOOK;
+		return;
 	}
 }
 
 void MonsterInfo::parseMessages(const string &messages) {
-	if (messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ' && look_at != saiph->levels[saiph->position.level].monsters.end()) {
+	if (look_at != saiph->levels[saiph->position.level].monsters.end() && messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ') {
 		/* probably looked at a monster */
 		string::size_type pos = string::npos;
 		if ((pos = messages.find(" (peaceful ", 0)) != string::npos) {
@@ -36,7 +38,7 @@ void MonsterInfo::parseMessages(const string &messages) {
 			pos += sizeof (" (peaceful ") - 1;
 		} else if ((pos = messages.find(" (", 0)) != string::npos) {
 			/* hostile */
-			if (messages.find(" (Oracle", 0) != string::npos)
+			if (messages.find(" (Oracle", pos) == pos)
 				look_at->second.attitude = FRIENDLY; // never attack oracle
 			else
 				look_at->second.attitude = HOSTILE;
@@ -46,14 +48,14 @@ void MonsterInfo::parseMessages(const string &messages) {
 			look_at->second.shopkeeper = true; // shopkeepers are always white @, and their names are capitalized
 		else
 			look_at->second.shopkeeper = false;
-		if (messages.find("priest of ", 0) != string::npos || messages.find("priestess of ", 0) != string::npos)
+		if (messages.find("priest of ", pos) != string::npos || messages.find("priestess of ", pos) != string::npos)
 			look_at->second.priest = true;
 		else
 			look_at->second.priest = false;
-		if (messages.find("minotaur)", 0) != string::npos)
-			look_at->second.minotaur = true;
-		else
-			look_at->second.minotaur = false;
+		if (look_at->second.data == NULL)
+			look_at->second.data = MonsterData::getMonsterData(messages.substr(pos, messages.find(")", pos) - pos));
+		if (look_at->second.data == NULL)
+			look_at->second.data = MonsterData::getMonsterData(messages.substr(pos, messages.find(" - ", pos) - pos));
 	} else if (messages.find(" gets angry!", 0) != string::npos) {
 		/* uh oh, we pissed someone off, make everyone's attitude unknown */
 		for (map<Point, Monster>::iterator look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at)
