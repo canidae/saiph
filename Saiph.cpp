@@ -369,9 +369,14 @@ bool Saiph::run() {
 		(*best_analyzer)->parseMessages(world->messages);
 		if ((*best_analyzer)->priority == PRIORITY_CONTINUE_ACTION)
 			best_priority = PRIORITY_CONTINUE_ACTION;
+		else
+			best_analyzer = analyzers.end();
+	} else {
+		/* reset best_analyzer */
+		best_analyzer = analyzers.end();
 	}
 
-	if (best_priority == ILLEGAL_PRIORITY) {
+	if (best_analyzer == analyzers.end()) {
 		/* remove expired analyzers and parse messages */
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 			if ((*a)->expired) {
