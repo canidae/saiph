@@ -29,9 +29,10 @@ void Dig::analyze() {
 		/* dig free UNPASSABLE FLOOR tiles */
 		if (!saiph->levels[saiph->position.level].undiggable) {
 			for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].end(); ++b) {
-				const PathNode &node = saiph->shortestPath(b->first);
+				const PathNode node = saiph->shortestPath(b->first);
 				if (node.cost != UNPASSABLE)
 					continue; // can either walk on it or not reach it
+				Debug::notice(saiph->last_turn) << "Want to dig '" << saiph->getDungeonSymbol(b->first) << "': n '" << saiph->getDungeonSymbol(N) << "', w '" << saiph->getDungeonSymbol(W) << "', e '" << saiph->getDungeonSymbol(E) << "', s '" << saiph->getDungeonSymbol(S) << "'" << endl;
 				/* dig one of the N, W, E or S tile if we can reach it */
 				const PathNode north = saiph->shortestPath(Point(b->first.row - 1, b->first.col));
 				if (north.cost == UNPASSABLE) {
