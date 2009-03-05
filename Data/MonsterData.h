@@ -184,23 +184,15 @@
 #define MS_WERE         38      /* lycanthrope in human form */
 #define MS_BOAST        39      /* giants */
 
-#define MR_FIRE         0x01    /* resists fire */
-#define MR_COLD         0x02    /* resists cold */
-#define MR_SLEEP        0x04    /* resists sleep */
-#define MR_DISINT       0x08    /* resists disintegration */
-#define MR_ELEC         0x10    /* resists electricity */
-#define MR_POISON       0x20    /* resists poison */
-#define MR_ACID         0x40    /* resists acid */
-#define MR_STONE        0x80    /* resists petrification */
-
-#define MR2_SEE_INVIS   0x0100  /* see invisible */
-#define MR2_LEVITATE    0x0200  /* levitation */
-#define MR2_WATERWALK   0x0400  /* water walking */
-#define MR2_MAGBREATH   0x0800  /* magical breathing */
-#define MR2_DISPLACED   0x1000  /* displaced */
-#define MR2_STRENGTH    0x2000  /* gauntlets of power */
-#define MR2_FUMBLING    0x4000  /* clumsy */
-#define MR2_NO_ELBERETH 0x8000  /* ignores Elbereth */
+#define MR_FIRE         0x001   /* resists fire */
+#define MR_COLD         0x002   /* resists cold */
+#define MR_SLEEP        0x004   /* resists sleep */
+#define MR_DISINT       0x008   /* resists disintegration */
+#define MR_ELEC         0x010   /* resists electricity */
+#define MR_POISON       0x020   /* resists poison */
+#define MR_ACID         0x040   /* resists acid */
+#define MR_STONE        0x080   /* resists petrification */
+#define MR_NO_ELBERETH  0x100   /* ignores Elbereth */
 
 #define M1_FLY          0x00000001L     /* can fly or float */
 #define M1_SWIM         0x00000002L     /* can traverse water */
