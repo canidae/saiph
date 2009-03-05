@@ -31,5 +31,4 @@ void ShieldData::init() {
 	addToMap("red-eyed shield", shields["orcish shield"]);
 	addToMap("polished silver shield", shields["shield of reflection"]);
 	addToMap("white-handed shield", shields["Uruk-hai shield"]);
-
 }
