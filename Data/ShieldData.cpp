@@ -18,4 +18,18 @@ void ShieldData::create(const std::string &name, int cost, int weight, int mater
 }
 
 void ShieldData::init() {
+	create("large shield", 10, 100, MATERIAL_IRON, 2, 0, 0);
+	create("Uruk-hai shield", 7, 50, MATERIAL_IRON, 1, 0, 0);
+	create("elven shield", 7, 40, MATERIAL_WOOD, 2, 0, 0);
+	create("small shield", 3, 30, MATERIAL_WOOD, 1, 0, 0);
+	create("dwarvish roundshield", 10, 100, MATERIAL_IRON, 2, 0, 0);
+	create("shield of reflection", 50, 50, MATERIAL_SILVER, 2, 0, PROPERTY_REFLECTION | PROPERTY_MAGIC);
+	create("orcish shield", 7, 50, MATERIAL_IRON, 1, 0, 0);
+
+	addToMap("blue and green shield", shields["elven shield"]);
+	addToMap("large round shield", shields["dwarvish roundshield"]);
+	addToMap("red-eyed shield", shields["orcish shield"]);
+	addToMap("polished silver shield", shields["shield of reflection"]);
+	addToMap("white-handed shield", shields["Uruk-hai shield"]);
+
 }
