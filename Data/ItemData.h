@@ -14,13 +14,13 @@
 #define PROPERTY_POISON            ((unsigned long long) (1LL << 5)) // match MR_POISON
 #define PROPERTY_ACID              ((unsigned long long) (1LL << 6)) // match MR_ACID
 #define PROPERTY_STONE             ((unsigned long long) (1LL << 7)) // match MR_STONE
-#define PROPERTY_SEE_INVISIBLE     ((unsigned long long) (1LL << 8))
-#define PROPERTY_LEVITATION        ((unsigned long long) (1LL << 9))
-#define PROPERTY_WATERWALKING      ((unsigned long long) (1LL << 10))
-#define PROPERTY_MAGICAL_BREATHING ((unsigned long long) (1LL << 11))
-#define PROPERTY_DISPLACEMENT      ((unsigned long long) (1LL << 12))
-#define PROPERTY_STRENGTH          ((unsigned long long) (1LL << 13))
-#define PROPERTY_FUMBLING          ((unsigned long long) (1LL << 14))
+#define PROPERTY_SEE_INVISIBLE     ((unsigned long long) (1LL << 8)) // match MR2_SEE_INVIS
+#define PROPERTY_LEVITATION        ((unsigned long long) (1LL << 9)) // match MR2_LEVITATE
+#define PROPERTY_WATERWALKING      ((unsigned long long) (1LL << 10)) // match MR2_WATERWALK
+#define PROPERTY_MAGICAL_BREATHING ((unsigned long long) (1LL << 11)) // match MR2_MAGBREATH
+#define PROPERTY_DISPLACEMENT      ((unsigned long long) (1LL << 12)) // match MR2_DISPLACED
+#define PROPERTY_STRENGTH          ((unsigned long long) (1LL << 13)) // match MR2_STRENGTH
+#define PROPERTY_FUMBLING          ((unsigned long long) (1LL << 14)) // match MR2_FUMBLING
 #define PROPERTY_MAGICRES          ((unsigned long long) (1LL << 15))
 #define PROPERTY_REFLECTION        ((unsigned long long) (1LL << 16))
 #define PROPERTY_INVISIBLE         ((unsigned long long) (1LL << 17))
