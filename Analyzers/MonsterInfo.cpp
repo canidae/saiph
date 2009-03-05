@@ -17,8 +17,8 @@ void MonsterInfo::analyze() {
 	for (look_at = saiph->levels[saiph->position.level].monsters.begin(); look_at != saiph->levels[saiph->position.level].monsters.end(); ++look_at) {
 		if (!look_at->second.visible)
 			continue; // monster not visible
-		else if (look_at->second.symbol == 'I')
-			continue; // don't farlook 'I' monsters
+		else if (look_at->second.symbol == 'I' || look_at->second.symbol == 'm')
+			continue; // don't farlook 'I' or 'm' monsters
 		else if (look_at->second.data != NULL && look_at->second.symbol != '@' && look_at->second.symbol != 'A')
 			continue; // not an interesting monster
 		else if (look_at->second.attitude != ATTITUDE_UNKNOWN)
