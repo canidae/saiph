@@ -131,7 +131,6 @@
 #define ENHANCE "#enhance\n"
 #define ESCAPE "\x1b"
 #define FIGHT "F"
-#define IDLE "."
 #define INVENTORY "i"
 #define KICK ""
 #define LOOK ":"
