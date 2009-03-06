@@ -59,8 +59,6 @@ F dddl llll luu
 B dddd dddd llll llll uuuu r
 D rrrr rrrd dddd ddll llll lluu uurr
 C drrr rrrr rddd dddd llll llll uuuu rrr
-
-A l # check for prizes!
 .
 
 # Sokoban level 1b
@@ -108,10 +106,9 @@ G dlll dddd llll llll uuu
 F lldd dddl llll lllu uuu
 C ddll dddd llll llll uuuu u
 
-E urrr ddld dddl llll lllu uuuu u
-
-# check for goodies
-D u
+E urrr
+D u # check for goodies
+E ddld dddl llll lllu uuuu u
 .
 
 # Sokoban level 2a
@@ -288,13 +285,14 @@ F lldd dddd drrr rrrr rrrr
 E lull dddd dddr rrrr rrrr rrr
 C dlll ulld dddd ddrr rrrr rrrr rrr
 
-I dddr rrrr rrrr r
-K ddll lrrr rrrr rrrr rrrr
-
 # check for goodies
 D u
 G u
 H r
+
+I dddr rrrr rrrr r
+K ddll lrrr rrrr rrrr rrrr
+
 .
 
 # Sokoban level 3b
@@ -347,14 +345,15 @@ I dddd drrr rrrr rr
 H rddd dddr rrrr rrrr r
 
 A rr
-C ddrd dddd drrr rrrr rrrr
+C ddrd dddd d
 
 # check for goodies
 B l
 J r
 E uu
-A l
 D d
+
+C rrr rrrr rrrr
 .
 
 # Sokoban level 4a
@@ -432,11 +431,13 @@ I dddl uull ldll luuu uuuu rrrr rrrr rrrr rr
 E lldl lldl lluu uuuu urrr rrrr rrrr rrrr
 B dlld llld lllu uuuu uurr rrrr rrrr rrrr rr
 G ddlu uuuu uurr rrrr rrrr rrrr rrr
-Q uulu uuuu uurr rrrr rrrr rrrr rrrr
+Q uulu uuuu uu
 
 # check for goodies:
 S l
 O u
+
+Q rr rrrr rrrr rrrr rrrr
 .
 
 # Sokoban level 4b
@@ -507,9 +508,11 @@ J rrrr ruuu ullu uurr ruuu luuu rrrr rrrr rrrr
 D rddd llll lurr rrru uuul luuu rrru uulu uurr rrrr rrrr rrr
 B rrrd ddll lddd uuuu rrru uulu uurr rrrr rrrr rrrr
 A rrrr rddd llld dduu uurr ruuu luuu rrrr rrrr rrrr rrr
-E llld ddll lddd uuuu rrru uulu uurr rrrr rrrr rrrr rr
+E llld ddll lddd uuuu rrru uulu uu
 
 # check for goodies:
 O l
 Q r
+ 
+E rr rrrr rrrr rrrr rr
 .
