@@ -27,13 +27,14 @@ void Dig::analyze() {
 			dig_locations.push_back(b->first);
 
 		/* dig free UNPASSABLE FLOOR tiles */
+		/* FIXME: this is broken, digging at random locations
 		if (!saiph->levels[saiph->position.level].undiggable) {
 			for (map<Point, int>::iterator b = saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].begin(); b != saiph->levels[saiph->position.level].symbols[(unsigned char) FLOOR].end(); ++b) {
 				const PathNode node = saiph->shortestPath(b->first);
 				if (node.cost != UNPASSABLE)
 					continue; // can either walk on it or not reach it
 				Debug::notice(saiph->last_turn) << "Want to dig '" << saiph->getDungeonSymbol(b->first) << "': n '" << saiph->getDungeonSymbol(N) << "', w '" << saiph->getDungeonSymbol(W) << "', e '" << saiph->getDungeonSymbol(E) << "', s '" << saiph->getDungeonSymbol(S) << "'" << endl;
-				/* dig one of the N, W, E or S tile if we can reach it */
+				// dig one of the N, W, E or S tile if we can reach it
 				const PathNode north = saiph->shortestPath(Point(b->first.row - 1, b->first.col));
 				if (north.cost == UNPASSABLE) {
 					dig_locations.push_back(Point(b->first.row - 1, b->first.col));
@@ -56,6 +57,7 @@ void Dig::analyze() {
 				}
 			}
 		}
+		*/
 	}
 
 	/* dig nearest dig_location */
@@ -90,7 +92,7 @@ void Dig::analyze() {
 	}
 
 	unsigned char symbol = saiph->getDungeonSymbol();
-	if (!saiph->levels[saiph->position.level].undiggable && (symbol == FLOOR || symbol == CORRIDOR) && least_moves == UNREACHABLE) {
+	if (!saiph->levels[saiph->position.level].undiggable && saiph->levels[saiph->position.level].branch != BRANCH_MINES && (symbol == FLOOR || symbol == CORRIDOR) && least_moves == UNREACHABLE) {
 		/* no place to dig, dig down instead */
 		dig_direction = DOWN;
 		last_dig_location = saiph->position;
