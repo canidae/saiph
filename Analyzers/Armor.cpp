@@ -3,6 +3,7 @@
 #include "../Player.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Debug.h"
 
 using namespace std;
 
@@ -21,9 +22,9 @@ void Armor::parseMessages(const string &messages) {
 		last_polymorphed = saiph->world->player.polymorphed;
 	}
 	if (!command2.empty() && (messages.find(MESSAGE_DONT_EVEN_BOTHER, 0) != string::npos ||
-		messages.find(ARMOR_HAVE_NO_FEET, 0) != string::npos ||
-		messages.find(ARMOR_WONT_FIT_HORN, 0) != string::npos ||
-		messages.find(ARMOR_TOO_MANY_HOOVES, 0) != string::npos)) {
+			messages.find(ARMOR_HAVE_NO_FEET, 0) != string::npos ||
+			messages.find(ARMOR_WONT_FIT_HORN, 0) != string::npos ||
+			messages.find(ARMOR_TOO_MANY_HOOVES, 0) != string::npos)) {
 		/* We tried to wear something and it didn't work. Polymorphed? */
 		can_wear[last_armor_type] = false;
 		wear_armor = false;
@@ -100,81 +101,112 @@ void Armor::parseMessages(const string &messages) {
 }
 
 bool Armor::request(const Request &request) {
-	if (request.request == REQUEST_ARMOR_WEAR) {
-		/* player wish to wear this armor */
-		if (request.key >= ARMOR_SLOTS)
-			return false;
-		carry_amount[request.key] = request.value;
-		ArmorData ad;
-		ad.beatitude = request.beatitude;
-		ad.priority = request.priority;
-		ad.keep = request.sustain;
-		ad.name = request.data;
-		armor[request.key].push_back(ad);
-		/* tell the loot analyzer to pick up this armor too */
-		req.request = REQUEST_ITEM_PICKUP;
-		req.value = request.value;
-		req.beatitude = request.beatitude | BEATITUDE_UNKNOWN;
-		req.data = request.data;
-		saiph->request(req);
-		return true;
-	} else if (request.request == REQUEST_UPDATED_INVENTORY) {
-		/* need this due to foocubi stripping us */
-		wearArmor();
-		return true;
-	}
+//	if (request.request == REQUEST_ARMOR_WEAR) {
+//		/* player wish to wear this armor */
+//		if (request.key >= ARMOR_SLOTS)
+//			return false;
+//		carry_amount[request.key] = request.value;
+//		ArmorData ad;
+//		ad.beatitude = request.beatitude;
+//		ad.priority = request.priority;
+//		ad.keep = request.sustain;
+//		ad.name = request.data;
+//		armor[request.key].push_back(ad);
+//		/* tell the loot analyzer to pick up this armor too */
+//		req.request = REQUEST_ITEM_PICKUP;
+//		req.value = request.value;
+//		req.beatitude = request.beatitude | BEATITUDE_UNKNOWN;
+//		req.data = request.data;
+//		saiph->request(req);
+//		return true;
+//	} else if (request.request == REQUEST_UPDATED_INVENTORY) {
+//		/* need this due to foocubi stripping us */
+//		planWear();
+//		return true;
+//	}
 	return false;
 }
 
 /* private methods */
-bool Armor::isCursed(int armor_slot) {
+Item* Armor::wearingInSlot(int armor_slot) {
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		if (i->second.additional != "being worn")
 			continue;
-		for (vector<ArmorData>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
-			if (armor[armor_slot][a].name != i->second.name)
-				continue;
-			return i->second.beatitude == CURSED;
-		}
+		if (ArmorData::armors.find(i->second.name) != ArmorData::armors.end() &&
+				ArmorData::armors[i->second.name]->slot == armor_slot)
+			return &(i->second);
+		Debug::warning() << "Item named " << i->second.name << " being worn, but in unknown slot" << endl;
 	}
 
 	/* Couldn't find something on that slot? */
-	return false;
+	return 0;
+}
+
+bool Armor::isCursed(int armor_slot) {
+	Item *foo = wearingInSlot(armor_slot);
+	return foo != 0 && foo->beatitude == CURSED;
 }
 
 void Armor::wearArmor() {
-	/* put on or change armor (which means we'll have to take something off) */
-	/* check that we're (still) wearing our preferred armor */
-	unsigned char worn[ARMOR_SLOTS] = {0};
-	unsigned char best_key[ARMOR_SLOTS] = {0};
-	int best_armor[ARMOR_SLOTS];
-	for (int s = 0; s < ARMOR_SLOTS; ++s)
-		best_armor[s] = INT_MIN;
-	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-		for (int s = 0; s < ARMOR_SLOTS; ++s) {
-			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
-				if (a->name != i->second.name)
-					continue;
-				else if (i->second.additional == "being worn")
-					worn[s] = i->first;
-				if (i->second.beatitude == BEATITUDE_UNKNOWN) {
-					/* armor with unknown beatitude, request it beatified */
-					req.request = REQUEST_BEATIFY_ITEMS;
-					saiph->request(req);
-				}
-				if ((a->beatitude & i->second.beatitude) == 0)
-					continue;
-				int score = a->priority + i->second.enchantment - i->second.damage;
-				if (i->second.unknown_enchantment)
-					score += ARMOR_UNKNOWN_ENCHANTMENT_BONUS;
-				if (score <= best_armor[s])
-					continue;
-				best_key[s] = i->first;
-				best_armor[s] = score;
+	bool slotCursed[ARMOR_SLOTS] = {false, false, false, false, false, false, false};
+	for (int i = 0; i < ARMOR_SLOTS; i++) {
+		Item *wearing = wearingInSlot(i);
+		if (wearing != 0 && wearing->beatitude == CURSED)
+			slotCursed[i] = true;
+	}
+	//cursed wielded weapon means no adjusting gloves
+	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i)
+		if (i->second.additional.find("weapon in ", 0) == 0 || i->second.additional == "wielded")
+			if (i->second.beatitude == CURSED) {
+				slotCursed[ARMOR_GLOVES] = true;
+				break;
 			}
+	if (slotCursed[ARMOR_CLOAK])
+		slotCursed[ARMOR_SUIT] = true;
+	if (slotCursed[ARMOR_SUIT])
+		slotCursed[ARMOR_SHIRT] = true;
+	vector<Item> armorChoices[ARMOR_SLOTS];
+	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		map<string, ArmorData *>::iterator armorIter = ArmorData::armors.find(i->second.name);
+		if (armorIter == ArmorData::armors.end()) //it's not armor.
+			continue;
+		if (armorIter != ArmorData::armors.end() && i->second.beatitude == BEATITUDE_UNKNOWN) {
+			req.request = REQUEST_BEATIFY_ITEMS;
+			saiph->request(req);
+		} else if (!slotCursed[armorIter->second->slot])
+			armorChoices[armorIter->second->slot].push_back(i->second);
+	}
+	for (int i = 0; i < ARMOR_SLOTS; i++)
+		if (slotCursed[i])
+			armorChoices[i].push_back(*wearingInSlot(i));
+	//choose zero or one element(s) from each vector in the armorChoices array
+	//if we are wearing cursed armor in a slot, we must choose the cursed armor
+	vector<vector<Item> > listOfCombos;
+	vector<Item> curVec;
+	makeArmorCombinations(armorChoices, slotCursed, 0, curVec, listOfCombos);
+	int bestRank = INT_MIN;
+	vector<Item> bestSet;
+	for (int i = 0; i < listOfCombos.size(); i++) {
+		int rank_ = rank(listOfCombos[i]);
+		if (rank_ > bestRank) {
+			bestSet = listOfCombos[i];
+			bestRank = rank_;
 		}
 	}
-
+	//now that we know what to wear, let's work out a "plan" to wear it
+	unsigned char worn[ARMOR_SLOTS] = {0};
+	unsigned char best_key[ARMOR_SLOTS] = {0};
+	for (int i = 0; i < bestSet.size(); i++)
+		for (map<unsigned char, Item>::iterator iter = saiph->inventory.begin(); iter != saiph->inventory.end(); iter++)
+			if (iter->second == bestSet[i])
+				best_key[ArmorData::armors[bestSet[i].name]->slot] = iter->first;
+	for (int i = 0; i < ARMOR_SLOTS; i++) {
+		Item *slot = wearingInSlot(i);
+		if (slot != 0)
+			for (map<unsigned char, Item>::iterator iter = saiph->inventory.begin(); iter != saiph->inventory.end(); iter++)
+				if (iter->second == *slot)
+					worn[i] = iter->first;
+	}
 	bool last_wear_armor = wear_armor;
 	wear_armor = false;
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
@@ -236,40 +268,29 @@ void Armor::wearArmor() {
 		wear_armor = true;
 		break;
 	}
-	if (wear_armor) {
+	if (wear_armor)
 		priority = PRIORITY_ARMOR_WEAR;
-	} else {
-		/* nothing to wear */
-		command.clear();
-		if (!last_wear_armor)
-			return;
-		/* tell Loot what armor we [still] want */
-		req.request = REQUEST_ITEM_PICKUP;
-		for (int s = 0; s < ARMOR_SLOTS; ++s) {
-			map<unsigned char, Item>::iterator i = saiph->inventory.find(worn[s]);
-			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
-				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS > best_armor[s]) {
-					/* we [still] want this armor */
-					req.value = carry_amount[s];
-					if (i != saiph->inventory.end() && a->name == i->second.name) {
-						/* allow carrying 1 more of what we're wearing,
-						 * but don't carry things we know enchantment of */
-						req.value++;
-						req.only_unknown_enchantment = true;
-					} else {
-						/* only carry armor which may be better than what we got */
-						req.only_unknown_enchantment = (a->priority <= best_armor[s]);
-					}
-				} else {
-					/* we don't want to keep this armor as it'll never
-					 * be better than the armor we currently got */
-					req.value = 0;
-					req.only_unknown_enchantment = false;
-				}
-				req.beatitude = a->beatitude | BEATITUDE_UNKNOWN;
-				req.data = a->name;
-				saiph->request(req);
-			}
+}
+
+//choices is a pointer to the first element of an array of vector<Item>
+//listOfCombos is intentionally mutable
+void Armor::makeArmorCombinations(const vector<Item> choices[], bool slotCursed[], int curSlot, vector<Item> &curVec, vector<vector<Item> > &listOfCombos) {
+	if (curSlot == ARMOR_SLOTS) {
+		listOfCombos.push_back(curVec);
+		return;
+	}
+	if (choices[curSlot].empty())
+		makeArmorCombinations(choices, slotCursed, curSlot+1, curVec, listOfCombos);
+	else if (slotCursed[curSlot]) { //we must wear the item in this slot
+		curVec.push_back(choices[curSlot][0]);
+		makeArmorCombinations(choices, slotCursed, curSlot+1, curVec, listOfCombos);
+	} else { //we can choose to wear nothing or one of the possible items
+		//wear nothing
+		makeArmorCombinations(choices, slotCursed, curSlot+1, curVec, listOfCombos);
+		//wear something; copy curVec to not mess up other recursive calls
+		for (int i = 0; i < choices[curSlot].size(); i++) {
+			curVec.push_back(choices[curSlot][i]);
+			makeArmorCombinations(choices, slotCursed, curSlot+1, curVec, listOfCombos);
 		}
 	}
 }
@@ -277,4 +298,58 @@ void Armor::wearArmor() {
 void Armor::resetCanWear() {
 	for (int a = 0; a < ARMOR_SLOTS; ++a)
 		can_wear[a] = true;
+}
+
+//return a value representing how desirable this armor is
+#define MR_VALUE 100
+#define REFLECTION_VALUE 100
+#define VERYFAST_VALUE 50
+#define AC_MULTIPLIER 10
+#define MC_MULTIPLIER 5
+
+int Armor::rank(const vector<Item> &items) {
+	vector<ArmorData *> armor;
+	for (int i = 0; i < items.size(); i++) {
+		if (items[i].beatitude == 0)
+			return -100; //we don't wear cursed armor.
+		map<string, ArmorData *>::iterator iter = ArmorData::armors.find(items[i].name);
+		if (iter != ArmorData::armors.end()) {
+			armor.push_back(iter->second);
+		} else
+			Debug::warning() << "No ArmorData for item named \"" << items[i].name << "\"" << endl;
+	}
+	int value = 0;
+	int maxMC = 0;
+	int baseAC = 0;
+	unsigned long long int properties = 0;
+	for (int i = 0; i < armor.size(); i++) {
+		baseAC += armor[i]->ac;
+		if (armor[i]->mc > maxMC)
+			maxMC = armor[i]->mc;
+		properties |= armor[i]->properties;
+	}
+	if (properties & PROPERTY_MAGICRES)
+		value += MR_VALUE;
+	if (properties & PROPERTY_REFLECTION)
+		value += REFLECTION_VALUE;
+	if (properties & PROPERTY_VERYFAST)
+		value += VERYFAST_VALUE;
+	value += AC_MULTIPLIER*baseAC;
+	value += MC_MULTIPLIER*maxMC;
+	//value is cacheable here because no item-instance-specific things are included
+	int enchantAC = 0; //also includes damage
+	int fixedBonus = 0;
+	int greasedBonus = 0;
+	int blessedBonus = 0;
+	for (int i = 0; i < items.size(); i++) {
+		enchantAC += items[i].unknown_enchantment ? ARMOR_UNKNOWN_ENCHANTMENT_BONUS : items[i].enchantment;
+		enchantAC -= items[i].damage;
+		fixedBonus += items[i].fixed;
+		blessedBonus += items[i].beatitude == BLESSED;
+	}
+	value += enchantAC*AC_MULTIPLIER;
+	value += fixedBonus;
+	value += greasedBonus;
+	value += blessedBonus;
+	return value;
 }

@@ -39,5 +39,6 @@ class Item {
 
 		Item(const std::string &text);
 		Item();
+		bool operator==(const Item &other);
 };
 #endif
