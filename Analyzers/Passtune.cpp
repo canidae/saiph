@@ -115,8 +115,7 @@ void Passtune::analyze(void) {
 	}
 }
 
-void Passtune::nextGuess(int gears, int tumblers) {
-	int possible = 0;
+int Passtune::nextGuess(int gears, int tumblers) {
 	int total_notes;
 
 	if (gears != UNKNOWN && tumblers != UNKNOWN) {
@@ -158,11 +157,7 @@ void Passtune::nextGuess(int gears, int tumblers) {
 					gears != current_gears)
 					discarded[c] = true;
 			}
-
-			if (!discarded[c])
-				possible++;
 		}
-		Debug::info() << PASSTUNE_DEBUG_NAME << "Possible combinations left " << possible << endl;
 	}
 
 	int total = 0;
@@ -183,7 +178,9 @@ void Passtune::nextGuess(int gears, int tumblers) {
 		total_notes *= NOTES;
 	}
 
-	Debug::info() << PASSTUNE_DEBUG_NAME << possible << " combinations left, guessing " << guess << endl;
+	Debug::info() << PASSTUNE_DEBUG_NAME << total << " combinations left, guessing " << guess << endl;
+
+	return total;
 }
 
 void Passtune::findInstrument() {
