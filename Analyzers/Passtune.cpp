@@ -24,7 +24,7 @@ void Passtune::parseMessages(const string &messages) {
 	if (messages.find(MESSAGE_DRAWBRIDGE_LOWERED, 0) != string::npos) {
 		if (saiph->position.level == castle_level)
 			solved = true;
-	} else if (messages.find(PASSTUNE_MESSAGE_YOU_HEAR, 0) != string::npos &&
+	} else if (!solved && messages.find(PASSTUNE_MESSAGE_YOU_HEAR, 0) != string::npos &&
 			((gear_loc = messages.find(PASSTUNE_GEAR, 0)) != string::npos ||
 			(tumbler_loc = messages.find(PASSTUNE_TUMBLER, 0)) != string::npos)) {
 		int gears = 0, tumblers = 0;
@@ -193,7 +193,10 @@ void Passtune::findInstrument() {
 }
 
 bool Passtune::isInstrument(const Item &item) {
-	if (item.beatitude == CURSED || (item.name != "flute" && item.name != "horn" && item.name != "harp" && item.name != "bugle"))
+	if (item.beatitude == CURSED ||
+		(item.name != "flute" && item.name != "horn" &&
+		item.name != "harp" && item.name != "bugle" &&
+		item.name != "magic harp"))
 		return false;
 	return true;
 }
