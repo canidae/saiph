@@ -33,6 +33,7 @@
 #include "Analyzers/Lamp.h"
 #include "Analyzers/Loot.h"
 #include "Analyzers/MonsterInfo.h"
+#include "Analyzers/Passtune.h"
 #include "Analyzers/Potion.h"
 #include "Analyzers/Pray.h"
 #include "Analyzers/Ring.h"
@@ -113,6 +114,7 @@ Saiph::Saiph(const string &directory, const int interface) {
 	analyzers.push_back(new Lamp(this));
 	analyzers.push_back(new Loot(this));
 	analyzers.push_back(new MonsterInfo(this));
+	analyzers.push_back(new Passtune(this));
 	analyzers.push_back(new Potion(this));
 	analyzers.push_back(new Pray(this));
 	analyzers.push_back(new Ring(this));

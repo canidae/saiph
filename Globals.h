@@ -272,6 +272,7 @@
 #define PRIORITY_WAND_ENGRAVE_ID 215
 /* 0-199: explore/random/do stuff we normally wouldn't do (melee floating eye) */
 #define PRIORITY_DOOR_OPEN 150
+#define PRIORITY_LOWER_DRAWBRIDGE 140
 #define PRIORITY_EXPLORE_FIND_ROGUE_STAIRS 70
 #define PRIORITY_EXPLORE_STAIRS_UP 60
 #define PRIORITY_EXPLORE_EXPLORE 50
@@ -304,6 +305,7 @@
 #define MESSAGE_DONT_BE_RIDICULOUS "  Don't be ridiculous!  "
 #define MESSAGE_DONT_EVEN_BOTHER "  Don't even bother.  "
 #define MESSAGE_DOOR_LOCKED "  This door is locked.  "
+#define MESSAGE_DRAWBRIDGE_LOWERED "  You see a drawbridge coming down!  "
 #define MESSAGE_DRINK_FROM_FOUNTAIN "  Drink from the fountain? [yn] (n)  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
@@ -313,6 +315,7 @@
 #define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here?  "
 #define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
+#define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
 #define MESSAGE_FOOCUBUS_QUESTION "  \"Shall I remove your " // followed by what he/she wants to remove.
 #define MESSAGE_FOOCUBUS_REMOVE "  \"Take off your " // followed by what the foocubus removed.
@@ -320,6 +323,7 @@
 #define MESSAGE_FOR_WHAT_DO_YOU_WISH "  For what do you wish?  "
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
 #define MESSAGE_HELLO_STRANGER "  \"Hello stranger, who are you?\" -  "
+#define MESSAGE_IMPROVISE "  Improvise? [yn] (n)  "
 #define MESSAGE_LIMBS_ARE_STIFFENING "  Your limbs are stiffening.  "
 #define MESSAGE_LIMBS_TURNED_TO_STONE "  Your limbs have turned to stone.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
@@ -329,6 +333,7 @@
 #define MESSAGE_PERHAPS_THATS_WHY "  Perhaps that's why you cannot move it.  "
 #define MESSAGE_PICK_A_SKILL "  Pick a skill to advance:  "
 #define MESSAGE_PICK_UP_WHAT "  Pick up what?  "
+#define MESSAGE_PLAY_PASSTUNE "  Play the passtune? [yn] (n)  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
@@ -352,6 +357,7 @@
 #define MESSAGE_WHAT_TO_WEAR "  What do you want to wear? "
 #define MESSAGE_WHAT_TO_WIELD "  What do you want to wield? "
 #define MESSAGE_WHAT_TO_ZAP "  What do you want to zap? "
+#define MESSAGE_WHAT_TUNE "  What tune are you playing? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
