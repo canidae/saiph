@@ -63,13 +63,17 @@ int Local::retrieve(char *buffer, int count) {
 	//fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
 	/* read 8 bytes, this will block until there's data available */
 	//data_received += read(link[0], buffer, 8);
-	/* usleep some ms here (after the blocked reading) both to
-	 * make sure that we've received all the data and to make the
-	 * game watchable  */
-	usleep(200000);
 	/* make reading non-blocking */
 	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
-	data_received += read(link[0], &buffer[data_received], count - data_received - 2);
+	ssize_t amount;
+	do {
+		/* usleep some ms here (after the blocked reading) both to
+		 * make sure that we've received all the data and to make the
+		 * game watchable  */
+		usleep(200000);
+		amount = read(link[0], &buffer[data_received], count - data_received - 2);
+		data_received += amount;
+	} while (amount > 1000 && !(amount & (amount + 1))); // power of 2 test
 	if (data_received < (ssize_t) count)
 		buffer[data_received] = '\0';
 	return (int) data_received;
