@@ -316,6 +316,7 @@
 #define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here?  "
 #define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
+#define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
 #define MESSAGE_FOOCUBUS_QUESTION "  \"Shall I remove your " // followed by what he/she wants to remove.
 #define MESSAGE_FOOCUBUS_REMOVE "  \"Take off your " // followed by what the foocubus removed.

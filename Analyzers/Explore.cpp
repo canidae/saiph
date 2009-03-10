@@ -189,9 +189,15 @@ void Explore::complete() {
 }
 
 void Explore::parseMessages(const string &messages) {
-	if (saiph->world->question && messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
+	if (!saiph->world->question)
+		return;
+
+	if (messages.find(MESSAGE_TELEPORT_WHERE, 0) != string::npos) {
 		/* temporary hack for teleport control */
 		command = "><,";
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (messages.find(MESSAGE_ENTER_GEHENNOM, 0) != string::npos) {
+		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
 	}
 	/* TODO
