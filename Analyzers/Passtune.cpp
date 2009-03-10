@@ -12,7 +12,8 @@ Passtune::Passtune(Saiph *saiph) : Analyzer("Passtune"), saiph(saiph), solved(fa
 	knights_moves.push_back(Point(11, 12));
 	knights_moves.push_back(Point(13, 12));
 
-	guess[0] = 0;
+	for (int x = 0; x <= PLACES; ++x)
+		guess[x] = 0;
 
 	discarded.resize(TOTAL_COMBINATIONS);
 
