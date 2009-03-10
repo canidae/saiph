@@ -1,4 +1,5 @@
-#include <complex>
+#include <math.h>
+#include <stdlib.h>
 #include "Passtune.h"
 #include "../Globals.h"
 #include "../World.h"
