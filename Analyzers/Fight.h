@@ -13,6 +13,7 @@
 #include "../Request.h"
 
 class Saiph;
+class Monster;
 
 class Fight : public Analyzer {
 	public:
@@ -30,5 +31,6 @@ class Fight : public Analyzer {
 		Request req;
 
 		unsigned char gotThrown();
+		bool moreDangerousThan(const Monster *a, const Monster *b);
 };
 #endif
