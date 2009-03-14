@@ -10,6 +10,7 @@
 #define COST_LAVA 512 // lava, hot!
 #define COST_MONSTER 64 // try not to path through monsters
 #define COST_TRAP 128 // avoid traps
+#define COST_PORTAL 128 // Don't accidentally walk into portals
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 16384 // max amount of nodes in pathing_queue
 /* max moves a monster can do before we think it's a new monster */
