@@ -39,15 +39,8 @@ Player::Player() {
 	/* turn */
 	turn = 0;
 	/* intrinsics */
-	cold_resistance = false;
-	disintegration_resistance = false;
-	fire_resistance = false;
-	poison_resistance = false;
-	shock_resistance = false;
-	sleep_resistance = false;
-	telepathy = false;
-	teleport_control = false;
-	teleportitis = false;
+	intrinsics = 0;
+	extrinsics = 0;
 	/* lycanthropy */
 	lycanthropy = false;
 	/* hurt leg */

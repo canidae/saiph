@@ -40,15 +40,8 @@ class Player {
 		/* turn */
 		int turn;
 		/* intrinsics */
-		bool cold_resistance;
-		bool disintegration_resistance;
-		bool fire_resistance;
-		bool poison_resistance;
-		bool shock_resistance;
-		bool sleep_resistance;
-		bool telepathy;
-		bool teleport_control;
-		bool teleportitis;
+		unsigned long long int intrinsics;
+		unsigned long long int extrinsics;
 		/* lycanthropy */
 		bool lycanthropy;
 		/* hurt leg */
