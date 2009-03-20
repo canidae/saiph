@@ -195,10 +195,3 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 
 Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
 }
-
-bool Item::operator==(const Item &other) {
-	return name == other.name && count == other.count && beatitude == other.beatitude &&
-			greased == other.greased && fixed == other.fixed && damage == other.damage &&
-			unknown_enchantment == other.unknown_enchantment &&
-			enchantment == other.enchantment && additional == other.additional;
-}
