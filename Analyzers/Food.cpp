@@ -279,7 +279,9 @@ bool Food::safeToEat(const string &corpse) {
 	*/
 	else if ((c->second->eat_effects & EAT_EFFECT_PETRIFY) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 && !saiph->world->player.poison_resistance)
+	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 && 
+			!(saiph->world->player.intrinsics & PROPERTY_POISON ||
+			  saiph->world->player.extrinsics & PROPERTY_POISON))
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POLYMORPH) != 0)
 		return false;

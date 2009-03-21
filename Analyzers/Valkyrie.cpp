@@ -18,7 +18,7 @@ void Valkyrie::init() {
 	setupWeapon();
 
 	/* set the cold resistance all valks start with */
-	saiph->world->player.cold_resistance = true;
+	saiph->world->player.intrinsics |= PROPERTY_COLD;
 }
 
 /* private methods */

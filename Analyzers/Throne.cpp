@@ -11,7 +11,8 @@ Throne::Throne(Saiph *saiph) : Analyzer("Throne"), saiph(saiph) {
 void Throne::analyze() {
 	if (priority >= PRIORITY_THRONE_SIT)
 		return;
-	else if (saiph->world->player.hitpoints < 7 || (!saiph->world->player.shock_resistance && saiph->world->player.hitpoints < 31))
+	else if (saiph->world->player.hitpoints < 7 || (!(saiph->world->player.intrinsics & PROPERTY_SHOCK
+			|| saiph->world->player.extrinsics & PROPERTY_SHOCK) && saiph->world->player.hitpoints < 31))
 		return; // don't get killed by an electric chair
 	else if (saiph->world->player.hitpoints - saiph->world->player.hitpoints_max > 5)
 		return; // for the HP boost result
