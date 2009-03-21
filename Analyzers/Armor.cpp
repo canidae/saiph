@@ -105,7 +105,7 @@ bool Armor::request(const Request &request) {
 		if (request.key >= ARMOR_SLOTS)
 			return false;
 		carry_amount[request.key] = request.value;
-		ArmorData ad;
+		OldArmorData ad;
 		ad.beatitude = request.beatitude;
 		ad.priority = request.priority;
 		ad.keep = request.sustain;
@@ -131,7 +131,7 @@ bool Armor::isCursed(int armor_slot) {
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		if (i->second.additional != "being worn")
 			continue;
-		for (vector<ArmorData>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
+		for (vector<OldArmorData>::size_type a = 0; a < armor[armor_slot].size(); ++a) {
 			if (armor[armor_slot][a].name != i->second.name)
 				continue;
 			return i->second.beatitude == CURSED;
@@ -152,7 +152,7 @@ void Armor::wearArmor() {
 		best_armor[s] = INT_MIN;
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
-			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
+			for (vector<OldArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
 				if (a->name != i->second.name)
 					continue;
 				else if (i->second.additional == "being worn")
@@ -247,7 +247,7 @@ void Armor::wearArmor() {
 		req.request = REQUEST_ITEM_PICKUP;
 		for (int s = 0; s < ARMOR_SLOTS; ++s) {
 			map<unsigned char, Item>::iterator i = saiph->inventory.find(worn[s]);
-			for (vector<ArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
+			for (vector<OldArmorData>::iterator a = armor[s].begin(); a != armor[s].end(); ++a) {
 				if (a->keep || a->priority + ARMOR_UNKNOWN_ENCHANTMENT_BONUS > best_armor[s]) {
 					/* we [still] want this armor */
 					req.value = carry_amount[s];

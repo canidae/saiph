@@ -14,7 +14,7 @@
 #include "../Request.h"
 
 /* struct for wearing armor */
-struct ArmorData {
+struct OldArmorData {
 	int beatitude; // beatitudes we'll accept
 	int priority; // wear armor with highest priority, priority += enchantment
 	bool keep; // if we should keep this armor even if we find better armor
@@ -35,7 +35,7 @@ class Armor : public Analyzer {
 		bool wear_armor;
 		int carry_amount[ARMOR_SLOTS];
 		bool can_wear[ARMOR_SLOTS];
-		std::vector<ArmorData> armor[ARMOR_SLOTS];
+		std::vector<OldArmorData> armor[ARMOR_SLOTS];
 		std::string command2;
 		Request req;
 		int last_armor_type;
