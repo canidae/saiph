@@ -935,25 +935,25 @@ void Saiph::dumpMaps() {
 
 	/* status & inventory */
 	cout << (unsigned char) 27 << "[2;82H";
-	if (world->player.cold_resistance)
+	if (world->player.intrinsics & PROPERTY_COLD)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
-	if (world->player.disintegration_resistance)
+	if (world->player.intrinsics & PROPERTY_DISINT)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
-	if (world->player.fire_resistance)
+	if (world->player.intrinsics & PROPERTY_FIRE)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
-	if (world->player.poison_resistance)
+	if (world->player.intrinsics & PROPERTY_POISON)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
-	if (world->player.shock_resistance)
+	if (world->player.intrinsics & PROPERTY_SHOCK)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
-	if (world->player.sleep_resistance)
+	if (world->player.intrinsics & PROPERTY_SLEEP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
 
 	cout << (unsigned char) 27 << "[3;82H";
-	if (world->player.telepathy)
+	if (world->player.intrinsics & PROPERTY_ESP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
-	if (world->player.teleport_control)
+	if (world->player.intrinsics & PROPERTY_TELEPORT_CONTROL)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
-	if (world->player.teleportitis)
+	if (world->player.intrinsics & PROPERTY_TELEPORT)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
 	if (world->player.lycanthropy)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
@@ -1014,37 +1014,37 @@ void Saiph::parseMessages(const string &messages) {
 		world->question = true;
 	}
 	if (messages.find(SAIPH_GAIN_COLD_RES1, 0) != string::npos)
-		world->player.cold_resistance = true;
+		world->player.intrinsics |= PROPERTY_COLD;
 	if (messages.find(SAIPH_LOSE_COLD_RES1, 0) != string::npos)
-		world->player.cold_resistance = false;
+		world->player.intrinsics &= ~PROPERTY_COLD;
 	if (messages.find(SAIPH_GAIN_DISINTEGRATION_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_DISINTEGRATION_RES2, 0) != string::npos)
-		world->player.disintegration_resistance = true;
+		world->player.intrinsics |= PROPERTY_DISINT;
 	if (messages.find(SAIPH_GAIN_FIRE_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_FIRE_RES2, 0) != string::npos)
-		world->player.fire_resistance = true;
+		world->player.intrinsics |= PROPERTY_FIRE;
 	if (messages.find(SAIPH_LOSE_FIRE_RES1, 0) != string::npos)
-		world->player.fire_resistance = false;
+		world->player.intrinsics &= ~PROPERTY_FIRE;
 	if (messages.find(SAIPH_GAIN_POISON_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_POISON_RES2, 0) != string::npos)
-		world->player.poison_resistance = true;
+		world->player.intrinsics |= PROPERTY_POISON;
 	if (messages.find(SAIPH_LOSE_POISON_RES1, 0) != string::npos)
-		world->player.poison_resistance = false;
+		world->player.intrinsics &= ~PROPERTY_POISON;
 	if (messages.find(SAIPH_GAIN_SHOCK_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_SHOCK_RES2, 0) != string::npos)
-		world->player.shock_resistance = true;
+		world->player.intrinsics |= PROPERTY_SHOCK;
 	if (messages.find(SAIPH_LOSE_SHOCK_RES1, 0) != string::npos)
-		world->player.shock_resistance = false;
+		world->player.intrinsics &= ~PROPERTY_SHOCK;
 	if (messages.find(SAIPH_GAIN_SLEEP_RES1, 0) != string::npos)
-		world->player.sleep_resistance = true;
+		world->player.intrinsics |= PROPERTY_SLEEP;
 	if (messages.find(SAIPH_LOSE_SLEEP_RES1, 0) != string::npos)
-		world->player.sleep_resistance = false;
+		world->player.intrinsics &= ~PROPERTY_SLEEP;
 	if (messages.find(SAIPH_GAIN_TELEPATHY1, 0) != string::npos)
-		world->player.telepathy = true;
+		world->player.intrinsics |= PROPERTY_ESP;
 	if (messages.find(SAIPH_LOSE_TELEPATHY1, 0) != string::npos)
-		world->player.telepathy = false;
+		world->player.intrinsics &= ~PROPERTY_ESP;
 	if (messages.find(SAIPH_GAIN_TELEPORT_CONTROL1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORT_CONTROL2, 0) != string::npos)
-		world->player.teleport_control = true;
+		world->player.intrinsics |= PROPERTY_TELEPORT_CONTROL;
 	if (messages.find(SAIPH_GAIN_TELEPORTITIS1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORTITIS2, 0) != string::npos)
-		world->player.teleportitis = true;
+		world->player.intrinsics |= PROPERTY_TELEPORT;
 	if (messages.find(SAIPH_LOSE_TELEPORTITIS1, 0) != string::npos)
-		world->player.teleportitis = false;
+		world->player.intrinsics &= ~PROPERTY_TELEPORT;
 	if (messages.find(SAIPH_FEEL_PURIFIED, 0) != string::npos)
 		world->player.lycanthropy = false;
 	if (messages.find(SAIPH_FEEL_FEVERISH, 0) != string::npos)
