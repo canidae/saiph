@@ -240,6 +240,8 @@
 #define PROPERTY_MAGIC             ((unsigned long long) (1LL << 28))
 #define PROPERTY_RANDOM_APPEARANCE ((unsigned long long) (1LL << 29))
 #define PROPERTY_CASTING_BONUS     ((unsigned long long) (1LL << 30))
+#define PROPERTY_TELEPORT          ((unsigned long long) (1LL << 31))
+#define PROPERTY_TELEPORT_CONTROL  ((unsigned long long) (1LL << 32))
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
