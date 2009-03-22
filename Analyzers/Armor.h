@@ -9,9 +9,12 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include "../Item.h"
 #include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Request.h"
+#include "../Debug.h"
 
 /* struct for wearing armor */
 struct OldArmorData {
@@ -19,6 +22,33 @@ struct OldArmorData {
 	int priority; // wear armor with highest priority, priority += enchantment
 	bool keep; // if we should keep this armor even if we find better armor
 	std::string name;
+};
+
+/* struct for ranking a set of armor; much nicer than using a vector */
+struct ArmorSet {
+	Item shirt, suit, cloak, boots, gloves, helmet, shield;
+	//allow looping over the armor types
+	inline Item operator[](int index) const {
+		switch(index) {
+			case ARMOR_SHIRT:
+				return shirt;
+			case ARMOR_SUIT:
+				return suit;
+			case ARMOR_CLOAK:
+				return cloak;
+			case ARMOR_BOOTS:
+				return boots;
+			case ARMOR_GLOVES:
+				return gloves;
+			case ARMOR_HELMET:
+				return helmet;
+			case ARMOR_SHIELD:
+				return shield;
+			default:
+				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
+				return Item();
+		}
+	}
 };
 
 class Saiph;
@@ -40,9 +70,11 @@ class Armor : public Analyzer {
 		Request req;
 		int last_armor_type;
 		bool last_polymorphed;
+		static std::map<unsigned long long int, int> scores;
 
 		bool isCursed(int armor_slot);
 		void wearArmor();
 		void resetCanWear();
+		int rank(const ArmorSet& r);
 };
 #endif
