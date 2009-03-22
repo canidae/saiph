@@ -189,7 +189,7 @@ void Armor::wearArmor() {
 	vector< vector<Item> > choices(ARMOR_SLOTS);
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 		//we don't wear cursed armor
-		if (i->second.beatitude == CURSED)
+		if (i->second.beatitude == CURSED || i->second.beatitude == BEATITUDE_UNKNOWN)
 			continue;
 		map<string, ArmorData *>::iterator a = ArmorData::armors.find(i->second.name);
 		if (a != ArmorData::armors.end())
