@@ -40,4 +40,11 @@ class Item {
 		Item(const std::string &text);
 		Item();
 };
+
+bool operator==(const Item &a, const Item &b);
+
+inline bool operator!=(const Item &a, const Item &b) {
+	return !(a == b);
+}
+
 #endif
