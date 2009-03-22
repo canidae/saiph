@@ -5,7 +5,7 @@ using namespace std;
 /* initialize static variables */
 map<string, CloakData *> CloakData::cloaks;
 
-CloakData::CloakData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
+CloakData::CloakData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_CLOAK, ac, mc, properties) {
 }
 
 void CloakData::addToMap(const std::string& name, CloakData *cloak) {
