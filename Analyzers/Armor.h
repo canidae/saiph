@@ -49,7 +49,14 @@ struct ArmorSet {
 				return Item();
 		}
 	}
+	friend std::ostream& operator<<(std::ostream& out, const ArmorSet& as);
 };
+
+inline std::ostream& operator<<(std::ostream& out, const ArmorSet& as) {
+	return out << "[" << as.shirt << ", " << as.suit << ", " << as.cloak << ", "
+			<< as.boots << ", " << as.gloves << ", " << as.helmet << ", "
+			<< as.shield << "]";
+}
 
 class Saiph;
 

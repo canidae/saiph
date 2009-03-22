@@ -292,6 +292,8 @@ void Armor::wearArmor() {
 	}
 	if (wear_armor) {
 		priority = PRIORITY_ARMOR_WEAR;
+		Debug::notice() << "Armor]" << "Going to wear " << bestSet << " with score"
+				<< bestScore << endl;
 	} else {
 		/* nothing to wear */
 		command.clear();

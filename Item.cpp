@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <ostream>
 #include "Globals.h"
 #include "Item.h"
 
@@ -13,11 +14,11 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	if (matched != 2)
 		return; // unable to parse text as item
 	/* figure out amount of items */
-	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || ((amount[0] == 't' || amount[0] == 'T') && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))     
+	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || ((amount[0] == 't' || amount[0] == 'T') && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))
 		count = 1; // "a", "an" or "the" <item>
 	else if (amount[0] >= '0' || amount[0] <= '9')
 		count = atoi(amount); // n <items>
-	else    
+	else
 		return; // unable to parse text as item
 	string::size_type pos = 0;
 	name = name_long;
@@ -201,4 +202,28 @@ bool operator==(const Item &a, const Item &b) {
 			a.fixed == b.fixed && a.damage == b.damage &&
 			a.unknown_enchantment == b.unknown_enchantment && a.enchantment == b.enchantment &&
 			a.name == b.name && a.additional == b.additional;
+}
+
+ostream & operator<<(ostream& out, const Item& item) {
+	if (item.name == "")
+		out << "(no item)";
+	else {
+		out << item.count << " ";
+		if (item.beatitude == BLESSED)
+			out << "blessed ";
+		else if (item.beatitude == UNCURSED)
+			out << "uncursed ";
+		else if (item.beatitude == CURSED)
+			out << "cursed ";
+		if (item.greased)
+			out << "greased ";
+		if (item.fixed)
+			out << "fixed ";
+		if (item.damage)
+			out << "dmg" << item.damage << " ";
+		if (!item.unknown_enchantment)
+			out << ((item.enchantment > 0) ? "+" : "") << item.enchantment << " ";
+		out << item.name << " " << item.additional;
+	}
+	return out;
 }

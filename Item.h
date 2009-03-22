@@ -41,6 +41,7 @@ class Item {
 		Item();
 };
 
+std::ostream& operator<<(std::ostream& out, const Item& item);
 bool operator==(const Item &a, const Item &b);
 
 inline bool operator!=(const Item &a, const Item &b) {
