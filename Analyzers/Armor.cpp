@@ -200,7 +200,9 @@ void Armor::wearArmor() {
 		choices[i].push_back(Item());
 
 	ArmorSet bestSet;
-	int bestScore = INT_MIN;
+	for (int i = 0; i < ARMOR_SLOTS; i++)
+		bestSet[i] = saiph->inventory[worn[i]];
+	int bestScore = rank(bestSet); //if we're going to wear something else, make it be strictly better
 	for (vector<Item>::size_type a = 0; a < choices[ARMOR_SHIRT].size(); a++)
 		for (vector<Item>::size_type b = 0; b < choices[ARMOR_SUIT].size(); b++)
 			for (vector<Item>::size_type c = 0; c < choices[ARMOR_CLOAK].size(); c++)

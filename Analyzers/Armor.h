@@ -28,7 +28,7 @@ struct OldArmorData {
 struct ArmorSet {
 	Item shirt, suit, cloak, boots, gloves, helmet, shield;
 	//allow looping over the armor types
-	inline Item operator[](int index) const {
+	inline const Item& operator[](int index) const {
 		switch(index) {
 			case ARMOR_SHIRT:
 				return shirt;
@@ -46,7 +46,26 @@ struct ArmorSet {
 				return shield;
 			default:
 				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
-				return Item();
+		}
+	}
+	inline Item& operator[](int index) {
+		switch(index) {
+			case ARMOR_SHIRT:
+				return shirt;
+			case ARMOR_SUIT:
+				return suit;
+			case ARMOR_CLOAK:
+				return cloak;
+			case ARMOR_BOOTS:
+				return boots;
+			case ARMOR_GLOVES:
+				return gloves;
+			case ARMOR_HELMET:
+				return helmet;
+			case ARMOR_SHIELD:
+				return shield;
+			default:
+				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
 		}
 	}
 	friend std::ostream& operator<<(std::ostream& out, const ArmorSet& as);
