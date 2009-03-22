@@ -70,7 +70,7 @@ int Local::retrieve(char *buffer, int count) {
 		/* usleep some ms here (after the blocked reading) both to
 		 * make sure that we've received all the data and to make the
 		 * game watchable  */
-		usleep(200000);
+		usleep(100000);
 		amount = read(link[0], &buffer[data_received], count - data_received - 2);
 		data_received += amount;
 	} while (amount > 1000 && !(amount & (amount + 1))); // power of 2 test

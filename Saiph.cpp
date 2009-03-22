@@ -902,7 +902,7 @@ void Saiph::dumpMaps() {
 	cout << "CPS/FPS/TPS: ";
 	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
 	cout << (unsigned char) 27 << "[35m" << fps << (unsigned char) 27 << "[0m/";
-	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m";
+	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m      ";
 
 	/* monsters and map as saiph sees it */
 	Point p;
