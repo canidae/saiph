@@ -204,14 +204,14 @@ void Armor::wearArmor() {
 		if (!cursed[i]) //we have to wear this if it's cursed
 			choices[i].push_back(Item());
 
-	ArmorSet curSet;
+	ArmorSet cur_set;
 	for (int i = 0; i < ARMOR_SLOTS; i++)
 		if (worn[i] != 0)
-			curSet[i] = saiph->inventory[worn[i]];
-	Debug::notice() << "Armor] " << "currently wearing " << curSet << endl;
+			cur_set[i] = saiph->inventory[worn[i]];
+	Debug::notice() << "Armor] " << "currently wearing " << cur_set << endl;
 
-	ArmorSet bestSet = curSet;
-	int bestScore = rank(bestSet);
+	ArmorSet best_set = cur_set;
+	int best_score = rank(best_set);
 	for (vector<Item>::size_type a = 0; a < choices[ARMOR_SHIRT].size(); a++)
 		for (vector<Item>::size_type b = 0; b < choices[ARMOR_SUIT].size(); b++)
 			for (vector<Item>::size_type c = 0; c < choices[ARMOR_CLOAK].size(); c++)
@@ -229,15 +229,15 @@ void Armor::wearArmor() {
 									choices[ARMOR_SHIELD][g],
 								};
 								int score = rank(as);
-								if (score > bestScore) {
-									bestSet = as;
-									bestScore = score;
+								if (score > best_score) {
+									best_set = as;
+									best_score = score;
 								}
 							}
 
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); i++)
 		for (int j = 0; j < ARMOR_SLOTS; j++)
-			if (i->second == bestSet[j])
+			if (i->second == best_set[j])
 				best_key[j] = i->first;
 
 	bool last_wear_armor = wear_armor;
@@ -305,8 +305,8 @@ void Armor::wearArmor() {
 	}
 	if (wear_armor) {
 		priority = PRIORITY_ARMOR_WEAR;
-		Debug::notice() << "Armor]" << "Going to wear " << bestSet << " with score"
-				<< bestScore << endl;
+		Debug::notice() << "Armor]" << "Going to wear " << best_set << " with score"
+				<< best_score << endl;
 	} else {
 		/* nothing to wear */
 		command.clear();
@@ -359,8 +359,8 @@ void Armor::resetCanWear() {
 #define WEIGHT_LIMIT 150
 #define WEIGHT_PENALTY 50
 
-int Armor::rank(const ArmorSet& armor) {
-	ArmorData *nulldata = 0;
+int Armor::rank(const ArmorSet &armor) {
+	ArmorData *nulldata = 0;  //vector's constructor didn't like const 0 for some reason
 	vector<ArmorData *> data(ARMOR_SLOTS, nulldata);
 	for (int i = 0; i < ARMOR_SLOTS; i++)
 		if (armor[i] != Item()) {
@@ -368,37 +368,37 @@ int Armor::rank(const ArmorSet& armor) {
 			if (iter != ArmorData::armors.end())
 				data[i] = iter->second;
 		}
-	unsigned long long armorProperties = 0ULL;
+	unsigned long long armor_properties = 0ULL;
 	for (int i = 0; i < ARMOR_SLOTS; i++)
 		if (data[i] != 0)
-			armorProperties |= data[i]->properties;
+			armor_properties |= data[i]->properties;
 	//don't consider the things we have intrinsically, unless the extrinsic is different
-	armorProperties &= (~saiph->world->player.intrinsics | PROPERTY_ESP);
-	int propertyScore = 0;
+	armor_properties &= (~saiph->world->player.intrinsics | PROPERTY_ESP);
+	int property_score = 0;
 	for (map<unsigned long long int, int>::iterator i = scores.begin(); i != scores.end(); i++)
-		if (armorProperties & i->first)
-			propertyScore += i->second;
-	int totalAC = 0, maxMC = 0, miscBonuses = 0;
+		if (armor_properties & i->first)
+			property_score += i->second;
+	int total_ac = 0, max_mc = 0, misc_bonuses = 0;
 	for (int i = 0; i < ARMOR_SLOTS; i++) {
 		if (data[i] == 0)
 			continue;
-		totalAC += data[i]->ac;
-		totalAC -= armor[i].damage > data[i]->ac ? data[i]->ac : armor[i].damage;
-		totalAC += armor[i].unknown_enchantment ? ARMOR_UNKNOWN_ENCHANTMENT_BONUS : armor[i].enchantment;
-		maxMC = maxMC > data[i]->mc ? maxMC : data[i]->mc;
+		total_ac += data[i]->ac;
+		total_ac -= armor[i].damage > data[i]->ac ? data[i]->ac : armor[i].damage;
+		total_ac += armor[i].unknown_enchantment ? ARMOR_UNKNOWN_ENCHANTMENT_BONUS : armor[i].enchantment;
+		max_mc = max_mc > data[i]->mc ? max_mc : data[i]->mc;
 		if (armor[i].beatitude == BLESSED)
-			miscBonuses += BLESSED_BONUS;
+			misc_bonuses += BLESSED_BONUS;
 		if (armor[i].fixed || (data[i]->material & ~MATERIALS_THAT_ERODE))
-			miscBonuses += FIXED_BONUS;
+			misc_bonuses += FIXED_BONUS;
 		if (armor[i].greased)
-			miscBonuses += GREASED_BONUS;
+			misc_bonuses += GREASED_BONUS;
 		if (armor[i].additional == "being worn")
-			miscBonuses += BEING_WORN_BONUS;
+			misc_bonuses += BEING_WORN_BONUS;
 		if (data[i]->weight > WEIGHT_LIMIT)
-			miscBonuses -= WEIGHT_PENALTY;
-		miscBonuses += ANY_ARMOR_BONUS;
+			misc_bonuses -= WEIGHT_PENALTY;
+		misc_bonuses += ANY_ARMOR_BONUS;
 	}
 	if (data[ARMOR_HELMET] != 0 && data[ARMOR_HELMET]->material & MATERIALS_METALLIC)
-		miscBonuses += HARD_HAT_BONUS;
-	return propertyScore + totalAC * AC_MULTIPLIER + maxMC * MC_MULTIPLIER + miscBonuses;
+		misc_bonuses += HARD_HAT_BONUS;
+	return property_score + total_ac * AC_MULTIPLIER + max_mc * MC_MULTIPLIER + misc_bonuses;
 }
