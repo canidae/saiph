@@ -186,23 +186,30 @@ void Armor::wearArmor() {
 		}
 	}
 
+	bool cursed[ARMOR_SLOTS];
+	for (int i = 0; i < ARMOR_SLOTS; i++)
+		cursed[i] = isCursed(i);
 	vector< vector<Item> > choices(ARMOR_SLOTS);
 	for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-		//we don't wear cursed armor
-		if (i->second.beatitude == CURSED || i->second.beatitude == BEATITUDE_UNKNOWN)
-			continue;
 		map<string, ArmorData *>::iterator a = ArmorData::armors.find(i->second.name);
-		if (a != ArmorData::armors.end())
+		//we don't wear cursed armor, but if we're wearing something cursed we need to add it anyway
+		if (a != ArmorData::armors.end() && ((cursed[a->second->slot] && i->second.beatitude == CURSED) ||
+				(!cursed[a->second->slot] && !(i->second.beatitude == CURSED || i->second.beatitude == BEATITUDE_UNKNOWN))))
 			choices[a->second->slot].push_back(i->second);
 	}
 	//represent leaving a slot empty (sometimes this is better)
 	for (int i = 0; i < ARMOR_SLOTS; i++)
-		choices[i].push_back(Item());
+		if (!cursed[i]) //we have to wear this if it's cursed
+			choices[i].push_back(Item());
 
-	ArmorSet bestSet;
+	ArmorSet curSet;
 	for (int i = 0; i < ARMOR_SLOTS; i++)
-		bestSet[i] = saiph->inventory[worn[i]];
-	int bestScore = rank(bestSet); //if we're going to wear something else, make it be strictly better
+		if (worn[i] != 0)
+			curSet[i] = saiph->inventory[worn[i]];
+	Debug::notice() << "Armor] " << "currently wearing " << curSet << endl;
+
+	ArmorSet bestSet = curSet;
+	int bestScore = rank(bestSet);
 	for (vector<Item>::size_type a = 0; a < choices[ARMOR_SHIRT].size(); a++)
 		for (vector<Item>::size_type b = 0; b < choices[ARMOR_SUIT].size(); b++)
 			for (vector<Item>::size_type c = 0; c < choices[ARMOR_CLOAK].size(); c++)
@@ -236,6 +243,8 @@ void Armor::wearArmor() {
 	for (int s = 0; s < ARMOR_SLOTS; ++s) {
 		if (worn[s] == best_key[s])
 			continue; // wearing best armor or got no armor to wield
+		Debug::notice() << "Armor] Going to wear armor in slot " << s << endl;
+		Debug::notice() << "Armor] best: " << best_key[s] << " cur: " << worn[s] << endl;
 		if (isCursed(s))
 			continue; // the item we're wearing in this slot it cursed and cannot be taken off
 		if (!can_wear[s])
@@ -382,5 +391,5 @@ int Armor::rank(const ArmorSet& armor) {
 	}
 	if (data[ARMOR_HELMET] != 0 && data[ARMOR_HELMET]->material & MATERIALS_METALLIC)
 		miscBonuses += HARD_HAT_BONUS;
-	return propertyScore + totalAC*AC_MULTIPLIER + maxMC*MC_MULTIPLIER + miscBonuses;
+	return propertyScore + totalAC * AC_MULTIPLIER + maxMC * MC_MULTIPLIER + miscBonuses;
 }
