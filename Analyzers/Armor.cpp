@@ -27,6 +27,8 @@ Armor::Armor(Saiph *saiph) : Analyzer("Armor"), saiph(saiph), wear_armor(false),
 	scores[PROPERTY_SLIPPERY] = 5;
 	scores[PROPERTY_STRENGTH] = 30;
 	scores[PROPERTY_STEALTH] = 15;
+	scores[PROPERTY_FUMBLING] = -100;
+	scores[PROPERTY_STUPIDITY] = -100;
 }
 
 /* methods */
@@ -348,11 +350,14 @@ void Armor::resetCanWear() {
 
 #define AC_MULTIPLIER 10
 #define MC_MULTIPLIER 5
-#define BLESSED_BONUS 2
-#define FIXED_BONUS 1
-#define GREASED_BONUS 1
-#define HARD_HAT_BONUS 1 /* good vs. falling rocks */
-#define ANY_ARMOR_BONUS 1 /* prevent oscillation */
+#define BLESSED_BONUS 3
+#define FIXED_BONUS 2
+#define GREASED_BONUS 2
+#define HARD_HAT_BONUS 2 /* good vs. falling rocks */
+#define ANY_ARMOR_BONUS 1 /* better than nothing? */
+#define BEING_WORN_BONUS 1 /* a hack to prevent oscillations */
+#define WEIGHT_LIMIT 150
+#define WEIGHT_PENALTY 50
 
 int Armor::rank(const ArmorSet& armor) {
 	ArmorData *nulldata = 0;
@@ -387,6 +392,10 @@ int Armor::rank(const ArmorSet& armor) {
 			miscBonuses += FIXED_BONUS;
 		if (armor[i].greased)
 			miscBonuses += GREASED_BONUS;
+		if (armor[i].additional == "being worn")
+			miscBonuses += BEING_WORN_BONUS;
+		if (data[i]->weight > WEIGHT_LIMIT)
+			miscBonuses -= WEIGHT_PENALTY;
 		miscBonuses += ANY_ARMOR_BONUS;
 	}
 	if (data[ARMOR_HELMET] != 0 && data[ARMOR_HELMET]->material & MATERIALS_METALLIC)
