@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <ostream>
 #include "Globals.h"
 #include "Item.h"
 
@@ -13,11 +14,11 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 	if (matched != 2)
 		return; // unable to parse text as item
 	/* figure out amount of items */
-	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || ((amount[0] == 't' || amount[0] == 'T') && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))     
+	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || ((amount[0] == 't' || amount[0] == 'T') && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))
 		count = 1; // "a", "an" or "the" <item>
 	else if (amount[0] >= '0' || amount[0] <= '9')
 		count = atoi(amount); // n <items>
-	else    
+	else
 		return; // unable to parse text as item
 	string::size_type pos = 0;
 	name = name_long;
@@ -171,8 +172,13 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		name = name.substr(pos + sizeof (ITEM_CALLED) - 1);
 	/* singularize name.
 	 * we'll only singularize stuff we care about for now */
-	if (name.find("pair of ") == 0)
-		return; // it's "2 pair of boots", not "2 pairs of boot"
+	if (name.find("pair of ") == 0) {
+		if (name.find("pair of lenses") == string::npos) {
+			//boots or gloves; remove "pair of"
+			name = name.erase(name.find("pair of "), string("pair of ").length());
+		}
+		return; //don't de-pluluralize "boots", "gloves", or "lenses"
+	}
 	string::size_type stop = string::npos;
 	if ((stop = name.find(" of ", 0)) != string::npos || (stop = name.find(" labeled ", 0)) != string::npos || (stop = name.find(" called ", 0)) != string::npos || (stop = name.find(" named ", 0)) != string::npos || (stop = name.find(" from ", 0)) != string::npos) {
 		/* no need to do anything here.
@@ -194,4 +200,42 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 }
 
 Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
+}
+
+bool operator==(const Item &a, const Item &b) {
+	return a.count == b.count && a.beatitude == b.beatitude && a.greased == b.greased &&
+			a.fixed == b.fixed && a.damage == b.damage &&
+			a.unknown_enchantment == b.unknown_enchantment && a.enchantment == b.enchantment &&
+			a.name == b.name && a.additional == b.additional;
+}
+
+ostream &operator<<(ostream &out, const Item &item) {
+	if (item.name == "") {
+		out << "(no item)";
+	} else {
+		out << item.count << " ";
+		if (item.beatitude == BLESSED)
+			out << "blessed ";
+		else if (item.beatitude == UNCURSED)
+			out << "uncursed ";
+		else if (item.beatitude == CURSED)
+			out << "cursed ";
+		if (item.greased)
+			out << "greased ";
+		if (item.fixed)
+			out << "fixed ";
+		if (item.damage > 0) {
+			if (item.damage == 2)
+				out << "very ";
+			else if (item.damage == 3)
+				out << "thoroughly ";
+			out << "damaged ";
+		}
+		if (!item.unknown_enchantment)
+			out << ((item.enchantment >= 0) ? "+" : "") << item.enchantment << " ";
+		out << item.name;
+		if (item.additional != "")
+			 out << " " << item.additional;
+	}
+	return out;
 }

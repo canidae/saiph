@@ -1,6 +1,7 @@
 #include "Wish.h"
 #include "../Globals.h"
 #include "../Saiph.h"
+#include "../World.h"
 #include "../Debug.h"
 #include <string>
 
@@ -21,13 +22,19 @@ void Wish::parseMessages(const string &messages) {
 		}
 	}
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
-		MRarmor = wearing("gray dragon scale mail") || wearing("gray dragon scales");
-		MRcloak = wearing("cloak of magic resistance");
-		haveMR = MRarmor || MRcloak;
-		reflectionArmor = wearing("silver dragon scale mail") || wearing("silver dragon scales");
-		reflectionAmulet = wearing("amulet of reflection");
-		reflectionShield = wearing("shield of reflection");
-		haveReflection = reflectionArmor || reflectionAmulet || reflectionShield;
+		haveMR = saiph->world->player.extrinsics & PROPERTY_MAGICRES;
+		if (haveMR) {
+			MRarmor = wearing("gray dragon scale mail") || wearing("gray dragon scales");
+			MRcloak = wearing("cloak of magic resistance");
+		} else
+			MRarmor = MRcloak = false;
+		haveReflection = saiph->world->player.extrinsics & PROPERTY_REFLECTION;
+		if (haveReflection) {
+			reflectionArmor = wearing("silver dragon scale mail") || wearing("silver dragon scales");
+			reflectionAmulet = wearing("amulet of reflection");
+			reflectionShield = wearing("shield of reflection");
+		} else
+			reflectionArmor = reflectionAmulet = reflectionShield = false;
 		command = "3 blessed greased fixed +3 " + selectWish();
 		Debug::notice(saiph->last_turn) << WISH_DEBUG_NAME << "Wishing for " << command << endl;
 		command.append("\n");
@@ -70,8 +77,9 @@ string Wish::selectWish() {
 	else if (!wearing("gauntlets of power"))
 		return "gauntlets of power";
 	//just some survival items
-	if (!reflectionAmulet)
-		return "amulet of life saving";
+	//TODO: wait until we wear amulets
+//	if (!reflectionAmulet)
+//		return "amulet of life saving";
 	return "potion of full healing";
 }
 

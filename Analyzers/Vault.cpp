@@ -14,7 +14,7 @@ void Vault::parseMessages(const string &messages) {
 		/* guard asking who we are */
 		/* if we got some means of getting out (teleportitis, wand of teleport, scroll of teleport, pick-axe),
 		 * then claim we're Croesus */
-		if (saiph->world->player.teleportitis) {
+		if (saiph->world->player.intrinsics & PROPERTY_TELEPORT) {
 			command = VAULT_CROESUS;
 			priority = PRIORITY_CONTINUE_ACTION;
 			return;
