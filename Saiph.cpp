@@ -973,31 +973,7 @@ void Saiph::dumpMaps() {
 		else if (i->second.beatitude == UNCURSED)
 			cout << (unsigned char) 27 << "[33m";
 		cout << i->first;
-		cout << " - " << i->second.count;
-		if (i->second.beatitude == BLESSED)
-			cout << " blessed";
-		else if (i->second.beatitude == CURSED)
-			cout << " cursed";
-		else if (i->second.beatitude == UNCURSED)
-			cout << " uncursed";
-		cout << (i->second.greased ? " greased" : "");
-		cout << (i->second.fixed ? " fixed" : "");
-		if (i->second.damage > 0) {
-			if (i->second.damage == 2)
-				cout << " very";
-			else if (i->second.damage == 3)
-				cout << " thoroughly";
-			cout << " damaged";
-		}
-		if (!i->second.unknown_enchantment) {
-			if (i->second.enchantment >= 0)
-				cout << " +" << i->second.enchantment;
-			else
-				cout << " " << i->second.enchantment;
-		}
-		cout << " " << i->second.name;
-		if (i->second.additional != "")
-			cout << " (" << i->second.additional << ")";
+		cout << " - " << i->second;
 		cout << (unsigned char) 27 << "[m";
 		++ir;
 	}
