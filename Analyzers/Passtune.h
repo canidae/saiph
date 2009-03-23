@@ -39,7 +39,7 @@ class Passtune : public Analyzer {
 
 		char guess[PLACES+1];
 
-		void nextGuess(int gears, int tumblers);
+		int nextGuess(int gears, int tumblers);
 
 		void findInstrument(void);
 		bool isInstrument(const Item &item);

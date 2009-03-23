@@ -115,6 +115,24 @@ void Explore::analyze() {
 		}
 	}
 
+	/* explore through portal */
+	if (priority < PRIORITY_EXPLORE_MAGIC_PORTAL) {
+		/* explore through portal unless already exploring upstairs */
+		for (map<Point, int>::iterator s = saiph->levels[saiph->position.level].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != saiph->levels[saiph->position.level].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			const PathNode &node = saiph->shortestPath(s->first);
+			if (node.cost >= UNPASSABLE)
+				continue;
+			if (node.dir == NOWHERE)
+				continue; // shouldn't happen
+			else
+				best_move = node.dir;
+			priority = PRIORITY_EXPLORE_MAGIC_PORTAL;
+			break;
+		}
+	}
+
 	/* travel */
 	if (priority < PRIORITY_EXPLORE_TRAVEL) {
 		unsigned char move = ILLEGAL_DIRECTION;

@@ -611,6 +611,35 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			}
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
+		/* path to levels through magic portals */
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where this magic portal leads
+			if (level_added[s->second])
+				continue; // already added this level
+			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			if (node.cost >= UNPASSABLE)
+				continue;
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
+				continue;
+			/* distance to these stairs is shorter than shortest path found so far.
+			 * we should check the level these stairs lead to as well */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to downstairs on level we're standing on */
+				level_pathnode[s->second] = node;
+				if (node.dir == NOWHERE)
+					level_pathnode[s->second].dir = NOWHERE;
+			} else {
+				/* pathing to downstairs on another level */
+				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+				level_pathnode[s->second].moves += node.moves;
+				level_pathnode[s->second].cost += node.cost;
+			}
+			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+		}
 	}
 	return best_pathnode;
 }
@@ -684,6 +713,34 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 			/* path to downstairs on level */
 			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+				if (s->second == UNKNOWN_SYMBOL_VALUE)
+					continue; // we don't know where these stairs lead
+				else if (level_added[s->second])
+					continue; // already added this level
+				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				if (node.cost >= UNPASSABLE)
+					continue;
+				/* distance to these stairs is shorter than shortest path found so far.
+				 * we should check the level these stairs lead to as well */
+				level_added[s->second] = true;
+				level_queue[level_count++] = s->second;
+				if (pivot == 0) {
+					/* pathing to downstairs on level we're standing on */
+					level_pathnode[s->second] = node;
+					if (node.dir == NOWHERE)
+						level_pathnode[s->second].dir = DOWN;
+				} else {
+					/* pathing to downstairs on another level */
+					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
+				}
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+			}
+			/* path to downstairs on level */
+			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
@@ -784,6 +841,10 @@ void Saiph::detectPosition() {
 		/* we did stand on stairs up, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
 		found = levels[position.level].symbols[(unsigned char) STAIRS_UP][position];
+	} else if (symbol == MAGIC_PORTAL) {
+		/* we did stand on a magic portal, and if we don't know where it leads then
+		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
+		found = levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position];
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
@@ -826,6 +887,9 @@ void Saiph::detectPosition() {
 	} else if (symbol == STAIRS_UP) {
 		/* yes, we were on stairs up */
 		levels[position.level].symbols[(unsigned char) STAIRS_UP][position] = found;
+	} else if (symbol == MAGIC_PORTAL) {
+		/* yes, we were on a magic portal */
+		levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position] = found;
 	}
 	position.row = world->player.row;
 	position.col = world->player.col;

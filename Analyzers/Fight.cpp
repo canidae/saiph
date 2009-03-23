@@ -3,6 +3,7 @@
 #include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Data/MonsterData.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ void Fight::analyze() {
 	unsigned char got_thrown = FIGHT_NOT_CHECKED_THROWN_WEAPONS;
 	int min_distance = INT_MAX;
 	unsigned int min_moves = UNREACHABLE;
+	Monster *target = NULL;
 	map<Point, Monster>::iterator best_monster = saiph->levels[saiph->position.level].monsters.end();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
@@ -41,9 +43,10 @@ void Fight::analyze() {
 					got_thrown = gotThrown();
 				if (got_thrown != FIGHT_NO_THROWN_WEAPONS && saiph->world->player.encumbrance <= BURDENED) {
 					/* got thrown weapons */
-					if (priority == PRIORITY_FIGHT_ATTACK && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A')
+					if (priority == PRIORITY_FIGHT_ATTACK && distance >= min_distance && m->second.symbol != '@' && m->second.symbol != 'A' && !moreDangerousThan(&m->second, target))
 						continue; // already got a target
 					priority = PRIORITY_FIGHT_ATTACK;
+					target = &m->second;
 					min_distance = distance;
 					command = THROW;
 					command2 = got_thrown;
@@ -60,12 +63,13 @@ void Fight::analyze() {
 			continue; // we must move to monster, but we got something else with higher priority or are blind
 		else if (node.moves > min_moves)
 			continue; // we know of a monster closer than this one
-		else if (node.moves == 1 && distance == min_distance && priority == PRIORITY_FIGHT_ATTACK && m->second.symbol != '@' && m->second.symbol != 'A')
+		else if (node.moves == 1 && distance == min_distance && priority == PRIORITY_FIGHT_ATTACK && m->second.symbol != '@' && m->second.symbol != 'A' && !moreDangerousThan(&m->second, target))
 			continue; // already got a target
 		else if (blue_e)
 			priority = PRIORITY_FIGHT_MELEE_BLUE_E;
 		else
 			priority = (node.moves == 1) ? PRIORITY_FIGHT_ATTACK : PRIORITY_FIGHT_MOVE;
+		target = &m->second;
 		min_distance = distance;
 		min_moves = node.moves;
 		command = (node.moves == 1 ? FIGHT : ""); // always fight using F when distance is 1
@@ -112,4 +116,18 @@ unsigned char Fight::gotThrown() {
 		}
 	}
 	return FIGHT_NO_THROWN_WEAPONS;
+}
+
+bool Fight::moreDangerousThan(const Monster *a, const Monster *b) {
+	if (b == NULL)
+		return true;
+	if (a == NULL)
+		return false;
+
+	// if we don't know anything about either one, send false
+	if (a->data == NULL || b->data == NULL)
+		return false;
+
+	// Otherwise fall back on difficulty
+	return a->data->difficulty > b->data->difficulty;
 }

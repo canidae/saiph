@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdlib.h>
 #include "Passtune.h"
 #include "../Globals.h"
@@ -13,7 +12,8 @@ Passtune::Passtune(Saiph *saiph) : Analyzer("Passtune"), saiph(saiph), solved(fa
 	knights_moves.push_back(Point(11, 12));
 	knights_moves.push_back(Point(13, 12));
 
-	guess[0] = 0;
+	for (int x = 0; x <= PLACES; ++x)
+		guess[x] = 0;
 
 	discarded.resize(TOTAL_COMBINATIONS);
 
@@ -116,8 +116,8 @@ void Passtune::analyze(void) {
 	}
 }
 
-void Passtune::nextGuess(int gears, int tumblers) {
-	int possible = 0;
+int Passtune::nextGuess(int gears, int tumblers) {
+	int total_notes;
 
 	if (gears != UNKNOWN && tumblers != UNKNOWN) {
 		for (int c = 0; c < TOTAL_COMBINATIONS; ++c) {
@@ -128,8 +128,11 @@ void Passtune::nextGuess(int gears, int tumblers) {
 
 				char current[PLACES];
 
-				for (int i = 0; i < PLACES; ++i)
-					current[i] = 'A' + ((int)(c / pow((float)NOTES, i)) % NOTES);
+				total_notes = 1;
+				for (int i = 0; i < PLACES; ++i) {
+					current[i] = 'A' + (c / total_notes) % NOTES;
+					total_notes *= NOTES;
+				}
 
 				int current_gears = 0, current_tumblers = 0;
 
@@ -155,11 +158,7 @@ void Passtune::nextGuess(int gears, int tumblers) {
 					gears != current_gears)
 					discarded[c] = true;
 			}
-
-			if (!discarded[c])
-				possible++;
 		}
-		Debug::info() << PASSTUNE_DEBUG_NAME << "Possible combinations left " << possible << endl;
 	}
 
 	int total = 0;
@@ -174,10 +173,15 @@ void Passtune::nextGuess(int gears, int tumblers) {
 	int current_combination = temp[random() % total];
 	temp.clear();
 
-	for (int n = 0; n < PLACES; ++n)
-		guess[n] = 'A' + ((int)(current_combination / pow((float)NOTES, n)) % NOTES);
+	total_notes = 1;
+	for (int n = 0; n < PLACES; ++n) {
+		guess[n] = 'A' + (current_combination / total_notes) % NOTES;
+		total_notes *= NOTES;
+	}
 
-	Debug::info() << PASSTUNE_DEBUG_NAME << possible << " combinations left, guessing " << guess << endl;
+	Debug::info() << PASSTUNE_DEBUG_NAME << total << " combinations left, guessing " << guess << endl;
+
+	return total;
 }
 
 void Passtune::findInstrument() {
