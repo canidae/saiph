@@ -222,8 +222,10 @@ ostream & operator<<(ostream& out, const Item& item) {
 		if (item.damage)
 			out << "dmg" << item.damage << " ";
 		if (!item.unknown_enchantment)
-			out << ((item.enchantment > 0) ? "+" : "") << item.enchantment << " ";
-		out << item.name << " " << item.additional;
+			out << ((item.enchantment >= 0) ? "+" : "") << item.enchantment << " ";
+		out << item.name;
+		if (item.additional != "")
+			 out << " " << item.additional;
 	}
 	return out;
 }
