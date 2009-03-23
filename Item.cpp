@@ -172,8 +172,13 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		name = name.substr(pos + sizeof (ITEM_CALLED) - 1);
 	/* singularize name.
 	 * we'll only singularize stuff we care about for now */
-	if (name.find("pair of ") == 0)
-		return; // it's "2 pair of boots", not "2 pairs of boot"
+	if (name.find("pair of ") == 0) {
+		if (name.find("pair of lenses") == string::npos) {
+			//boots or gloves; remove "pair of"
+			name = name.erase(name.find("pair of "), string("pair of ").length());
+		}
+		return; //don't de-pluluralize "boots", "gloves", or "lenses"
+	}
 	string::size_type stop = string::npos;
 	if ((stop = name.find(" of ", 0)) != string::npos || (stop = name.find(" labeled ", 0)) != string::npos || (stop = name.find(" called ", 0)) != string::npos || (stop = name.find(" named ", 0)) != string::npos || (stop = name.find(" from ", 0)) != string::npos) {
 		/* no need to do anything here.
