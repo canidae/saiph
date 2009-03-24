@@ -1,6 +1,7 @@
 #ifndef ANALYZER_H
 #define ANALYZER_H
 
+#include "Event.h"
 #include <string>
 
 class Point;
@@ -22,5 +23,6 @@ class Analyzer {
 		virtual void init();
 		virtual void parseMessages(const std::string &messages);
 		virtual bool request(const Request &request);
+		virtual void handle(Event &evt);
 };
 #endif
