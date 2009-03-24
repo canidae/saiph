@@ -40,6 +40,6 @@ bool Analyzer::request(const Request &) {
 	return false;
 }
 
-void Analyzer::handle(Event &evt) {
+void Analyzer::handle(Event &) {
 
 }

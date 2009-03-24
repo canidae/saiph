@@ -1,7 +1,7 @@
 #ifndef ANALYZER_H
 #define ANALYZER_H
 
-#include "Event.h"
+#include "Events/Event.h"
 #include <string>
 
 class Point;

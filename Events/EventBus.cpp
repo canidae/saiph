@@ -1,5 +1,5 @@
 #include "EventBus.h"
-#include "Debug.h"
+#include "../Debug.h"
 
 #define EVENTBUS_DEBUG_NAME "EventBus] "
 
@@ -13,18 +13,18 @@ void EventBus::add(int event_type, Analyzer* analyzer) {
 }
 
 void EventBus::remove(int event_type, Analyzer* analyzer) {
-	const vector<Analyzer *> &subscribers = analyzers[event_type];
-	for (int i = 0; i < subscribers.size(); ++i)
+	vector<Analyzer *> &subscribers = analyzers[event_type];
+	for (vector<Analyzer *>::size_type i = 0; i < subscribers.size(); ++i)
 		if (subscribers[i] == analyzer) {
 			subscribers.erase(subscribers.begin() + i);
 			Debug::notice() << EVENTBUS_DEBUG_NAME << "Deregistered " << analyzer->name << " for event " << event_type << endl;
 			return;
 		}
-	Debug::warn() << EVENTBUS_DEBUG_NAME << "Failed to deregister " << analyzer->name << " for event " << event_type << endl;
+	Debug::warning() << EVENTBUS_DEBUG_NAME << "Failed to deregister " << analyzer->name << " for event " << event_type << endl;
 }
 
 void EventBus::broadcast(Event& evt) {
 	const vector<Analyzer *> &subscribers = analyzers[evt.type];
-	for (int i = 0; i < subscribers.size(); ++i)
+	for (vector<Analyzer *>::size_type i = 0; i < subscribers.size(); ++i)
 		subscribers[i]->handle(evt);
 }

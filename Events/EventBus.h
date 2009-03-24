@@ -2,7 +2,7 @@
 #define	_EVENTBUS_H
 
 #include "Event.h"
-#include "Analyzer.h"
+#include "../Analyzer.h"
 #include <vector>
 
 class EventBus {
