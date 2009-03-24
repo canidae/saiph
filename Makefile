@@ -4,10 +4,11 @@ CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
 LDFLAGS = -lutil -g3 -gdwarf-2
 OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
 
-saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp
+saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp Events/*.h Events/*.cpp
+	$(MAKE) -C Events
 	$(MAKE) -C Analyzers
 	$(MAKE) -C Data
-	$(CXX) $(OBJECTS) Analyzers/*.o Data/*.o $(LDFLAGS) -o saiph
+	$(CXX) $(OBJECTS) Analyzers/*.o Data/*.o Events/*.o $(LDFLAGS) -o saiph
 
 Analyzer.o: Analyzer.h Analyzer.cpp
 Connection.o: Connection.h Connection.cpp
