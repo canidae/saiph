@@ -41,5 +41,4 @@ bool Analyzer::request(const Request &) {
 }
 
 void Analyzer::handle(Event &) {
-
 }
