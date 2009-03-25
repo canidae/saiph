@@ -1,4 +1,6 @@
+#include "Event.h"
 #include "EventBus.h"
+#include "../Analyzer.h"
 #include "../Debug.h"
 
 #define EVENTBUS_DEBUG_NAME "EventBus] "
