@@ -52,10 +52,8 @@ void Wand::analyze() {
 }
 
 void Wand::parseMessages(const string &messages) {
-	if (messages.find(WAND_WORN_OUT_MESSAGE, 0) != string::npos) {
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
-	}
+	if (messages.find(WAND_WORN_OUT_MESSAGE, 0) != string::npos)
+		state = WAND_STATE_WANT_DIRTY_INVENTORY;
 	if (state == WAND_STATE_INIT) {
 		if (saiph->inventory_changed) {
 			if (wand_key != 0 && !isUnidentifiedWand(wand_key))
@@ -108,10 +106,12 @@ void Wand::parseMessages(const string &messages) {
 	if (state == WAND_STATE_ENGRAVING) {
 		if (messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
 			command = YES;
+			priority = PRIORITY_CONTINUE_ACTION;
 		} else if (messages.find(WAND_DIGGING_MESSAGE, 0) != string::npos ||
 				messages.find(WAND_LIGHTNING_MESSAGE, 0) != string::npos ||
 				messages.find(WAND_FIRE_MESSAGE, 0) != string::npos) {
 			command = ESCAPE;
+			priority = PRIORITY_CONTINUE_ACTION;
 			req.request = REQUEST_DIRTY_INVENTORY;
 			saiph->request(req);
 			wand_key = 0;
@@ -121,10 +121,11 @@ void Wand::parseMessages(const string &messages) {
 				messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos ||
 				messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos) {
 			command = "x\n";
+			priority = PRIORITY_CONTINUE_ACTION;
 			state = WAND_STATE_READY_TO_NAME;
 		} else if (messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
-			priority = PRIORITY_CONTINUE_ACTION;
 			command = wand_key;
+			priority = PRIORITY_CONTINUE_ACTION;
 		} else {
 			/* make sure we didn't get interrupted */
 			if (wand_key == 0 || !isUnidentifiedWand(wand_key) || saiph->getDungeonSymbol() != FLOOR || saiph->world->player.levitating || saiph->world->player.blind) {
@@ -132,9 +133,12 @@ void Wand::parseMessages(const string &messages) {
 				state = WAND_STATE_INIT;
 				return;
 			}
+			/* wands of wishing ask what we want to wish for */
+			if (saiph->world->question)
+				return;
 			command = ENGRAVE;
+			priority = PRIORITY_WAND_ENGRAVE_ID;
 		}
-		priority = PRIORITY_CONTINUE_ACTION;
 	} else if (state == WAND_STATE_READY_TO_NAME) {
 		string name = WAND_NO_EFFECT_NAME;
 		for (vector<pair<string, string> >::size_type i = 0; i < wand_engrave_messages.size(); i++)

@@ -27,7 +27,7 @@ void Sokoban::parseMessages(const string &messages) {
 				return;
 			}
 			/* There is a monster behind the boulder, so try to wait for them to move and push again. */
-			command = IDLE;
+			command = REST;
 			priority = PRIORITY_SOLVE_SOKOBAN;
 			return;
 		}
