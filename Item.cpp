@@ -209,10 +209,10 @@ bool operator==(const Item &a, const Item &b) {
 			a.name == b.name && a.additional == b.additional;
 }
 
-ostream & operator<<(ostream& out, const Item& item) {
-	if (item.name == "")
+ostream &operator<<(ostream &out, const Item &item) {
+	if (item.name == "") {
 		out << "(no item)";
-	else {
+	} else {
 		out << item.count << " ";
 		if (item.beatitude == BLESSED)
 			out << "blessed ";
@@ -224,8 +224,13 @@ ostream & operator<<(ostream& out, const Item& item) {
 			out << "greased ";
 		if (item.fixed)
 			out << "fixed ";
-		if (item.damage)
-			out << "dmg" << item.damage << " ";
+		if (item.damage > 0) {
+			if (item.damage == 2)
+				out << "very ";
+			else if (item.damage == 3)
+				out << "thoroughly ";
+			out << "damaged ";
+		}
 		if (!item.unknown_enchantment)
 			out << ((item.enchantment >= 0) ? "+" : "") << item.enchantment << " ";
 		out << item.name;
