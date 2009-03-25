@@ -2,6 +2,8 @@
 #include "Loot.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Events/EventBus.h"
+#include "../Events/InventoryChangedEvent.h"
 
 using namespace std;
 

@@ -39,3 +39,6 @@ void Analyzer::parseMessages(const string &) {
 bool Analyzer::request(const Request &) {
 	return false;
 }
+
+void Analyzer::handle(Event &) {
+}

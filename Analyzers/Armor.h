@@ -28,7 +28,7 @@ struct OldArmorData {
 struct ArmorSet {
 	Item shirt, suit, cloak, boots, gloves, helmet, shield;
 	//allow looping over the armor types
-	inline const Item& operator[](int index) const {
+	inline const Item & operator[](int index) const {
 		switch(index) {
 			case ARMOR_SHIRT:
 				return shirt;
@@ -48,7 +48,7 @@ struct ArmorSet {
 				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
 		}
 	}
-	inline Item& operator[](int index) {
+	inline Item & operator[](int index) {
 		switch(index) {
 			case ARMOR_SHIRT:
 				return shirt;
@@ -68,10 +68,10 @@ struct ArmorSet {
 				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
 		}
 	}
-	friend std::ostream& operator<<(std::ostream& out, const ArmorSet& as);
+	friend std::ostream & operator<<(std::ostream &out, const ArmorSet &as);
 };
 
-inline std::ostream& operator<<(std::ostream& out, const ArmorSet& as) {
+inline std::ostream & operator<<(std::ostream &out, const ArmorSet &as) {
 	return out << "[" << as.shirt << ", " << as.suit << ", " << as.cloak << ", "
 			<< as.boots << ", " << as.gloves << ", " << as.helmet << ", "
 			<< as.shield << "]";
@@ -101,6 +101,6 @@ class Armor : public Analyzer {
 		bool isCursed(int armor_slot);
 		void wearArmor();
 		void resetCanWear();
-		int rank(const ArmorSet& r);
+		int rank(const ArmorSet &r);
 };
 #endif
