@@ -1,16 +1,13 @@
 #ifndef _EVENT_H
 #define	_EVENT_H
 
-/* the registry of event types; must be consecutive integers */
-#define EVENT_INVENTORY_CHANGED 0 /* InventoryChangedEvent */
-#define EVENT_PICKUP_QUERY 1 /* PickupQueryEvent */
-#define NUM_EVENT_TYPES 2 /* needed in EventBus to make the right size vector */
+#define ILLEGAL_EVENT_TYPE -1
 
 class Event {
 public:
-	Event(const int type) : type(type) {}
-	const int type;
+	Event() {};
+	virtual ~Event() {};
+
+	virtual int getType() {return ILLEGAL_EVENT_TYPE;}
 };
-
-#endif	/* _EVENT_H */
-
+#endif

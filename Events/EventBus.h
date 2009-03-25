@@ -1,19 +1,18 @@
 #ifndef _EVENTBUS_H
 #define	_EVENTBUS_H
 
+#include <vector>
 #include "Event.h"
 #include "../Analyzer.h"
-#include <vector>
 
 class EventBus {
 public:
-	//I'd call this "register", but that's a keyword!
-	static void add(int event_type, Analyzer *analyzer);
-	static void remove(int event_type, Analyzer *analyzer);
-	static void broadcast(Event &evt);
+	static int createEventType();
+	static void registerEvent(int event_type, Analyzer *analyzer);
+	static void unregisterEvent(int event_type, Analyzer *analyzer);
+	static void broadcast(Event *evt);
+
 private:
-	static std::vector< std::vector<Analyzer *> > analyzers;
+	static std::vector<std::vector<Analyzer *> > events;
 };
-
-#endif	/* _EVENTBUS_H */
-
+#endif

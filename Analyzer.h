@@ -23,6 +23,6 @@ class Analyzer {
 		virtual void init();
 		virtual void parseMessages(const std::string &messages);
 		virtual bool request(const Request &request);
-		virtual void handle(Event &evt);
+		virtual void handle(Event *event);
 };
 #endif
