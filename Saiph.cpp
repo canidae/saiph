@@ -514,7 +514,7 @@ bool Saiph::run() {
 		stuck_counter = 0;
 	last_command = (*best_analyzer)->command;
 	last_turn = world->player.turn;
-	if (best_priority < PRIORITY_MAX)
+	if (best_priority <= PRIORITY_MAX)
 		++internal_turn;
 	return true;
 }
