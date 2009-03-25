@@ -11,7 +11,7 @@ public:
 	static int createEventType();
 	static void registerEvent(int event_type, Analyzer *analyzer);
 	static void unregisterEvent(int event_type, Analyzer *analyzer);
-	static void broadcast(Event *evt);
+	static void broadcast(Event *event);
 
 private:
 	static std::vector<std::vector<Analyzer *> > events;
