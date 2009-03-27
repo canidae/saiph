@@ -3,7 +3,7 @@
 using namespace std;
 using namespace Action;
 
-Move::Move(unsigned char direction, int priority) : command(string(1, direction), priority) {
+Move::Move(unsigned char direction, int priority) : move(string(1, direction), priority) {
 	/* XXX:
 	 * should we check that the user gave a valid direction?
 	 * i say no, it should be an unnecessary cost. this class will not check
@@ -15,6 +15,6 @@ Move::Move(unsigned char direction, int priority) : command(string(1, direction)
 Move::~Move() {
 }
 
-const Command &Move::execute() {
-	return command;
+const Command &Move::execute(Saiph *) {
+	return move;
 }

@@ -4,13 +4,15 @@
 #include "../Command.h"
 #include "../Globals.h"
 
+class Saiph;
+
 namespace Action {
 	class Action {
 	public:
 		Action() {}
 		virtual ~Action() {}
 
-		virtual const Command &execute() = 0;
+		virtual const Command &execute(Saiph *saiph) = 0;
 	};
 }
 #endif

@@ -361,6 +361,7 @@
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
 #define MESSAGE_HELLO_STRANGER "  \"Hello stranger, who are you?\" -  "
 #define MESSAGE_IMPROVISE "  Improvise? [yn] (n)  "
+#define MESSAGE_IN_WHAT_DIRECTION "  In what direction?  "
 #define MESSAGE_LIMBS_ARE_STIFFENING "  Your limbs are stiffening.  "
 #define MESSAGE_LIMBS_TURNED_TO_STONE "  Your limbs have turned to stone.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
