@@ -2,7 +2,7 @@
 #include "Loot.h"
 #include "../Saiph.h"
 #include "../World.h"
-#include "../Events/EventBus.h"
+#include "../EventBus.h"
 
 using namespace std;
 

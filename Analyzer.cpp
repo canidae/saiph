@@ -2,6 +2,7 @@
 #include "Globals.h"
 
 using namespace std;
+using namespace event;
 
 /* constructors/destructor */
 Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), command(""), expired(false) {

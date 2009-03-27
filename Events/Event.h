@@ -3,11 +3,13 @@
 
 #define ILLEGAL_EVENT_TYPE -1
 
-class Event {
-public:
-	Event() {};
-	virtual ~Event() {};
+namespace event {
+	class Event {
+	public:
+		Event() {};
+		virtual ~Event() {};
 
-	virtual int getType() {return ILLEGAL_EVENT_TYPE;}
-};
+		virtual int getType() {return ILLEGAL_EVENT_TYPE;}
+	};
+}
 #endif

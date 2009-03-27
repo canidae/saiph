@@ -2,18 +2,18 @@ CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
 LDFLAGS = -lutil -g3 -gdwarf-2
-OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
+OBJECTS = Analyzer.o Connection.o Coordinate.o Debug.o EventBus.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Point.o Request.o Saiph.o Stash.o Telnet.o World.o
 
-saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp Events/*.h Events/*.cpp
+saiph: $(OBJECTS) Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp
 	$(MAKE) -C Analyzers
 	$(MAKE) -C Data
-	$(MAKE) -C Events
-	$(CXX) $(OBJECTS) Analyzers/*.o Data/*.o Events/*.o $(LDFLAGS) -o saiph
+	$(CXX) $(OBJECTS) Analyzers/*.o Data/*.o $(LDFLAGS) -o saiph
 
 Analyzer.o: Analyzer.h Analyzer.cpp
 Connection.o: Connection.h Connection.cpp
 Coordinate.o: Coordinate.h Coordinate.cpp
 Debug.o: Debug.h Debug.cpp
+EventBus.o: EventBus.h EventBus.cpp
 Item.o: Item.h Item.cpp
 Level.o: Level.h Level.cpp
 Local.o: Local.h Local.cpp
@@ -32,7 +32,6 @@ clean:
 	$(RM) *.o *.gch saiph
 	$(MAKE) -C Analyzers clean
 	$(MAKE) -C Data clean
-	$(MAKE) -C Events clean
 
 #Launch game
 game:
