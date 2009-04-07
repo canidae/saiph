@@ -5,7 +5,7 @@
 
 class Saiph;
 
-namespace Action {
+namespace action {
 	class Kick : public Action {
 	public:
 		Kick(unsigned char direction, int priority);

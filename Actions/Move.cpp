@@ -1,7 +1,7 @@
 #include "Move.h"
 
 using namespace std;
-using namespace Action;
+using namespace action;
 
 Move::Move(unsigned char direction, int priority) : move(string(1, direction), priority) {
 	/* XXX:

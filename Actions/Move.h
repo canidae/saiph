@@ -5,7 +5,7 @@
 
 class Saiph;
 
-namespace Action {
+namespace action {
 	class Move : public Action {
 	public:
 		Move(unsigned char direction, int priority);

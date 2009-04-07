@@ -6,7 +6,7 @@
 
 class Saiph;
 
-namespace Action {
+namespace action {
 	class Action {
 	public:
 		Action() {}

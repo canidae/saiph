@@ -3,7 +3,7 @@
 #include "../World.h"
 
 using namespace std;
-using namespace Action;
+using namespace action;
 
 Kick::Kick(unsigned char direction, int priority) : kick(KICK, priority), kick_direction(string(1, direction), PRIORITY_CONTINUE_ACTION) {
 }
