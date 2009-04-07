@@ -14,8 +14,8 @@ namespace action {
 		virtual const Command &execute(Saiph *saiph);
 
 	private:
-		Command kick;
-		Command kick_direction;
+		const Command kick;
+		const Command kick_direction;
 	};
 }
 #endif

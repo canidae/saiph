@@ -9,10 +9,14 @@ class Saiph;
 namespace action {
 	class Action {
 	public:
+		static const Command noop;
+
 		Action() {}
 		virtual ~Action() {}
 
 		virtual const Command &execute(Saiph *saiph) = 0;
 	};
+
+	const Command Action::noop;
 }
 #endif
