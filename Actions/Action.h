@@ -11,12 +11,10 @@ namespace action {
 	public:
 		static const Command noop;
 
-		Action() {}
-		virtual ~Action() {}
+		Action();
+		virtual ~Action();
 
 		virtual const Command &execute(Saiph *saiph) = 0;
 	};
-
-	const Command Action::noop;
 }
 #endif
