@@ -5,7 +5,7 @@ using namespace action;
 
 const Command Action::noop;
 
-Action::Action() {
+Action::Action() : sequence(0) {
 }
 
 Action::~Action() {

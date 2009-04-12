@@ -15,6 +15,9 @@ namespace action {
 		virtual ~Action();
 
 		virtual const Command &execute(Saiph *saiph);
+
+	protected:
+		int sequence;
 	};
 }
 #endif
