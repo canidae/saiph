@@ -14,7 +14,7 @@ namespace action {
 		Action();
 		virtual ~Action();
 
-		virtual const Command &execute(Saiph *saiph) = 0;
+		virtual const Command &execute(Saiph *saiph);
 	};
 }
 #endif

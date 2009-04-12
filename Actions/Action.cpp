@@ -10,3 +10,7 @@ Action::Action() {
 
 Action::~Action() {
 }
+
+const Command &Action::execute(Saiph *) {
+	return noop;
+}

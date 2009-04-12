@@ -10,5 +10,7 @@ public:
 	const int priority;
 
 	Command(std::string command = "", int priority = ILLEGAL_PRIORITY) : command(command), priority(priority) {}
+
+	bool operator==(const Command &c) {return priority == c.priority && command == command;}
 };
 #endif
