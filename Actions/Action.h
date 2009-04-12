@@ -10,14 +10,12 @@ namespace action {
 	class Action {
 	public:
 		static const Command noop;
+		int sequence;
 
 		Action();
 		virtual ~Action();
 
 		virtual const Command &execute(Saiph *saiph);
-
-	protected:
-		int sequence;
 	};
 }
 #endif

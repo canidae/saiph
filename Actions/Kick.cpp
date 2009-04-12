@@ -12,8 +12,9 @@ Kick::~Kick() {
 }
 
 const Command &Kick::execute(Saiph *saiph) {
-	if (saiph->world->question && saiph->world->messages.find(MESSAGE_IN_WHAT_DIRECTION))
-		return kick_direction;
-	else
+	if (sequence == 0)
 		return kick;
+	else if (sequence == 1 && saiph->world->question && saiph->world->messages.find(MESSAGE_IN_WHAT_DIRECTION))
+		return kick_direction;
+	return Action::noop;
 }

@@ -18,6 +18,5 @@ Move::~Move() {
 const Command &Move::execute(Saiph *) {
 	if (sequence == 0)
 		return move;
-	++sequence;
 	return Action::noop;
 }
