@@ -2,10 +2,7 @@
 #define ANALYZER_H
 
 #include <string>
-<<<<<<< HEAD:Analyzer.h
-=======
 #include "Actions/Action.h"
->>>>>>> actions:Analyzer.h
 #include "Events/Event.h"
 
 class Command;
