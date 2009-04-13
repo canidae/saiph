@@ -4,6 +4,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Events/Event.h"
+#include "../Events/ReceivedItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -15,6 +16,9 @@ Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph) {
 
 /* methods */
 void Amulet::onEvent(Event *const event) {
+	if (event->getID() == ReceivedItems::id) {
+		ReceivedItems *e = (ReceivedItems *) event;
+	}
 }
 
 void Amulet::parseMessages(const string &messages, const Command &best_command) {

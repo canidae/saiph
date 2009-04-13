@@ -6,13 +6,12 @@
 namespace event {
 	class ReceivedItems {
 	public:
+		static const int id;
+
 		ReceivedItems();
 		virtual ~ReceivedItems();
 
 		virtual int getID();
-
-	private:
-		static const int id;
 	};
 }
 #endif
