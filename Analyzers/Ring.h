@@ -15,7 +15,8 @@ struct WearRing {
 
 class Saiph;
 
-class Ring : public Analyzer {
+namespace analyzer {
+	class Ring : public Analyzer {
 	public:
 		Ring(Saiph *saiph);
 
@@ -31,5 +32,6 @@ class Ring : public Analyzer {
 		Request req;
 
 		void wearRing();
-};
+	};
+}
 #endif

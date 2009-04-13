@@ -6,7 +6,8 @@
 
 class Saiph;
 
-class Health : public Analyzer {
+namespace analyzer {
+	class Health : public Analyzer {
 	public:
 		Health(Saiph *saiph);
 
@@ -23,5 +24,6 @@ class Health : public Analyzer {
 		int prev_wi;
 		int prev_ch;
 		Request req;
-};
+	};
+}
 #endif

@@ -1,17 +1,19 @@
 #ifndef VAULT_H
 #define VAULT_H
+
+#include <string>
+#include "Analyzer.h"
+
 /* Croesus */
 #define VAULT_CROESUS "Croesus\n"
 /* messages */
 #define VAULT_MESSAGE_STRANGER "  \"Hello stranger, who are you?\" -  "
 #define VAULT_MESSAGE_DISAPPEAR "  Suddenly, the guard disappears.  "
 
-#include <string>
-#include "Analyzer.h"
-
 class Saiph;
 
-class Vault : public Analyzer {
+namespace analyzer {
+	class Vault : public Analyzer {
 	public:
 		Vault(Saiph *saiph);
 
@@ -22,5 +24,6 @@ class Vault : public Analyzer {
 		bool drop_gold;
 		bool look_at_ground;
 		bool follow_guard;
-};
+	};
+}
 #endif

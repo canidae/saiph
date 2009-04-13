@@ -1,5 +1,9 @@
 #ifndef ELBERETH_H
 #define ELBERETH_H
+
+#include <string>
+#include "Analyzer.h"
+
 /* messages */
 #define ELBERETH_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define ELBERETH_DIGGED_TEXT "  Something is engraved here on the floor.  "
@@ -9,13 +13,11 @@
 /* Elbereth */
 #define ELBERETH_ELBERETH "Elbereth"
 
-#include <string>
-#include "Analyzer.h"
-
 class Request;
 class Saiph;
 
-class Elbereth : public Analyzer {
+namespace analyzer {
+	class Elbereth : public Analyzer {
 	public:
 		Elbereth(Saiph *saiph);
 
@@ -36,5 +38,6 @@ class Elbereth : public Analyzer {
 		bool last_polymorphed;
 
 		bool canEngrave();
-};
+	};
+}
 #endif

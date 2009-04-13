@@ -1,5 +1,9 @@
 #ifndef ENHANCE_H
 #define ENHANCE_H
+
+#include <string>
+#include "Analyzer.h"
+
 /* messages */
 #define ENHANCE_MESSAGE_CONFIDENT "  You feel more confident in your "
 #define ENHANCE_CURRENT_SKILLS "  Current skills:  "
@@ -7,12 +11,10 @@
 /* commands */
 #define ENHANCE_ENHANCE "#enhance\n"
 
-#include <string>
-#include "Analyzer.h"
-
 class Saiph;
 
-class Enhance : public Analyzer {
+namespace analyzer {
+	class Enhance : public Analyzer {
 	public:
 		Enhance(Saiph *saiph);
 
@@ -22,5 +24,6 @@ class Enhance : public Analyzer {
 		Saiph *saiph;
 		bool do_enhance;
 		bool got_enhance_menu;
-};
+	};
+}
 #endif

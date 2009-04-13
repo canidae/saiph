@@ -5,6 +5,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 
+using namespace analyzer;
 using namespace std;
 
 Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITEM), dig_direction(NOWHERE) {

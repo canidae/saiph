@@ -1,14 +1,16 @@
 #ifndef WISH_H
 #define WISH_H
-#define WISH_DEBUG_NAME "Wish] "
 
 #include <string>
 #include <vector>
 #include "Analyzer.h"
 
+#define WISH_DEBUG_NAME "Wish] "
+
 class Saiph;
 
-class Wish : public Analyzer {
+namespace analyzer {
+	class Wish : public Analyzer {
 	public:
 		Wish(Saiph *saiph);
 
@@ -22,5 +24,6 @@ class Wish : public Analyzer {
 		bool zapping_wand;
 		std::string selectWish();
 		bool wearing(const std::string& name);
-};
+	};
+}
 #endif

@@ -1,12 +1,13 @@
 #ifndef WEAPON_H
 #define WEAPON_H
-/* messages */
-#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
 
 #include <string>
 #include <vector>
 #include "Analyzer.h"
 #include "../Request.h"
+
+/* messages */
+#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
 
 /* struct for wielding weapons */
 struct WeaponData {
@@ -19,7 +20,8 @@ struct WeaponData {
 
 class Saiph;
 
-class Weapon : public Analyzer {
+namespace analyzer {
+	class Weapon : public Analyzer {
 	public:
 		Weapon(Saiph *saiph);
 
@@ -36,5 +38,6 @@ class Weapon : public Analyzer {
 		bool last_polymorphed;
 
 		void wieldWeapon();
-};
+	};
+}
 #endif

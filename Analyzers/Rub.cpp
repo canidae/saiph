@@ -4,6 +4,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 
+using namespace analyzer;
 using namespace std;
 
 Rub::Rub(Saiph *saiph) : Analyzer("Rub"), saiph(saiph), magic_lamp_key(ILLEGAL_ITEM) {

@@ -1,15 +1,16 @@
 #ifndef DONATE_H
 #define	DONATE_H
 
-#define DONATE_HOW_MUCH_OFFER "  How much will you offer?  "
-#define DONATE_TALK_TO_WHOM "  Talk to whom? "
-
 #include "Analyzer.h"
 #include "../Coordinate.h"
 
+#define DONATE_HOW_MUCH_OFFER "  How much will you offer?  "
+#define DONATE_TALK_TO_WHOM "  Talk to whom? "
+
 class Saiph;
 
-class Donate : public Analyzer {
+namespace analyzer {
+	class Donate : public Analyzer {
 	public:
 		Donate(Saiph *saiph);
 
@@ -20,5 +21,6 @@ class Donate : public Analyzer {
 		Saiph *saiph;
 		unsigned char priest_dir;
 		Coordinate priest_loc;
-};
+	};
+}
 #endif

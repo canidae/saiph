@@ -11,8 +11,6 @@
 #define SOKOBAN_DEBUG_NAME "Sokoban] "
 #define SOKOBAN_MAX_PUSH_FAILURES 15
 
-using namespace std;
-
 class Saiph;
 
 struct Move {
@@ -23,11 +21,12 @@ struct Move {
 };
 
 struct SokobanLevel {
-	vector<Point> boulders;
-	vector<Move> solution;
+	std::vector<Point> boulders;
+	std::vector<Move> solution;
 };
 
-class Sokoban : public Analyzer {
+namespace analyzer {
+	class Sokoban : public Analyzer {
 	public:
 		Sokoban(Saiph *saiph);
 		bool isSokobanLevel(void);
@@ -42,23 +41,24 @@ class Sokoban : public Analyzer {
 		void moveBoulderToTarget(int level, const Move &move);
 
 		void loadLevels();
-		bool loadBoulders(ifstream &file, vector<Point> &boulders);
-		bool loadSolutions(ifstream &file, vector<Move> &moves);
-		void getnextline(ifstream &file, string &line);
+		bool loadBoulders(std::ifstream &file, std::vector<Point> &boulders);
+		bool loadSolutions(std::ifstream &file, std::vector<Move> &moves);
+		void getnextline(std::ifstream &file, std::string &line);
 
 		Saiph *saiph;
 
 		int lineNumber;
-		vector<SokobanLevel> levels;
+		std::vector<SokobanLevel> levels;
 
-		map<int, int> levelMap;
+		std::map<int, int> levelMap;
 
-		vector<bool> solved;
-		vector<bool> started;
+		std::vector<bool> solved;
+		std::vector<bool> started;
 
-		vector<Move>::iterator currentMove;
+		std::vector<Move>::iterator currentMove;
 		Coordinate currentTarget;
 		bool moving;
 		int pushFailures;
-};
+	};
+}
 #endif

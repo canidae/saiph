@@ -13,7 +13,8 @@
 class Item;
 class Saiph;
 
-class Dig : public Analyzer {
+namespace analyzer {
+	class Dig : public Analyzer {
 	public:
 		Dig(Saiph *saiph);
 
@@ -32,5 +33,6 @@ class Dig : public Analyzer {
 		void findDiggingTool();
 		bool freeWeaponHand();
 		bool isDiggingTool(const Item &item);
-};
-#endif	
+	};
+}
+#endif

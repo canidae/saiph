@@ -8,7 +8,8 @@
 
 class Saiph;
 
-class MonsterInfo : public Analyzer {
+namespace analyzer {
+	class MonsterInfo : public Analyzer {
 	public:
 		MonsterInfo(Saiph *saiph);
 
@@ -18,5 +19,6 @@ class MonsterInfo : public Analyzer {
 	private:
 		Saiph *saiph;
 		std::map<Point, Monster>::iterator look_at;
-};
+	};
+}
 #endif

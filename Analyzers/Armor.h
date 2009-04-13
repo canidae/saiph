@@ -1,12 +1,6 @@
 #ifndef ARMOR_H
 #define ARMOR_H
 
-#define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3
-/* various polymorph messages */
-#define ARMOR_HAVE_NO_FEET "  You have no feet...  "
-#define ARMOR_WONT_FIT_HORN " won't fit over your horn"
-#define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
-
 #include <string>
 #include <vector>
 #include <map>
@@ -15,6 +9,12 @@
 #include "../Globals.h"
 #include "../Request.h"
 #include "../Debug.h"
+
+#define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3
+/* various polymorph messages */
+#define ARMOR_HAVE_NO_FEET "  You have no feet...  "
+#define ARMOR_WONT_FIT_HORN " won't fit over your horn"
+#define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
 
 /* struct for wearing armor */
 struct OldArmorData {
@@ -79,7 +79,8 @@ inline std::ostream & operator<<(std::ostream &out, const ArmorSet &as) {
 
 class Saiph;
 
-class Armor : public Analyzer {
+namespace analyzer {
+	class Armor : public Analyzer {
 	public:
 		Armor(Saiph *saiph);
 
@@ -102,5 +103,6 @@ class Armor : public Analyzer {
 		void wearArmor();
 		void resetCanWear();
 		int rank(const ArmorSet &r);
-};
+	};
+}
 #endif

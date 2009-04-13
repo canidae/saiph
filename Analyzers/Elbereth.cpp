@@ -5,6 +5,7 @@
 #include "../World.h"
 #include "../Data/MonsterData.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */

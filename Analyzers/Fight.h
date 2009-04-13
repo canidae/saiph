@@ -1,5 +1,11 @@
 #ifndef FIGHT_H
 #define FIGHT_H
+
+#include <string>
+#include <vector>
+#include "Analyzer.h"
+#include "../Request.h"
+
 #define FIGHT_DEBUG_NAME "Fight] "
 /* messages */
 #define FIGHT_REALLY_ATTACK "Really attack"
@@ -7,15 +13,11 @@
 #define FIGHT_NOT_CHECKED_THROWN_WEAPONS 0
 #define FIGHT_NO_THROWN_WEAPONS 1
 
-#include <string>
-#include <vector>
-#include "Analyzer.h"
-#include "../Request.h"
-
 class Saiph;
 class Monster;
 
-class Fight : public Analyzer {
+namespace analyzer {
+	class Fight : public Analyzer {
 	public:
 		Fight(Saiph *saiph);
 
@@ -32,5 +34,6 @@ class Fight : public Analyzer {
 
 		unsigned char gotThrown();
 		bool moreDangerousThan(const Monster *a, const Monster *b);
-};
+	};
+}
 #endif

@@ -3,6 +3,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 
+using namespace analyzer;
 using namespace std;
 
 Throne::Throne(Saiph *saiph) : Analyzer("Throne"), saiph(saiph) {

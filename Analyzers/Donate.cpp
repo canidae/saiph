@@ -5,6 +5,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 
+using namespace analyzer;
 using namespace std;
 
 Donate::Donate(Saiph *saiph) : Analyzer("Donate"), saiph(saiph), priest_dir(ILLEGAL_DIRECTION), priest_loc() {

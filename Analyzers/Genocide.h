@@ -6,7 +6,8 @@
 #include "Analyzer.h"
 #include "../Saiph.h"
 
-class Genocide : public Analyzer {
+namespace analyzer {
+	class Genocide : public Analyzer {
 	public:
 		Genocide(Saiph *saiph);
 
@@ -16,5 +17,6 @@ class Genocide : public Analyzer {
 		Saiph *saiph;
 		std::list<std::string> monsters;
 		std::list<char> classes;
-};
+	};
+}
 #endif

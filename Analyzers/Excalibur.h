@@ -1,15 +1,17 @@
 #ifndef EXCALIBUR_H
 #define EXCALIBUR_H
-/* long sword */
-#define EXCALIBUR_LONG_SWORD "long sword"
 
 #include <string>
 #include "Analyzer.h"
 #include "../Request.h"
 
+/* long sword */
+#define EXCALIBUR_LONG_SWORD "long sword"
+
 class Saiph;
 
-class Excalibur : public Analyzer {
+namespace analyzer {
+	class Excalibur : public Analyzer {
 	public:
 		Excalibur(Saiph *saiph);
 
@@ -20,5 +22,6 @@ class Excalibur : public Analyzer {
 		Saiph *saiph;
 		Request req;
 		std::string command2;
-};
+	};
+}
 #endif

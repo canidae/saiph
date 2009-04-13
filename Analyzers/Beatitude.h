@@ -8,7 +8,8 @@ class Item;
 class Request;
 class Saiph;
 
-class Beatitude : public Analyzer {
+namespace analyzer {
+	class Beatitude : public Analyzer {
 	public:
 		Beatitude(Saiph *saiph);
 
@@ -21,5 +22,6 @@ class Beatitude : public Analyzer {
 		bool check_beatitude;
 
 		bool beatify(const Item &item);
-};
+	};
+}
 #endif

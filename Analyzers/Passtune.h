@@ -19,7 +19,8 @@
 
 #define UNKNOWN -1
 
-class Passtune : public Analyzer {
+namespace analyzer {
+	class Passtune : public Analyzer {
 	public:
 		Passtune(Saiph *saiph);
 
@@ -43,5 +44,6 @@ class Passtune : public Analyzer {
 
 		void findInstrument(void);
 		bool isInstrument(const Item &item);
-};
+	};
+}
 #endif

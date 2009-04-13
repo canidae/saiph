@@ -8,7 +8,8 @@
 class Item;
 class Saiph;
 
-class Rub : public Analyzer {
+namespace analyzer {
+	class Rub : public Analyzer {
 	public:
 		Rub(Saiph *saiph);
 
@@ -22,5 +23,6 @@ class Rub : public Analyzer {
 
 		void findMagicLamp();
 		bool isMagicLamp(const Item &item);
-};
+	};
+}
 #endif

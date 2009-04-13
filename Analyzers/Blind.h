@@ -7,7 +7,8 @@
 class Item;
 class Saiph;
 
-class Blind : public Analyzer {
+namespace analyzer {
+	class Blind : public Analyzer {
 	public:
 		Blind(Saiph *saiph);
 
@@ -26,5 +27,6 @@ class Blind : public Analyzer {
 
 		void findBlindingTool();
 		bool isBlindingTool(const Item &item);
-};
+	};
+}
 #endif	

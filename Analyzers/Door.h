@@ -1,6 +1,10 @@
 #ifndef DOOR_H
 #define DOOR_H
 
+#include <string>
+#include "Analyzer.h"
+#include "../Point.h"
+
 /* messages */
 #define DOOR_DOOR_LOCKED "  This door is locked.  "
 #define DOOR_UNLOCK_IT "  Unlock it? [yn] (n)  "
@@ -13,13 +17,10 @@
 
 #define DOOR_DEBUG_NAME "Door] "
 
-#include <string>
-#include "Analyzer.h"
-#include "../Point.h"
-
 class Saiph;
 
-class Door : public Analyzer {
+namespace analyzer {
+	class Door : public Analyzer {
 	public:
 		Door(Saiph *saiph);
 
@@ -34,5 +35,6 @@ class Door : public Analyzer {
 		bool in_a_pit;
 
 		void findUnlockingTool();
-};
+	};
+}
 #endif

@@ -1,12 +1,6 @@
 #ifndef FOOD_H
 #define FOOD_H
 
-#include <map>
-#include <string>
-#include <vector>
-#include "Analyzer.h"
-#include "../Request.h"
-
 /* some text */
 #define FOOD_CORPSE " corpse"
 #define FOOD_EAT_IT_1 "  There is "
@@ -41,9 +35,16 @@
 #define FOOD_VEGAN 0x20000
 #define FOOD_VEGETARIAN 0x40000
 
+#include <map>
+#include <string>
+#include <vector>
+#include "Analyzer.h"
+#include "../Request.h"
+
 class Saiph;
 
-class Food : public Analyzer {
+namespace analyzer {
+	class Food : public Analyzer {
 	public:
 		Food(Saiph *saiph);
 
@@ -60,5 +61,6 @@ class Food : public Analyzer {
 		Request req;
 
 		bool safeToEat(const std::string &corpse);
-};
+	};
+}
 #endif

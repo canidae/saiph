@@ -6,7 +6,8 @@
 
 class Saiph;
 
-class Valkyrie : public Analyzer {
+namespace analyzer {
+	class Valkyrie : public Analyzer {
 	public:
 		Valkyrie(Saiph *saiph);
 
@@ -25,5 +26,6 @@ class Valkyrie : public Analyzer {
 		void setupTool();
 		void setupWand();
 		void setupWeapon();
-};
+	};
+}
 #endif

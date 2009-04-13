@@ -5,6 +5,7 @@
 #include "../World.h"
 #include "../Data/ArmorData.h"
 
+using namespace analyzer;
 using namespace std;
 
 map<unsigned long long int, int> Armor::scores;

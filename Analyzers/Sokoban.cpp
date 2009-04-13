@@ -7,6 +7,7 @@
 #include "../Point.h"
 #include "../Debug.h"
 
+using namespace analyzer;
 using namespace std;
 
 Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false), pushFailures(0) {
