@@ -13,8 +13,8 @@
 /* actions */
 #include "Actions/Action.h"
 /* data */
-#include "Data/ItemData.h"
-#include "Data/MonsterData.h"
+#include "Data/Item.h"
+#include "Data/Monster.h"
 /* analyzers */
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
@@ -1155,8 +1155,8 @@ int main(int argc, const char *argv[]) {
 	}
 
 	Debug::open(logfile);
-	MonsterData::init();
-	ItemData::init();
+	data::Monster::init();
+	data::Item::init();
 	Saiph *saiph = new Saiph(dirname(argv[0]), connection_type);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
@@ -1164,7 +1164,7 @@ int main(int argc, const char *argv[]) {
 		;
 	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
 	delete saiph;
-	ItemData::destroy();
-	MonsterData::destroy();
+	data::Item::destroy();
+	data::Monster::destroy();
 	Debug::close();
 }
