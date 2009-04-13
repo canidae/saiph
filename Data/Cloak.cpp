@@ -1,23 +1,24 @@
-#include "CloakData.h"
+#include "Cloak.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, CloakData *> CloakData::cloaks;
+map<string, Cloak *> Cloak::cloaks;
 
-CloakData::CloakData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_CLOAK, ac, mc, properties) {
+Cloak::Cloak(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, ARMOR_CLOAK, ac, mc, properties) {
 }
 
-void CloakData::addToMap(const std::string& name, CloakData *cloak) {
-	CloakData::cloaks[name] = cloak;
-	ArmorData::addToMap(name, cloak);
+void Cloak::addToMap(const string& name, Cloak *cloak) {
+	Cloak::cloaks[name] = cloak;
+	Armor::addToMap(name, cloak);
 }
 
-void CloakData::create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new CloakData(name, cost, weight, material, ac, mc, properties));
+void Cloak::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+	addToMap(name, new Cloak(name, cost, weight, material, ac, mc, properties));
 }
 
-void CloakData::init() {
+void Cloak::init() {
 	//     name                       cost  weight  material          ac mc properties
 	create("mummy wrapping",             2,      3, MATERIAL_CLOTH,    0, 1, PROPERTY_VISIBLE);
 	create("orcish cloak",              40,     10, MATERIAL_CLOTH,    0, 2, 0);

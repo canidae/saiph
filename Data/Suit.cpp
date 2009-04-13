@@ -1,23 +1,24 @@
-#include "SuitData.h"
+#include "Suit.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, SuitData *> SuitData::suits;
+map<string, Suit *> Suit::suits;
 
-SuitData::SuitData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
+Suit::Suit(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
 }
 
-void SuitData::addToMap(const std::string &name, SuitData *suit) {
-	SuitData::suits[name] = suit;
-	ArmorData::addToMap(name, suit);
+void Suit::addToMap(const string &name, Suit *suit) {
+	Suit::suits[name] = suit;
+	Armor::addToMap(name, suit);
 }
 
-void SuitData::create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new SuitData(name, cost, weight, material, ac, mc, properties));
+void Suit::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+	addToMap(name, new Suit(name, cost, weight, material, ac, mc, properties));
 }
 
-void SuitData::init() {
+void Suit::init() {
 	create("white dragon scale mail", 900, 40, MATERIAL_DRAGON_HIDE, 9, 0, PROPERTY_COLD | PROPERTY_MAGIC);
 	create("gray dragon scales", 700, 40, MATERIAL_DRAGON_HIDE, 3, 0, PROPERTY_MAGICRES);
 	create("silver dragon scale mail", 1200, 40, MATERIAL_DRAGON_HIDE, 9, 0, PROPERTY_REFLECTION | PROPERTY_MAGIC);

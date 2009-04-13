@@ -1,12 +1,15 @@
-#include "LevelData.h"
+#include "Level.h"
 #include "../Point.h"
 
-map<std::string, LevelData *> LevelData::levels;
+using namespace data;
+using namespace std;
 
-LevelData::LevelData(const std::string &name, const std::vector< std::vector<char> > &symbols, int branch, int min_depth, int max_depth) : name(name), symbols(symbols), branch(branch), min_depth(min_depth), max_depth(max_depth) {
+map<string, Level *> Level::levels;
+
+Level::Level(const string &name, const vector< vector<char> > &symbols, int branch, int min_depth, int max_depth) : name(name), symbols(symbols), branch(branch), min_depth(min_depth), max_depth(max_depth) {
 }
 
-int LevelData::match(Level l) {
+int Level::match(Level l) {
 	if (l.branch != branch || l.depth < min_depth || l.depth > max_depth)
 		return MATCH_IMPOSSIBLE;
 	int matches = 0, skipped = 0;
@@ -39,5 +42,5 @@ int LevelData::match(Level l) {
 	return (matches*100) / checked;
 }
 
-void LevelData::init() {
+void Level::init() {
 }

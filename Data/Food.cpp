@@ -1,29 +1,30 @@
-#include "FoodData.h"
-#include "CorpseData.h"
+#include "Food.h"
+#include "Corpse.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, FoodData *> FoodData::foods;
+map<string, Food *> Food::foods;
 
-FoodData::FoodData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) : ItemData(name, cost, weight, FOOD, material, properties), nutrition(nutrition), eat_time(eat_time), eat_effects(eat_effects) {
+Food::Food(const string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) : Item(name, cost, weight, FOOD, material, properties), nutrition(nutrition), eat_time(eat_time), eat_effects(eat_effects) {
 }
 
-void FoodData::addToMap(const std::string &name, FoodData *food) {
-	FoodData::foods[name] = food;
-	ItemData::addToMap(name, food);
+void Food::addToMap(const string &name, Food *food) {
+	Food::foods[name] = food;
+	Item::addToMap(name, food);
 }
 
-void FoodData::create(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) {
-	addToMap(name, new FoodData(name, cost, weight, material, properties, nutrition, eat_time, eat_effects));
+void Food::create(const string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) {
+	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects));
 	if (eat_time > 1 && name != "tin" && name != "tin of spinach") {
 		string partly_eaten = "partly eaten ";
 		partly_eaten.append(name);
-		addToMap(partly_eaten, new FoodData(partly_eaten, 0, weight / 2, material, properties, nutrition / 2, eat_time / 2, eat_effects));
+		addToMap(partly_eaten, new Food(partly_eaten, 0, weight / 2, material, properties, nutrition / 2, eat_time / 2, eat_effects));
 	}
 }
 
-void FoodData::init() {
+void Food::init() {
 	create("meatball", 5, 1, MATERIAL_FLESH, 0, 5, 1, 0);
 	create("meat ring", 5, 1, MATERIAL_FLESH, 0, 5, 1, 0);
 	create("meat stick", 5, 1, MATERIAL_FLESH, 0, 5, 1, 0);
@@ -57,5 +58,5 @@ void FoodData::init() {
 	create("lichen corpse", 5, 20, MATERIAL_VEGGY, 0, 200, 3, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN);
 	create("lizard corpse", 5, 10, MATERIAL_FLESH, 0, 40, 3, EAT_EFFECT_CURE_STONING | EAT_EFFECT_REDUCE_STUNNING | EAT_EFFECT_REDUCE_CONFUSION);
 
-	CorpseData::init();
+	Corpse::init();
 }

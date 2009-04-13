@@ -7,41 +7,22 @@
 using namespace std;
 
 /* constructors/destructor */
-Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph), command2(""), wear_amulet(false) {
+Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph), command2("") {
 }
 
 /* methods */
 void Amulet::analyze() {
-	if (saiph->inventory_changed || wear_amulet)
+	if (saiph->inventory_changed)
 		wearAmulet();
 }
 
 void Amulet::parseMessages(const string &messages) {
-	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
-		/* put on or remove an amulet */
-		command = command2;
-		priority = PRIORITY_CONTINUE_ACTION;
-		wear_amulet = false;
-		/* request dirty inventory */
-		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
-	} else if (!command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
+	if (!command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
                 /* request dirty inventory */
+		/* TODO: something else should look for the "you were wearing" message and trigger dirty inventory */
                 req.request = REQUEST_DIRTY_INVENTORY;
                 saiph->request(req);
 	}
-}
-
-bool Amulet::request(const Request &request) {
-	if (request.request == REQUEST_AMULET_WEAR) {
-		/* player wish to wear this amulet */
-		WearAmulet wr;
-		wr.beatitude = request.beatitude;
-		wr.name = request.data;
-		amulets.push_back(wr);
-		return true;
-	}
-	return false;
 }
 
 /* private methods */

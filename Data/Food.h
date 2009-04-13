@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "ItemData.h"
+#include "Item.h"
 
 #define EAT_EFFECT_ACIDIC           (1 << 0)
 #define EAT_EFFECT_AGGRAVATE        (1 << 1)
@@ -32,22 +32,24 @@
 #define EAT_EFFECT_REDUCE_CONFUSION (1 << 24)
 #define EAT_EFFECT_INVISIBILITY     (1 << 25)
 
-class FoodData : public ItemData {
-public:
-	static std::map<std::string, FoodData *> foods;
-	const int nutrition;
-	const int eat_time;
-	const int eat_effects;
+namespace data {
+	class Food : public Item {
+	public:
+		static std::map<std::string, Food *> foods;
+		const int nutrition;
+		const int eat_time;
+		const int eat_effects;
 
-	FoodData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
-	~FoodData() {}
+		Food(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
+		~Food() {}
 
-	static void init();
+		static void init();
 
-protected:
-	static void addToMap(const std::string &name, FoodData *food);
+	protected:
+		static void addToMap(const std::string &name, Food *food);
 
-private:
-	static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
-};
+	private:
+		static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
+	};
+}
 #endif

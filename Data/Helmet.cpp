@@ -1,23 +1,24 @@
-#include "HelmetData.h"
+#include "Helmet.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, HelmetData *> HelmetData::helmets;
+map<string, Helmet *> Helmet::helmets;
 
-HelmetData::HelmetData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_HELMET, ac, mc, properties) {
+Helmet::Helmet(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, ARMOR_HELMET, ac, mc, properties) {
 }
 
-void HelmetData::addToMap(const std::string &name, HelmetData *helmet) {
-	HelmetData::helmets[name] = helmet;
-	ArmorData::addToMap(name, helmet);
+void Helmet::addToMap(const string &name, Helmet *helmet) {
+	Helmet::helmets[name] = helmet;
+	Armor::addToMap(name, helmet);
 }
 
-void HelmetData::create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new HelmetData(name, cost, weight, material, ac, mc, properties));
+void Helmet::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+	addToMap(name, new Helmet(name, cost, weight, material, ac, mc, properties));
 }
 
-void HelmetData::init() {
+void Helmet::init() {
 	create("helm of brilliance", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_MAGIC | PROPERTY_BRILLIANCE);
 	create("helm of opposite alignment", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_MAGIC);
 	create("dunce cap", 1, 4, MATERIAL_CLOTH, 0, 0, PROPERTY_MAGIC | PROPERTY_STUPIDITY);

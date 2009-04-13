@@ -1,23 +1,24 @@
-#include "ShieldData.h"
+#include "Shield.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, ShieldData *> ShieldData::shields;
+map<string, Shield *> Shield::shields;
 
-ShieldData::ShieldData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_SHIELD, ac, mc, properties) {
+Shield::Shield(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, ARMOR_SHIELD, ac, mc, properties) {
 }
 
-void ShieldData::addToMap(const std::string &name, ShieldData *shield) {
-	ShieldData::shields[name] = shield;
-	ArmorData::addToMap(name, shield);
+void Shield::addToMap(const string &name, Shield *shield) {
+	Shield::shields[name] = shield;
+	Armor::addToMap(name, shield);
 }
 
-void ShieldData::create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new ShieldData(name, cost, weight, material, ac, mc, properties));
+void Shield::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+	addToMap(name, new Shield(name, cost, weight, material, ac, mc, properties));
 }
 
-void ShieldData::init() {
+void Shield::init() {
 	create("large shield", 10, 100, MATERIAL_IRON, 2, 0, 0);
 	create("Uruk-hai shield", 7, 50, MATERIAL_IRON, 1, 0, 0);
 	create("elven shield", 7, 40, MATERIAL_WOOD, 2, 0, 0);

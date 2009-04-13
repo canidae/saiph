@@ -1,20 +1,21 @@
-#include "CorpseData.h"
+#include "Corpse.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, CorpseData *> CorpseData::corpses;
+map<string, Corpse *> Corpse::corpses;
 
-CorpseData::CorpseData(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : FoodData(name, cost, weight, material, properties, nutrition, eat_time, eat_effects), resistance_confer_probability(resistance_confer_probability) {
+Corpse::Corpse(const string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects), resistance_confer_probability(resistance_confer_probability) {
 }
 
-void CorpseData::addToMap(const std::string &name, CorpseData *corpse) {
-	CorpseData::corpses[name] = corpse;
-	FoodData::addToMap(name, corpse);
+void Corpse::addToMap(const string &name, Corpse *corpse) {
+	Corpse::corpses[name] = corpse;
+	Food::addToMap(name, corpse);
 }
 
-void CorpseData::create(const std::string &name, int nutrition, int eat_effects, int resistance_confer_probability) {
-	const MonsterData *monster = MonsterData::getMonsterData(name);
+void Corpse::create(const string &name, int nutrition, int eat_effects, int resistance_confer_probability) {
+	const Monster *monster = Monster::getMonster(name);
 	if (monster == NULL || monster->name.size() <= 0)
 		return;
 	string corpse_name = monster->name;
@@ -35,12 +36,12 @@ void CorpseData::create(const std::string &name, int nutrition, int eat_effects,
 		partly_eaten_name.append(" corpse");
 	}
 	int material = ((eat_effects & EAT_EFFECT_VEGETARIAN) == 0) ? MATERIAL_FLESH : MATERIAL_VEGGY;
-	addToMap(corpse_name, new CorpseData(corpse_name, 5, monster->weight, material, monster->resistances_conferred, nutrition, monster->weight / 64 + 3, eat_effects, resistance_confer_probability));
-	addToMap(partly_eaten_name, new CorpseData(partly_eaten_name, 0, monster->weight / 2, material, monster->resistances_conferred, nutrition / 2, (monster->weight / 64 + 3) / 2, eat_effects, resistance_confer_probability));
+	addToMap(corpse_name, new Corpse(corpse_name, 5, monster->weight, material, monster->resistances_conferred, nutrition, monster->weight / 64 + 3, eat_effects, resistance_confer_probability));
+	addToMap(partly_eaten_name, new Corpse(partly_eaten_name, 0, monster->weight / 2, material, monster->resistances_conferred, nutrition / 2, (monster->weight / 64 + 3) / 2, eat_effects, resistance_confer_probability));
 }
 
-void CorpseData::init() {
-	MonsterData::init();
+void Corpse::init() {
+	Monster::init();
 	create("abbot", 400, EAT_EFFECT_HUMAN | EAT_EFFECT_HALLUCINOGENIC, 0);
 	create("acid blob", 10, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN | EAT_EFFECT_ACIDIC, 0);
 	create("acolyte", 400, EAT_EFFECT_HUMAN, 0);

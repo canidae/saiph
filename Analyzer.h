@@ -20,7 +20,7 @@ class Analyzer {
 
 		virtual void analyze(const Command &command);
 		virtual void complete(); // TODO: die (replaced by actions)
-		virtual void fail(); // TODO: die (replaced by actions)
+		virtual void fail(); // TODO: die? (replaced by actions?)
 		virtual void init();
 		virtual void parseMessages(const std::string &messages, const Command &command);
 		virtual bool request(const Request &request); // TODO: die (replaced by event system)

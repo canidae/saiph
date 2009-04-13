@@ -27,29 +27,28 @@
 #define MATERIAL_GEMSTONE    ((unsigned int)(1 << 18))
 #define MATERIAL_MINERAL     ((unsigned int)(1 << 19))
 #define MATERIAL_LIQUID      ((unsigned int)(1 << 20))
-#define MATERIALS_THAT_ERODE MATERIAL_CLOTH | MATERIAL_LEATHER | MATERIAL_WOOD | \
-							 MATERIAL_IRON | MATERIAL_COPPER | MATERIAL_PLASTIC
-#define MATERIALS_METALLIC   MATERIAL_METAL | MATERIAL_IRON | MATERIAL_COPPER | \
-							 MATERIAL_SILVER | MATERIAL_GOLD | MATERIAL_PLATINUM | \
-							 MATERIAL_MITHRIL
+#define MATERIALS_THAT_ERODE MATERIAL_CLOTH | MATERIAL_LEATHER | MATERIAL_WOOD | MATERIAL_IRON | MATERIAL_COPPER | MATERIAL_PLASTIC
+#define MATERIALS_METALLIC   MATERIAL_METAL | MATERIAL_IRON | MATERIAL_COPPER | MATERIAL_SILVER | MATERIAL_GOLD | MATERIAL_PLATINUM | MATERIAL_MITHRIL
 
-class ItemData {
-public:
-	static std::map<std::string, ItemData *> items;
-	const std::string name;
-	const int base_cost;
-	const int weight;
-	const char item_class;
-	const int material;
-	const unsigned long long properties;
+namespace data {
+	class Item {
+	public:
+		static std::map<std::string, Item *> items;
+		const std::string name;
+		const int base_cost;
+		const int weight;
+		const char item_class;
+		const int material;
+		const unsigned long long properties;
 
-	ItemData(const std::string &name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
-	virtual ~ItemData() {}
+		Item(const std::string &name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
+		virtual ~Item() {}
 
-	static void init();
-	static void destroy();
+		static void init();
+		static void destroy();
 
-protected:
-	static void addToMap(const std::string &name, ItemData *item);
-};
+	protected:
+		static void addToMap(const std::string &name, Item *item);
+	};
+}
 #endif

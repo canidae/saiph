@@ -1,23 +1,24 @@
-#include "BootsData.h"
+#include "Boots.h"
 
+using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, BootsData *> BootsData::boots;
+map<string, Boots *> Boots::boots;
 
-BootsData::BootsData(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : ArmorData(name, cost, weight, material, ARMOR_BOOTS, ac, mc, properties) {
+Boots::Boots(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, ARMOR_BOOTS, ac, mc, properties) {
 }
 
-void BootsData::addToMap(const std::string &name, BootsData *boots) {
-	BootsData::boots[name] = boots;
-	ArmorData::addToMap(name, boots);
+void Boots::addToMap(const string &name, Boots *boots) {
+	Boots::boots[name] = boots;
+	Armor::addToMap(name, boots);
 }
 
-void BootsData::create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new BootsData(name, cost, weight, material, ac, mc, properties));
+void Boots::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+	addToMap(name, new Boots(name, cost, weight, material, ac, mc, properties));
 }
 
-void BootsData::init() {
+void Boots::init() {
 	//     name                 cost  weight  material          ac mc properties
 	create("low boots",            8,     10, MATERIAL_LEATHER, 1, 0, 0);
 	create("high boots",          12,     20, MATERIAL_LEATHER, 2, 0, 0);
