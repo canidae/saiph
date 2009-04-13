@@ -11,7 +11,8 @@ namespace action {
 		Move(unsigned char direction, int priority);
 		virtual ~Move();
 
-		virtual const Command &execute(Saiph *saiph);
+		virtual const Command &getCommand();
+		virtual void updateAction(const Saiph *saiph);
 
 	private:
 		const Command move;

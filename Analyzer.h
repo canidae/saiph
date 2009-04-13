@@ -1,28 +1,29 @@
 #ifndef ANALYZER_H
 #define ANALYZER_H
 
-#include "Events/Event.h"
 #include <string>
+#include "Actions/Action.h"
+#include "Events/Event.h"
 
+class Command;
 class Point;
 class Request;
 
 class Analyzer {
 	public:
 		std::string name;
-		int priority;
-		std::string command;
-		bool expired;
+		action::Action *action;
+		bool expired; // TODO: rather send a signal when the analyzer is expired
 	
 		Analyzer(std::string name);
 		virtual ~Analyzer();
 
-		virtual void analyze();
-		virtual void complete();
-		virtual void fail();
+		virtual void analyze(const Command &command);
+		virtual void complete(); // TODO: die (replaced by actions)
+		virtual void fail(); // TODO: die (replaced by actions)
 		virtual void init();
-		virtual void parseMessages(const std::string &messages);
-		virtual bool request(const Request &request);
-		virtual void handle(Event *event);
+		virtual void parseMessages(const std::string &messages, const Command &command);
+		virtual bool request(const Request &request); // TODO: die (replaced by event system)
+		virtual void handle(const Event *event);
 };
 #endif

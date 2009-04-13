@@ -2,7 +2,6 @@
 #define _ACTION_H
 
 #include "../Command.h"
-#include "../Globals.h"
 
 class Saiph;
 
@@ -10,12 +9,15 @@ namespace action {
 	class Action {
 	public:
 		static const Command noop;
-		int sequence;
 
 		Action();
 		virtual ~Action();
 
-		virtual const Command &execute(Saiph *saiph);
+		virtual const Command &getCommand();
+		virtual void updateAction(const Saiph *saiph);
+
+	protected:
+		int sequence;
 	};
 }
 #endif

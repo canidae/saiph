@@ -15,8 +15,16 @@ Move::Move(unsigned char direction, int priority) : move(string(1, direction), p
 Move::~Move() {
 }
 
-const Command &Move::execute(Saiph *) {
-	if (sequence == 0)
+const Command &Move::getCommand() {
+	switch (sequence) {
+	case 0:
 		return move;
-	return Action::noop;
+
+	default:
+		return Action::noop;
+	}
+}
+
+void Move::updateAction(const Saiph *) {
+	++sequence;
 }

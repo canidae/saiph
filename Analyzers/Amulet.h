@@ -24,7 +24,6 @@ class Amulet : public Analyzer {
 
 	private:
 		Saiph *saiph;
-		std::string command2;
 		std::vector<WearAmulet> amulets;
 		bool wear_amulet;
 		Request req;

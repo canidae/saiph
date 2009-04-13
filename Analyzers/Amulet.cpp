@@ -18,7 +18,7 @@ void Amulet::analyze() {
 
 void Amulet::parseMessages(const string &messages) {
 	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
-		/* put on or remove a amulet */
+		/* put on or remove an amulet */
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
 		wear_amulet = false;

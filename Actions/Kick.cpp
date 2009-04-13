@@ -11,10 +11,22 @@ Kick::Kick(unsigned char direction, int priority) : kick(KICK, priority), kick_d
 Kick::~Kick() {
 }
 
-const Command &Kick::execute(Saiph *saiph) {
-	if (sequence == 0)
+const Command &Kick::getCommand() {
+	switch (sequence) {
+	case 0:
 		return kick;
-	else if (sequence == 1 && saiph->world->question && saiph->world->messages.find(MESSAGE_IN_WHAT_DIRECTION))
+		
+	case 1:
 		return kick_direction;
-	return Action::noop;
+
+	default:
+		return Action::noop;
+	}
+}
+
+void Kick::updateAction(const Saiph *saiph) {
+	if (saiph->world->question && saiph->world->messages.find(MESSAGE_IN_WHAT_DIRECTION) != string::npos)
+		sequence = 1;
+	else if (sequence == 1)
+		sequence = 2;
 }

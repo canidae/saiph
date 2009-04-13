@@ -11,6 +11,11 @@ Action::Action() : sequence(0) {
 Action::~Action() {
 }
 
-const Command &Action::execute(Saiph *) {
+const Command &Action::getCommand() {
 	return noop;
+}
+
+void Action::updateAction(const Saiph *) {
+	/* called on the action object that was executed */
+	return;
 }

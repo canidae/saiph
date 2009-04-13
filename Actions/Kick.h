@@ -11,7 +11,8 @@ namespace action {
 		Kick(unsigned char direction, int priority);
 		virtual ~Kick();
 
-		virtual const Command &execute(Saiph *saiph);
+		virtual const Command &getCommand();
+		virtual void updateAction(const Saiph *saiph);
 
 	private:
 		const Command kick;
