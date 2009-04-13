@@ -88,7 +88,6 @@ class Saiph {
 		unsigned char getMonsterSymbol(const Coordinate &coordinate);
 		unsigned char getMonsterSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
-		bool request(const Request &request);
 		bool run();
 		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);

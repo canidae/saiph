@@ -5,7 +5,7 @@ using namespace std;
 using namespace event;
 
 /* constructors/destructor */
-Analyzer::Analyzer(string name) : name(name), action(NULL), expired(false) {
+Analyzer::Analyzer(string name) : name(name), action(NULL) {
 	/* methods will be called in this order:
 	 * 0. init (once, after all analyzers have been created)
 	 * 1. parseMessages
@@ -25,21 +25,11 @@ Analyzer::~Analyzer() {
 void Analyzer::analyze(const Command &) {
 }
 
-void Analyzer::complete() {
-}
-
-void Analyzer::fail() {
-}
-
 void Analyzer::init() {
 }
 
 void Analyzer::parseMessages(const string &, const Command &) {
 }
 
-bool Analyzer::request(const Request &) {
-	return false;
-}
-
-void Analyzer::handle(const Event *) {
+void Analyzer::handle(Event *const) {
 }

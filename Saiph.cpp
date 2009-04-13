@@ -289,17 +289,6 @@ bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	return true;
 }
 
-bool Saiph::request(const Request &request) {
-	/* request an action from any analyzer */
-	Debug::notice(last_turn) << REQUEST_DEBUG_NAME << "req: " << request.request << ", pri: " << request.priority << ", val: " << request.value << ", bea: " << request.beatitude << ", sus: " << request.sustain << ", unk: " << request.only_unknown_enchantment << ", key: " << (char) request.key << ", dat: " << request.data << ", (" << request.coordinate.level << ", " << request.coordinate.row << ", " << request.coordinate.col << ")" << endl;
-	bool status = false;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->request(request) && !status)
-			status = true;
-	}
-	return status;
-}
-
 bool Saiph::run() {
 	/* clear pickup list */
 	pickup.clear();
@@ -365,16 +354,8 @@ bool Saiph::run() {
 	}
 	if (command == action::Action::noop) {
 		/* analyzer stuff comes here */
-		/* remove expired analyzers and parse messages */
+		/* parse messages */
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
-			if ((*a)->expired) {
-				/* FIXME: this is bull, make analyzers signal when they're expired */
-				/* expired analyzer, remove it */
-				Debug::notice(last_turn) << "Analyzer " << (*a)->name << " has expired and will be removed" << endl;
-				delete *a;
-				a = analyzers.erase(a);
-				continue;
-			}
 			/* parse messages */
 			(*a)->parseMessages(world->messages, command);
 			Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
@@ -480,7 +461,6 @@ bool Saiph::run() {
 			/* apparently it wasn't a failed movement,
 			 * that means an analyzer is screwing up */
 			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ": " << command << endl;
-			(*best_analyzer)->fail();
 		}
 	} else if (stuck_counter > 1680) {
 		/* failed too many times, #quit */
@@ -489,8 +469,6 @@ bool Saiph::run() {
 		world->executeCommand(QUIT);
 		world->executeCommand(YES);
 		return false;
-	} else {
-		(*best_analyzer)->complete();
 	}
 	if (last_turn == world->player.turn)
 		stuck_counter++;
