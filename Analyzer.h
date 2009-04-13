@@ -24,6 +24,6 @@ class Analyzer {
 		virtual void init();
 		virtual void parseMessages(const std::string &messages, const Command &command);
 		virtual bool request(const Request &request); // TODO: die (replaced by event system)
-		virtual void handle(const Event *event);
+		virtual void handle(const event::Event *event);
 };
 #endif
