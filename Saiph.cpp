@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 #include "Connection.h"
 #include "Debug.h"
 #include "Globals.h"
@@ -50,6 +50,7 @@
 #include "Analyzers/Weapon.h"
 #include "Analyzers/Wish.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */

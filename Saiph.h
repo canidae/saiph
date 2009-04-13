@@ -50,7 +50,9 @@
 #include "Level.h"
 #include "Point.h"
 
-class Analyzer;
+namespace analyzer {
+	class Analyzer;
+}
 class Connection;
 class Request;
 class Stash;
@@ -98,9 +100,9 @@ class Saiph {
 
 	private:
 		Connection *connection;
-		std::vector<Analyzer *> analyzers;
+		std::vector<analyzer::Analyzer *> analyzers;
 		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
-		std::vector<Analyzer *>::iterator best_analyzer;
+		std::vector<analyzer::Analyzer *>::iterator best_analyzer;
 		std::string current_directory;
 		std::string farlook_command;
 		bool sokoban_found;

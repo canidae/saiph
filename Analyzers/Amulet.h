@@ -8,7 +8,8 @@
 
 class Saiph;
 
-class Amulet : public Analyzer {
+namespace analyzer {
+	class Amulet : public Analyzer {
 	public:
 		Amulet(Saiph *saiph);
 
@@ -20,5 +21,6 @@ class Amulet : public Analyzer {
 		Request req;
 
 		void wearAmulet();
-};
+	};
+}
 #endif

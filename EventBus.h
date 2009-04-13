@@ -4,16 +4,18 @@
 #include <vector>
 #include "Events/Event.h"
 
-class Analyzer;
+namespace analyzer {
+	class Analyzer;
+}
 
 class EventBus {
 public:
-	static int createEventType();
-	static void registerEvent(int event_type, Analyzer *analyzer);
-	static void unregisterEvent(int event_type, Analyzer *analyzer);
+	static int createEventID();
+	static void registerEvent(int event_id, analyzer::Analyzer *analyzer);
+	static void unregisterEvent(int event_id, analyzer::Analyzer *analyzer);
 	static void broadcast(event::Event *const event);
 
 private:
-	static std::vector<std::vector<Analyzer *> > events;
+	static std::vector<std::vector<analyzer::Analyzer *> > events;
 };
 #endif

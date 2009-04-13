@@ -4,6 +4,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
