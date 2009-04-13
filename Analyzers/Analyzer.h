@@ -3,8 +3,6 @@
 
 #include <string>
 
-#define ILLEGAL_ANALYZER_ID -1
-
 namespace action {
 	class Action;
 }
@@ -23,9 +21,8 @@ namespace analyzer {
 		virtual ~Analyzer();
 
 		virtual void analyze(const Command &) {}
-		virtual int getID() {return ILLEGAL_ANALYZER_ID;}
-		virtual void handle(event::Event *const) {}
 		virtual void init() {}
+		virtual void onEvent(event::Event *const) {}
 		virtual void parseMessages(const std::string &, const Command &) {}
 	};
 }

@@ -3,8 +3,10 @@
 #include "../Item.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Events/Event.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
@@ -12,12 +14,10 @@ Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph) {
 }
 
 /* methods */
-void Amulet::analyze() {
-	if (saiph->inventory_changed)
-		wearAmulet();
+void Amulet::onEvent(Event *const event) {
 }
 
-void Amulet::parseMessages(const string &messages) {
+void Amulet::parseMessages(const string &messages, const Command &best_command) {
 	if (!command2.empty() && messages.find(MESSAGE_YOU_WERE_WEARING, 0) != string::npos) {
                 /* request dirty inventory */
 		/* TODO: something else should look for the "you were wearing" message and trigger dirty inventory */

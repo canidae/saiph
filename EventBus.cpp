@@ -42,5 +42,5 @@ void EventBus::broadcast(Event *const event) {
 		return;
 	vector<Analyzer *> &subscribers = events[event->getID()];
 	for (vector<Analyzer *>::iterator s = subscribers.begin(); s != subscribers.end(); ++s)
-		(*s)->handle(event);
+		(*s)->onEvent(event);
 }

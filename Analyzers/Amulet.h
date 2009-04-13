@@ -4,8 +4,11 @@
 #include <string>
 #include <vector>
 #include "Analyzer.h"
-#include "../Request.h"
 
+namespace event {
+	class Event;
+}
+class Command;
 class Saiph;
 
 namespace analyzer {
@@ -13,12 +16,11 @@ namespace analyzer {
 	public:
 		Amulet(Saiph *saiph);
 
-		void analyze();
-		void parseMessages(const std::string &messages);
+		void onEvent(event::Event *const);
+		void parseMessages(const std::string &messages, const Command &best_command);
 
 	private:
 		Saiph *saiph;
-		Request req;
 
 		void wearAmulet();
 	};
