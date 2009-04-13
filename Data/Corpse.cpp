@@ -15,7 +15,7 @@ void Corpse::addToMap(const string &name, Corpse *corpse) {
 }
 
 void Corpse::create(const string &name, int nutrition, int eat_effects, int resistance_confer_probability) {
-	const Monster *monster = Monster::getMonster(name);
+	const Monster *monster = Monster::getMonsterData(name);
 	if (monster == NULL || monster->name.size() <= 0)
 		return;
 	string corpse_name = monster->name;

@@ -16,6 +16,7 @@ void Item::addToMap(const string &name, Item *item) {
 }
 
 void Item::init() {
+	Amulet::init();
 	Armor::init();
 	Food::init();
 }

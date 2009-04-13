@@ -242,6 +242,11 @@
 #define PROPERTY_CASTING_BONUS     ((unsigned long long) (1LL << 30))
 #define PROPERTY_TELEPORT          ((unsigned long long) (1LL << 31))
 #define PROPERTY_TELEPORT_CONTROL  ((unsigned long long) (1LL << 32))
+#define PROPERTY_LIFE_SAVING       ((unsigned long long) (1LL << 33))
+#define PROPERTY_STRANGULATION     ((unsigned long long) (1LL << 34))
+#define PROPERTY_UNCHANGING        ((unsigned long long) (1LL << 35))
+#define PROPERTY_RESTFUL_SLEEP     ((unsigned long long) (1LL << 36))
+#define PROPERTY_SEX_CHANGE        ((unsigned long long) (1LL << 37))
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0

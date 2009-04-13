@@ -7,7 +7,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph), command2("") {
+Amulet::Amulet(Saiph *saiph) : Analyzer("Amulet"), saiph(saiph) {
 }
 
 /* methods */
