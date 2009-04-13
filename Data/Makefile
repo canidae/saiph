@@ -1,22 +1,23 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = ArmorData.o BootsData.o CloakData.o CorpseData.o FoodData.o GlovesData.o HelmetData.o ItemData.o MonsterData.o ShieldData.o ShirtData.o SuitData.o
+OBJECTS = Amulet.o Armor.o Boots.o Cloak.o Corpse.o Food.o Gloves.o Helmet.o Item.o Monster.o Shield.o Shirt.o Suit.o
 
 analyzers: $(OBJECTS)
 
-ArmorData.o: ArmorData.h ArmorData.cpp
-BootsData.o: BootsData.h BootsData.cpp
-CloakData.o: CloakData.h CloakData.cpp
-CorpseData.o: CorpseData.h CorpseData.cpp
-FoodData.o: FoodData.h FoodData.cpp
-GlovesData.o: GlovesData.h GlovesData.cpp
-HelmetData.o: HelmetData.h HelmetData.cpp
-ItemData.o: ItemData.h ItemData.cpp
-MonsterData.o: MonsterData.h MonsterData.cpp
-ShieldData.o: ShieldData.h ShieldData.cpp
-ShirtData.o: ShirtData.h ShirtData.cpp
-SuitData.o: SuitData.h SuitData.cpp
+Amulet.o: Amulet.h Amulet.cpp
+Armor.o: Armor.h Armor.cpp
+Boots.o: Boots.h Boots.cpp
+Cloak.o: Cloak.h Cloak.cpp
+Corpse.o: Corpse.h Corpse.cpp
+Food.o: Food.h Food.cpp
+Gloves.o: Gloves.h Gloves.cpp
+Helmet.o: Helmet.h Helmet.cpp
+Item.o: Item.h Item.cpp
+Monster.o: Monster.h Monster.cpp
+Shield.o: Shield.h Shield.cpp
+Shirt.o: Shirt.h Shirt.cpp
+Suit.o: Suit.h Suit.cpp
 
 .PHONY: clean
 clean:

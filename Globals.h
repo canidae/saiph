@@ -242,6 +242,11 @@
 #define PROPERTY_CASTING_BONUS     ((unsigned long long) (1LL << 30))
 #define PROPERTY_TELEPORT          ((unsigned long long) (1LL << 31))
 #define PROPERTY_TELEPORT_CONTROL  ((unsigned long long) (1LL << 32))
+#define PROPERTY_LIFE_SAVING       ((unsigned long long) (1LL << 33))
+#define PROPERTY_STRANGULATION     ((unsigned long long) (1LL << 34))
+#define PROPERTY_UNCHANGING        ((unsigned long long) (1LL << 35))
+#define PROPERTY_RESTFUL_SLEEP     ((unsigned long long) (1LL << 36))
+#define PROPERTY_SEX_CHANGE        ((unsigned long long) (1LL << 37))
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
@@ -361,6 +366,7 @@
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
 #define MESSAGE_HELLO_STRANGER "  \"Hello stranger, who are you?\" -  "
 #define MESSAGE_IMPROVISE "  Improvise? [yn] (n)  "
+#define MESSAGE_IN_WHAT_DIRECTION "  In what direction?  "
 #define MESSAGE_LIMBS_ARE_STIFFENING "  Your limbs are stiffening.  "
 #define MESSAGE_LIMBS_TURNED_TO_STONE "  Your limbs have turned to stone.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "

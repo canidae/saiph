@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <ctime>
 #include <iostream>
 #include <stdlib.h>
@@ -11,9 +10,11 @@
 #include "Saiph.h"
 #include "Stash.h"
 #include "World.h"
+/* actions */
+#include "Actions/Action.h"
 /* data */
-#include "Data/ItemData.h"
-#include "Data/MonsterData.h"
+#include "Data/Item.h"
+#include "Data/Monster.h"
 /* analyzers */
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
@@ -50,11 +51,6 @@
 #include "Analyzers/Wish.h"
 
 using namespace std;
-
-/* function used for sorting analyzers descending */
-bool sortAnalyzers(const Analyzer *a, const Analyzer *b) {
-	return a->priority > b->priority;
-}
 
 /* constructors/destructor */
 Saiph::Saiph(const string &directory, const int interface) {
@@ -361,39 +357,30 @@ bool Saiph::run() {
 	if (levels[position.level].stashes.find(position) != levels[position.level].stashes.end())
 		on_ground = &levels[position.level].stashes[position];
 
-	/* analyzer stuff comes here */
-	/* reset priority */
-	int best_priority = ILLEGAL_PRIORITY;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->priority = ILLEGAL_PRIORITY;
-
-	/* if question, let last analyzer parse it first */
-	if (world->question && best_analyzer != analyzers.end()) {
-		(*best_analyzer)->parseMessages(world->messages);
-		if ((*best_analyzer)->priority == PRIORITY_CONTINUE_ACTION)
-			best_priority = PRIORITY_CONTINUE_ACTION;
+	/* unless we're in the middle of an action, let the analyzers figure out what to do */
+	Command command = action::Action::noop;
+	if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL) {
+		(*best_analyzer)->action->updateAction(this);
+		command = (*best_analyzer)->action->getCommand();
 	}
-
-	if (best_priority == ILLEGAL_PRIORITY) {
+	if (command == action::Action::noop) {
+		/* analyzer stuff comes here */
 		/* remove expired analyzers and parse messages */
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ) {
 			if ((*a)->expired) {
+				/* FIXME: this is bull, make analyzers signal when they're expired */
 				/* expired analyzer, remove it */
 				Debug::notice(last_turn) << "Analyzer " << (*a)->name << " has expired and will be removed" << endl;
 				delete *a;
 				a = analyzers.erase(a);
 				continue;
 			}
-			/* set analyzer's priority to best_priority.
-			 * this way analyzer should just check if priority is greater than
-			 * the priority of whatever subtask they're about to do */
-			if ((*a)->priority < best_priority)
-				(*a)->priority = best_priority;
 			/* parse messages */
-			(*a)->parseMessages(world->messages);
-			/* set best_priority if this analyzer has higher priority */
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
+			(*a)->parseMessages(world->messages, command);
+			Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+			/* set command & best_analyzer if a_command is more urgent */
+			if (a_command.priority > command.priority) {
+				command = a_command;
 				best_analyzer = a;
 			}
 			++a;
@@ -402,40 +389,37 @@ bool Saiph::run() {
 		/* analyze */
 		if (!world->question && !world->menu) {
 			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-				/* set analyzer's priority to best_priority.
-				 * this way analyzer should just check if priority is greater than
-				 * the priority of whatever subtask they're about to do */
-				if ((*a)->priority < best_priority)
-					(*a)->priority = best_priority;
 				/* analyze */
-				(*a)->analyze();
-				/* set best_priority if this analyzer has higher priority */
-				if ((*a)->priority > best_priority) {
-					best_priority = (*a)->priority;
+				(*a)->analyze(command);
+				Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+				/* set command & best_analyzer if a_command is more urgent */
+				if (a_command.priority > command.priority) {
+					command = a_command;
 					best_analyzer = a;
 				}
 			}
 		}
 
-		/* need to check priority once more, because of requests */
+		/* need to check priority once more, because of events */
 		for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-			if ((*a)->priority > best_priority) {
-				best_priority = (*a)->priority;
+			Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+			if (a_command.priority > command.priority) {
+				command = a_command;
 				best_analyzer = a;
 			}
 		}
 	}
 
 	/* check if we got a command */
-	if (world->question && best_priority == ILLEGAL_PRIORITY) {
+	if (world->question && command == action::Action::noop) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << world->messages << endl;
 		world->executeCommand(string(1, (char) 27));
 		return true;
-	} else if (world->menu && best_priority == ILLEGAL_PRIORITY) {
+	} else if (world->menu && command == action::Action::noop) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << world->messages << endl;
 		world->executeCommand(string(1, (char) 27));
 		return true;
-	} else if (best_priority == ILLEGAL_PRIORITY) {
+	} else if (command == action::Action::noop) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
@@ -450,52 +434,52 @@ bool Saiph::run() {
 	/* print what we're doing */
 	cout << (unsigned char) 27 << "[1;82H";
 	cout << (unsigned char) 27 << "[K"; // erase everything to the right
-	cout << (*best_analyzer)->name << " (priority " << best_priority << "): " << (*best_analyzer)->command;
+	cout << (*best_analyzer)->name << " " << command;
 	/* return cursor back to where it was */
 	cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
 	/* let an analyzer do its command */
-	Debug::notice(last_turn) << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
-	world->executeCommand((*best_analyzer)->command);
+	Debug::notice(last_turn) << (*best_analyzer)->name << " " << command << endl;
+	world->executeCommand(command.command);
 	if (stuck_counter % 42 == 41) {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
 		bool was_move = false;
-		if ((*best_analyzer)->command.size() == 1 && last_command == (*best_analyzer)->command) {
+		if (command.command.size() == 1 && last_command == command.command) {
 			/* command is movement, and so was last_command.
 			 * it's likely that we're moving */
 			Point to;
-			switch ((*best_analyzer)->command[0]) {
-				case NW:
-				case NE:
-				case SW:
-				case SE:
-					/* moving diagonally failed.
-					 * we could be trying to move diagonally into a door we're
-					 * unaware of because of an item blocking the door symbol.
-					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-					to = directionToPoint((unsigned char) (*best_analyzer)->command[0]);
-					setDungeonSymbol(to, UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
-					was_move = true;
-					break;
+			switch (command.command[0]) {
+			case NW:
+			case NE:
+			case SW:
+			case SE:
+				/* moving diagonally failed.
+				 * we could be trying to move diagonally into a door we're
+				 * unaware of because of an item blocking the door symbol.
+				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+				to = directionToPoint((unsigned char) command.command[0]);
+				setDungeonSymbol(to, UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+				was_move = true;
+				break;
 
-				case N:
-				case E:
-				case S:
-				case W:
-					/* moving cardinally failed, possibly item in wall.
-					 * make the tile UNKNOWN_TILE_UNPASSABLE */
-					to = directionToPoint((unsigned char) (*best_analyzer)->command[0]);
-					setDungeonSymbol(to, UNKNOWN_TILE_UNPASSABLE);
-					was_move = true;
-					break;
+			case N:
+			case E:
+			case S:
+			case W:
+				/* moving cardinally failed, possibly item in wall.
+				 * make the tile UNKNOWN_TILE_UNPASSABLE */
+				to = directionToPoint((unsigned char) command.command[0]);
+				setDungeonSymbol(to, UNKNOWN_TILE_UNPASSABLE);
+				was_move = true;
+				break;
 			}
 		}
 		if (!was_move) {
 			/* apparently it wasn't a failed movement,
 			 * that means an analyzer is screwing up */
-			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ". Priority was " << best_priority << " and command was: " << (*best_analyzer)->command << endl;
+			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ": " << command << endl;
 			(*best_analyzer)->fail();
 		}
 	} else if (stuck_counter > 1680) {
@@ -512,9 +496,9 @@ bool Saiph::run() {
 		stuck_counter++;
 	else
 		stuck_counter = 0;
-	last_command = (*best_analyzer)->command;
+	last_command = command.command;
 	last_turn = world->player.turn;
-	if (best_priority <= PRIORITY_MAX)
+	if (command.priority <= PRIORITY_MAX)
 		++internal_turn;
 	return true;
 }
@@ -1171,8 +1155,8 @@ int main(int argc, const char *argv[]) {
 	}
 
 	Debug::open(logfile);
-	MonsterData::init();
-	ItemData::init();
+	data::Monster::init();
+	data::Item::init();
 	Saiph *saiph = new Saiph(dirname(argv[0]), connection_type);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
@@ -1180,7 +1164,7 @@ int main(int argc, const char *argv[]) {
 		;
 	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
 	delete saiph;
-	ItemData::destroy();
-	MonsterData::destroy();
+	data::Item::destroy();
+	data::Monster::destroy();
 	Debug::close();
 }
