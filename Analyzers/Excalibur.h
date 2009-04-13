@@ -4,7 +4,7 @@
 #define EXCALIBUR_LONG_SWORD "long sword"
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Saiph;

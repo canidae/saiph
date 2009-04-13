@@ -14,7 +14,7 @@
 #define DOOR_DEBUG_NAME "Door] "
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Point.h"
 
 class Saiph;

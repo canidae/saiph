@@ -4,7 +4,7 @@
 
 #include <string>
 #include <vector>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 
 class Saiph;
 

@@ -30,7 +30,7 @@
 #define LAMP_LIT_AREAS_THRESHOLD 0
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Request;

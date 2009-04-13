@@ -1,7 +1,7 @@
 #ifndef BLIND_H
 #define BLIND_H
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Item;

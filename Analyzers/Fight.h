@@ -9,7 +9,7 @@
 
 #include <string>
 #include <vector>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Saiph;

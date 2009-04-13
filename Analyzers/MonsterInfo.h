@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Monster.h"
 
 class Saiph;

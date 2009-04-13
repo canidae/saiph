@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Globals.h"
 #include "../Request.h"
 

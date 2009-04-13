@@ -10,7 +10,7 @@
 #define ELBERETH_ELBERETH "Elbereth"
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 
 class Request;
 class Saiph;

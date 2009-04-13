@@ -2,7 +2,7 @@ CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
 LDFLAGS = -lutil -g3 -gdwarf-2
-OBJECTS = Analyzer.o Connection.o Debug.o EventBus.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Request.o Saiph.o Stash.o Telnet.o World.o
+OBJECTS = AnalyzerBus.o Connection.o Debug.o EventBus.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Request.o Saiph.o Stash.o Telnet.o World.o
 
 saiph: $(OBJECTS) Actions/*.h Actions/*.cpp Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp
 	$(MAKE) -C Actions
@@ -10,7 +10,7 @@ saiph: $(OBJECTS) Actions/*.h Actions/*.cpp Analyzers/*.h Analyzers/*.cpp Data/*
 	$(MAKE) -C Data
 	$(CXX) $(OBJECTS) Actions/*.o Analyzers/*.o Data/*.o Events/*.o $(LDFLAGS) -o saiph
 
-Analyzer.o: Analyzer.h Analyzer.cpp
+AnalyzerBus.o: AnalyzerBus.h AnalyzerBus.cpp
 Connection.o: Connection.h Connection.cpp
 Debug.o: Debug.h Debug.cpp
 EventBus.o: EventBus.h EventBus.cpp

@@ -7,7 +7,7 @@
 #define SHOP_MESSAGE_LEAVE_TOOL_ANGRY "  \"Leave the "
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Point.h"
 #include "../Request.h"
 

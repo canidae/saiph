@@ -1,7 +1,7 @@
 #ifndef VALKYRIE_H
 #define VALKYRIE_H
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Saiph;

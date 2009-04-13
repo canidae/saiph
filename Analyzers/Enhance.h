@@ -8,7 +8,7 @@
 #define ENHANCE_ENHANCE "#enhance\n"
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 
 class Saiph;
 

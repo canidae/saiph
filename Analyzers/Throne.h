@@ -1,7 +1,7 @@
 #ifndef THRONE_H
 #define	THRONE_H
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Saiph.h"
 
 class Throne : public Analyzer {

@@ -4,7 +4,7 @@
 #define DONATE_HOW_MUCH_OFFER "  How much will you offer?  "
 #define DONATE_TALK_TO_WHOM "  Talk to whom? "
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Coordinate.h"
 
 class Saiph;

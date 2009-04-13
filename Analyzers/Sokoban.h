@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <map>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Point.h"
 #include "../Coordinate.h"
 #include "../Level.h"

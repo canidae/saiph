@@ -2,7 +2,7 @@
 #define	RUB_H
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Item;

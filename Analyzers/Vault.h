@@ -7,7 +7,7 @@
 #define VAULT_MESSAGE_DISAPPEAR "  Suddenly, the guard disappears.  "
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 
 class Saiph;
 

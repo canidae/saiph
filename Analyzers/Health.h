@@ -1,7 +1,7 @@
 #ifndef HEALTH_H
 #define HEALTH_H
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Saiph;

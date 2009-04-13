@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include "Analyzer.h"
 #include "../Item.h"
-#include "../Analyzer.h"
 #include "../Globals.h"
 #include "../Request.h"
 #include "../Debug.h"

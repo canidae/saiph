@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Globals.h"
 #include "../Point.h"
 

@@ -17,7 +17,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Coordinate.h"
 #include "../Item.h"
 #include "../Request.h"

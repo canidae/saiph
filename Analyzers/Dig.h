@@ -3,7 +3,7 @@
 
 #include <list>
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Point.h"
 #include "../Request.h"
 

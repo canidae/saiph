@@ -6,7 +6,7 @@
 #define PRAY_FINISHED_PRAYING "  You finish your prayer.  "
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 
 class Request;
 class Saiph;

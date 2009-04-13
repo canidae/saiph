@@ -2,7 +2,7 @@
 #define BEATITUDE_H
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 
 class Item;
 class Request;
