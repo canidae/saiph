@@ -524,12 +524,8 @@ void World::update() {
 	/* parse attribute & status rows */
 	bool parsed_attributes = parseAttributeRow(view[ATTRIBUTES_ROW]);
 	bool parsed_status = parseStatusRow(view[STATUS_ROW]);
-	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
-		/* the last escape sequence *sometimes* place the cursor on the player,
-		 * which is quite handy since we won't have to search for the player then */
-		Saiph::row = cursor.row;
-		Saiph::col = cursor.col;
-	} else if (!menu && !question) {
+	/* check that the data we received seems ok */
+	if (!menu && !question && (!parsed_attributes || !parsed_status || cursor.row < MAP_ROW_BEGIN || cursor.row > MAP_ROW_END || cursor.col < MAP_COL_BEGIN || cursor.col > MAP_COL_END)) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
