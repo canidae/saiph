@@ -66,7 +66,7 @@ void World::init(int connection_type) {
 /* private methods */
 void World::addChangedLocation(const Point &point) {
 	/* add a location changed since last frame unless it's already added */
-	if (changed[point.row][point.col] || point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END || changed[point.row][point.col])
 		return;
 	changes.push_back(point);
 }
