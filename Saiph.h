@@ -57,61 +57,61 @@ class Stash;
 class World;
 
 class Saiph {
-	public:
-		World *world;
-		std::vector<Level> levels;
-		std::map<unsigned char, Item> inventory;
-		std::map<unsigned char, Item> pickup;
-		std::map<unsigned char, Item> drop;
-		Stash *on_ground;
-		Coordinate position;
-		Coordinate branch_main;
-		Coordinate branch_mines;
-		Coordinate branch_sokoban;
-		std::string last_command;
-		int internal_turn;
-		bool inventory_changed;
-		bool got_pickup_menu;
-		bool got_drop_menu;
-		int last_turn;
+public:
+	std::vector<Level> levels;
+	std::map<unsigned char, Item> inventory;
+	std::map<unsigned char, Item> pickup;
+	std::map<unsigned char, Item> drop;
+	Stash *on_ground;
+	Coordinate position;
+	Coordinate branch_main;
+	Coordinate branch_mines;
+	Coordinate branch_sokoban;
+	std::string last_command;
+	int internal_turn;
+	bool inventory_changed;
+	bool got_pickup_menu;
+	bool got_drop_menu;
+	int last_turn;
 
-		Saiph(const std::string &directory, const int interface);
-		~Saiph();
+	Saiph(const std::string &directory, const int interface);
+	~Saiph();
 
-		bool addItemToInventory(unsigned char key, const Item &item);
-		unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
-		const std::string &farlook(const Point &target);
-		unsigned char getDungeonSymbol();
-		unsigned char getDungeonSymbol(const Coordinate &coordinate);
-		unsigned char getDungeonSymbol(const Point &point);
-		unsigned char getDungeonSymbol(unsigned char direction);
-		unsigned char getMonsterSymbol(const Coordinate &coordinate);
-		unsigned char getMonsterSymbol(const Point &point);
-		bool removeItemFromInventory(unsigned char key, const Item &item);
-		bool run();
-		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
-		void setDungeonSymbol(const Point &point, unsigned char symbol);
-		void setDungeonSymbol(unsigned char symbol);
-		PathNode shortestPath(const Coordinate &target);
-		const PathNode &shortestPath(const Point &target);
-		PathNode shortestPath(unsigned char symbol);
+	bool addItemToInventory(unsigned char key, const Item &item);
+	unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
+	const std::string &farlook(const Point &target);
+	unsigned char getDungeonSymbol();
+	unsigned char getDungeonSymbol(const Coordinate &coordinate);
+	unsigned char getDungeonSymbol(const Point &point);
+	unsigned char getDungeonSymbol(unsigned char direction);
+	unsigned char getMonsterSymbol(const Coordinate &coordinate);
+	unsigned char getMonsterSymbol(const Point &point);
+	bool removeItemFromInventory(unsigned char key, const Item &item);
+	bool run();
+	void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
+	void setDungeonSymbol(const Point &point, unsigned char symbol);
+	void setDungeonSymbol(unsigned char symbol);
+	PathNode shortestPath(const Coordinate &target);
+	const PathNode &shortestPath(const Point &target);
+	PathNode shortestPath(unsigned char symbol);
 
-	private:
-		Connection *connection;
-		std::vector<analyzer::Analyzer *> analyzers;
-		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
-		std::vector<analyzer::Analyzer *>::iterator best_analyzer;
-		std::string current_directory;
-		std::string farlook_command;
-		bool sokoban_found;
-		int stuck_counter;
-		time_t start_time;
+private:
+	Connection *connection;
+	World *world;
+	std::vector<analyzer::Analyzer *> analyzers;
+	std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
+	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
+	std::string current_directory;
+	std::string farlook_command;
+	bool sokoban_found;
+	int stuck_counter;
+	time_t start_time;
 
-		void detectPosition();
-		bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
-		Point directionToPoint(unsigned char direction);
-		void dumpMaps();
-		void parseMessages(const std::string &messages);
+	void detectPosition();
+	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
+	Point directionToPoint(unsigned char direction);
+	void dumpMaps();
+	void parseMessages(const std::string &messages);
 };
 
 /* inline methods */

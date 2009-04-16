@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Connection.h"
 #include "Debug.h"
-#include "Player.h"
+#include "Saiph.h"
 #include "World.h"
 
 using namespace std;
@@ -20,6 +20,8 @@ int World::command_count = 0;
 int World::frame_count = 0;
 bool World::menu = false;
 bool World::question = false;
+char World::level[MAX_TEXT_LENGTH] = {'\0'};
+int World::turn = 0;
 
 /* constructors/destructor */
 World::World(Connection *connection) : connection(connection) {
@@ -370,6 +372,77 @@ void World::handleEscapeSequence(int *pos, int *color) {
 	}
 }
 
+bool World::parseAttributeRow(const char *attributerow) {
+	/* fetch attributes */
+	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &Saiph::strength, &Saiph::dexterity, &Saiph::constitution, &Saiph::intelligence, &Saiph::wisdom, &Saiph::charisma, effects[0]);
+	if (matched < 7)
+		return false;
+	if (effects[0][0] == 'L')
+		Saiph::alignment = LAWFUL;
+	else if (effects[0][0] == 'N')
+		Saiph::alignment = NEUTRAL;
+	else    
+		Saiph::alignment = CHAOTIC;
+	return true;
+}
+
+bool World::parseStatusRow(const char *statusrow) {
+	/* fetch status */
+	encumbrance = UNENCUMBERED;
+	hunger = CONTENT;
+	blind = false;
+	confused = false;
+	foodpoisoned = false;
+	hallucinating = false;
+	ill = false;
+	slimed = false;
+	stunned = false;
+	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", level, &Saiph::zorkmids, &Saiph::hitpoints, &Saiph::hitpoints_max, &Saiph::power, &Saiph::power_max, &Saiph::armor_class, &Saiph::experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	if (matched < 9)
+		return false;
+	int effects_found = matched - 9;
+	for (int e = 0; e < effects_found; ++e) {
+		if (strcmp(effects[e], "Burdened") == 0) {
+			Saiph::encumbrance = BURDENED;
+		} else if (strcmp(effects[e], "Stressed") == 0) {
+			Saiph::encumbrance = STRESSED;
+		} else if (strcmp(effects[e], "Strained") == 0) {
+			Saiph::encumbrance = STRAINED;
+		} else if (strcmp(effects[e], "Overtaxed") == 0) {
+			Saiph::encumbrance = OVERTAXED;
+		} else if (strcmp(effects[e], "Overloaded") == 0) {
+			Saiph::encumbrance = OVERLOADED;
+		} else if (strcmp(effects[e], "Fainting") == 0) {
+			Saiph::hunger = FAINTING;
+		} else if (strcmp(effects[e], "Fainted") == 0) {
+			Saiph::hunger = FAINTING;
+		} else if (strcmp(effects[e], "Weak") == 0) {
+			Saiph::hunger = WEAK;
+		} else if (strcmp(effects[e], "Hungry") == 0) {
+			Saiph::hunger = HUNGRY;
+		} else if (strcmp(effects[e], "Satiated") == 0) {
+			Saiph::hunger = SATIATED;
+		} else if (strcmp(effects[e], "Oversatiated") == 0) {
+			Saiph::hunger = OVERSATIATED;
+		} else if (strcmp(effects[e], "Blind") == 0) {
+			Saiph::blind = true;
+		} else if (strcmp(effects[e], "Conf") == 0) {
+			Saiph::confused = true;
+		} else if (strcmp(effects[e], "FoodPois") == 0) {
+			Saiph::foodpoisoned = true;
+		} else if (strcmp(effects[e], "Hallu") == 0) {
+			Saiph::hallucinating = true;
+		} else if (strcmp(effects[e], "Ill") == 0) {
+			Saiph::ill = true;
+		} else if (strcmp(effects[e], "Slime") == 0) {
+			Saiph::slimed = true;
+		} else if (strcmp(effects[e], "Stun") == 0) {
+			Saiph::stunned = true;
+		}
+	}
+	return true;
+}
+
 void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
@@ -449,13 +522,13 @@ void World::update() {
 	fetchMessages();
 
 	/* parse attribute & status rows */
-	bool parsed_attributes = Player::parseAttributeRow(view[ATTRIBUTES_ROW]);
-	bool parsed_status = Player::parseStatusRow(view[STATUS_ROW]);
+	bool parsed_attributes = parseAttributeRow(view[ATTRIBUTES_ROW]);
+	bool parsed_status = parseStatusRow(view[STATUS_ROW]);
 	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
-		Player::row = cursor.row;
-		Player::col = cursor.col;
+		Saiph::row = cursor.row;
+		Saiph::col = cursor.col;
 	} else if (!menu && !question) {
 		/* hmm, what else can it be?
 		 * could we be missing data?

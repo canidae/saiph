@@ -38,7 +38,7 @@ void Level::parseMessages(const string &messages) {
 	/* set inventory_changed to false */
 	saiph->inventory_changed = false;
 	/* set got_[drop|pickup]_menu to false if we don't have a menu */
-	if (!saiph->world->menu) {
+	if (!World::menu) {
 		saiph->got_drop_menu = false;
 		saiph->got_pickup_menu = false;
 	}
@@ -191,11 +191,11 @@ void Level::parseMessages(const string &messages) {
 			/* we probably picked up everything here, remove stash */
 			stashes.erase(saiph->position);
 		}
-	} else if (saiph->world->menu && (pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
+	} else if (World::menu && (pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
 		/* we probably listed our inventory */
 		/* we're searching for " -  " because when we #enhance there are 2 spaces after the "-".
 		 * otherwise we'll confuse the inventory list with the enhance list, which is very bad */
-		if (saiph->world->cur_page == 1)
+		if (World::cur_page == 1)
 			saiph->inventory.clear(); // only clear when we're listing 1st page
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
@@ -308,8 +308,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 				old_symbol = PET;
 			else
-				old_symbol = saiph->world->view[m->first.row][m->first.col];
-			if (m->second.symbol == old_symbol && m->second.color == saiph->world->color[m->first.row][m->first.col]) {
+				old_symbol = World::view[m->first.row][m->first.col];
+			if (m->second.symbol == old_symbol && m->second.color == World::color[m->first.row][m->first.col]) {
 				/* note about this "point == m->first":
 				 * the character for the monster may be updated even if it hasn't moved,
 				 * if this is the case, we should return and neither move nor add the
@@ -352,11 +352,11 @@ void Level::updateMonsters() {
 	 * and make monsters we can't see !visible */
 	for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ) {
 		unsigned char symbol;
-		int color = saiph->world->color[m->first.row][m->first.col];
+		int color = World::color[m->first.row][m->first.col];
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 			symbol = PET;
 		else
-			symbol = saiph->world->view[m->first.row][m->first.col];
+			symbol = World::view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
 		m->second.visible = (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color);
 		if (m->second.visible) {
