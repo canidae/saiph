@@ -16,7 +16,7 @@ namespace analyzer {
 	public:
 		Amulet(Saiph *saiph);
 
-		void onEvent(event::Event *const);
+		void onEvent(event::Event *const event);
 		void parseMessages(const std::string &messages, const Command &best_command);
 
 	private:
