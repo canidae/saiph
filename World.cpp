@@ -22,20 +22,21 @@ bool World::menu = false;
 bool World::question = false;
 char World::level[MAX_TEXT_LENGTH] = {'\0'};
 int World::turn = 0;
-
-/* constructors/destructor */
-World::World(Connection *connection) : connection(connection) {
-	inverse = false;
-	bold = false;
-	last_menu = Point(-1, -1);
-	memset(changed, false, sizeof (changed));
-	memset(data, '\0', sizeof (data));
-	data_size = -1;
-	/* fetch the first "frame" */
-	update();
-}
+Connection *World::connection = NULL;
+bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
+bool World::inverse = false;
+bool World::bold = false;
+char World::data[BUFFER_SIZE * 2] = {'\0'};
+char World::effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {{'\0'}};
+int World::data_size = -1;
+std::string World::msg_str;
+Point World::last_menu;
 
 /* methods */
+void World::destroy() {
+	delete connection;
+}
+
 bool World::executeCommand(const string &command) {
 	/* send a command to nethack */
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
@@ -50,6 +51,16 @@ bool World::executeCommand(const string &command) {
 	++command_count;
 	update();
 	return true;
+}
+
+void World::init(int connection_type) {
+	connection = Connection::create(connection_type);
+	if (connection == NULL) {
+		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
+		exit(1);
+	}
+	/* fetch the first "frame" */
+	update();
 }
 
 /* private methods */
@@ -388,15 +399,15 @@ bool World::parseAttributeRow(const char *attributerow) {
 
 bool World::parseStatusRow(const char *statusrow) {
 	/* fetch status */
-	encumbrance = UNENCUMBERED;
-	hunger = CONTENT;
-	blind = false;
-	confused = false;
-	foodpoisoned = false;
-	hallucinating = false;
-	ill = false;
-	slimed = false;
-	stunned = false;
+	Saiph::encumbrance = UNENCUMBERED;
+	Saiph::hunger = CONTENT;
+	Saiph::blind = false;
+	Saiph::confused = false;
+	Saiph::foodpoisoned = false;
+	Saiph::hallucinating = false;
+	Saiph::ill = false;
+	Saiph::slimed = false;
+	Saiph::stunned = false;
 	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", level, &Saiph::zorkmids, &Saiph::hitpoints, &Saiph::hitpoints_max, &Saiph::power, &Saiph::power_max, &Saiph::armor_class, &Saiph::experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
 	if (matched < 9)
 		return false;
@@ -445,7 +456,7 @@ bool World::parseStatusRow(const char *statusrow) {
 
 void World::update() {
 	/* update the view */
-	int color = 0; // color of the char
+	int charcolor = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	if (data_size <= 0) {
 		/* no data? sleep a sec and try again */
@@ -502,7 +513,7 @@ void World::update() {
 			case 27:
 				/* escape sequence coming up */
 				++pos;
-				handleEscapeSequence(&pos, &color);
+				handleEscapeSequence(&pos, &charcolor);
 				break;
 
 			default:
@@ -512,7 +523,7 @@ void World::update() {
 					break;
 				}
 				view[cursor.row][cursor.col] = (unsigned char) data[pos];
-				this->color[cursor.row][cursor.col] = color;
+				color[cursor.row][cursor.col] = charcolor;
 				addChangedLocation(cursor);
 				cursor.col++;
 				break;

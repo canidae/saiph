@@ -93,17 +93,7 @@ unsigned long long int Saiph::extrinsics = 0;
 
 
 /* constructors/destructor */
-Saiph::Saiph(const string &directory, const int interface) {
-	connection = Connection::create(interface);
-	if (connection == NULL) {
-		cout << "ERROR: Don't know what interface this is: " << interface << endl;
-		exit(1);
-	}
-	world = new World(connection);
-
-	/* current directory for loading files */
-	current_directory = directory;
-
+Saiph::Saiph() {
 	/* bools for branches */
 	sokoban_found = false;
 
@@ -1175,13 +1165,15 @@ int main(int argc, const char *argv[]) {
 	Debug::open(logfile);
 	data::Monster::init();
 	data::Item::init();
-	Saiph *saiph = new Saiph(dirname(argv[0]), connection_type);
+	World::init(connection_type);
+	Saiph *saiph = new Saiph(); //dirname(argv[0]), connection_type);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())
 		;
 	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
 	delete saiph;
+	World::destroy();
 	data::Item::destroy();
 	data::Monster::destroy();
 	Debug::close();

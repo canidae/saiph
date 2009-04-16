@@ -112,7 +112,7 @@ public:
 	bool got_drop_menu;
 	int last_turn;
 
-	Saiph(const std::string &directory, const int interface);
+	Saiph();
 	~Saiph();
 
 	bool addItemToInventory(unsigned char key, const Item &item);
@@ -139,7 +139,6 @@ private:
 	std::vector<analyzer::Analyzer *> analyzers;
 	std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
-	std::string current_directory;
 	std::string farlook_command;
 	bool sokoban_found;
 	int stuck_counter;

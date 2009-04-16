@@ -40,28 +40,28 @@ public:
 	static char level[MAX_TEXT_LENGTH];
 	static int turn;
 
-	World(Connection *connection);
-
-	bool executeCommand(const std::string &command);
+	static void destroy();
+	static bool executeCommand(const std::string &command);
+	static void init(int connection_type);
 
 private:
-	Connection *connection;
-	bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
-	bool inverse;
-	bool bold;
-	char data[BUFFER_SIZE * 2]; // weird errors from valgrind, oh well, we got enough memory
-	char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
-	int data_size;
-	std::string msg_str; // helps fetching messages
-	Point last_menu; // needed to help detect menus that persist over turns
+	static Connection *connection;
+	static bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
+	static bool inverse;
+	static bool bold;
+	static char data[BUFFER_SIZE * 2]; // weird errors from valgrind, oh well, we got enough memory
+	static char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
+	static int data_size;
+	static std::string msg_str; // helps fetching messages
+	static Point last_menu; // needed to help detect menus that persist over turns
 
-	void addChangedLocation(const Point &point);
-	void fetchMenu();
-	void fetchMenuText(int stoprow, int startcol, bool addspaces);
-	void fetchMessages();
-	void handleEscapeSequence(int *pos, int *color);
-	bool parseAttributeRow(const char *attributerow);
-	bool parseStatusRow(const char *statusrow);
-	void update();
+	static void addChangedLocation(const Point &point);
+	static void fetchMenu();
+	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
+	static void fetchMessages();
+	static void handleEscapeSequence(int *pos, int *color);
+	static bool parseAttributeRow(const char *attributerow);
+	static bool parseStatusRow(const char *statusrow);
+	static void update();
 };
 #endif
