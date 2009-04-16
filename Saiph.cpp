@@ -502,12 +502,12 @@ bool Saiph::run() {
 		world->executeCommand(YES);
 		return false;
 	}
-	if (last_turn == World::turn)
+	if (last_turn == turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
 	last_command = command.command;
-	last_turn = World::turn;
+	last_turn = turn;
 	if (command.priority <= PRIORITY_MAX)
 		++internal_turn;
 	return true;
@@ -767,17 +767,17 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 
 /* private methods */
 void Saiph::detectPosition() {
+	string level = levelname;
 	if (position.level < 0) {
 		/* this happens when we start */
 		position.row = World::cursor.row;
 		position.col = World::cursor.col;
 		position.level = levels.size();
 		branch_main = position;
-		levels.push_back(Level(this, World::level));
-		levelmap[World::level].push_back(position.level);
+		levels.push_back(Level(this, level));
+		levelmap[level].push_back(position.level);
 		return;
 	}
-	string level = World::level;
 	if ((int) levels.size() > position.level && level == levels[position.level].name) {
 		/* same level as last frame, update row & col */
 		position.row = World::cursor.row;
@@ -955,7 +955,7 @@ void Saiph::dumpMaps() {
 		++seconds;
 	int cps = World::command_count / seconds;
 	int fps = World::frame_count / seconds;
-	int tps = World::turn / seconds;
+	int tps = turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
 	cout << "CPS/FPS/TPS: ";
 	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
