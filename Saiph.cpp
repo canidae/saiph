@@ -7,7 +7,6 @@
 #include "Debug.h"
 #include "Globals.h"
 #include "Player.h"
-#include "Request.h"
 #include "Saiph.h"
 #include "Stash.h"
 #include "World.h"

@@ -2,7 +2,7 @@ CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
 LDFLAGS = -lutil -g3 -gdwarf-2
-OBJECTS = Connection.o Debug.o EventBus.o Inventory.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Request.o Saiph.o Stash.o Telnet.o World.o
+OBJECTS = Connection.o Debug.o EventBus.o Inventory.o Item.o Level.o Local.o Monster.o PathNode.o Player.o Saiph.o Stash.o Telnet.o World.o
 
 saiph: $(OBJECTS) Actions/*.h Actions/*.cpp Analyzers/*.h Analyzers/*.cpp Data/*.h Data/*.cpp Events/*.h Events/*.cpp
 	$(MAKE) -C Actions
@@ -21,7 +21,6 @@ Local.o: Local.h Local.cpp
 Monster.o: Monster.h Monster.cpp
 PathNode.o: PathNode.h PathNode.cpp
 Player.o: Player.h Player.cpp
-Request.o: Request.h Request.cpp
 Saiph.o: Saiph.h Saiph.cpp
 Stash.o: Stash.h Stash.cpp
 Telnet.o: Telnet.h Telnet.cpp

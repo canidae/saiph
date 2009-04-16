@@ -4,7 +4,6 @@
 #define COMMAND_DEBUG_NAME "Command] "
 #define ITEMTRACKER_DEBUG_NAME "ItemTracker] "
 #define MESSAGES_DEBUG_NAME "Messages] "
-#define REQUEST_DEBUG_NAME "Request] "
 #define SAIPH_DEBUG_NAME "Saiph] "
 /* messages */
 #define SAIPH_GAIN_COLD_RES1 "  You feel full of hot air.  "
@@ -54,7 +53,6 @@ namespace analyzer {
 	class Analyzer;
 }
 class Connection;
-class Request;
 class Stash;
 class World;
 

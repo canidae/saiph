@@ -8,25 +8,25 @@
 
 using namespace std;
 
+/* static variables */
+vector<Point> World::changes;
+char World::view[ROWS][COLS + 1] = {{'\0'}};
+int World::color[ROWS][COLS] = {{0}};
+Point World::cursor;
+string World::messages = " ";
+int World::cur_page = -1;
+int World::max_page = -1;
+int World::command_count = 0;
+int World::frame_count = 0;
+bool World::menu = false;
+bool World::question = false;
+
 /* constructors/destructor */
 World::World(Connection *connection) : connection(connection) {
-	memset(view, ' ', sizeof (view));
-	for (int r = 0; r < ROWS; ++r)
-		view[r][COLS] = '\0';
-	memset(color, NO_COLOR, sizeof (color));
-	memset(changed, false, sizeof (changed));
-	cursor.row = 0;
-	cursor.col = 0;
-	messages = "  ";
-	cur_page = -1;
-	max_page = -1;
-	command_count = 0;
-	frame_count = 0;
 	inverse = false;
 	bold = false;
-	menu = false;
-	question = false;
 	last_menu = Point(-1, -1);
+	memset(changed, false, sizeof (changed));
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
 	/* fetch the first "frame" */

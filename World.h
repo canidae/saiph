@@ -24,17 +24,17 @@ class Connection;
 
 class World {
 	public:
-		std::vector<Point> changes; // list of locations changed since last "frame"
-		char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
-		int color[ROWS][COLS]; // not used for string reading, no need for + 1
-		Point cursor; // cursor position
-		std::string messages;
-		int cur_page;
-		int max_page;
-		int command_count;
-		int frame_count;
-		bool menu;
-		bool question;
+		static std::vector<Point> changes; // list of locations changed since last "frame"
+		static char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
+		static int color[ROWS][COLS]; // not used for string reading, no need for + 1
+		static Point cursor; // cursor position
+		static std::string messages;
+		static int cur_page;
+		static int max_page;
+		static int command_count;
+		static int frame_count;
+		static bool menu;
+		static bool question;
 
 		World(Connection *connection);
 
