@@ -3,54 +3,58 @@
 #include "Globals.h"
 #include "Player.h"
 
+/* static variables */
+/* attributes */
+int Player::alignment = NEUTRAL; // see defined constants
+int Player::charisma = 0;
+int Player::constitution = 0;
+int Player::dexterity = 0;
+int Player::intelligence = 0;
+int Player::strength = 0;
+int Player::wisdom = 0;
+/* status */
+int Player::armor_class = 0;
+int Player::encumbrance = UNENCUMBERED; // see defined constants
+int Player::experience = 0;
+int Player::hunger = CONTENT; // see defined constants
+int Player::hitpoints = 0;
+int Player::hitpoints_max = 0;
+int Player::power = 0;
+int Player::power_max = 0;
+/* effects */
+bool Player::blind = false;
+bool Player::confused = false;
+bool Player::foodpoisoned = false;
+bool Player::hallucinating = false;
+bool Player::ill = false;
+bool Player::slimed = false;
+bool Player::stunned = false;
+/* position */
+char Player::level[MAX_TEXT_LENGTH] = {'\0'};
+int Player::row = 0;
+int Player::col = 0;
+/* zorkmids */
+int Player::zorkmids = 0;
+/* turn */
+int Player::turn = 0;
+/* intrinsics */
+unsigned long long int Player::intrinsics = 0;
+unsigned long long int Player::extrinsics = 0;
+/* lycanthropy */
+bool Player::lycanthropy = false;
+/* hurt leg */
+bool Player::hurt_leg = false;
+/* polymorphed */
+bool Player::polymorphed = false;
+/* engulfed */
+bool Player::engulfed = false;
+/* levitating */
+bool Player::levitating = false;
+/* for parsing text */
+char Player::effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {{'\0'}};
+
 /* constructors/destructor */
 Player::Player() {
-	/* attributes */
-	alignment = 0;
-	charisma = 0;
-	constitution = 0;
-	dexterity = 0;
-	intelligence = 0;
-	strength = 0;
-	wisdom = 0;
-	/* status */
-	armor_class = 0;
-	encumbrance = 0;
-	experience = 0;
-	hunger = 0;
-	hitpoints = 0;
-	hitpoints_max = 0;
-	power = 0;
-	power_max = 0;
-	/* effects */
-	blind = false;
-	confused = false;
-	foodpoisoned = false;
-	hallucinating = false;
-	ill = false;
-	slimed = false;
-	stunned = false;
-	/* position */
-	level[0] = '\0';
-	row = 0;
-	col = 0;
-	/* zorkmids */
-	zorkmids = 0;
-	/* turn */
-	turn = 0;
-	/* intrinsics */
-	intrinsics = 0;
-	extrinsics = 0;
-	/* lycanthropy */
-	lycanthropy = false;
-	/* hurt leg */
-	hurt_leg = false;
-	/* polymorphed */
-	polymorphed = false;
-	/* engulfed */
-	engulfed = false;
-	/* levitating */
-	levitating = false;
 }
 
 /* methods */

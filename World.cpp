@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Connection.h"
 #include "Debug.h"
+#include "Player.h"
 #include "World.h"
 
 using namespace std;
@@ -448,13 +449,13 @@ void World::update() {
 	fetchMessages();
 
 	/* parse attribute & status rows */
-	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
-	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
+	bool parsed_attributes = Player::parseAttributeRow(view[ATTRIBUTES_ROW]);
+	bool parsed_status = Player::parseStatusRow(view[STATUS_ROW]);
 	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
 		/* the last escape sequence *sometimes* place the cursor on the player,
 		 * which is quite handy since we won't have to search for the player then */
-		player.row = cursor.row;
-		player.col = cursor.col;
+		Player::row = cursor.row;
+		Player::col = cursor.col;
 	} else if (!menu && !question) {
 		/* hmm, what else can it be?
 		 * could we be missing data?

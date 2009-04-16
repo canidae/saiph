@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "Item.h"
 #include "Level.h"
+#include "Player.h"
 #include "Saiph.h"
 #include "World.h"
 
@@ -270,19 +271,19 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
 	/* update items */
-	if (!saiph->world->player.hallucinating && item[symbol]) {
+	if (!Player::hallucinating && item[symbol]) {
 		map<Point, Stash>::iterator s = stashes.find(point);
 		if (s != stashes.end()) {
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
 				if (s->second.top_symbol != ILLEGAL_ITEM)
-					s->second.turn_changed = saiph->world->player.turn;
+					s->second.turn_changed = Player::turn;
 				s->second.top_symbol = symbol;
 				s->second.top_color = color;
 			}
 		} else {
 			/* new stash */
-			stashes[point] = Stash(saiph->world->player.turn, symbol, color);
+			stashes[point] = Stash(Player::turn, symbol, color);
 		}
 	} else if (symbol == dungeonmap[point.row][point.col]) {
 		/* if there ever was a stash here, it's gone now */
@@ -334,12 +335,12 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			/* remove monster from monstermap */
 			monstermap[nearest->first.row][nearest->first.col] = ILLEGAL_MONSTER;
 			/* update monster */
-			nearest->second.last_seen = saiph->world->player.turn;
+			nearest->second.last_seen = Player::turn;
 			monsters[point] = nearest->second;
 			monsters.erase(nearest);
 		} else {
 			/* add monster */
-			monsters[point] = Monster(msymbol, color, saiph->world->player.turn);
+			monsters[point] = Monster(msymbol, color, Player::turn);
 		}
 		/* set monster on monstermap */
 		monstermap[point.row][point.col] = msymbol;
@@ -584,7 +585,7 @@ void Level::addItemToStash(const Point &point, const Item &item) {
 		return;
 	}
 	/* new stash */
-	Stash stash(saiph->world->player.turn);
+	Stash stash(Player::turn);
 	stash.items.push_back(item);
 	stashes[point] = stash;
 }

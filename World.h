@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 #include "Globals.h"
-#include "Player.h"
 #include "Point.h"
 
 class Connection;
@@ -29,7 +28,6 @@ class World {
 		char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 		int color[ROWS][COLS]; // not used for string reading, no need for + 1
 		Point cursor; // cursor position
-		Player player;
 		std::string messages;
 		int cur_page;
 		int max_page;

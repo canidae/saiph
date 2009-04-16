@@ -6,6 +6,7 @@
 #include "Connection.h"
 #include "Debug.h"
 #include "Globals.h"
+#include "Player.h"
 #include "Request.h"
 #include "Saiph.h"
 #include "Stash.h"
@@ -299,13 +300,13 @@ bool Saiph::run() {
 	on_ground = NULL;
 
 	/* check if we're engulfed */
-	if (world->player.row > MAP_ROW_BEGIN && world->player.row < MAP_ROW_END && world->player.col > MAP_COL_BEGIN && world->player.col < MAP_COL_END && world->view[world->player.row - 1][world->player.col - 1] == '/' && world->view[world->player.row - 1][world->player.col + 1] == '\\' && world->view[world->player.row + 1][world->player.col - 1] == '\\' && world->view[world->player.row + 1][world->player.col + 1] == '/')
-		world->player.engulfed = true;
+	if (Player::row > MAP_ROW_BEGIN && Player::row < MAP_ROW_END && Player::col > MAP_COL_BEGIN && Player::col < MAP_COL_END && world->view[Player::row - 1][Player::col - 1] == '/' && world->view[Player::row - 1][Player::col + 1] == '\\' && world->view[Player::row + 1][Player::col - 1] == '\\' && world->view[Player::row + 1][Player::col + 1] == '/')
+		Player::engulfed = true;
 	else
-		world->player.engulfed = false;
+		Player::engulfed = false;
 
 	/* detect player position */
-	if (!world->menu && !world->player.engulfed)
+	if (!world->menu && !Player::engulfed)
 		detectPosition();
 
 	/* global message parsing */
@@ -320,12 +321,12 @@ bool Saiph::run() {
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Question asked" << endl;
 	if (world->menu)
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Menu shown" << endl;
-	if (world->player.engulfed)
+	if (Player::engulfed)
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
 	/* update level */
 	if (!world->menu) {
-		if (!world->player.engulfed) {
+		if (!Player::engulfed) {
 			/* update changed symbols */
 			for (vector<Point>::iterator c = world->changes.begin(); c != world->changes.end(); ++c)
 				levels[position.level].updateMapPoint(*c, (unsigned char) world->view[c->row][c->col], world->color[c->row][c->col]);
@@ -471,12 +472,12 @@ bool Saiph::run() {
 		world->executeCommand(YES);
 		return false;
 	}
-	if (last_turn == world->player.turn)
+	if (last_turn == Player::turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
 	last_command = command.command;
-	last_turn = world->player.turn;
+	last_turn = Player::turn;
 	if (command.priority <= PRIORITY_MAX)
 		++internal_turn;
 	return true;
@@ -738,19 +739,19 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 void Saiph::detectPosition() {
 	if (position.level < 0) {
 		/* this happens when we start */
-		position.row = world->player.row;
-		position.col = world->player.col;
+		position.row = Player::row;
+		position.col = Player::col;
 		position.level = levels.size();
 		branch_main = position;
-		levels.push_back(Level(this, world->player.level));
-		levelmap[world->player.level].push_back(position.level);
+		levels.push_back(Level(this, Player::level));
+		levelmap[Player::level].push_back(position.level);
 		return;
 	}
-	string level = world->player.level;
+	string level = Player::level;
 	if ((int) levels.size() > position.level && level == levels[position.level].name) {
 		/* same level as last frame, update row & col */
-		position.row = world->player.row;
-		position.col = world->player.col;
+		position.row = Player::row;
+		position.col = Player::col;
 		if (!sokoban_found && levels[position.level].branch == BRANCH_MAIN && levels[position.level].depth >= 5 && levels[position.level].depth <= 9) {
 			/* look for sokoban level 1a or 1b */
 			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
@@ -854,8 +855,8 @@ void Saiph::detectPosition() {
 		/* yes, we were on a magic portal */
 		levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position] = found;
 	}
-	position.row = world->player.row;
-	position.col = world->player.col;
+	position.row = Player::row;
+	position.col = Player::col;
 	position.level = found;
 }
 
@@ -924,7 +925,7 @@ void Saiph::dumpMaps() {
 		++seconds;
 	int cps = world->command_count / seconds;
 	int fps = world->frame_count / seconds;
-	int tps = world->player.turn / seconds;
+	int tps = Player::turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
 	cout << "CPS/FPS/TPS: ";
 	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
@@ -937,7 +938,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
 			unsigned char monster = getMonsterSymbol(p);
-			if (p.row == world->player.row && p.col == world->player.col)
+			if (p.row == Player::row && p.col == Player::col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (monster != ILLEGAL_MONSTER)
 				cout << monster;
@@ -951,7 +952,7 @@ void Saiph::dumpMaps() {
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
-			if (p.row == world->player.row && p.col == world->player.col)
+			if (p.row == Player::row && p.col == Player::col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (levels[position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
 				//cout << (unsigned char) levels[position.level].pathmap[p.row][p.col].dir;
@@ -964,31 +965,31 @@ void Saiph::dumpMaps() {
 
 	/* status & inventory */
 	cout << (unsigned char) 27 << "[2;82H";
-	if (world->player.intrinsics & PROPERTY_COLD)
+	if (Player::intrinsics & PROPERTY_COLD)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_DISINT)
+	if (Player::intrinsics & PROPERTY_DISINT)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_FIRE)
+	if (Player::intrinsics & PROPERTY_FIRE)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_POISON)
+	if (Player::intrinsics & PROPERTY_POISON)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_SHOCK)
+	if (Player::intrinsics & PROPERTY_SHOCK)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_SLEEP)
+	if (Player::intrinsics & PROPERTY_SLEEP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
 
 	cout << (unsigned char) 27 << "[3;82H";
-	if (world->player.intrinsics & PROPERTY_ESP)
+	if (Player::intrinsics & PROPERTY_ESP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_TELEPORT_CONTROL)
+	if (Player::intrinsics & PROPERTY_TELEPORT_CONTROL)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
-	if (world->player.intrinsics & PROPERTY_TELEPORT)
+	if (Player::intrinsics & PROPERTY_TELEPORT)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
-	if (world->player.lycanthropy)
+	if (Player::lycanthropy)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
-	if (world->player.hurt_leg)
+	if (Player::hurt_leg)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
-	if (world->player.polymorphed)
+	if (Player::polymorphed)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
 
 	int ir = 0;
@@ -1019,53 +1020,53 @@ void Saiph::parseMessages(const string &messages) {
 		world->question = true;
 	}
 	if (messages.find(SAIPH_GAIN_COLD_RES1, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_COLD;
+		Player::intrinsics |= PROPERTY_COLD;
 	if (messages.find(SAIPH_LOSE_COLD_RES1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_COLD;
+		Player::intrinsics &= ~PROPERTY_COLD;
 	if (messages.find(SAIPH_GAIN_DISINTEGRATION_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_DISINTEGRATION_RES2, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_DISINT;
+		Player::intrinsics |= PROPERTY_DISINT;
 	if (messages.find(SAIPH_GAIN_FIRE_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_FIRE_RES2, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_FIRE;
+		Player::intrinsics |= PROPERTY_FIRE;
 	if (messages.find(SAIPH_LOSE_FIRE_RES1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_FIRE;
+		Player::intrinsics &= ~PROPERTY_FIRE;
 	if (messages.find(SAIPH_GAIN_POISON_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_POISON_RES2, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_POISON;
+		Player::intrinsics |= PROPERTY_POISON;
 	if (messages.find(SAIPH_LOSE_POISON_RES1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_POISON;
+		Player::intrinsics &= ~PROPERTY_POISON;
 	if (messages.find(SAIPH_GAIN_SHOCK_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_SHOCK_RES2, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_SHOCK;
+		Player::intrinsics |= PROPERTY_SHOCK;
 	if (messages.find(SAIPH_LOSE_SHOCK_RES1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_SHOCK;
+		Player::intrinsics &= ~PROPERTY_SHOCK;
 	if (messages.find(SAIPH_GAIN_SLEEP_RES1, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_SLEEP;
+		Player::intrinsics |= PROPERTY_SLEEP;
 	if (messages.find(SAIPH_LOSE_SLEEP_RES1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_SLEEP;
+		Player::intrinsics &= ~PROPERTY_SLEEP;
 	if (messages.find(SAIPH_GAIN_TELEPATHY1, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_ESP;
+		Player::intrinsics |= PROPERTY_ESP;
 	if (messages.find(SAIPH_LOSE_TELEPATHY1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_ESP;
+		Player::intrinsics &= ~PROPERTY_ESP;
 	if (messages.find(SAIPH_GAIN_TELEPORT_CONTROL1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORT_CONTROL2, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_TELEPORT_CONTROL;
+		Player::intrinsics |= PROPERTY_TELEPORT_CONTROL;
 	if (messages.find(SAIPH_GAIN_TELEPORTITIS1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORTITIS2, 0) != string::npos)
-		world->player.intrinsics |= PROPERTY_TELEPORT;
+		Player::intrinsics |= PROPERTY_TELEPORT;
 	if (messages.find(SAIPH_LOSE_TELEPORTITIS1, 0) != string::npos)
-		world->player.intrinsics &= ~PROPERTY_TELEPORT;
+		Player::intrinsics &= ~PROPERTY_TELEPORT;
 	if (messages.find(SAIPH_FEEL_PURIFIED, 0) != string::npos)
-		world->player.lycanthropy = false;
+		Player::lycanthropy = false;
 	if (messages.find(SAIPH_FEEL_FEVERISH, 0) != string::npos)
-		world->player.lycanthropy = true;
+		Player::lycanthropy = true;
 	if (messages.find(SAIPH_HURT_LEFT_LEG, 0) != string::npos || messages.find(SAIPH_HURT_RIGHT_LEG, 0) != string::npos)
-		world->player.hurt_leg = true;
+		Player::hurt_leg = true;
 	if (messages.find(SAIPH_LEG_IS_BETTER, 0) != string::npos)
-		world->player.hurt_leg = false;
+		Player::hurt_leg = false;
 	if (messages.find(SAIPH_POLYMORPH, 0) != string::npos)
-		world->player.polymorphed = true;
+		Player::polymorphed = true;
 	if (messages.find(SAIPH_UNPOLYMORPH, 0) != string::npos)
-		world->player.polymorphed = false;
+		Player::polymorphed = false;
 	if (messages.find(SAIPH_BEGIN_LEVITATION, 0) != string::npos || messages.find(SAIPH_BEGIN_LEVITATION_PIT, 0) != string::npos)
-		world->player.levitating = true;
+		Player::levitating = true;
 	if (messages.find(SAIPH_END_LEVITATION, 0) != string::npos || messages.find(SAIPH_END_LEVITATION_SINK, 0) != string::npos)
-		world->player.levitating = false;
+		Player::levitating = false;
 }
 
 string dirname(const string &path) {

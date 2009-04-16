@@ -7,59 +7,59 @@
 class Player {
 	public:
 		/* attributes */
-		int alignment; // see defined constants
-		int charisma;
-		int constitution;
-		int dexterity;
-		int intelligence;
-		int strength;
-		int wisdom;
+		static int alignment; // see defined constants
+		static int charisma;
+		static int constitution;
+		static int dexterity;
+		static int intelligence;
+		static int strength;
+		static int wisdom;
 		/* status */
-		int armor_class;
-		int encumbrance; // see defined constants
-		int experience;
-		int hunger; // see defined constants
-		int hitpoints;
-		int hitpoints_max;
-		int power;
-		int power_max;
+		static int armor_class;
+		static int encumbrance; // see defined constants
+		static int experience;
+		static int hunger; // see defined constants
+		static int hitpoints;
+		static int hitpoints_max;
+		static int power;
+		static int power_max;
 		/* effects */
-		bool blind;
-		bool confused;
-		bool foodpoisoned;
-		bool hallucinating;
-		bool ill;
-		bool slimed;
-		bool stunned;
+		static bool blind;
+		static bool confused;
+		static bool foodpoisoned;
+		static bool hallucinating;
+		static bool ill;
+		static bool slimed;
+		static bool stunned;
 		/* position */
-		char level[MAX_TEXT_LENGTH];
-		int row;
-		int col;
+		static char level[MAX_TEXT_LENGTH];
+		static int row;
+		static int col;
 		/* zorkmids */
-		int zorkmids;
+		static int zorkmids;
 		/* turn */
-		int turn;
+		static int turn;
 		/* intrinsics */
-		unsigned long long int intrinsics;
-		unsigned long long int extrinsics;
+		static unsigned long long int intrinsics;
+		static unsigned long long int extrinsics;
 		/* lycanthropy */
-		bool lycanthropy;
+		static bool lycanthropy;
 		/* hurt leg */
-		bool hurt_leg;
+		static bool hurt_leg;
 		/* polymorphed */
-		bool polymorphed;
+		static bool polymorphed;
 		/* engulfed */
-		bool engulfed;
+		static bool engulfed;
 		/* levitating */
-		bool levitating;
+		static bool levitating;
 
 		Player();
 
-		bool parseAttributeRow(const char *attributerow);
-		bool parseStatusRow(const char *statusrow);
+		static bool parseAttributeRow(const char *attributerow);
+		static bool parseStatusRow(const char *statusrow);
 
 	private:
 		/* for parsing text */
-		char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
+		static char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 };
 #endif
