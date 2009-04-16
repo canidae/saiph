@@ -5,6 +5,8 @@
 #define ITEMTRACKER_DEBUG_NAME "ItemTracker] "
 #define MESSAGES_DEBUG_NAME "Messages] "
 #define SAIPH_DEBUG_NAME "Saiph] "
+/* max length of levelname */
+#define MAX_LEVELNAME_LENGTH 16
 /* messages */
 #define SAIPH_GAIN_COLD_RES1 "  You feel full of hot air.  "
 #define SAIPH_LOSE_COLD_RES1 "  You feel cooler!  "
@@ -88,14 +90,15 @@ public:
 	static bool polymorphed;
 	static bool levitating;
 	static bool engulfed;
-	/* position */
+	/* position, level name and turn */
 	static Coordinate position;
+	static char levelname[MAX_LEVELNAME_LENGTH];
+	static int turn;
 	/* zorkmids */
 	static int zorkmids;
 	/* intrinsics/extrinsics */
 	static unsigned long long int intrinsics;
 	static unsigned long long int extrinsics;
-
 
 	std::vector<Level> levels;
 	std::map<unsigned char, Item> inventory;

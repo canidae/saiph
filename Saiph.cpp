@@ -85,6 +85,8 @@ bool Saiph::levitating = false;
 bool Saiph::engulfed = false;
 /* position */
 Coordinate Saiph::position;
+char Saiph::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
+int Saiph::turn = 0;
 /* zorkmids */
 int Saiph::zorkmids = 0;
 /* intrinsics/extrinsics */

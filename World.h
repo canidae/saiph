@@ -37,8 +37,6 @@ public:
 	static int frame_count;
 	static bool menu;
 	static bool question;
-	static char level[MAX_TEXT_LENGTH];
-	static int turn;
 
 	static void destroy();
 	static bool executeCommand(const std::string &command);

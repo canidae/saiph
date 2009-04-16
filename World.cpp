@@ -20,8 +20,6 @@ int World::command_count = 0;
 int World::frame_count = 0;
 bool World::menu = false;
 bool World::question = false;
-char World::level[MAX_TEXT_LENGTH] = {'\0'};
-int World::turn = 0;
 Connection *World::connection = NULL;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
 bool World::inverse = false;
@@ -408,7 +406,7 @@ bool World::parseStatusRow(const char *statusrow) {
 	Saiph::ill = false;
 	Saiph::slimed = false;
 	Saiph::stunned = false;
-	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", level, &Saiph::zorkmids, &Saiph::hitpoints, &Saiph::hitpoints_max, &Saiph::power, &Saiph::power_max, &Saiph::armor_class, &Saiph::experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", Saiph::levelname, &Saiph::zorkmids, &Saiph::hitpoints, &Saiph::hitpoints_max, &Saiph::power, &Saiph::power_max, &Saiph::armor_class, &Saiph::experience, &Saiph::turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
 	if (matched < 9)
 		return false;
 	int effects_found = matched - 9;
