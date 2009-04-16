@@ -5,6 +5,8 @@
 #define DATA_DEBUG_NAME "Data] " // data from game, give that an unique name
 /* buffer */
 #define BUFFER_SIZE 65536
+#define MAX_EFFECTS 8
+#define MAX_TEXT_LENGTH 16
 /* stuff for parsing attribute & status rows */
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23

@@ -58,12 +58,50 @@ class World;
 
 class Saiph {
 public:
+	/* attributes */
+	static int alignment;
+	static int charisma;
+	static int constitution;
+	static int dexterity;
+	static int intelligence;
+	static int strength;
+	static int wisdom;
+	/* status */
+	static int armor_class;
+	static int encumbrance;
+	static int experience;
+	static int hunger;
+	static int hitpoints;
+	static int hitpoints_max;
+	static int power;
+	static int power_max;
+	/* effects */
+	static bool blind;
+	static bool confused;
+	static bool foodpoisoned;
+	static bool hallucinating;
+	static bool ill;
+	static bool slimed;
+	static bool stunned;
+	static bool lycanthropy;
+	static bool hurt_leg;
+	static bool polymorphed;
+	static bool levitating;
+	static bool engulfed;
+	/* position */
+	static Coordinate position;
+	/* zorkmids */
+	static int zorkmids;
+	/* intrinsics/extrinsics */
+	static unsigned long long int intrinsics;
+	static unsigned long long int extrinsics;
+
+
 	std::vector<Level> levels;
 	std::map<unsigned char, Item> inventory;
 	std::map<unsigned char, Item> pickup;
 	std::map<unsigned char, Item> drop;
 	Stash *on_ground;
-	Coordinate position;
 	Coordinate branch_main;
 	Coordinate branch_mines;
 	Coordinate branch_sokoban;

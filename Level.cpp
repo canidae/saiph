@@ -2,7 +2,6 @@
 #include "Debug.h"
 #include "Item.h"
 #include "Level.h"
-#include "Player.h"
 #include "Saiph.h"
 #include "World.h"
 
@@ -271,19 +270,19 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
 	/* update items */
-	if (!Player::hallucinating && item[symbol]) {
+	if (!Saiph::hallucinating && item[symbol]) {
 		map<Point, Stash>::iterator s = stashes.find(point);
 		if (s != stashes.end()) {
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
 				if (s->second.top_symbol != ILLEGAL_ITEM)
-					s->second.turn_changed = Player::turn;
+					s->second.turn_changed = World::turn;
 				s->second.top_symbol = symbol;
 				s->second.top_color = color;
 			}
 		} else {
 			/* new stash */
-			stashes[point] = Stash(Player::turn, symbol, color);
+			stashes[point] = Stash(World::turn, symbol, color);
 		}
 	} else if (symbol == dungeonmap[point.row][point.col]) {
 		/* if there ever was a stash here, it's gone now */
@@ -335,12 +334,12 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			/* remove monster from monstermap */
 			monstermap[nearest->first.row][nearest->first.col] = ILLEGAL_MONSTER;
 			/* update monster */
-			nearest->second.last_seen = Player::turn;
+			nearest->second.last_seen = World::turn;
 			monsters[point] = nearest->second;
 			monsters.erase(nearest);
 		} else {
 			/* add monster */
-			monsters[point] = Monster(msymbol, color, Player::turn);
+			monsters[point] = Monster(msymbol, color, World::turn);
 		}
 		/* set monster on monstermap */
 		monstermap[point.row][point.col] = msymbol;
@@ -585,7 +584,7 @@ void Level::addItemToStash(const Point &point, const Item &item) {
 		return;
 	}
 	/* new stash */
-	Stash stash(Player::turn);
+	Stash stash(World::turn);
 	stash.items.push_back(item);
 	stashes[point] = stash;
 }
