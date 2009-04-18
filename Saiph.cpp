@@ -6,6 +6,7 @@
 #include "Connection.h"
 #include "Debug.h"
 #include "Globals.h"
+#include "Inventory.h"
 #include "Saiph.h"
 #include "Stash.h"
 #include "World.h"
@@ -14,40 +15,6 @@
 /* data */
 #include "Data/Item.h"
 #include "Data/Monster.h"
-/* analyzers */
-#include "Analyzers/Amulet.h"
-#include "Analyzers/Armor.h"
-#include "Analyzers/Beatitude.h"
-#include "Analyzers/Blind.h"
-#include "Analyzers/Dig.h"
-#include "Analyzers/Donate.h"
-#include "Analyzers/Door.h"
-#include "Analyzers/Elbereth.h"
-#include "Analyzers/Enhance.h"
-#include "Analyzers/Excalibur.h"
-#include "Analyzers/Explore.h"
-#include "Analyzers/Fight.h"
-#include "Analyzers/Food.h"
-#include "Analyzers/Genocide.h"
-#include "Analyzers/Health.h"
-#include "Analyzers/Lamp.h"
-#include "Analyzers/Loot.h"
-#include "Analyzers/MonsterInfo.h"
-#include "Analyzers/Passtune.h"
-#include "Analyzers/Potion.h"
-#include "Analyzers/Pray.h"
-#include "Analyzers/Ring.h"
-#include "Analyzers/Rub.h"
-#include "Analyzers/Scroll.h"
-#include "Analyzers/Shop.h"
-#include "Analyzers/Sokoban.h"
-#include "Analyzers/Throne.h"
-#include "Analyzers/Unihorn.h"
-#include "Analyzers/Valkyrie.h"
-#include "Analyzers/Vault.h"
-#include "Analyzers/Wand.h"
-#include "Analyzers/Weapon.h"
-#include "Analyzers/Wish.h"
 
 using namespace analyzer;
 using namespace std;
@@ -91,6 +58,7 @@ int Saiph::zorkmids = 0;
 unsigned long long int Saiph::intrinsics = 0;
 unsigned long long int Saiph::extrinsics = 0;
 
+std::vector<Analyzer *> Saiph::analyzers;
 
 /* constructors/destructor */
 Saiph::Saiph() {
@@ -112,45 +80,6 @@ Saiph::Saiph() {
 	/* used for cps/fps/tps */
 	start_time = time(NULL);
 
-	/* Analyzers */
-	analyzers.push_back(new Amulet(this));
-	analyzers.push_back(new Armor(this));
-	analyzers.push_back(new Beatitude(this));
-	analyzers.push_back(new Blind(this));
-	analyzers.push_back(new Dig(this));
-	analyzers.push_back(new Donate(this));
-	analyzers.push_back(new Door(this));
-	analyzers.push_back(new Elbereth(this));
-	analyzers.push_back(new Enhance(this));
-	analyzers.push_back(new Excalibur(this));
-	analyzers.push_back(new Explore(this));
-	analyzers.push_back(new Fight(this));
-	analyzers.push_back(new Food(this));
-	analyzers.push_back(new Genocide(this));
-	analyzers.push_back(new Health(this));
-	analyzers.push_back(new Lamp(this));
-	analyzers.push_back(new Loot(this));
-	analyzers.push_back(new MonsterInfo(this));
-	analyzers.push_back(new Passtune(this));
-	analyzers.push_back(new Potion(this));
-	analyzers.push_back(new Pray(this));
-	analyzers.push_back(new Ring(this));
-	analyzers.push_back(new Rub(this));
-	analyzers.push_back(new Scroll(this));
-	analyzers.push_back(new Shop(this));
-	analyzers.push_back(new Sokoban(this));
-	analyzers.push_back(new Throne(this));
-	analyzers.push_back(new Unihorn(this));
-	analyzers.push_back(new Valkyrie(this));
-	analyzers.push_back(new Vault(this));
-	analyzers.push_back(new Wand(this));
-	analyzers.push_back(new Weapon(this));
-	analyzers.push_back(new Wish(this));
-
-	/* run init in analyzers */
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-		(*a)->init();
-
 	/* set best_analyzer */
 	best_analyzer = analyzers.end();
 }
@@ -161,20 +90,6 @@ Saiph::~Saiph() {
 }
 
 /* methods */
-bool Saiph::addItemToInventory(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return false;
-	Debug::notice() << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
-	if (inventory.find(key) != inventory.end()) {
-		/* existing item, add amount */
-		inventory[key].count += item.count;
-	} else {
-		/* new item */
-		inventory[key] = item;
-	}
-	return true;
-}
-
 unsigned char Saiph::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
 	/* is the target in a direct line from the player? */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
@@ -293,18 +208,17 @@ const string &Saiph::farlook(const Point &target) {
 	return farlook_command;
 }
 
-bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
-	if (item.count <= 0)
-		return false;
-	map<unsigned char, Item>::iterator i = inventory.find(key);
-	if (i == inventory.end())
-		return false;
-	Debug::notice() << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
-	if (i->second.count > item.count)
-		i->second.count -= item.count; // we got more than we remove
-	else
-		inventory.erase(i); // removing all we got
-	return true;
+void Saiph::registerAnalyzer(Analyzer *analyzer) {
+	analyzers.push_back(analyzer);
+}
+
+void Saiph::unregisterAnalyzer(Analyzer *analyzer) {
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if ((*a)->name == analyzer->name) {
+			analyzers.erase(a);
+			return;
+		}
+	}
 }
 
 bool Saiph::run() {
@@ -627,7 +541,7 @@ void Saiph::dumpMaps() {
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
 
 	int ir = 0;
-	for (map<unsigned char, Item>::iterator i = inventory.begin(); i != inventory.end() && ir < 46; ++i) {
+	for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end() && ir < 46; ++i) {
 		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		if (i->second.beatitude == BLESSED)

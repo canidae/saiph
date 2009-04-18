@@ -96,34 +96,34 @@ public:
 	static unsigned long long int intrinsics;
 	static unsigned long long int extrinsics;
 
-	std::map<unsigned char, Item> inventory; // Inventory
-	std::map<unsigned char, Item> pickup; // ???, World?
-	std::map<unsigned char, Item> drop; // ???, World?
+	std::map<unsigned char, Item> pickup; // Loot analyzer
+	std::map<unsigned char, Item> drop; // Loot analyzer
 	std::string last_command; // World?
 	int internal_turn; // World
-	bool got_pickup_menu; // ???, World
-	bool got_drop_menu; // ???, World
+	bool got_pickup_menu; // Loot analyzer
+	bool got_drop_menu; // Loot analyzer
 	int last_turn; // World?
 
 	Saiph();
 	~Saiph();
 
-	bool addItemToInventory(unsigned char key, const Item &item); // Inventory
+	static void registerAnalyzer(analyzer::Analyzer *analyzer);
+	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
+
 	unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders); // World
 	const std::string &farlook(const Point &target); // hmm
-	bool removeItemFromInventory(unsigned char key, const Item &item); // Inventory
 	bool run(); // main?
 
 private:
-	std::vector<analyzer::Analyzer *> analyzers;
+	static std::vector<analyzer::Analyzer *> analyzers;
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer; // main?
 	std::string farlook_command; // hmm
 	int stuck_counter; // main?
 	time_t start_time; // hmm
 
-	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
+	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders); // World
 	Point directionToPoint(unsigned char direction);
-	void dumpMaps();
+	void dumpMaps(); // World
 	void parseMessages(const std::string &messages);
 };
 #endif

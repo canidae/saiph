@@ -14,6 +14,7 @@ namespace event {
 		virtual ~ChangedInventoryItems() {}
 
 		virtual int getID() {return id;}
+		virtual std::string getName() {return "ChangedInventoryItems";}
 	};
 }
 #endif
