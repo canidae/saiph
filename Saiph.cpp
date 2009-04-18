@@ -101,9 +101,6 @@ Saiph::Saiph() {
 	/* clear last_command */
 	last_command = "";
 
-	/* inventory changed */
-	inventory_changed = false;
-
 	/* pickup/drop menu not showing */
 	got_pickup_menu = false;
 	got_drop_menu = false;
@@ -164,14 +161,13 @@ Saiph::Saiph() {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
-	Debug::close();
 }
 
 /* methods */
 bool Saiph::addItemToInventory(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return false;
-	Debug::notice(last_turn) << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
+	Debug::notice() << ITEMTRACKER_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (inventory.find(key) != inventory.end()) {
 		/* existing item, add amount */
 		inventory[key].count += item.count;
@@ -306,7 +302,7 @@ bool Saiph::removeItemFromInventory(unsigned char key, const Item &item) {
 	map<unsigned char, Item>::iterator i = inventory.find(key);
 	if (i == inventory.end())
 		return false;
-	Debug::notice(last_turn) << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
+	Debug::notice() << ITEMTRACKER_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (i->second.count > item.count)
 		i->second.count -= item.count; // we got more than we remove
 	else
@@ -336,16 +332,16 @@ bool Saiph::run() {
 	parseMessages(World::messages);
 
 	/* level message parsing */
-	Debug::notice(last_turn) << MESSAGES_DEBUG_NAME << "'" << World::messages << "'" << endl;
+	Debug::notice() << MESSAGES_DEBUG_NAME << "'" << World::messages << "'" << endl;
 	World::levels[position.level].parseMessages(World::messages);
 
 	/* more debugging */
 	if (World::question)
-		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Question asked" << endl;
+		Debug::notice() << SAIPH_DEBUG_NAME << "Question asked" << endl;
 	if (World::menu)
-		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Menu shown" << endl;
+		Debug::notice() << SAIPH_DEBUG_NAME << "Menu shown" << endl;
 	if (engulfed)
-		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
+		Debug::notice() << SAIPH_DEBUG_NAME << "Saiph engulfed" << endl;
 
 	/* update level */
 	if (!World::menu) {
@@ -418,15 +414,15 @@ bool Saiph::run() {
 
 	/* check if we got a command */
 	if (World::question && command == action::Action::noop) {
-		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << World::messages << endl;
+		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << World::messages << endl;
 		World::executeCommand(string(1, (char) 27));
 		return true;
 	} else if (World::menu && command == action::Action::noop) {
-		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << World::messages << endl;
+		Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << World::messages << endl;
 		World::executeCommand(string(1, (char) 27));
 		return true;
 	} else if (command == action::Action::noop) {
-		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
+		Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		cout << "No idea what to do: 42s";
@@ -446,7 +442,7 @@ bool Saiph::run() {
 	/* and flush cout. if we don't do this our output looks like garbage */
 	cout.flush();
 	/* let an analyzer do its command */
-	Debug::notice(last_turn) << (*best_analyzer)->name << " " << command << endl;
+	Debug::notice() << (*best_analyzer)->name << " " << command << endl;
 	World::executeCommand(command.command);
 	if (stuck_counter % 42 == 41) {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
@@ -485,11 +481,11 @@ bool Saiph::run() {
 		if (!was_move) {
 			/* apparently it wasn't a failed movement,
 			 * that means an analyzer is screwing up */
-			Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ": " << command << endl;
+			Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ": " << command << endl;
 		}
 	} else if (stuck_counter > 1680) {
 		/* failed too many times, #quit */
-		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+		Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
 		World::executeCommand(string(1, (char) 27));
 		World::executeCommand(QUIT);
 		World::executeCommand(YES);

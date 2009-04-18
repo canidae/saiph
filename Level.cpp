@@ -34,16 +34,6 @@ Level::Level(string name, int branch) : name(name), branch(branch), undiggable(f
 
 /* methods */
 void Level::parseMessages(const string &messages) {
-	/* set inventory_changed to false */
-	Saiph::inventory_changed = false;
-	/* set got_[drop|pickup]_menu to false if we don't have a menu */
-	if (!World::menu) {
-		Saiph::got_drop_menu = false;
-		Saiph::got_pickup_menu = false;
-	}
-	/* if last command was ":" we should clear stash on ground */
-	if (Saiph::last_command == ":")
-		clearStash(Saiph::position);
 	/* parse messages that can help us find doors/staircases/etc. */
 	string::size_type pos;
 	if (messages.find(LEVEL_STAIRCASE_UP_HERE) != string::npos) {
@@ -105,111 +95,50 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
 		stashes.erase(Saiph::position);
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Saiph::got_pickup_menu) {
-		/* picking up stuff */
-		if (Saiph::got_pickup_menu) {
-			/* not the first page, set pos to 0 */
-			pos = 0;
-		} else {
-			/* first page */
-			Saiph::got_pickup_menu = true;
-			/* and find first "  " */
-			pos = messages.find("  ", pos + 1);
-		}
-		while (pos != string::npos && messages.size() > pos + 6) {
-			pos += 6;
-			string::size_type length = messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			if (messages[pos - 2] == '-') {
-				Item item(messages.substr(pos, length));
-				Saiph::pickup[messages[pos - 4]] = item;
-			}
-			pos += length;
-		}
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Saiph::got_drop_menu) {
-		/* dropping items */
-		if (Saiph::got_drop_menu) {
-			/* not the first page, set pos to 0 */
-			pos = 0;
-		} else {
-			/* first page, set menu */
-			Saiph::got_drop_menu = true;;
-			/* and find first "  " */
-			pos = messages.find("  ", pos + 1);
-		}
-		while (pos != string::npos && messages.size() > pos + 6) {
-			pos += 6;
-			string::size_type length = messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			if (messages[pos - 2] == '-')
-				Saiph::drop[messages[pos - 4]] = Item(messages.substr(pos, length));
-			pos += length;
-		}
-	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
-		/* our inventory is empty. how did that happen? */
-		Saiph::inventory.clear();
-		Saiph::inventory_changed = true;
-	} else if (messages.find(".  ") != string::npos) {
-		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
-		 * we'll need to handle this too somehow.
-		 * when we're burdened we'll get "  You have a little trouble lifting f - a lichen corpse.  ".
-		 * we're searching for ".  " as we won't get that when we're listing inventory.
-		 * also, this won't detect gold, but we might not need to detect that,
-		 * well, it's gonna be a bit buggy when picking up gold from stashes */
-		/* additionally, we'll assume we're picking up from the stash at this location.
-		 * this will also trigger on wishes, but meh, probably not gonna be an issue */
-		pos = 0;
-		int pickup_count = 0;
-		while ((pos = messages.find(" - ", pos)) != string::npos) {
-			if (pos > 2 && (messages[pos - 3] == ' ' || messages[pos - 3] == 'g') && messages[pos - 2] == ' ') {
-				unsigned char key = messages[pos - 1];
-				pos += 3;
-				string::size_type length = messages.find(".  ", pos);
-				if (length == string::npos)
-					break;
-				length = length - pos;
-				Item item(messages.substr(pos, length));
-				if (Saiph::addItemToInventory(key, item))
-					++pickup_count;
-				pos += length;
-			} else {
-				/* "Yak - dog food!" mess things up.
-				 * this is why we checked for "  " or "g " before the "-".
-				 * we may get "... trouble lifting f - ya", and we need to detect that,
-				 * hence the "g " */
-				++pos;
-			}
-		}
-		if (pickup_count > 0)
-			Saiph::inventory_changed = true;
-		if ((int) stashes[Saiph::position].items.size() == pickup_count) {
-			/* we probably picked up everything here, remove stash */
-			stashes.erase(Saiph::position);
-		}
-	} else if (World::menu && (pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
-		/* we probably listed our inventory */
-		/* we're searching for " -  " because when we #enhance there are 2 spaces after the "-".
-		 * otherwise we'll confuse the inventory list with the enhance list, which is very bad */
-		if (World::cur_page == 1)
-			Saiph::inventory.clear(); // only clear when we're listing 1st page
-		while ((pos = messages.find(" - ", pos)) != string::npos) {
-			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
-				unsigned char key = messages[pos - 1];
-				pos += 3;
-				string::size_type length = messages.find("  ", pos);
-				if (length == string::npos)
-					break;
-				length = length - pos;
-				Item item(messages.substr(pos, length));
-				Saiph::addItemToInventory(key, item);
-				pos += length;
-			}
-		}
-		Saiph::inventory_changed = true;
+//	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Saiph::got_pickup_menu) {
+//		/* picking up stuff */
+//		if (Saiph::got_pickup_menu) {
+//			/* not the first page, set pos to 0 */
+//			pos = 0;
+//		} else {
+//			/* first page */
+//			Saiph::got_pickup_menu = true;
+//			/* and find first "  " */
+//			pos = messages.find("  ", pos + 1);
+//		}
+//		while (pos != string::npos && messages.size() > pos + 6) {
+//			pos += 6;
+//			string::size_type length = messages.find("  ", pos);
+//			if (length == string::npos)
+//				break;
+//			length = length - pos;
+//			if (messages[pos - 2] == '-') {
+//				Item item(messages.substr(pos, length));
+//				Saiph::pickup[messages[pos - 4]] = item;
+//			}
+//			pos += length;
+//		}
+//	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Saiph::got_drop_menu) {
+//		/* dropping items */
+//		if (Saiph::got_drop_menu) {
+//			/* not the first page, set pos to 0 */
+//			pos = 0;
+//		} else {
+//			/* first page, set menu */
+//			Saiph::got_drop_menu = true;;
+//			/* and find first "  " */
+//			pos = messages.find("  ", pos + 1);
+//		}
+//		while (pos != string::npos && messages.size() > pos + 6) {
+//			pos += 6;
+//			string::size_type length = messages.find("  ", pos);
+//			if (length == string::npos)
+//				break;
+//			length = length - pos;
+//			if (messages[pos - 2] == '-')
+//				Saiph::drop[messages[pos - 4]] = Item(messages.substr(pos, length));
+//			pos += length;
+//		}
 	}
 }
 
@@ -575,7 +504,7 @@ void Level::updatePathMap() {
 
 /* private methods */
 void Level::addItemToStash(const Point &point, const Item &item) {
-	Debug::notice(Saiph::last_turn) << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
+	Debug::notice() << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
 	if (item.count <= 0)
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);

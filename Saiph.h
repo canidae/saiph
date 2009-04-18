@@ -102,7 +102,6 @@ public:
 	Stash *on_ground; // World, ???
 	std::string last_command; // World?
 	int internal_turn; // World
-	bool inventory_changed; // DIE
 	bool got_pickup_menu; // ???, World
 	bool got_drop_menu; // ???, World
 	int last_turn; // World?
