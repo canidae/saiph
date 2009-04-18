@@ -76,7 +76,6 @@ public:
 	static bool lycanthropy; // TODO: intrinsic
 	static bool hurt_leg;
 	static bool polymorphed;
-	static bool levitating; // TODO: extrinsic?
 	/* position */
 	static Coordinate position;
 	/* zorkmids */

@@ -33,7 +33,6 @@ bool Saiph::stunned = false;
 bool Saiph::lycanthropy = false;
 bool Saiph::hurt_leg = false;
 bool Saiph::polymorphed = false;
-bool Saiph::levitating = false;
 /* position */
 Coordinate Saiph::position;
 /* zorkmids */
@@ -92,7 +91,7 @@ void Saiph::parseMessages(const string &messages) {
 	if (messages.find(SAIPH_UNPOLYMORPH, 0) != string::npos)
 		polymorphed = false;
 	if (messages.find(SAIPH_BEGIN_LEVITATION, 0) != string::npos || messages.find(SAIPH_BEGIN_LEVITATION_PIT, 0) != string::npos)
-		levitating = true;
+		extrinsics |= PROPERTY_LEVITATION;
 	if (messages.find(SAIPH_END_LEVITATION, 0) != string::npos || messages.find(SAIPH_END_LEVITATION_SINK, 0) != string::npos)
-		levitating = false;
+		extrinsics &= ~PROPERTY_LEVITATION;
 }
