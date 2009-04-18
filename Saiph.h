@@ -73,7 +73,6 @@ public:
 	static bool ill;
 	static bool slimed;
 	static bool stunned;
-	static bool lycanthropy; // TODO: intrinsic
 	static bool hurt_leg;
 	static bool polymorphed;
 	/* position */

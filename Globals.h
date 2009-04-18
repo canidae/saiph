@@ -247,6 +247,7 @@
 #define PROPERTY_UNCHANGING        ((unsigned long long) (1LL << 35))
 #define PROPERTY_RESTFUL_SLEEP     ((unsigned long long) (1LL << 36))
 #define PROPERTY_SEX_CHANGE        ((unsigned long long) (1LL << 37))
+#define PROPERTY_LYCANTHROPY       ((unsigned long long) (1LL << 38))
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0

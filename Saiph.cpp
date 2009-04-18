@@ -30,7 +30,6 @@ bool Saiph::hallucinating = false;
 bool Saiph::ill = false;
 bool Saiph::slimed = false;
 bool Saiph::stunned = false;
-bool Saiph::lycanthropy = false;
 bool Saiph::hurt_leg = false;
 bool Saiph::polymorphed = false;
 /* position */
@@ -79,9 +78,9 @@ void Saiph::parseMessages(const string &messages) {
 	if (messages.find(SAIPH_LOSE_TELEPORTITIS1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_TELEPORT;
 	if (messages.find(SAIPH_FEEL_PURIFIED, 0) != string::npos)
-		lycanthropy = false;
+		intrinsics |= PROPERTY_LYCANTHROPY;
 	if (messages.find(SAIPH_FEEL_FEVERISH, 0) != string::npos)
-		lycanthropy = true;
+		intrinsics &= ~PROPERTY_LYCANTHROPY;
 	if (messages.find(SAIPH_HURT_LEFT_LEG, 0) != string::npos || messages.find(SAIPH_HURT_RIGHT_LEG, 0) != string::npos)
 		hurt_leg = true;
 	if (messages.find(SAIPH_LEG_IS_BETTER, 0) != string::npos)

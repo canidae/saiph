@@ -826,7 +826,7 @@ void World::dumpMaps() {
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
 	if (Saiph::intrinsics & PROPERTY_TELEPORT)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
-	if (Saiph::lycanthropy)
+	if (Saiph::intrinsics & PROPERTY_LYCANTHROPY)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
 	if (Saiph::hurt_leg)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
