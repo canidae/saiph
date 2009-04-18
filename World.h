@@ -49,9 +49,10 @@ public:
 
 	static void init(int connection_type);
 	static void destroy();
-	static bool executeCommand(const std::string &command);
 	static void registerAnalyzer(analyzer::Analyzer *analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
+	static bool executeCommand(const std::string &command);
+	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 	static unsigned char getDungeonSymbol();
 	static unsigned char getDungeonSymbol(const Coordinate &coordinate);
 	static unsigned char getDungeonSymbol(const Point &point);
@@ -81,6 +82,8 @@ private:
 
 	static void addChangedLocation(const Point &point);
 	static void detectPosition();
+	static Point directionToPoint(unsigned char direction);
+	static bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
 	static void dumpMaps();
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);

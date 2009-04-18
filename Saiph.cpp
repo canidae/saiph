@@ -60,10 +60,6 @@ unsigned long long int Saiph::extrinsics = 0;
 
 /* constructors/destructor */
 Saiph::Saiph() {
-	/* internal turn counter.
-	 * whenever priority < 1000, we increase it by 1 */
-	internal_turn = 0;
-
 	/* clear last_command */
 	last_command = "";
 
@@ -84,83 +80,6 @@ void Saiph::init() {
 }
 
 void Saiph::destroy() {
-}
-
-unsigned char Saiph::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
-	/* is the target in a direct line from the player? */
-	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
-		/* outside map */
-		return ILLEGAL_DIRECTION;
-	} else if (point == position) {
-		/* eh? don't do this */
-		return NOWHERE;
-	} else if (point.row == position.row) {
-		/* aligned horizontally */
-		if (point.col > position.col) {
-			while (--point.col > position.col) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return E;
-		} else {
-			while (++point.col < position.col) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return W;
-		}
-	} else if (point.col == position.col) {
-		/* aligned vertically */
-		if (point.row > position.row) {
-			while (--point.row > position.row) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return S;
-		} else {
-			while (++point.row < position.row) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return N;
-		}
-	} else if (abs(point.row - position.row) == abs(point.col - position.col)) {
-		/* aligned diagonally */
-		if (point.row > position.row) {
-			if (point.col > position.col) {
-				while (--point.row > position.row) {
-					--point.col;
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return SE;
-			} else {
-				while (--point.row > position.row) {
-					++point.col;
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return SW;
-			}
-		} else {
-			if (point.col > position.col) {
-				while (++point.row < position.row) {
-					--point.col;
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return NE;
-			} else {
-				while (++point.row < position.row) {
-					++point.col;
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return NW;
-			}
-		}
-	}
-	return ILLEGAL_DIRECTION;
 }
 
 bool Saiph::run() {
@@ -270,7 +189,6 @@ bool Saiph::run() {
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << World::cursor.row + 1 << ";" << World::cursor.col + 1 << "H";
 		World::executeCommand("42s");
-		++internal_turn;
 		return true;
 	}
 
@@ -338,67 +256,7 @@ bool Saiph::run() {
 		stuck_counter = 0;
 	last_command = command.command;
 	last_turn = World::turn;
-	if (command.priority <= PRIORITY_MAX)
-		++internal_turn;
 	return true;
-}
-
-/* private methods */
-bool Saiph::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders) {
-	unsigned char symbol = World::getDungeonSymbol(point);
-	if (!Level::passable[symbol] && (!ignore_boulders || symbol != BOULDER))
-		return false;
-	else if (!ignore_sinks && symbol == SINK)
-		return false;
-	else if (World::getMonsterSymbol(point) != ILLEGAL_MONSTER && World::levels[position.level].monsters[point].visible)
-		return false;
-	return true;
-}
-
-Point Saiph::directionToPoint(unsigned char direction) {
-	/* return the position we'd be at if we do the given move */
-	Point pos = position;
-	switch (direction) {
-		case NW:
-			--pos.row;
-			--pos.col;
-			break;
-
-		case N:
-			--pos.row;
-			break;
-
-		case NE:
-			--pos.row;
-			++pos.col;
-			break;
-
-		case E:
-			++pos.col;
-			break;
-
-		case SE:
-			++pos.row;
-			++pos.col;
-			break;
-
-		case S:
-			++pos.row;
-			break;
-
-		case SW:
-			++pos.row;
-			--pos.col;
-			break;
-
-		case W:
-			--pos.col;
-			break;
-	}
-	if (pos.row >= MAP_ROW_BEGIN && pos.row <= MAP_ROW_END && pos.col >= MAP_COL_BEGIN && pos.col <= MAP_COL_END)
-		return pos;
-	else
-		return position;
 }
 
 void Saiph::analyze() {
@@ -460,6 +318,7 @@ void Saiph::parseMessages(const string &messages) {
 		levitating = false;
 }
 
+/* private methods */
 void usage(const string &executable) {
 	cout << "Usage: " << executable << " [-l|-t] [-L <logfile>]" << endl;
 	cout << endl;

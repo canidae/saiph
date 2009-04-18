@@ -88,6 +88,83 @@ bool World::executeCommand(const string &command) {
 	return true;
 }
 
+unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
+	/* is the target in a direct line from the player? */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
+		/* outside map */
+		return ILLEGAL_DIRECTION;
+	} else if (point == Saiph::position) {
+		/* eh? don't do this */
+		return NOWHERE;
+	} else if (point.row == Saiph::position.row) {
+		/* aligned horizontally */
+		if (point.col > Saiph::position.col) {
+			while (--point.col > Saiph::position.col) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return E;
+		} else {
+			while (++point.col < Saiph::position.col) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return W;
+		}
+	} else if (point.col == Saiph::position.col) {
+		/* aligned vertically */
+		if (point.row > Saiph::position.row) {
+			while (--point.row > Saiph::position.row) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return S;
+		} else {
+			while (++point.row < Saiph::position.row) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return N;
+		}
+	} else if (abs(point.row - Saiph::position.row) == abs(point.col - Saiph::position.col)) {
+		/* aligned diagonally */
+		if (point.row > Saiph::position.row) {
+			if (point.col > Saiph::position.col) {
+				while (--point.row > Saiph::position.row) {
+					--point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return SE;
+			} else {
+				while (--point.row > Saiph::position.row) {
+					++point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return SW;
+			}
+		} else {
+			if (point.col > Saiph::position.col) {
+				while (++point.row < Saiph::position.row) {
+					--point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return NE;
+			} else {
+				while (++point.row < Saiph::position.row) {
+					++point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return NW;
+			}
+		}
+	}
+	return ILLEGAL_DIRECTION;
+}
+
 PathNode World::shortestPath(unsigned char symbol) {
 	/* returns PathNode for shortest path from player to nearest symbol */
 	int pivot = -1;
@@ -468,6 +545,60 @@ void World::detectPosition() {
 	Saiph::position.row = cursor.row;
 	Saiph::position.col = cursor.col;
 	Saiph::position.level = found;
+}
+
+Point World::directionToPoint(unsigned char direction) {
+	/* return the position we'd be at if we do the given move */
+	Point pos = Saiph::position;
+	switch (direction) {
+	case NW:
+		--pos.row;
+		--pos.col;
+		break;
+
+	case N:
+		--pos.row;
+		break;
+
+	case NE:
+		--pos.row;
+		++pos.col;
+		break;
+
+	case E:
+		++pos.col;
+		break;
+
+	case SE:
+		++pos.row;
+		++pos.col;
+		break;
+
+	case S: 
+		++pos.row;
+		break;
+
+	case SW:
+		++pos.row;
+		--pos.col;
+		break;
+
+	case W: 
+		--pos.col;
+		break;
+	}
+	return pos;
+}
+
+bool World::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders) {
+	unsigned char symbol = getDungeonSymbol(point);
+	if (!Level::passable[symbol] && (!ignore_boulders || symbol != BOULDER))
+		return false;
+	else if (!ignore_sinks && symbol == SINK)
+		return false;
+	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[Saiph::position.level].monsters[point].visible)
+		return false;
+	return true;
 }
 
 void World::dumpMaps() {

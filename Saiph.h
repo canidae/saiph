@@ -98,10 +98,9 @@ public:
 	std::map<unsigned char, Item> pickup; // Loot analyzer
 	std::map<unsigned char, Item> drop; // Loot analyzer
 	std::string last_command; // World?
-	int internal_turn; // World
 	bool got_pickup_menu; // Loot analyzer
 	bool got_drop_menu; // Loot analyzer
-	int last_turn; // World?
+	int last_turn; // main?
 
 	Saiph();
 	~Saiph();
@@ -111,14 +110,12 @@ public:
 	static void analyze();
 	static void parseMessages(const std::string &messages);
 
-	unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders); // World
 	bool run(); // main?
 
 private:
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer; // main?
 	int stuck_counter; // main?
 
-	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders); // World
-	Point directionToPoint(unsigned char direction); // World
+	void usage(const std::string &executable);
 };
 #endif
