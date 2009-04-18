@@ -90,56 +90,53 @@ public:
 	static bool polymorphed;
 	static bool levitating;
 	static bool engulfed;
-	/* position, level name and turn */
+	/* position */
 	static Coordinate position;
-	static char levelname[MAX_LEVELNAME_LENGTH];
-	static int turn;
 	/* zorkmids */
 	static int zorkmids;
 	/* intrinsics/extrinsics */
 	static unsigned long long int intrinsics;
 	static unsigned long long int extrinsics;
 
-	std::vector<Level> levels;
-	std::map<unsigned char, Item> inventory;
-	std::map<unsigned char, Item> pickup;
-	std::map<unsigned char, Item> drop;
-	Stash *on_ground;
-	Coordinate branch_main;
-	Coordinate branch_mines;
-	Coordinate branch_sokoban;
-	std::string last_command;
-	int internal_turn;
-	bool inventory_changed;
-	bool got_pickup_menu;
-	bool got_drop_menu;
-	int last_turn;
+	std::vector<Level> levels; // World
+	std::map<unsigned char, Item> inventory; // Inventory
+	std::map<unsigned char, Item> pickup; // ???, World?
+	std::map<unsigned char, Item> drop; // ???, World?
+	Stash *on_ground; // World, ???
+	Coordinate branch_main; // World
+	Coordinate branch_mines; // World
+	Coordinate branch_sokoban; // World
+	std::string last_command; // World?
+	int internal_turn; // World
+	bool inventory_changed; // DIE
+	bool got_pickup_menu; // ???, World
+	bool got_drop_menu; // ???, World
+	int last_turn; // World?
 
 	Saiph();
 	~Saiph();
 
-	bool addItemToInventory(unsigned char key, const Item &item);
-	unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
-	const std::string &farlook(const Point &target);
-	unsigned char getDungeonSymbol();
-	unsigned char getDungeonSymbol(const Coordinate &coordinate);
-	unsigned char getDungeonSymbol(const Point &point);
-	unsigned char getDungeonSymbol(unsigned char direction);
-	unsigned char getMonsterSymbol(const Coordinate &coordinate);
-	unsigned char getMonsterSymbol(const Point &point);
-	bool removeItemFromInventory(unsigned char key, const Item &item);
-	bool run();
-	void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
-	void setDungeonSymbol(const Point &point, unsigned char symbol);
-	void setDungeonSymbol(unsigned char symbol);
-	PathNode shortestPath(const Coordinate &target);
-	const PathNode &shortestPath(const Point &target);
-	PathNode shortestPath(unsigned char symbol);
+	bool addItemToInventory(unsigned char key, const Item &item); // Inventory
+	unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders); // World
+	const std::string &farlook(const Point &target); // hmm
+	unsigned char getDungeonSymbol(); // World
+	unsigned char getDungeonSymbol(const Coordinate &coordinate); // World
+	unsigned char getDungeonSymbol(const Point &point); // World
+	unsigned char getDungeonSymbol(unsigned char direction); // World
+	unsigned char getMonsterSymbol(const Coordinate &coordinate); // World
+	unsigned char getMonsterSymbol(const Point &point); // World
+	bool removeItemFromInventory(unsigned char key, const Item &item); // Inventory
+	bool run(); // main?
+	void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol); // World
+	void setDungeonSymbol(const Point &point, unsigned char symbol); // World
+	void setDungeonSymbol(unsigned char symbol); // World
+	PathNode shortestPath(const Coordinate &target); // World
+	const PathNode &shortestPath(const Point &target); // World
+	PathNode shortestPath(unsigned char symbol); // World
 
 private:
-	Connection *connection;
 	std::vector<analyzer::Analyzer *> analyzers;
-	std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
+	std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition, World
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
 	std::string farlook_command;
 	bool sokoban_found;

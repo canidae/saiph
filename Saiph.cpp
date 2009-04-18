@@ -85,8 +85,6 @@ bool Saiph::levitating = false;
 bool Saiph::engulfed = false;
 /* position */
 Coordinate Saiph::position;
-char Saiph::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
-int Saiph::turn = 0;
 /* zorkmids */
 int Saiph::zorkmids = 0;
 /* intrinsics/extrinsics */
@@ -169,7 +167,6 @@ Saiph::Saiph() {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
-	delete connection;
 	Debug::close();
 }
 
@@ -501,12 +498,12 @@ bool Saiph::run() {
 		World::executeCommand(YES);
 		return false;
 	}
-	if (last_turn == turn)
+	if (last_turn == World::turn)
 		stuck_counter++;
 	else
 		stuck_counter = 0;
 	last_command = command.command;
-	last_turn = turn;
+	last_turn = World::turn;
 	if (command.priority <= PRIORITY_MAX)
 		++internal_turn;
 	return true;
@@ -766,7 +763,7 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 
 /* private methods */
 void Saiph::detectPosition() {
-	string level = levelname;
+	string level = World::levelname;
 	if (position.level < 0) {
 		/* this happens when we start */
 		position.row = World::cursor.row;
@@ -954,7 +951,7 @@ void Saiph::dumpMaps() {
 		++seconds;
 	int cps = World::command_count / seconds;
 	int fps = World::frame_count / seconds;
-	int tps = turn / seconds;
+	int tps = World::turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
 	cout << "CPS/FPS/TPS: ";
 	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";

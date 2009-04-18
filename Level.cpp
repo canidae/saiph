@@ -276,13 +276,13 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
 				if (s->second.top_symbol != ILLEGAL_ITEM)
-					s->second.turn_changed = Saiph::turn;
+					s->second.turn_changed = World::turn;
 				s->second.top_symbol = symbol;
 				s->second.top_color = color;
 			}
 		} else {
 			/* new stash */
-			stashes[point] = Stash(Saiph::turn, symbol, color);
+			stashes[point] = Stash(World::turn, symbol, color);
 		}
 	} else if (symbol == dungeonmap[point.row][point.col]) {
 		/* if there ever was a stash here, it's gone now */
@@ -334,12 +334,12 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			/* remove monster from monstermap */
 			monstermap[nearest->first.row][nearest->first.col] = ILLEGAL_MONSTER;
 			/* update monster */
-			nearest->second.last_seen = Saiph::turn;
+			nearest->second.last_seen = World::turn;
 			monsters[point] = nearest->second;
 			monsters.erase(nearest);
 		} else {
 			/* add monster */
-			monsters[point] = Monster(msymbol, color, Saiph::turn);
+			monsters[point] = Monster(msymbol, color, World::turn);
 		}
 		/* set monster on monstermap */
 		monstermap[point.row][point.col] = msymbol;
@@ -584,7 +584,7 @@ void Level::addItemToStash(const Point &point, const Item &item) {
 		return;
 	}
 	/* new stash */
-	Stash stash(Saiph::turn);
+	Stash stash(World::turn);
 	stash.items.push_back(item);
 	stashes[point] = stash;
 }
