@@ -84,6 +84,7 @@ public:
 	static unsigned long long int intrinsics;
 	static unsigned long long int extrinsics;
 
+	/* TODO: these must go */
 	std::map<unsigned char, Item> pickup; // Loot analyzer
 	std::map<unsigned char, Item> drop; // Loot analyzer
 	bool got_pickup_menu; // Loot analyzer

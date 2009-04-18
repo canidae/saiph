@@ -82,23 +82,29 @@ void Level::parseMessages(const string &messages) {
 		undiggable = true;
 	}
 
-	/* item parsing */
-	/* figure out if there's something on the ground or if we're picking up something */
-	if ((pos = messages.find(LEVEL_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_YOU_FEEL_HERE, 0)) != string::npos) {
-		/* single item on ground */
+	/* figure out if there's something on the ground */
+	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
+		/* we see a single item on ground */
 		clearStash(Saiph::position);
-		if (messages.find(LEVEL_YOU_SEE_HERE, 0) != string::npos)
-			pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
-		else
-			pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
+		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
 			addItemToStash(Saiph::position, item);
 		}
-	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE, 0)) != string::npos) {
-		/* multiple items on ground */
+	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
+		/* we feel a single item on the ground */
+		clearStash(Saiph::position);
+		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
+		string::size_type length = messages.find(".  ", pos);
+		if (length != string::npos) {
+			length = length - pos;
+			Item item(messages.substr(pos, length));
+			addItemToStash(Saiph::position, item);
+		}
+	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
+		/* we see/feel multiple items on the ground */
 		clearStash(Saiph::position);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
@@ -111,9 +117,11 @@ void Level::parseMessages(const string &messages) {
 			addItemToStash(Saiph::position, item);
 			pos += length;
 		}
-	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE, 0) != string::npos) {
-		/* no items on ground */
+	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
+		/* we see/feel no items on the ground */
 		stashes.erase(Saiph::position);
+	}
+	/* TODO: the following lines should be in a loot analyzer */
 //	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Saiph::got_pickup_menu) {
 //		/* picking up stuff */
 //		if (Saiph::got_pickup_menu) {
@@ -158,7 +166,6 @@ void Level::parseMessages(const string &messages) {
 //				Saiph::drop[messages[pos - 4]] = Item(messages.substr(pos, length));
 //			pos += length;
 //		}
-	}
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {
