@@ -118,10 +118,10 @@ public:
 
 private:
 	std::vector<analyzer::Analyzer *> analyzers;
-	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
-	std::string farlook_command;
-	int stuck_counter;
-	time_t start_time;
+	std::vector<analyzer::Analyzer *>::iterator best_analyzer; // main?
+	std::string farlook_command; // hmm
+	int stuck_counter; // main?
+	time_t start_time; // hmm
 
 	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
 	Point directionToPoint(unsigned char direction);

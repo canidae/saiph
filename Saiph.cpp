@@ -94,9 +94,6 @@ unsigned long long int Saiph::extrinsics = 0;
 
 /* constructors/destructor */
 Saiph::Saiph() {
-	/* bools for branches */
-	sokoban_found = false;
-
 	/* internal turn counter.
 	 * whenever priority < 1000, we increase it by 1 */
 	internal_turn = 0;
@@ -333,7 +330,7 @@ bool Saiph::run() {
 
 	/* detect player position */
 	if (!World::menu && !World::question && !engulfed)
-		detectPosition();
+		World::detectPosition();
 
 	/* global message parsing */
 	parseMessages(World::messages);
