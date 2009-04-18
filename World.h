@@ -17,9 +17,11 @@
 #define PAGE_DIRTY "%*[^(]" PAGE
 
 #include <fstream>
+#include <map>
 #include <string>
 #include <vector>
 #include "Globals.h"
+#include "Level.h"
 #include "Point.h"
 
 class Connection;
@@ -39,6 +41,7 @@ public:
 	static bool question;
 	static char levelname[MAX_LEVELNAME_LENGTH];
 	static int turn;
+	static std::vector<Level> levels;
 
 	static void destroy();
 	static bool executeCommand(const std::string &command);
@@ -54,6 +57,7 @@ private:
 	static int data_size;
 	static std::string msg_str; // helps fetching messages
 	static Point last_menu; // needed to help detect menus that persist over turns
+	static std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 
 	static void addChangedLocation(const Point &point);
 	static void fetchMenu();

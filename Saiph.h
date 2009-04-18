@@ -50,13 +50,12 @@
 #include "Item.h"
 #include "Level.h"
 #include "Point.h"
+#include "World.h"
 
 namespace analyzer {
 	class Analyzer;
 }
-class Connection;
 class Stash;
-class World;
 
 class Saiph {
 public:
@@ -98,7 +97,6 @@ public:
 	static unsigned long long int intrinsics;
 	static unsigned long long int extrinsics;
 
-	std::vector<Level> levels; // World
 	std::map<unsigned char, Item> inventory; // Inventory
 	std::map<unsigned char, Item> pickup; // ???, World?
 	std::map<unsigned char, Item> drop; // ???, World?
@@ -136,7 +134,6 @@ public:
 
 private:
 	std::vector<analyzer::Analyzer *> analyzers;
-	std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition, World
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
 	std::string farlook_command;
 	bool sokoban_found;
@@ -153,19 +150,19 @@ private:
 /* inline methods */
 inline unsigned char Saiph::getDungeonSymbol() {
 	/* return dungeon symbol at player position */
-	return levels[position.level].getDungeonSymbol(position);
+	return World::levels[position.level].getDungeonSymbol(position);
 }
 
 inline unsigned char Saiph::getDungeonSymbol(const Coordinate &coordinate) {
 	/* return dungeon symbol at given coordinate */
-	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+	if (coordinate.level < 0 || coordinate.level > (int) World::levels.size())
 		return OUTSIDE_MAP;
-	return levels[coordinate.level].getDungeonSymbol(coordinate);
+	return World::levels[coordinate.level].getDungeonSymbol(coordinate);
 }
 
 inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
 	/* return dungeon symbol at given point on current level */
-	return levels[position.level].getDungeonSymbol(point);
+	return World::levels[position.level].getDungeonSymbol(point);
 }
 
 inline unsigned char Saiph::getDungeonSymbol(unsigned char direction) {
@@ -207,36 +204,36 @@ inline unsigned char Saiph::getDungeonSymbol(unsigned char direction) {
 
 inline unsigned char Saiph::getMonsterSymbol(const Coordinate &coordinate) {
 	/* return monster symbol at given point on current level */
-	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+	if (coordinate.level < 0 || coordinate.level > (int) World::levels.size())
 		return ILLEGAL_MONSTER;
-	return levels[coordinate.level].getMonsterSymbol(coordinate);
+	return World::levels[coordinate.level].getMonsterSymbol(coordinate);
 }
 
 inline unsigned char Saiph::getMonsterSymbol(const Point &point) {
 	/* return monster symbol at given point on current level */
-	return levels[position.level].getMonsterSymbol(point);
+	return World::levels[position.level].getMonsterSymbol(point);
 }
 
 inline void Saiph::setDungeonSymbol(unsigned char symbol) {
 	/* set dungeon symbol at player position */
-	levels[position.level].setDungeonSymbol(position, symbol);
+	World::levels[position.level].setDungeonSymbol(position, symbol);
 }
 
 inline void Saiph::setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol) {
 	/* set dungeon symbol at given coordinate */
-	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
+	if (coordinate.level < 0 || coordinate.level > (int) World::levels.size())
 		return;
-	levels[coordinate.level].setDungeonSymbol(coordinate, symbol);
+	World::levels[coordinate.level].setDungeonSymbol(coordinate, symbol);
 }
 
 inline void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	/* set dungeon symbol at given point on current level */
-	levels[position.level].setDungeonSymbol(point, symbol);
+	World::levels[position.level].setDungeonSymbol(point, symbol);
 }
 
 inline const PathNode &Saiph::shortestPath(const Point &point) {
 	/* returns PathNode for shortest path from player to target */
-	return levels[position.level].shortestPath(point);
+	return World::levels[position.level].shortestPath(point);
 }
 
 #endif

@@ -22,6 +22,7 @@ bool World::menu = false;
 bool World::question = false;
 char World::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
+vector<Level> World::levels;
 
 Connection *World::connection = NULL;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
@@ -32,6 +33,7 @@ char World::effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {{'\0'}};
 int World::data_size = -1;
 std::string World::msg_str;
 Point World::last_menu;
+std::map<std::string, std::vector<int> > World::levelmap;
 
 /* methods */
 void World::destroy() {

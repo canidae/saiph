@@ -8,7 +8,6 @@
 #include "Globals.h"
 #include "Saiph.h"
 #include "Stash.h"
-#include "World.h"
 /* actions */
 #include "Actions/Action.h"
 /* data */
@@ -340,7 +339,7 @@ bool Saiph::run() {
 
 	/* level message parsing */
 	Debug::notice(last_turn) << MESSAGES_DEBUG_NAME << "'" << World::messages << "'" << endl;
-	levels[position.level].parseMessages(World::messages);
+	World::levels[position.level].parseMessages(World::messages);
 
 	/* more debugging */
 	if (World::question)
@@ -355,15 +354,15 @@ bool Saiph::run() {
 		if (!engulfed) {
 			/* update changed symbols */
 			for (vector<Point>::iterator c = World::changes.begin(); c != World::changes.end(); ++c)
-				levels[position.level].updateMapPoint(*c, (unsigned char) World::view[c->row][c->col], World::color[c->row][c->col]);
+				World::levels[position.level].updateMapPoint(*c, (unsigned char) World::view[c->row][c->col], World::color[c->row][c->col]);
 			/* update monsters */
-			levels[position.level].updateMonsters();
+			World::levels[position.level].updateMonsters();
 			/* update pathmap */
-			levels[position.level].updatePathMap();
+			World::levels[position.level].updatePathMap();
 		} else {
 			/* we'll still need to update monster's "visible" while engulfed,
 			 * or she may attempt to farlook a monster */
-			for (map<Point, Monster>::iterator m = levels[position.level].monsters.begin(); m != levels[position.level].monsters.end(); ++m)
+			for (map<Point, Monster>::iterator m = World::levels[position.level].monsters.begin(); m != World::levels[position.level].monsters.end(); ++m)
 				m->second.visible = false;
 		}
 	}
@@ -371,8 +370,8 @@ bool Saiph::run() {
 	dumpMaps();
 
 	/* set the on_ground pointer if there's loot here */
-	if (levels[position.level].stashes.find(position) != levels[position.level].stashes.end())
-		on_ground = &levels[position.level].stashes[position];
+	if (World::levels[position.level].stashes.find(position) != World::levels[position.level].stashes.end())
+		on_ground = &World::levels[position.level].stashes[position];
 
 	/* unless we're in the middle of an action, let the analyzers figure out what to do */
 	Command command = action::Action::noop;
@@ -514,18 +513,18 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 	int pivot = -1;
 	int level_count = 1;
 	PathNode best_pathnode;
-	int level_queue[levels.size()];
+	int level_queue[World::levels.size()];
 	level_queue[0] = position.level;
-	bool level_added[levels.size()];
-	for (int a = 0; a < (int) levels.size(); ++a)
+	bool level_added[World::levels.size()];
+	for (int a = 0; a < (int) World::levels.size(); ++a)
 		level_added[a] = false;
 	level_added[position.level] = true;
-	PathNode level_pathnode[levels.size()];
+	PathNode level_pathnode[World::levels.size()];
 	level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
 	while (++pivot < level_count) {
 		/* path to symbols on level */
-		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+		for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[symbol].begin(); s != World::levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
+			const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << ": " << node.dir << " - " << node.moves << " - " << node.cost << endl;
 			if (node.cost == UNREACHABLE)
 				continue;
@@ -544,13 +543,13 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Pathing to '" << symbol << "' on level " << level_queue[pivot] << endl;
 		}
 		/* path to upstairs on level */
-		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
+		for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
 			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
@@ -573,13 +572,13 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
 		/* path to downstairs on level */
-		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
+		for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
 			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
@@ -602,13 +601,13 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
 		/* path to levels through magic portals */
-		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+		for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != World::levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
 			Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where this magic portal leads
 			if (level_added[s->second])
 				continue; // already added this level
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
 			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
@@ -636,28 +635,28 @@ PathNode Saiph::shortestPath(unsigned char symbol) {
 
 PathNode Saiph::shortestPath(const Coordinate &target) {
 	/* returns PathNode for shortest path from player to target */
-	if (target.level < 0 || target.level >= (int) levels.size()) {
+	if (target.level < 0 || target.level >= (int) World::levels.size()) {
 		return PathNode(); // outside the map
 	} else if (target.level == position.level) {
 		/* target on same level */
-		return levels[position.level].shortestPath(target);
+		return World::levels[position.level].shortestPath(target);
 	} else {
 		int pivot = -1;
 		int level_count = 1;
-		int level_queue[levels.size()];
+		int level_queue[World::levels.size()];
 		level_queue[0] = position.level;
-		bool level_added[levels.size()];
-		for (int a = 0; a < (int) levels.size(); ++a)
+		bool level_added[World::levels.size()];
+		for (int a = 0; a < (int) World::levels.size(); ++a)
 			level_added[a] = false;
 		level_added[position.level] = true;
-		PathNode level_pathnode[levels.size()];
+		PathNode level_pathnode[World::levels.size()];
 		level_pathnode[position.level] = PathNode(Point(), NOWHERE, 0, 0);
 		Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target << endl;
 		while (++pivot < level_count) {
 			Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "interlevel pathing: " << pivot << " - " << level_count << endl;
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level) {
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(target);
+				const PathNode &node = World::levels[level_queue[pivot]].shortestPath(target);
 				if (node.cost == UNREACHABLE)
 					continue;
 				else if (node.cost == UNPASSABLE && node.moves > 1)
@@ -673,13 +672,13 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 				return best_pathnode;
 			}
 			/* path to upstairs on level */
-			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
+			for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
 					continue; // already added this level
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 				if (node.cost >= UNPASSABLE)
 					continue;
 				/* distance to these stairs is shorter than shortest path found so far.
@@ -701,13 +700,13 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 			}
 			/* path to downstairs on level */
-			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
+			for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != World::levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
 					continue; // already added this level
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 				if (node.cost >= UNPASSABLE)
 					continue;
 				/* distance to these stairs is shorter than shortest path found so far.
@@ -729,13 +728,13 @@ PathNode Saiph::shortestPath(const Coordinate &target) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 			}
 			/* path to downstairs on level */
-			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+			for (map<Point, int>::iterator s = World::levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != World::levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
 				Debug::info(last_turn) << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
 					continue; // already added this level
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				const PathNode &node = World::levels[level_queue[pivot]].shortestPath(s->first);
 				if (node.cost >= UNPASSABLE)
 					continue;
 				/* distance to these stairs is shorter than shortest path found so far.
@@ -768,36 +767,36 @@ void Saiph::detectPosition() {
 		/* this happens when we start */
 		position.row = World::cursor.row;
 		position.col = World::cursor.col;
-		position.level = levels.size();
+		position.level = World::levels.size();
 		branch_main = position;
-		levels.push_back(Level(this, level));
-		levelmap[level].push_back(position.level);
+		World::levels.push_back(Level(this, level));
+		World::levelmap[level].push_back(position.level);
 		return;
 	}
-	if ((int) levels.size() > position.level && level == levels[position.level].name) {
+	if ((int) World::levels.size() > position.level && level == World::levels[position.level].name) {
 		/* same level as last frame, update row & col */
 		position.row = World::cursor.row;
 		position.col = World::cursor.col;
-		if (!sokoban_found && levels[position.level].branch == BRANCH_MAIN && levels[position.level].depth >= 5 && levels[position.level].depth <= 9) {
+		if (!sokoban_found && World::levels[position.level].branch == BRANCH_MAIN && World::levels[position.level].depth >= 5 && World::levels[position.level].depth <= 9) {
 			/* look for sokoban level 1a or 1b */
 			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
 				/* sokoban 1a */
 				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << position.level << endl;
-				levels[position.level].branch = BRANCH_SOKOBAN;
+				World::levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 				branch_sokoban = position;
 			} else if (getDungeonSymbol(Point(8, 34)) == BOULDER && getDungeonSymbol(Point(8, 42)) == BOULDER && getDungeonSymbol(Point(9, 34)) == BOULDER && getDungeonSymbol(Point(9, 41)) == BOULDER && getDungeonSymbol(Point(10, 42)) == BOULDER && getDungeonSymbol(Point(13, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(15, 41)) == BOULDER && getDungeonSymbol(Point(16, 40)) == BOULDER && getDungeonSymbol(Point(16, 42)) == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << position.level << endl;
-				levels[position.level].branch = BRANCH_SOKOBAN;
+				World::levels[position.level].branch = BRANCH_SOKOBAN;
 				sokoban_found = true;
 				branch_sokoban = position;
 			}
 
 		}
-		if (levels[position.level].branch == BRANCH_MAIN && levels[position.level].depth >= 3 && levels[position.level].depth <= 5) {
+		if (World::levels[position.level].branch == BRANCH_MAIN && World::levels[position.level].depth >= 3 && World::levels[position.level].depth <= 5) {
 			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
-			for (map<Point, int>::iterator hw = levels[position.level].symbols[(unsigned char) HORIZONTAL_WALL].begin(); hw != levels[position.level].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++hw) {
+			for (map<Point, int>::iterator hw = World::levels[position.level].symbols[(unsigned char) HORIZONTAL_WALL].begin(); hw != World::levels[position.level].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++hw) {
 				if (hw->first.row <= MAP_ROW_BEGIN || hw->first.row >= MAP_ROW_END || hw->first.col <= MAP_COL_BEGIN || hw->first.col >= MAP_COL_END)
 					continue;
 				/* if we see horizontal walls adjacent to this point (except west & east),
@@ -805,16 +804,16 @@ void Saiph::detectPosition() {
 				if (getDungeonSymbol(Point(hw->first.row - 1, hw->first.col - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row - 1, hw->first.col)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row - 1, hw->first.col + 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col + 1)) == HORIZONTAL_WALL) {
 					/* we're in the mines */
 					Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found the mines: " << position.level << endl;
-					levels[position.level].branch = BRANCH_MINES;
+					World::levels[position.level].branch = BRANCH_MINES;
 					branch_mines = position;
 					break;
 				}
 			}
 		}
-		if (levels[position.level].branch != BRANCH_ROGUE && World::view[STATUS_ROW][8] == '*') {
+		if (World::levels[position.level].branch != BRANCH_ROGUE && World::view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
 			Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found the rogue level: " << position.level << endl;
-			levels[position.level].branch = BRANCH_ROGUE;
+			World::levels[position.level].branch = BRANCH_ROGUE;
 		}
 		return;
 	}
@@ -826,60 +825,60 @@ void Saiph::detectPosition() {
 	if (symbol == STAIRS_DOWN) {
 		/* we did stand on stairs down, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position];
+		found = World::levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position];
 	} else if (symbol == STAIRS_UP) {
 		/* we did stand on stairs up, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = levels[position.level].symbols[(unsigned char) STAIRS_UP][position];
+		found = World::levels[position.level].symbols[(unsigned char) STAIRS_UP][position];
 	} else if (symbol == MAGIC_PORTAL) {
 		/* we did stand on a magic portal, and if we don't know where it leads then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position];
+		found = World::levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position];
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
-		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
+		for (vector<int>::iterator lm = World::levelmap[level].begin(); lm != World::levelmap[level].end(); ++lm) {
 			/* check if level got walls on same locations.
 			 * since walls can disappear, we'll allow a 80% match */
 			int total = 0;
 			int matched = 0;
-			for (map<Point, int>::iterator s = levels[*lm].symbols[(unsigned char) VERTICAL_WALL].begin(); s != levels[*lm].symbols[(unsigned char) VERTICAL_WALL].end(); ++s) {
+			for (map<Point, int>::iterator s = World::levels[*lm].symbols[(unsigned char) VERTICAL_WALL].begin(); s != World::levels[*lm].symbols[(unsigned char) VERTICAL_WALL].end(); ++s) {
 				if (World::view[s->first.row][s->first.col] == VERTICAL_WALL)
 					++matched;
 				++total;
 			}
-			for (map<Point, int>::iterator s = levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].begin(); s != levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++s) {
+			for (map<Point, int>::iterator s = World::levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].begin(); s != World::levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++s) {
 				if (World::view[s->first.row][s->first.col] == HORIZONTAL_WALL)
 					++matched;
 				++total;
 			}
 			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
 				found = *lm;
-				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name << "'" << endl;
+				Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << World::levels[found].name << "'" << endl;
 				break;
 			}
 		}
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* new level */
-		found = levels.size();
+		found = World::levels.size();
 		/* when we discover a new level it's highly likely it's in the
 		 * same branch as the previous level.
 		 * exception is rogue level, which really isn't a branch*/
-		levels.push_back(Level(this, level, (levels[position.level].branch != BRANCH_ROGUE) ? levels[position.level].branch : BRANCH_MAIN));
-		levelmap[level].push_back(found);
+		World::levels.push_back(Level(this, level, (World::levels[position.level].branch != BRANCH_ROGUE) ? World::levels[position.level].branch : BRANCH_MAIN));
+		World::levelmap[level].push_back(found);
 		Debug::notice(last_turn) << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
 	}
 	/* were we on stairs on last position? */
 	if (symbol == STAIRS_DOWN) {
 		/* yes, we were on stairs down */
-		levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position] = found;
+		World::levels[position.level].symbols[(unsigned char) STAIRS_DOWN][position] = found;
 	} else if (symbol == STAIRS_UP) {
 		/* yes, we were on stairs up */
-		levels[position.level].symbols[(unsigned char) STAIRS_UP][position] = found;
+		World::levels[position.level].symbols[(unsigned char) STAIRS_UP][position] = found;
 	} else if (symbol == MAGIC_PORTAL) {
 		/* yes, we were on a magic portal */
-		levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position] = found;
+		World::levels[position.level].symbols[(unsigned char) MAGIC_PORTAL][position] = found;
 	}
 	position.row = World::cursor.row;
 	position.col = World::cursor.col;
@@ -892,7 +891,7 @@ bool Saiph::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_
 		return false;
 	else if (!ignore_sinks && symbol == SINK)
 		return false;
-	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[position.level].monsters[point].visible)
+	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && World::levels[position.level].monsters[point].visible)
 		return false;
 	return true;
 }
@@ -980,9 +979,9 @@ void Saiph::dumpMaps() {
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
 			if (p.row == postion.row && p.col == position.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
-				//cout << (unsigned char) levels[position.level].pathmap[p.row][p.col].dir;
-				cout << (char) (levels[position.level].pathmap[p.row][p.col].cost % 64 + 48);
+			else if (World::levels[position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
+				//cout << (unsigned char) World::levels[position.level].pathmap[p.row][p.col].dir;
+				cout << (char) (World::levels[position.level].pathmap[p.row][p.col].cost % 64 + 48);
 			else
 				cout << getDungeonSymbol(p);
 		}
