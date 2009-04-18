@@ -47,7 +47,6 @@
 #include "Stash.h"
 
 class Item;
-class Saiph;
 
 class Level {
 	public:
@@ -63,7 +62,7 @@ class Level {
 
 		static bool passable[UCHAR_MAX + 1];
 
-		Level(Saiph *saiph, std::string name, int branch = BRANCH_MAIN);
+		Level(std::string name, int branch = BRANCH_MAIN);
 
 		unsigned char getDungeonSymbol(const Point &point);
 		unsigned char getMonsterSymbol(const Point &point);
@@ -75,7 +74,6 @@ class Level {
 		void updatePathMap();
 
 	private:
-		Saiph *saiph;
 		PathNode pathnode_outside_map;
 		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 

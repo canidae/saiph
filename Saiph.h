@@ -100,9 +100,6 @@ public:
 	std::map<unsigned char, Item> pickup; // ???, World?
 	std::map<unsigned char, Item> drop; // ???, World?
 	Stash *on_ground; // World, ???
-	Coordinate branch_main; // World
-	Coordinate branch_mines; // World
-	Coordinate branch_sokoban; // World
 	std::string last_command; // World?
 	int internal_turn; // World
 	bool inventory_changed; // DIE
@@ -123,11 +120,9 @@ private:
 	std::vector<analyzer::Analyzer *> analyzers;
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
 	std::string farlook_command;
-	bool sokoban_found;
 	int stuck_counter;
 	time_t start_time;
 
-	void detectPosition();
 	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
 	Point directionToPoint(unsigned char direction);
 	void dumpMaps();

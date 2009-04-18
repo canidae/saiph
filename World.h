@@ -43,6 +43,9 @@ public:
 	static char levelname[MAX_LEVELNAME_LENGTH];
 	static int turn;
 	static std::vector<Level> levels;
+	static Coordinate branch_main;
+	static Coordinate branch_mines;
+	static Coordinate branch_sokoban;
 
 	static void destroy();
 	static bool executeCommand(const std::string &command);
@@ -73,6 +76,7 @@ private:
 	static std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 
 	static void addChangedLocation(const Point &point);
+	static void detectPosition();
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
 	static void fetchMessages();

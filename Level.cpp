@@ -20,7 +20,7 @@ bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
 
 /* constructors/destructor */
-Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), undiggable(false), saiph(saiph) {
+Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
 			dungeonmap[a][b] = SOLID_ROCK;
@@ -35,40 +35,40 @@ Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch)
 /* methods */
 void Level::parseMessages(const string &messages) {
 	/* set inventory_changed to false */
-	saiph->inventory_changed = false;
+	Saiph::inventory_changed = false;
 	/* set got_[drop|pickup]_menu to false if we don't have a menu */
 	if (!World::menu) {
-		saiph->got_drop_menu = false;
-		saiph->got_pickup_menu = false;
+		Saiph::got_drop_menu = false;
+		Saiph::got_pickup_menu = false;
 	}
 	/* if last command was ":" we should clear stash on ground */
-	if (saiph->last_command == ":")
-		clearStash(saiph->position);
+	if (Saiph::last_command == ":")
+		clearStash(Saiph::position);
 	/* parse messages that can help us find doors/staircases/etc. */
 	string::size_type pos;
 	if (messages.find(LEVEL_STAIRCASE_UP_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, STAIRS_UP);
+		setDungeonSymbol(Saiph::position, STAIRS_UP);
 	} else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, STAIRS_DOWN);
+		setDungeonSymbol(Saiph::position, STAIRS_DOWN);
 	} else if (messages.find(LEVEL_OPEN_DOOR_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, OPEN_DOOR);
+		setDungeonSymbol(Saiph::position, OPEN_DOOR);
 	} else if (messages.find(LEVEL_GRAVE_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, GRAVE);
+		setDungeonSymbol(Saiph::position, GRAVE);
 	} else if (messages.find(LEVEL_FOUNTAIN_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, FOUNTAIN);
+		setDungeonSymbol(Saiph::position, FOUNTAIN);
 	} else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2) != string::npos) {
-		setDungeonSymbol(saiph->position, FLOOR);
+		setDungeonSymbol(Saiph::position, FLOOR);
 	} else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, UNKNOWN_TILE);
+		setDungeonSymbol(Saiph::position, UNKNOWN_TILE);
 	} else if ((pos = messages.find(LEVEL_ALTAR_HERE)) != string::npos) {
-		setDungeonSymbol(saiph->position, ALTAR);
+		setDungeonSymbol(Saiph::position, ALTAR);
 		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
-			symbols[(unsigned char) ALTAR][saiph->position] = NEUTRAL;
+			symbols[(unsigned char) ALTAR][Saiph::position] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
-			symbols[(unsigned char) ALTAR][saiph->position] = CHAOTIC;
+			symbols[(unsigned char) ALTAR][Saiph::position] = CHAOTIC;
 		else
-			symbols[(unsigned char) ALTAR][saiph->position] = LAWFUL;
+			symbols[(unsigned char) ALTAR][Saiph::position] = LAWFUL;
 	} else if (messages.find(LEVEL_UNDIGGABLE) != string::npos) {
 		undiggable = true;
 	}
@@ -77,7 +77,7 @@ void Level::parseMessages(const string &messages) {
 	/* figure out if there's something on the ground or if we're picking up something */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* single item on ground */
-		clearStash(saiph->position);
+		clearStash(Saiph::position);
 		if (messages.find(LEVEL_YOU_SEE_HERE, 0) != string::npos)
 			pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		else
@@ -86,11 +86,11 @@ void Level::parseMessages(const string &messages) {
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(saiph->position, item);
+			addItemToStash(Saiph::position, item);
 		}
 	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE, 0)) != string::npos) {
 		/* multiple items on ground */
-		clearStash(saiph->position);
+		clearStash(Saiph::position);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -99,20 +99,20 @@ void Level::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(saiph->position, item);
+			addItemToStash(Saiph::position, item);
 			pos += length;
 		}
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE, 0) != string::npos) {
 		/* no items on ground */
-		stashes.erase(saiph->position);
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || saiph->got_pickup_menu) {
+		stashes.erase(Saiph::position);
+	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Saiph::got_pickup_menu) {
 		/* picking up stuff */
-		if (saiph->got_pickup_menu) {
+		if (Saiph::got_pickup_menu) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page */
-			saiph->got_pickup_menu = true;
+			Saiph::got_pickup_menu = true;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
@@ -124,18 +124,18 @@ void Level::parseMessages(const string &messages) {
 			length = length - pos;
 			if (messages[pos - 2] == '-') {
 				Item item(messages.substr(pos, length));
-				saiph->pickup[messages[pos - 4]] = item;
+				Saiph::pickup[messages[pos - 4]] = item;
 			}
 			pos += length;
 		}
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || saiph->got_drop_menu) {
+	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Saiph::got_drop_menu) {
 		/* dropping items */
-		if (saiph->got_drop_menu) {
+		if (Saiph::got_drop_menu) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page, set menu */
-			saiph->got_drop_menu = true;;
+			Saiph::got_drop_menu = true;;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
@@ -146,13 +146,13 @@ void Level::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			if (messages[pos - 2] == '-')
-				saiph->drop[messages[pos - 4]] = Item(messages.substr(pos, length));
+				Saiph::drop[messages[pos - 4]] = Item(messages.substr(pos, length));
 			pos += length;
 		}
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
 		/* our inventory is empty. how did that happen? */
-		saiph->inventory.clear();
-		saiph->inventory_changed = true;
+		Saiph::inventory.clear();
+		Saiph::inventory_changed = true;
 	} else if (messages.find(".  ") != string::npos) {
 		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
 		 * we'll need to handle this too somehow.
@@ -173,7 +173,7 @@ void Level::parseMessages(const string &messages) {
 					break;
 				length = length - pos;
 				Item item(messages.substr(pos, length));
-				if (saiph->addItemToInventory(key, item))
+				if (Saiph::addItemToInventory(key, item))
 					++pickup_count;
 				pos += length;
 			} else {
@@ -185,17 +185,17 @@ void Level::parseMessages(const string &messages) {
 			}
 		}
 		if (pickup_count > 0)
-			saiph->inventory_changed = true;
-		if ((int) stashes[saiph->position].items.size() == pickup_count) {
+			Saiph::inventory_changed = true;
+		if ((int) stashes[Saiph::position].items.size() == pickup_count) {
 			/* we probably picked up everything here, remove stash */
-			stashes.erase(saiph->position);
+			stashes.erase(Saiph::position);
 		}
 	} else if (World::menu && (pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
 		/* we probably listed our inventory */
 		/* we're searching for " -  " because when we #enhance there are 2 spaces after the "-".
 		 * otherwise we'll confuse the inventory list with the enhance list, which is very bad */
 		if (World::cur_page == 1)
-			saiph->inventory.clear(); // only clear when we're listing 1st page
+			Saiph::inventory.clear(); // only clear when we're listing 1st page
 		while ((pos = messages.find(" - ", pos)) != string::npos) {
 			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
 				unsigned char key = messages[pos - 1];
@@ -205,11 +205,11 @@ void Level::parseMessages(const string &messages) {
 					break;
 				length = length - pos;
 				Item item(messages.substr(pos, length));
-				saiph->addItemToInventory(key, item);
+				Saiph::addItemToInventory(key, item);
 				pos += length;
 			}
 		}
-		saiph->inventory_changed = true;
+		Saiph::inventory_changed = true;
 	}
 }
 
@@ -290,7 +290,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	}
 
 	/* update monsters */
-	if (monster[symbol] && point != saiph->position) {
+	if (monster[symbol] && point != Saiph::position) {
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
@@ -357,12 +357,12 @@ void Level::updateMonsters() {
 		else
 			symbol = World::view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color);
+		m->second.visible = (m->first != Saiph::position && symbol == m->second.symbol && color == m->second.color);
 		if (m->second.visible) {
 			/* monster still visible, don't remove it */
 			++m;
 			continue;
-		} else if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
+		} else if (abs(Saiph::position.row - m->first.row) > 1 || abs(Saiph::position.col - m->first.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
@@ -385,7 +385,7 @@ void Level::updatePathMap() {
 	int curnode = 0;
 	int nodes = 0;
 	unsigned int cost = 0;
-	Point from = saiph->position;
+	Point from = Saiph::position;
 	pathmap[from.row][from.col].dir = NOWHERE;
 	pathmap[from.row][from.col].moves = 0;
 	pathmap[from.row][from.col].cost = 0;
@@ -575,7 +575,7 @@ void Level::updatePathMap() {
 
 /* private methods */
 void Level::addItemToStash(const Point &point, const Item &item) {
-	Debug::notice(saiph->last_turn) << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
+	Debug::notice(Saiph::last_turn) << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
 	if (item.count <= 0)
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);
@@ -630,7 +630,7 @@ unsigned int Level::updatePathMapHelper(const Point &to, const Point &from) {
 	      return UNREACHABLE;
 	if (s == TRAP && branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(saiph->position.row - to.row) <= 1 && abs(saiph->position.col - to.col) <= 1)
+	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(Saiph::position.row - to.row) <= 1 && abs(Saiph::position.col - to.col) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += pathcost[s];
