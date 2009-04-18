@@ -1,5 +1,9 @@
+#include "EventBus.h"
 #include "Inventory.h"
+#include "Events/ChangedInventoryItems.h"
+#include "Events/ReceivedItems.h"
 
+using namespace event;
 using namespace std;
 
 /* methods */
@@ -49,7 +53,9 @@ void Inventory::parseMessages(const string &messages) {
 			updated = true;
 		}
 		if (changed_items.size() > 0) {
-			/* TODO: send event ChangedItems */
+			/* send event ChangedInventoryItems */
+			ChangedInventoryItems cii(changed_items);
+			EventBus::broadcast((Event *) &cii);
 			changed_items.clear();
 		}
 	} else if (!World::menu) {
@@ -72,7 +78,9 @@ void Inventory::parseMessages(const string &messages) {
 			map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
 			if (s != World::levels[Saiph::position.level].stashes.end())
 				s->second.turn_changed = World::turn;
-			/* TODO: send event ReceivedItems */
+			/* send event "ReceivedItems" */
+			ReceivedItems ri(changed_items);
+			EventBus::broadcast((Event *) &ri);
 			changed_items.clear();
 		}
 	}

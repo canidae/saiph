@@ -47,6 +47,7 @@ public:
 	static Coordinate branch_mines;
 	static Coordinate branch_sokoban;
 
+	static void init(int connection_type);
 	static void destroy();
 	static bool executeCommand(const std::string &command);
 	static unsigned char getDungeonSymbol();
@@ -55,7 +56,6 @@ public:
 	static unsigned char getDungeonSymbol(unsigned char direction);
 	static unsigned char getMonsterSymbol(const Coordinate &coordinate);
 	static unsigned char getMonsterSymbol(const Point &point);
-	static void init(int connection_type);
 	static void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 	static void setDungeonSymbol(const Point &point, unsigned char symbol);
 	static void setDungeonSymbol(unsigned char symbol);

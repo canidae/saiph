@@ -361,7 +361,7 @@ bool Saiph::run() {
 	/* unless we're in the middle of an action, let the analyzers figure out what to do */
 	Command command = action::Action::noop;
 	if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL) {
-		(*best_analyzer)->action->updateAction(this);
+		(*best_analyzer)->action->updateAction();
 		command = (*best_analyzer)->action->getCommand();
 	}
 	if (command == action::Action::noop) {
