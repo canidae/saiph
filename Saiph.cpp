@@ -169,7 +169,6 @@ Saiph::Saiph() {
 Saiph::~Saiph() {
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
-	delete world;
 	delete connection;
 	Debug::close();
 }
@@ -426,11 +425,11 @@ bool Saiph::run() {
 	/* check if we got a command */
 	if (World::question && command == action::Action::noop) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled question: " << World::messages << endl;
-		world->executeCommand(string(1, (char) 27));
+		World::executeCommand(string(1, (char) 27));
 		return true;
 	} else if (World::menu && command == action::Action::noop) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "Unhandled menu: " << World::messages << endl;
-		world->executeCommand(string(1, (char) 27));
+		World::executeCommand(string(1, (char) 27));
 		return true;
 	} else if (command == action::Action::noop) {
 		Debug::warning(last_turn) << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching 42 times" << endl;
@@ -439,7 +438,7 @@ bool Saiph::run() {
 		cout << "No idea what to do: 42s";
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << World::cursor.row + 1 << ";" << World::cursor.col + 1 << "H";
-		world->executeCommand("42s");
+		World::executeCommand("42s");
 		++internal_turn;
 		return true;
 	}
@@ -454,7 +453,7 @@ bool Saiph::run() {
 	cout.flush();
 	/* let an analyzer do its command */
 	Debug::notice(last_turn) << (*best_analyzer)->name << " " << command << endl;
-	world->executeCommand(command.command);
+	World::executeCommand(command.command);
 	if (stuck_counter % 42 == 41) {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
 		/* let's see if we're moving somewhere */
@@ -497,9 +496,9 @@ bool Saiph::run() {
 	} else if (stuck_counter > 1680) {
 		/* failed too many times, #quit */
 		Debug::error(last_turn) << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
-		world->executeCommand(string(1, (char) 27));
-		world->executeCommand(QUIT);
-		world->executeCommand(YES);
+		World::executeCommand(string(1, (char) 27));
+		World::executeCommand(QUIT);
+		World::executeCommand(YES);
 		return false;
 	}
 	if (last_turn == turn)

@@ -138,7 +138,6 @@ public:
 
 private:
 	Connection *connection;
-	World *world;
 	std::vector<analyzer::Analyzer *> analyzers;
 	std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer;
