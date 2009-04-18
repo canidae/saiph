@@ -114,7 +114,7 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		/* sadly certain items won't say "uncursed" after dropping them on an altar
 		 * for example, the dagger valks start with is such an item.
 		 * to prevent her from dropping it over & over again,
-		 * we'll say items we know enchantment off, we also "know" is uncursed */
+		 * we'll say items we know enchantment of, we also "know" is uncursed */
 		if (beatitude == BEATITUDE_UNKNOWN)
 			beatitude = UNCURSED;
 	} else if (name[pos] == '-') {
@@ -125,7 +125,7 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 		/* sadly certain items won't say "uncursed" after dropping them on an altar
 		 * for example, the dagger valks start with is such an item.
 		 * to prevent her from dropping it over & over again,
-		 * we'll say items we know enchantment off, we also "know" is uncursed */
+		 * we'll say items we know enchantment of, we also "know" is uncursed */
 		if (beatitude == BEATITUDE_UNKNOWN)
 			beatitude = UNCURSED;
 	}

@@ -56,12 +56,12 @@ public:
 	static unsigned char getMonsterSymbol(const Coordinate &coordinate);
 	static unsigned char getMonsterSymbol(const Point &point);
 	static void init(int connection_type);
-	static void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol); // World
-	static void setDungeonSymbol(const Point &point, unsigned char symbol); // World
-	static void setDungeonSymbol(unsigned char symbol); // World
-	PathNode shortestPath(const Coordinate &target); // World
-	const PathNode &shortestPath(const Point &target); // World
-	PathNode shortestPath(unsigned char symbol); // World
+	static void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
+	static void setDungeonSymbol(const Point &point, unsigned char symbol);
+	static void setDungeonSymbol(unsigned char symbol);
+	PathNode shortestPath(const Coordinate &target);
+	const PathNode &shortestPath(const Point &target);
+	PathNode shortestPath(unsigned char symbol);
 
 private:
 	static Connection *connection;

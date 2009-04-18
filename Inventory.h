@@ -7,18 +7,21 @@
 #include "Item.h"
 #include "World.h"
 
-#define INVENTORY_DEBUG_NAME "Inventor] "
+#define INVENTORY_DEBUG_NAME "Inventory] "
+
+#define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
+#define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
 
 class Inventory {
 public:
 	static std::map<unsigned char, Item> items;
 
-	Inventory();
-	~Inventory();
-
 	static void addItem(unsigned char key, const Item &item);
 	static void parseMessages(const std::string &messages);
 	static void removeItem(unsigned char key, const Item &item);
+
+private:
+	static std::vector<unsigned char> changed_items;
 };
 
 /* inline methods */
@@ -47,4 +50,7 @@ inline void Inventory::removeItem(unsigned char key, const Item &item) {
 	else    
 		items.erase(i); // removing all we got
 }
+
+/* define private static variables */
+std::vector<unsigned char> Inventory::changed_items;
 #endif

@@ -781,7 +781,7 @@ int main(int argc, const char *argv[]) {
 		}
 	}
 
-	Debug::open(logfile);
+	Debug::init(logfile);
 	data::Monster::init();
 	data::Item::init();
 	World::init(connection_type);
@@ -795,5 +795,5 @@ int main(int argc, const char *argv[]) {
 	World::destroy();
 	data::Item::destroy();
 	data::Monster::destroy();
-	Debug::close();
+	Debug::destroy();
 }

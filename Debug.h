@@ -10,19 +10,20 @@ extern "C" {
 #include "World.h"
 
 class Debug {
-	public:
-		static void init(const std::string &file);
-		static void destroy();
-		static std::ofstream &error();
-		static std::ofstream &info();
-		static std::ofstream &notice();
-		static std::ofstream &warning();
+public:
+	static void init(const std::string &file);
+	static void destroy();
+	static std::ofstream &info();
+	static std::ofstream &notice();
+	static std::ofstream &warning();
+	static std::ofstream &error();
+	static void rawCharArray(const char *data, int start, int stop);
 
-	private:
-		static std::ofstream debugfile;
-		static std::string timestamp;
+private:
+	static std::ofstream debugfile;
+	static std::string timestamp;
 
-		static std::string &printTime();
+	static std::string &printTime();
 };
 
 /* inline methods */
@@ -32,11 +33,6 @@ inline void Debug::init(const std::string &file) {
 
 inline void Debug::destroy() {
         debugfile.close();
-}
-
-inline std::ofstream &Debug::error() {
-        debugfile << "<T" << World::turn << "> " << printTime() << ": [ERROR:";
-        return debugfile;
 }
 
 inline std::ofstream &Debug::info() {
@@ -52,6 +48,18 @@ inline std::ofstream &Debug::notice() {
 inline std::ofstream &Debug::warning() {
         debugfile << "<T" << World::turn << "> " << printTime() << ": [WARNING:";
         return debugfile;
+}
+
+inline std::ofstream &Debug::error() {
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [ERROR:";
+        return debugfile;
+}
+
+inline void Debug::rawCharArray(const char *data, int start, int stop) {
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [RAW:Data] ";
+	for (int a = start; a < stop; ++a)
+		debugfile << data[a];
+	debugfile << std::endl;
 }
 
 /* inline private methods */
