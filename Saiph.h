@@ -99,7 +99,6 @@ public:
 	std::map<unsigned char, Item> inventory; // Inventory
 	std::map<unsigned char, Item> pickup; // ???, World?
 	std::map<unsigned char, Item> drop; // ???, World?
-	Stash *on_ground; // World, ???
 	std::string last_command; // World?
 	int internal_turn; // World
 	bool got_pickup_menu; // ???, World

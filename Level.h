@@ -49,47 +49,47 @@
 class Item;
 
 class Level {
-	public:
-		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		std::map<Point, Monster> monsters;
-		std::map<Point, Stash> stashes;
-		std::map<Point, int> symbols[UCHAR_MAX + 1];
-		std::string name;
-		int depth;
-		int branch;
-		bool undiggable;
+public:
+	PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+	unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
+	std::map<Point, Monster> monsters;
+	std::map<Point, Stash> stashes;
+	std::map<Point, int> symbols[UCHAR_MAX + 1];
+	std::string name;
+	int depth;
+	int branch;
+	bool undiggable;
 
-		static bool passable[UCHAR_MAX + 1];
+	static bool passable[UCHAR_MAX + 1];
 
-		Level(std::string name, int branch = BRANCH_MAIN);
+	Level(std::string name, int branch = BRANCH_MAIN);
 
-		unsigned char getDungeonSymbol(const Point &point);
-		unsigned char getMonsterSymbol(const Point &point);
-		void parseMessages(const std::string &messages);
-		void setDungeonSymbol(const Point &point, unsigned char symbol);
-		const PathNode &shortestPath(const Point &target);
-		void updateMapPoint(const Point &point, unsigned char symbol, int color);
-		void updateMonsters();
-		void updatePathMap();
+	unsigned char getDungeonSymbol(const Point &point);
+	unsigned char getMonsterSymbol(const Point &point);
+	void parseMessages(const std::string &messages);
+	void setDungeonSymbol(const Point &point, unsigned char symbol);
+	const PathNode &shortestPath(const Point &target);
+	void updateMapPoint(const Point &point, unsigned char symbol, int color);
+	void updateMonsters();
+	void updatePathMap();
 
-	private:
-		PathNode pathnode_outside_map;
-		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+private:
+	PathNode pathnode_outside_map;
+	unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 
-		static Point pathing_queue[PATHING_QUEUE_SIZE];
-		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
-		static int pathcost[UCHAR_MAX + 1];
-		static bool dungeon[UCHAR_MAX + 1];
-		static bool monster[UCHAR_MAX + 1];
-		static bool item[UCHAR_MAX + 1];
-		static bool initialized;
+	static Point pathing_queue[PATHING_QUEUE_SIZE];
+	static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
+	static int pathcost[UCHAR_MAX + 1];
+	static bool dungeon[UCHAR_MAX + 1];
+	static bool monster[UCHAR_MAX + 1];
+	static bool item[UCHAR_MAX + 1];
+	static bool initialized;
 
-		void addItemToStash(const Point &point, const Item &item);
-		void clearStash(const Point &point);
-		unsigned int updatePathMapHelper(const Point &to, const Point &from);
+	void addItemToStash(const Point &point, const Item &item);
+	void clearStash(const Point &point);
+	unsigned int updatePathMapHelper(const Point &to, const Point &from);
 
-		static void init();
+	static void init();
 };
 
 /* inline methods */

@@ -15,7 +15,7 @@ const Command &Action::getCommand() {
 	return noop;
 }
 
-void Action::updateAction(const Saiph *) {
+void Action::updateAction() {
 	/* called on the action object that was executed */
 	return;
 }

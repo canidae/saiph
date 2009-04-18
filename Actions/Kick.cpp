@@ -1,5 +1,4 @@
 #include "Kick.h"
-#include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
@@ -24,8 +23,8 @@ const Command &Kick::getCommand() {
 	}
 }
 
-void Kick::updateAction(const Saiph *saiph) {
-	if (saiph->world->question && saiph->world->messages.find(MESSAGE_IN_WHAT_DIRECTION) != string::npos)
+void Kick::updateAction() {
+	if (World::question && World::messages.find(MESSAGE_IN_WHAT_DIRECTION) != string::npos)
 		sequence = 1;
 	else if (sequence == 1)
 		sequence = 2;

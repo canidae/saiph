@@ -25,6 +25,6 @@ const Command &Move::getCommand() {
 	}
 }
 
-void Move::updateAction(const Saiph *) {
+void Move::updateAction() {
 	++sequence;
 }

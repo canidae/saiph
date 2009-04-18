@@ -3,8 +3,6 @@
 
 #include "../Command.h"
 
-class Saiph;
-
 namespace action {
 	class Action {
 	public:
@@ -14,7 +12,7 @@ namespace action {
 		virtual ~Action();
 
 		virtual const Command &getCommand();
-		virtual void updateAction(const Saiph *saiph);
+		virtual void updateAction();
 
 	protected:
 		int sequence;

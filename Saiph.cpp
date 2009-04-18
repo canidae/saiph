@@ -105,9 +105,6 @@ Saiph::Saiph() {
 	got_pickup_menu = false;
 	got_drop_menu = false;
 
-	/* set on_ground to NULL */
-	on_ground = NULL;
-
 	/* used to determine if we seem to be in a loop */
 	last_turn = 0;
 	stuck_counter = 0;
@@ -315,8 +312,6 @@ bool Saiph::run() {
 	pickup.clear();
 	/* and drop list */
 	drop.clear();
-	/* set on_ground to NULL */
-	on_ground = NULL;
 
 	/* check if we're engulfed */
 	if (position.row > MAP_ROW_BEGIN && position.row < MAP_ROW_END && position.col > MAP_COL_BEGIN && position.col < MAP_COL_END && World::view[position.row - 1][position.col - 1] == '/' && World::view[position.row - 1][position.col + 1] == '\\' && World::view[position.row + 1][position.col - 1] == '\\' && World::view[position.row + 1][position.col + 1] == '/')
@@ -362,10 +357,6 @@ bool Saiph::run() {
 	}
 	/* print maps so we see what we're doing */
 	dumpMaps();
-
-	/* set the on_ground pointer if there's loot here */
-	if (World::levels[position.level].stashes.find(position) != World::levels[position.level].stashes.end())
-		on_ground = &World::levels[position.level].stashes[position];
 
 	/* unless we're in the middle of an action, let the analyzers figure out what to do */
 	Command command = action::Action::noop;

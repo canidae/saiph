@@ -3,8 +3,6 @@
 
 #include "Action.h"
 
-class Saiph;
-
 namespace action {
 	class Kick : public Action {
 	public:
@@ -12,7 +10,7 @@ namespace action {
 		virtual ~Kick();
 
 		virtual const Command &getCommand();
-		virtual void updateAction(const Saiph *saiph);
+		virtual void updateAction();
 
 	private:
 		const Command kick;

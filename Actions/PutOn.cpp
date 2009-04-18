@@ -1,5 +1,4 @@
 #include "PutOn.h"
-#include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
@@ -24,8 +23,8 @@ const Command &PutOn::getCommand() {
 	}
 }
 
-void PutOn::updateAction(const Saiph *saiph) {
-	if (saiph->world->question && saiph->world->messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos)
+void PutOn::updateAction() {
+	if (World::question && World::messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos)
 		sequence = 1;
 	else if (sequence == 1)
 		sequence = 2;

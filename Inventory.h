@@ -14,6 +14,7 @@
 
 class Inventory {
 public:
+	static bool updated;
 	static std::map<unsigned char, Item> items;
 
 	static void addItem(unsigned char key, const Item &item);
@@ -50,6 +51,10 @@ inline void Inventory::removeItem(unsigned char key, const Item &item) {
 	else    
 		items.erase(i); // removing all we got
 }
+
+/* define static variables */
+bool Inventory::updated = false;
+std::map<unsigned char, Item> Inventory::items;
 
 /* define private static variables */
 std::vector<unsigned char> Inventory::changed_items;

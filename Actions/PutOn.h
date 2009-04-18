@@ -3,8 +3,6 @@
 
 #include "Action.h"
 
-class Saiph;
-
 namespace action {
 	class PutOn : public Action {
 	public:
@@ -12,7 +10,7 @@ namespace action {
 		virtual ~PutOn();
 
 		virtual const Command &getCommand();
-		virtual void updateAction(const Saiph *saiph);
+		virtual void updateAction();
 
 	private:
 		const Command put_on;

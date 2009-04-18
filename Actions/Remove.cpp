@@ -1,5 +1,4 @@
 #include "Remove.h"
-#include "../Saiph.h"
 #include "../World.h"
 
 using namespace std;
@@ -24,8 +23,8 @@ const Command &Remove::getCommand() {
 	}
 }
 
-void Remove::updateAction(const Saiph *saiph) {
-	if (saiph->world->question && saiph->world->messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos)
+void Remove::updateAction() {
+	if (World::question && World::messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos)
 		sequence = 1;
 	else if (sequence == 1)
 		sequence = 2;

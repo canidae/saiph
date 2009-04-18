@@ -45,6 +45,8 @@ void Inventory::parseMessages(const string &messages) {
 				}
 				++i;
 			}
+			/* also mark inventory as updated */
+			updated = true;
 		}
 		if (changed_items.size() > 0) {
 			/* TODO: send event ChangedItems */
@@ -62,11 +64,14 @@ void Inventory::parseMessages(const string &messages) {
 				continue;
 			}
 			addItem(messages[pos - 1], item);
-			/* TODO: remove items from stash on ground */
 			/* add item to changed_items */
 			changed_items.push_back(messages[pos - 1]);
 		}
 		if (changed_items.size() > 0) {
+			/* if we're standing on a stash, mark it as changed */
+			map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
+			if (s != World::levels[Saiph::position.level].stashes.end())
+				s->second.turn_changed = World::turn;
 			/* TODO: send event ReceivedItems */
 			changed_items.clear();
 		}
