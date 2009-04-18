@@ -3,8 +3,11 @@
 #include <iostream>
 #include "Connection.h"
 #include "Debug.h"
+#include "Inventory.h"
 #include "World.h"
+#include "Analyzers/Analyzer.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* static variables */
@@ -36,10 +39,37 @@ int World::data_size = -1;
 std::string World::msg_str;
 Point World::last_menu;
 std::map<std::string, std::vector<int> > World::levelmap;
+time_t World::start_time = time(NULL);
+std::vector<Analyzer *> World::analyzers;
 
 /* methods */
+void World::init(int connection_type) {
+	connection = Connection::create(connection_type);
+	if (connection == NULL) {
+		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
+		exit(1);
+	}
+	/* fetch the first "frame" */
+	update();
+}
+
 void World::destroy() {
 	delete connection;
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		delete *a;
+}
+
+void World::registerAnalyzer(Analyzer *analyzer) {
+	analyzers.push_back(analyzer);
+}
+
+void World::unregisterAnalyzer(Analyzer *analyzer) {
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if ((*a)->name == analyzer->name) {
+			analyzers.erase(a);
+			return;
+		}
+	}
 }
 
 bool World::executeCommand(const string &command) {
@@ -56,16 +86,6 @@ bool World::executeCommand(const string &command) {
 	++command_count;
 	update();
 	return true;
-}
-
-void World::init(int connection_type) {
-	connection = Connection::create(connection_type);
-	if (connection == NULL) {
-		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
-		exit(1);
-	}
-	/* fetch the first "frame" */
-	update();
 }
 
 PathNode World::shortestPath(unsigned char symbol) {
@@ -448,6 +468,102 @@ void World::detectPosition() {
 	Saiph::position.row = cursor.row;
 	Saiph::position.col = cursor.col;
 	Saiph::position.level = found;
+}
+
+void World::dumpMaps() {
+	/* XXX: World echoes output from the game in the top left corner */
+	/* commands/frames/turns per second */
+	int seconds = (int) difftime(time(NULL), start_time);
+	if (seconds == 0)
+		++seconds;
+	int cps = World::command_count / seconds;
+	int fps = World::frame_count / seconds;
+	int tps = World::turn / seconds;
+	cout << (unsigned char) 27 << "[25;1H";
+	cout << "CPS/FPS/TPS: ";
+	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
+	cout << (unsigned char) 27 << "[35m" << fps << (unsigned char) 27 << "[0m/";
+	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m      ";
+
+	/* monsters and map as saiph sees it */
+	Point p;
+	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			unsigned char monster = World::getMonsterSymbol(p);
+			if (p.row == Saiph::position.row && p.col == Saiph::position.col)
+				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
+			else if (monster != ILLEGAL_MONSTER)
+				cout << monster;
+			else
+				cout << World::getDungeonSymbol(p);
+		}
+	}
+
+	/* path map */
+	/*
+	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			if (p.row == postion.row && p.col == Saiph::position.col)
+				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
+			else if (World::levels[Saiph::position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
+				//cout << (unsigned char) World::levels[Saiph::position.level].pathmap[p.row][p.col].dir;
+				cout << (char) (World::levels[Saiph::position.level].pathmap[p.row][p.col].cost % 64 + 48);
+			else
+				cout << World::getDungeonSymbol(p);
+		}
+	}
+	*/
+
+	/* status & inventory */
+	cout << (unsigned char) 27 << "[2;82H";
+	if (Saiph::intrinsics & PROPERTY_COLD)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_DISINT)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_FIRE)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_POISON)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_SHOCK)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_SLEEP)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
+
+	cout << (unsigned char) 27 << "[3;82H";
+	if (Saiph::intrinsics & PROPERTY_ESP)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_TELEPORT_CONTROL)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_TELEPORT)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
+	if (Saiph::lycanthropy)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
+	if (Saiph::hurt_leg)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
+	if (Saiph::polymorphed)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
+
+	int ir = 0;
+	for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end() && ir < 46; ++i) {
+		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+		if (i->second.beatitude == BLESSED)
+			cout << (unsigned char) 27 << "[32m";
+		else if (i->second.beatitude == CURSED)
+			cout << (unsigned char) 27 << "[31m";
+		else if (i->second.beatitude == UNCURSED)
+			cout << (unsigned char) 27 << "[33m";
+		cout << i->first;
+		cout << " - " << i->second;
+		cout << (unsigned char) 27 << "[m";
+		++ir;
+	}
+	for (; ir < 46; ++ir) {
+		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+	}
 }
 
 void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
@@ -919,5 +1035,10 @@ void World::update() {
 	}
 	if (messages == "  ")
 		messages.clear(); // no messages
+	/* check if we're engulfed */
+	if (cursor.row > MAP_ROW_BEGIN && cursor.row < MAP_ROW_END && cursor.col > MAP_COL_BEGIN && cursor.col < MAP_COL_END && view[cursor.row - 1][cursor.col - 1] == '/' && view[cursor.row - 1][cursor.col + 1] == '\\' && view[cursor.row + 1][cursor.col - 1] == '\\' && view[cursor.row + 1][cursor.col + 1] == '/')
+		Saiph::engulfed = true;
+	else    
+		Saiph::engulfed = false;
 	++frame_count;
 }

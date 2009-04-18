@@ -50,6 +50,8 @@ public:
 	static void init(int connection_type);
 	static void destroy();
 	static bool executeCommand(const std::string &command);
+	static void registerAnalyzer(analyzer::Analyzer *analyzer);
+	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
 	static unsigned char getDungeonSymbol();
 	static unsigned char getDungeonSymbol(const Coordinate &coordinate);
 	static unsigned char getDungeonSymbol(const Point &point);
@@ -59,9 +61,9 @@ public:
 	static void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 	static void setDungeonSymbol(const Point &point, unsigned char symbol);
 	static void setDungeonSymbol(unsigned char symbol);
-	PathNode shortestPath(const Coordinate &target);
-	const PathNode &shortestPath(const Point &target);
-	PathNode shortestPath(unsigned char symbol);
+	static const PathNode &shortestPath(const Point &target);
+	static PathNode shortestPath(unsigned char symbol);
+	static PathNode shortestPath(const Coordinate &target);
 
 private:
 	static Connection *connection;
@@ -74,9 +76,12 @@ private:
 	static std::string msg_str; // helps fetching messages
 	static Point last_menu; // needed to help detect menus that persist over turns
 	static std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
+	static time_t start_time;
+	static std::vector<analyzer::Analyzer *> analyzers;
 
 	static void addChangedLocation(const Point &point);
 	static void detectPosition();
+	static void dumpMaps();
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
 	static void fetchMessages();

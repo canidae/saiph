@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "Analyzer.h"
+#include "../Point.h"
 #include "../Monster.h"
 
 class Saiph;
@@ -19,6 +20,9 @@ namespace analyzer {
 	private:
 		Saiph *saiph;
 		std::map<Point, Monster>::iterator look_at;
+		std::string farlook_command;
+
+		void farlook(const Point &target);
 	};
 }
 #endif

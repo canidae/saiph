@@ -66,3 +66,44 @@ void MonsterInfo::parseMessages(const string &messages) {
 			look_at->second.attitude = ATTITUDE_UNKNOWN;
 	}
 }
+
+/* private methods */
+void MonsterInfo::farlook(const Point &target) {
+	/* look at something, eg. monster */
+	farlook_command = ";";
+	Point cursor = position;
+	while (cursor != target) {
+		unsigned char move;
+		if (cursor.row < target.row && cursor.col < target.col) {
+			move = SE;
+			++cursor.row;
+			++cursor.col;
+		} else if (cursor.row < target.row && cursor.col > target.col) {
+			move = SW;
+			++cursor.row;
+			--cursor.col;
+		} else if (cursor.row > target.row && cursor.col < target.col) {
+			move = NE;
+			--cursor.row;
+			++cursor.col;
+		} else if (cursor.row > target.row && cursor.col > target.col) {
+			move = NW;
+			--cursor.row;
+			--cursor.col;
+		} else if (cursor.row < target.row) {
+			move = S;
+			++cursor.row;
+		} else if (cursor.row > target.row) {
+			move = N;
+			--cursor.row;
+		} else if (cursor.col < target.col) {
+			move = E;
+			++cursor.col;
+		} else {
+			move = W;
+			--cursor.col;
+		}
+		farlook_command.push_back(move);
+	}
+	farlook_command.push_back(',');
+}

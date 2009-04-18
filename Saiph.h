@@ -54,7 +54,6 @@
 namespace analyzer {
 	class Analyzer;
 }
-class Stash;
 
 class Saiph {
 public:
@@ -107,23 +106,19 @@ public:
 	Saiph();
 	~Saiph();
 
-	static void registerAnalyzer(analyzer::Analyzer *analyzer);
-	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
+	static void init();
+	static void destroy();
+	static void analyze();
+	static void parseMessages(const std::string &messages);
 
 	unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders); // World
-	const std::string &farlook(const Point &target); // hmm
 	bool run(); // main?
 
 private:
-	static std::vector<analyzer::Analyzer *> analyzers;
 	std::vector<analyzer::Analyzer *>::iterator best_analyzer; // main?
-	std::string farlook_command; // hmm
 	int stuck_counter; // main?
-	time_t start_time; // hmm
 
 	bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders); // World
-	Point directionToPoint(unsigned char direction);
-	void dumpMaps(); // World
-	void parseMessages(const std::string &messages);
+	Point directionToPoint(unsigned char direction); // World
 };
 #endif
