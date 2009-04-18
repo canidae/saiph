@@ -11,11 +11,16 @@ namespace action {
 		Action() : sequence(0) {}
 		virtual ~Action() {}
 
-		virtual const Command &getCommand() {return noop;}
-		virtual void updateAction() {}
+		static int createID() {return ++counter;}
+		virtual int getID() = 0;
+		virtual const Command &getCommand() = 0;
+		virtual void updateAction() = 0;
 
 	protected:
 		int sequence;
+
+	private:
+		static int counter;
 	};
 }
 #endif

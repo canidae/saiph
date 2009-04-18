@@ -1,11 +1,14 @@
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
 #include "Connection.h"
 #include "Debug.h"
 #include "Inventory.h"
 #include "World.h"
+#include "Actions/Action.h"
+#include "Actions/Move.h"
 #include "Analyzers/Analyzer.h"
+#include "Data/Item.h"
+#include "Data/Monster.h"
 
 using namespace analyzer;
 using namespace std;
@@ -22,12 +25,14 @@ int World::command_count = 0;
 int World::frame_count = 0;
 bool World::menu = false;
 bool World::question = false;
+bool World::engulfed = false;
 char World::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
 vector<Level> World::levels;
 Coordinate World::branch_main;
 Coordinate World::branch_mines;
 Coordinate World::branch_sokoban;
+Command World::command = action::Action::noop;
 
 Connection *World::connection = NULL;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
@@ -417,6 +422,158 @@ PathNode World::shortestPath(const Coordinate &target) {
 	return PathNode(); // symbol not found
 }
 
+void World::run() {
+	vector<analyzer::Analyzer *>::iterator best_analyzer = analyzers.end();
+	int last_turn = 0;
+	int stuck_counter = 0;
+	while (true) {
+		/* let Saiph, Inventory and current level parse messages */
+		Saiph::parseMessages(messages);
+		Inventory::parseMessages(messages);
+		levels[Saiph::position.level].parseMessages(messages);
+
+		/* let Saiph, Inventory and current level analyze */
+		Saiph::analyze();
+		Inventory::analyze();
+		levels[Saiph::position.level].analyze();
+
+		/* dump maps */
+		dumpMaps();
+
+		/* check if we're stuck */
+		if (stuck_counter % 42 == 41) {
+			bool was_move = false;
+			if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL && (*best_analyzer)->action->getID() == action::Move::id) {
+				/* we're moving, mark target tile unpassable */
+				command = (*best_analyzer)->action->getCommand();
+				switch (command.command[0]) {
+					case NW:
+					case NE:
+					case SW:
+					case SE:
+						/* moving diagonally failed.
+						 * we could be trying to move diagonally into a door we're
+						 * unaware of because of an item blocking the door symbol.
+						 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+						setDungeonSymbol(directionToPoint((unsigned char) command.command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+						was_move = true;
+						break;
+
+					case N:
+					case E:
+					case S:
+					case W:
+						/* moving cardinally failed, possibly item in wall.
+						 * make the tile UNKNOWN_TILE_UNPASSABLE */
+						setDungeonSymbol(directionToPoint((unsigned char) command.command[0]), UNKNOWN_TILE_UNPASSABLE);
+						was_move = true;
+						break;
+
+					default:
+						/* huh? */
+						break;
+				}
+			}
+			if (!was_move) {
+				/* not good. we're not moving and we're stuck */
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ": " << command << endl;
+			}
+		} else if (stuck_counter > 1680) {
+			/* failed too many times, #quit */
+			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+			executeCommand(string(1, (char) 27));
+			executeCommand(QUIT);
+			executeCommand(YES);
+			return;
+		}
+
+		if (last_turn == turn)
+			stuck_counter++;
+		else    
+			stuck_counter = 0;
+		last_turn = turn;
+
+		/* check if we're in the middle of an action */
+		if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL) {
+			(*best_analyzer)->action->updateAction();
+			command = (*best_analyzer)->action->getCommand();
+		}
+		if (command == action::Action::noop) {
+			/* we got no command, find a new one */
+			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+				/* parse messages */
+				(*a)->parseMessages(messages);
+				Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+				/* set command & best_analyzer if a_command is more urgent */
+				if (a_command.priority > command.priority) {
+					command = a_command;
+					best_analyzer = a;
+				}
+			}
+
+			/* analyze */
+			if (!question && !menu) {
+				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+					/* analyze */
+					(*a)->analyze();
+					Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+					/* set command & best_analyzer if a_command is more urgent */
+					if (a_command.priority > command.priority) {
+						command = a_command;
+						best_analyzer = a;
+					}
+				}
+			}
+
+			/* need to check priority once more, because of events */
+			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+				Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+				if (a_command.priority > command.priority) {
+					command = a_command;
+					best_analyzer = a;
+				}
+			}
+		}
+
+		/* check if we got a command */
+		if (command == action::Action::noop) {
+			/* we do not. print debugging and just answer something sensible */
+			if (question) {
+				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;
+				executeCommand(string(1, (char) 27));
+				continue;
+			} else if (menu) {
+				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << messages << endl;
+				executeCommand(string(1, (char) 27));
+				continue;
+			} else {
+				Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching" << endl;
+				cout << (unsigned char) 27 << "[1;82H";
+				cout << (unsigned char) 27 << "[K"; // erase everything to the right
+				cout << "No idea what to do: s";
+				/* return cursor back to where it was */
+				cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
+				cout.flush();
+				executeCommand("s");
+				continue;
+			}
+		}
+
+		/* print what we're doing */
+		cout << (unsigned char) 27 << "[1;82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+		cout << (*best_analyzer)->name << " " << command;
+		/* return cursor back to where it was */
+		cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
+		/* and flush cout. if we don't do this our output looks like garbage */
+		cout.flush();
+		Debug::notice() << (*best_analyzer)->name << " " << command << endl;
+
+		/* execute the command */
+		executeCommand(command.command);
+	}
+}
+
 /* private methods */
 void World::addChangedLocation(const Point &point) {
 	/* add a location changed since last frame unless it's already added */
@@ -607,9 +764,9 @@ void World::dumpMaps() {
 	int seconds = (int) difftime(time(NULL), start_time);
 	if (seconds == 0)
 		++seconds;
-	int cps = World::command_count / seconds;
-	int fps = World::frame_count / seconds;
-	int tps = World::turn / seconds;
+	int cps = command_count / seconds;
+	int fps = frame_count / seconds;
+	int tps = turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
 	cout << "CPS/FPS/TPS: ";
 	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
@@ -621,13 +778,13 @@ void World::dumpMaps() {
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
 		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
-			unsigned char monster = World::getMonsterSymbol(p);
+			unsigned char monster = getMonsterSymbol(p);
 			if (p.row == Saiph::position.row && p.col == Saiph::position.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (monster != ILLEGAL_MONSTER)
 				cout << monster;
 			else
-				cout << World::getDungeonSymbol(p);
+				cout << getDungeonSymbol(p);
 		}
 	}
 
@@ -638,11 +795,11 @@ void World::dumpMaps() {
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
 			if (p.row == postion.row && p.col == Saiph::position.col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (World::levels[Saiph::position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
-				//cout << (unsigned char) World::levels[Saiph::position.level].pathmap[p.row][p.col].dir;
-				cout << (char) (World::levels[Saiph::position.level].pathmap[p.row][p.col].cost % 64 + 48);
+			else if (levels[Saiph::position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
+				//cout << (unsigned char) levels[Saiph::position.level].pathmap[p.row][p.col].dir;
+				cout << (char) (levels[Saiph::position.level].pathmap[p.row][p.col].cost % 64 + 48);
 			else
-				cout << World::getDungeonSymbol(p);
+				cout << getDungeonSymbol(p);
 		}
 	}
 	*/
@@ -1164,12 +1321,92 @@ void World::update() {
 		update();
 		return;
 	}
+	++frame_count;
 	if (messages == "  ")
 		messages.clear(); // no messages
+
+	/* check if we get the question where we want to teleport */
+	if (messages.find(MESSAGE_FOR_INSTRUCTIONS, 0) != string::npos) {
+		/* a bit unique case, this is a question.
+		 * the data doesn't end with the sequence we check in World.
+		 * however, the cursor is placed on the player when we get this message */
+		question = true;
+        }
+
 	/* check if we're engulfed */
 	if (cursor.row > MAP_ROW_BEGIN && cursor.row < MAP_ROW_END && cursor.col > MAP_COL_BEGIN && cursor.col < MAP_COL_END && view[cursor.row - 1][cursor.col - 1] == '/' && view[cursor.row - 1][cursor.col + 1] == '\\' && view[cursor.row + 1][cursor.col - 1] == '\\' && view[cursor.row + 1][cursor.col + 1] == '/')
-		Saiph::engulfed = true;
+		engulfed = true;
 	else    
-		Saiph::engulfed = false;
-	++frame_count;
+		engulfed = false;
+
+	if (!menu && !question && !engulfed)
+		detectPosition();
+}
+
+/* main */
+int main(int argc, const char *argv[]) {
+	int connection_type = CONNECTION_TELNET;
+	string logfile = "saiph.log";
+
+	bool showUsage = false;
+	if (argc > 1) {
+		for (int a = 1; a < argc; ++a) {
+			if (strlen(argv[a]) < 2) {
+				showUsage = true;
+				continue;
+			}
+
+			if (argv[a][0] == '-') {
+				switch (argv[a][1]) {
+				case 'h':
+					showUsage = true;
+					break;
+				case 'l':
+					connection_type = CONNECTION_LOCAL;
+					break;
+				case 't':
+					connection_type = CONNECTION_TELNET;
+					break;
+				case 'L':
+					if (argc > ++a)
+						logfile = argv[a];
+					else
+						showUsage = true;
+					break;
+				default:
+					cout << "Invalid argument " << argv[a] << endl;
+					showUsage = true;
+					break;
+				}
+			} else {
+				cout << "Unknown argument specified." << endl;
+			}
+		}
+
+		if (showUsage) {
+			cout << "Usage: " << argv[0] << " [-l|-t] [-L <logfile>]" << endl;
+			cout << endl;
+			cout << "\t-l  Use local nethack executable" << endl;
+			cout << "\t-t  Use telnet nethack server" << endl;
+			cout << endl;
+			cout << "\t-L <logfile>  Log file to write Saiph output" << endl;
+			return 1;
+		}
+	}
+
+	/* init */
+	Debug::init(logfile);
+	data::Monster::init();
+	data::Item::init();
+	World::init(connection_type);
+
+	/* run */
+	World::run();
+	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
+
+	/* destroy */
+	World::destroy();
+	data::Item::destroy();
+	data::Monster::destroy();
+	Debug::destroy();
 }

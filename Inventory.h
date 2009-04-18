@@ -17,9 +17,10 @@ public:
 	static bool updated;
 	static std::map<unsigned char, Item> items;
 
+	static void analyze();
+	static void parseMessages(const std::string &messages);
 	static void addItem(unsigned char key, const Item &item);
 	static void removeItem(unsigned char key, const Item &item);
-	static void parseMessages(const std::string &messages);
 
 private:
 	static std::vector<unsigned char> changed_items;

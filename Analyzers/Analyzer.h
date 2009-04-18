@@ -20,10 +20,10 @@ namespace analyzer {
 		Analyzer(std::string name) : name(name), action(NULL) {}
 		virtual ~Analyzer();
 
-		virtual void analyze(const Command &) {}
+		virtual void analyze() {}
 		virtual void init() {}
 		virtual void onEvent(event::Event *const) {}
-		virtual void parseMessages(const std::string &, const Command &) {}
+		virtual void parseMessages(const std::string &) {}
 	};
 }
 #endif

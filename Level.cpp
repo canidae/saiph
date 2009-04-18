@@ -33,6 +33,25 @@ Level::Level(string name, int branch) : name(name), branch(branch), undiggable(f
 }
 
 /* methods */
+void Level::analyze() {
+	if (World::menu)
+		return; // menu hides map, don't update
+	if (World::engulfed) {
+		 /* we'll still need to update monster's "visible" while engulfed,
+		  * or she may attempt to farlook a monster she can't see */
+		for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ++m)
+			m->second.visible = false;
+		return;
+	}
+	/* update changed symbols */
+	for (vector<Point>::iterator c = World::changes.begin(); c != World::changes.end(); ++c)
+		updateMapPoint(*c, (unsigned char) World::view[c->row][c->col], World::color[c->row][c->col]);
+	/* update monsters */
+	updateMonsters();
+	/* update pathmap */
+	updatePathMap();
+}
+
 void Level::parseMessages(const string &messages) {
 	/* parse messages that can help us find doors/staircases/etc. */
 	string::size_type pos;

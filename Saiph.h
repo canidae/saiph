@@ -1,12 +1,7 @@
 #ifndef SAIPH_H
 #define SAIPH_H
 /* debug */
-#define COMMAND_DEBUG_NAME "Command] "
-#define ITEMTRACKER_DEBUG_NAME "ItemTracker] "
-#define MESSAGES_DEBUG_NAME "Messages] "
 #define SAIPH_DEBUG_NAME "Saiph] "
-/* max length of levelname */
-#define MAX_LEVELNAME_LENGTH 16
 /* messages */
 #define SAIPH_GAIN_COLD_RES1 "  You feel full of hot air.  "
 #define SAIPH_LOSE_COLD_RES1 "  You feel cooler!  "
@@ -42,14 +37,10 @@
 #define SAIPH_END_LEVITATION "  You float gently to the " //followed by kind of floor
 #define SAIPH_END_LEVITATION_SINK "  You crash to the " //followed by kind of floor
 
-#include <fstream>
 #include <map>
 #include <string>
-#include <vector>
 #include "Coordinate.h"
 #include "Item.h"
-#include "Level.h"
-#include "Point.h"
 
 namespace analyzer {
 	class Analyzer;
@@ -82,11 +73,10 @@ public:
 	static bool ill;
 	static bool slimed;
 	static bool stunned;
-	static bool lycanthropy;
+	static bool lycanthropy; // TODO: intrinsic
 	static bool hurt_leg;
 	static bool polymorphed;
-	static bool levitating;
-	static bool engulfed;
+	static bool levitating; // TODO: extrinsic?
 	/* position */
 	static Coordinate position;
 	/* zorkmids */
@@ -97,25 +87,10 @@ public:
 
 	std::map<unsigned char, Item> pickup; // Loot analyzer
 	std::map<unsigned char, Item> drop; // Loot analyzer
-	std::string last_command; // World?
 	bool got_pickup_menu; // Loot analyzer
 	bool got_drop_menu; // Loot analyzer
-	int last_turn; // main?
 
-	Saiph();
-	~Saiph();
-
-	static void init();
-	static void destroy();
 	static void analyze();
 	static void parseMessages(const std::string &messages);
-
-	bool run(); // main?
-
-private:
-	std::vector<analyzer::Analyzer *>::iterator best_analyzer; // main?
-	int stuck_counter; // main?
-
-	void usage(const std::string &executable);
 };
 #endif

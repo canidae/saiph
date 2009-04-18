@@ -6,9 +6,12 @@
 namespace action {
 	class Remove : public Action {
 	public:
+		static const int id;
+
 		Remove(unsigned char key, int priority);
 		virtual ~Remove() {}
 
+		virtual int getID() {return id;}
 		virtual const Command &getCommand();
 		virtual void updateAction();
 

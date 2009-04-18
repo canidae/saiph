@@ -6,9 +6,12 @@
 namespace action {
 	class Kick : public Action {
 	public:
+		static const int id;
+
 		Kick(unsigned char direction, int priority);
 		virtual ~Kick() {}
 
+		virtual int getID() {return id;}
 		virtual const Command &getCommand();
 		virtual void updateAction();
 

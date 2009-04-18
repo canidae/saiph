@@ -66,9 +66,10 @@ public:
 
 	unsigned char getDungeonSymbol(const Point &point);
 	unsigned char getMonsterSymbol(const Point &point);
-	void parseMessages(const std::string &messages);
 	void setDungeonSymbol(const Point &point, unsigned char symbol);
 	const PathNode &shortestPath(const Point &target);
+	void analyze();
+	void parseMessages(const std::string &messages);
 	void updateMapPoint(const Point &point, unsigned char symbol, int color);
 	void updateMonsters();
 	void updatePathMap();

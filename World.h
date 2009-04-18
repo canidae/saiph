@@ -2,11 +2,11 @@
 #define WORLD_H
 /* debug */
 #define WORLD_DEBUG_NAME "World] "
-#define DATA_DEBUG_NAME "Data] " // data from game, give that an unique name
 /* buffer */
 #define BUFFER_SIZE 65536
 #define MAX_EFFECTS 8
 #define MAX_TEXT_LENGTH 16
+#define MAX_LEVELNAME_LENGTH 16
 /* stuff for parsing attribute & status rows */
 #define ATTRIBUTES_ROW 22
 #define STATUS_ROW 23
@@ -16,10 +16,10 @@
 #define PAGE "(%d of %d)"
 #define PAGE_DIRTY "%*[^(]" PAGE
 
-#include <fstream>
 #include <map>
 #include <string>
 #include <vector>
+#include "Command.h"
 #include "Globals.h"
 #include "Level.h"
 #include "Point.h"
@@ -40,12 +40,14 @@ public:
 	static int frame_count;
 	static bool menu;
 	static bool question;
+	static bool engulfed;
 	static char levelname[MAX_LEVELNAME_LENGTH];
 	static int turn;
 	static std::vector<Level> levels;
 	static Coordinate branch_main;
 	static Coordinate branch_mines;
 	static Coordinate branch_sokoban;
+	static Command command;
 
 	static void init(int connection_type);
 	static void destroy();
@@ -65,6 +67,7 @@ public:
 	static const PathNode &shortestPath(const Point &target);
 	static PathNode shortestPath(unsigned char symbol);
 	static PathNode shortestPath(const Coordinate &target);
+	static void run();
 
 private:
 	static Connection *connection;
@@ -115,37 +118,37 @@ inline unsigned char World::getDungeonSymbol(const Point &point) {
 inline unsigned char World::getDungeonSymbol(unsigned char direction) {
 	/* return dungeon symbol in given direction on current level */
 	switch (direction) {
-		case NW:
-			return getDungeonSymbol(Point(Saiph::position.row - 1, Saiph::position.col - 1));
+	case NW:
+		return getDungeonSymbol(Point(Saiph::position.row - 1, Saiph::position.col - 1));
 
-		case N:
-			return getDungeonSymbol(Point(Saiph::position.row - 1, Saiph::position.col));
+	case N:
+		return getDungeonSymbol(Point(Saiph::position.row - 1, Saiph::position.col));
 
-		case NE:
-			return getDungeonSymbol(Point(Saiph::position.row - 1, Saiph::position.col + 1));
+	case NE:
+		return getDungeonSymbol(Point(Saiph::position.row - 1, Saiph::position.col + 1));
 
-		case W:
-			return getDungeonSymbol(Point(Saiph::position.row, Saiph::position.col - 1));
+	case W:
+		return getDungeonSymbol(Point(Saiph::position.row, Saiph::position.col - 1));
 
-		case NOWHERE:
-		case DOWN:
-		case UP:
-			return getDungeonSymbol();
+	case NOWHERE:
+	case DOWN:
+	case UP:
+		return getDungeonSymbol();
 
-		case E:
-			return getDungeonSymbol(Point(Saiph::position.row, Saiph::position.col + 1));
+	case E:
+		return getDungeonSymbol(Point(Saiph::position.row, Saiph::position.col + 1));
 
-		case SW:
-			return getDungeonSymbol(Point(Saiph::position.row + 1, Saiph::position.col - 1));
+	case SW:
+		return getDungeonSymbol(Point(Saiph::position.row + 1, Saiph::position.col - 1));
 
-		case S:
-			return getDungeonSymbol(Point(Saiph::position.row + 1, Saiph::position.col));
+	case S:
+		return getDungeonSymbol(Point(Saiph::position.row + 1, Saiph::position.col));
 
-		case SE:
-			return getDungeonSymbol(Point(Saiph::position.row + 1, Saiph::position.col + 1));
+	case SE:
+		return getDungeonSymbol(Point(Saiph::position.row + 1, Saiph::position.col + 1));
 
-		default:
-			return OUTSIDE_MAP;
+	default:
+		return OUTSIDE_MAP;
 	}
 }
 

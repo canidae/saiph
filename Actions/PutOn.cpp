@@ -4,6 +4,8 @@
 using namespace std;
 using namespace action;
 
+const int PutOn::id = Action::createID();
+
 PutOn::PutOn(unsigned char key, int priority) : put_on(PUT_ON, priority), put_on_key(string(1, key), PRIORITY_CONTINUE_ACTION) {
 }
 

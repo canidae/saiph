@@ -6,9 +6,12 @@
 namespace action {
 	class ListInventory : public Action {
 	public:
+		static const int id;
+
 		ListInventory();
 		virtual ~ListInventory() {};
 
+		virtual int getID() {return id;}
 		virtual const Command &getCommand();
 		virtual void updateAction();
 

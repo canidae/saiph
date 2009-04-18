@@ -3,6 +3,8 @@
 using namespace std;
 using namespace action;
 
+const int ListInventory::id = Action::createID();
+
 ListInventory::ListInventory() : list_inventory("i", PRIORITY_LOOK) {
 }
 

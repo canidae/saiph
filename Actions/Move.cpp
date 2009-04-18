@@ -3,6 +3,8 @@
 using namespace std;
 using namespace action;
 
+const int Move::id = Action::createID();
+
 Move::Move(unsigned char direction, int priority) : move(string(1, direction), priority) {
 	/* XXX:
 	 * should we check that the user gave a valid direction?

@@ -4,6 +4,8 @@
 using namespace std;
 using namespace action;
 
+const int Kick::id = Action::createID();
+
 Kick::Kick(unsigned char direction, int priority) : kick(KICK, priority), kick_direction(string(1, direction), PRIORITY_CONTINUE_ACTION) {
 }
 
