@@ -7,7 +7,7 @@ namespace action {
 	class ListInventory : public Action {
 	public:
 		ListInventory();
-		virtual ~ListInventory();
+		virtual ~ListInventory() {};
 
 		virtual const Command &getCommand();
 		virtual void updateAction();

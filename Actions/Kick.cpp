@@ -7,9 +7,6 @@ using namespace action;
 Kick::Kick(unsigned char direction, int priority) : kick(KICK, priority), kick_direction(string(1, direction), PRIORITY_CONTINUE_ACTION) {
 }
 
-Kick::~Kick() {
-}
-
 const Command &Kick::getCommand() {
 	switch (sequence) {
 	case 0:

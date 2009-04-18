@@ -7,7 +7,7 @@ namespace action {
 	class PutOn : public Action {
 	public:
 		PutOn(unsigned char key, int priority);
-		virtual ~PutOn();
+		virtual ~PutOn() {}
 
 		virtual const Command &getCommand();
 		virtual void updateAction();

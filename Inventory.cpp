@@ -6,19 +6,18 @@
 using namespace event;
 using namespace std;
 
-
 /* define static variables */
 bool Inventory::updated = false;
-std::map<unsigned char, Item> Inventory::items;
+map<unsigned char, Item> Inventory::items;
 
 /* define private static variables */
-std::vector<unsigned char> Inventory::changed_items;
+vector<unsigned char> Inventory::changed_items;
 
 /* methods */
 void Inventory::addItem(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return;
-	Debug::notice() << INVENTORY_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << std::endl;
+	Debug::notice() << INVENTORY_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (items.find(key) != items.end()) {
 		/* existing item, add amount */
 		items[key].count += item.count;
@@ -31,10 +30,10 @@ void Inventory::addItem(unsigned char key, const Item &item) {
 void Inventory::removeItem(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return;
-	std::map<unsigned char, Item>::iterator i = items.find(key);
+	map<unsigned char, Item>::iterator i = items.find(key);
 	if (i == items.end())
 		return;
-	Debug::notice() << INVENTORY_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << std::endl;
+	Debug::notice() << INVENTORY_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (i->second.count > item.count)
 		i->second.count -= item.count; // we got more than we remove
 	else    

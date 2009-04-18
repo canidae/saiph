@@ -12,9 +12,6 @@ Move::Move(unsigned char direction, int priority) : move(string(1, direction), p
 	 * should check if the move is legal at the same time (if necessary) */
 }
 
-Move::~Move() {
-}
-
 const Command &Move::getCommand() {
 	switch (sequence) {
 	case 0:

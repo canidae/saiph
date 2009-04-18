@@ -7,7 +7,7 @@ namespace action {
 	class Move : public Action {
 	public:
 		Move(unsigned char direction, int priority);
-		virtual ~Move();
+		virtual ~Move() {}
 
 		virtual const Command &getCommand();
 		virtual void updateAction();

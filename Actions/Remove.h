@@ -7,7 +7,7 @@ namespace action {
 	class Remove : public Action {
 	public:
 		Remove(unsigned char key, int priority);
-		virtual ~Remove();
+		virtual ~Remove() {}
 
 		virtual const Command &getCommand();
 		virtual void updateAction();

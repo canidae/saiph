@@ -7,9 +7,6 @@ using namespace action;
 Remove::Remove(unsigned char key, int priority) : remove(REMOVE, priority), remove_key(string(1, key), PRIORITY_CONTINUE_ACTION) {
 }
 
-Remove::~Remove() {
-}
-
 const Command &Remove::getCommand() {
 	switch (sequence) {
 	case 0:

@@ -7,7 +7,7 @@ namespace action {
 	class Kick : public Action {
 	public:
 		Kick(unsigned char direction, int priority);
-		virtual ~Kick();
+		virtual ~Kick() {}
 
 		virtual const Command &getCommand();
 		virtual void updateAction();

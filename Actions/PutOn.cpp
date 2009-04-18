@@ -7,9 +7,6 @@ using namespace action;
 PutOn::PutOn(unsigned char key, int priority) : put_on(PUT_ON, priority), put_on_key(string(1, key), PRIORITY_CONTINUE_ACTION) {
 }
 
-PutOn::~PutOn() {
-}
-
 const Command &PutOn::getCommand() {
 	switch (sequence) {
 	case 0:

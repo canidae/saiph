@@ -8,11 +8,11 @@ namespace action {
 	public:
 		static const Command noop;
 
-		Action();
-		virtual ~Action();
+		Action() : sequence(0) {}
+		virtual ~Action() {}
 
-		virtual const Command &getCommand();
-		virtual void updateAction();
+		virtual const Command &getCommand() {return noop;}
+		virtual void updateAction() {}
 
 	protected:
 		int sequence;
