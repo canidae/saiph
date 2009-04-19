@@ -6,7 +6,7 @@ using namespace std;
 /* initialize static variables */
 map<string, Suit *> Suit::suits;
 
-Suit::Suit(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, ARMOR_SUIT, ac, mc, properties) {
+Suit::Suit(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SUIT, ac, mc, properties) {
 }
 
 void Suit::addToMap(const string &name, Suit *suit) {

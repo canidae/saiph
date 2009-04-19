@@ -1,6 +1,7 @@
-#include "Item.h"
+#include "Amulet.h"
 #include "Armor.h"
 #include "Food.h"
+#include "Item.h"
 
 using namespace data;
 using namespace std;

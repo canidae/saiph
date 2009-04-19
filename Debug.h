@@ -69,8 +69,4 @@ inline std::string &Debug::printTime() {
 	timestamp = asctime(localtime(&rawtime));
 	return timestamp.erase(timestamp.size() - 1);
 }
-
-/* init static variables */
-std::string Debug::timestamp;
-std::ofstream Debug::debugfile;
 #endif

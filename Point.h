@@ -18,5 +18,5 @@ public:
 	bool operator!=(const Point &p) const {return (row != p.row || col != p.col);}
 };
 
-std::ostream &operator<<(std::ostream &os, const Point &p) {return os << "(" << p.row << ", " << p.col << ")";}
+std::ostream &operator<<(std::ostream &os, const Point &p);
 #endif

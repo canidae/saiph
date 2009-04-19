@@ -16,5 +16,5 @@ public:
 	bool operator==(const Command &c) const {return priority == c.priority && command == command;}
 };
 
-std::ostream &operator<<(std::ostream &os, const Command &c) {return os << "(" << c.priority << "): " << c.command;}
+std::ostream &operator<<(std::ostream &os, const Command &c);
 #endif

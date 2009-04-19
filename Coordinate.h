@@ -18,5 +18,5 @@ public:
 	bool operator!=(const Coordinate &c) const {return (level != c.level || row != c.row || col != c.col);}
 };
 
-std::ostream &operator<<(std::ostream &os, const Coordinate& c) {return os << "(" << c.level << ", " << c.row << ", " << c.col << ")";}
+std::ostream &operator<<(std::ostream &os, const Coordinate& c);
 #endif
