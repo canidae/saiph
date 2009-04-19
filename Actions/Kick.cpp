@@ -1,8 +1,8 @@
 #include "Kick.h"
 #include "../World.h"
 
-using namespace std;
 using namespace action;
+using namespace std;
 
 const int Kick::id = Action::createID();
 
@@ -22,8 +22,8 @@ const Command &Kick::getCommand() {
 	}
 }
 
-void Kick::updateAction() {
-	if (World::question && World::messages.find(MESSAGE_IN_WHAT_DIRECTION) != string::npos)
+void Kick::updateAction(const string &messages) {
+	if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != string::npos)
 		sequence = 1;
 	else if (sequence == 1)
 		sequence = 2;

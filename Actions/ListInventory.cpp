@@ -1,7 +1,7 @@
 #include "ListInventory.h"
 
-using namespace std;
 using namespace action;
+using namespace std;
 
 const int ListInventory::id = Action::createID();
 
@@ -18,6 +18,6 @@ const Command &ListInventory::getCommand() {
 	}
 }
 
-void ListInventory::updateAction() {
+void ListInventory::updateAction(const string &) {
 	++sequence;
 }

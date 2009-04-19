@@ -33,7 +33,6 @@ public:
 	static char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 	static int color[ROWS][COLS]; // not used for string reading, no need for + 1
 	static Point cursor; // cursor position
-	static std::string messages;
 	static int cur_page;
 	static int max_page;
 	static int command_count;
@@ -72,6 +71,7 @@ public:
 private:
 	static Connection *connection;
 	static bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
+	static std::string messages;
 	static bool inverse;
 	static bool bold;
 	static char data[BUFFER_SIZE * 2]; // weird errors from valgrind, oh well, we got enough memory

@@ -1,7 +1,7 @@
 #include "Move.h"
 
-using namespace std;
 using namespace action;
+using namespace std;
 
 const int Move::id = Action::createID();
 
@@ -24,6 +24,6 @@ const Command &Move::getCommand() {
 	}
 }
 
-void Move::updateAction() {
+void Move::updateAction(const string &) {
 	++sequence;
 }

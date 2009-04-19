@@ -9,12 +9,11 @@ namespace event {
 	class Event;
 }
 class Command;
-class Saiph;
 
 namespace analyzer {
 	class Amulet : public Analyzer {
 	public:
-		Amulet(Saiph *saiph);
+		Amulet();
 
 		void onEvent(event::Event *const event);
 		void parseMessages(const std::string &messages, const Command &best_command);

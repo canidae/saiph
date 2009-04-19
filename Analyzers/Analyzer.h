@@ -9,7 +9,6 @@ namespace action {
 namespace event {
 	class Event;
 }
-class Command;
 
 namespace analyzer {
 	class Analyzer {
@@ -18,12 +17,12 @@ namespace analyzer {
 		action::Action *action;
 
 		Analyzer(std::string name) : name(name), action(NULL) {}
-		virtual ~Analyzer();
+		virtual ~Analyzer() {}
 
-		virtual void analyze() {}
 		virtual void init() {}
-		virtual void onEvent(event::Event *const) {}
 		virtual void parseMessages(const std::string &) {}
+		virtual void analyze() {}
+		virtual void onEvent(event::Event *const) {}
 	};
 }
 #endif

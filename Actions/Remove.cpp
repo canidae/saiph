@@ -1,8 +1,8 @@
 #include "Remove.h"
 #include "../World.h"
 
-using namespace std;
 using namespace action;
+using namespace std;
 
 const int Remove::id = Action::createID();
 
@@ -22,8 +22,8 @@ const Command &Remove::getCommand() {
 	}
 }
 
-void Remove::updateAction() {
-	if (World::question && World::messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos)
+void Remove::updateAction(const string &messages) {
+	if (World::question && messages.find(MESSAGE_WHAT_TO_REMOVE) != string::npos)
 		sequence = 1;
 	else if (sequence == 1)
 		sequence = 2;

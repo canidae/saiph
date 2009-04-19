@@ -18,7 +18,6 @@ vector<Point> World::changes;
 char World::view[ROWS][COLS + 1] = {{'\0'}};
 int World::color[ROWS][COLS] = {{0}};
 Point World::cursor;
-string World::messages = " ";
 int World::cur_page = -1;
 int World::max_page = -1;
 int World::command_count = 0;
@@ -36,6 +35,7 @@ Command World::command = action::Action::noop;
 
 Connection *World::connection = NULL;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
+string World::messages = " ";
 bool World::inverse = false;
 bool World::bold = false;
 char World::data[BUFFER_SIZE * 2] = {'\0'};
@@ -495,7 +495,7 @@ void World::run() {
 
 		/* check if we're in the middle of an action */
 		if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL) {
-			(*best_analyzer)->action->updateAction();
+			(*best_analyzer)->action->updateAction(messages);
 			command = (*best_analyzer)->action->getCommand();
 		}
 		if (command == action::Action::noop) {

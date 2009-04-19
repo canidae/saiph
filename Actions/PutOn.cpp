@@ -1,8 +1,8 @@
 #include "PutOn.h"
 #include "../World.h"
 
-using namespace std;
 using namespace action;
+using namespace std;
 
 const int PutOn::id = Action::createID();
 
@@ -22,8 +22,8 @@ const Command &PutOn::getCommand() {
 	}
 }
 
-void PutOn::updateAction() {
-	if (World::question && World::messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos)
+void PutOn::updateAction(const string &messages) {
+	if (World::question && messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos)
 		sequence = 1;
 	else if (sequence == 1)
 		sequence = 2;

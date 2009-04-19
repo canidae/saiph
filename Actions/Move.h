@@ -13,7 +13,7 @@ namespace action {
 
 		virtual int getID() {return id;}
 		virtual const Command &getCommand();
-		virtual void updateAction();
+		virtual void updateAction(const std::string &messages);
 
 	private:
 		const Command move;
