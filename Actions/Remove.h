@@ -2,6 +2,7 @@
 #define _REMOVE_H
 
 #include "Action.h"
+#include "../Inventory.h"
 
 namespace action {
 	class Remove : public Action {

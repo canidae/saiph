@@ -8,8 +8,8 @@ using namespace analyzer;
 using namespace event;
 using namespace std;
 
-/* register analyzer */
-int Explore::id = World::registerAnalyzer(new Explore());
+/* define static variables */
+int Explore::id = ILLEGAL_ANALYZER_ID;
 
 /* constructors/destructor */
 Explore::Explore() : Analyzer("Explore") {

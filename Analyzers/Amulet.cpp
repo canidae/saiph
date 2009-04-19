@@ -13,8 +13,8 @@ using namespace analyzer;
 using namespace event;
 using namespace std;
 
-/* register analyzer */
-int Amulet::id = World::registerAnalyzer(new Amulet());
+/* define static variables */
+int Amulet::id = ILLEGAL_ANALYZER_ID;
 
 /* constructors/destructor */
 Amulet::Amulet() : Analyzer("Amulet") {

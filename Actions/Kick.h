@@ -2,6 +2,7 @@
 #define _KICK_H
 
 #include "Action.h"
+#include "../World.h"
 
 namespace action {
 	class Kick : public Action {

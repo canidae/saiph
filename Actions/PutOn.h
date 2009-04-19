@@ -2,6 +2,7 @@
 #define _PUT_ON_H
 
 #include "Action.h"
+#include "../Inventory.h"
 
 namespace action {
 	class PutOn : public Action {

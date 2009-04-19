@@ -3,11 +3,12 @@
 
 #include <string>
 #include "../Command.h"
-#include "../Inventory.h"
-#include "../World.h"
-#include "../Analyzers/Analyzer.h"
 
 #define ILLEGAL_ACTION_ID -1
+
+namespace analyzer {
+	class Analyzer;
+}
 
 namespace action {
 	class Action {
