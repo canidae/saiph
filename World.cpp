@@ -443,9 +443,9 @@ void World::run() {
 		/* check if we're stuck */
 		if (stuck_counter % 42 == 41) {
 			bool was_move = false;
-			if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL && (*best_analyzer)->action->getID() == action::Move::id) {
+			if (best_analyzer != analyzers.end() && (*best_analyzer)->getAction() != NULL && (*best_analyzer)->getAction()->getID() == action::Move::id) {
 				/* we're moving, mark target tile unpassable */
-				command = (*best_analyzer)->action->getCommand();
+				command = (*best_analyzer)->getAction()->getCommand();
 				switch (command.command[0]) {
 					case NW:
 					case NE:
@@ -494,16 +494,16 @@ void World::run() {
 		last_turn = turn;
 
 		/* check if we're in the middle of an action */
-		if (best_analyzer != analyzers.end() && (*best_analyzer)->action != NULL) {
-			(*best_analyzer)->action->updateAction(messages);
-			command = (*best_analyzer)->action->getCommand();
+		if (best_analyzer != analyzers.end() && (*best_analyzer)->getAction() != NULL) {
+			(*best_analyzer)->getAction()->updateAction(messages);
+			command = (*best_analyzer)->getAction()->getCommand();
 		}
 		if (command == action::Action::noop) {
 			/* we got no command, find a new one */
 			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 				/* parse messages */
 				(*a)->parseMessages(messages);
-				Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+				Command a_command = (*a)->getAction() == NULL ? action::Action::noop : (*a)->getAction()->getCommand();
 				/* set command & best_analyzer if a_command is more urgent */
 				if (a_command.priority > command.priority) {
 					command = a_command;
@@ -516,7 +516,7 @@ void World::run() {
 				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 					/* analyze */
 					(*a)->analyze();
-					Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+					Command a_command = (*a)->getAction() == NULL ? action::Action::noop : (*a)->getAction()->getCommand();
 					/* set command & best_analyzer if a_command is more urgent */
 					if (a_command.priority > command.priority) {
 						command = a_command;
@@ -527,7 +527,7 @@ void World::run() {
 
 			/* need to check priority once more, because of events */
 			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-				Command a_command = (*a)->action == NULL ? action::Action::noop : (*a)->action->getCommand();
+				Command a_command = (*a)->getAction() == NULL ? action::Action::noop : (*a)->getAction()->getCommand();
 				if (a_command.priority > command.priority) {
 					command = a_command;
 					best_analyzer = a;

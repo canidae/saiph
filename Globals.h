@@ -94,15 +94,21 @@
 #define SATIATED 1
 #define OVERSATIATED 2
 
-/* armor slots */
-#define ARMOR_SLOTS 7
-#define ARMOR_SHIRT 0
-#define ARMOR_SUIT 1
-#define ARMOR_CLOAK 2
-#define ARMOR_BOOTS 3
-#define ARMOR_GLOVES 4
-#define ARMOR_HELMET 5
-#define ARMOR_SHIELD 6
+/* slots */
+#define SLOTS 12
+#define INVALID_SLOT -1
+#define SLOT_SHIRT 0
+#define SLOT_SUIT 1
+#define SLOT_CLOAK 2
+#define SLOT_BOOTS 3
+#define SLOT_GLOVES 4
+#define SLOT_HELMET 5
+#define SLOT_SHIELD 6
+#define SLOT_AMULET 7
+#define SLOT_LEFT_RING 8
+#define SLOT_RIGHT_RING 9
+#define SLOT_WEAPON 10
+#define SLOT_OFFHAND_WEAPON 11
 
 /* directions */
 #define ILLEGAL_DIRECTION 0

@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include "Debug.h"
+#include "Globals.h"
 #include "Item.h"
 #include "World.h"
 
@@ -16,6 +17,7 @@ class Inventory {
 public:
 	static bool updated;
 	static std::map<unsigned char, Item> items;
+	static unsigned char slots[SLOTS];
 
 	static void analyze();
 	static void parseMessages(const std::string &messages);
@@ -24,5 +26,7 @@ public:
 
 private:
 	static std::vector<unsigned char> changed_items;
+
+	static void setSlot(unsigned char key, const Item &item);
 };
 #endif

@@ -202,11 +202,8 @@ Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN
 Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
 }
 
-bool operator==(const Item &a, const Item &b) {
-	return a.count == b.count && a.beatitude == b.beatitude && a.greased == b.greased &&
-			a.fixed == b.fixed && a.damage == b.damage &&
-			a.unknown_enchantment == b.unknown_enchantment && a.enchantment == b.enchantment &&
-			a.name == b.name && a.additional == b.additional;
+bool Item::operator==(const Item &i) {
+	return count == i.count && beatitude == i.beatitude && greased == i.greased && fixed == i.fixed && damage == i.damage && unknown_enchantment == i.unknown_enchantment && enchantment == i.enchantment && name == i.name && additional == i.additional;
 }
 
 ostream &operator<<(ostream &out, const Item &item) {

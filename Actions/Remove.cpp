@@ -1,4 +1,5 @@
 #include "Remove.h"
+#include "../Inventory.h"
 #include "../World.h"
 
 using namespace action;
@@ -15,6 +16,8 @@ const Command &Remove::getCommand() {
 		return remove;
 		
 	case 1:
+		/* also mark the inventory dirty when we do this */
+		Inventory::updated = false;
 		return remove_key;
 
 	default:

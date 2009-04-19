@@ -1,5 +1,7 @@
 #include "EventBus.h"
 #include "Inventory.h"
+#include "Data/Armor.h"
+#include "Data/Amulet.h"
 #include "Events/ChangedInventoryItems.h"
 #include "Events/ReceivedItems.h"
 
@@ -9,6 +11,7 @@ using namespace std;
 /* define static variables */
 bool Inventory::updated = false;
 map<unsigned char, Item> Inventory::items;
+unsigned char Inventory::slots[] = {'\0'};
 
 /* define private static variables */
 vector<unsigned char> Inventory::changed_items;
@@ -107,6 +110,8 @@ void Inventory::addItem(unsigned char key, const Item &item) {
 		/* new item */
 		items[key] = item;
 	}
+	/* update slot */
+	setSlot(key, item);
 }
 
 void Inventory::removeItem(unsigned char key, const Item &item) {
@@ -116,8 +121,45 @@ void Inventory::removeItem(unsigned char key, const Item &item) {
 	if (i == items.end())
 		return;
 	Debug::notice() << INVENTORY_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
-	if (i->second.count > item.count)
-		i->second.count -= item.count; // we got more than we remove
-	else    
-		items.erase(i); // removing all we got
+	if (i->second.count > item.count) {
+		/* reduce stack */
+		i->second.count -= item.count;
+	} else {
+		/* remove stack entirely */
+		for (int a = 0; a < SLOTS; ++a) {
+			if (slots[a] == key) {
+				slots[a] = '\0';
+				return;
+			}
+		}
+		items.erase(i);
+	}
+}
+
+/* private methods */
+void Inventory::setSlot(unsigned char key, const Item &item) {
+	if (item.additional == "being worn") {
+		/* armor */
+		map<string, data::Armor *>::iterator a = data::Armor::armors.find(item.name);
+		if (a != data::Armor::armors.end()) {
+			slots[a->second->slot] = key;
+			return;
+		}
+		/* amulet */
+		map<string, data::Amulet *>::iterator b = data::Amulet::amulets.find(item.name);
+		if (b != data::Amulet::amulets.end()) {
+			slots[SLOT_AMULET] = key;
+			return;
+		}
+	} else if (item.additional == "wielded") {
+		slots[SLOT_WEAPON] = key;
+	} else if (item.additional.find("weapon in ") == 0) {
+		slots[SLOT_WEAPON] = key;
+	} else if (item.additional.find("wielded in other ") == 0) {
+		slots[SLOT_OFFHAND_WEAPON] = key;
+	} else if (item.additional.find("on left ") == 0) {
+		slots[SLOT_LEFT_RING] = key;
+	} else if (item.additional.find("on right ") == 0) {
+		slots[SLOT_RIGHT_RING] = key;
+	}
 }
