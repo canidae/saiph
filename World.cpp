@@ -9,6 +9,7 @@
 #include "Analyzers/Analyzer.h"
 #include "Data/Item.h"
 #include "Data/Monster.h"
+#include "Events/Event.h"
 
 using namespace analyzer;
 using namespace std;
@@ -31,9 +32,9 @@ vector<Level> World::levels;
 Coordinate World::branch_main;
 Coordinate World::branch_mines;
 Coordinate World::branch_sokoban;
-Command World::command = action::Action::noop;
 
 Connection *World::connection = NULL;
+action::Action *World::action = NULL;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
 string World::messages = " ";
 bool World::inverse = false;
@@ -65,11 +66,13 @@ void World::destroy() {
 }
 
 int World::registerAnalyzer(Analyzer *analyzer) {
+	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name << endl;
 	analyzers.push_back(analyzer);
 	return (int) analyzers.size();
 }
 
 void World::unregisterAnalyzer(Analyzer *analyzer) {
+	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name << endl;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->name == analyzer->name) {
 			analyzers.erase(a);
@@ -78,20 +81,19 @@ void World::unregisterAnalyzer(Analyzer *analyzer) {
 	}
 }
 
-bool World::executeCommand(const string &command) {
-	/* send a command to nethack */
-	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
-		changed[c->row][c->col] = false;
-	changes.clear();
-	messages = "  "; // we want 2 spaces before the first message too
-	if (command.size() <= 0) {
-		/* huh? no command? */
-		return false;
+int World::getPriority() {
+	if (action == NULL)
+		return action::Action::noop.priority;
+	return action->getCommand().priority;
+}
+
+void World::setAction(action::Action *action) {
+	if (World::action != NULL) {
+		if (action->getCommand().priority <= World::action->getCommand().priority)
+			return; // already got an action with higher priority
+		delete World::action;
 	}
-	connection->transmit(command);
-	++command_count;
-	update();
-	return true;
+	World::action = action;
 }
 
 unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
@@ -390,7 +392,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 				}
 				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 			}
-			/* path to downstairs on level */
+			/* path to portals on level */
 			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
 				Debug::info() << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
 				if (s->second == UNKNOWN_SYMBOL_VALUE)
@@ -424,7 +426,6 @@ PathNode World::shortestPath(const Coordinate &target) {
 }
 
 void World::run() {
-	vector<analyzer::Analyzer *>::iterator best_analyzer = analyzers.end();
 	int last_turn = 0;
 	int stuck_counter = 0;
 	while (true) {
@@ -442,12 +443,11 @@ void World::run() {
 		dumpMaps();
 
 		/* check if we're stuck */
-		if (stuck_counter % 42 == 41) {
+		if (action != NULL && stuck_counter % 42 == 41) {
 			bool was_move = false;
-			if (best_analyzer != analyzers.end() && (*best_analyzer)->getAction() != NULL && (*best_analyzer)->getAction()->getID() == action::Move::id) {
+			if (action->getID() == action::Move::id) {
 				/* we're moving, mark target tile unpassable */
-				command = (*best_analyzer)->getAction()->getCommand();
-				switch (command.command[0]) {
+				switch (action->getCommand().command[0]) {
 					case NW:
 					case NE:
 					case SW:
@@ -456,7 +456,7 @@ void World::run() {
 						 * we could be trying to move diagonally into a door we're
 						 * unaware of because of an item blocking the door symbol.
 						 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-						setDungeonSymbol(directionToPoint((unsigned char) command.command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+						setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
 						was_move = true;
 						break;
 
@@ -466,7 +466,7 @@ void World::run() {
 					case W:
 						/* moving cardinally failed, possibly item in wall.
 						 * make the tile UNKNOWN_TILE_UNPASSABLE */
-						setDungeonSymbol(directionToPoint((unsigned char) command.command[0]), UNKNOWN_TILE_UNPASSABLE);
+						setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_UNPASSABLE);
 						was_move = true;
 						break;
 
@@ -477,7 +477,7 @@ void World::run() {
 			}
 			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << (*best_analyzer)->name << ": " << command << endl;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name << ": " << action->getCommand() << endl;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
@@ -495,49 +495,29 @@ void World::run() {
 		last_turn = turn;
 
 		/* check if we're in the middle of an action */
-		if (best_analyzer != analyzers.end() && (*best_analyzer)->getAction() != NULL) {
-			(*best_analyzer)->getAction()->updateAction(messages);
-			command = (*best_analyzer)->getAction()->getCommand();
-		}
-		if (command == action::Action::noop) {
+		if (action != NULL)
+			action->updateAction(messages);
+		if (action == NULL || action->getCommand() == action::Action::noop) {
 			/* we got no command, find a new one */
+			/* parse messages */
+			Debug::info() << SAIPH_DEBUG_NAME << "Calling parseMessages() in analyzers... " << endl;
 			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-				/* parse messages */
+				Debug::info() << SAIPH_DEBUG_NAME << (*a)->name << ".parseMessages()" << endl;
 				(*a)->parseMessages(messages);
-				Command a_command = (*a)->getAction() == NULL ? action::Action::noop : (*a)->getAction()->getCommand();
-				/* set command & best_analyzer if a_command is more urgent */
-				if (a_command.priority > command.priority) {
-					command = a_command;
-					best_analyzer = a;
-				}
 			}
 
 			/* analyze */
 			if (!question && !menu) {
+				Debug::info() << SAIPH_DEBUG_NAME << "Calling analyze() in analyzers... " << endl;
 				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-					/* analyze */
+					Debug::info() << SAIPH_DEBUG_NAME << (*a)->name << ".parseMessages()" << endl;
 					(*a)->analyze();
-					Command a_command = (*a)->getAction() == NULL ? action::Action::noop : (*a)->getAction()->getCommand();
-					/* set command & best_analyzer if a_command is more urgent */
-					if (a_command.priority > command.priority) {
-						command = a_command;
-						best_analyzer = a;
-					}
-				}
-			}
-
-			/* need to check priority once more, because of events */
-			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-				Command a_command = (*a)->getAction() == NULL ? action::Action::noop : (*a)->getAction()->getCommand();
-				if (a_command.priority > command.priority) {
-					command = a_command;
-					best_analyzer = a;
 				}
 			}
 		}
 
 		/* check if we got a command */
-		if (command == action::Action::noop) {
+		if (action == NULL || action->getCommand() == action::Action::noop) {
 			/* we do not. print debugging and just answer something sensible */
 			if (question) {
 				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;
@@ -563,15 +543,15 @@ void World::run() {
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << (*best_analyzer)->name << " " << command;
+		cout << action->getAnalyzer()->name << " " << action->getCommand();
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::notice() << (*best_analyzer)->name << " " << command << endl;
+		Debug::notice() << action->getAnalyzer()->name << " " << action->getCommand() << endl;
 
 		/* execute the command */
-		executeCommand(command.command);
+		executeCommand(action->getCommand().command);
 	}
 }
 
@@ -853,6 +833,22 @@ void World::dumpMaps() {
 		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 	}
+}
+
+bool World::executeCommand(const string &command) {
+	/* send a command to nethack */
+	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
+		changed[c->row][c->col] = false;
+	changes.clear();
+	messages = "  "; // we want 2 spaces before the first message too
+	if (command.size() <= 0) {
+		/* huh? no command? */
+		return false;
+	}
+	connection->transmit(command);
+	++command_count;
+	update();
+	return true;
 }
 
 void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
@@ -1399,6 +1395,7 @@ int main(int argc, const char *argv[]) {
 	Debug::init(logfile);
 	data::Monster::init();
 	data::Item::init();
+	event::Event::init();
 	World::init(connection_type);
 
 	/* run */
@@ -1409,5 +1406,6 @@ int main(int argc, const char *argv[]) {
 	World::destroy();
 	data::Item::destroy();
 	data::Monster::destroy();
+	event::Event::destroy();
 	Debug::destroy();
 }

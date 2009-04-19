@@ -7,7 +7,7 @@
 namespace event {
 	class ReceivedItems {
 	public:
-		static const int id;
+		static int id;
 		std::vector<unsigned char> item_keys;
 
 		ReceivedItems(const std::vector<unsigned char> &item_keys) : item_keys(item_keys) {}

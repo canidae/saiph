@@ -57,5 +57,5 @@ void Amulet::wearAmulet(const vector<unsigned char> &keys) {
 		return; // no new amulet to put on or wearing best amulet
 
 	/* put on this amulet */
-	setAction(new action::PutOn(best_key, 100));
+	World::setAction(new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR));
 }

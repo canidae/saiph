@@ -25,6 +25,7 @@ Level::Level(string name, int branch) : name(name), branch(branch), undiggable(f
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
 			dungeonmap[a][b] = SOLID_ROCK;
 			monstermap[a][b] = ILLEGAL_MONSTER;
+			searchmap[a][b] = 0;
 		}
 	}
 	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
@@ -50,6 +51,8 @@ void Level::analyze() {
 	updateMonsters();
 	/* update pathmap */
 	updatePathMap();
+	/* set point we're standing on "fully searched" */
+	searchmap[Saiph::position.row][Saiph::position.col] = INT_MAX;
 }
 
 void Level::parseMessages(const string &messages) {
@@ -626,7 +629,6 @@ void Level::init() {
 	passable[(unsigned char) CORRIDOR] = true;
 	passable[(unsigned char) STAIRS_UP] = true;
 	passable[(unsigned char) STAIRS_DOWN] = true;
-	passable[(unsigned char) MAGIC_PORTAL] = true;
 	passable[(unsigned char) ALTAR] = true;
 	passable[(unsigned char) GRAVE] = true;
 	passable[(unsigned char) THRONE] = true;
@@ -669,7 +671,6 @@ void Level::init() {
 	dungeon[(unsigned char) CORRIDOR] = true;
 	dungeon[(unsigned char) STAIRS_UP] = true;
 	dungeon[(unsigned char) STAIRS_DOWN] = true;
-	dungeon[(unsigned char) MAGIC_PORTAL] = true;
 	dungeon[(unsigned char) ALTAR] = true;
 	dungeon[(unsigned char) GRAVE] = true;
 	dungeon[(unsigned char) THRONE] = true;
@@ -686,7 +687,6 @@ void Level::init() {
 	dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
 	dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
 	/* cost for pathing on certain tiles */
-	pathcost[(unsigned char) MAGIC_PORTAL] = COST_PORTAL;
 	pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
 	pathcost[(unsigned char) GRAVE] = COST_GRAVE;
 	pathcost[(unsigned char) ALTAR] = COST_ALTAR;
@@ -709,4 +709,5 @@ void Level::init() {
 	uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
 	uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
 	uniquemap[(unsigned char) WATER][RED] = LAVA;
+	uniquemap[(unsigned char) TRAP][BOLD_MAGENTA] = MAGIC_PORTAL;
 }

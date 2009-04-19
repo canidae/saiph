@@ -1,12 +1,11 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = ChangedInventoryItems.o ReceivedItems.o
+OBJECTS = Event.o
 
 events: $(OBJECTS)
 
-ChangedInventoryItems.o: ChangedInventoryItems.h ChangedInventoryItems.cpp
-ReceivedItems.o: ReceivedItems.h ReceivedItems.cpp
+Event.o: Event.h Event.cpp
 
 .PHONY: clean
 clean:

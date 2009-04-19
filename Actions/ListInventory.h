@@ -6,9 +6,9 @@
 namespace action {
 	class ListInventory : public Action {
 	public:
-		static const int id;
+		static int id;
 
-		ListInventory();
+		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), list_inventory("i", PRIORITY_LOOK) {}
 		virtual ~ListInventory() {};
 
 		virtual int getID() {return id;}
@@ -18,5 +18,20 @@ namespace action {
 	private:
 		const Command list_inventory;
 	};
+}
+
+/* methods */
+inline const Command &action::ListInventory::getCommand() {
+	switch (sequence) {
+	case 0: 
+		return list_inventory;
+
+	default:
+		return Action::noop;
+	}
+}
+
+inline void action::ListInventory::updateAction(const std::string &) {
+	++sequence;
 }
 #endif

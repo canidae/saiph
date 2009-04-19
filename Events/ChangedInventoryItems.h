@@ -7,7 +7,7 @@
 namespace event {
 	class ChangedInventoryItems {
 	public:
-		static const int id;
+		static int id;
 		std::vector<unsigned char> item_keys;
 
 		ChangedInventoryItems(const std::vector<unsigned char> &item_keys) : item_keys(item_keys) {}

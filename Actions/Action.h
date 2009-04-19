@@ -3,17 +3,24 @@
 
 #include <string>
 #include "../Command.h"
+#include "../Inventory.h"
+#include "../World.h"
+#include "../Analyzers/Analyzer.h"
+
+#define ILLEGAL_ACTION_ID -1
 
 namespace action {
 	class Action {
 	public:
 		static const Command noop;
 
-		Action() : sequence(0) {}
+		Action(analyzer::Analyzer *analyzer) : sequence(0), analyzer(analyzer) {}
 		virtual ~Action() {}
 
-		static int createID() {return ++counter;}
+		static void init();
+		static void destroy();
 		virtual int getID() = 0;
+		virtual analyzer::Analyzer *getAnalyzer() {return analyzer;}
 		virtual const Command &getCommand() = 0;
 		virtual void updateAction(const std::string &messages) = 0;
 
@@ -21,7 +28,8 @@ namespace action {
 		int sequence;
 
 	private:
-		static int counter;
+		static bool initialized;
+		analyzer::Analyzer *analyzer;
 	};
 }
 #endif

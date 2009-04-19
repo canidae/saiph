@@ -4,6 +4,9 @@
 #include <vector>
 #include "Analyzer.h"
 
+/* priorities */
+#define PRIORITY_AMULET_WEAR 200
+
 namespace analyzer {
 	class Amulet : public Analyzer {
 	public:

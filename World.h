@@ -25,6 +25,9 @@
 #include "Point.h"
 #include "Saiph.h"
 
+namespace action {
+	class Action;
+}
 class Connection;
 
 class World {
@@ -46,13 +49,13 @@ public:
 	static Coordinate branch_main;
 	static Coordinate branch_mines;
 	static Coordinate branch_sokoban;
-	static Command command;
 
 	static void init(int connection_type);
 	static void destroy();
 	static int registerAnalyzer(analyzer::Analyzer *analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
-	static bool executeCommand(const std::string &command);
+	static int getPriority();
+	static void setAction(action::Action *action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 	static unsigned char getDungeonSymbol();
 	static unsigned char getDungeonSymbol(const Coordinate &coordinate);
@@ -70,6 +73,7 @@ public:
 
 private:
 	static Connection *connection;
+	static action::Action *action;
 	static bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 	static std::string messages;
 	static bool inverse;
@@ -88,6 +92,7 @@ private:
 	static Point directionToPoint(unsigned char direction);
 	static bool directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders);
 	static void dumpMaps();
+	static bool executeCommand(const std::string &command);
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
 	static void fetchMessages();

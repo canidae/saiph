@@ -3,7 +3,13 @@
 
 #include <iostream>
 #include <string>
-#include "Globals.h"
+
+/* unique priorities */
+#define ILLEGAL_PRIORITY -1
+#define PRIORITY_CONTINUE_ACTION 1003
+#define PRIORITY_SELECT_ITEM 1002
+#define PRIORITY_CLOSE_PAGE 1001
+#define PRIORITY_LOOK 1000
 
 class Command {
 public:
