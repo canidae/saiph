@@ -428,7 +428,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 void World::run() {
 	int last_turn = 0;
 	int stuck_counter = 0;
-	while (true) {
+	while (turn < 400) {
 		/* let Saiph, Inventory and current level parse messages */
 		Saiph::parseMessages(messages);
 		Inventory::parseMessages(messages);
@@ -500,19 +500,13 @@ void World::run() {
 		if (action == NULL || action->getCommand() == action::Action::noop) {
 			/* we got no command, find a new one */
 			/* parse messages */
-			Debug::info() << SAIPH_DEBUG_NAME << "Calling parseMessages() in analyzers... " << endl;
-			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-				Debug::info() << SAIPH_DEBUG_NAME << (*a)->name << ".parseMessages()" << endl;
+			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 				(*a)->parseMessages(messages);
-			}
 
 			/* analyze */
 			if (!question && !menu) {
-				Debug::info() << SAIPH_DEBUG_NAME << "Calling analyze() in analyzers... " << endl;
-				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-					Debug::info() << SAIPH_DEBUG_NAME << (*a)->name << ".parseMessages()" << endl;
+				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 					(*a)->analyze();
-				}
 			}
 		}
 
