@@ -50,7 +50,7 @@ public:
 
 	static void init(int connection_type);
 	static void destroy();
-	static void registerAnalyzer(analyzer::Analyzer *analyzer);
+	static int registerAnalyzer(analyzer::Analyzer *analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
 	static bool executeCommand(const std::string &command);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);

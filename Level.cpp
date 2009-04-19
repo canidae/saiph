@@ -7,7 +7,7 @@
 
 using namespace std;
 
-/* initialize static variables */
+/* define static variables */
 /* public */
 bool Level::passable[UCHAR_MAX + 1] = {false};
 /* private */

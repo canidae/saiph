@@ -64,8 +64,9 @@ void World::destroy() {
 		delete *a;
 }
 
-void World::registerAnalyzer(Analyzer *analyzer) {
+int World::registerAnalyzer(Analyzer *analyzer) {
 	analyzers.push_back(analyzer);
+	return (int) analyzers.size();
 }
 
 void World::unregisterAnalyzer(Analyzer *analyzer) {

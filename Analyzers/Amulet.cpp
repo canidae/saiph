@@ -1,6 +1,7 @@
 #include "Amulet.h"
 #include "../Globals.h"
 #include "../Inventory.h"
+#include "../World.h"
 #include "../Actions/PutOn.h"
 #include "../Actions/Remove.h"
 #include "../Data/Amulet.h"
@@ -11,6 +12,9 @@
 using namespace analyzer;
 using namespace event;
 using namespace std;
+
+/* register analyzer */
+int Amulet::id = World::registerAnalyzer(new Amulet());
 
 /* constructors/destructor */
 Amulet::Amulet() : Analyzer("Amulet") {
