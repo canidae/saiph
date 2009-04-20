@@ -60,6 +60,7 @@ void World::init(int connection_type) {
 }
 
 void World::destroy() {
+	delete action;
 	delete connection;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
@@ -430,7 +431,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 void World::run() {
 	int last_turn = 0;
 	int stuck_counter = 0;
-	while (turn < 400) {
+	while (true) {
 		/* let Saiph, Inventory and current level parse messages */
 		Saiph::parseMessages(messages);
 		Inventory::parseMessages(messages);
