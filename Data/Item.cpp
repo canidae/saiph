@@ -23,10 +23,12 @@ void Item::init() {
 }
 
 void Item::destroy() {
-	for (map<string, Item *>::iterator i = items.begin(); i != items.end(); ++i) {
-		delete i->second;
-		// we might have two mappings for the same Item (e.g., "low boots"
-		// and "walking shoes" are the same item); make any double-deletes harmless
-		i->second = NULL;
-	}
+	/* we might have two mappings for the same Item (e.g., "low boots" and "walking shoes" are the same item).
+	 * only free the assigned memore once */
+	set<Item *> unique_pointers;
+	for (map<string, Item *>::iterator i = items.begin(); i != items.end(); ++i)
+		unique_pointers.insert(i->second);
+	for (set<Item *>::iterator p = unique_pointers.begin(); p != unique_pointers.end(); ++p)
+		delete *p;
+	items.clear();
 }

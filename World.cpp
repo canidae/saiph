@@ -89,8 +89,10 @@ int World::getPriority() {
 
 void World::setAction(action::Action *action) {
 	if (World::action != NULL) {
-		if (action->getCommand().priority <= World::action->getCommand().priority)
+		if (action->getCommand().priority <= World::action->getCommand().priority) {
+			delete action;
 			return; // already got an action with higher priority
+		}
 		delete World::action;
 	}
 	World::action = action;
