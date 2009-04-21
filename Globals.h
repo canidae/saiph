@@ -69,9 +69,9 @@
 #define BLESSED 0x8
 
 /* alignment */
-#define CHAOTIC -1
-#define NEUTRAL 0
-#define LAWFUL 1
+#define CHAOTIC 0x1
+#define NEUTRAL 0x2
+#define LAWFUL 0x4
 
 /* attitude */
 #define ATTITUDE_UNKNOWN 0x1
@@ -95,7 +95,7 @@
 #define OVERSATIATED 2
 
 /* slots */
-#define SLOTS 12
+#define SLOTS 13
 #define INVALID_SLOT -1
 #define SLOT_SHIRT 0
 #define SLOT_SUIT 1
@@ -109,6 +109,7 @@
 #define SLOT_RIGHT_RING 9
 #define SLOT_WEAPON 10
 #define SLOT_OFFHAND_WEAPON 11
+#define SLOT_EYES 12
 
 /* directions */
 #define ILLEGAL_DIRECTION 0
@@ -258,6 +259,7 @@
 #define PROPERTY_RESTFUL_SLEEP     ((unsigned long long) (1LL << 36))
 #define PROPERTY_SEX_CHANGE        ((unsigned long long) (1LL << 37))
 #define PROPERTY_LYCANTHROPY       ((unsigned long long) (1LL << 38))
+#define PROPERTY_SEARCHING         ((unsigned long long) (1LL << 39))
 
 /* discard item */
 #define DISCARD "DISCARD"

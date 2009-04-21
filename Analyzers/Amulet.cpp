@@ -13,9 +13,6 @@ using namespace analyzer;
 using namespace event;
 using namespace std;
 
-/* define static variables */
-int Amulet::id = ILLEGAL_ANALYZER_ID;
-
 /* constructors/destructor */
 Amulet::Amulet() : Analyzer("Amulet") {
 }

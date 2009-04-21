@@ -15,8 +15,8 @@ void Analyzer::init() {
 	initialized = true;
 
 	/* init analyzers */
-	Amulet::id = World::registerAnalyzer(new Amulet());
-	Explore::id = World::registerAnalyzer(new Explore());
+	World::registerAnalyzer(new Amulet());
+	World::registerAnalyzer(new Explore());
 }
 
 void Analyzer::destroy() {

@@ -16,8 +16,6 @@
 namespace analyzer {
 	class Explore : public Analyzer {
 	public:
-		static int id;
-
 		Explore();
 
 		void parseMessages(const std::string &messages);

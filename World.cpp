@@ -66,10 +66,9 @@ void World::destroy() {
 		delete *a;
 }
 
-int World::registerAnalyzer(Analyzer *analyzer) {
+void World::registerAnalyzer(Analyzer *analyzer) {
 	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name << endl;
 	analyzers.push_back(analyzer);
-	return (int) analyzers.size();
 }
 
 void World::unregisterAnalyzer(Analyzer *analyzer) {

@@ -9,9 +9,6 @@ using namespace analyzer;
 using namespace event;
 using namespace std;
 
-/* define static variables */
-int Explore::id = ILLEGAL_ANALYZER_ID;
-
 /* constructors/destructor */
 Explore::Explore() : Analyzer("Explore") {
 }

@@ -13,6 +13,7 @@ class Debug {
 public:
 	static void init(const std::string &file);
 	static void destroy();
+	static std::ofstream &analyzer(const std::string &name);
 	static std::ofstream &info();
 	static std::ofstream &notice();
 	static std::ofstream &warning();
@@ -35,28 +36,33 @@ inline void Debug::destroy() {
         debugfile.close();
 }
 
+inline std::ofstream &Debug::analyzer(const std::string &name) {
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [" << name << "] ";
+        return debugfile;
+}
+
 inline std::ofstream &Debug::info() {
-        debugfile << "<T" << World::turn << "> " << printTime() << ": [INFO:";
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [Info] ";
         return debugfile;
 }
 
 inline std::ofstream &Debug::notice() {
-        debugfile << "<T" << World::turn << "> " << printTime() << ": [NOTICE:";
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [Notice] ";
         return debugfile;
 }
 
 inline std::ofstream &Debug::warning() {
-        debugfile << "<T" << World::turn << "> " << printTime() << ": [WARNING:";
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [Warning] ";
         return debugfile;
 }
 
 inline std::ofstream &Debug::error() {
-        debugfile << "<T" << World::turn << "> " << printTime() << ": [ERROR:";
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [Error] ";
         return debugfile;
 }
 
 inline void Debug::rawCharArray(const char *data, int start, int stop) {
-        debugfile << "<T" << World::turn << "> " << printTime() << ": [RAW:Data] ";
+        debugfile << "<T" << World::turn << "> " << printTime() << ": [Data] ";
 	for (int a = start; a < stop; ++a)
 		debugfile << data[a];
 	debugfile << std::endl;

@@ -1,7 +1,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = Amulet.o Armor.o Boots.o Cloak.o Corpse.o Food.o Gloves.o Helmet.o Item.o Monster.o Shield.o Shirt.o Suit.o
+OBJECTS = Amulet.o Armor.o Boots.o Cloak.o Corpse.o Food.o Gloves.o Helmet.o Item.o Monster.o Shield.o Shirt.o Suit.o Weapon.o
 
 analyzers: $(OBJECTS)
 
@@ -18,6 +18,7 @@ Monster.o: Monster.h Monster.cpp
 Shield.o: Shield.h Shield.cpp
 Shirt.o: Shirt.h Shirt.cpp
 Suit.o: Suit.h Suit.cpp
+Weapon.o: Weapon.h Weapon.cpp
 
 .PHONY: clean
 clean:

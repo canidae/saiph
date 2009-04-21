@@ -52,7 +52,7 @@ public:
 
 	static void init(int connection_type);
 	static void destroy();
-	static int registerAnalyzer(analyzer::Analyzer *analyzer);
+	static void registerAnalyzer(analyzer::Analyzer *analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
 	static int getPriority();
 	static void setAction(action::Action *action);

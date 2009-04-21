@@ -10,8 +10,6 @@
 namespace analyzer {
 	class Amulet : public Analyzer {
 	public:
-		static int id;
-
 		Amulet();
 
 		void onEvent(event::Event *const event);
