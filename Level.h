@@ -115,7 +115,7 @@ inline unsigned char Level::getMonsterSymbol(const Point &point) {
 inline int Level::getSearchCount(const Point &point) {
 	/* return search count at given point */
 	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
-		return -1;
+		return POINT_FULLY_SEARCHED;
 	return searchmap[point.row][point.col];
 }
 

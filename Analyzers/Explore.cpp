@@ -228,7 +228,7 @@ void Explore::explorePoint(Point p, unsigned int *min_moves, int *best_type) {
 	*min_moves = node.moves;
 	*best_type = type;
 	if (node.dir == NOWHERE)
-		World::setAction(new action::Search(this, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / 2, node.moves)));
+		World::setAction(new action::Search(this, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), node.moves)));
 	else
-		World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / 2, node.moves)));
+		World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), node.moves)));
 }
