@@ -260,6 +260,7 @@
 #define PROPERTY_SEX_CHANGE        ((unsigned long long) (1LL << 37))
 #define PROPERTY_LYCANTHROPY       ((unsigned long long) (1LL << 38))
 #define PROPERTY_SEARCHING         ((unsigned long long) (1LL << 39))
+#define PROPERTY_ARTIFACT          ((unsigned long long) (1LL << 40))
 
 /* discard item */
 #define DISCARD "DISCARD"
