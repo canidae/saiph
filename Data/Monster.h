@@ -245,6 +245,7 @@ namespace data {
 		int m2;
 		int m3;
 		int color;
+		int saiph_difficulty;
 
 		static const Monster *getMonsterData(unsigned char symbol, int color);
 		static const Monster *getMonsterData(const std::string &name);

@@ -84,6 +84,10 @@ namespace data {
 		int sides;
 
 		Attack(int type = 0, int damage_type = 0, int dice = 0, int sides = 0) : type(type), damage_type(damage_type), dice(dice), sides(sides) {};
+
+		int minDamage() const {return dice;}
+		int avgDamage() const {return (dice * sides + dice) / 2;}
+		int maxDamage() const {return dice * sides;}
 	};
 }
 #endif

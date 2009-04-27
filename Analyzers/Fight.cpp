@@ -5,7 +5,9 @@
 #include "../World.h"
 #include "../Data/MonsterData.h"
 
+using namespace action;
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
@@ -13,6 +15,26 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 }
 
 /* methods */
+void Fight::parseMessages(const string &messages) {
+	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
+		command = YES;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && !command3.empty() && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
+		command = command2;
+		command2 = command3;
+		command3 = THROW;
+		priority = PRIORITY_CONTINUE_ACTION;
+	} else if (saiph->world->question && command3 == THROW && !command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
+		command = command2;
+		command2.clear();
+		command3.clear();
+		priority = PRIORITY_CONTINUE_ACTION;
+		/* make inventory dirty, we just threw something */
+		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
+		saiph->request(req);
+	}
+}
+
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (saiph->world->player.engulfed) {
@@ -79,32 +101,13 @@ void Fight::analyze() {
 	}
 }
 
-void Fight::parseMessages(const string &messages) {
-	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
-		command = YES;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && !command3.empty() && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
-		command = command2;
-		command2 = command3;
-		command3 = THROW;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && command3 == THROW && !command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
-		command = command2;
-		command2.clear();
-		command3.clear();
-		priority = PRIORITY_CONTINUE_ACTION;
-		/* make inventory dirty, we just threw something */
-		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
-		saiph->request(req);
+void Fight::onEvent(Event *const event) {
+	if (event->getID() == ReceivedItems::id) {
+		/* received items, check if this is a weapon we want to throw */
+		ReceivedItems *e = (ReceivedItems *) event;
+	} else if (event->getID() == ChangedInventoryItems::id) {
+		ChangedInventoryItems *e = (ChangedInventoryItems *) event;
 	}
-}
-
-bool Fight::request(const Request &request) {
-	if (request.request == REQUEST_ADD_THROWN_WEAPON) {
-		thrown.push_back(request.data);
-		return true;
-	}
-	return false;
 }
 
 /* private methods */
@@ -117,18 +120,4 @@ unsigned char Fight::gotThrown() {
 		}
 	}
 	return FIGHT_NO_THROWN_WEAPONS;
-}
-
-bool Fight::moreDangerousThan(const Monster *a, const Monster *b) {
-	if (b == NULL)
-		return true;
-	if (a == NULL)
-		return false;
-
-	// if we don't know anything about either one, send false
-	if (a->data == NULL || b->data == NULL)
-		return false;
-
-	// Otherwise fall back on difficulty
-	return a->data->difficulty > b->data->difficulty;
 }

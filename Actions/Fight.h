@@ -3,6 +3,9 @@
 
 #include "Action.h"
 #include "../Globals.h"
+#include "../World.h"
+
+#define MESSAGE_REALLY_ATTACK "Really attack"
 
 namespace action {
 	class Fight : public Action {
@@ -28,12 +31,20 @@ inline const Command &action::Fight::getCommand() {
 	case 0: 
 		return fight;
 
+	case 1:
+		return attack_friendly;
+
 	default:
 		return Action::noop;
 	}
 }
 
-inline void action::Fight::updateAction(const std::string &) {
-	++sequence;
+inline void action::Fight::updateAction(const std::string &messages) {
+	if (sequence == 0) {
+		if (World::question && messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
+			sequence = 1;
+		else
+			sequence = 2;
+	}
 }
 #endif

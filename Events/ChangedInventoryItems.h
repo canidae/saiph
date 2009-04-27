@@ -1,16 +1,16 @@
 #ifndef _CHANGED_INVENTORY_ITEMS_H
 #define _CHANGED_INVENTORY_ITEMS_H
 
-#include <vector>
+#include <set>
 #include "Event.h"
 
 namespace event {
 	class ChangedInventoryItems {
 	public:
 		static int id;
-		std::vector<unsigned char> item_keys;
+		std::set<unsigned char> keys;
 
-		ChangedInventoryItems(const std::vector<unsigned char> &item_keys) : item_keys(item_keys) {}
+		ChangedInventoryItems(const std::set<unsigned char> &keys = std::set<unsigned char>()) : keys(keys) {}
 		virtual ~ChangedInventoryItems() {}
 
 		virtual int getID() {return id;}

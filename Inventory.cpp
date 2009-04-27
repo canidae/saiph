@@ -2,8 +2,6 @@
 #include "Inventory.h"
 #include "Data/Armor.h"
 #include "Data/Amulet.h"
-#include "Events/ChangedInventoryItems.h"
-#include "Events/ReceivedItems.h"
 
 using namespace event;
 using namespace std;
@@ -14,7 +12,8 @@ map<unsigned char, Item> Inventory::items;
 unsigned char Inventory::slots[] = {'\0'};
 
 /* define private static variables */
-vector<unsigned char> Inventory::changed_items;
+ChangedInventoryItems Inventory::changed;
+set<unsigned char> Inventory::lost;
 
 /* methods */
 void Inventory::analyze() {
@@ -24,14 +23,16 @@ void Inventory::parseMessages(const string &messages) {
 	if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
 		/* we're not carrying anything */
 		Inventory::items.clear();
-	} else if (World::menu && messages.find(" -  ") == string::npos) {
+	} else if (World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
 		/* listing a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
 		if (World::cur_page == 1) {
-			/* listing first page, set item count for every item to 0 */
+			/* listing first page, clear changed and lost and add every inventory item to "lost" */
+			changed.keys.clear();
+			lost.clear();
 			for (map<unsigned char, Item>::iterator i = items.begin(); i != items.end(); ++i)
-				i->second.count = 0;
+				lost.insert(i->first);
 		}
 		while ((pos = messages.find(" - ")) != string::npos && pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ' && (pos2 = messages.find("  ", pos + 3)) != string::npos) {
 			/* check that item match inventory item */
@@ -44,32 +45,28 @@ void Inventory::parseMessages(const string &messages) {
 			if (i == items.end()) {
 				/* item is not in our inventory */
 				addItem(messages[pos - 1], item);
-				changed_items.push_back(messages[pos - 1]);
+				changed.keys.insert(messages[pos - 1]);
 			} else if (item != i->second) {
 				/* item does not match item in inventory */
 				removeItem(i->first, item);
 				addItem(i->first, item);
-				changed_items.push_back(i->first);
+				changed.keys.insert(i->first);
 			}
+			/* we (still) got this item, so it's not lost. remove it from lost */
+			lost.erase(messages[pos - 1]);
 		}
 		if (World::cur_page == World::max_page) {
-			/* listing last page, add items with count 0 to changed_items and remove them from inventory */
-			for (map<unsigned char, Item>::iterator i = items.begin(); i != items.end(); ) {
-				if (i->second.count == 0) {
-					changed_items.push_back(i->first);
-					items.erase(i++);
-					continue;
-				}
-				++i;
+			/* listing last page, add lost items to changed and remove them from inventory */
+			for (set<unsigned char>::iterator l = lost.begin(); l != lost.end(); ++l) {
+				changed.keys.insert(*l);
+				items.erase(*l);
 			}
-			/* also mark inventory as updated */
+			/* mark inventory as updated */
 			updated = true;
 		}
-		if (changed_items.size() > 0) {
-			/* send event ChangedInventoryItems */
-			ChangedInventoryItems cii(changed_items);
-			EventBus::broadcast((Event *) &cii);
-			changed_items.clear();
+		if (changed.keys.size() > 0) {
+			/* broadcast ChangedInventoryItems */
+			EventBus::broadcast((Event *) &changed);
 		}
 	} else if (!World::menu) {
 		/* check if we received items */
@@ -83,18 +80,18 @@ void Inventory::parseMessages(const string &messages) {
 				continue;
 			}
 			addItem(messages[pos - 1], item);
-			/* add item to changed_items */
-			changed_items.push_back(messages[pos - 1]);
+			/* add item to changed.keys */
+			changed.keys.insert(messages[pos - 1]);
 		}
-		if (changed_items.size() > 0) {
+		if (changed.keys.size() > 0) {
 			/* if we're standing on a stash, mark it as changed */
 			map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
 			if (s != World::levels[Saiph::position.level].stashes.end())
 				s->second.turn_changed = World::turn;
-			/* send event "ReceivedItems" */
-			ReceivedItems ri(changed_items);
-			EventBus::broadcast((Event *) &ri);
-			changed_items.clear();
+			/* broadcast "ChangedInventoryItems" */
+			EventBus::broadcast((Event *) &changed);
+			/* and clear changed */
+			changed.keys.clear();
 		}
 	}
 }

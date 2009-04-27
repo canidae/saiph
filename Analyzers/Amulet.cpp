@@ -7,7 +7,6 @@
 #include "../Data/Amulet.h"
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
-#include "../Events/ReceivedItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -19,17 +18,14 @@ Amulet::Amulet() : Analyzer("Amulet") {
 
 /* methods */
 void Amulet::onEvent(Event *const event) {
-	if (event->getID() == ReceivedItems::id) {
-		ReceivedItems *e = (ReceivedItems *) event;
-		wearAmulet(e->item_keys);
-	} else if (event->getID() == ChangedInventoryItems::id) {
+	if (event->getID() == ChangedInventoryItems::id) {
 		ChangedInventoryItems *e = (ChangedInventoryItems *) event;
-		wearAmulet(e->item_keys);
+		wearAmulet(e->keys);
 	}
 }
 
 /* private methods */
-void Amulet::wearAmulet(const vector<unsigned char> &keys) {
+void Amulet::wearAmulet(const set<unsigned char> &keys) {
 	map<unsigned char, Item>::iterator worn = Inventory::items.find(Inventory::slots[SLOT_AMULET]);
 	if (worn != Inventory::items.end() && worn->second.beatitude == CURSED)
 		return; // wearing a cursed amulet, no point trying to wear another amulet
@@ -38,7 +34,7 @@ void Amulet::wearAmulet(const vector<unsigned char> &keys) {
 	unsigned char best_key = (worn == Inventory::items.end()) ? '\0' : worn->first;
 	map<string, data::Amulet *>::iterator best_amulet = (worn == Inventory::items.end()) ? data::Amulet::amulets.end() : data::Amulet::amulets.find(worn->second.name);
 
-	for (vector<unsigned char>::const_iterator k = keys.begin(); k != keys.end(); ++k) {
+	for (set<unsigned char>::const_iterator k = keys.begin(); k != keys.end(); ++k) {
 		map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 		if (i == Inventory::items.end())
 			return; // huh? this can't happen

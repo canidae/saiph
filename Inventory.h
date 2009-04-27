@@ -2,11 +2,13 @@
 #define _INVENTORY_H
 
 #include <map>
+#include <set>
 #include <string>
 #include "Debug.h"
 #include "Globals.h"
 #include "Item.h"
 #include "World.h"
+#include "Events/ChangedInventoryItems.h"
 
 #define INVENTORY_DEBUG_NAME "Inventory] "
 
@@ -25,7 +27,8 @@ public:
 	static void removeItem(unsigned char key, const Item &item);
 
 private:
-	static std::vector<unsigned char> changed_items;
+	static event::ChangedInventoryItems changed;
+	static std::set<unsigned char> lost;
 
 	static void setSlot(unsigned char key, const Item &item);
 };
