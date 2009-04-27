@@ -1,4 +1,5 @@
 #include "Action.h"
+#include "Fight.h"
 #include "Kick.h"
 #include "ListInventory.h"
 #include "Look.h"
@@ -10,32 +11,12 @@
 using namespace action;
 
 /* define static variables */
-bool Action::initialized = false;
 const Command Action::noop;
-int Kick::id = ILLEGAL_ACTION_ID;
-int ListInventory::id = ILLEGAL_ACTION_ID;
-int Look::id = ILLEGAL_ACTION_ID;
-int Move::id = ILLEGAL_ACTION_ID;
-int PutOn::id = ILLEGAL_ACTION_ID;
-int Remove::id = ILLEGAL_ACTION_ID;
-int Search::id = ILLEGAL_ACTION_ID;
-
-/* methods */
-void Action::init() {
-	if (initialized)
-		return;
-	initialized = true;
-
-	/* init actions */
-	int id = 0;
-	Kick::id = ++id;
-	ListInventory::id = ++id;
-	Look::id = ++id;
-	Move::id = ++id;
-	PutOn::id = ++id;
-	Remove::id = ++id;
-	Search::id = ++id;
-}
-
-void Action::destroy() {
-}
+int Fight::id = 1;
+int Kick::id = 10;
+int ListInventory::id = 20;
+int Look::id = 30;
+int Move::id = 40;
+int PutOn::id = 50;
+int Remove::id = 60;
+int Search::id = 70;
