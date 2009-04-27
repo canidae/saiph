@@ -7,6 +7,7 @@
 
 using namespace action;
 using namespace analyzer;
+using namespace data;
 using namespace event;
 using namespace std;
 
@@ -15,35 +16,30 @@ Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
 }
 
 /* methods */
-void Fight::parseMessages(const string &messages) {
-	if (saiph->world->question && messages.find(FIGHT_REALLY_ATTACK, 0) != string::npos) {
-		command = YES;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && !command3.empty() && messages.find(MESSAGE_WHAT_TO_THROW, 0) != string::npos) {
-		command = command2;
-		command2 = command3;
-		command3 = THROW;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (saiph->world->question && command3 == THROW && !command2.empty() && messages.find(MESSAGE_CHOOSE_DIRECTION, 0) != string::npos) {
-		command = command2;
-		command2.clear();
-		command3.clear();
-		priority = PRIORITY_CONTINUE_ACTION;
-		/* make inventory dirty, we just threw something */
-		req.request = REQUEST_DIRTY_INVENTORY;                                                                                                 
-		saiph->request(req);
-	}
-}
-
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
-	if (saiph->world->player.engulfed) {
-		command = NW; // doesn't matter which direction
-		priority = PRIORITY_FIGHT_ATTACK;
+	if (World::engulfed) {
+		World::setAction(new Fight(NW, PRIORITY_FIGHT_ENGULFED));
 		return;
 	}
 	/* fight monsters */
-	unsigned char got_thrown = FIGHT_NOT_CHECKED_THROWN_WEAPONS;
+	int most_dangerous = INT_MIN;
+	map<Point, Monster>::iterator best_monster = World::levels[Saiph::position.level].monsters.end();
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level].monsters.begin(); m != World::levels[Saiph::position.level].monsters.end(); ++m) {
+		if (m->second.symbol == PET)
+			continue; // we're not fighting pets :)
+		else if (m->second.attitude == FRIENDLY)
+			continue; // don't attack friendlies
+		else if (m->second.symbol == 'u' && ((m->second.color == BOLD_WHITE && Saiph::alignment == LAWFUL) || (m->second.color == WHITE && Saiph::alignment == NEUTRAL) || (m->second.color == BLUE && Saiph::alignment == CHAOTIC)))
+			continue; // don't attack unicorns of same alignment
+		if (m->second.data == NULL) {
+			/* this shouldn't happen, MonsterInfo should make sure we got monster data */
+			most_dangerous = INT_MAX;
+			best_monster = m;
+			break;
+		}
+	}
+
 	int min_distance = INT_MAX;
 	unsigned int min_moves = UNREACHABLE;
 	Monster *target = NULL;
@@ -102,22 +98,27 @@ void Fight::analyze() {
 }
 
 void Fight::onEvent(Event *const event) {
-	if (event->getID() == ReceivedItems::id) {
-		/* received items, check if this is a weapon we want to throw */
-		ReceivedItems *e = (ReceivedItems *) event;
-	} else if (event->getID() == ChangedInventoryItems::id) {
+	if (event->getID() == ChangedInventoryItems::id) {
 		ChangedInventoryItems *e = (ChangedInventoryItems *) event;
-	}
-}
-
-/* private methods */
-unsigned char Fight::gotThrown() {
-	/* return best weapon we can throw, if any */
-	for (vector<string>::iterator t = thrown.begin(); t != thrown.end(); ++t) {
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			if (i->second.name == *t)
-				return i->first;
+		for (set<unsigned char>::iterator k = event.keys.begin(); k != event.keys.end(); ++k) {
+			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
+			if (i == Inventory::items.end()) {
+				/* we lost this item, remove it from thrown */
+				thrown.erase(*k);
+			} else {
+				/* this item is new or changed.
+				 * if we intend to throw it, add it to thrown.
+				 * otherwise remove it from thrown */
+				/* FIXME: figure out what to throw depending on class */
+				/* FIXME 2: looking up the lists each time is expencive, create a single map instead */
+				if (Dagger::daggers.find(i->second.name) != Dagger::daggers.end() || Spear::spears.find(i->second.name) != Spear::spears.end() || Dart::darts.find(i->second.name) != Dart::darts.end()) {
+					/* add to thrown */
+					thrown.insert(*k);
+				} else {
+					/* remove from thrown */
+					thrown.erase(*k);
+				}
+			}
 		}
 	}
-	return FIGHT_NO_THROWN_WEAPONS;
 }

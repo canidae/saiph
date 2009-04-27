@@ -7,6 +7,7 @@
 #include "PutOn.h"
 #include "Remove.h"
 #include "Search.h"
+#include "Throw.h"
 
 using namespace action;
 
@@ -20,3 +21,4 @@ int Move::id = 40;
 int PutOn::id = 50;
 int Remove::id = 60;
 int Search::id = 70;
+int Throw::id = 80;
