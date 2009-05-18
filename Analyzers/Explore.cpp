@@ -21,7 +21,7 @@ void Explore::analyze() {
 	if (Saiph::blind || Saiph::confused || Saiph::hallucinating || Saiph::stunned)
 		return; // don't explore when we're blind/confused/hallucinating/stunned
 
-	/* find stairs at rogue level */
+	/* find stairs on rogue level */
 	if (World::levels[Saiph::position.level].branch == BRANCH_ROGUE) {
 		for (map<Point, int>::iterator s = World::levels[Saiph::position.level].symbols[(unsigned char) ROGUE_STAIRS].begin(); s != World::levels[Saiph::position.level].symbols[(unsigned char) ROGUE_STAIRS].end(); ++s) {
 			const PathNode &node = World::shortestPath(s->first);
@@ -31,7 +31,7 @@ void Explore::analyze() {
 				World::setAction(new action::Look(this));
 			else
 				World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, node.moves)));
-			return;
+			break;
 		}
 	}
 
@@ -47,6 +47,7 @@ void Explore::analyze() {
 				World::setAction(new action::Move(this, UP, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves)));
 			else
 				World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves)));
+			break;
 		}
 	}
 
@@ -79,7 +80,24 @@ void Explore::analyze() {
 			World::setAction(new action::Move(this, DOWN, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves)));
 		else
 			World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves)));
+		break;
 	}
+
+	/* explore magic portals */
+	for (map<Point, int>::iterator s = World::levels[Saiph::position.level].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != World::levels[Saiph::position.level].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+		if (s->second != UNKNOWN_SYMBOL_VALUE)
+			continue; // we know where these stairs lead
+		const PathNode &node = World::shortestPath(s->first);
+		if (node.cost >= UNPASSABLE)
+			continue;
+		if (node.dir == NOWHERE)
+			continue; // shouldn't happen
+		else
+			World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, node.moves)));
+		break;
+	}
+
+	/* TODO: travel */
 }
 
 /* private methods */

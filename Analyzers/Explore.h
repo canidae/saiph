@@ -12,6 +12,7 @@
 #define PRIORITY_EXPLORE_STAIRS_UP 90
 #define PRIORITY_EXPLORE_LEVEL 80
 #define PRIORITY_EXPLORE_STAIRS_DOWN 70
+#define PRIORITY_EXPLORE_MAGIC_PORTAL 70
 
 namespace analyzer {
 	class Explore : public Analyzer {
