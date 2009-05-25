@@ -1,38 +1,836 @@
 #include <stdlib.h>
 #include <string.h>
-#include <iostream>
 #include "Connection.h"
 #include "Debug.h"
+#include "Inventory.h"
 #include "World.h"
+#include "Actions/Action.h"
+#include "Actions/Move.h"
+#include "Analyzers/Analyzer.h"
+#include "Data/Item.h"
+#include "Data/Monster.h"
+#include "Events/Event.h"
 
+using namespace analyzer;
 using namespace std;
 
-/* constructors/destructor */
-World::World(Connection *connection) : connection(connection) {
-	memset(view, ' ', sizeof (view));
-	for (int r = 0; r < ROWS; ++r)
-		view[r][COLS] = '\0';
-	memset(color, NO_COLOR, sizeof (color));
-	memset(changed, false, sizeof (changed));
-	cursor.row = 0;
-	cursor.col = 0;
-	messages = "  ";
-	cur_page = -1;
-	max_page = -1;
-	command_count = 0;
-	frame_count = 0;
-	inverse = false;
-	bold = false;
-	menu = false;
-	question = false;
-	last_menu = Point(-1, -1);
-	memset(data, '\0', sizeof (data));
-	data_size = -1;
+/* static variables */
+vector<Point> World::changes;
+char World::view[ROWS][COLS + 1] = {{'\0'}};
+int World::color[ROWS][COLS] = {{0}};
+Point World::cursor;
+int World::cur_page = -1;
+int World::max_page = -1;
+int World::command_count = 0;
+int World::frame_count = 0;
+bool World::menu = false;
+bool World::question = false;
+bool World::engulfed = false;
+char World::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
+int World::turn = 0;
+vector<Level> World::levels;
+Coordinate World::branch_main;
+Coordinate World::branch_mines;
+Coordinate World::branch_sokoban;
+
+Connection *World::connection = NULL;
+action::Action *World::action = NULL;
+bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
+string World::messages = " ";
+bool World::inverse = false;
+bool World::bold = false;
+char World::data[BUFFER_SIZE * 2] = {'\0'};
+char World::effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {{'\0'}};
+int World::data_size = -1;
+std::string World::msg_str;
+Point World::last_menu;
+std::map<std::string, std::vector<int> > World::levelmap;
+time_t World::start_time = time(NULL);
+std::vector<Analyzer *> World::analyzers;
+
+/* methods */
+void World::init(int connection_type) {
+	connection = Connection::create(connection_type);
+	if (connection == NULL) {
+		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
+		exit(1);
+	}
 	/* fetch the first "frame" */
 	update();
 }
 
-/* methods */
+void World::destroy() {
+	delete action;
+	delete connection;
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+		delete *a;
+}
+
+void World::registerAnalyzer(Analyzer *analyzer) {
+	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name << endl;
+	analyzers.push_back(analyzer);
+}
+
+void World::unregisterAnalyzer(Analyzer *analyzer) {
+	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name << endl;
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+		if ((*a)->name == analyzer->name) {
+			analyzers.erase(a);
+			return;
+		}
+	}
+}
+
+int World::getPriority() {
+	if (action == NULL)
+		return action::Action::noop.priority;
+	return action->getCommand().priority;
+}
+
+void World::setAction(action::Action *action) {
+	if (World::action != NULL) {
+		if (action->getCommand().priority <= World::action->getCommand().priority) {
+			delete action;
+			return; // already got an action with higher priority
+		}
+		delete World::action;
+	}
+	World::action = action;
+}
+
+unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
+	/* is the target in a direct line from the player? */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END) {
+		/* outside map */
+		return ILLEGAL_DIRECTION;
+	} else if (point == Saiph::position) {
+		/* eh? don't do this */
+		return NOWHERE;
+	} else if (point.row == Saiph::position.row) {
+		/* aligned horizontally */
+		if (point.col > Saiph::position.col) {
+			while (--point.col > Saiph::position.col) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return E;
+		} else {
+			while (++point.col < Saiph::position.col) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return W;
+		}
+	} else if (point.col == Saiph::position.col) {
+		/* aligned vertically */
+		if (point.row > Saiph::position.row) {
+			while (--point.row > Saiph::position.row) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return S;
+		} else {
+			while (++point.row < Saiph::position.row) {
+				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+					return ILLEGAL_DIRECTION;
+			}
+			return N;
+		}
+	} else if (abs(point.row - Saiph::position.row) == abs(point.col - Saiph::position.col)) {
+		/* aligned diagonally */
+		if (point.row > Saiph::position.row) {
+			if (point.col > Saiph::position.col) {
+				while (--point.row > Saiph::position.row) {
+					--point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return SE;
+			} else {
+				while (--point.row > Saiph::position.row) {
+					++point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return SW;
+			}
+		} else {
+			if (point.col > Saiph::position.col) {
+				while (++point.row < Saiph::position.row) {
+					--point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return NE;
+			} else {
+				while (++point.row < Saiph::position.row) {
+					++point.col;
+					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
+						return ILLEGAL_DIRECTION;
+				}
+				return NW;
+			}
+		}
+	}
+	return ILLEGAL_DIRECTION;
+}
+
+PathNode World::shortestPath(unsigned char symbol) {
+	/* returns PathNode for shortest path from player to nearest symbol */
+	int pivot = -1;
+	int level_count = 1;
+	PathNode best_pathnode;
+	int level_queue[levels.size()];
+	level_queue[0] = Saiph::position.level;
+	bool level_added[levels.size()];
+	for (int a = 0; a < (int) levels.size(); ++a)
+		level_added[a] = false;
+	level_added[Saiph::position.level] = true;
+	PathNode level_pathnode[levels.size()];
+	level_pathnode[Saiph::position.level] = PathNode(Point(), NOWHERE, 0, 0);
+	while (++pivot < level_count) {
+		/* path to symbols on level */
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
+			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			Debug::info() << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << ": " << node.dir << " - " << node.moves << " - " << node.cost << endl;
+			if (node.cost == UNREACHABLE)
+				continue;
+			else if (node.cost == UNPASSABLE && node.moves > 1)
+				continue;
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
+				continue;
+			/* this symbol is closer than the previously found one */
+			best_pathnode = node;
+			if (pivot != 0) {
+				/* symbol is on another level, gotta modify this pathnode a bit */
+				best_pathnode.dir = level_pathnode[level_queue[pivot]].dir;
+				best_pathnode.moves += level_pathnode[level_queue[pivot]].moves;
+				best_pathnode.cost += level_pathnode[level_queue[pivot]].cost;
+			}
+			Debug::info() << SAIPH_DEBUG_NAME << "Pathing to '" << symbol << "' on level " << level_queue[pivot] << endl;
+		}
+		/* path to upstairs on level */
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
+			Debug::info() << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where these stairs lead
+			if (level_added[s->second])
+				continue; // already added this level
+			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			if (node.cost >= UNPASSABLE)
+				continue;
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
+				continue;
+			/* distance to these stairs is shorter than shortest path found so far.
+			 * we should check the level these stairs lead to as well */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to upstairs on level we're standing on */
+				level_pathnode[s->second] = node;
+				if (node.dir == NOWHERE)
+					level_pathnode[s->second].dir = UP;
+			} else {
+				/* pathing to upstairs on another level */
+				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+				level_pathnode[s->second].moves += node.moves;
+				level_pathnode[s->second].cost += node.cost;
+			}
+			Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+		}
+		/* path to downstairs on level */
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
+			Debug::info() << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where these stairs lead
+			if (level_added[s->second])
+				continue; // already added this level
+			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			if (node.cost >= UNPASSABLE)
+				continue;
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
+				continue;
+			/* distance to these stairs is shorter than shortest path found so far.
+			 * we should check the level these stairs lead to as well */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to downstairs on level we're standing on */
+				level_pathnode[s->second] = node;
+				if (node.dir == NOWHERE)
+					level_pathnode[s->second].dir = DOWN;
+			} else {
+				/* pathing to downstairs on another level */
+				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+				level_pathnode[s->second].moves += node.moves;
+				level_pathnode[s->second].cost += node.cost;
+			}
+			Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+		}
+		/* path to levels through magic portals */
+		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+			Debug::info() << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where this magic portal leads
+			if (level_added[s->second])
+				continue; // already added this level
+			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			if (node.cost >= UNPASSABLE)
+				continue;
+			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
+				continue;
+			/* distance to these stairs is shorter than shortest path found so far.
+			 * we should check the level these stairs lead to as well */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to downstairs on level we're standing on */
+				level_pathnode[s->second] = node;
+				if (node.dir == NOWHERE)
+					level_pathnode[s->second].dir = NOWHERE;
+			} else {
+				/* pathing to downstairs on another level */
+				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+				level_pathnode[s->second].moves += node.moves;
+				level_pathnode[s->second].cost += node.cost;
+			}
+			Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+		}
+	}
+	return best_pathnode;
+}
+
+PathNode World::shortestPath(const Coordinate &target) {
+	/* returns PathNode for shortest path from player to target */
+	if (target.level < 0 || target.level >= (int) levels.size()) {
+		return PathNode(); // outside the map
+	} else if (target.level == Saiph::position.level) {
+		/* target on same level */
+		return levels[Saiph::position.level].shortestPath(target);
+	} else {
+		int pivot = -1;
+		int level_count = 1;
+		int level_queue[levels.size()];
+		level_queue[0] = Saiph::position.level;
+		bool level_added[levels.size()];
+		for (int a = 0; a < (int) levels.size(); ++a)
+			level_added[a] = false;
+		level_added[Saiph::position.level] = true;
+		PathNode level_pathnode[levels.size()];
+		level_pathnode[Saiph::position.level] = PathNode(Point(), NOWHERE, 0, 0);
+		Debug::info() << SAIPH_DEBUG_NAME << "Interlevel pathing to " << target << endl;
+		while (++pivot < level_count) {
+			Debug::notice() << SAIPH_DEBUG_NAME << "interlevel pathing: " << pivot << " - " << level_count << endl;
+			/* check if target is on level */
+			if (level_queue[pivot] == target.level) {
+				const PathNode &node = levels[level_queue[pivot]].shortestPath(target);
+				if (node.cost == UNREACHABLE)
+					continue;
+				else if (node.cost == UNPASSABLE && node.moves > 1)
+					continue;
+				PathNode best_pathnode = node;
+				if (pivot != 0) {
+					/* symbol is on another level, gotta modify this pathnode a bit */
+					best_pathnode.dir = level_pathnode[level_queue[pivot]].dir;
+					best_pathnode.moves += level_pathnode[level_queue[pivot]].moves;
+					best_pathnode.cost += level_pathnode[level_queue[pivot]].cost;
+				}
+				Debug::info() << SAIPH_DEBUG_NAME << "Found " << target << " in " << best_pathnode.moves << " steps" << endl;
+				return best_pathnode;
+			}
+			/* path to upstairs on level */
+			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_UP].end(); ++s) {
+				Debug::info() << SAIPH_DEBUG_NAME << "Found upstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+				if (s->second == UNKNOWN_SYMBOL_VALUE)
+					continue; // we don't know where these stairs lead
+				else if (level_added[s->second])
+					continue; // already added this level
+				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				if (node.cost >= UNPASSABLE)
+					continue;
+				/* distance to these stairs is shorter than shortest path found so far.
+				 * we should check the level these stairs lead to as well */
+				level_added[s->second] = true;
+				level_queue[level_count++] = s->second;
+				if (pivot == 0) {
+					/* pathing to upstairs on level we're standing on */
+					level_pathnode[s->second] = node;
+					if (node.dir == NOWHERE)
+						level_pathnode[s->second].dir = UP;
+				} else {
+					/* pathing to upstairs on another level */
+					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
+				}
+				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+			}
+			/* path to downstairs on level */
+			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) STAIRS_DOWN].end(); ++s) {
+				Debug::info() << SAIPH_DEBUG_NAME << "Found downstairs on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+				if (s->second == UNKNOWN_SYMBOL_VALUE)
+					continue; // we don't know where these stairs lead
+				else if (level_added[s->second])
+					continue; // already added this level
+				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				if (node.cost >= UNPASSABLE)
+					continue;
+				/* distance to these stairs is shorter than shortest path found so far.
+				 * we should check the level these stairs lead to as well */
+				level_added[s->second] = true;
+				level_queue[level_count++] = s->second;
+				if (pivot == 0) {
+					/* pathing to downstairs on level we're standing on */
+					level_pathnode[s->second] = node;
+					if (node.dir == NOWHERE)
+						level_pathnode[s->second].dir = DOWN;
+				} else {
+					/* pathing to downstairs on another level */
+					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
+				}
+				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+			}
+			/* path to portals on level */
+			for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].begin(); s != levels[level_queue[pivot]].symbols[(unsigned char) MAGIC_PORTAL].end(); ++s) {
+				Debug::info() << SAIPH_DEBUG_NAME << "Found magic portal on level " << level_queue[pivot] << " leading to level " << s->second << endl;
+				if (s->second == UNKNOWN_SYMBOL_VALUE)
+					continue; // we don't know where these stairs lead
+				else if (level_added[s->second])
+					continue; // already added this level
+				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				if (node.cost >= UNPASSABLE)
+					continue;
+				/* distance to these stairs is shorter than shortest path found so far.
+				 * we should check the level these stairs lead to as well */
+				level_added[s->second] = true;
+				level_queue[level_count++] = s->second;
+				if (pivot == 0) {
+					/* pathing to downstairs on level we're standing on */
+					level_pathnode[s->second] = node;
+					if (node.dir == NOWHERE)
+						level_pathnode[s->second].dir = DOWN;
+				} else {
+					/* pathing to downstairs on another level */
+					level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
+					level_pathnode[s->second].dir = level_pathnode[level_queue[pivot]].dir;
+					level_pathnode[s->second].moves += level_pathnode[level_queue[pivot]].moves;
+					level_pathnode[s->second].cost += level_pathnode[level_queue[pivot]].cost;
+				}
+				Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
+			}
+		}
+	}
+	return PathNode(); // symbol not found
+}
+
+void World::run() {
+	int last_turn = 0;
+	int stuck_counter = 0;
+	while (true) {
+		/* let Saiph, Inventory and current level parse messages */
+		Saiph::parseMessages(messages);
+		Inventory::parseMessages(messages);
+		levels[Saiph::position.level].parseMessages(messages);
+
+		/* let Saiph, Inventory and current level analyze */
+		Saiph::analyze();
+		Inventory::analyze();
+		levels[Saiph::position.level].analyze();
+
+		/* dump maps */
+		dumpMaps();
+
+		/* check if we're stuck */
+		if (action != NULL && stuck_counter % 42 == 41) {
+			bool was_move = false;
+			if (action->getID() == action::Move::id) {
+				/* we're moving, mark target tile unpassable */
+				switch (action->getCommand().command[0]) {
+					case NW:
+					case NE:
+					case SW:
+					case SE:
+						/* moving diagonally failed.
+						 * we could be trying to move diagonally into a door we're
+						 * unaware of because of an item blocking the door symbol.
+						 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+						setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+						was_move = true;
+						break;
+
+					case N:
+					case E:
+					case S:
+					case W:
+						/* moving cardinally failed, possibly item in wall.
+						 * make the tile UNKNOWN_TILE_UNPASSABLE */
+						setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_UNPASSABLE);
+						was_move = true;
+						break;
+
+					default:
+						/* huh? */
+						break;
+				}
+			}
+			if (!was_move) {
+				/* not good. we're not moving and we're stuck */
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name << ": " << action->getCommand() << endl;
+			}
+		} else if (stuck_counter > 1680) {
+			/* failed too many times, #quit */
+			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+			executeCommand(string(1, (char) 27));
+			executeCommand(QUIT);
+			executeCommand(YES);
+			return;
+		}
+
+		if (last_turn == turn)
+			stuck_counter++;
+		else    
+			stuck_counter = 0;
+		last_turn = turn;
+
+		/* check if we're in the middle of an action */
+		if (action != NULL)
+			action->updateAction(messages);
+		if (action == NULL || action->getCommand() == action::Action::noop) {
+			/* we got no command, find a new one */
+			/* parse messages */
+			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+				(*a)->parseMessages(messages);
+
+			/* analyze */
+			if (!question && !menu) {
+				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+					(*a)->analyze();
+			}
+		}
+
+		/* check if we got a command */
+		if (action == NULL || action->getCommand() == action::Action::noop) {
+			/* we do not. print debugging and just answer something sensible */
+			if (question) {
+				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;
+				executeCommand(string(1, (char) 27));
+				continue;
+			} else if (menu) {
+				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << messages << endl;
+				executeCommand(string(1, (char) 27));
+				continue;
+			} else {
+				Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching" << endl;
+				cout << (unsigned char) 27 << "[1;82H";
+				cout << (unsigned char) 27 << "[K"; // erase everything to the right
+				cout << "No idea what to do: s";
+				/* return cursor back to where it was */
+				cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
+				cout.flush();
+				executeCommand("s");
+				continue;
+			}
+		}
+
+		/* print what we're doing */
+		cout << (unsigned char) 27 << "[1;82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+		cout << action->getAnalyzer()->name << " " << action->getCommand();
+		/* return cursor back to where it was */
+		cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
+		/* and flush cout. if we don't do this our output looks like garbage */
+		cout.flush();
+		Debug::notice() << action->getAnalyzer()->name << " " << action->getCommand() << endl;
+
+		/* execute the command */
+		executeCommand(action->getCommand().command);
+	}
+}
+
+/* private methods */
+void World::addChangedLocation(const Point &point) {
+	/* add a location changed since last frame unless it's already added */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END || changed[point.row][point.col])
+		return;
+	changes.push_back(point);
+}
+
+void World::detectPosition() {
+	string level = levelname;
+	if (Saiph::position.level < 0) {
+		/* this happens when we start */
+		Saiph::position.row = cursor.row;
+		Saiph::position.col = cursor.col;
+		Saiph::position.level = levels.size();
+		branch_main = Saiph::position;
+		levels.push_back(Level(level));
+		levelmap[level].push_back(Saiph::position.level);
+		return;
+	}
+	if ((int) levels.size() > Saiph::position.level && level == levels[Saiph::position.level].name) {
+		/* same level as last frame, update row & col */
+		Saiph::position.row = cursor.row;
+		Saiph::position.col = cursor.col;
+		if (branch_sokoban.level == -1 && levels[Saiph::position.level].branch == BRANCH_MAIN && levels[Saiph::position.level].depth >= 5 && levels[Saiph::position.level].depth <= 9) {
+			/* look for sokoban level 1a or 1b */
+			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
+				/* sokoban 1a */
+				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << Saiph::position.level << endl;
+				levels[Saiph::position.level].branch = BRANCH_SOKOBAN;
+				branch_sokoban = Saiph::position;
+			} else if (getDungeonSymbol(Point(8, 34)) == BOULDER && getDungeonSymbol(Point(8, 42)) == BOULDER && getDungeonSymbol(Point(9, 34)) == BOULDER && getDungeonSymbol(Point(9, 41)) == BOULDER && getDungeonSymbol(Point(10, 42)) == BOULDER && getDungeonSymbol(Point(13, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(15, 41)) == BOULDER && getDungeonSymbol(Point(16, 40)) == BOULDER && getDungeonSymbol(Point(16, 42)) == BOULDER) {
+				/* sokoban 1b */
+				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << Saiph::position.level << endl;
+				levels[Saiph::position.level].branch = BRANCH_SOKOBAN;
+				branch_sokoban = Saiph::position;
+			}
+
+		}
+		if (levels[Saiph::position.level].branch == BRANCH_MAIN && levels[Saiph::position.level].depth >= 3 && levels[Saiph::position.level].depth <= 5) {
+			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
+			for (map<Point, int>::iterator hw = levels[Saiph::position.level].symbols[(unsigned char) HORIZONTAL_WALL].begin(); hw != levels[Saiph::position.level].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++hw) {
+				if (hw->first.row <= MAP_ROW_BEGIN || hw->first.row >= MAP_ROW_END || hw->first.col <= MAP_COL_BEGIN || hw->first.col >= MAP_COL_END)
+					continue;
+				/* if we see horizontal walls adjacent to this point (except west & east),
+				 * then we're in the mines */
+				if (getDungeonSymbol(Point(hw->first.row - 1, hw->first.col - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row - 1, hw->first.col)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row - 1, hw->first.col + 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row + 1, hw->first.col + 1)) == HORIZONTAL_WALL) {
+					/* we're in the mines */
+					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << Saiph::position.level << endl;
+					levels[Saiph::position.level].branch = BRANCH_MINES;
+					branch_mines = Saiph::position;
+					break;
+				}
+			}
+		}
+		if (levels[Saiph::position.level].branch != BRANCH_ROGUE && view[STATUS_ROW][8] == '*') {
+			/* rogue level, set branch attribute */
+			Debug::notice() << SAIPH_DEBUG_NAME << "Found the rogue level: " << Saiph::position.level << endl;
+			levels[Saiph::position.level].branch = BRANCH_ROGUE;
+		}
+		return;
+	}
+	/* level has changed.
+	 * we need to figure out if it's a new level or one we already know of */
+	int found = UNKNOWN_SYMBOL_VALUE;
+	unsigned char symbol = getDungeonSymbol();
+	/* maybe we already know where these stairs lead? */
+	if (symbol == STAIRS_DOWN) {
+		/* we did stand on stairs down, and if we don't know where they lead then
+		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
+		found = levels[Saiph::position.level].symbols[(unsigned char) STAIRS_DOWN][Saiph::position];
+	} else if (symbol == STAIRS_UP) {
+		/* we did stand on stairs up, and if we don't know where they lead then
+		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
+		found = levels[Saiph::position.level].symbols[(unsigned char) STAIRS_UP][Saiph::position];
+	} else if (symbol == MAGIC_PORTAL) {
+		/* we did stand on a magic portal, and if we don't know where it leads then
+		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
+		found = levels[Saiph::position.level].symbols[(unsigned char) MAGIC_PORTAL][Saiph::position];
+	}
+	if (found == UNKNOWN_SYMBOL_VALUE) {
+		/* we didn't know where the stairs would take us */
+		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
+			/* check if level got walls on same locations.
+			 * since walls can disappear, we'll allow a 80% match */
+			int total = 0;
+			int matched = 0;
+			for (map<Point, int>::iterator s = levels[*lm].symbols[(unsigned char) VERTICAL_WALL].begin(); s != levels[*lm].symbols[(unsigned char) VERTICAL_WALL].end(); ++s) {
+				if (view[s->first.row][s->first.col] == VERTICAL_WALL)
+					++matched;
+				++total;
+			}
+			for (map<Point, int>::iterator s = levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].begin(); s != levels[*lm].symbols[(unsigned char) HORIZONTAL_WALL].end(); ++s) {
+				if (view[s->first.row][s->first.col] == HORIZONTAL_WALL)
+					++matched;
+				++total;
+			}
+			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
+				found = *lm;
+				Debug::notice() << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name << "'" << endl;
+				break;
+			}
+		}
+	}
+	if (found == UNKNOWN_SYMBOL_VALUE) {
+		/* new level */
+		found = levels.size();
+		/* when we discover a new level it's highly likely it's in the
+		 * same branch as the previous level.
+		 * exception is rogue level, which really isn't a branch */
+		levels.push_back(Level(level, (levels[Saiph::position.level].branch != BRANCH_ROGUE) ? levels[Saiph::position.level].branch : BRANCH_MAIN));
+		levelmap[level].push_back(found);
+		Debug::notice() << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
+	}
+	/* were we on stairs on last Saiph::position? */
+	if (symbol == STAIRS_DOWN) {
+		/* yes, we were on stairs down */
+		levels[Saiph::position.level].symbols[(unsigned char) STAIRS_DOWN][Saiph::position] = found;
+	} else if (symbol == STAIRS_UP) {
+		/* yes, we were on stairs up */
+		levels[Saiph::position.level].symbols[(unsigned char) STAIRS_UP][Saiph::position] = found;
+	} else if (symbol == MAGIC_PORTAL) {
+		/* yes, we were on a magic portal */
+		levels[Saiph::position.level].symbols[(unsigned char) MAGIC_PORTAL][Saiph::position] = found;
+	}
+	Saiph::position.row = cursor.row;
+	Saiph::position.col = cursor.col;
+	Saiph::position.level = found;
+}
+
+Point World::directionToPoint(unsigned char direction) {
+	/* return the position we'd be at if we do the given move */
+	Point pos = Saiph::position;
+	switch (direction) {
+	case NW:
+		--pos.row;
+		--pos.col;
+		break;
+
+	case N:
+		--pos.row;
+		break;
+
+	case NE:
+		--pos.row;
+		++pos.col;
+		break;
+
+	case E:
+		++pos.col;
+		break;
+
+	case SE:
+		++pos.row;
+		++pos.col;
+		break;
+
+	case S: 
+		++pos.row;
+		break;
+
+	case SW:
+		++pos.row;
+		--pos.col;
+		break;
+
+	case W: 
+		--pos.col;
+		break;
+	}
+	return pos;
+}
+
+bool World::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders) {
+	unsigned char symbol = getDungeonSymbol(point);
+	if (!Level::passable[symbol] && (!ignore_boulders || symbol != BOULDER))
+		return false;
+	else if (!ignore_sinks && symbol == SINK)
+		return false;
+	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[Saiph::position.level].monsters[point].visible)
+		return false;
+	return true;
+}
+
+void World::dumpMaps() {
+	/* XXX: World echoes output from the game in the top left corner */
+	/* commands/frames/turns per second */
+	int seconds = (int) difftime(time(NULL), start_time);
+	if (seconds == 0)
+		++seconds;
+	int cps = command_count / seconds;
+	int fps = frame_count / seconds;
+	int tps = turn / seconds;
+	cout << (unsigned char) 27 << "[25;1H";
+	cout << "CPS/FPS/TPS: ";
+	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
+	cout << (unsigned char) 27 << "[35m" << fps << (unsigned char) 27 << "[0m/";
+	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m      ";
+
+	/* monsters and map as saiph sees it */
+	Point p;
+	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			unsigned char monster = getMonsterSymbol(p);
+			if (p.row == Saiph::position.row && p.col == Saiph::position.col)
+				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
+			else if (monster != ILLEGAL_MONSTER)
+				cout << monster;
+			else
+				cout << getDungeonSymbol(p);
+		}
+	}
+
+	/* path map */
+	/*
+	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
+			if (p.row == postion.row && p.col == Saiph::position.col)
+				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
+			else if (levels[Saiph::position.level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
+				//cout << (unsigned char) levels[Saiph::position.level].pathmap[p.row][p.col].dir;
+				cout << (char) (levels[Saiph::position.level].pathmap[p.row][p.col].cost % 64 + 48);
+			else
+				cout << getDungeonSymbol(p);
+		}
+	}
+	*/
+
+	/* status & inventory */
+	cout << (unsigned char) 27 << "[2;82H";
+	if (Saiph::intrinsics & PROPERTY_COLD)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_DISINT)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_FIRE)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_POISON)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_SHOCK)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_SLEEP)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
+
+	cout << (unsigned char) 27 << "[3;82H";
+	if (Saiph::intrinsics & PROPERTY_ESP)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_TELEPORT_CONTROL)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_TELEPORT)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics & PROPERTY_LYCANTHROPY)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
+	if (Saiph::hurt_leg)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
+	if (Saiph::polymorphed)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
+
+	int ir = 0;
+	for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end() && ir < 46; ++i) {
+		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+		if (i->second.beatitude == BLESSED)
+			cout << (unsigned char) 27 << "[32m";
+		else if (i->second.beatitude == CURSED)
+			cout << (unsigned char) 27 << "[31m";
+		else if (i->second.beatitude == UNCURSED)
+			cout << (unsigned char) 27 << "[33m";
+		cout << i->first;
+		cout << " - " << i->second;
+		cout << (unsigned char) 27 << "[m";
+		++ir;
+	}
+	for (; ir < 46; ++ir) {
+		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
+		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+	}
+}
+
 bool World::executeCommand(const string &command) {
 	/* send a command to nethack */
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
@@ -47,14 +845,6 @@ bool World::executeCommand(const string &command) {
 	++command_count;
 	update();
 	return true;
-}
-
-/* private methods */
-void World::addChangedLocation(const Point &point) {
-	/* add a location changed since last frame unless it's already added */
-	if (changed[point.row][point.col] || point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
-		return;
-	changes.push_back(point);
 }
 
 void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
@@ -326,10 +1116,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 				break;
 			} else if (data[*pos] == 27) {
 				/* escape char found, that shouldn't happen */
-				Debug::error() << WORLD_DEBUG_NAME << "Escape character found in sequence: ";
-				for (int a = start; a <= *pos; ++a)
-					Debug::debugfile << (int) data[a] << " - ";
-				Debug::debugfile << endl;
+				Debug::rawCharArray(data, start, *pos + 1);
 				exit(7);
 			} else if (*pos - start > 7) {
 				/* too long escape sequence? */
@@ -369,9 +1156,80 @@ void World::handleEscapeSequence(int *pos, int *color) {
 	}
 }
 
+bool World::parseAttributeRow(const char *attributerow) {
+	/* fetch attributes */
+	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &Saiph::strength, &Saiph::dexterity, &Saiph::constitution, &Saiph::intelligence, &Saiph::wisdom, &Saiph::charisma, effects[0]);
+	if (matched < 7)
+		return false;
+	if (effects[0][0] == 'L')
+		Saiph::alignment = LAWFUL;
+	else if (effects[0][0] == 'N')
+		Saiph::alignment = NEUTRAL;
+	else    
+		Saiph::alignment = CHAOTIC;
+	return true;
+}
+
+bool World::parseStatusRow(const char *statusrow) {
+	/* fetch status */
+	Saiph::encumbrance = UNENCUMBERED;
+	Saiph::hunger = CONTENT;
+	Saiph::blind = false;
+	Saiph::confused = false;
+	Saiph::foodpoisoned = false;
+	Saiph::hallucinating = false;
+	Saiph::ill = false;
+	Saiph::slimed = false;
+	Saiph::stunned = false;
+	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", levelname, &Saiph::zorkmids, &Saiph::hitpoints, &Saiph::hitpoints_max, &Saiph::power, &Saiph::power_max, &Saiph::armor_class, &Saiph::experience, &turn, effects[0], effects[1], effects[2], effects[3], effects[4]);
+	if (matched < 9)
+		return false;
+	int effects_found = matched - 9;
+	for (int e = 0; e < effects_found; ++e) {
+		if (strcmp(effects[e], "Burdened") == 0) {
+			Saiph::encumbrance = BURDENED;
+		} else if (strcmp(effects[e], "Stressed") == 0) {
+			Saiph::encumbrance = STRESSED;
+		} else if (strcmp(effects[e], "Strained") == 0) {
+			Saiph::encumbrance = STRAINED;
+		} else if (strcmp(effects[e], "Overtaxed") == 0) {
+			Saiph::encumbrance = OVERTAXED;
+		} else if (strcmp(effects[e], "Overloaded") == 0) {
+			Saiph::encumbrance = OVERLOADED;
+		} else if (strcmp(effects[e], "Fainting") == 0) {
+			Saiph::hunger = FAINTING;
+		} else if (strcmp(effects[e], "Fainted") == 0) {
+			Saiph::hunger = FAINTING;
+		} else if (strcmp(effects[e], "Weak") == 0) {
+			Saiph::hunger = WEAK;
+		} else if (strcmp(effects[e], "Hungry") == 0) {
+			Saiph::hunger = HUNGRY;
+		} else if (strcmp(effects[e], "Satiated") == 0) {
+			Saiph::hunger = SATIATED;
+		} else if (strcmp(effects[e], "Oversatiated") == 0) {
+			Saiph::hunger = OVERSATIATED;
+		} else if (strcmp(effects[e], "Blind") == 0) {
+			Saiph::blind = true;
+		} else if (strcmp(effects[e], "Conf") == 0) {
+			Saiph::confused = true;
+		} else if (strcmp(effects[e], "FoodPois") == 0) {
+			Saiph::foodpoisoned = true;
+		} else if (strcmp(effects[e], "Hallu") == 0) {
+			Saiph::hallucinating = true;
+		} else if (strcmp(effects[e], "Ill") == 0) {
+			Saiph::ill = true;
+		} else if (strcmp(effects[e], "Slime") == 0) {
+			Saiph::slimed = true;
+		} else if (strcmp(effects[e], "Stun") == 0) {
+			Saiph::stunned = true;
+		}
+	}
+	return true;
+}
+
 void World::update() {
 	/* update the view */
-	int color = 0; // color of the char
+	int charcolor = 0; // color of the char
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	if (data_size <= 0) {
 		/* no data? sleep a sec and try again */
@@ -388,10 +1246,7 @@ void World::update() {
 	for (int a = 0; a < data_size; ++a)
 		cout << data[a];
 	cout.flush(); // same reason as in saiph.dumpMaps()
-	Debug::info() << DATA_DEBUG_NAME;
-	for (int a = 0; a < data_size; ++a)
-		Debug::debugfile << data[a];
-	Debug::debugfile << endl;
+	Debug::rawCharArray(data, 0, data_size);
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:
@@ -428,7 +1283,7 @@ void World::update() {
 			case 27:
 				/* escape sequence coming up */
 				++pos;
-				handleEscapeSequence(&pos, &color);
+				handleEscapeSequence(&pos, &charcolor);
 				break;
 
 			default:
@@ -438,7 +1293,7 @@ void World::update() {
 					break;
 				}
 				view[cursor.row][cursor.col] = (unsigned char) data[pos];
-				this->color[cursor.row][cursor.col] = color;
+				color[cursor.row][cursor.col] = charcolor;
 				addChangedLocation(cursor);
 				cursor.col++;
 				break;
@@ -448,14 +1303,10 @@ void World::update() {
 	fetchMessages();
 
 	/* parse attribute & status rows */
-	bool parsed_attributes = player.parseAttributeRow(view[ATTRIBUTES_ROW]);
-	bool parsed_status = player.parseStatusRow(view[STATUS_ROW]);
-	if (parsed_attributes && parsed_status && cursor.row >= MAP_ROW_BEGIN && cursor.row <= MAP_ROW_END && cursor.col >= MAP_COL_BEGIN && cursor.col <= MAP_COL_END && !menu && !question) {
-		/* the last escape sequence *sometimes* place the cursor on the player,
-		 * which is quite handy since we won't have to search for the player then */
-		player.row = cursor.row;
-		player.col = cursor.col;
-	} else if (!menu && !question) {
+	bool parsed_attributes = parseAttributeRow(view[ATTRIBUTES_ROW]);
+	bool parsed_status = parseStatusRow(view[STATUS_ROW]);
+	/* check that the data we received seems ok */
+	if (!menu && !question && (!parsed_attributes || !parsed_status || cursor.row < MAP_ROW_BEGIN || cursor.row > MAP_ROW_END || cursor.col < MAP_COL_BEGIN || cursor.col > MAP_COL_END)) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
@@ -463,7 +1314,96 @@ void World::update() {
 		update();
 		return;
 	}
+	++frame_count;
 	if (messages == "  ")
 		messages.clear(); // no messages
-	++frame_count;
+
+	/* check if we get the question where we want to teleport */
+	if (messages.find(MESSAGE_FOR_INSTRUCTIONS, 0) != string::npos) {
+		/* a bit unique case, this is a question.
+		 * the data doesn't end with the sequence we check in World.
+		 * however, the cursor is placed on the player when we get this message */
+		question = true;
+        }
+
+	/* check if we're engulfed */
+	if (cursor.row > MAP_ROW_BEGIN && cursor.row < MAP_ROW_END && cursor.col > MAP_COL_BEGIN && cursor.col < MAP_COL_END && view[cursor.row - 1][cursor.col - 1] == '/' && view[cursor.row - 1][cursor.col + 1] == '\\' && view[cursor.row + 1][cursor.col - 1] == '\\' && view[cursor.row + 1][cursor.col + 1] == '/')
+		engulfed = true;
+	else    
+		engulfed = false;
+
+	if (!menu && !question && !engulfed)
+		detectPosition();
+}
+
+/* main */
+int main(int argc, const char *argv[]) {
+	int connection_type = CONNECTION_TELNET;
+	string logfile = "saiph.log";
+
+	bool showUsage = false;
+	if (argc > 1) {
+		for (int a = 1; a < argc; ++a) {
+			if (strlen(argv[a]) < 2) {
+				showUsage = true;
+				continue;
+			}
+
+			if (argv[a][0] == '-') {
+				switch (argv[a][1]) {
+				case 'h':
+					showUsage = true;
+					break;
+				case 'l':
+					connection_type = CONNECTION_LOCAL;
+					break;
+				case 't':
+					connection_type = CONNECTION_TELNET;
+					break;
+				case 'L':
+					if (argc > ++a)
+						logfile = argv[a];
+					else
+						showUsage = true;
+					break;
+				default:
+					cout << "Invalid argument " << argv[a] << endl;
+					showUsage = true;
+					break;
+				}
+			} else {
+				cout << "Unknown argument specified." << endl;
+			}
+		}
+
+		if (showUsage) {
+			cout << "Usage: " << argv[0] << " [-l|-t] [-L <logfile>]" << endl;
+			cout << endl;
+			cout << "\t-l  Use local nethack executable" << endl;
+			cout << "\t-t  Use telnet nethack server" << endl;
+			cout << endl;
+			cout << "\t-L <logfile>  Log file to write Saiph output" << endl;
+			return 1;
+		}
+	}
+
+	/* init */
+	Debug::init(logfile);
+	data::Monster::init();
+	data::Item::init();
+	event::Event::init();
+	World::init(connection_type);
+	Analyzer::init();
+
+	/* run */
+	World::run();
+	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
+
+	/* destroy */
+	Analyzer::destroy();
+	World::destroy();
+	data::Item::destroy();
+	data::Monster::destroy();
+	event::Event::destroy();
+	Debug::destroy();
 }

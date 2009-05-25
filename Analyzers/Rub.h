@@ -2,13 +2,14 @@
 #define	RUB_H
 
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Item;
 class Saiph;
 
-class Rub : public Analyzer {
+namespace analyzer {
+	class Rub : public Analyzer {
 	public:
 		Rub(Saiph *saiph);
 
@@ -22,5 +23,6 @@ class Rub : public Analyzer {
 
 		void findMagicLamp();
 		bool isMagicLamp(const Item &item);
-};
+	};
+}
 #endif

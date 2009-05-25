@@ -1,20 +1,20 @@
 #ifndef ARMOR_H
 #define ARMOR_H
 
+#include <string>
+#include <vector>
+#include <map>
+#include "Analyzer.h"
+#include "../Item.h"
+#include "../Globals.h"
+#include "../Request.h"
+#include "../Debug.h"
+
 #define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3
 /* various polymorph messages */
 #define ARMOR_HAVE_NO_FEET "  You have no feet...  "
 #define ARMOR_WONT_FIT_HORN " won't fit over your horn"
 #define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
-
-#include <string>
-#include <vector>
-#include <map>
-#include "../Item.h"
-#include "../Analyzer.h"
-#include "../Globals.h"
-#include "../Request.h"
-#include "../Debug.h"
 
 /* struct for wearing armor */
 struct OldArmorData {
@@ -30,19 +30,19 @@ struct ArmorSet {
 	//allow looping over the armor types
 	inline const Item & operator[](int index) const {
 		switch(index) {
-			case ARMOR_SHIRT:
+			case SLOT_SHIRT:
 				return shirt;
-			case ARMOR_SUIT:
+			case SLOT_SUIT:
 				return suit;
-			case ARMOR_CLOAK:
+			case SLOT_CLOAK:
 				return cloak;
-			case ARMOR_BOOTS:
+			case SLOT_BOOTS:
 				return boots;
-			case ARMOR_GLOVES:
+			case SLOT_GLOVES:
 				return gloves;
-			case ARMOR_HELMET:
+			case SLOT_HELMET:
 				return helmet;
-			case ARMOR_SHIELD:
+			case SLOT_SHIELD:
 				return shield;
 			default:
 				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
@@ -50,19 +50,19 @@ struct ArmorSet {
 	}
 	inline Item & operator[](int index) {
 		switch(index) {
-			case ARMOR_SHIRT:
+			case SLOT_SHIRT:
 				return shirt;
-			case ARMOR_SUIT:
+			case SLOT_SUIT:
 				return suit;
-			case ARMOR_CLOAK:
+			case SLOT_CLOAK:
 				return cloak;
-			case ARMOR_BOOTS:
+			case SLOT_BOOTS:
 				return boots;
-			case ARMOR_GLOVES:
+			case SLOT_GLOVES:
 				return gloves;
-			case ARMOR_HELMET:
+			case SLOT_HELMET:
 				return helmet;
-			case ARMOR_SHIELD:
+			case SLOT_SHIELD:
 				return shield;
 			default:
 				Debug::error() << "Armor] Using invalid ArmorSet index " << index << std::endl;
@@ -77,21 +77,19 @@ inline std::ostream & operator<<(std::ostream &out, const ArmorSet &as) {
 			<< as.shield << "]";
 }
 
-class Saiph;
-
-class Armor : public Analyzer {
+namespace analyzer {
+	class Armor : public Analyzer {
 	public:
-		Armor(Saiph *saiph);
+		Armor();
 
 		void parseMessages(const std::string &messages);
 		bool request(const Request &request);
 
 	private:
-		Saiph *saiph;
 		bool wear_armor;
-		int carry_amount[ARMOR_SLOTS];
-		bool can_wear[ARMOR_SLOTS];
-		std::vector<OldArmorData> armor[ARMOR_SLOTS];
+		int carry_amount[SLOTS];
+		bool can_wear[SLOTS];
+		std::vector<OldArmorData> armor[SLOTS];
 		std::string command2;
 		Request req;
 		int last_armor_type;
@@ -102,5 +100,6 @@ class Armor : public Analyzer {
 		void wearArmor();
 		void resetCanWear();
 		int rank(const ArmorSet &r);
-};
+	};
+}
 #endif

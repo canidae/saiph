@@ -3,6 +3,7 @@
 #include "../World.h"
 #include "../Data/CorpseData.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */

@@ -1,13 +1,14 @@
 #ifndef BLIND_H
 #define BLIND_H
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Request.h"
 
 class Item;
 class Saiph;
 
-class Blind : public Analyzer {
+namespace analyzer {
+	class Blind : public Analyzer {
 	public:
 		Blind(Saiph *saiph);
 
@@ -26,5 +27,6 @@ class Blind : public Analyzer {
 
 		void findBlindingTool();
 		bool isBlindingTool(const Item &item);
-};
+	};
+}
 #endif	

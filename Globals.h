@@ -69,9 +69,9 @@
 #define BLESSED 0x8
 
 /* alignment */
-#define CHAOTIC -1
-#define NEUTRAL 0
-#define LAWFUL 1
+#define CHAOTIC 0x1
+#define NEUTRAL 0x2
+#define LAWFUL 0x4
 
 /* attitude */
 #define ATTITUDE_UNKNOWN 0x1
@@ -94,15 +94,22 @@
 #define SATIATED 1
 #define OVERSATIATED 2
 
-/* armor slots */
-#define ARMOR_SLOTS 7
-#define ARMOR_SHIRT 0
-#define ARMOR_SUIT 1
-#define ARMOR_CLOAK 2
-#define ARMOR_BOOTS 3
-#define ARMOR_GLOVES 4
-#define ARMOR_HELMET 5
-#define ARMOR_SHIELD 6
+/* slots */
+#define SLOTS 13
+#define INVALID_SLOT -1
+#define SLOT_SHIRT 0
+#define SLOT_SUIT 1
+#define SLOT_CLOAK 2
+#define SLOT_BOOTS 3
+#define SLOT_GLOVES 4
+#define SLOT_HELMET 5
+#define SLOT_SHIELD 6
+#define SLOT_AMULET 7
+#define SLOT_LEFT_RING 8
+#define SLOT_RIGHT_RING 9
+#define SLOT_WEAPON 10
+#define SLOT_OFFHAND_WEAPON 11
+#define SLOT_EYES 12
 
 /* directions */
 #define ILLEGAL_DIRECTION 0
@@ -179,14 +186,18 @@
 #define LOWERED_DRAWBRIDGE 135
 #define RAISED_DRAWBRIDGE '8'
 #define TRAP '^'
-#define MAGIC_PORTAL '9'
 #define UNKNOWN_TILE 136
 #define UNKNOWN_TILE_DIAGONALLY_UNPASSABLE 137
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
 #define MINES_FOUNTAIN 140
 #define SHOP_TILE 141
-#define OUTSIDE_MAP 142
+#define MAGIC_PORTAL 142
+#define OUTSIDE_MAP 254
+
+/* special monster symbols */
+#define ILLEGAL_MONSTER 0
+#define PET 255
 
 /* item symbols */
 #define ILLEGAL_ITEM 0
@@ -242,84 +253,14 @@
 #define PROPERTY_CASTING_BONUS     ((unsigned long long) (1LL << 30))
 #define PROPERTY_TELEPORT          ((unsigned long long) (1LL << 31))
 #define PROPERTY_TELEPORT_CONTROL  ((unsigned long long) (1LL << 32))
-
-/* special monster symbols */
-#define ILLEGAL_MONSTER 0
-#define PET 255
-
-/* priorities
- * "global" priorities structure:
- * PRIORITY_<what_to_do>
- * examples:
- * PRIORITY_CONTINUE_ACTION
- * PRIORITY_LOOK
- *
- * "analyzer" priorities structure:
- * PRIORITY_<analyzer>_<what_to_do>
- * examples:
- * PRIORITY_BEATITUDE_DROP_ALTAR
- * PRIORITY_WEAPON_WIELD */
-/* illegal, max & min */
-#define ILLEGAL_PRIORITY -1
-#define PRIORITY_MAX 999
-#define PRIORITY_MIN 0
-/* 1000->  : zero-turn actions */
-#define PRIORITY_CONTINUE_ACTION 1003
-#define PRIORITY_SELECT_ITEM 1002
-#define PRIORITY_CLOSE_PAGE 1001
-#define PRIORITY_LOOK 1000
-/* 800-999: panic, all hell is loose, pray, teleport, get the hell away */
-#define PRIORITY_VAULT_GO_OUT 999
-#define PRIORITY_FOOD_PRAY_FOR_FOOD 950
-#define PRIORITY_HEALTH_CURE_POLYMORPH 925
-#define PRIORITY_HEALTH_CURE_DEADLY 900
-#define PRIORITY_HEALTH_PRAY_FOR_HP 900
-/* 600-799: don't panic, rest for hp, fix bad stuff */
-#define PRIORITY_FOOD_EAT_FAINTING 750
-#define PRIORITY_FOOD_EAT_WEAK 725
-#define PRIORITY_HEALTH_REST_FOR_HP_LOW 700
-#define PRIORITY_HEALTH_QUAFF_FOR_HP 700
-/* 400-599: don't move. engrave for protection, attack if not moving and protected, feed, etc */
-#define PRIORITY_HEALTH_REST_FOR_HP_HIGH 500
-#define PRIORITY_HEALTH_CURE_NON_DEADLY 480
-#define PRIORITY_WEAPON_WIELD 475
-#define PRIORITY_FIGHT_ATTACK 450
-#define PRIORITY_LOOT_LOOT_STASH 450
-#define PRIORITY_FOOD_EAT_CORPSE 435
-#define PRIORITY_HEALTH_CURE_LYCANTHROPY 400
-#define PRIORITY_POTION_QUAFF_GAIN_LEVEL 400
-/* 200-399: move around, eg. attacking & looting */
-#define PRIORITY_FOOD_EAT_HUNGRY 350
-#define PRIORITY_SHOP_DROP_DIGGING_TOOL 330
-#define PRIORITY_FIGHT_MOVE 325
-#define PRIORITY_DONATE_CHAT_TO_PRIEST 310
-#define PRIORITY_LAMP_TOGGLE 300
-#define PRIORITY_SHOP_ENTER 275
-#define PRIORITY_THRONE_SIT 260
-#define PRIORITY_AMULET_WEAR 255
-#define PRIORITY_ARMOR_WEAR 255
-#define PRIORITY_LOOT_VISIT_STASH 250
-#define PRIORITY_LOOT_DROP_ITEMS 245
-#define PRIORITY_BEATITUDE_DROP_ALTAR 230
-#define PRIORITY_EXCALIBUR_DIP 225
-#define PRIORITY_RING_WEAR 225
-#define PRIORITY_RUB_MAGIC_LAMP 225
-#define PRIORITY_WISH_ZAP_WAND 225
-#define PRIORITY_WAND_ENGRAVE_ID 215
-/* 0-199: explore/random/do stuff we normally wouldn't do (melee floating eye) */
-#define PRIORITY_DOOR_OPEN 150
-#define PRIORITY_LOWER_DRAWBRIDGE 140
-#define PRIORITY_EXPLORE_FIND_ROGUE_STAIRS 70
-#define PRIORITY_EXPLORE_STAIRS_UP 60
-#define PRIORITY_EXPLORE_EXPLORE 50
-#define PRIORITY_DIG_PATH 45
-#define PRIORITY_SOLVE_SOKOBAN 45
-#define PRIORITY_EXPLORE_STAIRS_DOWN 40
-#define PRIORITY_EXPLORE_MAGIC_PORTAL 40
-#define PRIORITY_EXPLORE_TRAVEL 30
-#define PRIORITY_FIGHT_MELEE_BLUE_E 25
-#define PRIORITY_DIG_DOWN 20
-#define PRIORITY_EXPLORE_SEARCH 15
+#define PROPERTY_LIFE_SAVING       ((unsigned long long) (1LL << 33))
+#define PROPERTY_STRANGULATION     ((unsigned long long) (1LL << 34))
+#define PROPERTY_UNCHANGING        ((unsigned long long) (1LL << 35))
+#define PROPERTY_RESTFUL_SLEEP     ((unsigned long long) (1LL << 36))
+#define PROPERTY_SEX_CHANGE        ((unsigned long long) (1LL << 37))
+#define PROPERTY_LYCANTHROPY       ((unsigned long long) (1LL << 38))
+#define PROPERTY_SEARCHING         ((unsigned long long) (1LL << 39))
+#define PROPERTY_ARTIFACT          ((unsigned long long) (1LL << 40))
 
 /* discard item */
 #define DISCARD "DISCARD"
@@ -361,6 +302,7 @@
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
 #define MESSAGE_HELLO_STRANGER "  \"Hello stranger, who are you?\" -  "
 #define MESSAGE_IMPROVISE "  Improvise? [yn] (n)  "
+#define MESSAGE_IN_WHAT_DIRECTION "  In what direction?  "
 #define MESSAGE_LIMBS_ARE_STIFFENING "  Your limbs are stiffening.  "
 #define MESSAGE_LIMBS_TURNED_TO_STONE "  Your limbs have turned to stone.  "
 #define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "

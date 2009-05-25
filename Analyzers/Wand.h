@@ -1,6 +1,12 @@
 #ifndef WAND_H
 #define WAND_H
 
+#include <string>
+#include <vector>
+#include "Analyzer.h"
+#include "../Request.h"
+#include "../Item.h"
+
 #define WAND_DEBUG_NAME "Wand] "
 
 /* these don't auto-id; we must actually engrave */
@@ -31,15 +37,10 @@
 #define WAND_STATE_READY_TO_NAME 4
 #define WAND_STATE_WANT_DIRTY_INVENTORY 5
 
-#include <string>
-#include <vector>
-#include "../Analyzer.h"
-#include "../Request.h"
-#include "../Item.h"
-
 class Saiph;
 
-class Wand : public Analyzer {
+namespace analyzer {
+	class Wand : public Analyzer {
 	public:
 		Wand(Saiph *saiph);
 
@@ -55,5 +56,6 @@ class Wand : public Analyzer {
 		void findUnidentifiedWands();
 		bool isUnidentifiedWand(const Item& i);
 		bool isUnidentifiedWand(const unsigned char& c);
-};
+	};
+}
 #endif

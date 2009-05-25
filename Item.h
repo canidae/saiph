@@ -39,13 +39,10 @@ class Item {
 
 		Item(const std::string &text);
 		Item();
+
+		bool operator==(const Item &i);
+		bool operator!=(const Item &i) {return !(*this == i);}
 };
 
 std::ostream& operator<<(std::ostream& out, const Item& item);
-bool operator==(const Item &a, const Item &b);
-
-inline bool operator!=(const Item &a, const Item &b) {
-	return !(a == b);
-}
-
 #endif

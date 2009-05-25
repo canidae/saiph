@@ -10,11 +10,12 @@
 #define COST_LAVA 512 // lava, hot!
 #define COST_MONSTER 64 // try not to path through monsters
 #define COST_TRAP 128 // avoid traps
-#define COST_PORTAL 128 // Don't accidentally walk into portals
 #define COST_WATER 256 // avoid water if possible
 #define PATHING_QUEUE_SIZE 16384 // max amount of nodes in pathing_queue
 /* max moves a monster can do before we think it's a new monster */
 #define MAX_MONSTER_MOVE 3 // if a monster is more than this distance from where we last saw it, then it's probably a new monster
+/* max searching on a point */
+#define POINT_FULLY_SEARCHED 256
 /* debugging that should be moved to Debug in the future */
 #define LEVEL_DEBUG_NAME "Level] "
 /* messages */
@@ -47,51 +48,53 @@
 #include "Stash.h"
 
 class Item;
-class Saiph;
 
 class Level {
-	public:
-		PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
-		std::map<Point, Monster> monsters;
-		std::map<Point, Stash> stashes;
-		std::map<Point, int> symbols[UCHAR_MAX + 1];
-		std::string name;
-		int depth;
-		int branch;
-		bool undiggable;
+public:
+	PathNode pathmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+	unsigned char monstermap[MAP_ROW_END + 1][MAP_COL_END + 1];
+	std::map<Point, Monster> monsters;
+	std::map<Point, Stash> stashes;
+	std::map<Point, int> symbols[UCHAR_MAX + 1];
+	std::string name;
+	int depth;
+	int branch;
+	bool undiggable;
 
-		static bool passable[UCHAR_MAX + 1];
+	static bool passable[UCHAR_MAX + 1];
 
-		Level(Saiph *saiph, std::string name, int branch = BRANCH_MAIN);
+	Level(std::string name, int branch = BRANCH_MAIN);
 
-		unsigned char getDungeonSymbol(const Point &point);
-		unsigned char getMonsterSymbol(const Point &point);
-		void parseMessages(const std::string &messages);
-		void setDungeonSymbol(const Point &point, unsigned char symbol);
-		const PathNode &shortestPath(const Point &target);
-		void updateMapPoint(const Point &point, unsigned char symbol, int color);
-		void updateMonsters();
-		void updatePathMap();
+	unsigned char getDungeonSymbol(const Point &point);
+	unsigned char getMonsterSymbol(const Point &point);
+	int getSearchCount(const Point &point);
+	void setDungeonSymbol(const Point &point, unsigned char symbol);
+	void increaseAdjacentSearchCount(const Point &point);
+	const PathNode &shortestPath(const Point &target);
+	void analyze();
+	void parseMessages(const std::string &messages);
+	void updateMapPoint(const Point &point, unsigned char symbol, int color);
+	void updateMonsters();
+	void updatePathMap();
 
-	private:
-		Saiph *saiph;
-		PathNode pathnode_outside_map;
-		unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+private:
+	PathNode pathnode_outside_map;
+	unsigned char dungeonmap[MAP_ROW_END + 1][MAP_COL_END + 1];
+	int searchmap[MAP_ROW_END + 1][MAP_COL_END + 1];
 
-		static Point pathing_queue[PATHING_QUEUE_SIZE];
-		static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
-		static int pathcost[UCHAR_MAX + 1];
-		static bool dungeon[UCHAR_MAX + 1];
-		static bool monster[UCHAR_MAX + 1];
-		static bool item[UCHAR_MAX + 1];
-		static bool initialized;
+	static Point pathing_queue[PATHING_QUEUE_SIZE];
+	static unsigned char uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
+	static int pathcost[UCHAR_MAX + 1];
+	static bool dungeon[UCHAR_MAX + 1];
+	static bool monster[UCHAR_MAX + 1];
+	static bool item[UCHAR_MAX + 1];
+	static bool initialized;
 
-		void addItemToStash(const Point &point, const Item &item);
-		void clearStash(const Point &point);
-		unsigned int updatePathMapHelper(const Point &to, const Point &from);
+	void addItemToStash(const Point &point, const Item &item);
+	void clearStash(const Point &point);
+	unsigned int updatePathMapHelper(const Point &to, const Point &from);
 
-		static void init();
+	static void init();
 };
 
 /* inline methods */
@@ -109,6 +112,13 @@ inline unsigned char Level::getMonsterSymbol(const Point &point) {
 	return monstermap[point.row][point.col];
 }
 
+inline int Level::getSearchCount(const Point &point) {
+	/* return search count at given point */
+	if (point.row < MAP_ROW_BEGIN || point.row > MAP_ROW_END || point.col < MAP_COL_BEGIN || point.col > MAP_COL_END)
+		return POINT_FULLY_SEARCHED;
+	return searchmap[point.row][point.col];
+}
+
 inline void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	/* need to update both dungeonmap and symbols,
 	 * better keep it in a method */
@@ -122,6 +132,21 @@ inline void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
 	/* update dungeonmap */
 	dungeonmap[point.row][point.col] = symbol;
+}
+
+inline void Level::increaseAdjacentSearchCount(const Point &point) {
+	/* increase search count for adjacent points to given point */
+	for (int r = point.row - 1; r <= point.row + 1; ++r) {
+		if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
+			continue;
+		for (int c = point.col - 1; c <= point.col + 1; ++c) {
+			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
+				continue;
+			if (searchmap[r][c] >= POINT_FULLY_SEARCHED)
+				continue;
+			++searchmap[r][c];
+		}
+	}
 }
 
 inline const PathNode &Level::shortestPath(const Point &point) {

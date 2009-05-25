@@ -1,5 +1,15 @@
 #ifndef LOOT_H
 #define LOOT_H
+
+#include <map>
+#include <string>
+#include <sstream>
+#include <vector>
+#include "Analyzer.h"
+#include "../Coordinate.h"
+#include "../Item.h"
+#include "../Request.h"
+
 /* messages */
 #define LOOT_NAME_INDIVIDUAL_OBECT "  Name an individual object? [ynq] (q)  "
 #define LOOT_ITEM_TO_NAME "  What do you want to name? "
@@ -12,15 +22,6 @@
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 #define LOOT_STOLE " stole "
 #define LOOT_STEALS " steals "
-
-#include <map>
-#include <string>
-#include <sstream>
-#include <vector>
-#include "../Analyzer.h"
-#include "../Coordinate.h"
-#include "../Item.h"
-#include "../Request.h"
 
 /* struct for items we want */
 struct ItemWanted {
@@ -37,7 +38,8 @@ struct ItemGroup {
 
 class Saiph;
 
-class Loot : public Analyzer {
+namespace analyzer {
+	class Loot : public Analyzer {
 	public:
 		Loot(Saiph *saiph);
 
@@ -67,5 +69,6 @@ class Loot : public Analyzer {
 		int pickupItem(const Item &item);
 		int pickupOrDropItem(const Item &item, bool drop);
 		void visitOldStash();
-};
+	};
+}
 #endif

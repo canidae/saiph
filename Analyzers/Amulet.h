@@ -1,34 +1,21 @@
 #ifndef AMULET_H
 #define AMULET_H
 
-#include <string>
-#include <vector>
-#include "../Analyzer.h"
-#include "../Request.h"
+#include <set>
+#include "Analyzer.h"
 
-/* struct for wearing amulet */
-struct WearAmulet {
-	int beatitude;
-	std::string name;
-};
+/* priorities */
+#define PRIORITY_AMULET_WEAR 200
 
-class Saiph;
-
-class Amulet : public Analyzer {
+namespace analyzer {
+	class Amulet : public Analyzer {
 	public:
-		Amulet(Saiph *saiph);
+		Amulet();
 
-		void analyze();
-		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void onEvent(event::Event *const event);
 
 	private:
-		Saiph *saiph;
-		std::string command2;
-		std::vector<WearAmulet> amulets;
-		bool wear_amulet;
-		Request req;
-
-		void wearAmulet();
-};
+		void wearAmulet(const std::set<unsigned char> &keys);
+	};
+}
 #endif

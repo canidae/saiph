@@ -1,5 +1,10 @@
 #ifndef LAMP_H
 #define LAMP_H
+
+#include <string>
+#include "Analyzer.h"
+#include "../Request.h"
+
 /* messages */
 // This lamp has no oil.
 // Your lamp flickers.
@@ -29,14 +34,10 @@
 /* threshold for turning lamp on/off */
 #define LAMP_LIT_AREAS_THRESHOLD 0
 
-#include <string>
-#include "../Analyzer.h"
-#include "../Request.h"
-
-class Request;
 class Saiph;
 
-class Lamp : public Analyzer {
+namespace analyzer {
+	class Lamp : public Analyzer {
 	public:
 		Lamp(Saiph *saiph);
 
@@ -52,5 +53,6 @@ class Lamp : public Analyzer {
 		bool seen_magic_lamp;
 
 		void findLamp();
-};
+	};
+}
 #endif

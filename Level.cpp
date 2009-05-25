@@ -7,7 +7,7 @@
 
 using namespace std;
 
-/* initialize static variables */
+/* define static variables */
 /* public */
 bool Level::passable[UCHAR_MAX + 1] = {false};
 /* private */
@@ -20,11 +20,12 @@ bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
 
 /* constructors/destructor */
-Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch), undiggable(false), saiph(saiph) {
+Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
 			dungeonmap[a][b] = SOLID_ROCK;
 			monstermap[a][b] = ILLEGAL_MONSTER;
+			searchmap[a][b] = 0;
 		}
 	}
 	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
@@ -33,64 +34,81 @@ Level::Level(Saiph *saiph, string name, int branch) : name(name), branch(branch)
 }
 
 /* methods */
-void Level::parseMessages(const string &messages) {
-	/* set inventory_changed to false */
-	saiph->inventory_changed = false;
-	/* set got_[drop|pickup]_menu to false if we don't have a menu */
-	if (!saiph->world->menu) {
-		saiph->got_drop_menu = false;
-		saiph->got_pickup_menu = false;
+void Level::analyze() {
+	if (World::menu)
+		return; // menu hides map, don't update
+	if (World::engulfed) {
+		 /* we'll still need to update monster's "visible" while engulfed,
+		  * or she may attempt to farlook a monster she can't see */
+		for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ++m)
+			m->second.visible = false;
+		return;
 	}
-	/* if last command was ":" we should clear stash on ground */
-	if (saiph->last_command == ":")
-		clearStash(saiph->position);
+	/* update changed symbols */
+	for (vector<Point>::iterator c = World::changes.begin(); c != World::changes.end(); ++c)
+		updateMapPoint(*c, (unsigned char) World::view[c->row][c->col], World::color[c->row][c->col]);
+	/* update monsters */
+	updateMonsters();
+	/* update pathmap */
+	updatePathMap();
+	/* set point we're standing on "fully searched" */
+	searchmap[Saiph::position.row][Saiph::position.col] = INT_MAX;
+}
+
+void Level::parseMessages(const string &messages) {
 	/* parse messages that can help us find doors/staircases/etc. */
 	string::size_type pos;
 	if (messages.find(LEVEL_STAIRCASE_UP_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, STAIRS_UP);
+		setDungeonSymbol(Saiph::position, STAIRS_UP);
 	} else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, STAIRS_DOWN);
+		setDungeonSymbol(Saiph::position, STAIRS_DOWN);
 	} else if (messages.find(LEVEL_OPEN_DOOR_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, OPEN_DOOR);
+		setDungeonSymbol(Saiph::position, OPEN_DOOR);
 	} else if (messages.find(LEVEL_GRAVE_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, GRAVE);
+		setDungeonSymbol(Saiph::position, GRAVE);
 	} else if (messages.find(LEVEL_FOUNTAIN_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, FOUNTAIN);
+		setDungeonSymbol(Saiph::position, FOUNTAIN);
 	} else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2) != string::npos) {
-		setDungeonSymbol(saiph->position, FLOOR);
+		setDungeonSymbol(Saiph::position, FLOOR);
 	} else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE) != string::npos) {
-		setDungeonSymbol(saiph->position, UNKNOWN_TILE);
+		setDungeonSymbol(Saiph::position, UNKNOWN_TILE);
 	} else if ((pos = messages.find(LEVEL_ALTAR_HERE)) != string::npos) {
-		setDungeonSymbol(saiph->position, ALTAR);
+		setDungeonSymbol(Saiph::position, ALTAR);
 		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
-			symbols[(unsigned char) ALTAR][saiph->position] = NEUTRAL;
+			symbols[(unsigned char) ALTAR][Saiph::position] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
-			symbols[(unsigned char) ALTAR][saiph->position] = CHAOTIC;
+			symbols[(unsigned char) ALTAR][Saiph::position] = CHAOTIC;
 		else
-			symbols[(unsigned char) ALTAR][saiph->position] = LAWFUL;
+			symbols[(unsigned char) ALTAR][Saiph::position] = LAWFUL;
 	} else if (messages.find(LEVEL_UNDIGGABLE) != string::npos) {
 		undiggable = true;
 	}
 
-	/* item parsing */
-	/* figure out if there's something on the ground or if we're picking up something */
-	if ((pos = messages.find(LEVEL_YOU_SEE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_YOU_FEEL_HERE, 0)) != string::npos) {
-		/* single item on ground */
-		clearStash(saiph->position);
-		if (messages.find(LEVEL_YOU_SEE_HERE, 0) != string::npos)
-			pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
-		else
-			pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
+	/* figure out if there's something on the ground */
+	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
+		/* we see a single item on ground */
+		clearStash(Saiph::position);
+		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(saiph->position, item);
+			addItemToStash(Saiph::position, item);
 		}
-	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE, 0)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE, 0)) != string::npos) {
-		/* multiple items on ground */
-		clearStash(saiph->position);
+	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
+		/* we feel a single item on the ground */
+		clearStash(Saiph::position);
+		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
+		string::size_type length = messages.find(".  ", pos);
+		if (length != string::npos) {
+			length = length - pos;
+			Item item(messages.substr(pos, length));
+			addItemToStash(Saiph::position, item);
+		}
+	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
+		/* we see/feel multiple items on the ground */
+		clearStash(Saiph::position);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -99,118 +117,58 @@ void Level::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(saiph->position, item);
+			addItemToStash(Saiph::position, item);
 			pos += length;
 		}
-	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS, 0) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE, 0) != string::npos) {
-		/* no items on ground */
-		stashes.erase(saiph->position);
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || saiph->got_pickup_menu) {
-		/* picking up stuff */
-		if (saiph->got_pickup_menu) {
-			/* not the first page, set pos to 0 */
-			pos = 0;
-		} else {
-			/* first page */
-			saiph->got_pickup_menu = true;
-			/* and find first "  " */
-			pos = messages.find("  ", pos + 1);
-		}
-		while (pos != string::npos && messages.size() > pos + 6) {
-			pos += 6;
-			string::size_type length = messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			if (messages[pos - 2] == '-') {
-				Item item(messages.substr(pos, length));
-				saiph->pickup[messages[pos - 4]] = item;
-			}
-			pos += length;
-		}
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || saiph->got_drop_menu) {
-		/* dropping items */
-		if (saiph->got_drop_menu) {
-			/* not the first page, set pos to 0 */
-			pos = 0;
-		} else {
-			/* first page, set menu */
-			saiph->got_drop_menu = true;;
-			/* and find first "  " */
-			pos = messages.find("  ", pos + 1);
-		}
-		while (pos != string::npos && messages.size() > pos + 6) {
-			pos += 6;
-			string::size_type length = messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			if (messages[pos - 2] == '-')
-				saiph->drop[messages[pos - 4]] = Item(messages.substr(pos, length));
-			pos += length;
-		}
-	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING, 0) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD, 0) != string::npos) {
-		/* our inventory is empty. how did that happen? */
-		saiph->inventory.clear();
-		saiph->inventory_changed = true;
-	} else if (messages.find(".  ") != string::npos) {
-		/* when we pick up stuff we only get "  f - a lichen corpse.  " and similar.
-		 * we'll need to handle this too somehow.
-		 * when we're burdened we'll get "  You have a little trouble lifting f - a lichen corpse.  ".
-		 * we're searching for ".  " as we won't get that when we're listing inventory.
-		 * also, this won't detect gold, but we might not need to detect that,
-		 * well, it's gonna be a bit buggy when picking up gold from stashes */
-		/* additionally, we'll assume we're picking up from the stash at this location.
-		 * this will also trigger on wishes, but meh, probably not gonna be an issue */
-		pos = 0;
-		int pickup_count = 0;
-		while ((pos = messages.find(" - ", pos)) != string::npos) {
-			if (pos > 2 && (messages[pos - 3] == ' ' || messages[pos - 3] == 'g') && messages[pos - 2] == ' ') {
-				unsigned char key = messages[pos - 1];
-				pos += 3;
-				string::size_type length = messages.find(".  ", pos);
-				if (length == string::npos)
-					break;
-				length = length - pos;
-				Item item(messages.substr(pos, length));
-				if (saiph->addItemToInventory(key, item))
-					++pickup_count;
-				pos += length;
-			} else {
-				/* "Yak - dog food!" mess things up.
-				 * this is why we checked for "  " or "g " before the "-".
-				 * we may get "... trouble lifting f - ya", and we need to detect that,
-				 * hence the "g " */
-				++pos;
-			}
-		}
-		if (pickup_count > 0)
-			saiph->inventory_changed = true;
-		if ((int) stashes[saiph->position].items.size() == pickup_count) {
-			/* we probably picked up everything here, remove stash */
-			stashes.erase(saiph->position);
-		}
-	} else if (saiph->world->menu && (pos = messages.find(" - ", 0)) != string::npos && messages.find(" -  ", 0) == string::npos) {
-		/* we probably listed our inventory */
-		/* we're searching for " -  " because when we #enhance there are 2 spaces after the "-".
-		 * otherwise we'll confuse the inventory list with the enhance list, which is very bad */
-		if (saiph->world->cur_page == 1)
-			saiph->inventory.clear(); // only clear when we're listing 1st page
-		while ((pos = messages.find(" - ", pos)) != string::npos) {
-			if (pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ') {
-				unsigned char key = messages[pos - 1];
-				pos += 3;
-				string::size_type length = messages.find("  ", pos);
-				if (length == string::npos)
-					break;
-				length = length - pos;
-				Item item(messages.substr(pos, length));
-				saiph->addItemToInventory(key, item);
-				pos += length;
-			}
-		}
-		saiph->inventory_changed = true;
+	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
+		/* we see/feel no items on the ground */
+		stashes.erase(Saiph::position);
 	}
+	/* TODO: the following lines should be in a loot analyzer */
+//	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Saiph::got_pickup_menu) {
+//		/* picking up stuff */
+//		if (Saiph::got_pickup_menu) {
+//			/* not the first page, set pos to 0 */
+//			pos = 0;
+//		} else {
+//			/* first page */
+//			Saiph::got_pickup_menu = true;
+//			/* and find first "  " */
+//			pos = messages.find("  ", pos + 1);
+//		}
+//		while (pos != string::npos && messages.size() > pos + 6) {
+//			pos += 6;
+//			string::size_type length = messages.find("  ", pos);
+//			if (length == string::npos)
+//				break;
+//			length = length - pos;
+//			if (messages[pos - 2] == '-') {
+//				Item item(messages.substr(pos, length));
+//				Saiph::pickup[messages[pos - 4]] = item;
+//			}
+//			pos += length;
+//		}
+//	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Saiph::got_drop_menu) {
+//		/* dropping items */
+//		if (Saiph::got_drop_menu) {
+//			/* not the first page, set pos to 0 */
+//			pos = 0;
+//		} else {
+//			/* first page, set menu */
+//			Saiph::got_drop_menu = true;;
+//			/* and find first "  " */
+//			pos = messages.find("  ", pos + 1);
+//		}
+//		while (pos != string::npos && messages.size() > pos + 6) {
+//			pos += 6;
+//			string::size_type length = messages.find("  ", pos);
+//			if (length == string::npos)
+//				break;
+//			length = length - pos;
+//			if (messages[pos - 2] == '-')
+//				Saiph::drop[messages[pos - 4]] = Item(messages.substr(pos, length));
+//			pos += length;
+//		}
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {
@@ -270,19 +228,19 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
 	/* update items */
-	if (!saiph->world->player.hallucinating && item[symbol]) {
+	if (!Saiph::hallucinating && item[symbol]) {
 		map<Point, Stash>::iterator s = stashes.find(point);
 		if (s != stashes.end()) {
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
 				if (s->second.top_symbol != ILLEGAL_ITEM)
-					s->second.turn_changed = saiph->world->player.turn;
+					s->second.turn_changed = World::turn;
 				s->second.top_symbol = symbol;
 				s->second.top_color = color;
 			}
 		} else {
 			/* new stash */
-			stashes[point] = Stash(saiph->world->player.turn, symbol, color);
+			stashes[point] = Stash(World::turn, symbol, color);
 		}
 	} else if (symbol == dungeonmap[point.row][point.col]) {
 		/* if there ever was a stash here, it's gone now */
@@ -290,7 +248,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 	}
 
 	/* update monsters */
-	if (monster[symbol] && point != saiph->position) {
+	if (monster[symbol] && point != Saiph::position) {
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
@@ -307,8 +265,8 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 				old_symbol = PET;
 			else
-				old_symbol = saiph->world->view[m->first.row][m->first.col];
-			if (m->second.symbol == old_symbol && m->second.color == saiph->world->color[m->first.row][m->first.col]) {
+				old_symbol = World::view[m->first.row][m->first.col];
+			if (m->second.symbol == old_symbol && m->second.color == World::color[m->first.row][m->first.col]) {
 				/* note about this "point == m->first":
 				 * the character for the monster may be updated even if it hasn't moved,
 				 * if this is the case, we should return and neither move nor add the
@@ -334,12 +292,12 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			/* remove monster from monstermap */
 			monstermap[nearest->first.row][nearest->first.col] = ILLEGAL_MONSTER;
 			/* update monster */
-			nearest->second.last_seen = saiph->world->player.turn;
+			nearest->second.last_seen = World::turn;
 			monsters[point] = nearest->second;
 			monsters.erase(nearest);
 		} else {
 			/* add monster */
-			monsters[point] = Monster(msymbol, color, saiph->world->player.turn);
+			monsters[point] = Monster(msymbol, color, World::turn);
 		}
 		/* set monster on monstermap */
 		monstermap[point.row][point.col] = msymbol;
@@ -351,18 +309,18 @@ void Level::updateMonsters() {
 	 * and make monsters we can't see !visible */
 	for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ) {
 		unsigned char symbol;
-		int color = saiph->world->color[m->first.row][m->first.col];
+		int color = World::color[m->first.row][m->first.col];
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 			symbol = PET;
 		else
-			symbol = saiph->world->view[m->first.row][m->first.col];
+			symbol = World::view[m->first.row][m->first.col];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (m->first != saiph->position && symbol == m->second.symbol && color == m->second.color);
+		m->second.visible = (m->first != Saiph::position && symbol == m->second.symbol && color == m->second.color);
 		if (m->second.visible) {
 			/* monster still visible, don't remove it */
 			++m;
 			continue;
-		} else if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
+		} else if (abs(Saiph::position.row - m->first.row) > 1 || abs(Saiph::position.col - m->first.col) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
@@ -385,7 +343,7 @@ void Level::updatePathMap() {
 	int curnode = 0;
 	int nodes = 0;
 	unsigned int cost = 0;
-	Point from = saiph->position;
+	Point from = Saiph::position;
 	pathmap[from.row][from.col].dir = NOWHERE;
 	pathmap[from.row][from.col].moves = 0;
 	pathmap[from.row][from.col].cost = 0;
@@ -575,7 +533,7 @@ void Level::updatePathMap() {
 
 /* private methods */
 void Level::addItemToStash(const Point &point, const Item &item) {
-	Debug::notice(saiph->last_turn) << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
+	Debug::notice() << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
 	if (item.count <= 0)
 		return;
 	map<Point, Stash>::iterator s = stashes.find(point);
@@ -584,7 +542,7 @@ void Level::addItemToStash(const Point &point, const Item &item) {
 		return;
 	}
 	/* new stash */
-	Stash stash(saiph->world->player.turn);
+	Stash stash(World::turn);
 	stash.items.push_back(item);
 	stashes[point] = stash;
 }
@@ -630,7 +588,7 @@ unsigned int Level::updatePathMapHelper(const Point &to, const Point &from) {
 	      return UNREACHABLE;
 	if (s == TRAP && branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(saiph->position.row - to.row) <= 1 && abs(saiph->position.col - to.col) <= 1)
+	if (monstermap[to.row][to.col] != ILLEGAL_MONSTER && abs(Saiph::position.row - to.row) <= 1 && abs(Saiph::position.col - to.col) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = pathmap[from.row][from.col].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += pathcost[s];
@@ -671,7 +629,6 @@ void Level::init() {
 	passable[(unsigned char) CORRIDOR] = true;
 	passable[(unsigned char) STAIRS_UP] = true;
 	passable[(unsigned char) STAIRS_DOWN] = true;
-	passable[(unsigned char) MAGIC_PORTAL] = true;
 	passable[(unsigned char) ALTAR] = true;
 	passable[(unsigned char) GRAVE] = true;
 	passable[(unsigned char) THRONE] = true;
@@ -714,7 +671,6 @@ void Level::init() {
 	dungeon[(unsigned char) CORRIDOR] = true;
 	dungeon[(unsigned char) STAIRS_UP] = true;
 	dungeon[(unsigned char) STAIRS_DOWN] = true;
-	dungeon[(unsigned char) MAGIC_PORTAL] = true;
 	dungeon[(unsigned char) ALTAR] = true;
 	dungeon[(unsigned char) GRAVE] = true;
 	dungeon[(unsigned char) THRONE] = true;
@@ -731,7 +687,6 @@ void Level::init() {
 	dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
 	dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
 	/* cost for pathing on certain tiles */
-	pathcost[(unsigned char) MAGIC_PORTAL] = COST_PORTAL;
 	pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
 	pathcost[(unsigned char) GRAVE] = COST_GRAVE;
 	pathcost[(unsigned char) ALTAR] = COST_ALTAR;
@@ -754,4 +709,5 @@ void Level::init() {
 	uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
 	uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
 	uniquemap[(unsigned char) WATER][RED] = LAVA;
+	uniquemap[(unsigned char) TRAP][BOLD_MAGENTA] = MAGIC_PORTAL;
 }

@@ -3,7 +3,7 @@
 
 #include <list>
 #include <string>
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Point.h"
 #include "../Request.h"
 
@@ -13,7 +13,8 @@
 class Item;
 class Saiph;
 
-class Dig : public Analyzer {
+namespace analyzer {
+	class Dig : public Analyzer {
 	public:
 		Dig(Saiph *saiph);
 
@@ -32,5 +33,6 @@ class Dig : public Analyzer {
 		void findDiggingTool();
 		bool freeWeaponHand();
 		bool isDiggingTool(const Item &item);
-};
-#endif	
+	};
+}
+#endif

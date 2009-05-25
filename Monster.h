@@ -7,11 +7,13 @@
 #include <vector>
 #include "Globals.h"
 
-class MonsterData;
+namespace data {
+	class Monster;
+}
 
 class Monster {
 	public:
-		const MonsterData *data;
+		const data::Monster *data;
 		unsigned char symbol;
 		int color;
 		int last_seen;

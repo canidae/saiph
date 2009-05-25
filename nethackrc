@@ -32,7 +32,6 @@
 # - raised drawbridges are represented by '8'. not '#'
 # * traps
 # - web is represented by '^', not '"'
-# - magic portal is represented by '9', not '^'
 OPTIONS=align:lawful
 OPTIONS=autopickup
 OPTIONS=boulder:0
@@ -66,4 +65,3 @@ OPTIONS=!sparkle
 OPTIONS=!splash_screen
 OPTIONS=time
 OPTIONS=!timed_delay
-OPTIONS=traps:\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^9\^\^\^\^\^

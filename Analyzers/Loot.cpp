@@ -2,7 +2,9 @@
 #include "Loot.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../EventBus.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */

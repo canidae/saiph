@@ -2,6 +2,7 @@
 #include "../Globals.h"
 #include "../World.h"
 
+using namespace analyzer;
 using namespace std;
 
 Genocide::Genocide(Saiph *saiph) : Analyzer("Genocide"), saiph(saiph) {

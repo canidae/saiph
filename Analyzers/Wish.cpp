@@ -5,6 +5,7 @@
 #include "../Debug.h"
 #include <string>
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */

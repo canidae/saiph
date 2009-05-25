@@ -1,17 +1,19 @@
 #ifndef SCROLL_H
 #define SCROLL_H
+
+#include <string>
+#include <vector>
+#include "Analyzer.h"
+
 #define SCROLL_DEBUG_NAME "Scroll] "
 /* messages */
 #define SCROLL_CALL_END ":  "
 #define SCROLL_CALL_SCROLL "  Call a scroll labeled "
 
-#include <string>
-#include <vector>
-#include "../Analyzer.h"
-
 class Saiph;
 
-class Scroll : public Analyzer {
+namespace analyzer {
+	class Scroll : public Analyzer {
 	public:
 		Scroll(Saiph *saiph);
 
@@ -20,5 +22,6 @@ class Scroll : public Analyzer {
 	private:
 		std::vector<std::string> appearance;
 		Saiph *saiph;
-};
+	};
+}
 #endif

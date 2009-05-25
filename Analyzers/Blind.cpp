@@ -6,6 +6,7 @@
 #include "../World.h"
 #include "../Debug.h"
 
+using namespace analyzer;
 using namespace std;
 
 Blind::Blind(Saiph *saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(false), blinding_tool(ILLEGAL_ITEM), blind_priority(ILLEGAL_PRIORITY), unblind_priority(ILLEGAL_PRIORITY) {

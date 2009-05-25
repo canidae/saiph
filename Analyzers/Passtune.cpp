@@ -4,6 +4,7 @@
 #include "../World.h"
 #include "../Debug.h"
 
+using namespace analyzer;
 using namespace std;
 
 Passtune::Passtune(Saiph *saiph) : Analyzer("Passtune"), saiph(saiph), solved(false), instrument(ILLEGAL_ITEM), castle_level(-1) {

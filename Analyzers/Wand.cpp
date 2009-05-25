@@ -5,6 +5,7 @@
 #include "../World.h"
 #include "../Debug.h"
 
+using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */

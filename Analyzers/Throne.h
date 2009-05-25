@@ -1,10 +1,11 @@
 #ifndef THRONE_H
 #define	THRONE_H
 
-#include "../Analyzer.h"
+#include "Analyzer.h"
 #include "../Saiph.h"
 
-class Throne : public Analyzer {
+namespace analyzer {
+	class Throne : public Analyzer {
 	public:
 		Throne(Saiph *saiph);
 
@@ -12,5 +13,6 @@ class Throne : public Analyzer {
 
 	private:
 		Saiph *saiph;
-};
+	};
+}
 #endif
