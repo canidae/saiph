@@ -287,12 +287,6 @@
 #define MESSAGE_DRINK_FROM_FOUNTAIN "  Drink from the fountain? [yn] (n)  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
-#define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? "
-#define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
-#define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
-#define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here?  "
-#define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
-#define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
 #define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
 #define MESSAGE_FOOCUBUS_QUESTION "  \"Shall I remove your " // followed by what he/she wants to remove.
