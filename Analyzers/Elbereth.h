@@ -19,25 +19,14 @@ class Saiph;
 namespace analyzer {
 	class Elbereth : public Analyzer {
 	public:
-		Elbereth(Saiph *saiph);
+		Elbereth();
 
-		void complete();
 		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void onEvent(event::Event *const evt);
 
 	private:
-		Saiph *saiph;
-		int last_look_internal_turn;
 		int elbereth_count;
-		bool burned;
-		bool digged;
-		bool dusted;
-		bool frosted;
-		bool append;
-		bool can_hold_something;
-		bool last_polymorphed;
-
-		bool canEngrave();
+		int engraving_type;
 	};
 }
 #endif

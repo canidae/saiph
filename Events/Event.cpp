@@ -1,5 +1,6 @@
 #include "Event.h"
 #include "ChangedInventoryItems.h"
+#include "ElberethQuery.h"
 #include "../EventBus.h"
 
 using namespace event;
@@ -7,6 +8,7 @@ using namespace event;
 /* define static variables */
 bool Event::initialized = false;
 int ChangedInventoryItems::id = ILLEGAL_EVENT_ID;
+int ElberethQuery::id = ILLEGAL_EVENT_ID;
 
 /* methods */
 void Event::init() {
