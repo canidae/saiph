@@ -1,152 +1,56 @@
 #include <stdlib.h>
 #include "Elbereth.h"
-#include "../Request.h"
+#include "../Events/ElberethQuery.h"
 #include "../Saiph.h"
 #include "../World.h"
-#include "../Data/MonsterData.h"
 
 using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Elbereth::Elbereth(Saiph *saiph) : Analyzer("Elbereth"), saiph(saiph) {
-	last_look_internal_turn = 0;
-	elbereth_count = 0;
-	burned = false;
-	digged = false;
-	dusted = false;
-	frosted = false;
-	append = false;
-	can_hold_something = true;
-	last_polymorphed = false;
-	priority = ILLEGAL_PRIORITY;
+Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(-1) {
 }
 
-/* methods */
-void Elbereth::complete() {
-	if (command == LOOK) {
-		/* we're going to look now. reset variables telling us what's engraved here */
-		elbereth_count = 0;
-		dusted = false;
-		burned = false;
-		digged = false;
-		frosted = false;
-		last_look_internal_turn = saiph->internal_turn;
+void Elbereth::onEvent(event::Event *const evt) {
+	if (evt->getID() == event::ElberethQuery::id) {
+		//TODO: determine if this info is stale, and if so, look somehow before processing the event
+		event::ElberethQuery *const q = static_cast<event::ElberethQuery *const>(evt);
+		q->engraving_type = engraving_type;
+		q->number_of_elbereths = elbereth_count;
 	}
 }
 
 void Elbereth::parseMessages(const string &messages) {
-	if (last_polymorphed != saiph->world->player.polymorphed) {
-		/* we changed form. assume we can hold something to engrave */
-		can_hold_something = true;
-	}
-
-	/* set up next command */
-	if (messages.find(MESSAGE_ENGRAVE_WITH, 0) != string::npos) {
-		priority = PRIORITY_CONTINUE_ACTION;
-		command = HANDS;
-	} else if (messages.find(MESSAGE_ENGRAVE_ADD, 0) != string::npos) {
-		/* we only get this step if there's something engraved here already */
-		priority = PRIORITY_CONTINUE_ACTION;
-		command = append ? YES : NO;
-	} else if (messages.find(MESSAGE_ENGRAVE_DUST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_DUST, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST_ADD, 0) != string::npos || messages.find(MESSAGE_ENGRAVE_FROST, 0) != string::npos) {
-		priority = PRIORITY_CONTINUE_ACTION;
-		command = ELBERETH_ELBERETH "\n";
-	} else if (messages.find(MESSAGE_YOU_CANT_HOLD, 0) != string::npos) {
-		/* we're in a form that can't hold anything to engrave */
-		can_hold_something = false;
-	}
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
+		elbereth_count = 0;
+		engraving_type = -1;
 		return;
 	}
 	/* is it written in dust, burned or digged? */
 	if (messages.find(ELBERETH_DUSTED_TEXT, 0) != string::npos) {
 		/* it's dusted. */
-		dusted = true;
+		engraving_type = ENGRAVING_DUSTED;
 	} else if (messages.find(ELBERETH_BURNED_TEXT, 0) != string::npos) {
 		/* it's burned */
-		burned = true;
+		engraving_type = ENGRAVING_PERMANENT;
 	} else if (messages.find(ELBERETH_DIGGED_TEXT, 0) != string::npos) {
 		/* it's digged */
-		digged = true;
+		engraving_type = ENGRAVING_SEMIPERM;
 	} else if (messages.find(ELBERETH_FROSTED_TEXT, 0) != string::npos) {
 		/* it's frosted */
-		frosted = true;
+		engraving_type = ENGRAVING_DUSTED;
 	} else {
 		/* it's unexpected */
+		engraving_type = -1;
 		return;
 	}
+	elbereth_count = 1; //we found one already with the first find() call
 	while ((pos = messages.find(ELBERETH_ELBERETH, pos + 1)) != string::npos) {
 		/* found another elbereth */
 		++elbereth_count;
 	}
 }
 
-bool Elbereth::request(const Request &request) {
-	if (request.request == REQUEST_ELBERETH_OR_REST) {
-		if (!canEngrave())
-			return false;
-		/* we can engrave and elbereth will (probably) be respected */
-		if (last_look_internal_turn != saiph->internal_turn) {
-			/* we'll need to look first, which means set action & priority and return true */
-			command = LOOK;
-			priority = PRIORITY_LOOK; // since it's a zero turn affair
-			return true;
-		} else {
-			/* we know what's here */
-			if (((burned || digged) && elbereth_count > 0) || ((dusted || frosted) && elbereth_count >= 3)) {
-				/* we should rest */
-				command = "20" SEARCH;
-				priority = request.priority;
-				return true;
-			} else if (!burned && !digged && elbereth_count < 3) {
-				/* we should engrave in the dust/frost */
-				append = (elbereth_count > 0); // append if 0 < elbereth_count < 3
-				command = ENGRAVE;
-				priority = request.priority;
-				return true;
-			} else {
-				/* hmm... we don't know how to handle digged elbereths that fades out */
-				return false;
-			}
-		}
-	}
-	return false;
-}
-
-/* private methods */
-bool Elbereth::canEngrave() {
-	if (!can_hold_something)
-		return false;
-	if (saiph->world->player.levitating)
-		return false;
-	/* check if there's a fountain/grave/altar here */
-	switch (saiph->getDungeonSymbol()) {
-		case ALTAR:
-		case GRAVE:
-		case FOUNTAIN:
-			return false;
-			break;
-	}
-	/* check for ill effects */
-	if (saiph->world->player.blind || saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.stunned)
-		return false;
-	/* check that we're not engulfed */
-	if (saiph->world->player.engulfed)
-		return false;
-	/* check that the monsters around us respects elbereth */
-	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-		if (abs(saiph->position.row - m->first.row) > 1 || abs(saiph->position.col - m->first.col) > 1) {
-			/* monster is not next to player */
-			continue;
-		}
-		if (m->second.attitude == FRIENDLY)
-			continue;
-		if (m->second.data == NULL || (m->second.data->resistances & MR_NO_ELBERETH) != 0)
-			return false; // elbereth won't be respected
-	}
-	return true;
-}
