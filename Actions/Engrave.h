@@ -33,24 +33,24 @@ namespace action {
 	};
 
 	inline const Command &Engrave::getCommand() {
-		//what do you want to write with?
-		//do you want to add? (maybe)
-		//what do you want to add? or what do you want to write?
+		// what do you want to write with?
+		// do you want to add? (maybe)
+		// what do you want to add? or what do you want to write?
 		switch (sequence) {
-			case 0:
-				return engrave;
-			case 1:
-				return item;
-			case 2:
-				return append;
-			case 3:
-				return message;
-			default:
-				return Action::noop;
+		case 0:
+			return engrave;
+		case 1:
+			return item;
+		case 2:
+			return append;
+		case 3:
+			return message;
+		default:
+			return Action::noop;
 		}
 	}
 
-	inline void Engrave::updateAction(const std::string& messages) {
+	inline void Engrave::updateAction(const std::string &messages) {
 		if (messages.find(MESSAGE_ENGRAVE_WITH) != std::string::npos)
 			sequence = 1;
 		else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos)
@@ -61,6 +61,4 @@ namespace action {
 			sequence = 3;
 	}
 }
-
-#endif	/* ENGRAVE_H */
-
+#endif

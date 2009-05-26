@@ -12,9 +12,10 @@ namespace event {
 	public:
 		static int id;
 
-		int number_of_elbereths, engraving_type;
+		int number_of_elbereths;
+		int engraving_type;
 
-		//initialize these to invalid values to spot bugs
+		// initialize these to invalid values to spot bugs
 		ElberethQuery() : number_of_elbereths(-1), engraving_type(-1) {}
 		virtual ~ElberethQuery() {}
 
@@ -22,6 +23,4 @@ namespace event {
 		virtual std::string getName() {return "ElberethQuery";}
 	};
 }
-
-#endif	/* _ELBERETHQUERY_H */
-
+#endif
