@@ -16,6 +16,7 @@ void Event::init() {
 
 	/* init events */
 	ChangedInventoryItems::id = EventBus::createEventID();
+	ElberethQuery::id = EventBus::createEventID();
 }
 
 void Event::destroy() {
