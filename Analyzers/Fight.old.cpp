@@ -13,18 +13,6 @@ using namespace std;
 
 /* constructors/destructor */
 Fight::Fight(Saiph *saiph) : Analyzer("Fight"), saiph(saiph) {
-	/* FIXME
-	 * this should be dynamic, this varies with the class we play.
-	 * this'll work for valks for the time being */
-	/* daggers */
-	for (map<string, Dagger *>::iterator i = Dagger::daggers.begin(); i != Dagger::daggers.end(); ++i)
-		projectiles.insert(i->second);
-	/* spears */
-	for (map<string, Spear *>::iterator i = Spear::spears.begin(); i != Spear::spears.end(); ++i)
-		projectiles.insert(i->second);
-	/* darts */
-	for (map<string, Dart *>::iterator i = Dart::darts.begin(); i != Dart::darts.end(); ++i)
-		projectiles.insert(i->second);
 }
 
 /* methods */
@@ -35,7 +23,7 @@ void Fight::analyze() {
 		return;
 	}
 	/* fight monsters */
-	int attack_score = INT_MIN;
+	int most_dangerous = INT_MIN;
 	map<Point, Monster>::iterator best_monster = World::levels[Saiph::position.level].monsters.end();
 	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level].monsters.begin(); m != World::levels[Saiph::position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
@@ -44,18 +32,12 @@ void Fight::analyze() {
 			continue; // don't attack friendlies
 		else if (m->second.symbol == 'u' && ((m->second.color == BOLD_WHITE && Saiph::alignment == LAWFUL) || (m->second.color == WHITE && Saiph::alignment == NEUTRAL) || (m->second.color == BLUE && Saiph::alignment == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
-		else if (m->second.data == NULL) {
+		if (m->second.data == NULL) {
 			/* this shouldn't happen, MonsterInfo should make sure we got monster data */
-			attack_score = INT_MAX;
+			most_dangerous = INT_MAX;
 			best_monster = m;
 			break;
 		}
-		/* figure out the attack score */
-		/* FIXME
-		 * this needs to be improved later.
-		 * currently we use monster difficulty, whether we can melee/throw at it and how far away it is.
-		 * this is a too simple solution, we need to consider stuff as how hard they hit, if they steal
-		 * stuff, if they use wands, etc */
 	}
 
 	int min_distance = INT_MAX;
@@ -121,17 +103,21 @@ void Fight::onEvent(Event *const event) {
 		for (set<unsigned char>::iterator k = event.keys.begin(); k != event.keys.end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i == Inventory::items.end()) {
-				/* we lost this item, remove it from projectile_slots */
-				projectile_slots.erase(*k);
+				/* we lost this item, remove it from thrown */
+				thrown.erase(*k);
 			} else {
 				/* this item is new or changed.
-				 * if we intend to throw it, add it to projectile_slots.
-				 * otherwise remove it from projectile_slots */
-				map<string, unsigned char>::iterator p = projectiles.find(i->second.name);
-				if (p != projectiles.end())
-					projectile_slots.insert(*k);
-				else
-					projectile_slots.erase(*k);
+				 * if we intend to throw it, add it to thrown.
+				 * otherwise remove it from thrown */
+				/* FIXME: figure out what to throw depending on class */
+				/* FIXME 2: looking up the lists each time is expencive, create a single map instead */
+				if (Dagger::daggers.find(i->second.name) != Dagger::daggers.end() || Spear::spears.find(i->second.name) != Spear::spears.end() || Dart::darts.find(i->second.name) != Dart::darts.end()) {
+					/* add to thrown */
+					thrown.insert(*k);
+				} else {
+					/* remove from thrown */
+					thrown.erase(*k);
+				}
 			}
 		}
 	}

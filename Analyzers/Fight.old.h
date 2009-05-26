@@ -22,8 +22,7 @@ namespace analyzer {
 		void onEvent(event::Event *const event);
 
 	private:
-		std::set<std::string> projectiles; // weapons we can throw
-		std::set<unsigned char> projectile_slots; // slots where we got weapons we should throw
+		std::set<unsigned char> thrown;
 	};
 }
 #endif
