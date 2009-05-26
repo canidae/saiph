@@ -25,6 +25,8 @@ void Elbereth::parseMessages(const string &messages) {
 	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
+		elbereth_count = 0;
+		engraving_type = -1;
 		return;
 	}
 	/* is it written in dust, burned or digged? */
