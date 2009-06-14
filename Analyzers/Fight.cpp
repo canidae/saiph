@@ -37,7 +37,7 @@ Fight::Fight() : Analyzer("Fight") {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (World::engulfed) {
-		World::setAction(new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX));
+		World::setAction(static_cast<action::Action *>(new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
 		return;
 	}
 	/* fight monsters */
@@ -72,20 +72,20 @@ void Fight::analyze() {
 				/* we can throw at monster */
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_THROW_MIN;
-				World::setAction(new action::Throw(this, *projectile_slots.begin(), in_line, priority));
+				World::setAction(static_cast<action::Action *>(new action::Throw(this, *projectile_slots.begin(), in_line, priority)));
 				Debug::analyzer(name) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MELEE_MIN;
-			World::setAction(new action::Fight(this, World::shortestPath(m->first).dir, priority));
+			World::setAction(static_cast<action::Action *>(new action::Fight(this, World::shortestPath(m->first).dir, priority)));
 			Debug::analyzer(name) << "Setting action to melee '" << m->second.symbol << "' with priority " << priority << endl;
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
 		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
-		World::setAction(new action::Move(this, World::shortestPath(m->first).dir, priority));
+		World::setAction(static_cast<action::Action *>(new action::Move(this, World::shortestPath(m->first).dir, priority)));
 		Debug::analyzer(name) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }

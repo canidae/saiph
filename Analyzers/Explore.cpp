@@ -28,9 +28,9 @@ void Explore::analyze() {
 			if (node.cost >= UNPASSABLE)
 				continue;
 			if (node.dir == NOWHERE)
-				World::setAction(new action::Look(this));
+				World::setAction(static_cast<action::Action *>(new action::Look(this)));
 			else
-				World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, node.moves)));
+				World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, node.moves))));
 			break;
 		}
 	}
@@ -44,9 +44,9 @@ void Explore::analyze() {
 			if (node.cost >= UNPASSABLE)
 				continue;
 			if (node.dir == NOWHERE)
-				World::setAction(new action::Move(this, UP, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves)));
+				World::setAction(static_cast<action::Action *>(new action::Move(this, UP, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves))));
 			else
-				World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves)));
+				World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves))));
 			break;
 		}
 	}
@@ -77,9 +77,9 @@ void Explore::analyze() {
 		if (node.cost >= UNPASSABLE)
 			continue;
 		if (node.dir == NOWHERE)
-			World::setAction(new action::Move(this, DOWN, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves)));
+			World::setAction(static_cast<action::Action *>(new action::Move(this, DOWN, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves))));
 		else
-			World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves)));
+			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves))));
 		break;
 	}
 
@@ -93,7 +93,7 @@ void Explore::analyze() {
 		if (node.dir == NOWHERE)
 			continue; // shouldn't happen
 		else
-			World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, node.moves)));
+			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, node.moves))));
 		break;
 	}
 
@@ -243,7 +243,7 @@ void Explore::explorePoint(Point p, unsigned int *min_moves, int *best_type) {
 	*min_moves = node.moves;
 	*best_type = type;
 	if (node.dir == NOWHERE)
-		World::setAction(new action::Search(this, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), node.moves)));
+		World::setAction(static_cast<action::Action *>(new action::Search(this, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), node.moves))));
 	else
-		World::setAction(new action::Move(this, node.dir, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), node.moves)));
+		World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), node.moves))));
 }
