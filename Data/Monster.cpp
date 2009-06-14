@@ -4,6 +4,8 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
+int Monster::saiph_difficulty_min = 0;
+int Monster::saiph_difficulty_max = 0;
 bool Monster::initialized = false;
 int Monster::monster_symbol_mapping[UCHAR_MAX + 1][INVERSE_BOLD_WHITE + 1] = {{0}};
 vector<Monster *> Monster::monsters;
@@ -20,12 +22,21 @@ Monster::Monster(const string &name, unsigned char symbol, int difficulty, int m
 
 	/* calculate the "saiph difficulty" */
 	saiph_difficulty = 0;
-	if (symbol == S_HUMAN || symbol == S_ANGEL || name == "minotaur" || name == "Death" || name == "Pestilence" || name == "Famine")
-		saiph_difficulty += 100; // monster ignore elbereth
+	if (symbol == S_HUMAN || symbol == S_ANGEL || name == "minotaur" || name == "Death" || name == "Pestilence" || name == "Famine") {
+		/* monster ignore elbereth */
+		saiph_difficulty += 100;
+		ignore_elbereth = true;
+	} else {
+		ignore_elbereth = false;
+	}
 	saiph_difficulty += move_rate * 2; // faster monsters are more dangerous
 	saiph_difficulty -= armor_class * 2; // the lower ac the monster got, the more dangerous it is
 	saiph_difficulty += magic_resistance; // higher magic resistance is bad
 	saiph_difficulty += (a0.maxDamage() + a1.maxDamage() + a2.maxDamage() + a3.maxDamage() + a4.maxDamage() + a5.maxDamage()) * 3; // hard-hitting monsters are mean
+	if (saiph_difficulty < Monster::saiph_difficulty_min)
+		Monster::saiph_difficulty_min = saiph_difficulty;
+	if (saiph_difficulty > Monster::saiph_difficulty_max)
+		Monster::saiph_difficulty_max = saiph_difficulty;
 }
 
 /* methods */

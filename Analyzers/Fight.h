@@ -5,7 +5,12 @@
 #include <string>
 #include "Analyzer.h"
 
-#define PRIORITY_FIGHT_ENGULFED 200
+#define PRIORITY_FIGHT_MELEE_MAX 300
+#define PRIORITY_FIGHT_MELEE_MIN 100
+#define PRIORITY_FIGHT_MOVE_MAX 250
+#define PRIORITY_FIGHT_MOVE_MIN 50
+#define PRIORITY_FIGHT_THROW_MAX 250
+#define PRIORITY_FIGHT_THROW_MIN 100
 
 namespace event {
 	class Event;

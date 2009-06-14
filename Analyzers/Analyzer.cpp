@@ -2,6 +2,7 @@
 #include "Amulet.h"
 #include "Elbereth.h"
 #include "Explore.h"
+#include "Fight.h"
 #include "../World.h"
 
 using namespace analyzer;
@@ -19,6 +20,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Amulet());
 	World::registerAnalyzer(new Elbereth());
 	World::registerAnalyzer(new Explore());
+	World::registerAnalyzer(new Fight());
 }
 
 void Analyzer::destroy() {
