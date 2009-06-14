@@ -46,6 +46,8 @@
 #include "PathNode.h"
 #include "Point.h"
 #include "Stash.h"
+#include "Events/PickupItems.h"
+#include "Events/DropInventoryItems.h"
 
 class Item;
 
@@ -60,6 +62,7 @@ public:
 	int depth;
 	int branch;
 	bool undiggable;
+	Stash *on_ground;
 
 	static bool passable[UCHAR_MAX + 1];
 
@@ -89,6 +92,10 @@ private:
 	static bool monster[UCHAR_MAX + 1];
 	static bool item[UCHAR_MAX + 1];
 	static bool initialized;
+	static bool got_pickup_menu;
+	static bool got_drop_menu;
+	static event::PickupItems pickup;
+	static event::DropInventoryItems drop;
 
 	void addItemToStash(const Point &point, const Item &item);
 	void clearStash(const Point &point);

@@ -1,5 +1,5 @@
-#ifndef _CHANGED_INVENTORY_ITEMS_H
-#define _CHANGED_INVENTORY_ITEMS_H
+#ifndef _DROP_INVENTORY_ITEMS_H
+#define _DROP_INVENTORY_ITEMS_H
 
 #include <set>
 #include "Event.h"

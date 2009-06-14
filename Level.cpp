@@ -1,10 +1,12 @@
 #include <stdlib.h>
 #include "Debug.h"
+#include "EventBus.h"
 #include "Item.h"
 #include "Level.h"
 #include "Saiph.h"
 #include "World.h"
 
+using namespace event;
 using namespace std;
 
 /* define static variables */
@@ -18,9 +20,13 @@ bool Level::dungeon[UCHAR_MAX + 1] = {false};
 bool Level::monster[UCHAR_MAX + 1] = {false};
 bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
+bool Level::got_pickup_menu = false;
+bool Level::got_drop_menu = false;
+PickupItems Level::pickup;
+DropInventoryItems Level::drop;
 
 /* constructors/destructor */
-Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false) {
+Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false), on_ground(NULL) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
 			dungeonmap[a][b] = SOLID_ROCK;
@@ -85,6 +91,12 @@ void Level::parseMessages(const string &messages) {
 		undiggable = true;
 	}
 
+	/* need to reset got_pickup_menu & got_drop_menu if we got no meny */
+	if (!World::menu) {
+		got_pickup_menu = false;
+		got_drop_menu = false;
+	}
+
 	/* figure out if there's something on the ground */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
 		/* we see a single item on ground */
@@ -123,52 +135,64 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
 		stashes.erase(Saiph::position);
+	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Level::got_pickup_menu) {
+		/* picking up stuff */
+		if (Level::got_pickup_menu) {
+			/* not the first page, set pos to 0 */
+			pos = 0;
+		} else {
+			/* first page */
+			Level::got_pickup_menu = true;
+			/* and find first "  " */
+			pos = messages.find("  ", pos + 1);
+		}
+		/* reset pickup list */
+		Level::pickup.items.clear();
+		while (pos != string::npos && messages.size() > pos + 6) {
+			pos += 6;
+			string::size_type length = messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if (messages[pos - 2] == '-')
+				Level::pickup.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+			pos += length;
+		}
+		/* broadcast event */
+		EventBus::broadcast((Event *) &Level::pickup);
+	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Level::got_drop_menu) {
+		/* dropping items */
+		if (Level::got_drop_menu) {
+			/* not the first page, set pos to 0 */
+			pos = 0;
+		} else {
+			/* first page, set menu */
+			Level::got_drop_menu = true;;
+			/* and find first "  " */
+			pos = messages.find("  ", pos + 1);
+		}
+		/* reset drop list */
+		Level::drop.keys.clear();
+		while (pos != string::npos && messages.size() > pos + 6) {
+			pos += 6;
+			string::size_type length = messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if (messages[pos - 2] == '-')
+				Level::drop.keys.insert(messages[pos - 4]);
+			pos += length;
+		}
+		/* broadcast event */
+		EventBus::broadcast((Event *) &Level::drop);
 	}
-	/* TODO: the following lines should be in a loot analyzer */
-//	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Saiph::got_pickup_menu) {
-//		/* picking up stuff */
-//		if (Saiph::got_pickup_menu) {
-//			/* not the first page, set pos to 0 */
-//			pos = 0;
-//		} else {
-//			/* first page */
-//			Saiph::got_pickup_menu = true;
-//			/* and find first "  " */
-//			pos = messages.find("  ", pos + 1);
-//		}
-//		while (pos != string::npos && messages.size() > pos + 6) {
-//			pos += 6;
-//			string::size_type length = messages.find("  ", pos);
-//			if (length == string::npos)
-//				break;
-//			length = length - pos;
-//			if (messages[pos - 2] == '-') {
-//				Item item(messages.substr(pos, length));
-//				Saiph::pickup[messages[pos - 4]] = item;
-//			}
-//			pos += length;
-//		}
-//	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Saiph::got_drop_menu) {
-//		/* dropping items */
-//		if (Saiph::got_drop_menu) {
-//			/* not the first page, set pos to 0 */
-//			pos = 0;
-//		} else {
-//			/* first page, set menu */
-//			Saiph::got_drop_menu = true;;
-//			/* and find first "  " */
-//			pos = messages.find("  ", pos + 1);
-//		}
-//		while (pos != string::npos && messages.size() > pos + 6) {
-//			pos += 6;
-//			string::size_type length = messages.find("  ", pos);
-//			if (length == string::npos)
-//				break;
-//			length = length - pos;
-//			if (messages[pos - 2] == '-')
-//				Saiph::drop[messages[pos - 4]] = Item(messages.substr(pos, length));
-//			pos += length;
-//		}
+
+	/* set on_ground pointer */
+	map<Point, Stash>::iterator s = stashes.find(Saiph::position);
+	if (s != stashes.end())
+		on_ground = &(s->second);
+	else
+		on_ground = NULL;
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {

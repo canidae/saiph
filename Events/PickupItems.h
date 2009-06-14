@@ -1,5 +1,5 @@
-#ifndef _CHANGED_INVENTORY_ITEMS_H
-#define _CHANGED_INVENTORY_ITEMS_H
+#ifndef _PICKUP_ITEMS_H
+#define _PICKUP_ITEMS_H
 
 #include <map>
 #include "Event.h"
