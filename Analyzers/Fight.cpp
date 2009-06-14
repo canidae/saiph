@@ -92,7 +92,7 @@ void Fight::analyze() {
 
 void Fight::onEvent(Event *const event) {
 	if (event->getID() == ChangedInventoryItems::id) {
-		ChangedInventoryItems *e = (ChangedInventoryItems *) event;
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
 		for (set<unsigned char>::iterator k = e->keys.begin(); k != e->keys.end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i == Inventory::items.end()) {

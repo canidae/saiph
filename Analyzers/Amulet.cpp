@@ -19,7 +19,7 @@ Amulet::Amulet() : Analyzer("Amulet") {
 /* methods */
 void Amulet::onEvent(Event *const event) {
 	if (event->getID() == ChangedInventoryItems::id) {
-		ChangedInventoryItems *e = (ChangedInventoryItems *) event;
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
 		wearAmulet(e->keys);
 	}
 }
