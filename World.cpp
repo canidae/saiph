@@ -1328,7 +1328,7 @@ void World::update() {
 		 * the data doesn't end with the sequence we check in World.
 		 * however, the cursor is placed on the player when we get this message */
 		question = true;
-        }
+	}
 
 	/* check if we're engulfed */
 	if (cursor.row > MAP_ROW_BEGIN && cursor.row < MAP_ROW_END && cursor.col > MAP_COL_BEGIN && cursor.col < MAP_COL_END && view[cursor.row - 1][cursor.col - 1] == '/' && view[cursor.row - 1][cursor.col + 1] == '\\' && view[cursor.row + 1][cursor.col - 1] == '\\' && view[cursor.row + 1][cursor.col + 1] == '/')

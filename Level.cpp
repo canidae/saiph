@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "Debug.h"
 #include "EventBus.h"
+#include "Inventory.h"
 #include "Item.h"
 #include "Level.h"
 #include "Saiph.h"
@@ -24,9 +25,11 @@ bool Level::got_pickup_menu = false;
 bool Level::got_drop_menu = false;
 PickupItems Level::pickup;
 DropInventoryItems Level::drop;
+ReceivedItems Level::received;
+ItemsOnGround Level::on_ground;
 
 /* constructors/destructor */
-Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false), on_ground(NULL) {
+Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
 			dungeonmap[a][b] = SOLID_ROCK;
@@ -159,7 +162,7 @@ void Level::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast((Event *) &Level::pickup);
+		EventBus::broadcast(static_cast<Event *>(&Level::pickup));
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Level::got_drop_menu) {
 		/* dropping items */
 		if (Level::got_drop_menu) {
@@ -184,15 +187,41 @@ void Level::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast((Event *) &Level::drop);
+		EventBus::broadcast(static_cast<Event *>(&Level::drop));
+	} else if (!World::menu) {
+		/* check if we received items */
+		string::size_type pos = 0;
+		string::size_type pos2 = -1;
+		/* reset received list */
+		Level::received.items.clear();
+		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
+			/* add item to inventory */
+			Item item(messages.substr(pos + 3, pos2 - pos - 3));
+			if (item.count <= 0) {
+				Debug::notice() << INVENTORY_DEBUG_NAME << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
+				continue;
+			}
+			Inventory::addItem(messages[pos - 1], item);
+			/* add item to changed.keys */
+			Level::received.items[messages[pos - 1]] = item;
+		}
+		if (Level::received.items.size() > 0) {
+			/* if we're standing on a stash, mark it as changed */
+			map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
+			if (s != World::levels[Saiph::position.level].stashes.end())
+				s->second.turn_changed = World::turn;
+			/* broadcast "ChangedInventoryItems" */
+			EventBus::broadcast(static_cast<Event *>(&Level::received));
+		}
 	}
 
-	/* set on_ground pointer */
+	/* send event if we're standing on stash */
 	map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-	if (s != stashes.end())
-		on_ground = &(s->second);
-	else
-		on_ground = NULL;
+	if (s != stashes.end()) {
+		on_ground.items = s->second.items;
+		/* broadcast "ItemsOnGround" */
+		EventBus::broadcast(static_cast<Event *>(&Level::on_ground));
+	}
 }
 
 void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) {

@@ -1,12 +1,18 @@
 #include "Amulet.h"
 #include "../Globals.h"
 #include "../Inventory.h"
+#include "../Item.h"
 #include "../World.h"
+#include "../Actions/Loot.h"
 #include "../Actions/PutOn.h"
 #include "../Actions/Remove.h"
+#include "../Actions/Select.h"
 #include "../Data/Amulet.h"
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
+#include "../Events/ItemsOnGround.h"
+#include "../Events/PickupItems.h"
+#include "../Events/ReceivedItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -21,11 +27,32 @@ void Amulet::onEvent(Event *const event) {
 	if (event->getID() == ChangedInventoryItems::id) {
 		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
 		wearAmulet(e->keys);
+	} else if (event->getID() == ReceivedItems::id) {
+		// FIXME
+		//ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		//wearAmulet(e->items);
+	} else if (event->getID() == PickupItems::id) {
+		PickupItems *e = static_cast<PickupItems *>(event);
+		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (wantItem(i->second))
+				World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+		}
+	} else if (event->getID() == ItemsOnGround::id) {
+		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
+		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (wantItem(*i))
+				World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_AMULET_LOOT)));
+		}
 	}
 }
 
 /* private methods */
+bool Amulet::wantItem(const Item &item) {
+	return data::Amulet::amulets.find(item.name) != data::Amulet::amulets.end();
+}
+
 void Amulet::wearAmulet(const set<unsigned char> &keys) {
+	/* FIXME: need to make this smarter, so we can handle both ChangedInventoryItems and ReceivedItems events */
 	map<unsigned char, Item>::iterator worn = Inventory::items.find(Inventory::slots[SLOT_AMULET]);
 	if (worn != Inventory::items.end() && worn->second.beatitude == CURSED)
 		return; // wearing a cursed amulet, no point trying to wear another amulet

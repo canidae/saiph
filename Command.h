@@ -12,6 +12,11 @@
 #define PRIORITY_LOOK 1000
 #define PRIORITY_TURN_MAX 999
 
+/* some common answers */
+#define YES "y"
+#define NO "n"
+#define HANDS "-"
+
 class Command {
 public:
 	std::string command;

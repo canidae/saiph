@@ -2,6 +2,7 @@
 #include "Amulet.h"
 #include "Elbereth.h"
 #include "Explore.h"
+#include "Door.h"
 #include "Fight.h"
 #include "../World.h"
 
@@ -20,6 +21,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Amulet());
 	World::registerAnalyzer(new Elbereth());
 	World::registerAnalyzer(new Explore());
+	World::registerAnalyzer(new Door());
 	World::registerAnalyzer(new Fight());
 }
 

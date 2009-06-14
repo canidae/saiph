@@ -2,6 +2,7 @@
 #include "Armor.h"
 #include "Food.h"
 #include "Item.h"
+#include "Tool.h"
 #include "Weapon.h"
 
 using namespace data;
@@ -21,6 +22,7 @@ void Item::init() {
 	Amulet::init();
 	Armor::init();
 	Food::init();
+	Tool::init();
 	Weapon::init();
 }
 

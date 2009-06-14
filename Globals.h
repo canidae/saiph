@@ -158,10 +158,6 @@
 #define WEAR "W"
 #define WIELD "w"
 #define ZAP_WAND "z"
-/* common answers */
-#define HANDS "-"
-#define NO "n"
-#define YES "y"
 
 /* dungeon symbols */
 #define SOLID_ROCK ' '
