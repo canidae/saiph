@@ -28,6 +28,7 @@ bool World::question = false;
 bool World::engulfed = false;
 char World::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
+int World::real_turn = 0;
 vector<Level> World::levels;
 Coordinate World::branch_main;
 Coordinate World::branch_mines;
@@ -531,6 +532,7 @@ void World::run() {
 				/* return cursor back to where it was */
 				cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
 				cout.flush();
+				++World::real_turn; // command than won't increase turn counter
 				executeCommand("s");
 				continue;
 			}
@@ -547,6 +549,8 @@ void World::run() {
 		Debug::notice() << action->getAnalyzer()->name << " " << action->getCommand() << endl;
 
 		/* execute the command */
+		if (action->getCommand().priority <= PRIORITY_TURN_MAX)
+			++World::real_turn; // command that may increase turn counter
 		executeCommand(action->getCommand().command);
 	}
 }

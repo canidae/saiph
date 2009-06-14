@@ -45,6 +45,7 @@ public:
 	static bool engulfed;
 	static char levelname[MAX_LEVELNAME_LENGTH];
 	static int turn;
+	static int real_turn;
 	static std::vector<Level> levels;
 	static Coordinate branch_main;
 	static Coordinate branch_mines;

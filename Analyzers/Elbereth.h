@@ -27,6 +27,7 @@ namespace analyzer {
 	private:
 		int elbereth_count;
 		int engraving_type;
+		int real_turn_look;
 	};
 }
 #endif

@@ -10,6 +10,7 @@
 #define PRIORITY_SELECT_ITEM 1002
 #define PRIORITY_CLOSE_PAGE 1001
 #define PRIORITY_LOOK 1000
+#define PRIORITY_TURN_MAX 999
 
 class Command {
 public:

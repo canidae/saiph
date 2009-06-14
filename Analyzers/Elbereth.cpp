@@ -1,20 +1,26 @@
 #include <stdlib.h>
 #include "Elbereth.h"
-#include "../Events/ElberethQuery.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Actions/Look.h"
+#include "../Events/ElberethQuery.h"
 
 using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(-1) {
+Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(ENGRAVING_MUST_CHECK), real_turn_look(-1) {
 }
 
 void Elbereth::onEvent(event::Event *const evt) {
 	if (evt->getID() == event::ElberethQuery::id) {
-		// TODO: determine if this info is stale, and if so, look somehow before processing the event
 		event::ElberethQuery *const q = static_cast<event::ElberethQuery *const>(evt);
+		if (real_turn_look != World::real_turn) {
+			/* data is outdated */
+			engraving_type = ENGRAVING_MUST_CHECK;
+			elbereth_count = 0;
+			World::setAction(static_cast<action::Action *>(new action::Look(this)));
+		}
 		q->engraving_type = engraving_type;
 		q->number_of_elbereths = elbereth_count;
 	}
@@ -47,9 +53,8 @@ void Elbereth::parseMessages(const string &messages) {
 		engraving_type = -1;
 		return;
 	}
+	real_turn_look = World::real_turn;
 	elbereth_count = 1; // we found one already with the first find() call
-	while ((pos = messages.find(ELBERETH_ELBERETH, pos + 1)) != string::npos) {
-		/* found another elbereth */
-		++elbereth_count;
-	}
+	while ((pos = messages.find(ELBERETH_ELBERETH, pos + 1)) != string::npos)
+		++elbereth_count; // found another elbereth
 }
