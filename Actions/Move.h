@@ -1,5 +1,5 @@
-#ifndef MOVE_H
-#define MOVE_H
+#ifndef ACTION_MOVE_H
+#define ACTION_MOVE_H
 
 #include "Action.h"
 

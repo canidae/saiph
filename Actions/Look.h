@@ -1,5 +1,5 @@
-#ifndef LOOK_H
-#define LOOK_H
+#ifndef ACTION_LOOK_H
+#define ACTION_LOOK_H
 
 #include "Action.h"
 

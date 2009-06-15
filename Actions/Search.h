@@ -1,5 +1,5 @@
-#ifndef SEARCH_H
-#define SEARCH_H
+#ifndef ACTION_SEARCH_H
+#define ACTION_SEARCH_H
 
 #include "Action.h"
 

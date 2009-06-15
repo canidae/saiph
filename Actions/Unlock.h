@@ -1,5 +1,5 @@
-#ifndef UNLOCK_H
-#define UNLOCK_H
+#ifndef ACTION_UNLOCK_H
+#define ACTION_UNLOCK_H
 
 #include "Action.h"
 #include "../Inventory.h"

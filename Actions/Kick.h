@@ -1,5 +1,5 @@
-#ifndef KICK_H
-#define KICK_H
+#ifndef ACTION_KICK_H
+#define ACTION_KICK_H
 
 #include "Action.h"
 #include "../World.h"

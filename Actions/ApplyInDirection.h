@@ -1,5 +1,5 @@
-#ifndef APPLY_IN_DIRECTION_H
-#define APPLY_IN_DIRECTION_H
+#ifndef ACTION_APPLY_IN_DIRECTION_H
+#define ACTION_APPLY_IN_DIRECTION_H
 
 #include "Action.h"
 #include "../Inventory.h"

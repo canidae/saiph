@@ -1,5 +1,5 @@
-#ifndef OPEN_H
-#define OPEN_H
+#ifndef ACTION_OPEN_H
+#define ACTION_OPEN_H
 
 #include "Action.h"
 #include "../World.h"

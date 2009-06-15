@@ -1,5 +1,5 @@
-#ifndef THROW_H
-#define THROW_H
+#ifndef ACTION_THROW_H
+#define ACTION_THROW_H
 
 #include "Action.h"
 #include "../Inventory.h"

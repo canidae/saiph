@@ -1,5 +1,5 @@
-#ifndef ACTION_H
-#define ACTION_H
+#ifndef ACTION_ACTION_H
+#define ACTION_ACTION_H
 
 #include <string>
 #include "../Command.h"

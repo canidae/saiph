@@ -1,5 +1,5 @@
-#ifndef FIGHT_H
-#define FIGHT_H
+#ifndef ACTION_FIGHT_H
+#define ACTION_FIGHT_H
 
 #include "Action.h"
 #include "../Globals.h"

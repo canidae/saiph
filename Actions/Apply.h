@@ -1,5 +1,5 @@
-#ifndef APPLY_H
-#define APPLY_H
+#ifndef ACTION_APPLY_H
+#define ACTION_APPLY_H
 
 #include "Action.h"
 #include "../Inventory.h"

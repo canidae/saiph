@@ -1,5 +1,5 @@
-#ifndef ENGRAVE_H
-#define	ENGRAVE_H
+#ifndef ACTION_ENGRAVE_H
+#define ACTION_ENGRAVE_H
 
 #include "Action.h"
 
