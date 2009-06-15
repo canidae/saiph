@@ -1,5 +1,5 @@
-#ifndef _PUT_ON_H
-#define _PUT_ON_H
+#ifndef PUT_ON_H
+#define PUT_ON_H
 
 #include "Action.h"
 #include "../Inventory.h"

@@ -1,5 +1,5 @@
-#ifndef _LIST_INVENTORY_H
-#define _LIST_INVENTORY_H
+#ifndef LIST_INVENTORY_H
+#define LIST_INVENTORY_H
 
 #include "Action.h"
 

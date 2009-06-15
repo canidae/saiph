@@ -1,5 +1,5 @@
-#ifndef _REMOVE_H
-#define _REMOVE_H
+#ifndef REMOVE_H
+#define REMOVE_H
 
 #include "Action.h"
 #include "../Inventory.h"

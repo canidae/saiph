@@ -1,5 +1,5 @@
-#ifndef _LOOT_H
-#define _LOOT_H
+#ifndef LOOT_H
+#define LOOT_H
 
 #include "Action.h"
 

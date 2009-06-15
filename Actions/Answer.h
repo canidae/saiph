@@ -1,5 +1,5 @@
-#ifndef _ANSWER_H
-#define _ANSWER_H
+#ifndef ANSWER_H
+#define ANSWER_H
 
 #include "Action.h"
 

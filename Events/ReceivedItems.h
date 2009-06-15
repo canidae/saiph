@@ -1,5 +1,5 @@
-#ifndef _RECEIVED_ITEMS_H
-#define _RECEIVED_ITEMS_H
+#ifndef RECEIVED_ITEMS_H
+#define RECEIVED_ITEMS_H
 
 #include <map>
 #include "Event.h"

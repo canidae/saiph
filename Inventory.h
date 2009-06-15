@@ -1,5 +1,5 @@
-#ifndef _INVENTORY_H
-#define _INVENTORY_H
+#ifndef INVENTORY_H
+#define INVENTORY_H
 
 #include <map>
 #include <set>

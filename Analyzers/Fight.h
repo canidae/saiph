@@ -1,5 +1,5 @@
-#ifndef FIGHT_H
-#define FIGHT_H
+#ifndef FIGHT_ANALYZER_H
+#define FIGHT_ANALYZER_H
 
 #include <set>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef _COMMAND_H
-#define _COMMAND_H
+#ifndef COMMAND_H
+#define COMMAND_H
 
 #include <iostream>
 #include <string>

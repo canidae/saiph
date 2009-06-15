@@ -1,5 +1,5 @@
-#ifndef _ITEMS_ON_GROUND_H
-#define _ITEMS_ON_GROUND_H
+#ifndef ITEMS_ON_GROUND_H
+#define ITEMS_ON_GROUND_H
 
 #include <list>
 #include "Event.h"
