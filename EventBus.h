@@ -1,5 +1,5 @@
-#ifndef _EVENTBUS_H
-#define	_EVENTBUS_H
+#ifndef EVENTBUS_H
+#define EVENTBUS_H
 
 #include <vector>
 #include "Events/Event.h"

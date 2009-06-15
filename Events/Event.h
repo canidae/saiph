@@ -1,5 +1,5 @@
-#ifndef _EVENT_H
-#define	_EVENT_H
+#ifndef EVENT_EVENT_H
+#define EVENT_EVENT_H
 
 #include <string>
 

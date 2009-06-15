@@ -1,5 +1,5 @@
-#ifndef _ELBERETHQUERY_H
-#define	_ELBERETHQUERY_H
+#ifndef EVENT_ELBERETH_QUERY_H
+#define EVENT_ELBERETH_QUERY_H
 
 #include "Event.h"
 

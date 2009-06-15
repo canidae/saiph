@@ -1,5 +1,5 @@
-#ifndef PICKUP_ITEMS_H
-#define PICKUP_ITEMS_H
+#ifndef EVENT_PICKUP_ITEMS_H
+#define EVENT_PICKUP_ITEMS_H
 
 #include <map>
 #include "Event.h"
