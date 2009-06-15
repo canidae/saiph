@@ -8,7 +8,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Loot::Loot(Saiph *saiph) : Analyzer("Loot"), saiph(saiph), dirty_inventory(true), dirty_stash(false), showing_inventory(false), showing_pickup(false), showing_drop(false) {
+Loot::Loot() : Analyzer("Loot"), dirty_stash(false), showing_inventory(false), showing_pickup(false), showing_drop(false) {
 }
 
 /* methods */
