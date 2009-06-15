@@ -1,5 +1,5 @@
-#ifndef WAND_H
-#define WAND_H
+#ifndef ANALYZER_WAND_H
+#define ANALYZER_WAND_H
 
 #include <string>
 #include <vector>

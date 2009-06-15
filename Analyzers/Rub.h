@@ -1,5 +1,5 @@
-#ifndef RUB_H
-#define	RUB_H
+#ifndef ANALYZER_RUB_H
+#define ANALYZER_RUB_H
 
 #include <string>
 #include "Analyzer.h"

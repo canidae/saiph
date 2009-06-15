@@ -1,5 +1,5 @@
-#ifndef PASSTUNE_H
-#define	PASSTUNE_H
+#ifndef ANALYZER_PASSTUNE_H
+#define ANALYZER_PASSTUNE_H
 
 #include <vector>
 #include <string>

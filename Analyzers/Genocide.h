@@ -1,5 +1,5 @@
-#ifndef GENOCIDE_H
-#define	GENOCIDE_H
+#ifndef ANALYZER_GENOCIDE_H
+#define ANALYZER_GENOCIDE_H
 
 #include <list>
 #include <string>

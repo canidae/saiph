@@ -1,5 +1,5 @@
-#ifndef HEALTH_H
-#define HEALTH_H
+#ifndef ANALYZER_HEALTH_H
+#define ANALYZER_HEALTH_H
 
 #include "Analyzer.h"
 #include "../Request.h"

@@ -1,5 +1,5 @@
-#ifndef EXCALIBUR_H
-#define EXCALIBUR_H
+#ifndef ANALYZER_EXCALIBUR_H
+#define ANALYZER_EXCALIBUR_H
 
 #include <string>
 #include "Analyzer.h"

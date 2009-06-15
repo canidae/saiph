@@ -1,5 +1,5 @@
-#ifndef DOOR_H
-#define DOOR_H
+#ifndef ANALYZER_DOOR_H
+#define ANALYZER_DOOR_H
 
 #include <string>
 #include "Analyzer.h"

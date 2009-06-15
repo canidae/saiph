@@ -1,5 +1,5 @@
-#ifndef WISH_H
-#define WISH_H
+#ifndef ANALYZER_WISH_H
+#define ANALYZER_WISH_H
 
 #include <string>
 #include <vector>

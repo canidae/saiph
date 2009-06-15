@@ -1,5 +1,5 @@
-#ifndef LOOT_H
-#define LOOT_H
+#ifndef ANALYZER_LOOT_H
+#define ANALYZER_LOOT_H
 
 #include <map>
 #include <string>

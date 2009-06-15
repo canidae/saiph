@@ -1,5 +1,5 @@
-#ifndef THRONE_H
-#define	THRONE_H
+#ifndef ANALYZER_THRONE_H
+#define ANALYZER_THRONE_H
 
 #include "Analyzer.h"
 #include "../Saiph.h"

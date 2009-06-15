@@ -1,5 +1,5 @@
-#ifndef BEATITUDE_H
-#define BEATITUDE_H
+#ifndef ANALYZER_BEATITUDE_H
+#define ANALYZER_BEATITUDE_H
 
 #include <string>
 #include "Analyzer.h"

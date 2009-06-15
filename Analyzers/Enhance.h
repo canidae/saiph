@@ -1,5 +1,5 @@
-#ifndef ENHANCE_H
-#define ENHANCE_H
+#ifndef ANALYZER_ENHANCE_H
+#define ANALYZER_ENHANCE_H
 
 #include <string>
 #include "Analyzer.h"

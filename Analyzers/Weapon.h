@@ -1,5 +1,5 @@
-#ifndef WEAPON_H
-#define WEAPON_H
+#ifndef ANALYZER_WEAPON_H
+#define ANALYZER_WEAPON_H
 
 #include <string>
 #include <vector>

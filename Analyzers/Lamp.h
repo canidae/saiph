@@ -1,5 +1,5 @@
-#ifndef LAMP_H
-#define LAMP_H
+#ifndef ANALYZER_LAMP_H
+#define ANALYZER_LAMP_H
 
 #include <string>
 #include "Analyzer.h"

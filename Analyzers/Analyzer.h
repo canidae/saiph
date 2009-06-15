@@ -1,5 +1,5 @@
-#ifndef ANALYZER_H
-#define ANALYZER_H
+#ifndef ANALYZER_ANALYZER_H
+#define ANALYZER_ANALYZER_H
 
 #include <string>
 

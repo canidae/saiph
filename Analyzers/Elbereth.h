@@ -1,5 +1,5 @@
-#ifndef ELBERETH_H
-#define ELBERETH_H
+#ifndef ANALYZER_ELBERETH_H
+#define ANALYZER_ELBERETH_H
 
 #include <string>
 #include "Analyzer.h"

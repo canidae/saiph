@@ -1,5 +1,5 @@
-#ifndef UNIHORN_H
-#define UNIHORN_H
+#ifndef ANALYZER_UNIHORN_H
+#define ANALYZER_UNIHORN_H
 
 #include <string>
 #include "Analyzer.h"

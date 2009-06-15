@@ -1,5 +1,5 @@
-#ifndef MONSTERINFO_H
-#define MONSTERINFO_H
+#ifndef ANALYZER_MONSTERINFO_H
+#define ANALYZER_MONSTERINFO_H
 
 #include <map>
 #include <string>

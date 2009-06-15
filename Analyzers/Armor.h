@@ -1,5 +1,5 @@
-#ifndef ARMOR_H
-#define ARMOR_H
+#ifndef ANALYZER_ARMOR_H
+#define ANALYZER_ARMOR_H
 
 #include <string>
 #include <vector>

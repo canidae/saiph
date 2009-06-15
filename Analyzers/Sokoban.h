@@ -1,5 +1,5 @@
-#ifndef SOKOBAN_H
-#define SOKOBAN_H
+#ifndef ANALYZER_SOKOBAN_H
+#define ANALYZER_SOKOBAN_H
 
 #include <vector>
 #include <map>

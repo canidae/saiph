@@ -1,5 +1,5 @@
-#ifndef SHOP_H
-#define SHOP_H
+#ifndef ANALYZER_SHOP_H
+#define ANALYZER_SHOP_H
 
 #include <string>
 #include "Analyzer.h"

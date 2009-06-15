@@ -1,5 +1,5 @@
-#ifndef SCROLL_H
-#define SCROLL_H
+#ifndef ANALYZER_SCROLL_H
+#define ANALYZER_SCROLL_H
 
 #include <string>
 #include <vector>

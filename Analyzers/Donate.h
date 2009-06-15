@@ -1,5 +1,5 @@
-#ifndef DONATE_H
-#define	DONATE_H
+#ifndef ANALYZER_DONATE_H
+#define ANALYZER_DONATE_H
 
 #include "Analyzer.h"
 #include "../Coordinate.h"

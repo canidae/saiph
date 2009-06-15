@@ -1,5 +1,5 @@
-#ifndef RING_H
-#define RING_H
+#ifndef ANALYZER_RING_H
+#define ANALYZER_RING_H
 
 #include <string>
 #include <vector>

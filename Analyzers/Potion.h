@@ -1,5 +1,5 @@
-#ifndef POTION_H
-#define POTION_H
+#ifndef ANALYZER_POTION_H
+#define ANALYZER_POTION_H
 
 #include <string>
 #include <vector>

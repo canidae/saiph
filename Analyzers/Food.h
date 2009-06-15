@@ -1,5 +1,5 @@
-#ifndef FOOD_H
-#define FOOD_H
+#ifndef ANALYZER_FOOD_H
+#define ANALYZER_FOOD_H
 
 /* some text */
 #define FOOD_CORPSE " corpse"

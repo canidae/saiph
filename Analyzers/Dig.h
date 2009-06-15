@@ -1,5 +1,5 @@
-#ifndef DIG_H
-#define	DIG_H
+#ifndef ANALYZER_DIG_H
+#define ANALYZER_DIG_H
 
 #include <list>
 #include <string>

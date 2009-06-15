@@ -1,5 +1,5 @@
-#ifndef VALKYRIE_H
-#define VALKYRIE_H
+#ifndef ANALYZER_VALKYRIE_H
+#define ANALYZER_VALKYRIE_H
 
 #include "Analyzer.h"
 #include "../Request.h"

@@ -1,5 +1,5 @@
-#ifndef EXPLORE_H
-#define EXPLORE_H
+#ifndef ANALYZER_EXPLORE_H
+#define ANALYZER_EXPLORE_H
 
 #include <map>
 #include <string>

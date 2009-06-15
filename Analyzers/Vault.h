@@ -1,5 +1,5 @@
-#ifndef VAULT_H
-#define VAULT_H
+#ifndef ANALYZER_VAULT_H
+#define ANALYZER_VAULT_H
 
 #include <string>
 #include "Analyzer.h"

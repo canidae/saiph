@@ -1,5 +1,5 @@
-#ifndef PRAY_H
-#define PRAY_H
+#ifndef ANALYZER_PRAY_H
+#define ANALYZER_PRAY_H
 
 #include <string>
 #include "Analyzer.h"

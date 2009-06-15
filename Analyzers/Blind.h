@@ -1,5 +1,5 @@
-#ifndef BLIND_H
-#define BLIND_H
+#ifndef ANALYZER_BLIND_H
+#define ANALYZER_BLIND_H
 
 #include "Analyzer.h"
 #include "../Request.h"

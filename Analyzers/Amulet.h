@@ -1,5 +1,5 @@
-#ifndef AMULET_H
-#define AMULET_H
+#ifndef ANALYZER_AMULET_H
+#define ANALYZER_AMULET_H
 
 #include <set>
 #include "Analyzer.h"
