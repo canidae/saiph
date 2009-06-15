@@ -118,8 +118,8 @@ inline unsigned char World::getDungeonSymbol(const Coordinate &coordinate) {
 
 inline unsigned char World::getDungeonSymbol(const Point &point) {
 	/* return dungeon symbol at given point on current level */
-	return World::levels[Saiph::position.level].getDungeonSymbol(point);                                                                                                                                                                                                                                        
-}                                                                                                                                                                                                                                                                                                            
+	return World::levels[Saiph::position.level].getDungeonSymbol(point);
+}
 
 inline unsigned char World::getDungeonSymbol(unsigned char direction) {
 	/* return dungeon symbol in given direction on current level */
@@ -178,7 +178,7 @@ inline void World::setDungeonSymbol(unsigned char symbol) {
 inline void World::setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol) {
 	/* set dungeon symbol at given coordinate */
 	if (coordinate.level < 0 || coordinate.level > (int) World::levels.size())
-		return;                                                                                                                                                                                                                                                                                      
+		return;
 	World::levels[coordinate.level].setDungeonSymbol(coordinate, symbol);
 }
 

@@ -157,4 +157,4 @@ bool Dig::isDiggingTool(const Item &item) {
 		return false;
 	}
 	return true;
-}                                                                                                                                                       
+}
