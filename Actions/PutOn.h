@@ -4,6 +4,8 @@
 #include "Action.h"
 #include "../Inventory.h"
 
+#define PUT_ON "P"
+
 namespace action {
 	class PutOn : public Action {
 	public:

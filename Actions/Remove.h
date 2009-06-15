@@ -4,6 +4,8 @@
 #include "Action.h"
 #include "../Inventory.h"
 
+#define REMOVE "R"
+
 namespace action {
 	class Remove : public Action {
 	public:

@@ -5,7 +5,9 @@
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Fight.h"
+#include "../Actions/Loot.h"
 #include "../Actions/Move.h"
+#include "../Actions/Select.h"
 #include "../Actions/Throw.h"
 #include "../Data/Dagger.h"
 #include "../Data/Dart.h"
@@ -103,12 +105,35 @@ void Fight::onEvent(Event *const event) {
 				/* this item is new or changed.
 				 * if we intend to throw it, add it to projectile_slots.
 				 * otherwise remove it from projectile_slots */
-				set<string>::iterator p = projectiles.find(i->second.name);
-				if (p != projectiles.end())
+				if (wantItem(i->second))
 					projectile_slots.insert(*k);
 				else
 					projectile_slots.erase(*k);
 			}
 		}
+	} else if (event->getID() == ReceivedItems::id) {
+		ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (wantItem(i->second))
+				projectile_slots.insert(i->first);
+		}
+	} else if (event->getID() == PickupItems::id) {
+		PickupItems *e = static_cast<PickupItems *>(event);
+		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (wantItem(i->second))
+				World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+		}
+	} else if (event->getID() == ItemsOnGround::id) {
+		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
+		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (wantItem(*i))
+				World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FIGHT_LOOT)));
+		}
 	}
+}
+
+/* private methods */
+bool Fight::wantItem(const Item &item) {
+	/* return whether we want this item or not */
+	return projectiles.find(item.name) != projectiles.end();
 }

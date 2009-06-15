@@ -521,8 +521,8 @@ void World::run() {
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else if (menu) {
-				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << messages << endl;
-				executeCommand(string(1, (char) 27));
+				Debug::notice() << SAIPH_DEBUG_NAME << "Closing menu: " << messages << endl;
+				executeCommand(CLOSE_PAGE);
 				continue;
 			} else {
 				Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching" << endl;

@@ -13,9 +13,11 @@
 #define PRIORITY_TURN_MAX 999
 
 /* some common answers */
-#define YES "y"
-#define NO "n"
+#define CLOSE_PAGE " "
 #define HANDS "-"
+#define NO "n"
+#define QUIT "#quit\n"
+#define YES "y"
 
 class Command {
 public:

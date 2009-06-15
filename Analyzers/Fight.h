@@ -5,6 +5,7 @@
 #include <string>
 #include "Analyzer.h"
 
+#define PRIORITY_FIGHT_LOOT 200
 #define PRIORITY_FIGHT_MELEE_MAX 300
 #define PRIORITY_FIGHT_MELEE_MIN 100
 #define PRIORITY_FIGHT_MOVE_MAX 250
@@ -16,7 +17,7 @@ namespace event {
 	class Event;
 }
 
-class Monster;
+class Item;
 
 namespace analyzer {
 	class Fight : public Analyzer {
@@ -29,6 +30,8 @@ namespace analyzer {
 	private:
 		std::set<std::string> projectiles; // weapons we can throw
 		std::set<unsigned char> projectile_slots; // slots where we got weapons we should throw
+
+		bool wantItem(const Item &item);
 	};
 }
 #endif

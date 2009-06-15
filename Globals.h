@@ -125,40 +125,6 @@
 #define DOWN '>'
 #define NOWHERE '.'
 
-/* commands */
-#define ILLEGAL_ACTION 0
-#define APPLY "a"
-#define CHAT "#chat\n"
-#define CLOSE_PAGE " "
-#define DIP "#dip\n"
-#define DROP_MENU "D"
-#define DROP "d"
-#define EAT "e"
-#define ENGRAVE "E"
-#define ENHANCE "#enhance\n"
-#define ESCAPE "\x1b"
-#define FIGHT "F"
-#define INVENTORY "i"
-#define KICK ""
-#define LOOK ":"
-#define NAME "#name\n"
-#define OPEN "o"
-#define PICKUP ","
-#define PRAY "#pray\n"
-#define PUT_ON "P"
-#define QUAFF "q"
-#define QUIT "#quit\n"
-#define REMOVE "R"
-#define RUB "#rub\n"
-#define REST "."
-#define SEARCH "s"
-#define SIT "#sit\n"
-#define TAKE_OFF "T"
-#define THROW "t"
-#define WEAR "W"
-#define WIELD "w"
-#define ZAP_WAND "z"
-
 /* dungeon symbols */
 #define SOLID_ROCK ' '
 #define VERTICAL_WALL '|'
