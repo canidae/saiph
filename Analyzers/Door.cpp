@@ -60,10 +60,14 @@ void Door::analyze() {
 				World::setAction(static_cast<action::Action *>(new action::Open(this, node.dir, PRIORITY_DOOR_OPEN)));
 			} else {
 				/* we can't apply when we're overtaxed, but logically we can kick... */
-				if (unlock_tool_key == 0 || Saiph::encumbrance >= OVERTAXED)
-					World::setAction(static_cast<action::Action *>(new action::Kick(this, node.dir, PRIORITY_DOOR_OPEN)));
-				else
+				if (unlock_tool_key == 0 || Saiph::encumbrance >= OVERTAXED) {
+					if (Saiph::hurt_leg)
+						continue; // can't kick, hurt leg
+					else
+						World::setAction(static_cast<action::Action *>(new action::Kick(this, node.dir, PRIORITY_DOOR_OPEN)));
+				} else {
 					World::setAction(static_cast<action::Action *>(new action::Unlock(this, unlock_tool_key, node.dir, PRIORITY_DOOR_OPEN)));
+				}
 			}
 			position = d->first;
 			return;
