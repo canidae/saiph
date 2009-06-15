@@ -1,5 +1,5 @@
-#ifndef _ARMORDATA_H
-#define	_ARMORDATA_H
+#ifndef DATA_ARMOR_H
+#define DATA_ARMOR_H
 
 #include <map>
 #include <string>

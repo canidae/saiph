@@ -1,5 +1,5 @@
-#ifndef _FLAILDATA_H
-#define	_FLAILDATA_H
+#ifndef DATA_FLAIL_H
+#define DATA_FLAIL_H
 
 #include <map>
 #include <string>

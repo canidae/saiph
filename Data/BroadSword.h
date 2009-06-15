@@ -1,5 +1,5 @@
-#ifndef _BROAD_SWORDDATA_H
-#define	_BROAD_SWORDDATA_H
+#ifndef DATA_BROAD_SWORD_H
+#define DATA_BROAD_SWORD_H
 
 #include <map>
 #include <string>

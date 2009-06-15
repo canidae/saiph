@@ -1,5 +1,5 @@
-#ifndef _AXEDATA_H
-#define	_AXEDATA_H
+#ifndef DATA_AXE_H
+#define DATA_AXE_H
 
 #include <map>
 #include <string>

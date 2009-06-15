@@ -1,5 +1,5 @@
-#ifndef _JAVELINDATA_H
-#define	_JAVELINDATA_H
+#ifndef DATA_JAVELIN_H
+#define DATA_JAVELIN_H
 
 #include <map>
 #include <string>

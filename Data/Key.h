@@ -1,5 +1,5 @@
-#ifndef _KEYDATA_H
-#define	_KEYDATA_H
+#ifndef DATA_KEY_H
+#define DATA_KEY_H
 
 #include <map>
 #include <string>

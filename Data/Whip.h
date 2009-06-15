@@ -1,5 +1,5 @@
-#ifndef _WHIPDATA_H
-#define	_WHIPDATA_H
+#ifndef DATA_WHIP_H
+#define DATA_WHIP_H
 
 #include <map>
 #include <string>

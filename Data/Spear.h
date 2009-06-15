@@ -1,5 +1,5 @@
-#ifndef _SPEARDATA_H
-#define	_SPEARDATA_H
+#ifndef DATA_SPEAR_H
+#define DATA_SPEAR_H
 
 #include <map>
 #include <string>

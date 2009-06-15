@@ -1,5 +1,5 @@
-#ifndef _WEAPONDATA_H
-#define	_WEAPONDATA_H
+#ifndef DATA_WEAPON_H
+#define DATA_WEAPON_H
 
 #include <map>
 #include <string>

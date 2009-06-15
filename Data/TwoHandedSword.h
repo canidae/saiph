@@ -1,5 +1,5 @@
-#ifndef _TWO_HANDED_SWORDSDATA_H
-#define	_TWO_HANDED_SWORDSDATA_H
+#ifndef DATA_TWO_HANDED_SWORDS_H
+#define DATA_TWO_HANDED_SWORDS_H
 
 #include <map>
 #include <string>

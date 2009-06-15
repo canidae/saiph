@@ -1,5 +1,5 @@
-#ifndef _CLUBDATA_H
-#define	_CLUBDATA_H
+#ifndef DATA_CLUB_H
+#define DATA_CLUB_H
 
 #include <map>
 #include <string>

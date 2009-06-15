@@ -1,5 +1,5 @@
-#ifndef _HAMMERDATA_H
-#define	_HAMMERDATA_H
+#ifndef DATA_HAMMER_H
+#define DATA_HAMMER_H
 
 #include <map>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef _SCIMITARDATA_H
-#define	_SCIMITARDATA_H
+#ifndef DATA_SCIMITAR_H
+#define DATA_SCIMITAR_H
 
 #include <map>
 #include <string>

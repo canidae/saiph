@@ -1,5 +1,5 @@
-#ifndef MONSTERDATA_H
-#define MONSTERDATA_H
+#ifndef DATA_MONSTER_H
+#define DATA_MONSTER_H
 
 #include <limits.h>
 #include <map>

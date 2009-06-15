@@ -1,5 +1,5 @@
-#ifndef ITEMDATA_H
-#define ITEMDATA_H
+#ifndef DATA_ITEM_H
+#define DATA_ITEM_H
 
 #include <map>
 #include <set>

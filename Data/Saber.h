@@ -1,5 +1,5 @@
-#ifndef _SABERDATA_H
-#define	_SABERDATA_H
+#ifndef DATA_SABER_H
+#define DATA_SABER_H
 
 #include <map>
 #include <string>

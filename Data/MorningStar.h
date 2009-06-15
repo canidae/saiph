@@ -1,5 +1,5 @@
-#ifndef _MORNING_STARDATA_H
-#define	_MORNING_STARDATA_H
+#ifndef DATA_MORNING_STAR_H
+#define DATA_MORNING_STAR_H
 
 #include <map>
 #include <string>

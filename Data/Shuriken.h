@@ -1,5 +1,5 @@
-#ifndef _SHURIKENDATA_H
-#define	_SHURIKENDATA_H
+#ifndef DATA_SHURIKEN_H
+#define DATA_SHURIKEN_H
 
 #include <map>
 #include <string>

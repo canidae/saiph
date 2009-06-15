@@ -1,5 +1,5 @@
-#ifndef _TRIDENTDATA_H
-#define	_TRIDENTDATA_H
+#ifndef DATA_TRIDENT_H
+#define DATA_TRIDENT_H
 
 #include <map>
 #include <string>

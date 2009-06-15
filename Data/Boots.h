@@ -1,5 +1,5 @@
-#ifndef _BOOTSDATA_H
-#define	_BOOTSDATA_H
+#ifndef DATA_BOOTS_H
+#define DATA_BOOTS_H
 
 #include <map>
 #include <string>

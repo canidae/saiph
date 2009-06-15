@@ -1,5 +1,5 @@
-#ifndef _MACEDATA_H
-#define	_MACEDATA_H
+#ifndef DATA_MACE_H
+#define DATA_MACE_H
 
 #include <map>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef _SUITDATA_H
-#define	_SUITDATA_H
+#ifndef DATA_SUIT_H
+#define DATA_SUIT_H
 
 #include <map>
 #include <string>

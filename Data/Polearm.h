@@ -1,5 +1,5 @@
-#ifndef _POLEARMDATA_H
-#define	_POLEARMDATA_H
+#ifndef DATA_POLEARM_H
+#define DATA_POLEARM_H
 
 #include <map>
 #include <string>

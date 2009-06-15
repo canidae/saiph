@@ -1,5 +1,5 @@
-#ifndef _DARTDATA_H
-#define	_DARTDATA_H
+#ifndef DATA_DART_H
+#define DATA_DART_H
 
 #include <map>
 #include <string>

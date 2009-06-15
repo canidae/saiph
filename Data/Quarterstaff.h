@@ -1,5 +1,5 @@
-#ifndef _QUARTERSTAFFDATA_H
-#define	_QUARTERSTAFFDATA_H
+#ifndef DATA_QUARTERSTAFF_H
+#define DATA_QUARTERSTAFF_H
 
 #include <map>
 #include <string>

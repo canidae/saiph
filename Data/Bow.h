@@ -1,5 +1,5 @@
-#ifndef _BOWDATA_H
-#define	_BOWDATA_H
+#ifndef DATA_BOW_H
+#define DATA_BOW_H
 
 #include <map>
 #include <string>

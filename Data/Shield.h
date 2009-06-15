@@ -1,5 +1,5 @@
-#ifndef _SHIELDDATA_H
-#define	_SHIELDDATA_H
+#ifndef DATA_SHIELD_H
+#define DATA_SHIELD_H
 
 #include <map>
 #include <string>

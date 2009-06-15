@@ -1,5 +1,5 @@
-#ifndef _UNICORN_HORNDATA_H
-#define	_UNICORN_HORNDATA_H
+#ifndef DATA_UNICORN_HORN_H
+#define DATA_UNICORN_HORN_H
 
 #include <map>
 #include <string>

@@ -1,5 +1,5 @@
-#ifndef _CLOAKDATA_H
-#define	_CLOAKDATA_H
+#ifndef DATA_CLOAK_H
+#define DATA_CLOAK_H
 
 #include <map>
 #include <string>

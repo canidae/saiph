@@ -1,5 +1,5 @@
-#ifndef _SHIRTDATA_H
-#define	_SHIRTDATA_H
+#ifndef DATA_SHIRT_H
+#define DATA_SHIRT_H
 
 #include <map>
 #include <string>

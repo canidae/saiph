@@ -1,5 +1,5 @@
-#ifndef _CROSSBOWDATA_H
-#define	_CROSSBOWDATA_H
+#ifndef DATA_CROSSBOW_H
+#define DATA_CROSSBOW_H
 
 #include <map>
 #include <string>

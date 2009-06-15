@@ -1,5 +1,5 @@
-#ifndef _HELMETDATA_H
-#define	_HELMETDATA_H
+#ifndef DATA_HELMET_H
+#define DATA_HELMET_H
 
 #include <map>
 #include <string>

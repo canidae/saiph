@@ -1,5 +1,5 @@
-#ifndef _PICK_AXEDATA_H
-#define	_PICK_AXEDATA_H
+#ifndef DATA_PICK_AXE_H
+#define DATA_PICK_AXE_H
 
 #include <map>
 #include <string>

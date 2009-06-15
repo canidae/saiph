@@ -1,5 +1,5 @@
-#ifndef _SLINGDATA_H
-#define	_SLINGDATA_H
+#ifndef DATA_SLING_H
+#define DATA_SLING_H
 
 #include <map>
 #include <string>

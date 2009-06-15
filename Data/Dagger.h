@@ -1,5 +1,5 @@
-#ifndef _DAGGERDATA_H
-#define	_DAGGERDATA_H
+#ifndef DATA_DAGGER_H
+#define DATA_DAGGER_H
 
 #include <map>
 #include <string>

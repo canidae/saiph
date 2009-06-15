@@ -1,5 +1,5 @@
-#ifndef _FOODDATA_H
-#define	_FOODDATA_H
+#ifndef DATA_FOOD_H
+#define DATA_FOOD_H
 
 #include <map>
 #include <string>

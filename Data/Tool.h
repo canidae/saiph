@@ -1,5 +1,5 @@
-#ifndef _TOOLDATA_H
-#define	_TOOLDATA_H
+#ifndef DATA_TOOL_H
+#define DATA_TOOL_H
 
 #include <map>
 #include <string>

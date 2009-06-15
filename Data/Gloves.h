@@ -1,5 +1,5 @@
-#ifndef _GLOVESDATA_H
-#define	_GLOVESDATA_H
+#ifndef DATA_GLOVES_H
+#define DATA_GLOVES_H
 
 #include <map>
 #include <string>

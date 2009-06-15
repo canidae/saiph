@@ -1,5 +1,5 @@
-#ifndef _SHORT_SWORDDATA_H
-#define	_SHORT_SWORDDATA_H
+#ifndef DATA_SHORT_SWORD_H
+#define DATA_SHORT_SWORD_H
 
 #include <map>
 #include <string>

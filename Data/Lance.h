@@ -1,5 +1,5 @@
-#ifndef _LANCEDATA_H
-#define	_LANCEDATA_H
+#ifndef DATA_LANCE_H
+#define DATA_LANCE_H
 
 #include <map>
 #include <string>

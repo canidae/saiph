@@ -1,5 +1,5 @@
-#ifndef _LONG_SWORDDATA_H
-#define	_LONG_SWORDDATA_H
+#ifndef DATA_LONG_SWORD_H
+#define DATA_LONG_SWORD_H
 
 #include <map>
 #include <string>

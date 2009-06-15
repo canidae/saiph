@@ -1,5 +1,5 @@
-#ifndef _AMULETDATA_H
-#define	_AMULETDATA_H
+#ifndef DATA_AMULET_H
+#define DATA_AMULET_H
 
 #include <map>
 #include <string>

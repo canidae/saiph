@@ -1,5 +1,5 @@
-#ifndef ATTACK_H
-#define ATTACK_H
+#ifndef DATA_ATTACK_H
+#define DATA_ATTACK_H
 
 /* type */
 #define AT_ANY          -1      /* fake attack; dmgtype_fromattack wildcard */

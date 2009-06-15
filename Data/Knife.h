@@ -1,5 +1,5 @@
-#ifndef _KNIFEDATA_H
-#define	_KNIFEDATA_H
+#ifndef DATA_KNIFE_H
+#define DATA_KNIFE_H
 
 #include <map>
 #include <string>

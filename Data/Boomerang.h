@@ -1,5 +1,5 @@
-#ifndef _BOOMERANGDATA_H
-#define	_BOOMERANGDATA_H
+#ifndef DATA_BOOMERANG_H
+#define DATA_BOOMERANG_H
 
 #include <map>
 #include <string>

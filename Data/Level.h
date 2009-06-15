@@ -1,5 +1,5 @@
-#ifndef _LEVELDATA_H
-#define	_LEVELDATA_H
+#ifndef DATA_LEVEL_H
+#define DATA_LEVEL_H
 
 #include <string>
 #include <map>

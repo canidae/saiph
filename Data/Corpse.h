@@ -1,5 +1,5 @@
-#ifndef _CORPSEDATA_H
-#define	_CORPSEDATA_H
+#ifndef DATA_CORPSE_H
+#define DATA_CORPSE_H
 
 #include <map>
 #include <string>
