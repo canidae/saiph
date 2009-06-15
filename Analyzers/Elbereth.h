@@ -13,9 +13,6 @@
 /* Elbereth */
 #define ELBERETH_ELBERETH "Elbereth"
 
-class Request;
-class Saiph;
-
 namespace analyzer {
 	class Elbereth : public Analyzer {
 	public:

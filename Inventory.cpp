@@ -20,10 +20,7 @@ void Inventory::analyze() {
 }
 
 void Inventory::parseMessages(const string &messages) {
-	if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
-		/* we're not carrying anything */
-		Inventory::items.clear();
-	} else if (World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
+	if (World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
 		/* listing a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
@@ -68,6 +65,12 @@ void Inventory::parseMessages(const string &messages) {
 			/* broadcast ChangedInventoryItems */
 			EventBus::broadcast(static_cast<Event *>(&changed));
 		}
+	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
+		/* we're not carrying anything */
+		items.clear();
+	} else if (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos) {
+		/* blah, someone stole our stuff, mark inventory dirty */
+		updated = false;
 	}
 }
 

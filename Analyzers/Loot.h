@@ -23,21 +23,6 @@
 #define LOOT_STOLE " stole "
 #define LOOT_STEALS " steals "
 
-/* struct for items we want */
-struct ItemWanted {
-	int amount;
-	int beatitude;
-	bool only_unknown_enchantment;
-};
-
-/* struct for groups */
-struct ItemGroup {
-	int amount;
-	std::vector<std::string> items;
-};
-
-class Saiph;
-
 namespace analyzer {
 	class Loot : public Analyzer {
 	public:

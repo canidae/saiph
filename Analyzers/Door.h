@@ -20,7 +20,6 @@
 #define DOOR_SHOP_INVENTORY 2
 
 class Item;
-class Saiph;
 
 namespace analyzer {
 	class Door : public Analyzer {
