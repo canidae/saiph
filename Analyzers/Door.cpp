@@ -121,14 +121,21 @@ void Door::parseMessages(const string &messages) {
 void Door::onEvent(Event *const event) {
 	if (event->getID() == ChangedInventoryItems::id) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
 		map<unsigned char, Item>::iterator i = Inventory::items.find(unlock_tool_key);
 		if (Inventory::items.find(unlock_tool_key) == Inventory::items.end())
 			unlock_tool_key = 0; // darn, we lost our unlocking device
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
 		for (set<unsigned char>::iterator k = e->keys.begin(); k != e->keys.end(); ++k) {
-			map<unsigned char, Item>::iterator i2 = Inventory::items.find(*k);
+			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
+			if (i != Inventory::items.end() && wantItem(i->second))
+				unlock_tool_key = *k; // better key than what we currently got
 		}
 	} else if (event->getID() == ReceivedItems::id) {
+		ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (wantItem(i->second))
+				unlock_tool_key = i->first; // better key than what we currently got
+		}
 	} else if (event->getID() == PickupItems::id) {
 		PickupItems *e = static_cast<PickupItems *>(event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
@@ -145,23 +152,6 @@ void Door::onEvent(Event *const event) {
 }
 
 /* private methods */
-void Door::findUnlockingTool() {
-	/* find [skeleton] key, lock pick or credit card.
-	 * we'll assume that we only carry 1 such item, and that we only carry the best item */
-	map<unsigned char, Item>::iterator k = Inventory::items.find(unlock_tool_key);
-	if (k != Inventory::items.end() && (k->second.name == "skeleton key" || k->second.name == "key" || k->second.name == "lock pick" || k->second.name == "credit card"))
-		return;
-	for (k = Inventory::items.begin(); k != Inventory::items.end(); ++k) {
-		if (k->second.name != "skeleton key" && k->second.name != "key" && k->second.name != "lock pick" && k->second.name != "credit card")
-			continue;
-		/* this should be a unlocking device */
-		unlock_tool_key = k->first;
-		return;
-	}
-	/* no tool for unlocking doors */
-	unlock_tool_key = 0;
-}
-
 bool Door::wantItem(const Item &item) {
 	map<string, data::Key *>::iterator k = data::Key::keys.find(item.name);
 	if (k == data::Key::keys.end())

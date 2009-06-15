@@ -36,8 +36,7 @@ namespace analyzer {
 		unsigned char unlock_tool_key;
 		bool in_a_pit;
 
-		void findUnlockingTool();
-		bool wantItem(const Item &item);
+	bool wantItem(const Item &item);
 	};
 }
 #endif
