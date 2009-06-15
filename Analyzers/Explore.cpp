@@ -183,7 +183,7 @@ void Explore::explorePoint(Point p, unsigned int *min_moves, int *best_type) {
 	int intervals;
 	bool corner = !((!hu && !lu) || (!ju && !ku));
 	if (solid_rock_count + wall_count > 0)
-		intervals = search_count / EXPLORE_SEARCH_INTERVAL / (solid_rock_count + wall_count);
+		intervals = search_count / EXPLORE_SEARCH_INTERVAL;
 	else
 		intervals = 0;
 	if (World::getDungeonSymbol(p) == CORRIDOR) {
