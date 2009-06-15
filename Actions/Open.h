@@ -25,10 +25,10 @@ namespace action {
 /* methods */
 inline const Command &action::Open::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return open;
 
-	case 1: 
+	case 1:
 		return open_direction;
 
 	default:

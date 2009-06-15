@@ -77,7 +77,7 @@
 
 namespace data {
 	class Attack {
-	public: 
+	public:
 		int type;
 		int damage_type;
 		int dice;

@@ -25,10 +25,10 @@ namespace action {
 /* methods */
 inline const Command &action::Remove::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return remove;
 
-	case 1: 
+	case 1:
 		return remove_key;
 
 	default:

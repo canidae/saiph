@@ -27,10 +27,10 @@ namespace action {
 /* methods */
 inline const Command &action::Apply::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return do_apply;
 
-	case 1: 
+	case 1:
 		return apply_item;
 
 	default:

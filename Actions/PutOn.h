@@ -25,10 +25,10 @@ namespace action {
 /* methods */
 inline const Command &action::PutOn::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return put_on;
 
-	case 1: 
+	case 1:
 		return put_on_key;
 
 	default:

@@ -23,7 +23,7 @@ namespace action {
 /* methods */
 inline const Command &action::Select::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return select;
 
 	default:

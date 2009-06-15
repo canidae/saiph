@@ -26,7 +26,7 @@ namespace action {
 /* methods */
 inline const Command &action::Move::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return move;
 
 	default:

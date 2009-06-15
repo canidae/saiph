@@ -400,7 +400,7 @@ void Level::updatePathMap() {
 	pathmap[from.row][from.col].dir = NOWHERE;
 	pathmap[from.row][from.col].moves = 0;
 	pathmap[from.row][from.col].cost = 0;
-	
+
 	/* first move northwest node */
 	Point to(from.row - 1, from.col - 1);
 	if (to.row >= MAP_ROW_BEGIN && to.col >= MAP_COL_BEGIN) {

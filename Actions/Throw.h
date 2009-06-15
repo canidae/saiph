@@ -29,13 +29,13 @@ namespace action {
 /* methods */
 inline const Command &action::Throw::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return do_throw;
 
-	case 1: 
+	case 1:
 		return throw_item;
 
-	case 2: 
+	case 2:
 		return throw_direction;
 
 	default:

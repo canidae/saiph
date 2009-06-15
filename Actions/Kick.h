@@ -25,10 +25,10 @@ namespace action {
 /* methods */
 inline const Command &action::Kick::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return kick;
 
-	case 1: 
+	case 1:
 		return kick_direction;
 
 	default:

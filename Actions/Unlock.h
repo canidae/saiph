@@ -28,16 +28,16 @@ namespace action {
 /* methods */
 inline const Command &action::Unlock::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return do_apply;
 
-	case 1: 
+	case 1:
 		return apply_item;
 
-	case 2: 
+	case 2:
 		return apply_direction;
 
-	case 3: 
+	case 3:
 		return do_unlock;
 
 	default:

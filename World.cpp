@@ -493,7 +493,7 @@ void World::run() {
 
 		if (last_turn == turn)
 			stuck_counter++;
-		else    
+		else
 			stuck_counter = 0;
 		last_turn = turn;
 
@@ -712,7 +712,7 @@ Point World::directionToPoint(unsigned char direction) {
 		++pos.col;
 		break;
 
-	case S: 
+	case S:
 		++pos.row;
 		break;
 
@@ -721,7 +721,7 @@ Point World::directionToPoint(unsigned char direction) {
 		--pos.col;
 		break;
 
-	case W: 
+	case W:
 		--pos.col;
 		break;
 	}
@@ -1169,7 +1169,7 @@ bool World::parseAttributeRow(const char *attributerow) {
 		Saiph::alignment = LAWFUL;
 	else if (effects[0][0] == 'N')
 		Saiph::alignment = NEUTRAL;
-	else    
+	else
 		Saiph::alignment = CHAOTIC;
 	return true;
 }
@@ -1333,7 +1333,7 @@ void World::update() {
 	/* check if we're engulfed */
 	if (cursor.row > MAP_ROW_BEGIN && cursor.row < MAP_ROW_END && cursor.col > MAP_COL_BEGIN && cursor.col < MAP_COL_END && view[cursor.row - 1][cursor.col - 1] == '/' && view[cursor.row - 1][cursor.col + 1] == '\\' && view[cursor.row + 1][cursor.col - 1] == '\\' && view[cursor.row + 1][cursor.col + 1] == '/')
 		engulfed = true;
-	else    
+	else
 		engulfed = false;
 
 	if (!menu && !question && !engulfed)

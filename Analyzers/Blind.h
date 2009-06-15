@@ -29,4 +29,4 @@ namespace analyzer {
 		bool isBlindingTool(const Item &item);
 	};
 }
-#endif	
+#endif

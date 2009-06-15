@@ -23,7 +23,7 @@ namespace action {
 /* methods */
 inline const Command &action::Answer::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return answer;
 
 	default:

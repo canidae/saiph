@@ -28,7 +28,7 @@ namespace action {
 /* methods */
 inline const Command &action::Fight::getCommand() {
 	switch (sequence) {
-	case 0: 
+	case 0:
 		return fight;
 
 	case 1:
