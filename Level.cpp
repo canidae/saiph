@@ -151,7 +151,6 @@ void Level::parseMessages(const string &messages) {
 		}
 		/* reset pickup list */
 		pickup.items.clear();
-		pickup.select.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
