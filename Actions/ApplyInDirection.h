@@ -23,35 +23,34 @@ namespace action {
 		const Command apply_direction;
 		const bool update_inventory;
 	};
-}
 
-/* methods */
-inline const Command &action::ApplyInDirection::getCommand() {
-	switch (sequence) {
-	case 0:
-		return do_apply;
+	inline const Command &action::ApplyInDirection::getCommand() {
+		switch (sequence) {
+		case 0:
+			return do_apply;
 
-	case 1:
-		return apply_item;
+		case 1:
+			return apply_item;
 
-	case 2:
-		return apply_direction;
+		case 2:
+			return apply_direction;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::ApplyInDirection::updateAction(const std::string &messages) {
-	if (World::question && messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
-		sequence = 1;
-	} else if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
-		sequence = 2;
-	} else if (sequence == 2) {
-		/* mark inventory dirty if update_inventory is true */
-		if (update_inventory)
-			Inventory::updated = false;
-		sequence = 3;
+	inline void action::ApplyInDirection::updateAction(const std::string &messages) {
+		if (World::question && messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
+			sequence = 1;
+		} else if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+			sequence = 2;
+		} else if (sequence == 2) {
+			/* mark inventory dirty if update_inventory is true */
+			if (update_inventory)
+				Inventory::updated = false;
+			sequence = 3;
+		}
 	}
 }
 #endif

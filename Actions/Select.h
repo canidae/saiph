@@ -18,20 +18,19 @@ namespace action {
 	private:
 		const Command select;
 	};
-}
 
-/* methods */
-inline const Command &action::Select::getCommand() {
-	switch (sequence) {
-	case 0:
-		return select;
+	inline const Command &action::Select::getCommand() {
+		switch (sequence) {
+		case 0:
+			return select;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Select::updateAction(const std::string &) {
-	++sequence;
+	inline void action::Select::updateAction(const std::string &) {
+		++sequence;
+	}
 }
 #endif

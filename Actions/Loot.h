@@ -18,21 +18,20 @@ namespace action {
 	private:
 		const Command loot;
 	};
-}
 
-/* methods */
-inline const Command &action::Loot::getCommand() {
-	switch (sequence) {
-	case 0:
-		return loot;
+	inline const Command &action::Loot::getCommand() {
+		switch (sequence) {
+		case 0:
+			return loot;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Loot::updateAction(const std::string &) {
-	if (sequence == 0)
-		sequence = 1;
+	inline void action::Loot::updateAction(const std::string &) {
+		if (sequence == 0)
+			sequence = 1;
+	}
 }
 #endif

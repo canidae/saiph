@@ -18,20 +18,19 @@ namespace action {
 	private:
 		const Command list_inventory;
 	};
-}
 
-/* methods */
-inline const Command &action::ListInventory::getCommand() {
-	switch (sequence) {
-	case 0:
-		return list_inventory;
+	inline const Command &action::ListInventory::getCommand() {
+		switch (sequence) {
+		case 0:
+			return list_inventory;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::ListInventory::updateAction(const std::string &) {
-	++sequence;
+	inline void action::ListInventory::updateAction(const std::string &) {
+		++sequence;
+	}
 }
 #endif

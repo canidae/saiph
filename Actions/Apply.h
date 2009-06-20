@@ -22,30 +22,29 @@ namespace action {
 		const Command apply_item;
 		const bool update_inventory;
 	};
-}
 
-/* methods */
-inline const Command &action::Apply::getCommand() {
-	switch (sequence) {
-	case 0:
-		return do_apply;
+	inline const Command &action::Apply::getCommand() {
+		switch (sequence) {
+		case 0:
+			return do_apply;
 
-	case 1:
-		return apply_item;
+		case 1:
+			return apply_item;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Apply::updateAction(const std::string &messages) {
-	if (World::question && messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
-		sequence = 1;
-	} else if (sequence == 1) {
-		/* mark inventory dirty if update_inventory is true */
-		if (update_inventory)
-			Inventory::updated = false;
-		sequence = 2;
+	inline void action::Apply::updateAction(const std::string &messages) {
+		if (World::question && messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
+			sequence = 1;
+		} else if (sequence == 1) {
+			/* mark inventory dirty if update_inventory is true */
+			if (update_inventory)
+				Inventory::updated = false;
+			sequence = 2;
+		}
 	}
 }
 #endif

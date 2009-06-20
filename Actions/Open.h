@@ -20,26 +20,25 @@ namespace action {
 		const Command open;
 		const Command open_direction;
 	};
-}
 
-/* methods */
-inline const Command &action::Open::getCommand() {
-	switch (sequence) {
-	case 0:
-		return open;
+	inline const Command &action::Open::getCommand() {
+		switch (sequence) {
+		case 0:
+			return open;
 
-	case 1:
-		return open_direction;
+		case 1:
+			return open_direction;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Open::updateAction(const std::string &messages) {
-	if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
-		sequence = 1;
-	else if (sequence == 1)
-		sequence = 2;
+	inline void action::Open::updateAction(const std::string &messages) {
+		if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
+			sequence = 1;
+		else if (sequence == 1)
+			sequence = 2;
+	}
 }
 #endif

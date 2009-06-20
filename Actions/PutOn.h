@@ -22,29 +22,28 @@ namespace action {
 		const Command put_on;
 		const Command put_on_key;
 	};
-}
 
-/* methods */
-inline const Command &action::PutOn::getCommand() {
-	switch (sequence) {
-	case 0:
-		return put_on;
+	inline const Command &action::PutOn::getCommand() {
+		switch (sequence) {
+		case 0:
+			return put_on;
 
-	case 1:
-		return put_on_key;
+		case 1:
+			return put_on_key;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::PutOn::updateAction(const std::string &messages) {
-	if (World::question && messages.find(MESSAGE_WHAT_TO_PUT_ON) != std::string::npos) {
-		sequence = 1;
-	} else if (sequence == 1) {
-		/* also mark the inventory dirty when we do this */
-		Inventory::updated = false;
-		sequence = 2;
+	inline void action::PutOn::updateAction(const std::string &messages) {
+		if (World::question && messages.find(MESSAGE_WHAT_TO_PUT_ON) != std::string::npos) {
+			sequence = 1;
+		} else if (sequence == 1) {
+			/* also mark the inventory dirty when we do this */
+			Inventory::updated = false;
+			sequence = 2;
+		}
 	}
 }
 #endif

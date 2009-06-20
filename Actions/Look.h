@@ -18,21 +18,20 @@ namespace action {
 	private:
 		const Command look;
 	};
-}
 
-/* methods */
-inline const Command &action::Look::getCommand() {
-	switch (sequence) {
-	case 0:
-		return look;
+	inline const Command &action::Look::getCommand() {
+		switch (sequence) {
+		case 0:
+			return look;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Look::updateAction(const std::string &) {
-	if (sequence == 0)
-		sequence = 1;
+	inline void action::Look::updateAction(const std::string &) {
+		if (sequence == 0)
+			sequence = 1;
+	}
 }
 #endif

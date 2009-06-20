@@ -24,34 +24,33 @@ namespace action {
 		const Command throw_item;
 		const Command throw_direction;
 	};
-}
 
-/* methods */
-inline const Command &action::Throw::getCommand() {
-	switch (sequence) {
-	case 0:
-		return do_throw;
+	inline const Command &action::Throw::getCommand() {
+		switch (sequence) {
+		case 0:
+			return do_throw;
 
-	case 1:
-		return throw_item;
+		case 1:
+			return throw_item;
 
-	case 2:
-		return throw_direction;
+		case 2:
+			return throw_direction;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Throw::updateAction(const std::string &messages) {
-	if (World::question && messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
-		sequence = 1;
-	} else if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
-		sequence = 2;
-	} else if (sequence == 2) {
-		/* mark inventory dirty */
-		Inventory::updated = false;
-		sequence = 3;
+	inline void action::Throw::updateAction(const std::string &messages) {
+		if (World::question && messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
+			sequence = 1;
+		} else if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+			sequence = 2;
+		} else if (sequence == 2) {
+			/* mark inventory dirty */
+			Inventory::updated = false;
+			sequence = 3;
+		}
 	}
 }
 #endif

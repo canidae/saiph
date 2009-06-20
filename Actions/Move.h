@@ -21,20 +21,19 @@ namespace action {
 	private:
 		const Command move;
 	};
-}
 
-/* methods */
-inline const Command &action::Move::getCommand() {
-	switch (sequence) {
-	case 0:
-		return move;
+	inline const Command &action::Move::getCommand() {
+		switch (sequence) {
+		case 0:
+			return move;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Move::updateAction(const std::string &) {
-	++sequence;
+	inline void action::Move::updateAction(const std::string &) {
+		++sequence;
+	}
 }
 #endif

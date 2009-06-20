@@ -23,28 +23,27 @@ namespace action {
 		const Command fight;
 		const Command attack_friendly;
 	};
-}
 
-/* methods */
-inline const Command &action::Fight::getCommand() {
-	switch (sequence) {
-	case 0:
-		return fight;
+	inline const Command &action::Fight::getCommand() {
+		switch (sequence) {
+		case 0:
+			return fight;
 
-	case 1:
-		return attack_friendly;
+		case 1:
+			return attack_friendly;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Fight::updateAction(const std::string &messages) {
-	if (sequence == 0) {
-		if (World::question && messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
-			sequence = 1;
-		else
-			sequence = 2;
+	inline void action::Fight::updateAction(const std::string &messages) {
+		if (sequence == 0) {
+			if (World::question && messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
+				sequence = 1;
+			else
+				sequence = 2;
+		}
 	}
 }
 #endif

@@ -18,21 +18,20 @@ namespace action {
 	private:
 		const Command answer;
 	};
-}
 
-/* methods */
-inline const Command &action::Answer::getCommand() {
-	switch (sequence) {
-	case 0:
-		return answer;
+	inline const Command &Answer::getCommand() {
+		switch (sequence) {
+		case 0:
+			return answer;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Answer::updateAction(const std::string &) {
-	if (sequence == 0)
-		sequence = 1;
+	inline void Answer::updateAction(const std::string &) {
+		if (sequence == 0)
+			sequence = 1;
+	}
 }
 #endif

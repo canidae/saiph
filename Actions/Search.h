@@ -18,24 +18,23 @@ namespace action {
 	private:
 		const Command search;
 	};
-}
 
-/* methods */
-inline const Command &action::Search::getCommand() {
-	switch (sequence) {
-	case 0:
-		return search;
+	inline const Command &action::Search::getCommand() {
+		switch (sequence) {
+		case 0:
+			return search;
 
-	default:
-		return Action::noop;
+		default:
+			return Action::noop;
+		}
 	}
-}
 
-inline void action::Search::updateAction(const std::string &) {
-	if (sequence == 0) {
-		/* increase search counter on level */
-		World::levels[Saiph::position.level].increaseAdjacentSearchCount(Saiph::position);
-		sequence = 1;
+	inline void action::Search::updateAction(const std::string &) {
+		if (sequence == 0) {
+			/* increase search counter on level */
+			World::levels[Saiph::position.level].increaseAdjacentSearchCount(Saiph::position);
+			sequence = 1;
+		}
 	}
 }
 #endif
