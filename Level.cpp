@@ -138,19 +138,20 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
 		stashes.erase(Saiph::position);
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || Level::got_pickup_menu) {
+	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || got_pickup_menu) {
 		/* picking up stuff */
-		if (Level::got_pickup_menu) {
+		if (got_pickup_menu) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page */
-			Level::got_pickup_menu = true;
+			got_pickup_menu = true;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
 		/* reset pickup list */
-		Level::pickup.items.clear();
+		pickup.items.clear();
+		pickup.select.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
@@ -158,24 +159,24 @@ void Level::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			if (messages[pos - 2] == '-')
-				Level::pickup.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+				pickup.items[messages[pos - 4]] = Item(messages.substr(pos, length));
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&Level::pickup));
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || Level::got_drop_menu) {
+		EventBus::broadcast(static_cast<Event *>(&pickup));
+	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
 		/* dropping items */
-		if (Level::got_drop_menu) {
+		if (got_drop_menu) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page, set menu */
-			Level::got_drop_menu = true;;
+			got_drop_menu = true;;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
 		/* reset drop list */
-		Level::drop.keys.clear();
+		drop.keys.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
@@ -183,17 +184,17 @@ void Level::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			if (messages[pos - 2] == '-')
-				Level::drop.keys.insert(messages[pos - 4]);
+				drop.keys.insert(messages[pos - 4]);
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&Level::drop));
+		EventBus::broadcast(static_cast<Event *>(&drop));
 	} else if (!World::menu) {
 		/* check if we received items */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
 		/* reset received list */
-		Level::received.items.clear();
+		received.items.clear();
 		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
 			/* add item to inventory */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
@@ -203,15 +204,15 @@ void Level::parseMessages(const string &messages) {
 			}
 			Inventory::addItem(messages[pos - 1], item);
 			/* add item to changed.keys */
-			Level::received.items[messages[pos - 1]] = item;
+			received.items[messages[pos - 1]] = item;
 		}
-		if (Level::received.items.size() > 0) {
+		if (received.items.size() > 0) {
 			/* if we're standing on a stash, mark it as changed */
 			map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
 			if (s != World::levels[Saiph::position.level].stashes.end())
 				s->second.turn_changed = World::turn;
 			/* broadcast "ChangedInventoryItems" */
-			EventBus::broadcast(static_cast<Event *>(&Level::received));
+			EventBus::broadcast(static_cast<Event *>(&received));
 		}
 	}
 
@@ -220,7 +221,7 @@ void Level::parseMessages(const string &messages) {
 	if (s != stashes.end()) {
 		on_ground.items = s->second.items;
 		/* broadcast "ItemsOnGround" */
-		EventBus::broadcast(static_cast<Event *>(&Level::on_ground));
+		EventBus::broadcast(static_cast<Event *>(&on_ground));
 	}
 }
 
