@@ -79,20 +79,20 @@
 #define FRIENDLY 0x4
 
 /* encumbrance */
-#define UNENCUMBERED 0
-#define BURDENED 1
-#define STRESSED 2
-#define STRAINED 3
-#define OVERTAXED 4
-#define OVERLOADED 5
+#define UNENCUMBERED 0x01
+#define BURDENED 0x02
+#define STRESSED 0x04
+#define STRAINED 0x08
+#define OVERTAXED 0x10
+#define OVERLOADED 0x20
 
 /* hunger */
-#define FAINTING -3
-#define WEAK -2
-#define HUNGRY -1
-#define CONTENT 0
-#define SATIATED 1
-#define OVERSATIATED 2
+#define FAINTING 0x01
+#define WEAK 0x02
+#define HUNGRY 0x04
+#define CONTENT 0x08
+#define SATIATED 0x10
+#define OVERSATIATED 0x20
 
 /* slots */
 #define SLOTS 13
@@ -271,6 +271,8 @@
 #define MESSAGE_PLAY_PASSTUNE "  Play the passtune? [yn] (n)  "
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
+#define MESSAGE_STEALS " steals "
+#define MESSAGE_STOLE " stole "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
 #define MESSAGE_TEXT_BURNED "  Some text has been burned into the floor here.  "
 #define MESSAGE_TEXT_DIGGED "  Something is engraved here on the floor.  "
@@ -298,6 +300,5 @@
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off
-
 
 #endif

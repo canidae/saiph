@@ -11,8 +11,8 @@
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
 #include "../Events/ItemsOnGround.h"
-#include "../Events/PickupItems.h"
 #include "../Events/ReceivedItems.h"
+#include "../Events/WantItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -31,8 +31,8 @@ void Amulet::onEvent(Event *const event) {
 		// FIXME
 		//ReceivedItems *e = static_cast<ReceivedItems *>(event);
 		//wearAmulet(e->items);
-	} else if (event->getID() == PickupItems::id) {
-		PickupItems *e = static_cast<PickupItems *>(event);
+	} else if (event->getID() == WantItems::id) {
+		WantItems *e = static_cast<WantItems *>(event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (wantItem(i->second))
 				World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));

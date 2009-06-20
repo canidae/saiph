@@ -16,8 +16,8 @@
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
 #include "../Events/ItemsOnGround.h"
-#include "../Events/PickupItems.h"
 #include "../Events/ReceivedItems.h"
+#include "../Events/WantItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -136,8 +136,8 @@ void Door::onEvent(Event *const event) {
 			if (wantItem(i->second))
 				unlock_tool_key = i->first; // better key than what we currently got
 		}
-	} else if (event->getID() == PickupItems::id) {
-		PickupItems *e = static_cast<PickupItems *>(event);
+	} else if (event->getID() == WantItems::id) {
+		WantItems *e = static_cast<WantItems *>(event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (wantItem(i->second))
 				World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));

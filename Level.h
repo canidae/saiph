@@ -46,9 +46,7 @@
 #include "PathNode.h"
 #include "Point.h"
 #include "Stash.h"
-#include "Events/DropInventoryItems.h"
 #include "Events/ItemsOnGround.h"
-#include "Events/PickupItems.h"
 #include "Events/ReceivedItems.h"
 
 class Item;
@@ -95,8 +93,6 @@ private:
 	static bool initialized;
 	static bool got_pickup_menu;
 	static bool got_drop_menu;
-	static event::PickupItems pickup;
-	static event::DropInventoryItems drop;
 	static event::ReceivedItems received;
 	static event::ItemsOnGround on_ground;
 

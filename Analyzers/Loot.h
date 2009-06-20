@@ -16,29 +16,26 @@
 #define LOOT_MANY_MORE_OBJECTS_HERE "  There are many more objects here.  "
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 
+#define LOOT_GOT_BURDENED "  Your movements are slowed slightly because of your load.  "
+#define LOOT_GOT_STRESSED "  You rebalance your load.  Movement is difficult.  "
+#define LOOT_GOT_STRAINED "  You stagger under your heavy load.  Movement is very hard.  "
+#define LOOT_GOT_OVERTAXED "  You can barely move a handspan with this load!  "
+
 namespace analyzer {
 	class Loot : public Analyzer {
 	public:
 		Loot();
 
 		void analyze();
-		void complete();
 		void parseMessages(const std::string &messages);
 
 	private:
-		Saiph *saiph;
-		bool dirty_stash;
-		bool showing_inventory;
 		bool showing_pickup;
 		bool showing_drop;
-		std::map<Coordinate, int> visit_stash; // location, turn_changed
-		Coordinate visit_old_stash;
+		std::map<Coordinate, int> stash_checked; // location, turn we checked stash
+		Coordinate check_old_stash;
 
-		void checkStash();
-		int dropItem(const Item &item);
-		int pickupItem(const Item &item);
-		int pickupOrDropItem(const Item &item, bool drop);
-		void visitOldStash();
+		void checkOldStash();
 	};
 }
 #endif

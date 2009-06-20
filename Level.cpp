@@ -21,10 +21,6 @@ bool Level::dungeon[UCHAR_MAX + 1] = {false};
 bool Level::monster[UCHAR_MAX + 1] = {false};
 bool Level::item[UCHAR_MAX + 1] = {false};
 bool Level::initialized = false;
-bool Level::got_pickup_menu = false;
-bool Level::got_drop_menu = false;
-PickupItems Level::pickup;
-DropInventoryItems Level::drop;
 ReceivedItems Level::received;
 ItemsOnGround Level::on_ground;
 
@@ -94,12 +90,6 @@ void Level::parseMessages(const string &messages) {
 		undiggable = true;
 	}
 
-	/* need to reset got_pickup_menu & got_drop_menu if we got no meny */
-	if (!World::menu) {
-		got_pickup_menu = false;
-		got_drop_menu = false;
-	}
-
 	/* figure out if there's something on the ground */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
 		/* we see a single item on ground */
@@ -138,56 +128,6 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
 		stashes.erase(Saiph::position);
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || got_pickup_menu) {
-		/* picking up stuff */
-		if (got_pickup_menu) {
-			/* not the first page, set pos to 0 */
-			pos = 0;
-		} else {
-			/* first page */
-			got_pickup_menu = true;
-			/* and find first "  " */
-			pos = messages.find("  ", pos + 1);
-		}
-		/* reset pickup list */
-		pickup.items.clear();
-		while (pos != string::npos && messages.size() > pos + 6) {
-			pos += 6;
-			string::size_type length = messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			if (messages[pos - 2] == '-')
-				pickup.items[messages[pos - 4]] = Item(messages.substr(pos, length));
-			pos += length;
-		}
-		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&pickup));
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || got_drop_menu) {
-		/* dropping items */
-		if (got_drop_menu) {
-			/* not the first page, set pos to 0 */
-			pos = 0;
-		} else {
-			/* first page, set menu */
-			got_drop_menu = true;;
-			/* and find first "  " */
-			pos = messages.find("  ", pos + 1);
-		}
-		/* reset drop list */
-		drop.keys.clear();
-		while (pos != string::npos && messages.size() > pos + 6) {
-			pos += 6;
-			string::size_type length = messages.find("  ", pos);
-			if (length == string::npos)
-				break;
-			length = length - pos;
-			if (messages[pos - 2] == '-')
-				drop.keys.insert(messages[pos - 4]);
-			pos += length;
-		}
-		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&drop));
 	} else if (!World::menu) {
 		/* check if we received items */
 		string::size_type pos = 0;

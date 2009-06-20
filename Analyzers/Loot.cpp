@@ -1,46 +1,27 @@
 #include <stdlib.h>
 #include "Loot.h"
+#include "../EventBus.h"
+#include "../Inventory.h"
 #include "../Saiph.h"
 #include "../World.h"
-#include "../EventBus.h"
+#include "../Actions/ListInventory.h"
 
 using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Loot::Loot() : Analyzer("Loot"), dirty_stash(false), showing_inventory(false), showing_pickup(false), showing_drop(false) {
+Loot::Loot() : Analyzer("Loot"), showing_pickup(false), showing_drop(false) {
 }
 
 /* methods */
 void Loot::analyze() {
-	if (saiph->on_ground != NULL) {
-		/* set visit_stash when we stand on a stash */
-		visit_stash[saiph->position] = saiph->on_ground->turn_changed;
-		if (visit_old_stash == saiph->position)
-			visitOldStash(); // check if there are other old stashes we wish to visit
-	}
-	/* check that we don't have anything more important to do */
-	if (priority >= PRIORITY_LOOK)
-		return;
-	/* check inventory/stash if it's dirty */
-	if (dirty_inventory) {
-		checkInventory();
-		return;
-	}
-	if (dirty_stash) {
-		checkStash();
-		return;
-	}
-	if (name_items.size() > 0 || call_items.size() > 0) {
-		/* we got items to name or call */
-		command = NAME;
-		priority = PRIORITY_LOOK;
+	/* check inventory if it's not updated */
+	if (!Inventory::updated) {
+		World::setAction(static_cast<action::Action *>(new action::ListInventory(this)));
 		return;
 	}
 
 	/* loot stash we're standing on unless full knapsack or burdened */
-	if (priority >= PRIORITY_LOOT_LOOT_STASH)
-		return;
 	unsigned char symbol = saiph->getDungeonSymbol();
 	if (saiph->on_ground != NULL && saiph->inventory.size() < KNAPSACK_LIMIT && saiph->world->player.encumbrance < BURDENED) {
 		/* only loot if we're not on a SHOP_TILE */
@@ -110,18 +91,65 @@ void Loot::analyze() {
 	visitOldStash();
 }
 
-void Loot::complete() {
-	if (dirty_inventory && command == INVENTORY) {
-		/* we're showing our inventory */
-		showing_inventory = true;
-	} else if (dirty_stash && command == LOOK) {
-		/* looked at ground, stash is no longer dirty */
-		dirty_stash = false;
-	}
-}
-
 void Loot::parseMessages(const string &messages) {
-	if (saiph->got_pickup_menu) {
+	string::size_type pos;
+
+	if (!World::menu) {
+		showing_pickup = false;
+		showing_drop = false;
+	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT, 0)) != string::npos || showing_pickup) {
+		/* picking up stuff */
+		if (showing_pickup) {
+			/* not the first page, set pos to 0 */
+			pos = 0;
+		} else {
+			/* first page */
+			showing_pickup = true;
+			/* and find first "  " */
+			pos = messages.find("  ", pos + 1);
+		}
+		/* reset pickup list */
+		pickup.items.clear();
+		while (pos != string::npos && messages.size() > pos + 6) {
+			pos += 6;
+			string::size_type length = messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if (messages[pos - 2] == '-')
+				pickup.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+			pos += length;
+		}
+		/* broadcast event */
+		EventBus::broadcast(static_cast<Event *>(&pickup));
+	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS, 0)) != string::npos || showing_drop) {
+		/* dropping items */
+		if (showing_drop) {
+			/* not the first page, set pos to 0 */
+			pos = 0;
+		} else {
+			/* first page, set menu */
+			showing_drop = true;;
+			/* and find first "  " */
+			pos = messages.find("  ", pos + 1);
+		}
+		/* reset drop list */
+		drop.keys.clear();
+		while (pos != string::npos && messages.size() > pos + 6) {
+			pos += 6;
+			string::size_type length = messages.find("  ", pos);
+			if (length == string::npos)
+				break;
+			length = length - pos;
+			if (messages[pos - 2] == '-')
+				drop.keys.insert(messages[pos - 4]);
+			pos += length;
+		}
+		/* broadcast event */
+		EventBus::broadcast(static_cast<Event *>(&drop));
+	}
+
+	if (saiph->showing_pickup) {
 		/* looting */
 		if (saiph->inventory.size() < KNAPSACK_LIMIT) {
 			/* we should have room for it in the knapsack */
@@ -147,7 +175,7 @@ void Loot::parseMessages(const string &messages) {
 		showing_pickup = true;
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_PAGE;
-	} else if (saiph->got_drop_menu) {
+	} else if (saiph->showing_drop) {
 		showing_drop = true;
 		/* drop unwanted stuff */
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
@@ -177,29 +205,6 @@ void Loot::parseMessages(const string &messages) {
 		/* if we're here, we should get next page or close list */
 		command = CLOSE_PAGE;
 		priority = PRIORITY_CLOSE_PAGE;
-	} else if (saiph->world->menu && showing_inventory) {
-		/* we should close the page of the inventory we're showing */
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_PAGE;
-		return;
-	} else if (!saiph->world->menu) {
-		if (showing_inventory) {
-			/* we showed our inventory, but now it's closed */
-			dirty_inventory = false;
-			showing_inventory = false;
-			/* also announce that it's no longer dirty */
-			req.request = REQUEST_UPDATED_INVENTORY;
-			saiph->request(req);
-		} else if (showing_pickup) {
-			/* we just had a pickup menu. check stash */
-			checkStash();
-			showing_pickup = false;
-		} else if (showing_drop) {
-			/* we just had a drop menu. check stash and inventory */
-			checkInventory();
-			checkStash();
-			showing_drop = false;
-		}
 	}
 
 	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_SEVERAL_MORE_OBJECTS_HERE, 0) != string::npos || messages.find(LOOT_MANY_MORE_OBJECTS_HERE, 0) != string::npos) {
@@ -318,91 +323,7 @@ bool Loot::request(const Request &request) {
 }
 
 /* private methods */
-void Loot::checkInventory() {
-	dirty_inventory = true;
-	if (priority >= PRIORITY_LOOK)
-		return;
-	command = INVENTORY;
-	priority = PRIORITY_LOOK;
-}
-
-void Loot::checkStash() {
-	dirty_stash = true;
-	if (priority >= PRIORITY_LOOK)
-		return;
-	command = LOOK;
-	priority = PRIORITY_LOOK;
-}
-
-int Loot::dropItem(const Item &item) {
-	/* return how many items of this type should be dropped */
-	if (!item.additional.empty())
-		return 0; // hack: don't drop anything that got additional data ("wielded", "being worn", etc)
-	if (item.name.find("(", 0) != string::npos)
-		return 0; // even more of a hack; thoroughly rotted thoroughly burned iron helm (being wo
-	return pickupOrDropItem(item, true);
-}
-
-int Loot::pickupItem(const Item &item) {
-	/* return how many items of this type should be picked up */
-	return pickupOrDropItem(item, false);
-}
-
-int Loot::pickupOrDropItem(const Item &item, bool drop) {
-	/* helper method for dropItem() and pickupItem() */
-	map<string, ItemWanted>::iterator i = items.find(item.name);
-	if (i == items.end())
-		return (drop ? item.count : 0); // item is not in our list
-	if ((item.beatitude & i->second.beatitude) == 0)
-		return (drop ? item.count : 0); // item does not have a beatitude we'll accept
-	if (item.name == DISCARD)
-		return (drop ? item.count : 0); // item is named "discard", we don't want the item
-	/* groups */
-	for (map<unsigned char, ItemGroup>::iterator g = groups.begin(); g != groups.end(); ++g) {
-		/* figure out how many items we already got in this group */
-		int count = 0;
-		int item_in_group = false;
-		for (vector<string>::iterator gi = g->second.items.begin(); gi != g->second.items.end(); ++gi) {
-			for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-				if (in->second.name != *gi)
-					continue;
-				count += in->second.count;
-			}
-			if (*gi == item.name) {
-				/* item is in group.
-				 * we'll also break here so she'll pick up better items in group,
-				 * even if that means she'll exceed the limit.
-				 * otherwise she won't pick up eg. elven daggers when she's full on orcish daggers */
-				item_in_group = true;
-				break;
-			}
-		}
-		if (!item_in_group)
-			continue;
-		if (count <= g->second.amount)
-			return (drop ? 0 : g->second.amount - count);
-		else
-			return (drop ? count - g->second.amount : 0);
-	}
-	/* solitary items */
-	if (i->second.amount <= 0)
-		return (drop ? item.count : 0); // we don't desire this item
-	if (i->second.only_unknown_enchantment && !item.unknown_enchantment)
-		return (drop ? item.count : 0); // we only want this item if it got unknown enchantment, this is not the case
-	/* figure out how many we got of this item already */
-	int count = 0;
-	for (map<unsigned char, Item>::iterator in = saiph->inventory.begin(); in != saiph->inventory.end(); ++in) {
-		if (in->second.name != item.name)
-			continue;
-		count += in->second.count;
-	}
-	if (count <= i->second.amount)
-		return (drop ? 0 : i->second.amount - count);
-	else
-		return (drop ? count - i->second.amount : 0);
-}
-
-void Loot::visitOldStash() {
+void Loot::checkOldStash() {
 	if (saiph->world->player.hallucinating || saiph->world->player.blind || saiph->world->player.encumbrance > UNENCUMBERED || saiph->inventory.size() >= KNAPSACK_LIMIT)
 		return;
 	unsigned int min_moves = UNREACHABLE;

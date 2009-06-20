@@ -8,7 +8,7 @@ namespace action {
 	public:
 		static int id;
 
-		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), list_inventory("i", PRIORITY_LOOK) {}
+		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), list_inventory("i", PRIORITY_LOOK), close_page(" ", PRIORITY_CONTINUE_ACTION) {}
 		virtual ~ListInventory() {};
 
 		virtual int getID() {return id;}
@@ -17,6 +17,7 @@ namespace action {
 
 	private:
 		const Command list_inventory;
+		const Command close_page;
 	};
 
 	inline const Command &action::ListInventory::getCommand() {
@@ -24,13 +25,19 @@ namespace action {
 		case 0:
 			return list_inventory;
 
+		case 1:
+			return close_page;
+
 		default:
 			return Action::noop;
 		}
 	}
 
 	inline void action::ListInventory::updateAction(const std::string &) {
-		++sequence;
+		if (World::menu)
+			sequence = 1;
+		else
+			sequence = 2;
 	}
 }
 #endif

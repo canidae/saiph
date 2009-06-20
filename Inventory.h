@@ -12,11 +12,6 @@
 
 #define INVENTORY_DEBUG_NAME "Inventory] "
 
-#define MESSAGE_NOT_CARRYING_ANYTHING "  Not carrying anything.  "
-#define MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD "  Not carrying anything except gold.  "
-#define MESSAGE_STEALS " steals "
-#define MESSAGE_STOLE " stole "
-
 class Inventory {
 public:
 	static bool updated;
