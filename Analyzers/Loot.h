@@ -16,13 +16,6 @@
 #define LOOT_MANY_MORE_OBJECTS_HERE "  There are many more objects here.  "
 #define LOOT_MANY_OBJECTS_HERE "  There are many objects here.  "
 
-/* FIXME: move to own actions */
-#define LOOT_NAME_INDIVIDUAL_OBECT "  Name an individual object? [ynq] (q)  "
-#define LOOT_ITEM_TO_NAME "  What do you want to name? "
-#define LOOT_ITEM_TO_CALL "  What do you want to call? "
-#define LOOT_WHAT_TO_NAME_ITEM "  What do you want to name this "
-#define LOOT_WHAT_TO_CALL_ITEM "  Call "
-
 namespace analyzer {
 	class Loot : public Analyzer {
 	public:

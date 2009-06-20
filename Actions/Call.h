@@ -3,7 +3,6 @@
 
 #include "Action.h"
 
-#define MESSAGE_CALL_INDIVIDUAL_OBECT "  Call an individual object? [ynq] (q)  "
 #define MESSAGE_ITEM_TO_CALL "  What do you want to call? "
 #define MESSAGE_WHAT_TO_CALL_ITEM "  Call "
 
@@ -46,7 +45,7 @@ namespace action {
 	}
 
 	inline void Call::updateAction(const std::string &messages) {
-		if (messages.find(MESSAGE_CALL_INDIVIDUAL_OBECT) != std::string::npos)
+		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos)
 			sequence = 1;
 		else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos)
 			sequence = 2;

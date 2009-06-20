@@ -3,7 +3,6 @@
 
 #include "Action.h"
 
-#define MESSAGE_NAME_INDIVIDUAL_OBECT "  Name an individual object? [ynq] (q)  "
 #define MESSAGE_ITEM_TO_NAME "  What do you want to name? "
 #define MESSAGE_WHAT_TO_NAME_ITEM "  What do you want to name this "
 

@@ -4,6 +4,8 @@
 #include <string>
 #include "../Command.h"
 
+#define MESSAGE_NAME_INDIVIDUAL_OBECT "  Name an individual object? [ynq] (q)  "
+
 namespace analyzer {
 	class Analyzer;
 }
