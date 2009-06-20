@@ -15,16 +15,13 @@ namespace action {
 	public:
 		static int id;
 
-		Engrave(analyzer::Analyzer *analyzer, std::string engrave_msg, unsigned char engrave_with,
-				int priority, bool should_append = true) :
-				Action(analyzer), engrave(std::string(1, 'E'), priority), message(engrave_msg, PRIORITY_CONTINUE_ACTION),
-				item(std::string(1,engrave_with), PRIORITY_CONTINUE_ACTION),
-				append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {}
+		Engrave(analyzer::Analyzer *analyzer, std::string engrave_msg, unsigned char engrave_with, int priority, bool should_append = true) : Action(analyzer), engrave(std::string(1, 'E'), priority), message(engrave_msg, PRIORITY_CONTINUE_ACTION), item(std::string(1,engrave_with), PRIORITY_CONTINUE_ACTION), append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {}
 		virtual ~Engrave() {}
 
 		virtual int getID() {return id;}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
+
 	private:
 		const Command engrave;
 		const Command message;
@@ -33,18 +30,20 @@ namespace action {
 	};
 
 	inline const Command &Engrave::getCommand() {
-		// what do you want to write with?
-		// do you want to add? (maybe)
-		// what do you want to add? or what do you want to write?
 		switch (sequence) {
+
 		case 0:
 			return engrave;
+
 		case 1:
 			return item;
+
 		case 2:
 			return append;
+
 		case 3:
 			return message;
+
 		default:
 			return Action::noop;
 		}
