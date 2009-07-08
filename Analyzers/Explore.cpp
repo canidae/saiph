@@ -28,7 +28,7 @@ void Explore::analyze() {
 			const PathNode &node = World::shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			if (node.dir == NOWHERE)
+			else if (node.dir == NOWHERE)
 				World::setAction(static_cast<action::Action *>(new action::Look(this)));
 			else
 				World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, node.moves))));
@@ -44,7 +44,7 @@ void Explore::analyze() {
 			const PathNode &node = World::shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
-			if (node.dir == NOWHERE)
+			else if (node.dir == NOWHERE)
 				World::setAction(static_cast<action::Action *>(new action::Move(this, UP, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves))));
 			else
 				World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, node.moves))));
@@ -77,7 +77,7 @@ void Explore::analyze() {
 		const PathNode &node = World::shortestPath(s->first);
 		if (node.cost >= UNPASSABLE)
 			continue;
-		if (node.dir == NOWHERE)
+		else if (node.dir == NOWHERE)
 			World::setAction(static_cast<action::Action *>(new action::Move(this, DOWN, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves))));
 		else
 			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, node.moves))));
@@ -91,7 +91,7 @@ void Explore::analyze() {
 		const PathNode &node = World::shortestPath(s->first);
 		if (node.cost >= UNPASSABLE)
 			continue;
-		if (node.dir == NOWHERE)
+		else if (node.dir == NOWHERE)
 			continue; // shouldn't happen
 		else
 			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, node.moves))));
@@ -99,14 +99,16 @@ void Explore::analyze() {
 	}
 
 	/* travel */
-	for (map<Coordinate, int>::iterator v = visit.begin(); v != visit.end(); ++v) {
+	map<Coordinate, int>::iterator v = visit.begin();
+	while (v != visit.end()) {
 		const PathNode &node = World::shortestPath(v->first);
-		if (node.cost >= UNPASSABLE)
+		if (node.dir == NOWHERE) {
+			visit.erase(v++);
 			continue;
-		if (node.dir == NOWHERE)
-			continue; // shouldn't happen
-		else
+		} else if (node.cost < UNPASSABLE) {
 			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(v->second, node.moves))));
+		}
+		++v;
 	}
 }
 
