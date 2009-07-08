@@ -4,6 +4,7 @@
 #include "../Actions/Look.h"
 #include "../Actions/Move.h"
 #include "../Actions/Search.h"
+#include "../Events/TakeMeThere.h"
 
 using namespace analyzer;
 using namespace event;
@@ -97,7 +98,25 @@ void Explore::analyze() {
 		break;
 	}
 
-	/* TODO: travel */
+	/* travel */
+	for (map<Coordinate, int>::iterator v = visit.begin(); v != visit.end(); ++v) {
+		const PathNode &node = World::shortestPath(v->first);
+		if (node.cost >= UNPASSABLE)
+			continue;
+		if (node.dir == NOWHERE)
+			continue; // shouldn't happen
+		else
+			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(v->second, node.moves))));
+	}
+}
+
+void Explore::onEvent(Event *const event) {
+	if (event->getID() == TakeMeThere::id) {
+		TakeMeThere *e = static_cast<TakeMeThere *>(event);
+		map<Coordinate, int>::iterator v = visit.find(e->coordinate);
+		if (v == visit.end() || v->second < e->max_priority)
+			visit[e->coordinate] = e->max_priority;
+	}
 }
 
 /* private methods */

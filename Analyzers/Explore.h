@@ -1,8 +1,10 @@
 #ifndef ANALYZER_EXPLORE_H
 #define ANALYZER_EXPLORE_H
 
+#include <map>
 #include <string>
 #include "Analyzer.h"
+#include "../Coordinate.h"
 #include "../Point.h"
 
 /* search interval */
@@ -21,8 +23,11 @@ namespace analyzer {
 
 		void parseMessages(const std::string &messages);
 		void analyze();
+		void onEvent(event::Event *const event);
 
 	private:
+		std::map<Coordinate, int> visit;
+
 		void explorePoint(Point p, unsigned int *min_moves, int *best_type);
 	};
 }

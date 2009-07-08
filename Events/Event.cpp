@@ -3,6 +3,7 @@
 #include "ElberethQuery.h"
 #include "ItemsOnGround.h"
 #include "ReceivedItems.h"
+#include "TakeMeThere.h"
 #include "WantItems.h"
 #include "../EventBus.h"
 
@@ -14,6 +15,7 @@ int ChangedInventoryItems::id = ILLEGAL_EVENT_ID;
 int ElberethQuery::id = ILLEGAL_EVENT_ID;
 int ItemsOnGround::id = ILLEGAL_EVENT_ID;
 int ReceivedItems::id = ILLEGAL_EVENT_ID;
+int TakeMeThere::id = ILLEGAL_EVENT_ID;
 int WantItems::id = ILLEGAL_EVENT_ID;
 
 /* methods */
@@ -27,6 +29,7 @@ void Event::init() {
 	ElberethQuery::id = EventBus::createEventID();
 	ItemsOnGround::id = EventBus::createEventID();
 	ReceivedItems::id = EventBus::createEventID();
+	TakeMeThere::id = EventBus::createEventID();
 	WantItems::id = EventBus::createEventID();
 }
 
