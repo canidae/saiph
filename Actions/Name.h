@@ -2,6 +2,7 @@
 #define ACTION_NAME_H
 
 #include "Action.h"
+#include "../Inventory.h"
 
 #define MESSAGE_ITEM_TO_NAME "  What do you want to name? "
 #define MESSAGE_WHAT_TO_NAME_ITEM "  What do you want to name this "
@@ -45,14 +46,17 @@ namespace action {
 	}
 
 	inline void Name::updateAction(const std::string &messages) {
-		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos)
+		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
 			sequence = 1;
-		else if (messages.find(MESSAGE_ITEM_TO_NAME) != std::string::npos)
+		} else if (messages.find(MESSAGE_ITEM_TO_NAME) != std::string::npos) {
 			sequence = 2;
-		else if (messages.find(MESSAGE_WHAT_TO_NAME_ITEM) != std::string::npos)
+		} else if (messages.find(MESSAGE_WHAT_TO_NAME_ITEM) != std::string::npos) {
 			sequence = 3;
-		else
+		} else {
+			/* we need to mark inventory as not updated */
+			Inventory::updated = false;
 			sequence = 4;
+		}
 	}
 }
 #endif

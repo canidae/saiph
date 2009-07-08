@@ -2,6 +2,7 @@
 #define ACTION_CALL_H
 
 #include "Action.h"
+#include "../Inventory.h"
 
 #define MESSAGE_ITEM_TO_CALL "  What do you want to call? "
 #define MESSAGE_WHAT_TO_CALL_ITEM "  Call "
@@ -45,14 +46,17 @@ namespace action {
 	}
 
 	inline void Call::updateAction(const std::string &messages) {
-		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos)
+		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
 			sequence = 1;
-		else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos)
+		} else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos) {
 			sequence = 2;
-		else if (messages.find(MESSAGE_WHAT_TO_CALL_ITEM) != std::string::npos)
+		} else if (messages.find(MESSAGE_WHAT_TO_CALL_ITEM) != std::string::npos) {
 			sequence = 3;
-		else
+		} else {
+			/* we need to mark inventory as not updated */
+			Inventory::updated = false;
 			sequence = 4;
+		}
 	}
 }
 #endif
