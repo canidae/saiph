@@ -3,12 +3,8 @@
 
 #include <map>
 #include <string>
-#include <sstream>
-#include <vector>
 #include "Analyzer.h"
 #include "../Coordinate.h"
-#include "../Item.h"
-#include "../Request.h"
 
 /* messages */
 #define LOOT_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "
