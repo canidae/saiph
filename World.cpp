@@ -36,6 +36,7 @@ Coordinate World::branch_sokoban;
 
 Connection *World::connection = NULL;
 action::Action *World::action = NULL;
+list<action::Action *> World::action_queue;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {{false}};
 string World::messages = " ";
 bool World::inverse = false;
@@ -43,11 +44,11 @@ bool World::bold = false;
 char World::data[BUFFER_SIZE * 2] = {'\0'};
 char World::effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {{'\0'}};
 int World::data_size = -1;
-std::string World::msg_str;
+string World::msg_str;
 Point World::last_menu;
-std::map<std::string, std::vector<int> > World::levelmap;
+map<string, vector<int> > World::levelmap;
 time_t World::start_time = time(NULL);
-std::vector<Analyzer *> World::analyzers;
+vector<Analyzer *> World::analyzers;
 
 /* methods */
 void World::init(int connection_type) {
@@ -88,15 +89,28 @@ int World::getPriority() {
 	return action->getCommand().priority;
 }
 
-void World::setAction(action::Action *action) {
+bool World::setAction(action::Action *action) {
 	if (World::action != NULL) {
 		if (action->getCommand().priority <= World::action->getCommand().priority) {
 			delete action;
-			return; // already got an action with higher priority
+			return false; // already got an action with higher priority
 		}
 		delete World::action;
 	}
 	World::action = action;
+	return true;
+}
+
+bool World::queueAction(action::Action *action) {
+	if (action == NULL) {
+		return false; // shouldn't happen, though
+	} else if (action->getCommand().priority <= PRIORITY_TURN_MAX) {
+		/* not a zero-turn action, can't queue it */
+		delete action;
+		return false;
+	}
+	action_queue.push_back(action);
+	return true;
 }
 
 unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
@@ -513,6 +527,16 @@ void World::run() {
 			}
 		}
 
+		/* check if we got some queued actions */
+		for (list<action::Action *>::iterator a = action_queue.begin(); a != action_queue.end(); ++a) {
+			if (setAction(*a)) {
+				/* we will execute this action, remove it from queue.
+				 * if it fails, the analyzer that queued the action needs to handle it */
+				action_queue.erase(a);
+				break;
+			}
+		}
+
 		/* check if we got a command */
 		if (action == NULL || action->getCommand() == action::Action::noop) {
 			/* we do not. print debugging and just answer something sensible */
@@ -532,7 +556,7 @@ void World::run() {
 				/* return cursor back to where it was */
 				cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
 				cout.flush();
-				++World::real_turn; // command than won't increase turn counter
+				++World::real_turn; // command than may increase turn counter
 				executeCommand("s");
 				continue;
 			}

@@ -16,6 +16,7 @@
 #define PAGE "(%d of %d)"
 #define PAGE_DIRTY "%*[^(]" PAGE
 
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -56,7 +57,8 @@ public:
 	static void registerAnalyzer(analyzer::Analyzer *analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
 	static int getPriority();
-	static void setAction(action::Action *action);
+	static bool setAction(action::Action *action);
+	static bool queueAction(action::Action *action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 	static unsigned char getDungeonSymbol();
 	static unsigned char getDungeonSymbol(const Coordinate &coordinate);
@@ -75,6 +77,7 @@ public:
 private:
 	static Connection *connection;
 	static action::Action *action;
+	static std::list<action::Action *> action_queue;
 	static bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 	static std::string messages;
 	static bool inverse;
