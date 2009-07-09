@@ -4,10 +4,8 @@
 #include <map>
 #include <set>
 #include <string>
-#include "Debug.h"
 #include "Globals.h"
 #include "Item.h"
-#include "World.h"
 #include "Events/ChangedInventoryItems.h"
 
 #define INVENTORY_DEBUG_NAME "Inventory] "

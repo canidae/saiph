@@ -1,5 +1,7 @@
+#include "Debug.h"
 #include "EventBus.h"
 #include "Inventory.h"
+#include "World.h"
 #include "Data/Armor.h"
 #include "Data/Amulet.h"
 
