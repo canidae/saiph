@@ -48,9 +48,7 @@ public:
 	static int turn;
 	static int real_turn;
 	static std::vector<Level> levels;
-	static Coordinate branch_main;
-	static Coordinate branch_mines;
-	static Coordinate branch_sokoban;
+	static Coordinate branch[BRANCHES];
 
 	static void init(int connection_type);
 	static void destroy();

@@ -30,9 +30,7 @@ char World::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
 int World::real_turn = 0;
 vector<Level> World::levels;
-Coordinate World::branch_main;
-Coordinate World::branch_mines;
-Coordinate World::branch_sokoban;
+Coordinate World::branch[BRANCHES];
 
 Connection *World::connection = NULL;
 action::Action *World::action = NULL;
@@ -594,7 +592,7 @@ void World::detectPosition() {
 		Saiph::position.row = cursor.row;
 		Saiph::position.col = cursor.col;
 		Saiph::position.level = levels.size();
-		branch_main = Saiph::position;
+		branch[BRANCH_MAIN] = Saiph::position;
 		levels.push_back(Level(level));
 		levelmap[level].push_back(Saiph::position.level);
 		return;
@@ -603,18 +601,18 @@ void World::detectPosition() {
 		/* same level as last frame, update row & col */
 		Saiph::position.row = cursor.row;
 		Saiph::position.col = cursor.col;
-		if (branch_sokoban.level == -1 && levels[Saiph::position.level].branch == BRANCH_MAIN && levels[Saiph::position.level].depth >= 5 && levels[Saiph::position.level].depth <= 9) {
+		if (branch[BRANCH_SOKOBAN].level == -1 && levels[Saiph::position.level].branch == BRANCH_MAIN && levels[Saiph::position.level].depth >= 5 && levels[Saiph::position.level].depth <= 9) {
 			/* look for sokoban level 1a or 1b */
 			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
 				/* sokoban 1a */
 				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << Saiph::position.level << endl;
 				levels[Saiph::position.level].branch = BRANCH_SOKOBAN;
-				branch_sokoban = Saiph::position;
+				branch[BRANCH_SOKOBAN] = Saiph::position;
 			} else if (getDungeonSymbol(Point(8, 34)) == BOULDER && getDungeonSymbol(Point(8, 42)) == BOULDER && getDungeonSymbol(Point(9, 34)) == BOULDER && getDungeonSymbol(Point(9, 41)) == BOULDER && getDungeonSymbol(Point(10, 42)) == BOULDER && getDungeonSymbol(Point(13, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(15, 41)) == BOULDER && getDungeonSymbol(Point(16, 40)) == BOULDER && getDungeonSymbol(Point(16, 42)) == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << Saiph::position.level << endl;
 				levels[Saiph::position.level].branch = BRANCH_SOKOBAN;
-				branch_sokoban = Saiph::position;
+				branch[BRANCH_SOKOBAN] = Saiph::position;
 			}
 
 		}
@@ -629,7 +627,7 @@ void World::detectPosition() {
 					/* we're in the mines */
 					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << Saiph::position.level << endl;
 					levels[Saiph::position.level].branch = BRANCH_MINES;
-					branch_mines = Saiph::position;
+					branch[BRANCH_MINES] = Saiph::position;
 					break;
 				}
 			}
