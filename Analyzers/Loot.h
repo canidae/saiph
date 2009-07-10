@@ -1,11 +1,12 @@
 #ifndef ANALYZER_LOOT_H
 #define ANALYZER_LOOT_H
 
-#include <map>
+#include <set>
 #include <string>
 #include "Analyzer.h"
 #include "../Coordinate.h"
 
+#define PRIORITY_LOOT_VISIT 200
 /* messages */
 #define LOOT_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "
 #define LOOT_SEVERAL_OBJECTS_HERE "  There are several objects here.  "
@@ -17,6 +18,10 @@
 #define LOOT_GOT_STRAINED "  You stagger under your heavy load.  Movement is very hard.  "
 #define LOOT_GOT_OVERTAXED "  You can barely move a handspan with this load!  "
 
+namespace event {
+	class Event;
+}
+
 namespace analyzer {
 	class Loot : public Analyzer {
 	public:
@@ -24,14 +29,12 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string &messages);
+		void onEvent(event::Event *const event);
 
 	private:
 		bool showing_pickup;
 		bool showing_drop;
-		std::map<Coordinate, int> stash_checked; // location, turn we checked stash
-		Coordinate check_old_stash;
-
-		void checkOldStash();
+		std::set<Coordinate> visit;
 	};
 }
 #endif

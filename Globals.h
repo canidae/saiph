@@ -16,6 +16,7 @@
 #define BRANCH_WIZARD 5
 #define BRANCH_ASTRAL 6
 #define BRANCH_QUEST 7
+#define BRANCHES 8 // remember to update this when branches are added
 #define KNAPSACK_LIMIT 52
 #define UNREACHABLE UINT_MAX
 #define UNPASSABLE UNREACHABLE - 1

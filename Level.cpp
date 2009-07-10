@@ -6,6 +6,7 @@
 #include "Level.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Events/StashChanged.h"
 
 using namespace event;
 using namespace std;
@@ -145,14 +146,8 @@ void Level::parseMessages(const string &messages) {
 			/* add item to changed.keys */
 			received.items[messages[pos - 1]] = item;
 		}
-		if (received.items.size() > 0) {
-			/* if we're standing on a stash, mark it as changed */
-			map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
-			if (s != World::levels[Saiph::position.level].stashes.end())
-				s->second.turn_changed = World::turn;
-			/* broadcast "ChangedInventoryItems" */
-			EventBus::broadcast(static_cast<Event *>(&received));
-		}
+		if (received.items.size() > 0)
+			EventBus::broadcast(static_cast<Event *>(&received)); // broadcast "ChangedInventoryItems"
 	}
 
 	/* send event if we're standing on stash */
@@ -226,14 +221,20 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 		if (s != stashes.end()) {
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
-				if (s->second.top_symbol != ILLEGAL_ITEM)
-					s->second.turn_changed = World::turn;
 				s->second.top_symbol = symbol;
 				s->second.top_color = color;
+				/* broadcast StashChanged */
+				StashChanged sc;
+				sc.stash = Coordinate(Saiph::position.level, point);
+				EventBus::broadcast(static_cast<Event *>(&sc));
 			}
 		} else {
 			/* new stash */
-			stashes[point] = Stash(World::turn, symbol, color);
+			stashes[point] = Stash(symbol, color);
+			/* broadcast StashChanged */
+			StashChanged sc;
+			sc.stash = Coordinate(Saiph::position.level, point);
+			EventBus::broadcast(static_cast<Event *>(&sc));
 		}
 	} else if (symbol == dungeonmap[point.row][point.col]) {
 		/* if there ever was a stash here, it's gone now */

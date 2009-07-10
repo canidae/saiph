@@ -6,8 +6,10 @@
 #include "../World.h"
 #include "../Actions/ListInventory.h"
 #include "../Actions/Look.h"
+#include "../Events/StashChanged.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
@@ -17,12 +19,27 @@ Loot::Loot() : Analyzer("Loot"), showing_pickup(false), showing_drop(false) {
 /* methods */
 void Loot::analyze() {
 	/* check inventory if it's not updated */
+	/* TODO: we can make the analyzers that intend to use inventory items check this before they use the item */
 	if (!Inventory::updated) {
 		World::setAction(static_cast<action::Action *>(new action::ListInventory(this)));
 		return;
 	}
 
-	/* TODO: visit new/changed stashes, using event TakeMeThere */
+	/* visit new/changed stashes */
+	set<Coordinate>::iterator v = visit.begin();
+	while (v != visit.end()) {
+		const PathNode &node = World::shortestPath(*v);
+		if (node.dir == NOWHERE) {
+			/* standing on stash, look and remove from visit */
+			if (World::setAction(static_cast<action::Action *>(new action::Look(this))))
+				visit.erase(v++);
+			continue;
+		} else if (node.cost < UNPASSABLE) {
+			/* move to stash */
+			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, node.moves))));
+		}
+		++v;
+	}
 }
 
 void Loot::parseMessages(const string &messages) {
@@ -147,91 +164,10 @@ void Loot::parseMessages(const string &messages) {
 	}
 }
 
-bool Loot::request(const Request &request) {
-	if (request.request == REQUEST_DIRTY_INVENTORY) {
-		/* someone wants to mark our inventory as dirty */
-		checkInventory();
-		return true;
-	} else if (request.request == REQUEST_DIRTY_STASH) {
-		/* someone wants to mark stash at our position dirty */
-		checkStash();
-		return true;
-	} else if (request.request == REQUEST_ITEM_GROUP_SET_AMOUNT) {
-		/* set total amount of items in the given group */
-		groups[request.key].amount = request.value;
-		return true;
-	} else if (request.request == REQUEST_ITEM_GROUP_ADD) {
-		/* add item to group */
-		if (items.find(request.data) == items.end()) {
-			/* we need to add an entry about this item */
-			items[request.data].amount = 0;
-			items[request.data].beatitude = request.beatitude;
-			items[request.data].only_unknown_enchantment = false;
-		}
-		groups[request.key].items.push_back(request.data);
-		return true;
-	} else if (request.request == REQUEST_ITEM_PICKUP) {
-		/* pick up items that are not part of a group */
-		items[request.data].amount = request.value;
-		items[request.data].beatitude = request.beatitude;
-		items[request.data].only_unknown_enchantment = request.only_unknown_enchantment;
-		return true;
-	} else if (request.request == REQUEST_CALL_ITEM) {
-		call_items[request.key] = request.data;
-		if (priority < PRIORITY_LOOK) {
-			command = NAME;
-			priority = PRIORITY_LOOK;
-		}
-	} else if (request.request == REQUEST_NAME_ITEM) {
-		name_items[request.key] = request.data;
-		if (priority < PRIORITY_LOOK) {
-			command = NAME;
-			priority = PRIORITY_LOOK;
-		}
-	}
-	return false;
-}
-
-/* private methods */
-void Loot::checkOldStash() {
-	if (Saiph::hallucinating || Saiph::blind || Saiph::encumbrance > UNENCUMBERED || Inventory::items.size() >= KNAPSACK_LIMIT)
-		return;
-	unsigned int min_moves = UNREACHABLE;
-	visit_old_stash.level = -1; // reset, in case there are no old stashes we wish to visit
-	for (vector<Level>::size_type level = 0; level < saiph->levels.size(); ++level) {
-		for (map<Point, Stash>::iterator s = saiph->levels[level].stashes.begin(); s != saiph->levels[level].stashes.end(); ++s) {
-			Coordinate stash(level, s->first);
-			map<Coordinate, int>::iterator v = visit_stash.find(stash);
-			if (v != visit_stash.end() && v->second == s->second.turn_changed) {
-				/* stash is unchanged, but does it contain something nifty? */
-				if (World::getDungeonSymbol(v->first) != SHOP_TILE) {
-					for (list<Item>::iterator i = s->second.items.begin(); i != s->second.items.end(); ++i) {
-						if (pickupItem(*i) == 0)
-							continue; // don't want this item
-						// we want this item, is stash closer than previous stash?
-						const PathNode &node = saiph->shortestPath(stash);
-						if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
-							// move towards stash
-							min_moves = node.moves;
-							command = node.dir;
-							priority = PRIORITY_LOOT_VISIT_STASH;
-							visit_old_stash = stash;
-						}
-					}
-				}
-			} else {
-				/* unvisited stash, visit it if it's closer */
-				/* what? isn't this already covered?
-				 * actually, no. this one cares about unvisited stashes on other levels too */
-				const PathNode &node = saiph->shortestPath(stash);
-				if (node.dir != NOWHERE && node.cost < UNPASSABLE && node.moves < min_moves) {
-					/* move towards stash */
-					min_moves = node.moves;
-					command = node.dir;
-					priority = PRIORITY_LOOT_VISIT_STASH;
-					visit_old_stash = stash;
-				}
-			}
-		}
+void Loot::onEvent(Event *const event) {
+	if (event->getID() == StashChanged::id) {
+		/* stash changed, we need to visit it again */
+		StashChanged *e = static_cast<StashChanged *>(event);
+		visit.insert(e->stash);
 	}
 }
