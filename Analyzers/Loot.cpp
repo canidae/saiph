@@ -6,6 +6,7 @@
 #include "../World.h"
 #include "../Actions/ListInventory.h"
 #include "../Actions/Look.h"
+#include "../Actions/Move.h"
 #include "../Events/StashChanged.h"
 
 using namespace analyzer;
