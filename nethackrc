@@ -61,6 +61,7 @@ OPTIONS=!prayconfirm
 OPTIONS=race:human
 OPTIONS=role:valkyrie
 OPTIONS=runmode:teleport
+OPTIONS=showbuc
 OPTIONS=!sparkle
 OPTIONS=!splash_screen
 OPTIONS=time
