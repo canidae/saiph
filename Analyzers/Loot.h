@@ -35,7 +35,7 @@ namespace analyzer {
 	private:
 		bool showing_pickup;
 		bool showing_drop;
-		WantItems wi;
+		event::WantItems wi;
 		std::set<Coordinate> visit;
 	};
 }

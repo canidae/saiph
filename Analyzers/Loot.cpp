@@ -1,3 +1,4 @@
+#include <sstream>
 #include <stdlib.h>
 #include "Loot.h"
 #include "../EventBus.h"
@@ -7,6 +8,7 @@
 #include "../Actions/ListInventory.h"
 #include "../Actions/Look.h"
 #include "../Actions/Move.h"
+#include "../Actions/SelectMultiple.h"
 #include "../Events/StashChanged.h"
 
 using namespace analyzer;
@@ -20,7 +22,6 @@ Loot::Loot() : Analyzer("Loot"), showing_pickup(false), showing_drop(false) {
 /* methods */
 void Loot::analyze() {
 	/* check inventory if it's not updated */
-	/* TODO: we can make the analyzers that intend to use inventory items check this before they use the item */
 	if (!Inventory::updated) {
 		World::setAction(static_cast<action::Action *>(new action::ListInventory(this)));
 		return;
@@ -60,20 +61,34 @@ void Loot::parseMessages(const string &messages) {
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
-		/* reset pickup list */
-		pickup.items.clear();
+		/* reset WantItems lists */
+		wi.items.clear();
+		wi.want.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			if (messages[pos - 2] == '-')
-				pickup.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+			if (messages[pos - 2] == '-') {
+				wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+				wi.want[messages[pos - 4]] = 0;
+			}
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&pickup));
+		EventBus::broadcast(static_cast<Event *>(&wi));
+		/* pick up stuff that was wanted by analyzers */
+		vector<string> pickup;
+		ostringstream tmp;
+		for (map<unsigned char, int>::iterator w = wi.want.begin(); w != wi.want.end(); ++w) {
+			if (w->second <= 0)
+				continue;
+			tmp.str("");
+			tmp << w->second << w->first;
+			pickup.push_back(tmp.str());
+		}
+		World::setAction(static_cast<action::Action *>(new action::SelectMultiple(this, pickup)));
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS)) != string::npos || showing_drop) {
 		/* dropping items */
 		if (showing_drop) {
@@ -85,78 +100,54 @@ void Loot::parseMessages(const string &messages) {
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
-		/* reset drop list */
-		drop.keys.clear();
+		/* reset WantItems lists */
+		wi.items.clear();
+		wi.want.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			if (messages[pos - 2] == '-')
-				drop.keys.insert(messages[pos - 4]);
+			if (messages[pos - 2] == '-') {
+				map<unsigned char, Item>::iterator i = Inventory::items.find(messages[pos - 4]);
+				if (i != Inventory::items.end()) {
+					wi.items[messages[pos - 4]] = i->second;
+					/* let's also pretend we don't have any examples of the item in our inventory */
+					i->second.count = 0;
+				} else {
+					/* this isn't supposed to happen (inventory not updated?) */
+					wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+				}
+				wi.want[messages[pos - 4]] = 0;
+			}
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&drop));
-	}
-
-	if (saiph->showing_pickup) {
-		/* looting */
-		if (Inventory::items.size() < KNAPSACK_LIMIT) {
-			/* we should have room for it in the knapsack */
-			for (map<unsigned char, Item>::iterator p = saiph->pickup.begin(); p != saiph->pickup.end(); ++p) {
-				int wanted = pickupItem(p->second);
-				if (wanted == 0) {
-					/* pick up none */
-					continue;
-				} else if (wanted >= p->second.count) {
-					/* pick up all */
-					command = p->first;
-				} else {
-					/* pick up some */
-					stringstream tmp;
-					tmp << wanted << p->first;
-					command = tmp.str();
-				}
-				priority = PRIORITY_SELECT_ITEM;
-				return;
-			}
-		}
-		/* if we're here, we should get next page or close list */
-		showing_pickup = true;
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_PAGE;
-	} else if (saiph->showing_drop) {
-		showing_drop = true;
-		/* drop unwanted stuff */
-		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
-			if (d->second.name == "gold piece")
-				continue; // don't drop gold
-			int unwanted = dropItem(d->second);
-			/* we'll "cheat" a bit here:
-			 * we "forget" what we've marked to be dropped,
-			 * so we'll reduce the item count in our inventory when we select it */
-			if (unwanted == 0) {
-				/* drop none */
+		EventBus::broadcast(static_cast<Event *>(&wi));
+		/* drop stuff no analyzer wanted */
+		vector<string> drop;
+		ostringstream tmp;
+		for (map<unsigned char, int>::iterator w = wi.want.begin(); w != wi.want.end(); ++w) {
+			if (w->second <= 0) {
+				/* drop for beatitude or we don't want the item */
+				drop.push_back(std::string(1, w->first));
 				continue;
-			} else if (unwanted >= d->second.count) {
-				/* drop all */
-				Inventory::items[d->first].count = 0;
-				command = d->first;
-			} else {
-				/* drop some */
-				Inventory::items[d->first].count -= unwanted;
-				stringstream tmp;
-				tmp << unwanted << d->first;
-				command = tmp.str();
 			}
-			priority = PRIORITY_SELECT_ITEM;
-			return;
+			map<unsigned char, Item>::iterator i = wi.items.find(w->first);
+			if (i == wi.items.end()) {
+				/* what? no, this shouldn't happen */
+				continue;
+			} else if (i->second.count <= w->second) {
+				/* we want all of these items, don't drop them */
+				continue;
+			}
+			/* drop some of these items */
+			tmp.str("");
+			tmp << (i->second.count - w->second) << w->first;
+			drop.push_back(tmp.str());
 		}
-		/* if we're here, we should get next page or close list */
-		command = CLOSE_PAGE;
-		priority = PRIORITY_CLOSE_PAGE;
+		World::setAction(static_cast<action::Action *>(new action::SelectMultiple(this, drop)));
 	}
 
 	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE) != string::npos || messages.find(LOOT_SEVERAL_MORE_OBJECTS_HERE) != string::npos || messages.find(LOOT_MANY_MORE_OBJECTS_HERE) != string::npos) {
