@@ -89,9 +89,12 @@ void Fight::analyze() {
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
-		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
 		const PathNode &node = World::shortestPath(m->first);
-		World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(priority, node.moves))));
+		if (node.dir == ILLEGAL_DIRECTION)
+			continue; // can't move to monster
+		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
+		priority = action::Move::calculatePriority(priority, node.moves);
+		World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, priority)));
 		Debug::analyzer(name) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
