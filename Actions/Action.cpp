@@ -16,6 +16,7 @@
 #include "Remove.h"
 #include "Search.h"
 #include "Select.h"
+#include "SelectMultiple.h"
 #include "Throw.h"
 #include "Unlock.h"
 
@@ -24,21 +25,22 @@ using namespace action;
 /* define static variables */
 const Command Action::noop;
 int Apply::id = 1;
-int Answer::id = 101;
-int ApplyInDirection::id = 201;
-int Call::id = 301;
-int Engrave::id = 401;
-int Fight::id = 501;
-int Kick::id = 601;
-int ListInventory::id = 701;
-int Look::id = 801;
-int Loot::id = 901;
-int Move::id = 1001;
-int Name::id = 1101;
-int Open::id = 1201;
-int PutOn::id = 1301;
-int Remove::id = 1401;
-int Search::id = 1501;
-int Select::id = 1601;
-int Throw::id = 1701;
-int Unlock::id = 1801;
+int Answer::id = 2;
+int ApplyInDirection::id = 3;
+int Call::id = 4;
+int Engrave::id = 5;
+int Fight::id = 6;
+int Kick::id = 7;
+int ListInventory::id = 8;
+int Look::id = 9;
+int Loot::id = 10;
+int Move::id = 11;
+int Name::id = 12;
+int Open::id = 13;
+int PutOn::id = 14;
+int Remove::id = 15;
+int Search::id = 16;
+int Select::id = 17;
+int SelectMultiple::id = 18;
+int Throw::id = 19;
+int Unlock::id = 20;
