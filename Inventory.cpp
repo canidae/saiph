@@ -33,7 +33,7 @@ void Inventory::parseMessages(const string &messages) {
 			for (map<unsigned char, Item>::iterator i = items.begin(); i != items.end(); ++i)
 				lost.insert(i->first);
 		}
-		while ((pos = messages.find(" - ")) != string::npos && pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ' && (pos2 = messages.find("  ", pos + 3)) != string::npos) {
+		while ((pos = messages.find(" - ", pos + 1)) != string::npos && pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ' && (pos2 = messages.find("  ", pos + 3)) != string::npos) {
 			/* check that item match inventory item */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
 			if (item.count <= 0) {
