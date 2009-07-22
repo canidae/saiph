@@ -41,6 +41,7 @@ void EventBus::broadcast(Event *const event) {
 	if (event->getID() < 0 || event->getID() >= (int) EventBus::events.size())
 		return;
 	vector<Analyzer *> &subscribers = events[event->getID()];
+	Debug::broadcast() << event->getName() << " to " << subscribers.size() << " subscribers" << endl;
 	for (vector<Analyzer *>::iterator s = subscribers.begin(); s != subscribers.end(); ++s)
 		(*s)->onEvent(event);
 }

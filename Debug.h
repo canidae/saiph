@@ -14,6 +14,7 @@ public:
 	static void init(const std::string &file);
 	static void destroy();
 	static std::ofstream &analyzer(const std::string &name);
+	static std::ofstream &broadcast();
 	static std::ofstream &info();
 	static std::ofstream &notice();
 	static std::ofstream &warning();
@@ -38,6 +39,11 @@ inline void Debug::destroy() {
 
 inline std::ofstream &Debug::analyzer(const std::string &name) {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [" << name << "] ";
+	return debugfile;
+}
+
+inline std::ofstream &Debug::broadcast() {
+	debugfile << "<T" << World::turn << "> " << printTime() << ": [Broadcast] ";
 	return debugfile;
 }
 
