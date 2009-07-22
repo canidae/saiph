@@ -1,6 +1,7 @@
 #include <stack>
 #include "Door.h"
 #include "../Debug.h"
+#include "../EventBus.h"
 #include "../Inventory.h"
 #include "../Item.h"
 #include "../Saiph.h"
@@ -25,6 +26,11 @@ using namespace std;
 
 /* constructors/destructor */
 Door::Door() : Analyzer("Door"), unlock_tool_key(0), in_a_pit(false) {
+	/* register events */
+	EventBus::registerEvent(ChangedInventoryItems::id, this);
+	EventBus::registerEvent(ItemsOnGround::id, this);
+	EventBus::registerEvent(ReceivedItems::id, this);
+	EventBus::registerEvent(WantItems::id, this);
 }
 
 /* methods */

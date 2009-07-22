@@ -1,4 +1,5 @@
 #include "Amulet.h"
+#include "../EventBus.h"
 #include "../Globals.h"
 #include "../Inventory.h"
 #include "../Item.h"
@@ -20,6 +21,11 @@ using namespace std;
 
 /* constructors/destructor */
 Amulet::Amulet() : Analyzer("Amulet") {
+	/* register events */
+	EventBus::registerEvent(ChangedInventoryItems::id, this);
+	EventBus::registerEvent(ItemsOnGround::id, this);
+	EventBus::registerEvent(ReceivedItems::id, this);
+	EventBus::registerEvent(WantItems::id, this);
 }
 
 /* methods */

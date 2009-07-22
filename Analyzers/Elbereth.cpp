@@ -1,20 +1,24 @@
 #include <stdlib.h>
 #include "Elbereth.h"
+#include "../EventBus.h"
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Look.h"
 #include "../Events/ElberethQuery.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
 Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(ENGRAVING_MUST_CHECK), real_turn_look(-1) {
+	/* register events */
+	EventBus::registerEvent(ElberethQuery::id, this);
 }
 
-void Elbereth::onEvent(event::Event *const evt) {
-	if (evt->getID() == event::ElberethQuery::id) {
-		event::ElberethQuery *const q = static_cast<event::ElberethQuery *const>(evt);
+void Elbereth::onEvent(Event *const evt) {
+	if (evt->getID() == ElberethQuery::id) {
+		ElberethQuery *const q = static_cast<ElberethQuery *const>(evt);
 		if (real_turn_look != World::real_turn) {
 			/* data is outdated */
 			engraving_type = ENGRAVING_MUST_CHECK;

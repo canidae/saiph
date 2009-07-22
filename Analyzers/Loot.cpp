@@ -17,6 +17,8 @@ using namespace std;
 
 /* constructors/destructor */
 Loot::Loot() : Analyzer("Loot"), showing_pickup(false), showing_drop(false) {
+	/* register events */
+	EventBus::registerEvent(StashChanged::id, this);
 }
 
 /* methods */

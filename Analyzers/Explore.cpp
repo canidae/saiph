@@ -1,4 +1,5 @@
 #include "Explore.h"
+#include "../EventBus.h"
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Look.h"
@@ -12,6 +13,8 @@ using namespace std;
 
 /* constructors/destructor */
 Explore::Explore() : Analyzer("Explore") {
+	/* register events */
+	EventBus::registerEvent(TakeMeThere::id, this);
 }
 
 /* methods */

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "Fight.h"
 #include "../Debug.h"
+#include "../EventBus.h"
 #include "../Inventory.h"
 #include "../Saiph.h"
 #include "../World.h"
@@ -36,6 +37,12 @@ Fight::Fight() : Analyzer("Fight") {
 	/* darts */
 	for (map<string, data::Dart *>::iterator i = data::Dart::darts.begin(); i != data::Dart::darts.end(); ++i)
 		projectiles.insert(i->first);
+
+	/* register events */
+	EventBus::registerEvent(ChangedInventoryItems::id, this);
+	EventBus::registerEvent(ItemsOnGround::id, this);
+	EventBus::registerEvent(ReceivedItems::id, this);
+	EventBus::registerEvent(WantItems::id, this);
 }
 
 /* methods */
