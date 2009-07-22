@@ -96,8 +96,6 @@ private:
 	static event::ReceivedItems received;
 	static event::ItemsOnGround on_ground;
 
-	void addItemToStash(const Point &point, const Item &item);
-	void clearStash(const Point &point);
 	unsigned int updatePathMapHelper(const Point &to, const Point &from);
 
 	static void init();

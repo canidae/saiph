@@ -94,27 +94,41 @@ void Level::parseMessages(const string &messages) {
 	/* figure out if there's something on the ground */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
 		/* we see a single item on ground */
-		clearStash(Saiph::position);
+		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
+		if (s != stashes.end())
+			s->second.items.clear(); // clear stash items
+		else
+			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(Saiph::position, item);
+			if (item.count > 0)
+				s->second.items.push_back(item);
 		}
 	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
 		/* we feel a single item on the ground */
-		clearStash(Saiph::position);
+		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
+		if (s != stashes.end())
+			s->second.items.clear(); // clear stash items
+		else
+			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(Saiph::position, item);
+			if (item.count > 0)
+				s->second.items.push_back(item);
 		}
 	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
 		/* we see/feel multiple items on the ground */
-		clearStash(Saiph::position);
+		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
+		if (s != stashes.end())
+			s->second.items.clear(); // clear stash items
+		else
+			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -123,7 +137,8 @@ void Level::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			addItemToStash(Saiph::position, item);
+			if (item.count > 0)
+				s->second.items.push_back(item);
 			pos += length;
 		}
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
@@ -526,30 +541,6 @@ void Level::updatePathMap() {
 }
 
 /* private methods */
-void Level::addItemToStash(const Point &point, const Item &item) {
-	Debug::notice() << LEVEL_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to stash at " << point.row << ", " << point.col << endl;
-	if (item.count <= 0)
-		return;
-	map<Point, Stash>::iterator s = stashes.find(point);
-	if (s != stashes.end()) {
-		s->second.items.push_back(item);
-		return;
-	}
-	/* new stash */
-	Stash stash(World::turn);
-	stash.items.push_back(item);
-	stashes[point] = stash;
-}
-
-void Level::clearStash(const Point &point) {
-	/* clear the contents of a stash */
-	map<Point, Stash>::iterator s = stashes.find(point);
-	if (s != stashes.end()) {
-		s->second.items.clear();
-		s->second.top_symbol = ILLEGAL_ITEM;
-	}
-}
-
 unsigned int Level::updatePathMapHelper(const Point &to, const Point &from) {
 	/* helper method for updatePathMap()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
