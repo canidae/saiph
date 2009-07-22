@@ -1,6 +1,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include "Loot.h"
+#include "../Debug.h"
 #include "../EventBus.h"
 #include "../Inventory.h"
 #include "../Saiph.h"
@@ -35,9 +36,10 @@ void Loot::analyze() {
 		const PathNode &node = World::shortestPath(*v);
 		if (node.dir == NOWHERE) {
 			/* standing on stash, look and remove from visit */
-			if (World::setAction(static_cast<action::Action *>(new action::Look(this))))
+			if (World::setAction(static_cast<action::Action *>(new action::Look(this)))) {
 				visit.erase(v++);
-			continue;
+				continue;
+			}
 		} else if (node.cost < UNPASSABLE) {
 			/* move to stash */
 			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, node.moves))));
