@@ -167,7 +167,7 @@ void Level::parseMessages(const string &messages) {
 
 	/* send event if we're standing on stash */
 	map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-	if (s != stashes.end()) {
+	if (s != stashes.end() && s->second.items.size() > 0) {
 		on_ground.items = s->second.items;
 		/* broadcast "ItemsOnGround" */
 		EventBus::broadcast(static_cast<Event *>(&on_ground));
