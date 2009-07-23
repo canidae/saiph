@@ -3,7 +3,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-#OBJECTS = Amulet.o Armor.o Beatitude.o Blind.o Dig.o Donate.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Genocide.o Health.o Lamp.o Loot.o MonsterInfo.o Passtune.o Potion.o Pray.o Ring.o Rub.o Scroll.o Shop.o Sokoban.o Throne.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
+#OBJECTS = Amulet.o Armor.o Beatitude.o Blind.o Dig.o Donate.o Door.o Elbereth.o Enhance.o Excalibur.o Explore.o Fight.o Food.o Genocide.o Health.o Lamp.o Loot.o MonsterInfo.o Passtune.o Potion.o Ring.o Rub.o Scroll.o Shop.o Sokoban.o Throne.o Unihorn.o Valkyrie.o Vault.o Wand.o Weapon.o Wish.o
 OBJECTS = Analyzer.o Amulet.o Door.o Elbereth.o Explore.o Fight.o Loot.o
 
 analyzers: $(OBJECTS)
@@ -29,7 +29,6 @@ Loot.o: Loot.h Loot.cpp
 MonsterInfo.o: MonsterInfo.h MonsterInfo.cpp
 Passtune.o: Passtune.h Passtune.cpp
 Potion.o: Potion.h Potion.cpp
-Pray.o: Pray.h Pray.cpp
 Ring.o: Ring.h Ring.cpp
 Rub.o: Rub.h Rub.cpp
 Scroll.o: Scroll.h Scroll.cpp

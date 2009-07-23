@@ -39,6 +39,8 @@ int Saiph::zorkmids = 0;
 /* intrinsics/extrinsics */
 unsigned long long int Saiph::intrinsics = 0;
 unsigned long long int Saiph::extrinsics = 0;
+/* last pray turn */
+int Saiph::last_pray_turn = 0;
 
 /* methods */
 void Saiph::analyze() {

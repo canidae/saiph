@@ -82,6 +82,8 @@ public:
 	/* intrinsics/extrinsics */
 	static unsigned long long int intrinsics;
 	static unsigned long long int extrinsics;
+	/* last pray turn */
+	static int last_pray_turn;
 
 	static void analyze();
 	static void parseMessages(const std::string &messages);

@@ -12,6 +12,7 @@
 #include "Move.h"
 #include "Name.h"
 #include "Open.h"
+#include "Pray.h"
 #include "PutOn.h"
 #include "Remove.h"
 #include "Search.h"
@@ -37,10 +38,11 @@ int Loot::id = 10;
 int Move::id = 11;
 int Name::id = 12;
 int Open::id = 13;
-int PutOn::id = 14;
-int Remove::id = 15;
-int Search::id = 16;
-int Select::id = 17;
-int SelectMultiple::id = 18;
-int Throw::id = 19;
-int Unlock::id = 20;
+int Pray::id = 14;
+int PutOn::id = 15;
+int Remove::id = 16;
+int Search::id = 17;
+int Select::id = 18;
+int SelectMultiple::id = 19;
+int Throw::id = 20;
+int Unlock::id = 21;
