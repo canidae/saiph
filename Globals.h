@@ -229,10 +229,10 @@
 #define DISCARD "DISCARD"
 
 /* messages */
+/* list duplicate lines: grep "MESSAGE_" Globals.h | cut -d" " -f3- | sort | uniq -d */
 #define MESSAGE_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
-#define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
 #define MESSAGE_CRAWL_OUT_OF_PIT "  You crawl to the edge of the pit.  "
 #define MESSAGE_CURRENT_SKILLS "  Current skills:  "
@@ -296,10 +296,10 @@
 #define MESSAGE_WHAT_TO_DRINK "  What do you want to drink? "
 #define MESSAGE_WHAT_TO_DROP "  What do you want to drop? "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? "
-#define MESSAGE_WHAT_TO_GENOCIDE_UNCURSED "  What monster do you want to genocide? [type the name]  "
 #define MESSAGE_WHAT_TO_GENOCIDE_BLESSED  "  What class of monsters do you wish to genocide?  "
-#define MESSAGE_WHAT_TO_REMOVE "  What do you want to remove? "
+#define MESSAGE_WHAT_TO_GENOCIDE_UNCURSED "  What monster do you want to genocide? [type the name]  "
 #define MESSAGE_WHAT_TO_PUT_ON "  What do you want to put on? "
+#define MESSAGE_WHAT_TO_REMOVE "  What do you want to remove? "
 #define MESSAGE_WHAT_TO_RUB "  What do you want to rub? "
 #define MESSAGE_WHAT_TO_TAKE_OFF "  What do you want to take off? "
 #define MESSAGE_WHAT_TO_THROW "  What do you want to throw? "
