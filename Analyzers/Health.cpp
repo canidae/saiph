@@ -94,30 +94,15 @@ void Health::analyze() {
 		req.priority = PRIORITY_HEALTH_CURE_POLYMORPH;
 		saiph->request(req);
 	}
-	/*
-	if (prev_st < saiph->world->player.strength || prev_dx < saiph->world->player.dexterity || prev_co < saiph->world->player.constitution || prev_in < saiph->world->player.intelligence || prev_wi < saiph->world->player.wisdom || prev_ch < saiph->world->player.charisma) {
-		// we lost some stats. apply unihorn
-		req.request = REQUEST_APPLY_UNIHORN;
-		req.priority = PRIORITY_HEALTH_CURE_NON_DEADLY;
-		saiph->request(req);
-	}
-	*/
 }
 
 void Health::parseMessages(const string &messages) {
-	if (messages.find(MESSAGE_SLOWING_DOWN, 0) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING, 0) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE, 0) != string::npos) {
+	if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE) != string::npos) {
 		/* bloody *trice, this is bad */
-		req.request = REQUEST_EAT;
-		req.priority = PRIORITY_HEALTH_CURE_DEADLY;
-		req.data = "partly eaten lizard corpse";
-		if (!saiph->request(req)) {
-			/* no? try again non-partly eaten */
-			req.data = "lizard corpse";
-			if (!saiph->request(req)) {
-				/* oh crap */
-				req.request = REQUEST_PRAY;
-				saiph->request(req);
-			}
-		}
+		/* TODO: eat [partly eaten] lizard corpse */
+		/* pray if all else fails, don't even bother checking if it's safe to pray, we're dead anyways */
+		World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
+	} else if (messages.find(MESSAGE_YOU_FEEL_CLUMSY) != string::npos || messages.find(MESSAGE_YOU_FEEL_FOOLISH) != string::npos ||messages.find(MESSAGE_YOU_FEEL_FRAGILE) != string::npos ||messages.find(MESSAGE_YOU_FEEL_REPULSIVE) != string::npos ||messages.find(MESSAGE_YOU_FEEL_STUPID) != string::npos ||messages.find(MESSAGE_YOU_FEEL_WEAK) != string::npos) {
+		/* TODO: stat loss, apply unihorn */
 	}
 }
