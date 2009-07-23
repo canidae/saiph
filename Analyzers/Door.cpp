@@ -86,13 +86,13 @@ void Door::analyze() {
 }
 
 void Door::parseMessages(const string &messages) {
-	if (messages.find(DOOR_SUCCEED_UNLOCKING) != string::npos) {
+	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos) {
 		/* door unlocked */
 		World::levels[Saiph::position.level].symbols[(unsigned char) CLOSED_DOOR][position] = UNKNOWN_SYMBOL_VALUE;
-	} else if (messages.find(DOOR_DOOR_LOCKED, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
 		World::levels[Saiph::position.level].symbols[(unsigned char) CLOSED_DOOR][position] = 1;
-	} else if (messages.find(DOOR_BREAK_SHOP_DOOR, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		World::setAction(static_cast<action::Action *>(new action::Answer(this, YES)));
 	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
@@ -102,7 +102,7 @@ void Door::parseMessages(const string &messages) {
 	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
 		/* crawled out of pit */
 		in_a_pit = false;
-	} else if (messages.find(DOOR_CLOSED_FOR_INVENTORY, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_CLOSED_FOR_INVENTORY, 0) != string::npos) {
 		/* a shop that is closed for inventory */
 		stack<Point> door;
 

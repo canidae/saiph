@@ -229,8 +229,10 @@
 #define DISCARD "DISCARD"
 
 /* messages */
+#define MESSAGE_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
+#define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
 #define MESSAGE_CRAWL_OUT_OF_PIT "  You crawl to the edge of the pit.  "
 #define MESSAGE_CURRENT_SKILLS "  Current skills:  "
 #define MESSAGE_DESTROY_POTION_FIRE " boils and explodes!  "
@@ -282,6 +284,7 @@
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_STEALS " steals "
 #define MESSAGE_STOLE " stole "
+#define MESSAGE_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
 #define MESSAGE_TEXT_BURNED "  Some text has been burned into the floor here.  "
 #define MESSAGE_TEXT_DIGGED "  Something is engraved here on the floor.  "

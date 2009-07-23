@@ -9,12 +9,6 @@
 #define PRIORITY_DOOR_LOOT 200
 #define PRIORITY_DOOR_OPEN 100
 
-/* messages */
-#define DOOR_DOOR_LOCKED "  This door is locked.  "
-#define DOOR_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
-#define DOOR_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
-#define DOOR_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
-
 /* door states */
 #define DOOR_LOCKED 1
 #define DOOR_SHOP_INVENTORY 2
