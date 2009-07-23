@@ -47,52 +47,52 @@ void Saiph::analyze() {
 }
 
 void Saiph::parseMessages(const string &messages) {
-	if (messages.find(SAIPH_GAIN_COLD_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_COLD_RES_GAIN1, 0) != string::npos)
 		intrinsics |= PROPERTY_COLD;
-	if (messages.find(SAIPH_LOSE_COLD_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_COLD_RES_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_COLD;
-	if (messages.find(SAIPH_GAIN_DISINTEGRATION_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_DISINTEGRATION_RES2, 0) != string::npos)
+	if (messages.find(MESSAGE_DISINTEGRATION_RES_GAIN1, 0) != string::npos || messages.find(MESSAGE_DISINTEGRATION_RES_GAIN2, 0) != string::npos)
 		intrinsics |= PROPERTY_DISINT;
-	if (messages.find(SAIPH_GAIN_FIRE_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_FIRE_RES2, 0) != string::npos)
+	if (messages.find(MESSAGE_FIRE_RES_GAIN1, 0) != string::npos || messages.find(MESSAGE_FIRE_RES_GAIN2, 0) != string::npos)
 		intrinsics |= PROPERTY_FIRE;
-	if (messages.find(SAIPH_LOSE_FIRE_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_FIRE_RES_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_FIRE;
-	if (messages.find(SAIPH_GAIN_POISON_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_POISON_RES2, 0) != string::npos)
+	if (messages.find(MESSAGE_POISON_RES_GAIN1, 0) != string::npos || messages.find(MESSAGE_POISON_RES_GAIN2, 0) != string::npos)
 		intrinsics |= PROPERTY_POISON;
-	if (messages.find(SAIPH_LOSE_POISON_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_POISON_RES_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_POISON;
-	if (messages.find(SAIPH_GAIN_SHOCK_RES1, 0) != string::npos || messages.find(SAIPH_GAIN_SHOCK_RES2, 0) != string::npos)
+	if (messages.find(MESSAGE_SHOCK_RES_GAIN1, 0) != string::npos || messages.find(MESSAGE_SHOCK_RES_GAIN2, 0) != string::npos)
 		intrinsics |= PROPERTY_SHOCK;
-	if (messages.find(SAIPH_LOSE_SHOCK_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_SHOCK_RES_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_SHOCK;
-	if (messages.find(SAIPH_GAIN_SLEEP_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_SLEEP_RES_GAIN1, 0) != string::npos)
 		intrinsics |= PROPERTY_SLEEP;
-	if (messages.find(SAIPH_LOSE_SLEEP_RES1, 0) != string::npos)
+	if (messages.find(MESSAGE_SLEEP_RES_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_SLEEP;
-	if (messages.find(SAIPH_GAIN_TELEPATHY1, 0) != string::npos)
+	if (messages.find(MESSAGE_TELEPATHY_GAIN1, 0) != string::npos)
 		intrinsics |= PROPERTY_ESP;
-	if (messages.find(SAIPH_LOSE_TELEPATHY1, 0) != string::npos)
+	if (messages.find(MESSAGE_TELEPATHY_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_ESP;
-	if (messages.find(SAIPH_GAIN_TELEPORT_CONTROL1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORT_CONTROL2, 0) != string::npos)
+	if (messages.find(MESSAGE_TELEPORT_CONTROL_GAIN1, 0) != string::npos || messages.find(MESSAGE_TELEPORT_CONTROL_GAIN2, 0) != string::npos)
 		intrinsics |= PROPERTY_TELEPORT_CONTROL;
-	if (messages.find(SAIPH_GAIN_TELEPORTITIS1, 0) != string::npos || messages.find(SAIPH_GAIN_TELEPORTITIS2, 0) != string::npos)
+	if (messages.find(MESSAGE_TELEPORTITIS_GAIN1, 0) != string::npos || messages.find(MESSAGE_TELEPORTITIS_GAIN2, 0) != string::npos)
 		intrinsics |= PROPERTY_TELEPORT;
-	if (messages.find(SAIPH_LOSE_TELEPORTITIS1, 0) != string::npos)
+	if (messages.find(MESSAGE_TELEPORTITIS_LOSE1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_TELEPORT;
-	if (messages.find(SAIPH_FEEL_PURIFIED, 0) != string::npos)
+	if (messages.find(MESSAGE_LYCANTHROPY_LOSE1, 0) != string::npos)
 		intrinsics |= PROPERTY_LYCANTHROPY;
-	if (messages.find(SAIPH_FEEL_FEVERISH, 0) != string::npos)
+	if (messages.find(MESSAGE_LYCANTHROPY_GAIN1, 0) != string::npos)
 		intrinsics &= ~PROPERTY_LYCANTHROPY;
-	if (messages.find(SAIPH_HURT_LEFT_LEG, 0) != string::npos || messages.find(SAIPH_HURT_RIGHT_LEG, 0) != string::npos)
+	if (messages.find(MESSAGE_HURT_LEFT_LEG, 0) != string::npos || messages.find(MESSAGE_HURT_RIGHT_LEG, 0) != string::npos)
 		hurt_leg = true;
-	if (messages.find(SAIPH_LEG_IS_BETTER, 0) != string::npos)
+	if (messages.find(MESSAGE_LEG_IS_BETTER, 0) != string::npos)
 		hurt_leg = false;
-	if (messages.find(SAIPH_POLYMORPH, 0) != string::npos)
+	if (messages.find(MESSAGE_POLYMORPH, 0) != string::npos)
 		polymorphed = true;
-	if (messages.find(SAIPH_UNPOLYMORPH, 0) != string::npos)
+	if (messages.find(MESSAGE_UNPOLYMORPH, 0) != string::npos)
 		polymorphed = false;
-	if (messages.find(SAIPH_BEGIN_LEVITATION, 0) != string::npos || messages.find(SAIPH_BEGIN_LEVITATION_PIT, 0) != string::npos)
+	if (messages.find(MESSAGE_LEVITATION_GAIN1, 0) != string::npos || messages.find(MESSAGE_LEVITATION_GAIN2, 0) != string::npos)
 		extrinsics |= PROPERTY_LEVITATION;
-	if (messages.find(SAIPH_END_LEVITATION, 0) != string::npos || messages.find(SAIPH_END_LEVITATION_SINK, 0) != string::npos)
+	if (messages.find(MESSAGE_LEVITATION_LOSE1, 0) != string::npos || messages.find(MESSAGE_LEVITATION_LOSE2, 0) != string::npos)
 		extrinsics &= ~PROPERTY_LEVITATION;
 }

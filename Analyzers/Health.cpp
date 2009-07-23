@@ -6,7 +6,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Health::Health(Saiph *saiph) : Analyzer("Health"), saiph(saiph), resting(false), prev_st(INT_MAX), prev_dx(INT_MAX), prev_co(INT_MAX), prev_in(INT_MAX), prev_wi(INT_MAX), prev_ch(INT_MAX) {
+Health::Health() : Analyzer("Health"), resting(false) {
 }
 
 /* methods */
@@ -94,18 +94,14 @@ void Health::analyze() {
 		req.priority = PRIORITY_HEALTH_CURE_POLYMORPH;
 		saiph->request(req);
 	}
+	/*
 	if (prev_st < saiph->world->player.strength || prev_dx < saiph->world->player.dexterity || prev_co < saiph->world->player.constitution || prev_in < saiph->world->player.intelligence || prev_wi < saiph->world->player.wisdom || prev_ch < saiph->world->player.charisma) {
-		/* we lost some stats. apply unihorn */
+		// we lost some stats. apply unihorn
 		req.request = REQUEST_APPLY_UNIHORN;
 		req.priority = PRIORITY_HEALTH_CURE_NON_DEADLY;
 		saiph->request(req);
 	}
-	prev_st = saiph->world->player.strength;
-	prev_dx = saiph->world->player.dexterity;
-	prev_co = saiph->world->player.constitution;
-	prev_in = saiph->world->player.intelligence;
-	prev_wi = saiph->world->player.wisdom;
-	prev_ch = saiph->world->player.charisma;
+	*/
 }
 
 void Health::parseMessages(const string &messages) {
