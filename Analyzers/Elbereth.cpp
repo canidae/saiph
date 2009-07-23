@@ -32,7 +32,7 @@ void Elbereth::onEvent(Event *const evt) {
 
 void Elbereth::parseMessages(const string &messages) {
 	/* figure out if something is engraved here */
-	string::size_type pos = messages.find(ELBERETH_YOU_READ, 0);
+	string::size_type pos = messages.find(MESSAGE_YOU_READ, 0);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
 		elbereth_count = 0;
@@ -40,16 +40,16 @@ void Elbereth::parseMessages(const string &messages) {
 		return;
 	}
 	/* is it written in dust, burned or digged? */
-	if (messages.find(ELBERETH_DUSTED_TEXT, 0) != string::npos) {
+	if (messages.find(MESSAGE_DUSTED_TEXT, 0) != string::npos) {
 		/* it's dusted. */
 		engraving_type = ENGRAVING_DUSTED;
-	} else if (messages.find(ELBERETH_BURNED_TEXT, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_BURNED_TEXT, 0) != string::npos) {
 		/* it's burned */
 		engraving_type = ENGRAVING_PERMANENT;
-	} else if (messages.find(ELBERETH_DIGGED_TEXT, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DIGGED_TEXT, 0) != string::npos) {
 		/* it's digged */
 		engraving_type = ENGRAVING_SEMIPERM;
-	} else if (messages.find(ELBERETH_FROSTED_TEXT, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_FROSTED_TEXT, 0) != string::npos) {
 		/* it's frosted */
 		engraving_type = ENGRAVING_DUSTED;
 	} else {

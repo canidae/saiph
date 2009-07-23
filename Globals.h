@@ -230,6 +230,7 @@
 
 /* messages */
 #define MESSAGE_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
+#define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CHOOSE_DIRECTION "  In what direction?  "
 #define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
@@ -244,6 +245,7 @@
 #define MESSAGE_DESTROY_WAND " breaks apart and explodes!  "
 #define MESSAGE_DESTROY_WAND2 " break apart and explode!  "
 #define MESSAGE_DIG_DIRECTION "  In what direction do you want to dig? "
+#define MESSAGE_DIGGED_TEXT "  Something is engraved here on the floor.  "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
 #define MESSAGE_DONT_BE_RIDICULOUS "  Don't be ridiculous!  "
 #define MESSAGE_DONT_EVEN_BOTHER "  Don't even bother.  "
@@ -251,6 +253,7 @@
 #define MESSAGE_DRAWBRIDGE_LOWERED "  You see a drawbridge coming down!  "
 #define MESSAGE_DRINK_FROM_FOUNTAIN "  Drink from the fountain? [yn] (n)  "
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
+#define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
 #define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
@@ -258,6 +261,7 @@
 #define MESSAGE_FOOCUBUS_REMOVE "  \"Take off your " // followed by what the foocubus removed.
 #define MESSAGE_FOR_INSTRUCTIONS "  (For instructions type a ?)  "
 #define MESSAGE_FOR_WHAT_DO_YOU_WISH "  For what do you wish?  "
+#define MESSAGE_FROSTED_TEXT "  Something is written here in the frost.  "
 #define MESSAGE_GOT_BURDENED "  Your movements are slowed slightly because of your load.  "
 #define MESSAGE_GOT_OVERTAXED "  You can barely move a handspan with this load!  "
 #define MESSAGE_GOT_STRAINED "  You stagger under your heavy load.  Movement is very hard.  "
@@ -286,10 +290,6 @@
 #define MESSAGE_STOLE " stole "
 #define MESSAGE_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
-#define MESSAGE_TEXT_BURNED "  Some text has been burned into the floor here.  "
-#define MESSAGE_TEXT_DIGGED "  Something is engraved here on the floor.  "
-#define MESSAGE_TEXT_DUSTED "  Something is written here in the dust.  "
-#define MESSAGE_TEXT_FROSTED "  Something is written here in the frost.  "
 #define MESSAGE_UNLOCK_IT "  Unlock it? [yn] (n)  "
 #define MESSAGE_WHAT_TO_APPLY "  What do you want to use or apply? "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? "
