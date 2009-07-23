@@ -3,13 +3,6 @@
 
 #include "Action.h"
 
-#define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? "
-#define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
-#define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
-#define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here?  "
-#define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
-#define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
-
 namespace action {
 	class Engrave : public Action {
 	public:

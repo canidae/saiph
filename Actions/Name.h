@@ -4,9 +4,6 @@
 #include "Action.h"
 #include "../Inventory.h"
 
-#define MESSAGE_ITEM_TO_NAME "  What do you want to name? "
-#define MESSAGE_WHAT_TO_NAME_ITEM "  What do you want to name this "
-
 namespace action {
 	class Name : public Action {
 	public:

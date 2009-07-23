@@ -6,22 +6,20 @@
 
 /* turns between safe to pray */
 #define PRAY_PRAYER_TIMEOUT 1000
-/* messages */
-#define PRAY_FINISHED_PRAYING "  You finish your prayer.  "
 
-class Request;
-class Saiph;
+namespace event {
+	class Event;
+}
 
 namespace analyzer {
 	class Pray : public Analyzer {
 	public:
-		Pray(Saiph *saiph);
+		Pray();
 
 		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void onEvent(event::Event *const event);
 
 	private:
-		Saiph *saiph;
 		int last_pray_turn;
 	};
 }

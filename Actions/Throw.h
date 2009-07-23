@@ -5,8 +5,6 @@
 #include "../Inventory.h"
 #include "../World.h"
 
-#define MESSAGE_WHAT_TO_THROW "  What do you want to throw? "
-
 namespace action {
 	class Throw : public Action {
 	public:

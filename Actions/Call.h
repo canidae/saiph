@@ -4,9 +4,6 @@
 #include "Action.h"
 #include "../Inventory.h"
 
-#define MESSAGE_ITEM_TO_CALL "  What do you want to call? "
-#define MESSAGE_WHAT_TO_CALL_ITEM "  Call "
-
 namespace action {
 	class Call : public Action {
 	public:
