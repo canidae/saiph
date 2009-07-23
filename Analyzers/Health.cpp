@@ -12,18 +12,16 @@ Health::Health() : Analyzer("Health"), resting(false) {
 /* methods */
 void Health::analyze() {
 	/* do something if our health is low */
-	int hp = saiph->world->player.hitpoints;
-	int hp_max = saiph->world->player.hitpoints_max;
-	if (hp > 0 && hp < hp_max * 4 / 7) {
+	if (Saiph::hitpoints > 0 && Saiph::hitpoints < Saiph::hitpoints_max * 4 / 7) {
 		/* hp below 4/7 (about 57%), do something! */
 		bool doing_something = false;
-		if (hp < hp_max * 2 / 7) {
+		if (Saiph::hitpoints < Saiph::hitpoints_max * 2 / 7) {
 			/* try quaffing healing potion */
 			req.request = REQUEST_QUAFF_HEALING;
 			req.priority = PRIORITY_HEALTH_QUAFF_FOR_HP;
 			if (saiph->request(req)) {
 				doing_something = true;
-			} else if (hp < 6 || hp < hp_max / 7) {
+			} else if (Saiph::hitpoints < 6 || Saiph::hitpoints < Saiph::hitpoints_max / 7) {
 				/* quaffing won't work... how about pray? */
 				req.request = REQUEST_PRAY;
 				req.priority = PRIORITY_HEALTH_PRAY_FOR_HP;
@@ -47,11 +45,11 @@ void Health::analyze() {
 			resting = false;
 		}
 	}
-	if (saiph->world->player.confused || saiph->world->player.hallucinating || saiph->world->player.foodpoisoned || saiph->world->player.ill || saiph->world->player.stunned) {
+	if (Saiph::confused || Saiph::hallucinating || Saiph::foodpoisoned || Saiph::ill || Saiph::stunned) {
 		/* apply unihorn */
 		req.request = REQUEST_APPLY_UNIHORN;
-		req.priority = (saiph->world->player.foodpoisoned || saiph->world->player.ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
-		if (!saiph->request(req) && (saiph->world->player.foodpoisoned || saiph->world->player.ill)) {
+		req.priority = (Saiph::foodpoisoned || Saiph::ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
+		if (!saiph->request(req) && (Saiph::foodpoisoned || Saiph::ill)) {
 			/* crap. it's deadly, and unihorn won't work. try eating eucalyptus leaf */
 			req.request = REQUEST_EAT;
 			req.priority = PRIORITY_HEALTH_CURE_DEADLY;
@@ -66,7 +64,7 @@ void Health::analyze() {
 	}
 	if (resting) {
 		/* still resting */
-		if (hp > hp_max * 6 / 7) {
+		if (Saiph::hitpoints > Saiph::hitpoints_max * 6 / 7) {
 			resting = false; // enough hp (greater than about 86%) to continue our journey
 		} else {
 			req.request = REQUEST_ELBERETH_OR_REST;
@@ -77,7 +75,7 @@ void Health::analyze() {
 			}
 		}
 	}
-	if (saiph->world->player.lycanthropy) {
+	if (Saiph::intrinsics & PROPERTY_LYCANTHROPY) {
 		/* cure lycanthropy */
 		req.request = REQUEST_EAT;
 		req.priority = PRIORITY_HEALTH_CURE_LYCANTHROPY;
@@ -88,7 +86,7 @@ void Health::analyze() {
 			saiph->request(req);
 		}
 	}
-	if (saiph->world->player.polymorphed) {
+	if (Saiph::polymorphed) {
 		/* cure polymorph */
 		req.request = REQUEST_PRAY;
 		req.priority = PRIORITY_HEALTH_CURE_POLYMORPH;
