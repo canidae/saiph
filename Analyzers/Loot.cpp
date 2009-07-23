@@ -154,7 +154,7 @@ void Loot::parseMessages(const string &messages) {
 		World::setAction(static_cast<action::Action *>(new action::SelectMultiple(this, drop)));
 	}
 
-	if (messages.find(LOOT_SEVERAL_OBJECTS_HERE) != string::npos || messages.find(LOOT_MANY_OBJECTS_HERE) != string::npos || messages.find(LOOT_SEVERAL_MORE_OBJECTS_HERE) != string::npos || messages.find(LOOT_MANY_MORE_OBJECTS_HERE) != string::npos) {
+	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_SEVERAL_MORE_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_MORE_OBJECTS_HERE) != string::npos) {
 		/* several/many objects herek, take a look around */
 		World::setAction(static_cast<action::Action *>(new action::Look(this)));
 	}
