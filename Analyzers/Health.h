@@ -13,6 +13,12 @@ namespace analyzer {
 
 	private:
 		bool resting;
+		int prev_str;
+		int prev_dex;
+		int prev_con;
+		int prev_int;
+		int prev_wis;
+		int prev_cha;
 	};
 }
 #endif

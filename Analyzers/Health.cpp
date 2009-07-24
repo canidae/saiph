@@ -6,7 +6,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Health::Health() : Analyzer("Health"), resting(false) {
+Health::Health() : Analyzer("Health"), resting(false), prev_str(INT_MAX), prev_dex(INT_MAX), prev_con(INT_MAX), prev_int(INT_MAX), prev_wis(INT_MAX), prev_cha(INT_MAX) {
 }
 
 /* methods */
@@ -77,21 +77,26 @@ void Health::analyze() {
 	}
 	if (Saiph::intrinsics & PROPERTY_LYCANTHROPY) {
 		/* cure lycanthropy */
-		req.request = REQUEST_EAT;
-		req.priority = PRIORITY_HEALTH_CURE_LYCANTHROPY;
-		req.data = "sprig of wolfsbane";
-		if (!saiph->request(req)) {
-			/* no? try praying instead */
-			req.request = REQUEST_PRAY;
-			saiph->request(req);
-		}
+		/* TODO: eat sprig of wolfsbane */
+		/* no? try praying instead */
+		if (action::Pray::isSafeToPray())
+			World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_HEALTH_CURE_LYCANTHROPY)));
 	}
 	if (Saiph::polymorphed) {
 		/* cure polymorph */
-		req.request = REQUEST_PRAY;
-		req.priority = PRIORITY_HEALTH_CURE_POLYMORPH;
-		saiph->request(req);
+		if (action::Pray::isSafeToPray())
+			World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_HEALTH_CURE_POLYMORPH)));
 	}
+	if (prev_str < Saiph::strength || prev_dex < Saiph::dexterity || prev_con < Saiph::constitution || prev_int < Saiph::intelligence || prev_wis < Saiph::wisdom || prev_cha < Saiph::charisma) {
+		/* TODO: we lost some stats. apply unihorn */
+	}
+	/* set previous stat values */
+	prev_st = Saiph::strength;
+	prev_dx = Saiph::dexterity;
+	prev_co = Saiph::constitution;
+	prev_in = Saiph::intelligence;
+	prev_wi = Saiph::wisdom;
+	prev_ch = Saiph::charisma;
 }
 
 void Health::parseMessages(const string &messages) {
@@ -100,7 +105,5 @@ void Health::parseMessages(const string &messages) {
 		/* TODO: eat [partly eaten] lizard corpse */
 		/* pray if all else fails, don't even bother checking if it's safe to pray, we're dead anyways */
 		World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
-	} else if (messages.find(MESSAGE_YOU_FEEL_CLUMSY) != string::npos || messages.find(MESSAGE_YOU_FEEL_FOOLISH) != string::npos ||messages.find(MESSAGE_YOU_FEEL_FRAGILE) != string::npos ||messages.find(MESSAGE_YOU_FEEL_REPULSIVE) != string::npos ||messages.find(MESSAGE_YOU_FEEL_STUPID) != string::npos ||messages.find(MESSAGE_YOU_FEEL_WEAK) != string::npos) {
-		/* TODO: stat loss, apply unihorn */
 	}
 }
