@@ -15,6 +15,7 @@
 #include "Pray.h"
 #include "PutOn.h"
 #include "Remove.h"
+#include "Rest.h"
 #include "Search.h"
 #include "Select.h"
 #include "SelectMultiple.h"
@@ -41,8 +42,9 @@ int Open::id = 13;
 int Pray::id = 14;
 int PutOn::id = 15;
 int Remove::id = 16;
-int Search::id = 17;
-int Select::id = 18;
-int SelectMultiple::id = 19;
-int Throw::id = 20;
-int Unlock::id = 21;
+int Rest::id = 17;
+int Search::id = 18;
+int Select::id = 19;
+int SelectMultiple::id = 20;
+int Throw::id = 21;
+int Unlock::id = 22;

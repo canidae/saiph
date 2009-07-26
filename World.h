@@ -55,6 +55,7 @@ public:
 	static void registerAnalyzer(analyzer::Analyzer *analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer *analyzer);
 	static int getPriority();
+	static int getLastActionID();
 	static bool setAction(action::Action *action);
 	static bool queueAction(action::Action *action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
@@ -88,6 +89,7 @@ private:
 	static std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
 	static time_t start_time;
 	static std::vector<analyzer::Analyzer *> analyzers;
+	static int last_action_id;
 
 	static void addChangedLocation(const Point &point);
 	static void detectPosition();
@@ -105,6 +107,11 @@ private:
 };
 
 /* inline methods */
+inline int World::getLastActionID() {
+	/* return the id of the last action */
+	return last_action_id;
+}
+
 inline unsigned char World::getDungeonSymbol() {
 	/* return dungeon symbol at player position */
 	return World::levels[Saiph::position.level].getDungeonSymbol(Saiph::position);

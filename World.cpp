@@ -47,6 +47,7 @@ Point World::last_menu;
 map<string, vector<int> > World::levelmap;
 time_t World::start_time = time(NULL);
 vector<Analyzer *> World::analyzers;
+int World::last_action_id = NO_ACTION;
 
 /* methods */
 void World::init(int connection_type) {
@@ -460,7 +461,7 @@ void World::run() {
 		/* check if we're stuck */
 		if (action != NULL && stuck_counter % 42 == 41) {
 			bool was_move = false;
-			if (action->getID() == action::Move::id) {
+			if (last_action_id == action::Move::id) {
 				/* we're moving, mark target tile unpassable */
 				switch (action->getCommand().command[0]) {
 					case NW:
@@ -497,9 +498,10 @@ void World::run() {
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
 			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+			last_action_id = NO_ACTION;
 			executeCommand(string(1, (char) 27));
 			executeCommand(QUIT);
-			executeCommand(YES);
+			executeCommand(string(1, YES));
 			return;
 		}
 
@@ -510,8 +512,6 @@ void World::run() {
 		last_turn = turn;
 
 		/* check if we're in the middle of an action */
-		if (action != NULL)
-			action->updateAction(messages);
 		if (action == NULL || action->getCommand() == action::Action::noop) {
 			/* we got no command, find a new one */
 			/* parse messages */
@@ -540,10 +540,12 @@ void World::run() {
 			/* we do not. print debugging and just answer something sensible */
 			if (question) {
 				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;
+				last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else if (menu) {
 				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << messages << endl;
+				last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else {
@@ -555,6 +557,7 @@ void World::run() {
 				cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
 				cout.flush();
 				++World::real_turn; // command than may increase turn counter
+				last_action_id = NO_ACTION;
 				executeCommand("s");
 				continue;
 			}
@@ -568,12 +571,17 @@ void World::run() {
 		cout << (unsigned char) 27 << "[" << cursor.row + 1 << ";" << cursor.col + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::notice() << action->getAnalyzer()->name << " " << action->getCommand() << endl;
+		Debug::notice() << "Analyzer " << action->getAnalyzer()->name << " " << action->getCommand() << endl;
 
 		/* execute the command */
 		if (action->getCommand().priority <= PRIORITY_TURN_MAX)
 			++World::real_turn; // command that may increase turn counter
+		last_action_id = action->getID();
 		executeCommand(action->getCommand().command);
+
+		/* and finally update current action */
+		if (action != NULL)
+			action->updateAction(messages);
 	}
 }
 

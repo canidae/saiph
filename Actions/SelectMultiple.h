@@ -26,7 +26,7 @@ namespace action {
 		if (sequence < (int) keys.size())
 			tmp = Command(keys[sequence], PRIORITY_SELECT_ITEM);
 		else if (sequence == (int) keys.size())
-			tmp = Command(CLOSE_PAGE, PRIORITY_CLOSE_SELECT_PAGE);
+			tmp = Command(std::string(1, CLOSE_PAGE), PRIORITY_CLOSE_SELECT_PAGE);
 		else
 			tmp = Action::noop;
 		return tmp;

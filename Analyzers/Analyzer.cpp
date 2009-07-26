@@ -4,6 +4,7 @@
 #include "Explore.h"
 #include "Door.h"
 #include "Fight.h"
+#include "Health.h"
 #include "Loot.h"
 #include "../World.h"
 
@@ -24,6 +25,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Explore());
 	World::registerAnalyzer(new Door());
 	World::registerAnalyzer(new Fight());
+	World::registerAnalyzer(new Health());
 	World::registerAnalyzer(new Loot());
 }
 

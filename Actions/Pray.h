@@ -12,7 +12,7 @@ namespace action {
 	public:
 		static int id;
 
-		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), pray("#pray", priority) {}
+		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), pray("#pray\n", priority) {}
 		virtual ~Pray() {}
 
 		static bool isSafeToPray() {return World::turn - PRAY_PRAYER_TIMEOUT > Saiph::last_pray_turn;}

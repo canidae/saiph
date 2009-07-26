@@ -13,13 +13,13 @@
 #define PRIORITY_TURN_MAX 999
 
 /* some common answers */
-#define CLOSE_PAGE " "
-#define DESELECT_PAGE "\\"
-#define HANDS "-"
-#define NO "n"
+#define CLOSE_PAGE ' '
+#define DESELECT_PAGE '\\'
+#define HANDS '-'
+#define NO 'n'
 #define QUIT "#quit\n"
-#define SELECT_PAGE ","
-#define YES "y"
+#define SELECT_PAGE ','
+#define YES 'y'
 
 class Command {
 public:

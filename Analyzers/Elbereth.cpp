@@ -11,7 +11,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(ENGRAVING_MUST_CHECK), real_turn_look(-1) {
+Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(ELBERETH_MUST_CHECK) {
 	/* register events */
 	EventBus::registerEvent(ElberethQuery::id, this);
 }
@@ -19,11 +19,10 @@ Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(E
 void Elbereth::onEvent(Event *const evt) {
 	if (evt->getID() == ElberethQuery::id) {
 		ElberethQuery *const q = static_cast<ElberethQuery *const>(evt);
-		if (real_turn_look != World::real_turn) {
+		if (World::getLastActionID() != action::Look::id) {
 			/* data is outdated */
-			engraving_type = ENGRAVING_MUST_CHECK;
+			engraving_type = ELBERETH_MUST_CHECK;
 			elbereth_count = 0;
-			World::setAction(static_cast<action::Action *>(new action::Look(this)));
 		}
 		q->engraving_type = engraving_type;
 		q->number_of_elbereths = elbereth_count;
@@ -32,33 +31,32 @@ void Elbereth::onEvent(Event *const evt) {
 
 void Elbereth::parseMessages(const string &messages) {
 	/* figure out if something is engraved here */
-	string::size_type pos = messages.find(MESSAGE_YOU_READ, 0);
+	string::size_type pos = messages.find(MESSAGE_YOU_READ);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
 		elbereth_count = 0;
-		engraving_type = -1;
+		engraving_type = ELBERETH_NONE;
 		return;
 	}
 	/* is it written in dust, burned or digged? */
-	if (messages.find(MESSAGE_DUSTED_TEXT, 0) != string::npos) {
+	if (messages.find(MESSAGE_DUSTED_TEXT) != string::npos) {
 		/* it's dusted. */
-		engraving_type = ENGRAVING_DUSTED;
-	} else if (messages.find(MESSAGE_BURNED_TEXT, 0) != string::npos) {
+		engraving_type = ELBERETH_DUSTED;
+	} else if (messages.find(MESSAGE_BURNED_TEXT) != string::npos) {
 		/* it's burned */
-		engraving_type = ENGRAVING_PERMANENT;
-	} else if (messages.find(MESSAGE_DIGGED_TEXT, 0) != string::npos) {
+		engraving_type = ELBERETH_PERMANENT;
+	} else if (messages.find(MESSAGE_DIGGED_TEXT) != string::npos) {
 		/* it's digged */
-		engraving_type = ENGRAVING_SEMIPERM;
-	} else if (messages.find(MESSAGE_FROSTED_TEXT, 0) != string::npos) {
+		engraving_type = ELBERETH_SEMIPERM;
+	} else if (messages.find(MESSAGE_FROSTED_TEXT) != string::npos) {
 		/* it's frosted */
-		engraving_type = ENGRAVING_DUSTED;
+		engraving_type = ELBERETH_DUSTED;
 	} else {
 		/* it's unexpected */
-		engraving_type = -1;
+		engraving_type = ELBERETH_NOT_HANDLED;
 		return;
 	}
-	real_turn_look = World::real_turn;
 	elbereth_count = 1; // we found one already with the first find() call
-	while ((pos = messages.find(ELBERETH_ELBERETH, pos + 1)) != string::npos)
+	while ((pos = messages.find(ELBERETH, pos + 1)) != string::npos)
 		++elbereth_count; // found another elbereth
 }

@@ -12,7 +12,7 @@ namespace action {
 	public:
 		static int id;
 
-		Fight(analyzer::Analyzer *analyzer, unsigned char direction, int priority, bool attack_friendly = true) : Action(analyzer), fight(std::string(1, 'F').append(std::string(1, direction)), priority), attack_friendly(attack_friendly ? YES : NO, PRIORITY_CONTINUE_ACTION) {}
+		Fight(analyzer::Analyzer *analyzer, unsigned char direction, int priority, bool attack_friendly = true) : Action(analyzer), fight(std::string(1, 'F').append(std::string(1, direction)), priority), attack_friendly(std::string(1, attack_friendly ? YES : NO), PRIORITY_CONTINUE_ACTION) {}
 		virtual ~Fight() {}
 
 		virtual int getID() {return id;}

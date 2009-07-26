@@ -4,9 +4,6 @@
 #include <string>
 #include "Analyzer.h"
 
-/* Elbereth */
-#define ELBERETH_ELBERETH "Elbereth"
-
 namespace analyzer {
 	class Elbereth : public Analyzer {
 	public:
@@ -18,7 +15,6 @@ namespace analyzer {
 	private:
 		int elbereth_count;
 		int engraving_type;
-		int real_turn_look;
 	};
 }
 #endif

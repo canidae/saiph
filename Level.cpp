@@ -163,14 +163,16 @@ void Level::parseMessages(const string &messages) {
 		}
 		if (received.items.size() > 0)
 			EventBus::broadcast(static_cast<Event *>(&received)); // broadcast "ChangedInventoryItems"
-	}
 
-	/* send event if we're standing on stash */
-	map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-	if (s != stashes.end() && s->second.items.size() > 0) {
-		on_ground.items = s->second.items;
-		/* broadcast "ItemsOnGround" */
-		EventBus::broadcast(static_cast<Event *>(&on_ground));
+		if (!World::question) {
+			/* send event if we're standing on stash (except when we got a question or menu) */
+			map<Point, Stash>::iterator s = stashes.find(Saiph::position);
+			if (s != stashes.end() && s->second.items.size() > 0) {
+				on_ground.items = s->second.items;
+				/* broadcast "ItemsOnGround" */
+				EventBus::broadcast(static_cast<Event *>(&on_ground));
+			}
+		}
 	}
 }
 

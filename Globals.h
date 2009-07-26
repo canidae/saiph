@@ -227,6 +227,8 @@
 
 /* discard item */
 #define DISCARD "DISCARD"
+/* elbereth */
+#define ELBERETH "Elbereth"
 
 /* messages */
 /* list duplicate lines: grep "MESSAGE_" Globals.h | cut -d" " -f3- | sort | uniq -d */
@@ -260,10 +262,10 @@
 #define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? "
-#define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here?  "
-#define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here?  "
-#define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here?  "
-#define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here?  "
+#define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here? "
+#define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here? "
+#define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here? "
+#define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here? "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
 #define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "

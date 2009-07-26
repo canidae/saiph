@@ -94,7 +94,7 @@ void Door::parseMessages(const string &messages) {
 		World::levels[Saiph::position.level].symbols[(unsigned char) CLOSED_DOOR][position] = 1;
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
-		World::setAction(static_cast<action::Action *>(new action::Answer(this, YES)));
+		World::setAction(static_cast<action::Action *>(new action::Answer(this, string(1, YES))));
 	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
 		/* we're in a pit, can't reach door from here */
 		in_a_pit = true;

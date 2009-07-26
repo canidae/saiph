@@ -4,6 +4,8 @@
 #include <string>
 #include "../Command.h"
 
+#define NO_ACTION 0
+
 namespace analyzer {
 	class Analyzer;
 }

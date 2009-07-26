@@ -1,8 +1,15 @@
 #include "Health.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Actions/Engrave.h"
+#include "../Actions/Look.h"
+#include "../Actions/Pray.h"
+#include "../Actions/Rest.h"
+#include "../EventBus.h"
+#include "../Events/ElberethQuery.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
@@ -14,52 +21,34 @@ void Health::analyze() {
 	/* do something if our health is low */
 	if (Saiph::hitpoints > 0 && Saiph::hitpoints < Saiph::hitpoints_max * 4 / 7) {
 		/* hp below 4/7 (about 57%), do something! */
-		bool doing_something = false;
+		bool doing_something = false; // TODO: we probably don't need this variable later
 		if (Saiph::hitpoints < Saiph::hitpoints_max * 2 / 7) {
-			/* try quaffing healing potion */
-			req.request = REQUEST_QUAFF_HEALING;
-			req.priority = PRIORITY_HEALTH_QUAFF_FOR_HP;
-			if (saiph->request(req)) {
-				doing_something = true;
-			} else if (Saiph::hitpoints < 6 || Saiph::hitpoints < Saiph::hitpoints_max / 7) {
+			/* TODO: try quaffing healing potion */
+			//req.priority = PRIORITY_HEALTH_QUAFF_FOR_HP;
+			/* TODO: if we're quaffing, set doing_something = true */
+			if (Saiph::hitpoints < 6 || Saiph::hitpoints < Saiph::hitpoints_max / 7) {
+				/* TODO: should not enter this block if we could quaff */
 				/* quaffing won't work... how about pray? */
-				req.request = REQUEST_PRAY;
-				req.priority = PRIORITY_HEALTH_PRAY_FOR_HP;
-				if (saiph->request(req))
+				if (action::Pray::isSafeToPray()) {
+					World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_HEALTH_PRAY_FOR_HP)));
 					doing_something = true;
+				}
 			}
 		}
 		if (!doing_something) {
-			/* try elberething */
-			req.request = REQUEST_ELBERETH_OR_REST;
-			req.priority = PRIORITY_HEALTH_REST_FOR_HP_LOW;
-			if (saiph->request(req))
-				resting = true;
-		} else {
-			/* turn off resting if we pray/quaff.
-			 * in case we quaff a healing potion and end up with 80% hp,
-			 * so that we won't continue elberething in an attempt to get
-			 * 90% or more.
-			 * when we quaff it usually means we're in trouble, can't
-			 * waste time elberething then */
-			resting = false;
+			/* we're not going to quaff/pray, set resting = true to make her elbereth/rest instead */
+			resting = true;
 		}
 	}
 	if (Saiph::confused || Saiph::hallucinating || Saiph::foodpoisoned || Saiph::ill || Saiph::stunned) {
-		/* apply unihorn */
-		req.request = REQUEST_APPLY_UNIHORN;
-		req.priority = (Saiph::foodpoisoned || Saiph::ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
-		if (!saiph->request(req) && (Saiph::foodpoisoned || Saiph::ill)) {
-			/* crap. it's deadly, and unihorn won't work. try eating eucalyptus leaf */
-			req.request = REQUEST_EAT;
-			req.priority = PRIORITY_HEALTH_CURE_DEADLY;
-			req.data = "eucalyptus leaf";
-			if (saiph->request(req))
-				return; // yay, it'll work
-			/* no eucalyptus leaf, try praying */
-			req.request = REQUEST_PRAY;
-			req.priority = PRIORITY_HEALTH_CURE_DEADLY;
-			saiph->request(req);
+		/* TODO: apply unihorn */
+		//req.priority = (Saiph::foodpoisoned || Saiph::ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
+		resting = false; // this is to prevent us from trying to elbereth when we got some bad effect
+		if (Saiph::foodpoisoned || Saiph::ill) {
+			/* TODO: should not enter this block if we can use unihorn */
+			/* TODO: eat eucalyptus leaf (if foodpoisoned or ill and no unihorn) */
+			/* if we can't cure this in any other way, just pray even if it's not safe, because we'll die for sure if we don't */
+			World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
 		}
 	}
 	if (resting) {
@@ -67,12 +56,19 @@ void Health::analyze() {
 		if (Saiph::hitpoints > Saiph::hitpoints_max * 6 / 7) {
 			resting = false; // enough hp (greater than about 86%) to continue our journey
 		} else {
-			req.request = REQUEST_ELBERETH_OR_REST;
-			req.priority = PRIORITY_HEALTH_REST_FOR_HP_HIGH;
-			if (!saiph->request(req)) {
-				/* noone would handle our request.
-				 * we're bones */
+			ElberethQuery eq;
+			EventBus::broadcast(static_cast<Event *>(&eq));
+			if (eq.engraving_type == ELBERETH_MUST_CHECK) {
+				/* we don't know, we must look */
+				World::setAction(static_cast<action::Action *>(new action::Look(this)));
+			} else if (eq.engraving_type == ELBERETH_DUSTED || eq.engraving_type == ELBERETH_NONE) {
+				/* no elbereth or dusted elbereth, engrave or rest, depending on amount of elbereths */
+				if (eq.number_of_elbereths < 3)
+					World::setAction(static_cast<action::Action *>(new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_HEALTH_REST_FOR_HP_HIGH, (eq.number_of_elbereths > 0))));
+				else
+					World::setAction(static_cast<action::Action *>(new action::Rest(this, PRIORITY_HEALTH_REST_FOR_HP_HIGH)));
 			}
+			/* TODO: handle digged/burned elbereth */
 		}
 	}
 	if (Saiph::intrinsics & PROPERTY_LYCANTHROPY) {
@@ -91,12 +87,12 @@ void Health::analyze() {
 		/* TODO: we lost some stats. apply unihorn */
 	}
 	/* set previous stat values */
-	prev_st = Saiph::strength;
-	prev_dx = Saiph::dexterity;
-	prev_co = Saiph::constitution;
-	prev_in = Saiph::intelligence;
-	prev_wi = Saiph::wisdom;
-	prev_ch = Saiph::charisma;
+	prev_str = Saiph::strength;
+	prev_dex = Saiph::dexterity;
+	prev_con = Saiph::constitution;
+	prev_int = Saiph::intelligence;
+	prev_wis = Saiph::wisdom;
+	prev_cha = Saiph::charisma;
 }
 
 void Health::parseMessages(const string &messages) {

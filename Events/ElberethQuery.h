@@ -3,11 +3,12 @@
 
 #include "Event.h"
 
-#define ENGRAVING_NOT_HANDLED -1
-#define ENGRAVING_MUST_CHECK 0
-#define ENGRAVING_DUSTED 1
-#define ENGRAVING_SEMIPERM 2
-#define ENGRAVING_PERMANENT 3
+#define ELBERETH_NOT_HANDLED -1
+#define ELBERETH_MUST_CHECK 0
+#define ELBERETH_NONE 1
+#define ELBERETH_DUSTED 2
+#define ELBERETH_SEMIPERM 3
+#define ELBERETH_PERMANENT 4
 
 namespace event {
 	class ElberethQuery : public Event {
@@ -18,7 +19,7 @@ namespace event {
 		int engraving_type;
 
 		// initialize these to invalid values to spot bugs
-		ElberethQuery() : number_of_elbereths(0), engraving_type(ENGRAVING_NOT_HANDLED) {}
+		ElberethQuery() : number_of_elbereths(0), engraving_type(ELBERETH_NOT_HANDLED) {}
 		virtual ~ElberethQuery() {}
 
 		virtual int getID() {return id;}
