@@ -16,6 +16,7 @@ public:
 	static std::ofstream &analyzer(const std::string &name);
 	static std::ofstream &broadcast();
 	static std::ofstream &info();
+	static std::ofstream &inventory();
 	static std::ofstream &notice();
 	static std::ofstream &warning();
 	static std::ofstream &error();
@@ -49,6 +50,11 @@ inline std::ofstream &Debug::broadcast() {
 
 inline std::ofstream &Debug::info() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Info] ";
+	return debugfile;
+}
+
+inline std::ofstream &Debug::inventory() {
+	debugfile << "<T" << World::turn << "> " << printTime() << ": [Inventory] ";
 	return debugfile;
 }
 

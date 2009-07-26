@@ -8,8 +8,6 @@
 #include "Item.h"
 #include "Events/ChangedInventoryItems.h"
 
-#define INVENTORY_DEBUG_NAME "Inventory] "
-
 class Inventory {
 public:
 	static bool updated;

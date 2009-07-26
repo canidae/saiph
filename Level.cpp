@@ -154,19 +154,28 @@ void Level::parseMessages(const string &messages) {
 			/* add item to inventory */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
 			if (item.count <= 0) {
-				Debug::notice() << INVENTORY_DEBUG_NAME << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
+				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
 				continue;
 			}
 			Inventory::addItem(messages[pos - 1], item);
 			/* add item to changed.keys */
 			received.items[messages[pos - 1]] = item;
 		}
-		if (received.items.size() > 0)
-			EventBus::broadcast(static_cast<Event *>(&received)); // broadcast "ChangedInventoryItems"
+		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
+		if (received.items.size() > 0) {
+			/* broadcast "ReceivedItems" */
+			EventBus::broadcast(static_cast<Event *>(&received));
+			/* make stash dirty too */
+			if (s != stashes.end())
+				s->second.items.clear();
+			/* broadcast StashChanged */
+			StashChanged sc;
+			sc.stash = Coordinate(Saiph::position.level, Saiph::position);
+			EventBus::broadcast(static_cast<Event *>(&sc));
+		}
 
 		if (!World::question) {
 			/* send event if we're standing on stash (except when we got a question or menu) */
-			map<Point, Stash>::iterator s = stashes.find(Saiph::position);
 			if (s != stashes.end() && s->second.items.size() > 0) {
 				on_ground.items = s->second.items;
 				/* broadcast "ItemsOnGround" */

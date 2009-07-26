@@ -37,7 +37,7 @@ void Inventory::parseMessages(const string &messages) {
 			/* check that item match inventory item */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
 			if (item.count <= 0) {
-				Debug::notice() << INVENTORY_DEBUG_NAME << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
+				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
 				continue;
 			}
 			map<unsigned char, Item>::iterator i = items.find(messages[pos - 1]);
@@ -81,7 +81,7 @@ void Inventory::parseMessages(const string &messages) {
 void Inventory::addItem(unsigned char key, const Item &item) {
 	if (item.count <= 0)
 		return;
-	Debug::notice() << INVENTORY_DEBUG_NAME << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
+	Debug::inventory() << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
 	if (items.find(key) != items.end()) {
 		/* existing item, add amount */
 		items[key].count += item.count;
@@ -99,7 +99,7 @@ void Inventory::removeItem(unsigned char key, const Item &item) {
 	map<unsigned char, Item>::iterator i = items.find(key);
 	if (i == items.end())
 		return;
-	Debug::notice() << INVENTORY_DEBUG_NAME << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
+	Debug::inventory() << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
 	if (i->second.count > item.count) {
 		/* reduce stack */
 		i->second.count -= item.count;
