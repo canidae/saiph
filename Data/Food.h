@@ -31,6 +31,7 @@
 #define EAT_EFFECT_REDUCE_STUNNING  (1 << 23)
 #define EAT_EFFECT_REDUCE_CONFUSION (1 << 24)
 #define EAT_EFFECT_INVISIBILITY     (1 << 25)
+#define EAT_EFFECT_ROT              (1 << 26)
 
 namespace data {
 	class Food : public Item {
