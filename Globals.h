@@ -324,6 +324,7 @@
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_STEALS " steals "
 #define MESSAGE_STOLE " stole "
+#define MESSAGE_STOP_EATING "  Stop eating? [yn] (y)  "
 #define MESSAGE_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
 #define MESSAGE_TELEPATHY_GAIN1 "  You feel a strange mental acuity.  "
 #define MESSAGE_TELEPATHY_LOSE1 "  Your senses fail!  "

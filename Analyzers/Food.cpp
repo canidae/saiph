@@ -7,59 +7,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Food::Food(Saiph *saiph) : Analyzer("Food"), saiph(saiph) {
-	command2 = "";
-	priority = ILLEGAL_PRIORITY;
-	eat_order.push_back("partly eaten meatball");
-	eat_order.push_back("meatball");
-	eat_order.push_back("partly eaten meat ring");
-	eat_order.push_back("meat ring");
-	eat_order.push_back("partly eaten meat stick");
-	eat_order.push_back("meat stick");
-	eat_order.push_back("partly eaten huge chunk of meat");
-	eat_order.push_back("huge chunk of meat");
-	eat_order.push_back("partly eaten cream pie");
-	eat_order.push_back("cream pie");
-	eat_order.push_back("partly eaten lichen corpse");
-	eat_order.push_back("lichen corpse");
-	eat_order.push_back("partly eaten tripe ration");
-	eat_order.push_back("tripe ration");
-	eat_order.push_back("partly eaten melon");
-	eat_order.push_back("melon");
-	eat_order.push_back("partly eaten apple");
-	eat_order.push_back("apple");
-	eat_order.push_back("partly eaten pear");
-	eat_order.push_back("pear");
-	eat_order.push_back("partly eaten kelp frond");
-	eat_order.push_back("kelp frond");
-	eat_order.push_back("partly eaten C-ration");
-	eat_order.push_back("C-ration");
-	eat_order.push_back("partly eaten cram ration");
-	eat_order.push_back("cram ration");
-	eat_order.push_back("partly eaten food ration");
-	eat_order.push_back("food ration");
-	eat_order.push_back("partly eaten gunyoki");
-	eat_order.push_back("gunyoki");
-	eat_order.push_back("partly eaten K-ration");
-	eat_order.push_back("K-ration");
-	eat_order.push_back("partly eaten clove of garlic");
-	eat_order.push_back("clove of garlic");
-	eat_order.push_back("partly eaten fortune cookie");
-	eat_order.push_back("fortune cookie");
-	eat_order.push_back("partly eaten banana");
-	eat_order.push_back("banana");
-	eat_order.push_back("partly eaten orange");
-	eat_order.push_back("orange");
-	eat_order.push_back("partly eaten candy bar");
-	eat_order.push_back("candy bar");
-	eat_order.push_back("partly eaten byte");
-	eat_order.push_back("byte");
-	eat_order.push_back("partly eaten lump of royal jelly");
-	eat_order.push_back("lump of royal jelly");
-	eat_order.push_back("partly eaten pancake");
-	eat_order.push_back("pancake");
-	eat_order.push_back("partly eaten lembas wafer");
-	eat_order.push_back("lembas wafer");
+Food::Food() : Analyzer("Food") {
 	eat_order.push_back("partly eaten carrot"); // will cure blindness
 	eat_order.push_back("carrot"); // will cure blindness
 	eat_order.push_back("partly eaten eucalyptus leaf"); // will cure sickness
@@ -78,18 +26,18 @@ void Food::analyze() {
 		prev_monster_loc[m->first] = m->second.symbol;
 	/* we can't eat while acrrying too much.
 	   TODO drop things so we can eat */
-	if (saiph->world->player.encumbrance >= OVERTAXED)
+	if (Saiph::encumbrance >= OVERTAXED)
 		return;
 	/* are we hungry? */
-	if (saiph->world->player.hunger <= WEAK) {
+	if (Saiph::hunger <= WEAK) {
 		/* yes, we are */
 		for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+			for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end(); ++i) {
 				if (i->second.name == *f) {
 					/* and we got something to eat */
 					command = EAT;
 					command2 = i->first;
-					switch (saiph->world->player.hunger) {
+					switch (Saiph::hunger) {
 						case HUNGRY:
 							priority = PRIORITY_FOOD_EAT_HUNGRY;
 							break;
@@ -107,7 +55,7 @@ void Food::analyze() {
 			}
 		}
 		/* hmm, nothing to eat, how bad is it? */
-		if (saiph->world->player.hunger <= WEAK) {
+		if (Saiph::hunger <= WEAK) {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
 			req.request = REQUEST_PRAY;
@@ -117,12 +65,12 @@ void Food::analyze() {
 	}
 	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->getDungeonSymbol() != SHOP_TILE) {
 		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
-		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > saiph->world->player.turn) {
+		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > Saiph::turn) {
 			/* it's safe to eat corpses here */
 			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
 				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
 					/* there's a corpse in the stash, is it edible? */
-					if ((saiph->world->player.hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
+					if ((Saiph::hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
 						/* it is, and we know we can eat corpses on this position */
 						command = EAT;
 						command2 = i->name;
@@ -136,7 +84,7 @@ void Food::analyze() {
 }
 
 void Food::parseMessages(const string &messages) {
-	if (!saiph->world->question && command2 == "ate corpse") {
+	if (!World::question && command2 == "ate corpse") {
 		/* just ate a corpse, we should look at ground */
 		priority = PRIORITY_LOOK;
 		command = LOOK;
@@ -144,7 +92,7 @@ void Food::parseMessages(const string &messages) {
 		return;
 	}
 	string::size_type pos;
-	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
+	if (World::question && messages.find(MESSAGE_WHAT_TO_EAT, 0) != string::npos) {
 		if (command2.size() > 1) {
 			/* sometimes (eating troll that arise) we try to eat
 			 * a corpse that's gone.
@@ -169,7 +117,7 @@ void Food::parseMessages(const string &messages) {
 		/* asks if we should eat the stuff on the floor */
 		priority = PRIORITY_CONTINUE_ACTION;
 		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
-		if (c == corpse_loc.end() || c->second + FOOD_CORPSE_EAT_TIME <= saiph->world->player.turn) {
+		if (c == corpse_loc.end() || c->second + FOOD_CORPSE_EAT_TIME <= Saiph::turn) {
 			/* this corpse is rotten */
 			command = NO;
 			return;
@@ -207,7 +155,7 @@ void Food::parseMessages(const string &messages) {
 					corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
 				} else if (corpse_loc.find(p->first) == corpse_loc.end()) {
 					/* monster probably leaves an edible corpse */
-					corpse_loc[p->first] = saiph->world->player.turn;
+					corpse_loc[p->first] = Saiph::turn;
 				}
 			}
 		}
@@ -219,7 +167,7 @@ void Food::parseMessages(const string &messages) {
 			}
 			++c;
 		}
-	} else if (saiph->world->question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
+	} else if (World::question && messages.find(FOOD_STOP_EATING, 0) != string::npos) {
 		/* we should stop eating when we get this message */
 		command = YES;
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -230,7 +178,7 @@ bool Food::request(const Request &request) {
 	if (request.request == REQUEST_EAT) {
 		if (request.priority < priority)
 			return false;
-		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end(); ++i) {
 			if (i->second.name != request.data)
 				continue;
 			command = EAT;
@@ -281,8 +229,8 @@ bool Food::safeToEat(const string &corpse) {
 	else if ((c->second->eat_effects & EAT_EFFECT_PETRIFY) != 0)
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 &&
-			!(saiph->world->player.intrinsics & PROPERTY_POISON ||
-			  saiph->world->player.extrinsics & PROPERTY_POISON))
+			!(Saiph::intrinsics & PROPERTY_POISON ||
+			  Saiph::extrinsics & PROPERTY_POISON))
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POLYMORPH) != 0)
 		return false;
