@@ -1,73 +1,89 @@
 #include "Food.h"
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
-#include "../Data/CorpseData.h"
+#include "../Action/Eat.h"
+#include "../Action/Pray.h"
+#include "../Data/Corpse.h"
+#include "../Data/Food.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
 Food::Food() : Analyzer("Food") {
-	eat_order.push_back("partly eaten carrot"); // will cure blindness
-	eat_order.push_back("carrot"); // will cure blindness
-	eat_order.push_back("partly eaten eucalyptus leaf"); // will cure sickness
-	eat_order.push_back("eucalyptus leaf"); // will cure sickness
-	eat_order.push_back("partly eaten sprig of wolfsbane"); // will cure lycanthropy
-	eat_order.push_back("sprig of wolfsbane"); // will cure lycanthropy
-	eat_order.push_back("partly eaten lizard corpse"); // wil cure stoning
-	eat_order.push_back("lizard corpse"); // wil cure stoning
+	/* try to eat the food with lowest nutrition/weight first, and avoid food that cures bad effects */
+	for (map<string, data::Food *>::iterator f = data::Food::foods.begin() f != data::Food::foods.end(); ++f) {
+		int priority = 1000;
+		priority -= f->second.nutrition / f->second.weight;
+		if (f->second.eat_effects & EAT_EFFECT_CURE_BLINDNESS)
+			priority -= 200;
+		if (f->second.eat_effects & EAT_EFFECT_CURE_SICKNESS)
+			priority -= 400;
+		if (f->second.eat_effects & EAT_EFFECT_CURE_LYCANTHROPY)
+			priority -= 600;
+		if (f->second.eat_effects & EAT_EFFECT_CURE_STONING)
+			priority -= 800;
+		eat_priority[f->first] = priority;
+	}
 }
 
 /* methods */
 void Food::analyze() {
+	if (Saiph::encumbrance >= OVERTAXED)
+		return; // we can't eat while carrying too much
+
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m)
-		prev_monster_loc[m->first] = m->second.symbol;
-	/* we can't eat while acrrying too much.
-	   TODO drop things so we can eat */
-	if (Saiph::encumbrance >= OVERTAXED)
-		return;
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level].monsters.begin(); m != World::levels[Saiph::position.level].monsters.end(); ++m) {
+		if (m->second.visible)
+			prev_monster_loc[m->first] = m->second.symbol;
+	}
+
 	/* are we hungry? */
 	if (Saiph::hunger <= WEAK) {
-		/* yes, we are */
-		for (vector<string>::iterator f = eat_order.begin(); f != eat_order.end(); ++f) {
-			for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end(); ++i) {
-				if (i->second.name == *f) {
-					/* and we got something to eat */
-					command = EAT;
-					command2 = i->first;
-					switch (Saiph::hunger) {
-						case HUNGRY:
-							priority = PRIORITY_FOOD_EAT_HUNGRY;
-							break;
-
-						case WEAK:
-							priority = PRIORITY_FOOD_EAT_WEAK;
-							break;
-
-						default:
-							priority = PRIORITY_FOOD_EAT_FAINTING;
-							break;
-					}
-					return;
+		/* yes, we are, eat the food item in our inventory with lowest priority */
+		if (food_items.size() > 0) {
+			map<unsigned char, Item>::iterator eat = Inventory::items.end();
+			for (set<unsigned char>::iterator f = food_items.begin(); f != food_items.end(); ++f) {
+				map<unsigned char, Item>::iterator i = Inventory::items.find(*f);
+				map<string, int>::iterator ep = eat_priority.find(i->second.name);
+				if (i == Inventory::items.end()) {
+					/* this should not happen */
+					Debug::analyzer(name) << "Food item mysteriously disappeared from inventory slot '" << *f << "'" << endl;
+					continue;
+				} else if (ep == eat_priority.end()) {
+					/* neither should this */
+					Debug::analyzer(name) << "Want to eat item '" << i->second << "', but that's not in our list of edible items" << endl;
+					continue;
+				} else if (eat == Inventory::items.end() || eat_priority.find(eat->second.name)->second > ep->second) {
+					/* this food item got a lower eat priority than previous (if any) food item */
+					eat = i;
 				}
+			}
+			if (eat != Inventory::items.end()) {
+				/* we got something to eat, hooray! */
+				World::setAction(static_cast<action::Action *>(new action::Eat(this, eat->first, (Saiph::hunger == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
+				return;
 			}
 		}
 		/* hmm, nothing to eat, how bad is it? */
 		if (Saiph::hunger <= WEAK) {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
-			req.request = REQUEST_PRAY;
-			req.priority = PRIORITY_FOOD_PRAY_FOR_FOOD;
-			saiph->request(req);
+			if (action::Pray::isSafeToPray())
+				World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD)));
 		}
 	}
-	if (saiph->on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && saiph->getDungeonSymbol() != SHOP_TILE) {
-		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
+
+	/* TODO: event */
+	/* check if there's a fresh corpse on the ground */
+	if (Saiph::on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && Saiph::getDungeonSymbol() != SHOP_TILE) {
+		map<Point, int>::iterator c = corpse_loc.find(Saiph::position);
 		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > Saiph::turn) {
 			/* it's safe to eat corpses here */
-			for (list<Item>::iterator i = saiph->on_ground->items.begin(); i != saiph->on_ground->items.end(); ++i) {
+			for (list<Item>::iterator i = Saiph::on_ground->items.begin(); i != Saiph::on_ground->items.end(); ++i) {
 				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
 					/* there's a corpse in the stash, is it edible? */
 					if ((Saiph::hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
@@ -104,19 +120,19 @@ void Food::parseMessages(const string &messages) {
 			priority = PRIORITY_CONTINUE_ACTION;
 			/* also mark stash as dirty */
 			req.request = REQUEST_DIRTY_STASH;
-			saiph->request(req);
+			Saiph::request(req);
 			return;
 		}
 		command = command2;
 		priority = PRIORITY_CONTINUE_ACTION;
 		/* food gone, make inventory dirty */
 		req.request = REQUEST_DIRTY_INVENTORY;
-		saiph->request(req);
+		Saiph::request(req);
 		return;
 	} else if ((pos = messages.find(FOOD_EAT_IT_2, 0)) != string::npos || (pos = messages.find(FOOD_EAT_ONE_2, 0)) != string::npos) {
 		/* asks if we should eat the stuff on the floor */
 		priority = PRIORITY_CONTINUE_ACTION;
-		map<Point, int>::iterator c = corpse_loc.find(saiph->position);
+		map<Point, int>::iterator c = corpse_loc.find(Saiph::position);
 		if (c == corpse_loc.end() || c->second + FOOD_CORPSE_EAT_TIME <= Saiph::turn) {
 			/* this corpse is rotten */
 			command = NO;
@@ -161,7 +177,7 @@ void Food::parseMessages(const string &messages) {
 		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
 		for (map<Point, int>::iterator c = corpse_loc.begin(); c != corpse_loc.end(); ) {
-			if (saiph->levels[saiph->position.level].monsters.find(c->first) == saiph->levels[saiph->position.level].monsters.end() && saiph->levels[saiph->position.level].stashes.find(c->first) == saiph->levels[saiph->position.level].stashes.end()) {
+			if (World::levels[Saiph::position.level].monsters.find(c->first) == World::levels[Saiph::position.level].monsters.end() && World::levels[Saiph::position.level].stashes.find(c->first) == World::levels[Saiph::position.level].stashes.end()) {
 				corpse_loc.erase(c++);
 				continue;
 			}
@@ -174,6 +190,10 @@ void Food::parseMessages(const string &messages) {
 	}
 }
 
+void Food::onEvent(Event *const event) {
+}
+
+/* TODO: remove
 bool Food::request(const Request &request) {
 	if (request.request == REQUEST_EAT) {
 		if (request.priority < priority)
@@ -189,12 +209,13 @@ bool Food::request(const Request &request) {
 	}
 	return false;
 }
+*/
 
 /* private methods */
 bool Food::safeToEat(const string &corpse) {
 	/* this method returns true if it's safe to eat given corpse */
-	map<string, CorpseData *>::iterator c = CorpseData::corpses.find(corpse);
-	if (c == CorpseData::corpses.end())
+	map<string, data::Corpse *>::iterator c = data::Corpse::corpses.find(corpse);
+	if (c == data::Corpse::corpses.end())
 		return false;
 	/* acidic ain't so bad
 	else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
@@ -264,15 +285,15 @@ bool Food::safeToEat(const string &corpse) {
 	*/
 	else if ((c->second->eat_effects & EAT_EFFECT_SPEED_TOGGLE) != 0)
 		return false;
-	/* since we took out lizards from CorpseData, no monster got this effect
+	/* since we took out lizards from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_CURE_STONING) != 0)
 		return false;
 	*/
-	/* since we took out lichens from CorpseData, no monster got this effect
+	/* since we took out lichens from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_REDUCE_STUNNING) != 0)
 		return false;
 	*/
-	/* since we took out lichens from CorpseData, no monster got this effect
+	/* since we took out lichens from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_REDUCE_CONFUSION) != 0)
 		return false;
 	*/

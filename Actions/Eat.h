@@ -8,7 +8,7 @@ namespace action {
 	public:
 		static int id;
 
-		Eat(analyzer::Analyzer *analyzer, std::string eat_msg, unsigned char eat_with, int priority, bool should_append = true) : Action(analyzer), eat(std::string(1, 'E'), priority), message(eat_msg, PRIORITY_CONTINUE_ACTION), item(std::string(1,eat_with), PRIORITY_CONTINUE_ACTION), append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {}
+		Eat(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), eat(std::string(1, 'e'), priority), item(std::string(1, key), PRIORITY_CONTINUE_ACTION), answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION) {}
 		virtual ~Eat() {}
 
 		virtual int getID() {return id;}
@@ -17,9 +17,8 @@ namespace action {
 
 	private:
 		const Command eat;
-		const Command message;
 		const Command item;
-		const Command append;
+		const Command answer_no;
 	};
 
 	inline const Command &Eat::getCommand() {
@@ -33,9 +32,6 @@ namespace action {
 
 		case 2:
 			return append;
-
-		case 3:
-			return message;
 
 		default:
 			return Action::noop;

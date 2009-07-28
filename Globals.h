@@ -261,6 +261,10 @@
 #define MESSAGE_DROP_WHICH_ITEMS "  What would you like to drop?  "
 #define MESSAGE_DUSTED_TEXT "  Something is written here in the dust.  "
 #define MESSAGE_DYWYPI "  Do you want your possessions identified? [ynq] "
+#define MESSAGE_EAT_IT_1 "  There is "       // these four
+#define MESSAGE_EAT_IT_2 " here; eat it? "   // are used
+#define MESSAGE_EAT_ONE_1 "  There are "     // for eating
+#define MESSAGE_EAT_ONE_2 " here; eat one? " // stuff on ground
 #define MESSAGE_ENGRAVE_ADD "  Do you want to add to the current engraving? "
 #define MESSAGE_ENGRAVE_DUST "  What do you want to write in the dust here? "
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here? "
@@ -287,6 +291,8 @@
 #define MESSAGE_HURT_RIGHT_LEG "  Your right leg is in no shape for kicking.  "
 #define MESSAGE_IMPROVISE "  Improvise? [yn] (n)  "
 #define MESSAGE_IN_WHAT_DIRECTION "  In what direction?  "
+#define MESSAGE_IS_DESTROYED " is destroyed!  "
+#define MESSAGE_IS_KILLED " is killed!  "
 #define MESSAGE_ITEM_TO_CALL "  What do you want to call? "
 #define MESSAGE_ITEM_TO_NAME "  What do you want to name? "
 #define MESSAGE_LEG_IS_BETTER "  Your leg feels somewhat better.  "
@@ -355,9 +361,11 @@
 #define MESSAGE_WHAT_TO_ZAP "  What do you want to zap? "
 #define MESSAGE_WHAT_TUNE "  What tune are you playing? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
+#define MESSAGE_YOU_DESTROY "  You destroy the "
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_FINISH_YOUR_PRAYER "  You finish your prayer.  "
+#define MESSAGE_YOU_KILL "  You kill the "
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off
 
