@@ -2,6 +2,7 @@
 #define ACTION_EAT_H
 
 #include "Action.h"
+#include "../Inventory.h"
 
 namespace action {
 	class Eat : public Action {
@@ -31,7 +32,7 @@ namespace action {
 			return item;
 
 		case 2:
-			return append;
+			return answer_no;
 
 		default:
 			return Action::noop;
@@ -39,14 +40,14 @@ namespace action {
 	}
 
 	inline void Eat::updateAction(const std::string &messages) {
-		if (messages.find(MESSAGE_EAT_WITH) != std::string::npos)
+		if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {
 			sequence = 1;
-		else if (messages.find(MESSAGE_EAT_ADD) != std::string::npos)
+		} else if (messages.find(MESSAGE_EAT_IT_2) != std::string::npos || messages.find(MESSAGE_EAT_ONE_2) != std::string::npos) {
 			sequence = 2;
-		else if (sequence == 3 || sequence == -1)
-			sequence = -1;
-		else
+		} else if (sequence == 1) {
+			Inventory::updated = false; // item should disappear
 			sequence = 3;
+		}
 	}
 }
 #endif

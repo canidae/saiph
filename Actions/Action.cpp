@@ -3,6 +3,8 @@
 #include "Apply.h"
 #include "ApplyInDirection.h"
 #include "Call.h"
+#include "Eat.h"
+#include "EatCorpse.h"
 #include "Engrave.h"
 #include "Fight.h"
 #include "Kick.h"
@@ -26,25 +28,27 @@ using namespace action;
 
 /* define static variables */
 const Command Action::noop;
-int Apply::id = 1;
-int Answer::id = 2;
-int ApplyInDirection::id = 3;
-int Call::id = 4;
-int Engrave::id = 5;
-int Fight::id = 6;
-int Kick::id = 7;
-int ListInventory::id = 8;
-int Look::id = 9;
-int Loot::id = 10;
-int Move::id = 11;
-int Name::id = 12;
-int Open::id = 13;
-int Pray::id = 14;
-int PutOn::id = 15;
-int Remove::id = 16;
-int Rest::id = 17;
-int Search::id = 18;
-int Select::id = 19;
-int SelectMultiple::id = 20;
-int Throw::id = 21;
-int Unlock::id = 22;
+int Apply::id = 100;
+int Answer::id = 200;
+int ApplyInDirection::id = 300;
+int Call::id = 400;
+int Eat::id = 500;
+int EatCorpse::id = 550;
+int Engrave::id = 600;
+int Fight::id = 700;
+int Kick::id = 800;
+int ListInventory::id = 900;
+int Look::id = 1000;
+int Loot::id = 1100;
+int Move::id = 1200;
+int Name::id = 1300;
+int Open::id = 1400;
+int Pray::id = 1500;
+int PutOn::id = 1600;
+int Remove::id = 1700;
+int Rest::id = 1800;
+int Search::id = 1900;
+int Select::id = 2000;
+int SelectMultiple::id = 2100;
+int Throw::id = 2200;
+int Unlock::id = 2300;

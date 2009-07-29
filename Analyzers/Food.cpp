@@ -76,27 +76,6 @@ void Food::analyze() {
 				World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD)));
 		}
 	}
-
-	/* TODO: event */
-	/* check if there's a fresh corpse on the ground */
-	if (Saiph::on_ground != NULL && priority < PRIORITY_FOOD_EAT_CORPSE && Saiph::getDungeonSymbol() != SHOP_TILE) {
-		map<Point, int>::iterator c = corpse_loc.find(Saiph::position);
-		if (c != corpse_loc.end() && c->second + FOOD_CORPSE_EAT_TIME > Saiph::turn) {
-			/* it's safe to eat corpses here */
-			for (list<Item>::iterator i = Saiph::on_ground->items.begin(); i != Saiph::on_ground->items.end(); ++i) {
-				if (i->name.size() >= sizeof (FOOD_CORPSE) + 1 && i->name.find(FOOD_CORPSE, 0) == i->name.size() - sizeof (FOOD_CORPSE) + 1) {
-					/* there's a corpse in the stash, is it edible? */
-					if ((Saiph::hunger < SATIATED && safeToEat(i->name)) || i->name == "floating eye corpse" || i->name == "wraith corpse") {
-						/* it is, and we know we can eat corpses on this position */
-						command = EAT;
-						command2 = i->name;
-						priority = PRIORITY_FOOD_EAT_CORPSE;
-						return;
-					}
-				}
-			}
-		}
-	}
 }
 
 void Food::parseMessages(const string &messages) {
@@ -191,6 +170,23 @@ void Food::parseMessages(const string &messages) {
 }
 
 void Food::onEvent(Event *const event) {
+	if (event->getID() == ItemsOnGround::id && World::getDungeonSymbol() != SHOP_TILE) {
+		map<Point, int>::iterator cl = corpse_loc.find(Saiph::position);
+		if (!= corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
+			/* it's safe to eat corpses here */
+			ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
+			for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+				map<string, data::Corpse *>::iterator c = data::Corpse::corpses.find(i->name);
+				if (c == data::Corpse::corpses.end())
+					continue; // item is not a corpse
+				if (!safeToEat(c))
+					continue; // corpse is not safe to eat
+				/* we should eat this corpse */
+				World::setAction(static_cast<action::Action *>(new action::EatCorpse(this, eat->first, (Saiph::hunger == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
+				break;
+			}
+		}
+	}
 }
 
 /* TODO: remove
@@ -212,11 +208,10 @@ bool Food::request(const Request &request) {
 */
 
 /* private methods */
-bool Food::safeToEat(const string &corpse) {
+bool Food::safeToEat(map<string, data::Corpse *>::iterator c) {
 	/* this method returns true if it's safe to eat given corpse */
-	map<string, data::Corpse *>::iterator c = data::Corpse::corpses.find(corpse);
-	if (c == data::Corpse::corpses.end())
-		return false;
+	if (Saiph::hunger >= SATIATED && !(c->eat_effects & EAT_EFFECT_GAIN_LEVEL) && !(c->eat_effects & EAT_EFFECT_ESP))
+		return false; // satiated and eating it won't give us benefits that's worth the risk of choking
 	/* acidic ain't so bad
 	else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
 		return false;

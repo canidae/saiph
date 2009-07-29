@@ -113,7 +113,7 @@ void Corpse::init() {
 	create("fire ant", 10, 0, 20);
 	create("fire giant", 750, EAT_EFFECT_STRENGTH, 30);
 	create("flesh golem", 600, 0, 12);
-	create("floating eye", 10, 0, 100);
+	create("floating eye", 10, EAT_EFFECT_ESP, 100);
 	create("forest centaur", 600, 0, 0);
 	create("fox", 250, 0, 0);
 	create("frost giant", 750, EAT_EFFECT_STRENGTH, 33);

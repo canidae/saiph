@@ -24,7 +24,7 @@ namespace analyzer {
 		std::map<std::string, int> eat_priority;
 		std::set<unsigned char> food_items;
 
-		bool safeToEat(const std::string &corpse);
+		bool safeToEat(std::map<std::string, data::Corpse *>::iterator c);
 	};
 }
 #endif

@@ -35,6 +35,7 @@
 #define EAT_EFFECT_CURE_SICKNESS    (1 << 27)
 #define EAT_EFFECT_CURE_LYCANTHROPY (1 << 28)
 #define EAT_EFFECT_ROT              (1 << 29)
+#define EAT_EFFECT_ESP              (1 << 30)
 
 namespace data {
 	class Food : public Item {
