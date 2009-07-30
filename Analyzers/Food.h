@@ -1,13 +1,22 @@
 #ifndef ANALYZER_FOOD_H
 #define ANALYZER_FOOD_H
 
-/* how old corpses may be */
-#define FOOD_CORPSE_EAT_TIME 30
-
 #include <map>
 #include <set>
 #include <string>
 #include "Analyzer.h"
+#include "../Point.h"
+#include "../Data/Corpse.h"
+
+/* how old corpses may be */
+#define FOOD_CORPSE_EAT_TIME 30
+
+/* priorities, should be cleaned up */
+#define PRIORITY_FOOD_PRAY_FOR_FOOD 950
+#define PRIORITY_FOOD_EAT_FAINTING 750
+#define PRIORITY_FOOD_EAT_WEAK 725
+#define PRIORITY_FOOD_EAT_CORPSE 435
+#define PRIORITY_FOOD_EAT_HUNGRY 350
 
 namespace analyzer {
 	class Food : public Analyzer {

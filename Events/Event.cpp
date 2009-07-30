@@ -1,5 +1,6 @@
 #include "Event.h"
 #include "ChangedInventoryItems.h"
+#include "EatItem.h"
 #include "ElberethQuery.h"
 #include "ItemsOnGround.h"
 #include "ReceivedItems.h"
@@ -13,6 +14,7 @@ using namespace event;
 /* define static variables */
 bool Event::initialized = false;
 int ChangedInventoryItems::id = ILLEGAL_EVENT_ID;
+int EatItem::id = ILLEGAL_EVENT_ID;
 int ElberethQuery::id = ILLEGAL_EVENT_ID;
 int ItemsOnGround::id = ILLEGAL_EVENT_ID;
 int ReceivedItems::id = ILLEGAL_EVENT_ID;
@@ -28,6 +30,7 @@ void Event::init() {
 
 	/* init events */
 	ChangedInventoryItems::id = EventBus::createEventID();
+	EatItem::id = EventBus::createEventID();
 	ElberethQuery::id = EventBus::createEventID();
 	ItemsOnGround::id = EventBus::createEventID();
 	ReceivedItems::id = EventBus::createEventID();
