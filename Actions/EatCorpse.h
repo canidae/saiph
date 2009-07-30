@@ -58,6 +58,9 @@ namespace action {
 				sequence = 2;
 			else
 				sequence = 1;
+		} else if (messages.find(MESSAGE_STOP_EATING) != std::string::npos) {
+			/* we're about to choke, abort eating */
+			sequence = 2;
 		} else if (sequence == 1 || sequence == 2 || sequence == 4) {
 			/* either ate a corpse or cancelled the eat request, make us look at ground */
 			sequence = 3;
