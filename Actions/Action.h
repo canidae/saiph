@@ -3,7 +3,6 @@
 
 #include <string>
 #include "../Command.h"
-#include "../Globals.h"
 
 #define NO_ACTION 0
 
@@ -18,6 +17,9 @@ namespace action {
 
 		Action(analyzer::Analyzer *analyzer) : sequence(0), analyzer(analyzer) {}
 		virtual ~Action() {}
+
+		static void init();
+		static void destroy();
 		virtual int getID() = 0;
 		virtual analyzer::Analyzer *getAnalyzer() {return analyzer;}
 		virtual const Command &getCommand() = 0;
@@ -28,6 +30,7 @@ namespace action {
 
 	private:
 		analyzer::Analyzer *analyzer;
+		static int id_counter;
 	};
 }
 #endif

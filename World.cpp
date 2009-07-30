@@ -1423,6 +1423,7 @@ int main(int argc, const char *argv[]) {
 
 	/* init */
 	Debug::init(logfile);
+	action::Action::init();
 	data::Monster::init();
 	data::Item::init();
 	event::Event::init();
@@ -1436,8 +1437,9 @@ int main(int argc, const char *argv[]) {
 	/* destroy */
 	Analyzer::destroy();
 	World::destroy();
-	data::Item::destroy();
-	data::Monster::destroy();
 	event::Event::destroy();
+	data::Monster::destroy();
+	data::Item::destroy();
+	action::Action::destroy();
 	Debug::destroy();
 }

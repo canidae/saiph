@@ -28,7 +28,7 @@ void Event::init() {
 		return;
 	initialized = true;
 
-	/* init events */
+	/* set ID for events */
 	ChangedInventoryItems::id = EventBus::createEventID();
 	EatItem::id = EventBus::createEventID();
 	ElberethQuery::id = EventBus::createEventID();
