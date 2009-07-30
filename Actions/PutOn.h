@@ -4,14 +4,12 @@
 #include "Action.h"
 #include "../Inventory.h"
 
-#define PUT_ON "P"
-
 namespace action {
 	class PutOn : public Action {
 	public:
 		static int id;
 
-		PutOn(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), put_on(PUT_ON, priority), put_on_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {}
+		PutOn(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), put_on("P", priority), put_on_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {}
 		virtual ~PutOn() {}
 
 		virtual int getID() {return id;}

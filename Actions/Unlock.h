@@ -2,8 +2,6 @@
 #define ACTION_UNLOCK_H
 
 #include "Action.h"
-#include "../Inventory.h"
-#include "../World.h"
 
 namespace action {
 	class Unlock : public Action {
@@ -44,11 +42,11 @@ namespace action {
 	}
 
 	inline void action::Unlock::updateAction(const std::string &messages) {
-		if (World::question && messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
+		if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
 			sequence = 1;
-		} else if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+		} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
 			sequence = 2;
-		} else if (World::question && messages.find(MESSAGE_UNLOCK_IT) != std::string::npos) {
+		} else if (messages.find(MESSAGE_UNLOCK_IT) != std::string::npos) {
 			sequence = 3;
 		} else if (sequence == 3) {
 			sequence = 4;

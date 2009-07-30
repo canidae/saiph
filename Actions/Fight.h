@@ -2,10 +2,6 @@
 #define ACTION_FIGHT_H
 
 #include "Action.h"
-#include "../Globals.h"
-#include "../World.h"
-
-#define MESSAGE_REALLY_ATTACK "Really attack"
 
 namespace action {
 	class Fight : public Action {
@@ -39,7 +35,7 @@ namespace action {
 
 	inline void action::Fight::updateAction(const std::string &messages) {
 		if (sequence == 0) {
-			if (World::question && messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
+			if (messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
 				sequence = 1;
 			else
 				sequence = 2;

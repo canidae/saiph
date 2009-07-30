@@ -2,7 +2,6 @@
 #define ACTION_OPEN_H
 
 #include "Action.h"
-#include "../World.h"
 
 namespace action {
 	class Open : public Action {
@@ -35,7 +34,7 @@ namespace action {
 	}
 
 	inline void action::Open::updateAction(const std::string &messages) {
-		if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
+		if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
 			sequence = 1;
 		else if (sequence == 1)
 			sequence = 2;

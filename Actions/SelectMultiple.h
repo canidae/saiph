@@ -1,7 +1,6 @@
 #ifndef ACTION_SELECT_MULTIPLE_H
 #define ACTION_SELECT_MULTIPLE_H
 
-#include <string>
 #include <vector>
 #include "Action.h"
 

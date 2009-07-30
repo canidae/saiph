@@ -1,7 +1,6 @@
 #ifndef ACTION_SELECT_H
 #define ACTION_SELECT_H
 
-#include <string>
 #include "Action.h"
 
 namespace action {

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../Command.h"
+#include "../Globals.h"
 
 #define NO_ACTION 0
 

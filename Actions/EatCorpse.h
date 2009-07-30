@@ -1,7 +1,6 @@
 #ifndef ACTION_EAT_CORPSE_H
 #define ACTION_EAT_CORPSE_H
 
-#include <string>
 #include "Action.h"
 
 namespace action {
@@ -45,11 +44,13 @@ namespace action {
 	}
 
 	inline void EatCorpse::updateAction(const std::string &messages) {
-		if (messages.find(MESSAGE_WHAT_TO_EAT_CORPSE) != std::string::npos) {
+		if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {
 			sequence = 3;
 		} else if (messages.find(MESSAGE_EAT_IT_2) != std::string::npos || messages.find(MESSAGE_EAT_ONE_2) != std::string::npos) {
-			/* TODO */
-			sequence = 2;
+			if (messages.find(corpse) != std::string::npos && (messages.find(MESSAGE_EAT_IT_1) != std::string::npos || messages.find(MESSAGE_EAT_ONE_1) != std::string::npos))
+				sequence = 2;
+			else
+				sequence = 1;
 		} else if (sequence == 1 || sequence == 2) {
 			sequence = 4;
 		}

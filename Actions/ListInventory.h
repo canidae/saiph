@@ -2,6 +2,7 @@
 #define ACTION_LIST_INVENTORY_H
 
 #include "Action.h"
+#include "../World.h"
 
 namespace action {
 	class ListInventory : public Action {

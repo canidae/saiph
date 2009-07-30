@@ -3,7 +3,6 @@
 
 #include "Action.h"
 #include "../Inventory.h"
-#include "../World.h"
 
 namespace action {
 	class Apply : public Action {
@@ -37,7 +36,7 @@ namespace action {
 	}
 
 	inline void action::Apply::updateAction(const std::string &messages) {
-		if (World::question && messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
+		if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
 			sequence = 1;
 		} else if (sequence == 1) {
 			/* mark inventory dirty if update_inventory is true */

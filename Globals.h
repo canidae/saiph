@@ -319,6 +319,7 @@
 #define MESSAGE_POISON_RES_GAIN2 "  You feel especially healthy.  "
 #define MESSAGE_POISON_RES_LOSE1 "  You feel a little sick!  "
 #define MESSAGE_POLYMORPH "  You turn into "
+#define MESSAGE_REALLY_ATTACK "Really attack"
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "
 #define MESSAGE_SEVERAL_OBJECTS_HERE "  There are several objects here.  "

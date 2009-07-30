@@ -3,7 +3,6 @@
 
 #include "Action.h"
 #include "../Inventory.h"
-#include "../World.h"
 
 namespace action {
 	class Throw : public Action {
@@ -40,9 +39,9 @@ namespace action {
 	}
 
 	inline void action::Throw::updateAction(const std::string &messages) {
-		if (World::question && messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
+		if (messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
 			sequence = 1;
-		} else if (World::question && messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+		} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
 			sequence = 2;
 		} else if (sequence == 2) {
 			/* mark inventory dirty */
