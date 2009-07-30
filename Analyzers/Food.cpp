@@ -18,8 +18,13 @@ using namespace std;
 Food::Food() : Analyzer("Food") {
 	/* try to eat the food with lowest nutrition/weight first, and avoid food that cures bad effects */
 	for (map<string, data::Food *>::iterator f = data::Food::foods.begin(); f != data::Food::foods.end(); ++f) {
+		if (f->second->eat_effects & EAT_EFFECT_ROT)
+			continue; // we're not gonna carry food that rot
 		int priority = 1000;
-		priority -= f->second->nutrition / f->second->weight;
+		if (f->second->weight <= 0)
+			priority -= f->second->nutrition / 1; // prevent divide-by-zero (or negative values)
+		else
+			priority -= f->second->nutrition / f->second->weight;
 		if (f->second->eat_effects & EAT_EFFECT_CURE_BLINDNESS)
 			priority -= 200;
 		if (f->second->eat_effects & EAT_EFFECT_CURE_SICKNESS)

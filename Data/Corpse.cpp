@@ -20,7 +20,7 @@ void Corpse::create(const string &name, int nutrition, int eat_effects, int resi
 		return;
 	/* corpses rot and become tainted, we use this to distinguish corpses (except lizards ands lichens)
 	 * from food that never goes bad */
-	if (monster->name != "lizard corpse" && monster->name != "lichen corpse")
+	if (monster->name != "lizard" && monster->name != "lichen")
 		eat_effects |= EAT_EFFECT_ROT;
 	string corpse_name = monster->name;
 	string partly_eaten_name = monster->name;
@@ -192,10 +192,10 @@ void Corpse::init() {
 	create("large mimic", 400, EAT_EFFECT_MIMIC, 0);
 	create("leocrotta", 500, 0, 0);
 	create("leprechaun", 30, 0, 50);
-	create("lichen corpse", 200, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN, 0);
+	create("lichen", 200, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN, 0);
 	create("lieutenant", 400, EAT_EFFECT_HUMAN, 0);
 	create("little dog", 150, EAT_EFFECT_AGGRAVATE, 0);
-	create("lizard corpse", 40, EAT_EFFECT_CURE_STONING | EAT_EFFECT_REDUCE_STUNNING | EAT_EFFECT_REDUCE_CONFUSION, 0);
+	create("lizard", 40, EAT_EFFECT_CURE_STONING | EAT_EFFECT_REDUCE_STUNNING | EAT_EFFECT_REDUCE_CONFUSION, 0);
 	create("long worm", 500, 0, 0);
 	create("Lord Carnarvon", 400, EAT_EFFECT_HUMAN, 0);
 	create("Lord Sato", 400, EAT_EFFECT_HUMAN, 0);
