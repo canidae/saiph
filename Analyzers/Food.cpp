@@ -111,6 +111,7 @@ void Food::parseMessages(const string &messages) {
 
 void Food::onEvent(Event *const event) {
 	if (event->getID() == ItemsOnGround::id && World::getDungeonSymbol() != SHOP_TILE) {
+		/* TODO: forgot to make her pick up food items :\ */
 		map<Point, int>::iterator cl = corpse_loc.find(Saiph::position);
 		if (cl != corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
 			/* it's safe to eat corpses here */
