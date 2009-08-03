@@ -47,11 +47,10 @@ void Inventory::parseMessages(const string &messages) {
 				changed.keys.insert(messages[pos - 1]);
 			} else if (item != i->second) {
 				/* item does not match item in inventory */
-				/* FIXME: we remove an item from the map, that invalidates
-				 * the "i" iterator! */
-				removeItem(i->first, item);
-				addItem(i->first, item);
-				changed.keys.insert(i->first);
+				unsigned char key = i->first;
+				removeItem(key, i->second);
+				addItem(key, item);
+				changed.keys.insert(key);
 			}
 			/* we (still) got this item, so it's not lost. remove it from lost */
 			lost.erase(messages[pos - 1]);
