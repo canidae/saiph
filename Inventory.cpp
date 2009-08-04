@@ -110,7 +110,7 @@ void Inventory::removeItem(unsigned char key, const Item &item) {
 		for (int a = 0; a < SLOTS; ++a) {
 			if (slots[a] == key) {
 				slots[a] = '\0';
-				return;
+				break;
 			}
 		}
 		items.erase(i);
