@@ -17,6 +17,7 @@
 #define PRIORITY_FOOD_EAT_WEAK 725
 #define PRIORITY_FOOD_EAT_CORPSE 435
 #define PRIORITY_FOOD_EAT_HUNGRY 350
+#define PRIORITY_FOOD_LOOT 200
 
 namespace analyzer {
 	class Food : public Analyzer {

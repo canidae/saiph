@@ -4,11 +4,16 @@
 #include "../World.h"
 #include "../Actions/Eat.h"
 #include "../Actions/EatCorpse.h"
+#include "../Actions/Loot.h"
 #include "../Actions/Pray.h"
+#include "../Actions/Select.h"
 #include "../Data/Corpse.h"
 #include "../Data/Food.h"
+#include "../Events/ChangedInventoryItems.h"
 #include "../Events/EatItem.h"
 #include "../Events/ItemsOnGround.h"
+#include "../Events/ReceivedItems.h"
+#include "../Events/WantItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -111,21 +116,61 @@ void Food::parseMessages(const string &messages) {
 
 void Food::onEvent(Event *const event) {
 	if (event->getID() == ItemsOnGround::id && World::getDungeonSymbol() != SHOP_TILE) {
-		/* TODO: forgot to make her pick up food items :\ */
+		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
 		map<Point, int>::iterator cl = corpse_loc.find(Saiph::position);
-		if (cl != corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
-			/* it's safe to eat corpses here */
-			ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
-			for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			if (cl != corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
+				/* it's safe to eat corpses here */
 				map<string, data::Corpse *>::iterator c = data::Corpse::corpses.find(i->name);
 				if (c == data::Corpse::corpses.end())
 					continue; // item is not a corpse
-				if (!safeToEat(c))
+				else if (!safeToEat(c))
 					continue; // corpse is not safe to eat
+				else if (!(c->second->eat_effects & EAT_EFFECT_ROT))
+					continue; // corpse does not rot, we should pick it up instead
 				/* we should eat this corpse */
 				World::setAction(static_cast<action::Action *>(new action::EatCorpse(this, i->name, PRIORITY_FOOD_EAT_CORPSE)));
 				break;
 			}
+			/* check if we want to pick up edible item */
+			map<string, data::Food *>::iterator f = data::Food::foods.find(i->name);
+			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+				continue; // not food or the food rots
+			/* pick up food item */
+			World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FOOD_LOOT)));
+		}
+	} else if (event->getID() == WantItems::id) {
+		WantItems *e = static_cast<WantItems *>(event);
+		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			map<string, data::Food *>::iterator f = data::Food::foods.find(i->second.name);
+			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+				continue; // not food or the food rots
+			World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+			break;
+		}
+	} else if (event->getID() == ChangedInventoryItems::id) {
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
+		for (set<unsigned char>::iterator k = e->keys.begin(); k != e->keys.end(); ++k) {
+			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
+			if (i == Inventory::items.end()) {
+				/* lost this item */
+				food_items.erase(*k);
+			} else {
+				/* received item, is it food? */
+				map<string, data::Food *>::iterator f = data::Food::foods.find(i->second.name);
+				if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+					food_items.insert(*k); // cheezeburger!
+				else
+					food_items.erase(*k); // ewww
+			}
+		}
+	} else if (event->getID() == ReceivedItems::id) {
+		ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+			map<string, data::Food *>::iterator f = data::Food::foods.find(i->second.name);
+			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+				continue; // not food or the food rots
+			food_items.insert(i->first);
 		}
 	} else if (event->getID() == EatItem::id) {
 		EatItem *e = static_cast<EatItem *>(event);
