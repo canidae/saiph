@@ -167,9 +167,9 @@ void Food::onEvent(Event *const event) {
 				/* received item, is it food? */
 				map<string, data::Food *>::iterator f = data::Food::foods.find(i->second.name);
 				if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
-					food_items.insert(*k); // cheezeburger!
-				else
 					food_items.erase(*k); // ewww
+				else
+					food_items.insert(*k); // cheezeburger!
 			}
 		}
 	} else if (event->getID() == ReceivedItems::id) {

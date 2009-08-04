@@ -144,7 +144,8 @@ void Level::parseMessages(const string &messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
 		stashes.erase(Saiph::position);
-	} else if (!World::menu) {
+	}
+	if (!World::menu) {
 		/* check if we received items */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
