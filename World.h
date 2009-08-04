@@ -65,6 +65,7 @@ public:
 	static unsigned char getDungeonSymbol(unsigned char direction);
 	static unsigned char getMonsterSymbol(const Coordinate &coordinate);
 	static unsigned char getMonsterSymbol(const Point &point);
+	static void setDirtyStash();
 	static void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 	static void setDungeonSymbol(const Point &point, unsigned char symbol);
 	static void setDungeonSymbol(unsigned char symbol);
@@ -176,6 +177,13 @@ inline unsigned char World::getMonsterSymbol(const Coordinate &coordinate) {
 inline unsigned char World::getMonsterSymbol(const Point &point) {
 	/* return monster symbol at given point on current level */
 	return World::levels[Saiph::position.level].getMonsterSymbol(point);
+}
+
+inline void World::setDirtyStash() {
+	/* set stash at player position dirty */
+	std::map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(Saiph::position);
+	if (s != World::levels[Saiph::position.level].stashes.end())
+		s->second.items.clear();
 }
 
 inline void World::setDungeonSymbol(unsigned char symbol) {

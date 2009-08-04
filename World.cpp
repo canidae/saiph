@@ -458,59 +458,6 @@ void World::run() {
 		/* dump maps */
 		dumpMaps();
 
-		/* check if we're stuck */
-		if (action != NULL && stuck_counter % 42 == 41) {
-			bool was_move = false;
-			if (last_action_id == action::Move::id) {
-				/* we're moving, mark target tile unpassable */
-				switch (action->getCommand().command[0]) {
-					case NW:
-					case NE:
-					case SW:
-					case SE:
-						/* moving diagonally failed.
-						 * we could be trying to move diagonally into a door we're
-						 * unaware of because of an item blocking the door symbol.
-						 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-						setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
-						was_move = true;
-						break;
-
-					case N:
-					case E:
-					case S:
-					case W:
-						/* moving cardinally failed, possibly item in wall.
-						 * make the tile UNKNOWN_TILE_UNPASSABLE */
-						setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_UNPASSABLE);
-						was_move = true;
-						break;
-
-					default:
-						/* huh? */
-						break;
-				}
-			}
-			if (!was_move) {
-				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name << ": " << action->getCommand() << endl;
-			}
-		} else if (stuck_counter > 1680) {
-			/* failed too many times, #quit */
-			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
-			last_action_id = NO_ACTION;
-			executeCommand(string(1, (char) 27));
-			executeCommand(QUIT);
-			executeCommand(string(1, YES));
-			return;
-		}
-
-		if (last_turn == turn)
-			stuck_counter++;
-		else
-			stuck_counter = 0;
-		last_turn = turn;
-
 		/* check if we're in the middle of an action */
 		if (action == NULL || action->getCommand() == action::Action::noop) {
 			/* we got no command, find a new one */
@@ -578,6 +525,57 @@ void World::run() {
 			++World::real_turn; // command that may increase turn counter
 		last_action_id = action->getID();
 		executeCommand(action->getCommand().command);
+
+		/* check if we're stuck */
+		if (action != NULL && stuck_counter % 42 == 41 && action->getCommand().command.size() == 1) {
+			bool was_move = false;
+			/* we'll assume we're moving if the command that's stuck is a direction.
+			 * if not, it's probably not a big deal */
+			switch (action->getCommand().command[0]) {
+				case NW:
+				case NE:
+				case SW:
+				case SE:
+					/* moving diagonally failed.
+					 * we could be trying to move diagonally into a door we're
+					 * unaware of because of an item blocking the door symbol.
+					 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+					setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+					was_move = true;
+					break;
+
+				case N:
+				case E:
+				case S:
+				case W:
+					/* moving cardinally failed, possibly item in wall.
+					 * make the tile UNKNOWN_TILE_UNPASSABLE */
+					setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_UNPASSABLE);
+					was_move = true;
+					break;
+
+				default:
+					/* certainly not moving */
+					break;
+			}
+			if (!was_move) {
+				/* not good. we're not moving and we're stuck */
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name << ": " << action->getCommand() << endl;
+			}
+		} else if (stuck_counter > 1680) {
+			/* failed too many times, #quit */
+			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+			last_action_id = NO_ACTION;
+			executeCommand(string(1, (char) 27));
+			executeCommand(QUIT);
+			executeCommand(string(1, YES));
+			return;
+		}
+		if (last_turn == turn)
+			stuck_counter++;
+		else
+			stuck_counter = 0;
+		last_turn = turn;
 
 		/* and finally update current action */
 		if (action != NULL)

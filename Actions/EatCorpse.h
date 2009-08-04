@@ -2,6 +2,7 @@
 #define ACTION_EAT_CORPSE_H
 
 #include "Action.h"
+#include "../World.h"
 
 namespace action {
 	class EatCorpse : public Action {
@@ -62,7 +63,8 @@ namespace action {
 			/* we're about to choke, abort eating */
 			sequence = 2;
 		} else if (sequence == 1 || sequence == 2 || sequence == 4) {
-			/* either ate a corpse or cancelled the eat request, make us look at ground */
+			/* either ate a corpse or cancelled the eat request, make stash dirty and look at ground */
+			World::setDirtyStash();
 			sequence = 3;
 		} else if (sequence == 3) {
 			/* looked at ground, action is complete */
