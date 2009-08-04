@@ -2,6 +2,7 @@
 #include "EventBus.h"
 #include "Inventory.h"
 #include "World.h"
+#include "Actions/ListInventory.h"
 #include "Data/Armor.h"
 #include "Data/Amulet.h"
 
@@ -22,8 +23,8 @@ void Inventory::analyze() {
 }
 
 void Inventory::parseMessages(const string &messages) {
-	if (World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
-		/* listing a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
+	if (World::getLastActionID() == action::ListInventory::id && World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
+		/* last action was list inventory and we got a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
 		if (World::cur_page == 1) {
