@@ -33,6 +33,12 @@ void Loot::analyze() {
 	/* visit new/changed stashes */
 	set<Coordinate>::iterator v = visit.begin();
 	while (v != visit.end()) {
+		map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(*v);
+		if (s == World::levels[Saiph::position.level].stashes.end() || s->second.last_look == World::turn) {
+			/* stash is gone or we recently looked at it */
+			visit.erase(v++);
+			continue;
+		}
 		const PathNode &node = World::shortestPath(*v);
 		if (node.dir == NOWHERE) {
 			/* standing on stash, look and remove from visit */

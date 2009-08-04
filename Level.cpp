@@ -99,6 +99,7 @@ void Level::parseMessages(const string &messages) {
 			s->second.items.clear(); // clear stash items
 		else
 			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+		s->second.last_look = World::turn;
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -114,6 +115,7 @@ void Level::parseMessages(const string &messages) {
 			s->second.items.clear(); // clear stash items
 		else
 			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+		s->second.last_look = World::turn;
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -129,6 +131,7 @@ void Level::parseMessages(const string &messages) {
 			s->second.items.clear(); // clear stash items
 		else
 			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+		s->second.last_look = World::turn;
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
