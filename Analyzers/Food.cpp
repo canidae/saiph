@@ -130,22 +130,18 @@ void Food::onEvent(Event *const event) {
 			if (cl != corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
 				/* it's safe to eat corpses here */
 				map<string, data::Corpse *>::iterator c = data::Corpse::corpses.find(i->name);
-				if (c == data::Corpse::corpses.end())
-					continue; // item is not a corpse
-				else if (!safeToEat(c))
-					continue; // corpse is not safe to eat
-				else if (!(c->second->eat_effects & EAT_EFFECT_ROT))
-					continue; // corpse does not rot, we should pick it up instead
-				/* we should eat this corpse */
-				World::setAction(static_cast<action::Action *>(new action::EatCorpse(this, i->name, PRIORITY_FOOD_EAT_CORPSE)));
+				/* check that item is a corpse, it's safe to eat and that the corpse rots */
+				if (c != data::Corpse::corpses.end() && safeToEat(c) && c->second->eat_effects & EAT_EFFECT_ROT) {
+					World::setAction(static_cast<action::Action *>(new action::EatCorpse(this, i->name, PRIORITY_FOOD_EAT_CORPSE)));
+					break;
+				}
+			}
+			/* check if we want to pick up edible item that won't rot */
+			map<string, data::Food *>::iterator f = data::Food::foods.find(i->name);
+			if (f != data::Food::foods.end() && !(f->second->eat_effects & EAT_EFFECT_ROT)) {
+				World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FOOD_LOOT)));
 				break;
 			}
-			/* check if we want to pick up edible item */
-			map<string, data::Food *>::iterator f = data::Food::foods.find(i->name);
-			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
-				continue; // not food or the food rots
-			/* pick up food item */
-			World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FOOD_LOOT)));
 		}
 	} else if (event->getID() == WantItems::id) {
 		WantItems *e = static_cast<WantItems *>(event);
