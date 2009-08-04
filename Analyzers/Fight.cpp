@@ -133,14 +133,18 @@ void Fight::onEvent(Event *const event) {
 	} else if (event->getID() == WantItems::id) {
 		WantItems *e = static_cast<WantItems *>(event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
-			if (wantItem(i->second))
-				World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+			if (!wantItem(i->second))
+				continue;
+			World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+			break;
 		}
 	} else if (event->getID() == ItemsOnGround::id) {
 		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
 		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
-			if (wantItem(*i))
-				World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FIGHT_LOOT)));
+			if (!wantItem(*i))
+				continue;
+			World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FIGHT_LOOT)));
+			break;
 		}
 	}
 }
