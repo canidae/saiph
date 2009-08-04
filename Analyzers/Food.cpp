@@ -1,5 +1,6 @@
 #include "Food.h"
 #include "../Debug.h"
+#include "../EventBus.h"
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Eat.h"
@@ -40,6 +41,13 @@ Food::Food() : Analyzer("Food") {
 			priority -= 800;
 		eat_priority[f->first] = priority;
 	}
+
+	/* register events */
+	EventBus::registerEvent(ChangedInventoryItems::id, this);
+	EventBus::registerEvent(EatItem::id, this);
+	EventBus::registerEvent(ItemsOnGround::id, this);
+	EventBus::registerEvent(ReceivedItems::id, this);
+	EventBus::registerEvent(WantItems::id, this);
 }
 
 /* methods */
