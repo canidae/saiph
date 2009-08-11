@@ -76,7 +76,7 @@ void Fight::analyze() {
 		}
 		int distance = max(abs(m->first.row - Saiph::position.row), abs(m->first.col - Saiph::position.col));
 		bool floating_eye = (m->second.symbol == S_EYE && m->second.color == BLUE);
-		if (m->second.visible && (distance > 1 || floating_eye) && projectile_slots.size() > 0) {
+		if (m->second.visible && (distance > 1 || floating_eye) && projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
 			unsigned char in_line = World::directLine(m->first, false, true);
