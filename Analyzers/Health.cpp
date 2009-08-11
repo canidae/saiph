@@ -55,7 +55,7 @@ void Health::analyze() {
 		/* still resting */
 		if (Saiph::hitpoints > Saiph::hitpoints_max * 6 / 7) {
 			resting = false; // enough hp (greater than about 86%) to continue our journey
-		} else {
+		} else if (!Saiph::blind && !Saiph::confused && !Saiph::stunned && !Saiph::hallucinating) {
 			ElberethQuery eq;
 			EventBus::broadcast(static_cast<Event *>(&eq));
 			if (eq.engraving_type == ELBERETH_MUST_CHECK) {
