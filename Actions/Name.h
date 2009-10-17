@@ -44,7 +44,7 @@ namespace action {
 			return set_name;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

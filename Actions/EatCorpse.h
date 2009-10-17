@@ -50,7 +50,7 @@ namespace action {
 			return escape;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

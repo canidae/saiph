@@ -33,7 +33,7 @@ namespace action {
 		else if (sequence == (int) keys.size())
 			tmp = Command(std::string(1, CLOSE_PAGE), PRIORITY_CLOSE_SELECT_PAGE);
 		else
-			tmp = Action::noop;
+			tmp = Action::NOOP;
 		return tmp;
 	}
 

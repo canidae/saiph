@@ -27,7 +27,7 @@
 using namespace action;
 
 /* define static variables */
-const Command Action::noop;
+const Command Action::NOOP;
 int Apply::id = NO_ACTION;
 int Answer::id = NO_ACTION;
 int ApplyInDirection::id = NO_ACTION;

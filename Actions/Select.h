@@ -31,7 +31,7 @@ namespace action {
 			return select;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

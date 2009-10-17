@@ -41,7 +41,7 @@ namespace action {
 			return apply_direction;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -35,7 +35,7 @@ namespace action {
 			return kick_direction;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -31,7 +31,7 @@ namespace action {
 			return rest;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

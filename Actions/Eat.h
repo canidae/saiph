@@ -45,7 +45,7 @@ namespace action {
 			return answer_yes;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

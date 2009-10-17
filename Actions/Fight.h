@@ -35,7 +35,7 @@ namespace action {
 			return attack_friendly;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -40,7 +40,7 @@ namespace action {
 			return throw_direction;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

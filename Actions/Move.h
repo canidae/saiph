@@ -37,7 +37,7 @@ namespace action {
 			return move;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

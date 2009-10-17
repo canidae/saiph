@@ -31,7 +31,7 @@ namespace action {
 			return look;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

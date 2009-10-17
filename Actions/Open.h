@@ -35,7 +35,7 @@ namespace action {
 			return open_direction;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -36,7 +36,7 @@ namespace action {
 			return remove_key;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -36,7 +36,7 @@ namespace action {
 			return put_on_key;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

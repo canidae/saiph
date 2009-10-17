@@ -36,7 +36,7 @@ namespace action {
 			return close_page;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

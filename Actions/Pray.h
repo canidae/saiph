@@ -36,7 +36,7 @@ namespace action {
 	inline const Command &action::Pray::command() {
 		if (sequence == 0)
 			return pray;
-		return Action::noop;
+		return Action::NOOP;
 	}
 
 	inline void action::Pray::update(const std::string &messages) {

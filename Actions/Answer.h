@@ -31,7 +31,7 @@ namespace action {
 			return answer;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

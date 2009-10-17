@@ -14,7 +14,7 @@ namespace action {
 
 	class Action {
 	public:
-		static const Command noop;
+		static const Command NOOP;
 
 		Action(analyzer::Analyzer * const analyzer) : sequence(0), _analyzer(analyzer) {
 		}

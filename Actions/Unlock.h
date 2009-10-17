@@ -43,7 +43,7 @@ namespace action {
 			return do_unlock;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

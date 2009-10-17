@@ -31,7 +31,7 @@ namespace action {
 			return loot;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -44,7 +44,7 @@ namespace action {
 			return message;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

@@ -31,7 +31,7 @@ namespace action {
 			return search;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 

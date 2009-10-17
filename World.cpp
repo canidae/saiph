@@ -92,7 +92,7 @@ void World::unregisterAnalyzer(Analyzer *analyzer) {
 
 int World::getPriority() {
 	if (action == NULL)
-		return action::Action::noop.priority();
+		return action::Action::NOOP.priority();
 	return action->command().priority();
 }
 
@@ -463,7 +463,7 @@ void World::run() {
 		dumpMaps();
 
 		/* check if we're in the middle of an action */
-		if (action == NULL || action->command() == action::Action::noop) {
+		if (action == NULL || action->command() == action::Action::NOOP) {
 			/* we got no command, find a new one */
 			/* parse messages */
 			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
@@ -487,7 +487,7 @@ void World::run() {
 		}
 
 		/* check if we got a command */
-		if (action == NULL || action->command() == action::Action::noop) {
+		if (action == NULL || action->command() == action::Action::NOOP) {
 			/* we do not. print debugging and just answer something sensible */
 			if (question) {
 				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;

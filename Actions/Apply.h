@@ -37,7 +37,7 @@ namespace action {
 			return apply_item;
 
 		default:
-			return Action::noop;
+			return Action::NOOP;
 		}
 	}
 
