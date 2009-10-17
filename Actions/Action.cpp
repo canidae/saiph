@@ -27,7 +27,6 @@
 using namespace action;
 
 /* define static variables */
-int Action::id_counter = 0;
 const Command Action::noop;
 int Apply::id = NO_ACTION;
 int Answer::id = NO_ACTION;
@@ -56,9 +55,7 @@ int Unlock::id = NO_ACTION;
 
 /* methods */
 void Action::init() {
-	if (id_counter > 0)
-		return;
-
+	int id_counter = 0;
 	/* set ID for actions */
 	Apply::id = ++id_counter;
 	Answer::id = ++id_counter;

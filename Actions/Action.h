@@ -37,7 +37,6 @@ namespace action {
 
 	private:
 		analyzer::Analyzer *analyzer;
-		static int id_counter;
 	};
 }
 #endif
