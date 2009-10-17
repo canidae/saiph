@@ -76,14 +76,14 @@ void World::destroy() {
 }
 
 void World::registerAnalyzer(Analyzer *analyzer) {
-	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name << endl;
+	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name() << endl;
 	analyzers.push_back(analyzer);
 }
 
 void World::unregisterAnalyzer(Analyzer *analyzer) {
-	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name << endl;
+	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name() << endl;
 	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
-		if ((*a)->name == analyzer->name) {
+		if ((*a)->name() == analyzer->name()) {
 			analyzers.erase(a);
 			return;
 		}
@@ -517,12 +517,12 @@ void World::run() {
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << action->getAnalyzer()->name << " " << action->getCommand();
+		cout << action->getAnalyzer()->name() << " " << action->getCommand();
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << cursor.row() + 1 << ";" << cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::notice() << "Analyzer " << action->getAnalyzer()->name << " " << action->getCommand() << endl;
+		Debug::notice() << "Analyzer " << action->getAnalyzer()->name() << " " << action->getCommand() << endl;
 
 		/* execute the command */
 		if (action->getCommand().priority() <= PRIORITY_TURN_MAX)
@@ -564,7 +564,7 @@ void World::run() {
 			}
 			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name << ": " << action->getCommand() << endl;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name() << ": " << action->getCommand() << endl;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */

@@ -13,12 +13,15 @@ namespace analyzer {
 
 	class Analyzer {
 	public:
-		std::string name;
 
-		Analyzer(std::string name) : name(name) {
+		Analyzer(std::string name) : _name(name) {
 		}
 
 		virtual ~Analyzer() {
+		}
+
+		const std::string &name() {
+			return _name;
 		}
 
 		static void init();
@@ -34,6 +37,7 @@ namespace analyzer {
 		}
 
 	private:
+		std::string _name;
 		static bool initialized;
 	};
 }

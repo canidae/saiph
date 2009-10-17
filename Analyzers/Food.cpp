@@ -72,11 +72,11 @@ void Food::analyze() {
 				map<string, int>::iterator ep = eat_priority.find(i->second.name);
 				if (i == Inventory::items.end()) {
 					/* this should not happen */
-					Debug::analyzer(name) << "Food item mysteriously disappeared from inventory slot '" << *f << "'" << endl;
+					Debug::analyzer(name()) << "Food item mysteriously disappeared from inventory slot '" << *f << "'" << endl;
 					continue;
 				} else if (ep == eat_priority.end()) {
 					/* neither should this */
-					Debug::analyzer(name) << "Want to eat item '" << i->second << "', but that's not in our list of edible items" << endl;
+					Debug::analyzer(name()) << "Want to eat item '" << i->second << "', but that's not in our list of edible items" << endl;
 					continue;
 				} else if (eat == Inventory::items.end() || eat_priority.find(eat->second.name)->second > ep->second) {
 					/* this food item got a lower eat priority than previous (if any) food item */

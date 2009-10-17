@@ -63,7 +63,7 @@ void Fight::analyze() {
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
-			Debug::analyzer(name) << "Found monster we don't know data about. Hmm" << endl;
+			Debug::analyzer(name()) << "Found monster we don't know data about. Hmm" << endl;
 			attack_score = data::Monster::saiph_difficulty_max;
 		} else {
 			/* figure out the attack score */
@@ -85,14 +85,14 @@ void Fight::analyze() {
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_THROW_MIN;
 				World::setAction(static_cast<action::Action *> (new action::Throw(this, *projectile_slots.begin(), in_line, priority)));
-				Debug::analyzer(name) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
+				Debug::analyzer(name()) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MELEE_MIN;
 			World::setAction(static_cast<action::Action *> (new action::Fight(this, World::shortestPath(m->first).dir, priority)));
-			Debug::analyzer(name) << "Setting action to melee '" << m->second.symbol << "' with priority " << priority << endl;
+			Debug::analyzer(name()) << "Setting action to melee '" << m->second.symbol << "' with priority " << priority << endl;
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
@@ -102,7 +102,7 @@ void Fight::analyze() {
 		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
 		priority = action::Move::calculatePriority(priority, node.moves);
 		World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, priority)));
-		Debug::analyzer(name) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
+		Debug::analyzer(name()) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 
