@@ -6,7 +6,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Item::Item(const string &text) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
+Item::Item(const string &text, int want) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional(""), want(want) {
 	/* parse text */
 	char amount[8];
 	char name_long[128];

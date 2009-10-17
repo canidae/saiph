@@ -19,7 +19,7 @@ namespace event {
 	public:
 		static const int ID;
 
-		WantItems() : Event("WantItems"), _items(), _want() {
+		WantItems() : Event("WantItems"), _items() {
 		}
 
 		virtual ~WantItems() {
@@ -38,28 +38,16 @@ namespace event {
 			return this->items();
 		}
 
-		virtual std::map<unsigned char, int> &want() {
-			return _want;
-		}
-
-		virtual std::map<unsigned char, int> &want(const std::map<unsigned char, int> &want) {
-			_want = want;
-			return this->want();
-		}
-
 		virtual void clear() {
 			_items.clear();
-			_want.clear();
 		}
 
-		virtual void addItem(unsigned char key, const Item &item, int want) {
+		virtual void addItem(unsigned char key, const Item &item) {
 			_items[key] = item;
-			_want[key] = want;
 		}
 
 	private:
 		std::map<unsigned char, Item> _items;
-		std::map<unsigned char, int> _want;
 	};
 }
 #endif
