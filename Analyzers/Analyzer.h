@@ -38,7 +38,7 @@ namespace analyzer {
 
 	private:
 		std::string _name;
-		static bool initialized;
+		static bool _initialized;
 	};
 }
 #endif

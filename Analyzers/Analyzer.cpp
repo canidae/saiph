@@ -12,13 +12,13 @@
 using namespace analyzer;
 
 /* define static variables */
-bool Analyzer::initialized = false;
+bool Analyzer::_initialized = false;
 
 /* methods */
 void Analyzer::init() {
-	if (initialized)
+	if (_initialized)
 		return;
-	initialized = true;
+	_initialized = true;
 
 	/* init analyzers */
 	World::registerAnalyzer(new Amulet());
