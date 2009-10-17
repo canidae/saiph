@@ -92,13 +92,13 @@ void World::unregisterAnalyzer(Analyzer *analyzer) {
 
 int World::getPriority() {
 	if (action == NULL)
-		return action::Action::noop.priority;
-	return action->getCommand().priority;
+		return action::Action::noop.priority();
+	return action->getCommand().priority();
 }
 
 bool World::setAction(action::Action *action) {
 	if (World::action != NULL) {
-		if (action->getCommand().priority <= World::action->getCommand().priority) {
+		if (action->getCommand().priority() <= World::action->getCommand().priority()) {
 			delete action;
 			return false; // already got an action with higher priority
 		}
@@ -111,7 +111,7 @@ bool World::setAction(action::Action *action) {
 bool World::queueAction(action::Action *action) {
 	if (action == NULL) {
 		return false; // shouldn't happen, though
-	} else if (action->getCommand().priority <= PRIORITY_TURN_MAX) {
+	} else if (action->getCommand().priority() <= PRIORITY_TURN_MAX) {
 		/* not a zero-turn action, can't queue it */
 		delete action;
 		return false;
@@ -525,17 +525,17 @@ void World::run() {
 		Debug::notice() << "Analyzer " << action->getAnalyzer()->name << " " << action->getCommand() << endl;
 
 		/* execute the command */
-		if (action->getCommand().priority <= PRIORITY_TURN_MAX)
+		if (action->getCommand().priority() <= PRIORITY_TURN_MAX)
 			++World::real_turn; // command that may increase turn counter
 		last_action_id = action->getID();
-		executeCommand(action->getCommand().command);
+		executeCommand(action->getCommand().command());
 
 		/* check if we're stuck */
-		if (action != NULL && stuck_counter % 42 == 41 && action->getCommand().command.size() == 1) {
+		if (action != NULL && stuck_counter % 42 == 41 && action->getCommand().command().size() == 1) {
 			bool was_move = false;
 			/* we'll assume we're moving if the command that's stuck is a direction.
 			 * if not, it's probably not a big deal */
-			switch (action->getCommand().command[0]) {
+			switch (action->getCommand().command()[0]) {
 			case NW:
 			case NE:
 			case SW:
@@ -544,7 +544,7 @@ void World::run() {
 				 * we could be trying to move diagonally into a door we're
 				 * unaware of because of an item blocking the door symbol.
 				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+				setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -554,7 +554,7 @@ void World::run() {
 			case W:
 				/* moving cardinally failed, possibly item in wall.
 				 * make the tile UNKNOWN_TILE_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command[0]), UNKNOWN_TILE_UNPASSABLE);
+				setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command()[0]), UNKNOWN_TILE_UNPASSABLE);
 				was_move = true;
 				break;
 

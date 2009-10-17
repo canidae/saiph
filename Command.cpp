@@ -3,5 +3,5 @@
 using namespace std;
 
 ostream & operator<<(ostream &os, const Command &c) {
-	return os << "(" << c.priority << "): " << c.command;
+	return os << "(" << c.priority() << "): " << c.command();
 }
