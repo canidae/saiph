@@ -155,7 +155,7 @@ void Level::parseMessages(const string &messages) {
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
 		/* reset received list */
-		received.items.clear();
+		received.clear();
 		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
 			/* add item to inventory */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
@@ -165,10 +165,10 @@ void Level::parseMessages(const string &messages) {
 			}
 			Inventory::addItem(messages[pos - 1], item);
 			/* add item to changed.keys */
-			received.items[messages[pos - 1]] = item;
+			received.addItem(messages[pos - 1], item);
 		}
 		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-		if (received.items.size() > 0) {
+		if (received.items().size() > 0) {
 			/* broadcast "ReceivedItems" */
 			EventBus::broadcast(static_cast<Event *> (&received));
 			/* make stash dirty too */
@@ -176,14 +176,14 @@ void Level::parseMessages(const string &messages) {
 				s->second.items.clear();
 			/* broadcast StashChanged */
 			StashChanged sc;
-			sc.stash = Coordinate(Saiph::position.level(), Saiph::position);
+			sc.stash(Coordinate(Saiph::position.level(), Saiph::position));
 			EventBus::broadcast(static_cast<Event *> (&sc));
 		}
 
 		if (!World::question) {
 			/* send event if we're standing on stash (except when we got a question or menu) */
 			if (s != stashes.end() && s->second.items.size() > 0) {
-				on_ground.items = s->second.items;
+				on_ground.items(s->second.items);
 				/* broadcast "ItemsOnGround" */
 				EventBus::broadcast(static_cast<Event *> (&on_ground));
 			}
@@ -257,7 +257,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 				s->second.top_color = color;
 				/* broadcast StashChanged */
 				StashChanged sc;
-				sc.stash = Coordinate(Saiph::position.level(), point);
+				sc.stash(Coordinate(Saiph::position.level(), point));
 				EventBus::broadcast(static_cast<Event *> (&sc));
 			}
 		} else {
@@ -265,7 +265,7 @@ void Level::updateMapPoint(const Point &point, unsigned char symbol, int color) 
 			stashes[point] = Stash(symbol, color);
 			/* broadcast StashChanged */
 			StashChanged sc;
-			sc.stash = Coordinate(Saiph::position.level(), point);
+			sc.stash(Coordinate(Saiph::position.level(), point));
 			EventBus::broadcast(static_cast<Event *> (&sc));
 		}
 	} else if (symbol == dungeonmap[point.row()][point.col()]) {

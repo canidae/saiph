@@ -58,13 +58,13 @@ void Health::analyze() {
 		} else if (!Saiph::blind && !Saiph::confused && !Saiph::stunned && !Saiph::hallucinating) {
 			ElberethQuery eq;
 			EventBus::broadcast(static_cast<Event *> (&eq));
-			if (eq.engraving_type == ELBERETH_MUST_CHECK) {
+			if (eq.type() == ELBERETH_MUST_CHECK) {
 				/* we don't know, we must look */
 				World::setAction(static_cast<action::Action *> (new action::Look(this)));
-			} else if (eq.engraving_type == ELBERETH_DUSTED || eq.engraving_type == ELBERETH_NONE) {
+			} else if (eq.type() == ELBERETH_DUSTED || eq.type() == ELBERETH_NONE) {
 				/* no elbereth or dusted elbereth, engrave or rest, depending on amount of elbereths */
-				if (eq.number_of_elbereths < 3)
-					World::setAction(static_cast<action::Action *> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_HEALTH_REST_FOR_HP_HIGH, (eq.number_of_elbereths > 0))));
+				if (eq.count() < 3)
+					World::setAction(static_cast<action::Action *> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_HEALTH_REST_FOR_HP_HIGH, (eq.count() > 0))));
 				else
 					World::setAction(static_cast<action::Action *> (new action::Rest(this, PRIORITY_HEALTH_REST_FOR_HP_HIGH)));
 			}

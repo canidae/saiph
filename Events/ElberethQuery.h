@@ -14,26 +14,39 @@ namespace event {
 
 	class ElberethQuery : public Event {
 	public:
-		static int id;
+		static const int ID;
 
-		int number_of_elbereths;
-		int engraving_type;
-
-		// initialize these to invalid values to spot bugs
-
-		ElberethQuery() : number_of_elbereths(0), engraving_type(ELBERETH_NOT_HANDLED) {
+		ElberethQuery() : Event("ElberethQuery"), _count(0), _type(ELBERETH_NOT_HANDLED) {
 		}
 
 		virtual ~ElberethQuery() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "ElberethQuery";
+		virtual int count() {
+			return _count;
 		}
+
+		virtual int count(int count) {
+			_count = count;
+			return this->count();
+		}
+
+		virtual int type() {
+			return _type;
+		}
+
+		virtual int type(int type) {
+			_type = type;
+			return this->type();
+		}
+
+	private:
+		int _count;
+		int _type;
 	};
 }
 #endif

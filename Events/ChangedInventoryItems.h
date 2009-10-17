@@ -8,22 +8,37 @@ namespace event {
 
 	class ChangedInventoryItems : public Event {
 	public:
-		static int id;
-		std::set<unsigned char> keys;
+		static const int ID;
 
-		ChangedInventoryItems() : keys() {
+		ChangedInventoryItems() : Event("ChangedInventoryItems"), _keys() {
 		}
 
 		virtual ~ChangedInventoryItems() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "ChangedInventoryItems";
+		virtual std::set<unsigned char> &keys() {
+			return _keys;
 		}
+
+		virtual std::set<unsigned char> &keys(const std::set<unsigned char> &keys) {
+			_keys = keys;
+			return this->keys();
+		}
+
+		virtual void clear() {
+			_keys.clear();
+		}
+
+		virtual void add(unsigned char key) {
+			_keys.insert(key);
+		}
+
+	private:
+		std::set<unsigned char> _keys;
 	};
 }
 #endif

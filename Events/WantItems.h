@@ -17,23 +17,49 @@ namespace event {
 
 	class WantItems : public Event {
 	public:
-		static int id;
-		std::map<unsigned char, Item> items;
-		std::map<unsigned char, int> want;
+		static const int ID;
 
-		WantItems() : items(), want() {
+		WantItems() : Event("WantItems"), _items(), _want() {
 		}
 
 		virtual ~WantItems() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "WantItems";
+		virtual std::map<unsigned char, Item> &items() {
+			return _items;
 		}
+
+		virtual std::map<unsigned char, Item> &items(const std::map<unsigned char, Item> &items) {
+			_items = items;
+			return this->items();
+		}
+
+		virtual std::map<unsigned char, int> &want() {
+			return _want;
+		}
+
+		virtual std::map<unsigned char, int> &want(const std::map<unsigned char, int> &want) {
+			_want = want;
+			return this->want();
+		}
+
+		virtual void clear() {
+			_items.clear();
+			_want.clear();
+		}
+
+		virtual void addItem(unsigned char key, const Item &item, int want) {
+			_items[key] = item;
+			_want[key] = want;
+		}
+
+	private:
+		std::map<unsigned char, Item> _items;
+		std::map<unsigned char, int> _want;
 	};
 }
 #endif

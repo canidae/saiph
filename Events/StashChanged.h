@@ -9,22 +9,29 @@ namespace event {
 
 	class StashChanged : public Event {
 	public:
-		static int id;
-		Coordinate stash;
+		static const int ID;
 
-		StashChanged() : stash() {
+		StashChanged() : Event("StashChanged"), _stash() {
 		}
 
 		virtual ~StashChanged() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "StashChanged";
+		virtual Coordinate &stash() {
+			return _stash;
 		}
+
+		virtual Coordinate &stash(const Coordinate &stash) {
+			_stash = stash;
+			return this->stash();
+		}
+
+	private:
+		Coordinate _stash;
 	};
 }
 #endif

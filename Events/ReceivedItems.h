@@ -9,22 +9,37 @@ namespace event {
 
 	class ReceivedItems : public Event {
 	public:
-		static int id;
-		std::map<unsigned char, Item> items;
+		static const int ID;
 
-		ReceivedItems() : items() {
+		ReceivedItems() : Event("ReceivedItems"), _items() {
 		}
 
 		virtual ~ReceivedItems() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "ReceivedItems";
+		virtual std::map<unsigned char, Item> &items() {
+			return _items;
 		}
+
+		virtual std::map<unsigned char, Item> &items(const std::map<unsigned char, Item> &items) {
+			_items = items;
+			return this->items();
+		}
+
+		virtual void clear() {
+			_items.clear();
+		}
+
+		virtual void addItem(unsigned char key, const Item &item) {
+			_items[key] = item;
+		}
+
+	private:
+		std::map<unsigned char, Item> _items;
 	};
 }
 #endif

@@ -29,7 +29,7 @@ void Inventory::parseMessages(const string &messages) {
 		string::size_type pos2 = -1;
 		if (World::cur_page == 1) {
 			/* listing first page, clear changed and lost and add every inventory item to "lost" */
-			changed.keys.clear();
+			changed.clear();
 			lost.clear();
 			for (map<unsigned char, Item>::iterator i = items.begin(); i != items.end(); ++i)
 				lost.insert(i->first);
@@ -45,13 +45,13 @@ void Inventory::parseMessages(const string &messages) {
 			if (i == items.end()) {
 				/* item is not in our inventory */
 				addItem(messages[pos - 1], item);
-				changed.keys.insert(messages[pos - 1]);
+				changed.add(messages[pos - 1]);
 			} else if (item != i->second) {
 				/* item does not match item in inventory */
 				unsigned char key = i->first;
 				removeItem(key, i->second);
 				addItem(key, item);
-				changed.keys.insert(key);
+				changed.add(key);
 			}
 			/* we (still) got this item, so it's not lost. remove it from lost */
 			lost.erase(messages[pos - 1]);
@@ -59,13 +59,13 @@ void Inventory::parseMessages(const string &messages) {
 		if (World::cur_page == World::max_page) {
 			/* listing last page, add lost items to changed and remove them from inventory */
 			for (set<unsigned char>::iterator l = lost.begin(); l != lost.end(); ++l) {
-				changed.keys.insert(*l);
+				changed.add(*l);
 				items.erase(*l);
 			}
 			/* mark inventory as updated */
 			updated = true;
 		}
-		if (changed.keys.size() > 0) {
+		if (changed.keys().size() > 0) {
 			/* broadcast ChangedInventoryItems */
 			EventBus::broadcast(static_cast<Event *> (&changed));
 		}

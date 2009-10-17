@@ -27,10 +27,10 @@ using namespace std;
 /* constructors/destructor */
 Door::Door() : Analyzer("Door"), _unlock_tool_key(0), _in_a_pit(false) {
 	/* register events */
-	EventBus::registerEvent(ChangedInventoryItems::id, this);
-	EventBus::registerEvent(ItemsOnGround::id, this);
-	EventBus::registerEvent(ReceivedItems::id, this);
-	EventBus::registerEvent(WantItems::id, this);
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(ItemsOnGround::ID, this);
+	EventBus::registerEvent(ReceivedItems::ID, this);
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
@@ -125,32 +125,32 @@ void Door::parseMessages(const string &messages) {
 }
 
 void Door::onEvent(Event * const event) {
-	if (event->getID() == ChangedInventoryItems::id) {
+	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
 		map<unsigned char, Item>::iterator i = Inventory::items.find(_unlock_tool_key);
 		if (Inventory::items.find(_unlock_tool_key) == Inventory::items.end())
 			_unlock_tool_key = 0; // darn, we lost our unlocking device
 		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
-		for (set<unsigned char>::iterator k = e->keys.begin(); k != e->keys.end(); ++k) {
+		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i != Inventory::items.end() && wantItem(i->second))
 				_unlock_tool_key = *k; // better key than what we currently got
 		}
-	} else if (event->getID() == ReceivedItems::id) {
+	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems *e = static_cast<ReceivedItems *> (event);
-		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				_unlock_tool_key = i->first; // better key than what we currently got
 		}
-	} else if (event->getID() == WantItems::id) {
+	} else if (event->id() == WantItems::ID) {
 		WantItems *e = static_cast<WantItems *> (event);
-		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
 		}
-	} else if (event->getID() == ItemsOnGround::id) {
+	} else if (event->id() == ItemsOnGround::ID) {
 		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
-		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(*i))
 				World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_DOOR_LOOT)));
 		}

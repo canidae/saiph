@@ -12,32 +12,11 @@
 using namespace event;
 
 /* define static variables */
-bool Event::initialized = false;
-int ChangedInventoryItems::id = ILLEGAL_EVENT_ID;
-int EatItem::id = ILLEGAL_EVENT_ID;
-int ElberethQuery::id = ILLEGAL_EVENT_ID;
-int ItemsOnGround::id = ILLEGAL_EVENT_ID;
-int ReceivedItems::id = ILLEGAL_EVENT_ID;
-int StashChanged::id = ILLEGAL_EVENT_ID;
-int TakeMeThere::id = ILLEGAL_EVENT_ID;
-int WantItems::id = ILLEGAL_EVENT_ID;
-
-/* methods */
-void Event::init() {
-	if (initialized)
-		return;
-	initialized = true;
-
-	/* set ID for events */
-	ChangedInventoryItems::id = EventBus::createEventID();
-	EatItem::id = EventBus::createEventID();
-	ElberethQuery::id = EventBus::createEventID();
-	ItemsOnGround::id = EventBus::createEventID();
-	ReceivedItems::id = EventBus::createEventID();
-	StashChanged::id = EventBus::createEventID();
-	TakeMeThere::id = EventBus::createEventID();
-	WantItems::id = EventBus::createEventID();
-}
-
-void Event::destroy() {
-}
+const int ChangedInventoryItems::ID = 0;
+const int EatItem::ID = 1;
+const int ElberethQuery::ID = 2;
+const int ItemsOnGround::ID = 3;
+const int ReceivedItems::ID = 4;
+const int StashChanged::ID = 5;
+const int TakeMeThere::ID = 6;
+const int WantItems::ID = 7;

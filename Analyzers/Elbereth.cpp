@@ -13,19 +13,19 @@ using namespace std;
 /* constructors/destructor */
 Elbereth::Elbereth() : Analyzer("Elbereth"), _elbereth_count(0), _engraving_type(ELBERETH_MUST_CHECK) {
 	/* register events */
-	EventBus::registerEvent(ElberethQuery::id, this);
+	EventBus::registerEvent(ElberethQuery::ID, this);
 }
 
 void Elbereth::onEvent(Event * const evt) {
-	if (evt->getID() == ElberethQuery::id) {
+	if (evt->id() == ElberethQuery::ID) {
 		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
 		if (World::getLastActionID() != action::Look::ID) {
 			/* data is outdated */
 			_engraving_type = ELBERETH_MUST_CHECK;
 			_elbereth_count = 0;
 		}
-		q->engraving_type = _engraving_type;
-		q->number_of_elbereths = _elbereth_count;
+		q->type(_engraving_type);
+		q->count(_elbereth_count);
 	}
 }
 

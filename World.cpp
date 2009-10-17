@@ -1424,7 +1424,6 @@ int main(int argc, const char *argv[]) {
 	Debug::init(logfile);
 	data::Monster::init();
 	data::Item::init();
-	event::Event::init();
 	World::init(connection_type);
 	Analyzer::init();
 
@@ -1435,7 +1434,6 @@ int main(int argc, const char *argv[]) {
 	/* destroy */
 	Analyzer::destroy();
 	World::destroy();
-	event::Event::destroy();
 	data::Monster::destroy();
 	data::Item::destroy();
 	Debug::destroy();

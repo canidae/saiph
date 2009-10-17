@@ -7,23 +7,29 @@ namespace event {
 
 	class EatItem : public Event {
 	public:
-		static int id;
-		unsigned char key;
-		int priority;
+		static const int ID;
 
-		EatItem() : key(0), priority(0) {
+		EatItem() : Event("EatItem"), _key(0), _priority(0) {
 		}
 
 		virtual ~EatItem() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "EatItem";
+		virtual unsigned char key() {
+			return _key;
 		}
+
+		virtual int priority() {
+			return _priority;
+		}
+
+	private:
+		unsigned char _key;
+		int _priority;
 	};
 }
 #endif

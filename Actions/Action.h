@@ -24,7 +24,7 @@ namespace action {
 
 		virtual int id() = 0;
 
-		virtual analyzer::Analyzer *analyzer() {
+		analyzer::Analyzer *analyzer() {
 			return _analyzer;
 		}
 		virtual const Command &command() = 0;

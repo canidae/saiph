@@ -19,7 +19,7 @@ using namespace std;
 /* constructors/destructor */
 Loot::Loot() : Analyzer("Loot"), _showing_pickup(false), _showing_drop(false) {
 	/* register events */
-	EventBus::registerEvent(StashChanged::id, this);
+	EventBus::registerEvent(StashChanged::ID, this);
 }
 
 /* methods */
@@ -72,18 +72,15 @@ void Loot::parseMessages(const string &messages) {
 			pos = messages.find("  ", pos + 1);
 		}
 		/* reset WantItems lists */
-		_wi.items.clear();
-		_wi.want.clear();
+		_wi.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
 			if (length == string::npos)
 				break;
 			length = length - pos;
-			if (messages[pos - 2] == '-') {
-				_wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
-				_wi.want[messages[pos - 4]] = 0;
-			}
+			if (messages[pos - 2] == '-')
+				_wi.addItem(messages[pos - 4], Item(messages.substr(pos, length)), 0);
 			pos += length;
 		}
 		/* broadcast event */
@@ -91,7 +88,7 @@ void Loot::parseMessages(const string &messages) {
 		/* pick up stuff that was wanted by analyzers */
 		vector<string> pickup;
 		ostringstream tmp;
-		for (map<unsigned char, int>::iterator w = _wi.want.begin(); w != _wi.want.end(); ++w) {
+		for (map<unsigned char, int>::iterator w = _wi.want().begin(); w != _wi.want().end(); ++w) {
 			if (w->second <= 0)
 				continue;
 			tmp.str("");
@@ -112,8 +109,7 @@ void Loot::parseMessages(const string &messages) {
 			pos = messages.find("  ", pos + 1);
 		}
 		/* reset WantItems lists */
-		_wi.items.clear();
-		_wi.want.clear();
+		_wi.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
@@ -123,14 +119,13 @@ void Loot::parseMessages(const string &messages) {
 			if (messages[pos - 2] == '-') {
 				map<unsigned char, Item>::iterator i = Inventory::items.find(messages[pos - 4]);
 				if (i != Inventory::items.end()) {
-					_wi.items[messages[pos - 4]] = i->second;
+					_wi.addItem(messages[pos - 4], i->second, 0);
 					/* let's also pretend we don't have any examples of the item in our inventory */
 					i->second.count = 0;
 				} else {
 					/* this isn't supposed to happen (inventory not updated?) */
-					_wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+					_wi.addItem(messages[pos - 4], Item(messages.substr(pos, length)), 0);
 				}
-				_wi.want[messages[pos - 4]] = 0;
 			}
 			pos += length;
 		}
@@ -139,14 +134,14 @@ void Loot::parseMessages(const string &messages) {
 		/* drop stuff no analyzer wanted */
 		vector<string> drop;
 		ostringstream tmp;
-		for (map<unsigned char, int>::iterator w = _wi.want.begin(); w != _wi.want.end(); ++w) {
+		for (map<unsigned char, int>::iterator w = _wi.want().begin(); w != _wi.want().end(); ++w) {
 			if (w->second <= 0) {
 				/* drop for beatitude or we don't want the item */
 				drop.push_back(std::string(1, w->first));
 				continue;
 			}
-			map<unsigned char, Item>::iterator i = _wi.items.find(w->first);
-			if (i == _wi.items.end()) {
+			map<unsigned char, Item>::iterator i = _wi.items().find(w->first);
+			if (i == _wi.items().end()) {
 				/* what? no, this shouldn't happen */
 				continue;
 			} else if (i->second.count <= w->second) {
@@ -168,9 +163,9 @@ void Loot::parseMessages(const string &messages) {
 }
 
 void Loot::onEvent(Event * const event) {
-	if (event->getID() == StashChanged::id) {
+	if (event->id() == StashChanged::ID) {
 		/* stash changed, we need to visit it again */
 		StashChanged *e = static_cast<StashChanged *> (event);
-		_visit.insert(e->stash);
+		_visit.insert(e->stash());
 	}
 }

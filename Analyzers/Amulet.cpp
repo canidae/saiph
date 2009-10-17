@@ -22,30 +22,30 @@ using namespace std;
 /* constructors/destructor */
 Amulet::Amulet() : Analyzer("Amulet") {
 	/* register events */
-	EventBus::registerEvent(ChangedInventoryItems::id, this);
-	EventBus::registerEvent(ItemsOnGround::id, this);
-	EventBus::registerEvent(ReceivedItems::id, this);
-	EventBus::registerEvent(WantItems::id, this);
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(ItemsOnGround::ID, this);
+	EventBus::registerEvent(ReceivedItems::ID, this);
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
 void Amulet::onEvent(Event * const event) {
-	if (event->getID() == ChangedInventoryItems::id) {
+	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
-		wearAmulet(e->keys);
-	} else if (event->getID() == ReceivedItems::id) {
+		wearAmulet(e->keys());
+	} else if (event->id() == ReceivedItems::ID) {
 		// FIXME
 		//ReceivedItems *e = static_cast<ReceivedItems *>(event);
 		//wearAmulet(e->items);
-	} else if (event->getID() == WantItems::id) {
+	} else if (event->id() == WantItems::ID) {
 		WantItems *e = static_cast<WantItems *> (event);
-		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
 		}
-	} else if (event->getID() == ItemsOnGround::id) {
+	} else if (event->id() == ItemsOnGround::ID) {
 		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
-		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
+		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(*i))
 				World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_AMULET_LOOT)));
 		}

@@ -9,22 +9,29 @@ namespace event {
 
 	class ItemsOnGround : public Event {
 	public:
-		static int id;
-		std::list<Item> items;
+		static const int ID;
 
-		ItemsOnGround() : items() {
+		ItemsOnGround() : Event("ItemsOnGround"), _items() {
 		}
 
 		virtual ~ItemsOnGround() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "ItemsOnGround";
+		virtual std::list<Item> &items() {
+			return _items;
 		}
+
+		virtual std::list<Item> &items(const std::list<Item> &items) {
+			_items = items;
+			return this->items();
+		}
+
+	private:
+		std::list<Item> _items;
 	};
 }
 #endif

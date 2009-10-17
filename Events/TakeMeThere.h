@@ -8,23 +8,29 @@ namespace event {
 
 	class TakeMeThere : public Event {
 	public:
-		static int id;
-		Coordinate coordinate;
-		int max_priority;
+		static const int ID;
 
-		TakeMeThere() : coordinate(), max_priority(0) {
+		TakeMeThere() : Event("TakeMeThere"), _coordinate(), _max_priority(0) {
 		}
 
 		virtual ~TakeMeThere() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
 
-		virtual std::string getName() {
-			return "TakeMeThere";
+		virtual Coordinate &coordinate() {
+			return _coordinate;
 		}
+
+		virtual int max_priority() {
+			return _max_priority;
+		}
+
+	private:
+		Coordinate _coordinate;
+		int _max_priority;
 	};
 }
 #endif

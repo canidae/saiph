@@ -14,7 +14,7 @@ using namespace std;
 /* constructors/destructor */
 Explore::Explore() : Analyzer("Explore") {
 	/* register events */
-	EventBus::registerEvent(TakeMeThere::id, this);
+	EventBus::registerEvent(TakeMeThere::ID, this);
 }
 
 /* methods */
@@ -116,11 +116,11 @@ void Explore::analyze() {
 }
 
 void Explore::onEvent(Event * const event) {
-	if (event->getID() == TakeMeThere::id) {
+	if (event->id() == TakeMeThere::ID) {
 		TakeMeThere *e = static_cast<TakeMeThere *> (event);
-		map<Coordinate, int>::iterator v = _visit.find(e->coordinate);
-		if (v == _visit.end() || v->second < e->max_priority)
-			_visit[e->coordinate] = e->max_priority;
+		map<Coordinate, int>::iterator v = _visit.find(e->coordinate());
+		if (v == _visit.end() || v->second < e->max_priority())
+			_visit[e->coordinate()] = e->max_priority();
 	}
 }
 

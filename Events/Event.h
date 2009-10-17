@@ -10,16 +10,20 @@ namespace event {
 	class Event {
 	public:
 
-		virtual ~Event() {
-		};
+		Event(const std::string &name) : _name(name) {
+		}
 
-		static void init();
-		static void destroy();
-		virtual int getID() = 0;
-		virtual std::string getName() = 0;
+		virtual ~Event() {
+		}
+
+		virtual int id() = 0;
+
+		virtual const std::string &name() {
+			return _name;
+		}
 
 	private:
-		static bool initialized;
+		std::string _name;
 	};
 }
 #endif
