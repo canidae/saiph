@@ -517,12 +517,12 @@ void World::run() {
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << action->getAnalyzer()->name() << " " << action->getCommand();
+		cout << action->analyzer()->name() << " " << action->getCommand();
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << cursor.row() + 1 << ";" << cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::notice() << "Analyzer " << action->getAnalyzer()->name() << " " << action->getCommand() << endl;
+		Debug::notice() << "Analyzer " << action->analyzer()->name() << " " << action->getCommand() << endl;
 
 		/* execute the command */
 		if (action->getCommand().priority() <= PRIORITY_TURN_MAX)
@@ -564,7 +564,7 @@ void World::run() {
 			}
 			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->getAnalyzer()->name() << ": " << action->getCommand() << endl;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->analyzer()->name() << ": " << action->getCommand() << endl;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */

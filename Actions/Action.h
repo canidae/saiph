@@ -16,7 +16,7 @@ namespace action {
 	public:
 		static const Command noop;
 
-		Action(analyzer::Analyzer *analyzer) : sequence(0), analyzer(analyzer) {
+		Action(analyzer::Analyzer * const analyzer) : sequence(0), _analyzer(analyzer) {
 		}
 
 		virtual ~Action() {
@@ -26,8 +26,8 @@ namespace action {
 		static void destroy();
 		virtual int getID() = 0;
 
-		virtual analyzer::Analyzer *getAnalyzer() {
-			return analyzer;
+		virtual analyzer::Analyzer *analyzer() {
+			return _analyzer;
 		}
 		virtual const Command &getCommand() = 0;
 		virtual void updateAction(const std::string &messages) = 0;
@@ -36,7 +36,7 @@ namespace action {
 		int sequence;
 
 	private:
-		analyzer::Analyzer *analyzer;
+		analyzer::Analyzer *_analyzer;
 	};
 }
 #endif
