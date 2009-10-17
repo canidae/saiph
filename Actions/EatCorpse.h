@@ -19,8 +19,8 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command eat;
@@ -31,7 +31,7 @@ namespace action {
 		const Command escape;
 	};
 
-	inline const Command &EatCorpse::getCommand() {
+	inline const Command &EatCorpse::command() {
 		switch (sequence) {
 
 		case 0:
@@ -54,7 +54,7 @@ namespace action {
 		}
 	}
 
-	inline void EatCorpse::updateAction(const std::string &messages) {
+	inline void EatCorpse::update(const std::string &messages) {
 		if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {
 			/* we got "what do you want to eat?", we shouldn't get this
 			 * as we want to eat a corpse on the ground. escape */

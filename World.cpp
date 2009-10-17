@@ -93,12 +93,12 @@ void World::unregisterAnalyzer(Analyzer *analyzer) {
 int World::getPriority() {
 	if (action == NULL)
 		return action::Action::noop.priority();
-	return action->getCommand().priority();
+	return action->command().priority();
 }
 
 bool World::setAction(action::Action *action) {
 	if (World::action != NULL) {
-		if (action->getCommand().priority() <= World::action->getCommand().priority()) {
+		if (action->command().priority() <= World::action->command().priority()) {
 			delete action;
 			return false; // already got an action with higher priority
 		}
@@ -111,7 +111,7 @@ bool World::setAction(action::Action *action) {
 bool World::queueAction(action::Action *action) {
 	if (action == NULL) {
 		return false; // shouldn't happen, though
-	} else if (action->getCommand().priority() <= PRIORITY_TURN_MAX) {
+	} else if (action->command().priority() <= PRIORITY_TURN_MAX) {
 		/* not a zero-turn action, can't queue it */
 		delete action;
 		return false;
@@ -463,7 +463,7 @@ void World::run() {
 		dumpMaps();
 
 		/* check if we're in the middle of an action */
-		if (action == NULL || action->getCommand() == action::Action::noop) {
+		if (action == NULL || action->command() == action::Action::noop) {
 			/* we got no command, find a new one */
 			/* parse messages */
 			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
@@ -487,7 +487,7 @@ void World::run() {
 		}
 
 		/* check if we got a command */
-		if (action == NULL || action->getCommand() == action::Action::noop) {
+		if (action == NULL || action->command() == action::Action::noop) {
 			/* we do not. print debugging and just answer something sensible */
 			if (question) {
 				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;
@@ -517,25 +517,25 @@ void World::run() {
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << action->analyzer()->name() << " " << action->getCommand();
+		cout << action->analyzer()->name() << " " << action->command();
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << cursor.row() + 1 << ";" << cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::notice() << "Analyzer " << action->analyzer()->name() << " " << action->getCommand() << endl;
+		Debug::notice() << "Analyzer " << action->analyzer()->name() << " " << action->command() << endl;
 
 		/* execute the command */
-		if (action->getCommand().priority() <= PRIORITY_TURN_MAX)
+		if (action->command().priority() <= PRIORITY_TURN_MAX)
 			++World::real_turn; // command that may increase turn counter
 		last_action_id = action->getID();
-		executeCommand(action->getCommand().command());
+		executeCommand(action->command().command());
 
 		/* check if we're stuck */
-		if (action != NULL && stuck_counter % 42 == 41 && action->getCommand().command().size() == 1) {
+		if (action != NULL && stuck_counter % 42 == 41 && action->command().command().size() == 1) {
 			bool was_move = false;
 			/* we'll assume we're moving if the command that's stuck is a direction.
 			 * if not, it's probably not a big deal */
-			switch (action->getCommand().command()[0]) {
+			switch (action->command().command()[0]) {
 			case NW:
 			case NE:
 			case SW:
@@ -544,7 +544,7 @@ void World::run() {
 				 * we could be trying to move diagonally into a door we're
 				 * unaware of because of an item blocking the door symbol.
 				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+				setDungeonSymbol(directionToPoint((unsigned char) action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -554,7 +554,7 @@ void World::run() {
 			case W:
 				/* moving cardinally failed, possibly item in wall.
 				 * make the tile UNKNOWN_TILE_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) action->getCommand().command()[0]), UNKNOWN_TILE_UNPASSABLE);
+				setDungeonSymbol(directionToPoint((unsigned char) action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -564,7 +564,7 @@ void World::run() {
 			}
 			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->analyzer()->name() << ": " << action->getCommand() << endl;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->analyzer()->name() << ": " << action->command() << endl;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
@@ -583,7 +583,7 @@ void World::run() {
 
 		/* and finally update current action */
 		if (action != NULL)
-			action->updateAction(messages);
+			action->update(messages);
 	}
 }
 

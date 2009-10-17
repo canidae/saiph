@@ -19,8 +19,8 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command eat;
@@ -29,7 +29,7 @@ namespace action {
 		const Command answer_yes;
 	};
 
-	inline const Command &Eat::getCommand() {
+	inline const Command &Eat::command() {
 		switch (sequence) {
 
 		case 0:
@@ -49,7 +49,7 @@ namespace action {
 		}
 	}
 
-	inline void Eat::updateAction(const std::string &messages) {
+	inline void Eat::update(const std::string &messages) {
 		if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {
 			/* tell the game which item to eat */
 			sequence = 1;

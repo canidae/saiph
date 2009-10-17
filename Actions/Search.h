@@ -18,14 +18,14 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command search;
 	};
 
-	inline const Command &action::Search::getCommand() {
+	inline const Command &action::Search::command() {
 		switch (sequence) {
 		case 0:
 			return search;
@@ -35,7 +35,7 @@ namespace action {
 		}
 	}
 
-	inline void action::Search::updateAction(const std::string &) {
+	inline void action::Search::update(const std::string &) {
 		if (sequence == 0) {
 			/* increase search counter on level */
 			World::levels[Saiph::position.level()].increaseAdjacentSearchCount(Saiph::position);

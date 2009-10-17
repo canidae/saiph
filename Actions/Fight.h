@@ -18,15 +18,15 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command fight;
 		const Command attack_friendly;
 	};
 
-	inline const Command &action::Fight::getCommand() {
+	inline const Command &action::Fight::command() {
 		switch (sequence) {
 		case 0:
 			return fight;
@@ -39,7 +39,7 @@ namespace action {
 		}
 	}
 
-	inline void action::Fight::updateAction(const std::string &messages) {
+	inline void action::Fight::update(const std::string &messages) {
 		if (sequence == 0) {
 			if (messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
 				sequence = 1;

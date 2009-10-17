@@ -19,8 +19,8 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command do_apply;
@@ -28,7 +28,7 @@ namespace action {
 		const bool update_inventory;
 	};
 
-	inline const Command &action::Apply::getCommand() {
+	inline const Command &action::Apply::command() {
 		switch (sequence) {
 		case 0:
 			return do_apply;
@@ -41,7 +41,7 @@ namespace action {
 		}
 	}
 
-	inline void action::Apply::updateAction(const std::string &messages) {
+	inline void action::Apply::update(const std::string &messages) {
 		if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
 			sequence = 1;
 		} else if (sequence == 1) {

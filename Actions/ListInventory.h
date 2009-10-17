@@ -19,15 +19,15 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command list_inventory;
 		const Command close_page;
 	};
 
-	inline const Command &action::ListInventory::getCommand() {
+	inline const Command &action::ListInventory::command() {
 		switch (sequence) {
 		case 0:
 			return list_inventory;
@@ -40,7 +40,7 @@ namespace action {
 		}
 	}
 
-	inline void action::ListInventory::updateAction(const std::string &) {
+	inline void action::ListInventory::update(const std::string &) {
 		if (World::menu)
 			sequence = 1;
 		else

@@ -19,15 +19,15 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command put_on;
 		const Command put_on_key;
 	};
 
-	inline const Command &action::PutOn::getCommand() {
+	inline const Command &action::PutOn::command() {
 		switch (sequence) {
 		case 0:
 			return put_on;
@@ -40,7 +40,7 @@ namespace action {
 		}
 	}
 
-	inline void action::PutOn::updateAction(const std::string &messages) {
+	inline void action::PutOn::update(const std::string &messages) {
 		if (World::question && messages.find(MESSAGE_WHAT_TO_PUT_ON) != std::string::npos) {
 			sequence = 1;
 		} else if (sequence == 1) {

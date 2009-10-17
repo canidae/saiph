@@ -26,20 +26,20 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command pray;
 	};
 
-	inline const Command &action::Pray::getCommand() {
+	inline const Command &action::Pray::command() {
 		if (sequence == 0)
 			return pray;
 		return Action::noop;
 	}
 
-	inline void action::Pray::updateAction(const std::string &messages) {
+	inline void action::Pray::update(const std::string &messages) {
 		if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
 			Saiph::last_pray_turn = World::turn;
 			sequence = 1;

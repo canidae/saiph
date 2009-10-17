@@ -19,8 +19,8 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command do_call;
@@ -29,7 +29,7 @@ namespace action {
 		const Command set_call;
 	};
 
-	inline const Command &Call::getCommand() {
+	inline const Command &Call::command() {
 		switch (sequence) {
 		case 0:
 			return do_call;
@@ -48,7 +48,7 @@ namespace action {
 		}
 	}
 
-	inline void Call::updateAction(const std::string &messages) {
+	inline void Call::update(const std::string &messages) {
 		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
 			sequence = 1;
 		} else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos) {

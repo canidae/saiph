@@ -18,15 +18,15 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command open;
 		const Command open_direction;
 	};
 
-	inline const Command &action::Open::getCommand() {
+	inline const Command &action::Open::command() {
 		switch (sequence) {
 		case 0:
 			return open;
@@ -39,7 +39,7 @@ namespace action {
 		}
 	}
 
-	inline void action::Open::updateAction(const std::string &messages) {
+	inline void action::Open::update(const std::string &messages) {
 		if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
 			sequence = 1;
 		else if (sequence == 1)

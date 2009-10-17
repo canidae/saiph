@@ -18,14 +18,14 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command answer;
 	};
 
-	inline const Command &Answer::getCommand() {
+	inline const Command &Answer::command() {
 		switch (sequence) {
 		case 0:
 			return answer;
@@ -35,7 +35,7 @@ namespace action {
 		}
 	}
 
-	inline void Answer::updateAction(const std::string &) {
+	inline void Answer::update(const std::string &) {
 		if (sequence == 0)
 			sequence = 1;
 	}

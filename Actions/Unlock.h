@@ -18,8 +18,8 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const Command do_apply;
@@ -28,7 +28,7 @@ namespace action {
 		const Command do_unlock;
 	};
 
-	inline const Command &action::Unlock::getCommand() {
+	inline const Command &action::Unlock::command() {
 		switch (sequence) {
 		case 0:
 			return do_apply;
@@ -47,7 +47,7 @@ namespace action {
 		}
 	}
 
-	inline void action::Unlock::updateAction(const std::string &messages) {
+	inline void action::Unlock::update(const std::string &messages) {
 		if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
 			sequence = 1;
 		} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {

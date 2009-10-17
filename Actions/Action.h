@@ -29,8 +29,8 @@ namespace action {
 		virtual analyzer::Analyzer *analyzer() {
 			return _analyzer;
 		}
-		virtual const Command &getCommand() = 0;
-		virtual void updateAction(const std::string &messages) = 0;
+		virtual const Command &command() = 0;
+		virtual void update(const std::string &messages) = 0;
 
 	protected:
 		int sequence;

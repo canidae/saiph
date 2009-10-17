@@ -19,15 +19,15 @@ namespace action {
 		virtual int getID() {
 			return id;
 		}
-		virtual const Command &getCommand();
-		virtual void updateAction(const std::string &messages);
+		virtual const Command &command();
+		virtual void update(const std::string &messages);
 
 	private:
 		const std::vector<std::string> keys;
 		Command tmp;
 	};
 
-	inline const Command &action::SelectMultiple::getCommand() {
+	inline const Command &action::SelectMultiple::command() {
 		if (sequence < (int) keys.size())
 			tmp = Command(keys[sequence], PRIORITY_SELECT_ITEM);
 		else if (sequence == (int) keys.size())
@@ -37,7 +37,7 @@ namespace action {
 		return tmp;
 	}
 
-	inline void action::SelectMultiple::updateAction(const std::string &) {
+	inline void action::SelectMultiple::update(const std::string &) {
 		++sequence;
 	}
 }
