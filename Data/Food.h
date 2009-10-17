@@ -38,6 +38,7 @@
 #define EAT_EFFECT_ESP              (1 << 30)
 
 namespace data {
+
 	class Food : public Item {
 	public:
 		static std::map<std::string, Food *> foods;
@@ -46,7 +47,9 @@ namespace data {
 		const int eat_effects;
 
 		Food(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
-		~Food() {}
+
+		~Food() {
+		}
 
 		static void init();
 

@@ -14,13 +14,14 @@ namespace event {
 }
 
 namespace analyzer {
+
 	class Loot : public Analyzer {
 	public:
 		Loot();
 
 		void analyze();
 		void parseMessages(const std::string &messages);
-		void onEvent(event::Event *const event);
+		void onEvent(event::Event * const event);
 
 	private:
 		bool showing_pickup;

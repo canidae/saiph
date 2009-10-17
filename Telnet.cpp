@@ -47,7 +47,7 @@ Telnet::Telnet() {
 	addr.sin_addr = *((struct in_addr *) he->h_addr);
 	memset(addr.sin_zero, '\0', sizeof (addr.sin_zero));
 
-	if (connect(sock, (struct sockaddr *) &addr, sizeof (addr)) == -1) {
+	if (connect(sock, (struct sockaddr *) & addr, sizeof (addr)) == -1) {
 		perror("connect");
 		exit(1);
 	}

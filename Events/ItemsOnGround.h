@@ -6,16 +6,25 @@
 #include "../Item.h"
 
 namespace event {
+
 	class ItemsOnGround : public Event {
 	public:
 		static int id;
 		std::list<Item> items;
 
-		ItemsOnGround() : items() {}
-		virtual ~ItemsOnGround() {}
+		ItemsOnGround() : items() {
+		}
 
-		virtual int getID() {return id;}
-		virtual std::string getName() {return "ItemsOnGround";}
+		virtual ~ItemsOnGround() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
+
+		virtual std::string getName() {
+			return "ItemsOnGround";
+		}
 	};
 }
 #endif

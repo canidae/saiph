@@ -30,7 +30,7 @@ void Food::init() {
 	create("meat stick", 5, 1, MATERIAL_FLESH, 0, 5, 1, 0);
 	create("egg", 9, 15, MATERIAL_FLESH, 0, 80, 1, EAT_EFFECT_VEGAN);
 	create("tripe ration", 15, 10, MATERIAL_FLESH, 0, 200, 2, 0);
-	create("huge chunk of meat", 105, 400, MATERIAL_FLESH, 0, 2000, 20 , 0);
+	create("huge chunk of meat", 105, 400, MATERIAL_FLESH, 0, 2000, 20, 0);
 	create("kelp frond", 6, 1, MATERIAL_VEGGY, 0, 30, 1, EAT_EFFECT_VEGAN | EAT_EFFECT_VEGETARIAN);
 	create("eucalyptus leaf", 6, 1, MATERIAL_VEGGY, 0, 30, 1, EAT_EFFECT_VEGAN | EAT_EFFECT_VEGETARIAN | EAT_EFFECT_CURE_SICKNESS);
 	create("clove of garlic", 7, 1, MATERIAL_VEGGY, 0, 40, 1, EAT_EFFECT_VEGAN | EAT_EFFECT_VEGETARIAN);

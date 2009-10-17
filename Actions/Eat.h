@@ -5,14 +5,20 @@
 #include "../Inventory.h"
 
 namespace action {
+
 	class Eat : public Action {
 	public:
 		static int id;
 
-		Eat(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), eat(std::string(1, 'e'), priority), item(std::string(1, key), PRIORITY_CONTINUE_ACTION), answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Eat() {}
+		Eat(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), eat(std::string(1, 'e'), priority), item(std::string(1, key), PRIORITY_CONTINUE_ACTION), answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Eat() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

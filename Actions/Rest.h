@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Rest : public Action {
 	public:
 		static int id;
 
-		Rest(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), rest("16s", priority) {}
-		virtual ~Rest() {}
+		Rest(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), rest("16s", priority) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Rest() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

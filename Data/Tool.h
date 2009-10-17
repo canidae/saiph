@@ -7,12 +7,15 @@
 #include "../Globals.h"
 
 namespace data {
+
 	class Tool : public Item {
 	public:
 		static std::map<std::string, Tool *> tools;
 
 		Tool(const std::string &name, int cost, int weight, int material, unsigned long long properties);
-		virtual ~Tool() {}
+
+		virtual ~Tool() {
+		}
 
 		static void init();
 

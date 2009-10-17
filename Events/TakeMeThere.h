@@ -5,17 +5,26 @@
 #include "../Coordinate.h"
 
 namespace event {
+
 	class TakeMeThere : public Event {
 	public:
 		static int id;
 		Coordinate coordinate;
 		int max_priority;
 
-		TakeMeThere() : coordinate(), max_priority(0) {}
-		virtual ~TakeMeThere() {}
+		TakeMeThere() : coordinate(), max_priority(0) {
+		}
 
-		virtual int getID() {return id;}
-		virtual std::string getName() {return "TakeMeThere";}
+		virtual ~TakeMeThere() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
+
+		virtual std::string getName() {
+			return "TakeMeThere";
+		}
 	};
 }
 #endif

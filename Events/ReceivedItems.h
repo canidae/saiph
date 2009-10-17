@@ -6,16 +6,25 @@
 #include "../Item.h"
 
 namespace event {
+
 	class ReceivedItems : public Event {
 	public:
 		static int id;
 		std::map<unsigned char, Item> items;
 
-		ReceivedItems() : items() {}
-		virtual ~ReceivedItems() {}
+		ReceivedItems() : items() {
+		}
 
-		virtual int getID() {return id;}
-		virtual std::string getName() {return "ReceivedItems";}
+		virtual ~ReceivedItems() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
+
+		virtual std::string getName() {
+			return "ReceivedItems";
+		}
 	};
 }
 #endif

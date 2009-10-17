@@ -223,6 +223,7 @@
 #define G_FREQ          0x0007          /* creation frequency mask */
 
 namespace data {
+
 	class Monster {
 	public:
 		std::string name;

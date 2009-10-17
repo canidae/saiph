@@ -5,14 +5,20 @@
 #include "../Inventory.h"
 
 namespace action {
+
 	class PutOn : public Action {
 	public:
 		static int id;
 
-		PutOn(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), put_on("P", priority), put_on_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~PutOn() {}
+		PutOn(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), put_on("P", priority), put_on_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~PutOn() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

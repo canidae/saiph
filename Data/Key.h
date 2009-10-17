@@ -6,12 +6,15 @@
 #include "Tool.h"
 
 namespace data {
+
 	class Key : public Tool {
 	public:
 		static std::map<std::string, Key *> keys;
 
 		Key(const std::string &name, int cost, int weight, int material, unsigned long long properties);
-		~Key() {}
+
+		~Key() {
+		}
 
 		static void init();
 

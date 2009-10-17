@@ -32,6 +32,7 @@
 #define MATERIALS_METALLIC   MATERIAL_METAL | MATERIAL_IRON | MATERIAL_COPPER | MATERIAL_SILVER | MATERIAL_GOLD | MATERIAL_PLATINUM | MATERIAL_MITHRIL
 
 namespace data {
+
 	class Item {
 	public:
 		static std::map<std::string, Item *> items;
@@ -43,7 +44,9 @@ namespace data {
 		const unsigned long long properties;
 
 		Item(const std::string &name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
-		virtual ~Item() {}
+
+		virtual ~Item() {
+		}
 
 		static void init();
 		static void destroy();

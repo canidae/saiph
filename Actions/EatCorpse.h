@@ -5,14 +5,20 @@
 #include "../World.h"
 
 namespace action {
+
 	class EatCorpse : public Action {
 	public:
 		static int id;
 
-		EatCorpse(analyzer::Analyzer *analyzer, std::string corpse, int priority) : Action(analyzer), eat(std::string(1, 'e'), priority), corpse(corpse), answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), look(":", PRIORITY_CONTINUE_ACTION), escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~EatCorpse() {}
+		EatCorpse(analyzer::Analyzer *analyzer, std::string corpse, int priority) : Action(analyzer), eat(std::string(1, 'e'), priority), corpse(corpse), answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), look(":", PRIORITY_CONTINUE_ACTION), escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~EatCorpse() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

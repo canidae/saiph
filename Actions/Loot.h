@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Loot : public Action {
 	public:
 		static int id;
 
-		Loot(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), loot(",", priority) {}
-		virtual ~Loot() {}
+		Loot(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), loot(",", priority) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Loot() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

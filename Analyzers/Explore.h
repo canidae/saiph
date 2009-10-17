@@ -17,13 +17,14 @@
 #define PRIORITY_EXPLORE_MAGIC_PORTAL 70
 
 namespace analyzer {
+
 	class Explore : public Analyzer {
 	public:
 		Explore();
 
 		void parseMessages(const std::string &messages);
 		void analyze();
-		void onEvent(event::Event *const event);
+		void onEvent(event::Event * const event);
 
 	private:
 		std::map<Coordinate, int> visit;

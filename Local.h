@@ -12,16 +12,16 @@
 #include "Connection.h"
 
 class Local : public Connection {
-	public:
-		Local();
-		~Local();
+public:
+	Local();
+	~Local();
 
-		virtual int retrieve(char *buffer, int count);
-		virtual int transmit(const std::string &data);
-		virtual void start();
-		virtual void stop();
+	virtual int retrieve(char *buffer, int count);
+	virtual int transmit(const std::string &data);
+	virtual void start();
+	virtual void stop();
 
-	private:
-		int link[2];
+private:
+	int link[2];
 };
 #endif

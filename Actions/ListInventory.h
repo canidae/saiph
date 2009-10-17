@@ -5,14 +5,20 @@
 #include "../World.h"
 
 namespace action {
+
 	class ListInventory : public Action {
 	public:
 		static int id;
 
-		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), list_inventory("i", PRIORITY_LOOK), close_page(" ", PRIORITY_CONTINUE_ACTION) {}
-		virtual ~ListInventory() {};
+		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), list_inventory("i", PRIORITY_LOOK), close_page(" ", PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~ListInventory() {
+		};
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

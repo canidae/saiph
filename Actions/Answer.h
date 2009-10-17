@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Answer : public Action {
 	public:
 		static int id;
 
-		Answer(analyzer::Analyzer *analyzer, std::string answer) : Action(analyzer), answer(answer, PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Answer() {}
+		Answer(analyzer::Analyzer *analyzer, std::string answer) : Action(analyzer), answer(answer, PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Answer() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

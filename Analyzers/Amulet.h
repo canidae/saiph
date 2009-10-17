@@ -11,11 +11,12 @@
 class Item;
 
 namespace analyzer {
+
 	class Amulet : public Analyzer {
 	public:
 		Amulet();
 
-		void onEvent(event::Event *const event);
+		void onEvent(event::Event * const event);
 
 	private:
 		bool wantItem(const Item &item);

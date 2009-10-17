@@ -5,14 +5,20 @@
 #include "../Inventory.h"
 
 namespace action {
+
 	class Remove : public Action {
 	public:
 		static int id;
 
-		Remove(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), remove("R", priority), remove_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Remove() {}
+		Remove(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), remove("R", priority), remove_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Remove() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

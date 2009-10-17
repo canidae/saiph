@@ -10,18 +10,28 @@ namespace event {
 }
 
 namespace analyzer {
+
 	class Analyzer {
 	public:
 		std::string name;
 
-		Analyzer(std::string name) : name(name) {}
-		virtual ~Analyzer() {}
+		Analyzer(std::string name) : name(name) {
+		}
+
+		virtual ~Analyzer() {
+		}
 
 		static void init();
 		static void destroy();
-		virtual void parseMessages(const std::string &) {}
-		virtual void analyze() {}
-		virtual void onEvent(event::Event *const) {}
+
+		virtual void parseMessages(const std::string &) {
+		}
+
+		virtual void analyze() {
+		}
+
+		virtual void onEvent(event::Event * const) {
+		}
 
 	private:
 		static bool initialized;

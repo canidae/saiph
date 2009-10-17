@@ -11,17 +11,24 @@ namespace analyzer {
 }
 
 namespace action {
+
 	class Action {
 	public:
 		static const Command noop;
 
-		Action(analyzer::Analyzer *analyzer) : sequence(0), analyzer(analyzer) {}
-		virtual ~Action() {}
+		Action(analyzer::Analyzer *analyzer) : sequence(0), analyzer(analyzer) {
+		}
+
+		virtual ~Action() {
+		}
 
 		static void init();
 		static void destroy();
 		virtual int getID() = 0;
-		virtual analyzer::Analyzer *getAnalyzer() {return analyzer;}
+
+		virtual analyzer::Analyzer *getAnalyzer() {
+			return analyzer;
+		}
 		virtual const Command &getCommand() = 0;
 		virtual void updateAction(const std::string &messages) = 0;
 

@@ -29,25 +29,25 @@ Amulet::Amulet() : Analyzer("Amulet") {
 }
 
 /* methods */
-void Amulet::onEvent(Event *const event) {
+void Amulet::onEvent(Event * const event) {
 	if (event->getID() == ChangedInventoryItems::id) {
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
 		wearAmulet(e->keys);
 	} else if (event->getID() == ReceivedItems::id) {
 		// FIXME
 		//ReceivedItems *e = static_cast<ReceivedItems *>(event);
 		//wearAmulet(e->items);
 	} else if (event->getID() == WantItems::id) {
-		WantItems *e = static_cast<WantItems *>(event);
+		WantItems *e = static_cast<WantItems *> (event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (wantItem(i->second))
-				World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+				World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
 		}
 	} else if (event->getID() == ItemsOnGround::id) {
-		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
+		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
 		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (wantItem(*i))
-				World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_AMULET_LOOT)));
+				World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_AMULET_LOOT)));
 		}
 	}
 }
@@ -83,5 +83,5 @@ void Amulet::wearAmulet(const set<unsigned char> &keys) {
 		return; // no new amulet to put on or wearing best amulet
 
 	/* put on this amulet */
-	World::setAction(static_cast<action::Action *>(new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
+	World::setAction(static_cast<action::Action *> (new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
 }

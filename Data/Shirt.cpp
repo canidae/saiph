@@ -19,7 +19,7 @@ void Shirt::create(const string &name, int cost, int weight, int material, int a
 }
 
 void Shirt::init() {
-	//     name           cost  weight  material        ac mc properties
-	create("Hawaiian shirt", 3,      5, MATERIAL_CLOTH, 0, 0, 0);
-	create("T-shirt",        2,      5, MATERIAL_CLOTH, 0, 0, 0);
+	/* shirts */
+	create("Hawaiian shirt", 3, 5, MATERIAL_CLOTH, 0, 0, 0);
+	create("T-shirt", 2, 5, MATERIAL_CLOTH, 0, 0, 0);
 }

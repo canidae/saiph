@@ -5,14 +5,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class SelectMultiple : public Action {
 	public:
 		static int id;
 
-		SelectMultiple(analyzer::Analyzer *analyzer, std::vector<std::string> keys) : Action(analyzer), keys(keys) {}
-		virtual ~SelectMultiple() {}
+		SelectMultiple(analyzer::Analyzer *analyzer, std::vector<std::string> keys) : Action(analyzer), keys(keys) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~SelectMultiple() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

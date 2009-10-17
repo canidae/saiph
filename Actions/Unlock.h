@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Unlock : public Action {
 	public:
 		static int id;
 
-		Unlock(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), do_apply("a", priority), apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), do_unlock("y", PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Unlock() {}
+		Unlock(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), do_apply("a", priority), apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), do_unlock("y", PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Unlock() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

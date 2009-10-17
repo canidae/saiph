@@ -206,7 +206,7 @@ bool Item::operator==(const Item &i) {
 	return count == i.count && beatitude == i.beatitude && greased == i.greased && fixed == i.fixed && damage == i.damage && unknown_enchantment == i.unknown_enchantment && enchantment == i.enchantment && name == i.name && additional == i.additional;
 }
 
-ostream &operator<<(ostream &out, const Item &item) {
+ostream & operator<<(ostream &out, const Item &item) {
 	if (item.name == "") {
 		out << "(no item)";
 	} else {
@@ -232,7 +232,7 @@ ostream &operator<<(ostream &out, const Item &item) {
 			out << ((item.enchantment >= 0) ? "+" : "") << item.enchantment << " ";
 		out << item.name;
 		if (item.additional != "")
-			 out << " " << item.additional;
+			out << " " << item.additional;
 	}
 	return out;
 }

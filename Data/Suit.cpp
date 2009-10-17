@@ -19,6 +19,7 @@ void Suit::create(const string &name, int cost, int weight, int material, int ac
 }
 
 void Suit::init() {
+	/* suits */
 	create("white dragon scale mail", 900, 40, MATERIAL_DRAGON_HIDE, 9, 0, PROPERTY_COLD | PROPERTY_MAGIC);
 	create("gray dragon scales", 700, 40, MATERIAL_DRAGON_HIDE, 3, 0, PROPERTY_MAGICRES);
 	create("silver dragon scale mail", 1200, 40, MATERIAL_DRAGON_HIDE, 9, 0, PROPERTY_REFLECTION | PROPERTY_MAGIC);
@@ -53,6 +54,7 @@ void Suit::init() {
 	create("chain mail", 75, 300, MATERIAL_IRON, 5, 1, 0);
 	create("dwarvish mithril-coat", 240, 150, MATERIAL_MITHRIL, 6, 3, 0);
 
+	/* aliases */
 	addToMap("crude ring mail", suits["orcish ring mail"]);
 	addToMap("crude chain mail", suits["orcish chain mail"]);
 }

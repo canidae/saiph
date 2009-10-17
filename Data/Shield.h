@@ -6,12 +6,15 @@
 #include "Armor.h"
 
 namespace data {
+
 	class Shield : public Armor {
 	public:
 		static std::map<std::string, Shield *> shields;
 
 		Shield(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
-		virtual ~Shield() {}
+
+		virtual ~Shield() {
+		}
 
 		static void init();
 

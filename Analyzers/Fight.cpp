@@ -49,12 +49,12 @@ Fight::Fight() : Analyzer("Fight") {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (World::engulfed) {
-		World::setAction(static_cast<action::Action *>(new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
+		World::setAction(static_cast<action::Action *> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
 		return;
 	}
 	/* fight monsters */
 	int attack_score = INT_MIN;
-	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level].monsters.begin(); m != World::levels[Saiph::position.level].monsters.end(); ++m) {
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters.begin(); m != World::levels[Saiph::position.level()].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude == FRIENDLY)
@@ -74,7 +74,7 @@ void Fight::analyze() {
 			 * stuff, if they use wands, etc */
 			attack_score = m->second.data->saiph_difficulty;
 		}
-		int distance = max(abs(m->first.row - Saiph::position.row), abs(m->first.col - Saiph::position.col));
+		int distance = max(abs(m->first.row() - Saiph::position.row()), abs(m->first.col() - Saiph::position.col()));
 		bool floating_eye = (m->second.symbol == S_EYE && m->second.color == BLUE);
 		if (m->second.visible && (distance > 1 || floating_eye) && projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
@@ -84,14 +84,14 @@ void Fight::analyze() {
 				/* we can throw at monster */
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_THROW_MIN;
-				World::setAction(static_cast<action::Action *>(new action::Throw(this, *projectile_slots.begin(), in_line, priority)));
+				World::setAction(static_cast<action::Action *> (new action::Throw(this, *projectile_slots.begin(), in_line, priority)));
 				Debug::analyzer(name) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MELEE_MIN;
-			World::setAction(static_cast<action::Action *>(new action::Fight(this, World::shortestPath(m->first).dir, priority)));
+			World::setAction(static_cast<action::Action *> (new action::Fight(this, World::shortestPath(m->first).dir, priority)));
 			Debug::analyzer(name) << "Setting action to melee '" << m->second.symbol << "' with priority " << priority << endl;
 			continue;
 		}
@@ -101,14 +101,14 @@ void Fight::analyze() {
 			continue; // can't move to monster
 		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
 		priority = action::Move::calculatePriority(priority, node.moves);
-		World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, priority)));
+		World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, priority)));
 		Debug::analyzer(name) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 
-void Fight::onEvent(Event *const event) {
+void Fight::onEvent(Event * const event) {
 	if (event->getID() == ChangedInventoryItems::id) {
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
 		for (set<unsigned char>::iterator k = e->keys.begin(); k != e->keys.end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i == Inventory::items.end()) {
@@ -125,25 +125,25 @@ void Fight::onEvent(Event *const event) {
 			}
 		}
 	} else if (event->getID() == ReceivedItems::id) {
-		ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		ReceivedItems *e = static_cast<ReceivedItems *> (event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (wantItem(i->second))
 				projectile_slots.insert(i->first);
 		}
 	} else if (event->getID() == WantItems::id) {
-		WantItems *e = static_cast<WantItems *>(event);
+		WantItems *e = static_cast<WantItems *> (event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (!wantItem(i->second))
 				continue;
-			World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+			World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
 			break;
 		}
 	} else if (event->getID() == ItemsOnGround::id) {
-		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
+		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
 		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (!wantItem(*i))
 				continue;
-			World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FIGHT_LOOT)));
+			World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_FIGHT_LOOT)));
 			break;
 		}
 	}

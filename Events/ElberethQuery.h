@@ -11,6 +11,7 @@
 #define ELBERETH_PERMANENT 4
 
 namespace event {
+
 	class ElberethQuery : public Event {
 	public:
 		static int id;
@@ -19,11 +20,20 @@ namespace event {
 		int engraving_type;
 
 		// initialize these to invalid values to spot bugs
-		ElberethQuery() : number_of_elbereths(0), engraving_type(ELBERETH_NOT_HANDLED) {}
-		virtual ~ElberethQuery() {}
 
-		virtual int getID() {return id;}
-		virtual std::string getName() {return "ElberethQuery";}
+		ElberethQuery() : number_of_elbereths(0), engraving_type(ELBERETH_NOT_HANDLED) {
+		}
+
+		virtual ~ElberethQuery() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
+
+		virtual std::string getName() {
+			return "ElberethQuery";
+		}
 	};
 }
 #endif

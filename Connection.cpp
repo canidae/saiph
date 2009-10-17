@@ -14,16 +14,16 @@ Connection::~Connection() {
 /* static methods */
 Connection *Connection::create(int interface) {
 	switch (interface) {
-		case CONNECTION_LOCAL:
-			return new Local();
-			break;
+	case CONNECTION_LOCAL:
+		return new Local();
+		break;
 
-		case CONNECTION_TELNET:
-			return new Telnet();
-			break;
+	case CONNECTION_TELNET:
+		return new Telnet();
+		break;
 
-		default:
-			return NULL;
+	default:
+		return NULL;
 	}
 	/* this never happens :) */
 	return NULL;

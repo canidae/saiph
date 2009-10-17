@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Engrave : public Action {
 	public:
 		static int id;
 
-		Engrave(analyzer::Analyzer *analyzer, std::string engrave_msg, unsigned char engrave_with, int priority, bool should_append = true) : Action(analyzer), engrave(std::string(1, 'E'), priority), message(engrave_msg, PRIORITY_CONTINUE_ACTION), item(std::string(1,engrave_with), PRIORITY_CONTINUE_ACTION), append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Engrave() {}
+		Engrave(analyzer::Analyzer *analyzer, std::string engrave_msg, unsigned char engrave_with, int priority, bool should_append = true) : Action(analyzer), engrave(std::string(1, 'E'), priority), message(engrave_msg, PRIORITY_CONTINUE_ACTION), item(std::string(1, engrave_with), PRIORITY_CONTINUE_ACTION), append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Engrave() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

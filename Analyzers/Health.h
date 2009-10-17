@@ -14,6 +14,7 @@
 #define PRIORITY_HEALTH_CURE_LYCANTHROPY 400
 
 namespace analyzer {
+
 	class Health : public Analyzer {
 	public:
 		Health();

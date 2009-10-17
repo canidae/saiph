@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Select : public Action {
 	public:
 		static int id;
 
-		Select(analyzer::Analyzer *analyzer, unsigned char key) : Action(analyzer), select(std::string(1, key), PRIORITY_SELECT_ITEM) {}
-		virtual ~Select() {}
+		Select(analyzer::Analyzer *analyzer, unsigned char key) : Action(analyzer), select(std::string(1, key), PRIORITY_SELECT_ITEM) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Select() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

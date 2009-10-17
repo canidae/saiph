@@ -19,6 +19,6 @@ void UnicornHorn::create(const string &name, int cost, int weight, const Attack 
 }
 
 void UnicornHorn::init() {
-	/* unicorn_horns */
+	/* unicorn horns */
 	create("unicorn horn", 100, 20, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_BONE, '(', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
 }

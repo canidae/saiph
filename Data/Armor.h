@@ -7,6 +7,7 @@
 #include "../Globals.h"
 
 namespace data {
+
 	class Armor : public Item {
 	public:
 		static std::map<std::string, Armor *> armors;
@@ -15,7 +16,9 @@ namespace data {
 		const int mc;
 
 		Armor(const std::string &name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
-		virtual ~Armor() {}
+
+		virtual ~Armor() {
+		}
 
 		static void init();
 

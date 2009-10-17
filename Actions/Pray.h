@@ -8,15 +8,24 @@
 #define PRAY_PRAYER_TIMEOUT 1000
 
 namespace action {
+
 	class Pray : public Action {
 	public:
 		static int id;
 
-		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), pray("#pray\n", priority) {}
-		virtual ~Pray() {}
+		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), pray("#pray\n", priority) {
+		}
 
-		static bool isSafeToPray() {return World::turn - PRAY_PRAYER_TIMEOUT > Saiph::last_pray_turn;}
-		virtual int getID() {return id;}
+		virtual ~Pray() {
+		}
+
+		static bool isSafeToPray() {
+			return World::turn - PRAY_PRAYER_TIMEOUT > Saiph::last_pray_turn;
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

@@ -16,20 +16,21 @@
 class Item;
 
 namespace analyzer {
+
 	class Door : public Analyzer {
 	public:
 		Door();
 
 		void analyze();
 		void parseMessages(const std::string &messages);
-		void onEvent(event::Event *const event);
+		void onEvent(event::Event * const event);
 
 	private:
 		Point position;
 		unsigned char unlock_tool_key;
 		bool in_a_pit;
 
-	bool wantItem(const Item &item);
+		bool wantItem(const Item &item);
 	};
 }
 #endif

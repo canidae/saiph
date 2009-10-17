@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="62">
+  <logicalFolder name="root" displayName="root" projectFiles="true">
+    <df name="saiph" root="/home/canidae/projects/saiph">
+      <df name="Actions">
+        <in>Action.cpp</in>
+        <in>Action.h</in>
+        <in>Answer.h</in>
+        <in>Apply.h</in>
+        <in>ApplyInDirection.h</in>
+        <in>Call.h</in>
+        <in>Eat.h</in>
+        <in>EatCorpse.h</in>
+        <in>Engrave.h</in>
+        <in>Fight.h</in>
+        <in>Kick.h</in>
+        <in>ListInventory.h</in>
+        <in>Look.h</in>
+        <in>Loot.h</in>
+        <in>Move.h</in>
+        <in>Name.h</in>
+        <in>Open.h</in>
+        <in>Pray.h</in>
+        <in>PutOn.h</in>
+        <in>Remove.h</in>
+        <in>Rest.h</in>
+        <in>Search.h</in>
+        <in>Select.h</in>
+        <in>SelectMultiple.h</in>
+        <in>Throw.h</in>
+        <in>Unlock.h</in>
+      </df>
+      <df name="Analyzers">
+        <in>Amulet.cpp</in>
+        <in>Amulet.h</in>
+        <in>Analyzer.cpp</in>
+        <in>Analyzer.h</in>
+        <in>Armor.cpp</in>
+        <in>Armor.h</in>
+        <in>Beatitude.cpp</in>
+        <in>Beatitude.h</in>
+        <in>Blind.cpp</in>
+        <in>Blind.h</in>
+        <in>Dig.cpp</in>
+        <in>Dig.h</in>
+        <in>Donate.cpp</in>
+        <in>Donate.h</in>
+        <in>Door.cpp</in>
+        <in>Door.h</in>
+        <in>Elbereth.cpp</in>
+        <in>Elbereth.h</in>
+        <in>Enhance.cpp</in>
+        <in>Enhance.h</in>
+        <in>Excalibur.cpp</in>
+        <in>Excalibur.h</in>
+        <in>Explore.cpp</in>
+        <in>Explore.h</in>
+        <in>Fight.cpp</in>
+        <in>Fight.h</in>
+        <in>Food.cpp</in>
+        <in>Food.h</in>
+        <in>Genocide.cpp</in>
+        <in>Genocide.h</in>
+        <in>Health.cpp</in>
+        <in>Health.h</in>
+        <in>Lamp.cpp</in>
+        <in>Lamp.h</in>
+        <in>Loot.cpp</in>
+        <in>Loot.h</in>
+        <in>MonsterInfo.cpp</in>
+        <in>MonsterInfo.h</in>
+        <in>Passtune.cpp</in>
+        <in>Passtune.h</in>
+        <in>Potion.cpp</in>
+        <in>Potion.h</in>
+        <in>Ring.cpp</in>
+        <in>Ring.h</in>
+        <in>Rub.cpp</in>
+        <in>Rub.h</in>
+        <in>Scroll.cpp</in>
+        <in>Scroll.h</in>
+        <in>Shop.cpp</in>
+        <in>Shop.h</in>
+        <in>Sokoban.cpp</in>
+        <in>Sokoban.h</in>
+        <in>Throne.cpp</in>
+        <in>Throne.h</in>
+        <in>Unihorn.cpp</in>
+        <in>Unihorn.h</in>
+        <in>Valkyrie.cpp</in>
+        <in>Valkyrie.h</in>
+        <in>Vault.cpp</in>
+        <in>Vault.h</in>
+        <in>Wand.cpp</in>
+        <in>Wand.h</in>
+        <in>Weapon.cpp</in>
+        <in>Weapon.h</in>
+        <in>Wish.cpp</in>
+        <in>Wish.h</in>
+      </df>
+      <df name="Data">
+        <in>Amulet.cpp</in>
+        <in>Amulet.h</in>
+        <in>Armor.cpp</in>
+        <in>Armor.h</in>
+        <in>Attack.h</in>
+        <in>Axe.cpp</in>
+        <in>Axe.h</in>
+        <in>Boomerang.cpp</in>
+        <in>Boomerang.h</in>
+        <in>Boots.cpp</in>
+        <in>Boots.h</in>
+        <in>Bow.cpp</in>
+        <in>Bow.h</in>
+        <in>BroadSword.cpp</in>
+        <in>BroadSword.h</in>
+        <in>Cloak.cpp</in>
+        <in>Cloak.h</in>
+        <in>Club.cpp</in>
+        <in>Club.h</in>
+        <in>Corpse.cpp</in>
+        <in>Corpse.h</in>
+        <in>Crossbow.cpp</in>
+        <in>Crossbow.h</in>
+        <in>Dagger.cpp</in>
+        <in>Dagger.h</in>
+        <in>Dart.cpp</in>
+        <in>Dart.h</in>
+        <in>Flail.cpp</in>
+        <in>Flail.h</in>
+        <in>Food.cpp</in>
+        <in>Food.h</in>
+        <in>Gloves.cpp</in>
+        <in>Gloves.h</in>
+        <in>Hammer.cpp</in>
+        <in>Hammer.h</in>
+        <in>Helmet.cpp</in>
+        <in>Helmet.h</in>
+        <in>Item.cpp</in>
+        <in>Item.h</in>
+        <in>Javelin.cpp</in>
+        <in>Javelin.h</in>
+        <in>Key.cpp</in>
+        <in>Key.h</in>
+        <in>Knife.cpp</in>
+        <in>Knife.h</in>
+        <in>Lance.cpp</in>
+        <in>Lance.h</in>
+        <in>Level.cpp</in>
+        <in>Level.h</in>
+        <in>LongSword.cpp</in>
+        <in>LongSword.h</in>
+        <in>Mace.cpp</in>
+        <in>Mace.h</in>
+        <in>Monster.cpp</in>
+        <in>Monster.h</in>
+        <in>MorningStar.cpp</in>
+        <in>MorningStar.h</in>
+        <in>PickAxe.cpp</in>
+        <in>PickAxe.h</in>
+        <in>Polearm.cpp</in>
+        <in>Polearm.h</in>
+        <in>Quarterstaff.cpp</in>
+        <in>Quarterstaff.h</in>
+        <in>Saber.cpp</in>
+        <in>Saber.h</in>
+        <in>Scimitar.cpp</in>
+        <in>Scimitar.h</in>
+        <in>Shield.cpp</in>
+        <in>Shield.h</in>
+        <in>Shirt.cpp</in>
+        <in>Shirt.h</in>
+        <in>ShortSword.cpp</in>
+        <in>ShortSword.h</in>
+        <in>Shuriken.cpp</in>
+        <in>Shuriken.h</in>
+        <in>Sling.cpp</in>
+        <in>Sling.h</in>
+        <in>Spear.cpp</in>
+        <in>Spear.h</in>
+        <in>Suit.cpp</in>
+        <in>Suit.h</in>
+        <in>Tool.cpp</in>
+        <in>Tool.h</in>
+        <in>Trident.cpp</in>
+        <in>Trident.h</in>
+        <in>TwoHandedSword.cpp</in>
+        <in>TwoHandedSword.h</in>
+        <in>UnicornHorn.cpp</in>
+        <in>UnicornHorn.h</in>
+        <in>Weapon.cpp</in>
+        <in>Weapon.h</in>
+        <in>Whip.cpp</in>
+        <in>Whip.h</in>
+      </df>
+      <df name="Events">
+        <in>ChangedInventoryItems.h</in>
+        <in>EatItem.h</in>
+        <in>ElberethQuery.h</in>
+        <in>Event.cpp</in>
+        <in>Event.h</in>
+        <in>ItemsOnGround.h</in>
+        <in>ReceivedItems.h</in>
+        <in>StashChanged.h</in>
+        <in>TakeMeThere.h</in>
+        <in>WantItems.h</in>
+      </df>
+      <in>Command.cpp</in>
+      <in>Command.h</in>
+      <in>Connection.cpp</in>
+      <in>Connection.h</in>
+      <in>Coordinate.cpp</in>
+      <in>Coordinate.h</in>
+      <in>Debug.cpp</in>
+      <in>Debug.h</in>
+      <in>EventBus.cpp</in>
+      <in>EventBus.h</in>
+      <in>Globals.h</in>
+      <in>Inventory.cpp</in>
+      <in>Inventory.h</in>
+      <in>Item.cpp</in>
+      <in>Item.h</in>
+      <in>Level.cpp</in>
+      <in>Level.h</in>
+      <in>Local.cpp</in>
+      <in>Local.h</in>
+      <in>Monster.cpp</in>
+      <in>Monster.h</in>
+      <in>PathNode.cpp</in>
+      <in>PathNode.h</in>
+      <in>Point.cpp</in>
+      <in>Point.h</in>
+      <in>Saiph.cpp</in>
+      <in>Saiph.h</in>
+      <in>Stash.h</in>
+      <in>Telnet.cpp</in>
+      <in>Telnet.h</in>
+      <in>World.cpp</in>
+      <in>World.h</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false">
+      <itemPath>/home/canidae/projects/saiph/Makefile</itemPath>
+      <itemPath>Makefile-saiph.mk</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceRootList>
+    <Elem>/home/canidae/projects/saiph</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile-saiph.mk</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <compilerSet>GNU|GNU</compilerSet>
+        <platform>2</platform>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>/home/canidae/projects/saiph</buildCommandWorkingDir>
+          <buildCommand>$(MAKE) -f Makefile -j9</buildCommand>
+          <cleanCommand>$(MAKE) -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>.</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>__REGISTER_PREFIX__=</Elem>
+              <Elem>__USER_LABEL_PREFIX__=</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="/home/canidae/projects/saiph/Analyzers/Amulet.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Analyzer.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Armor.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Armor.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Beatitude.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Beatitude.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Blind.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Blind.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Dig.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Dig.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Donate.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Donate.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Door.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Elbereth.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Enhance.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Enhance.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Excalibur.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Excalibur.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Explore.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Fight.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Food.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Genocide.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Genocide.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Health.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Lamp.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Lamp.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Loot.cpp"
+            ex="false"
+            tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/MonsterInfo.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/MonsterInfo.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Passtune.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Passtune.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Potion.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Potion.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Ring.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Ring.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Rub.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Rub.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Scroll.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Scroll.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Shop.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Shop.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Sokoban.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Sokoban.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Throne.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Throne.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Unihorn.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Unihorn.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Valkyrie.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Valkyrie.h"
+            ex="true"
+            tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Vault.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Vault.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Wand.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Wand.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Weapon.cpp"
+            ex="true"
+            tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Weapon.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Wish.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Analyzers/Wish.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Data/Level.cpp" ex="true" tool="1">
+      </item>
+      <item path="/home/canidae/projects/saiph/Data/Level.h" ex="true" tool="3">
+      </item>
+      <item path="/home/canidae/projects/saiph/Debug.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/EventBus.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+            <pElem>Analyzers</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Inventory.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+            <pElem>Events</pElem>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Level.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Local.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Monster.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/Telnet.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="/home/canidae/projects/saiph/World.cpp" ex="false" tool="1">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+            <pElem>Events</pElem>
+            <pElem>Actions</pElem>
+            <pElem>Analyzers</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <folder path="saiph/Actions">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+            <pElem>Actions</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="saiph/Analyzers">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+            <pElem>Analyzers</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="saiph/Data">
+        <ccTool>
+          <incDir>
+            <pElem>Data</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="saiph/Events">
+        <ccTool>
+          <incDir>
+            <pElem>Events</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+    </conf>
+  </confs>
+</configurationDescriptor>

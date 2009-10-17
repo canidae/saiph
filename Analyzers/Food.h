@@ -20,13 +20,14 @@
 #define PRIORITY_FOOD_LOOT 200
 
 namespace analyzer {
+
 	class Food : public Analyzer {
 	public:
 		Food();
 
 		void analyze();
 		void parseMessages(const std::string &messages);
-		void onEvent(event::Event *const event);
+		void onEvent(event::Event * const event);
 
 	private:
 		std::map<Point, unsigned char> prev_monster_loc;

@@ -6,13 +6,16 @@
 #include "Item.h"
 
 namespace data {
+
 	class Amulet : public Item {
 	public:
 		static std::map<std::string, Amulet *> amulets;
 		const bool confer_effect;
 
 		Amulet(const std::string &name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
-		~Amulet() {}
+
+		~Amulet() {
+		}
 
 		static void init();
 

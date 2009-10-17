@@ -13,7 +13,7 @@ public:
 	static int createEventID();
 	static void registerEvent(int event_id, analyzer::Analyzer *analyzer);
 	static void unregisterEvent(int event_id, analyzer::Analyzer *analyzer);
-	static void broadcast(event::Event *const event);
+	static void broadcast(event::Event * const event);
 
 private:
 	static std::vector<std::vector<analyzer::Analyzer *> > events;

@@ -67,7 +67,7 @@ void Inventory::parseMessages(const string &messages) {
 		}
 		if (changed.keys.size() > 0) {
 			/* broadcast ChangedInventoryItems */
-			EventBus::broadcast(static_cast<Event *>(&changed));
+			EventBus::broadcast(static_cast<Event *> (&changed));
 		}
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
 		/* we're not carrying anything */

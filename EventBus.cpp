@@ -37,7 +37,7 @@ void EventBus::unregisterEvent(int event_id, Analyzer *analyzer) {
 	Debug::warning() << EVENTBUS_DEBUG_NAME << "Failed to unregister " << analyzer->name << " for event " << event_id << endl;
 }
 
-void EventBus::broadcast(Event *const event) {
+void EventBus::broadcast(Event * const event) {
 	if (event->getID() < 0 || event->getID() >= (int) EventBus::events.size())
 		return;
 	vector<Analyzer *> &subscribers = events[event->getID()];

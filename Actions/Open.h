@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Open : public Action {
 	public:
 		static int id;
 
-		Open(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), open("o", priority), open_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Open() {}
+		Open(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), open("o", priority), open_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Open() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

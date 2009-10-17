@@ -2,6 +2,6 @@
 
 using namespace std;
 
-ostream &operator<<(ostream &os, const Coordinate& c) {
-	return os << "(" << c.level << ", " << c.row << ", " << c.col << ")";
+ostream & operator<<(ostream &os, const Coordinate& c) {
+	return os << "(" << c.level() << ", " << c.row() << ", " << c.col() << ")";
 }

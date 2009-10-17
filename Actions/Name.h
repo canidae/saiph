@@ -5,14 +5,20 @@
 #include "../Inventory.h"
 
 namespace action {
+
 	class Name : public Action {
 	public:
 		static int id;
 
-		Name(analyzer::Analyzer *analyzer, unsigned char item, std::string name) : Action(analyzer), do_name("#name", PRIORITY_LOOK), name_individual("y", PRIORITY_CONTINUE_ACTION), name_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), set_name(name, PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Name() {}
+		Name(analyzer::Analyzer *analyzer, unsigned char item, std::string name) : Action(analyzer), do_name("#name", PRIORITY_LOOK), name_individual("y", PRIORITY_CONTINUE_ACTION), name_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), set_name(name, PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Name() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Kick : public Action {
 	public:
 		static int id;
 
-		Kick(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), kick("", priority), kick_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Kick() {}
+		Kick(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), kick("", priority), kick_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Kick() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

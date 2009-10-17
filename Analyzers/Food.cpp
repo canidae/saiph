@@ -57,7 +57,7 @@ void Food::analyze() {
 
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level].monsters.begin(); m != World::levels[Saiph::position.level].monsters.end(); ++m) {
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters.begin(); m != World::levels[Saiph::position.level()].monsters.end(); ++m) {
 		if (m->second.visible)
 			prev_monster_loc[m->first] = m->second.symbol;
 	}
@@ -85,7 +85,7 @@ void Food::analyze() {
 			}
 			if (eat != Inventory::items.end()) {
 				/* we got something to eat, hooray! */
-				World::setAction(static_cast<action::Action *>(new action::Eat(this, eat->first, (Saiph::hunger == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
+				World::setAction(static_cast<action::Action *> (new action::Eat(this, eat->first, (Saiph::hunger == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
 				return;
 			}
 		}
@@ -94,7 +94,7 @@ void Food::analyze() {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
 			if (action::Pray::isSafeToPray())
-				World::setAction(static_cast<action::Action *>(new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD)));
+				World::setAction(static_cast<action::Action *> (new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD)));
 		}
 	}
 }
@@ -112,8 +112,8 @@ void Food::parseMessages(const string &messages) {
 			}
 		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
-		for (map<Point, int>::iterator c = corpse_loc.begin(); c != corpse_loc.end(); ) {
-			if (World::levels[Saiph::position.level].monsters.find(c->first) == World::levels[Saiph::position.level].monsters.end() && World::levels[Saiph::position.level].stashes.find(c->first) == World::levels[Saiph::position.level].stashes.end()) {
+		for (map<Point, int>::iterator c = corpse_loc.begin(); c != corpse_loc.end();) {
+			if (World::levels[Saiph::position.level()].monsters.find(c->first) == World::levels[Saiph::position.level()].monsters.end() && World::levels[Saiph::position.level()].stashes.find(c->first) == World::levels[Saiph::position.level()].stashes.end()) {
 				corpse_loc.erase(c++);
 				continue;
 			}
@@ -122,9 +122,9 @@ void Food::parseMessages(const string &messages) {
 	}
 }
 
-void Food::onEvent(Event *const event) {
+void Food::onEvent(Event * const event) {
 	if (event->getID() == ItemsOnGround::id && World::getDungeonSymbol() != SHOP_TILE) {
-		ItemsOnGround *e = static_cast<ItemsOnGround *>(event);
+		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
 		map<Point, int>::iterator cl = corpse_loc.find(Saiph::position);
 		for (list<Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (cl != corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
@@ -132,28 +132,28 @@ void Food::onEvent(Event *const event) {
 				map<string, data::Corpse *>::iterator c = data::Corpse::corpses.find(i->name);
 				/* check that item is a corpse, it's safe to eat and that the corpse rots */
 				if (c != data::Corpse::corpses.end() && safeToEat(c) && c->second->eat_effects & EAT_EFFECT_ROT) {
-					World::setAction(static_cast<action::Action *>(new action::EatCorpse(this, i->name, PRIORITY_FOOD_EAT_CORPSE)));
+					World::setAction(static_cast<action::Action *> (new action::EatCorpse(this, i->name, PRIORITY_FOOD_EAT_CORPSE)));
 					break;
 				}
 			}
 			/* check if we want to pick up edible item that won't rot */
 			map<string, data::Food *>::iterator f = data::Food::foods.find(i->name);
 			if (f != data::Food::foods.end() && !(f->second->eat_effects & EAT_EFFECT_ROT)) {
-				World::setAction(static_cast<action::Action *>(new action::Loot(this, PRIORITY_FOOD_LOOT)));
+				World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
 				break;
 			}
 		}
 	} else if (event->getID() == WantItems::id) {
-		WantItems *e = static_cast<WantItems *>(event);
+		WantItems *e = static_cast<WantItems *> (event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			map<string, data::Food *>::iterator f = data::Food::foods.find(i->second.name);
 			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
 				continue; // not food or the food rots
-			World::setAction(static_cast<action::Action *>(new action::Select(this, i->first)));
+			World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
 			break;
 		}
 	} else if (event->getID() == ChangedInventoryItems::id) {
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *>(event);
+		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
 		for (set<unsigned char>::iterator k = e->keys.begin(); k != e->keys.end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i == Inventory::items.end()) {
@@ -169,7 +169,7 @@ void Food::onEvent(Event *const event) {
 			}
 		}
 	} else if (event->getID() == ReceivedItems::id) {
-		ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		ReceivedItems *e = static_cast<ReceivedItems *> (event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			map<string, data::Food *>::iterator f = data::Food::foods.find(i->second.name);
 			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
@@ -177,8 +177,8 @@ void Food::onEvent(Event *const event) {
 			food_items.insert(i->first);
 		}
 	} else if (event->getID() == EatItem::id) {
-		EatItem *e = static_cast<EatItem *>(event);
-		World::setAction(static_cast<action::Action *>(new action::Eat(this, e->key, e->priority)));
+		EatItem *e = static_cast<EatItem *> (event);
+		World::setAction(static_cast<action::Action *> (new action::Eat(this, e->key, e->priority)));
 	}
 }
 
@@ -187,41 +187,41 @@ bool Food::safeToEat(map<string, data::Corpse *>::iterator c) {
 	/* this method returns true if it's safe to eat given corpse */
 	if (Saiph::hunger >= SATIATED && !(c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) && !(c->second->eat_effects & EAT_EFFECT_ESP))
 		return false; // satiated and eating it won't give us benefits that's worth the risk of choking
-	/* acidic ain't so bad
-	else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
-		return false;
-	*/
+		/* acidic ain't so bad
+		else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
+			return false;
+		 */
 	else if ((c->second->eat_effects & EAT_EFFECT_AGGRAVATE) != 0)
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_DIE) != 0)
 		return false;
-	/* eat dwarves for now
-	else if ((c->second->eat_effects & EAT_EFFECT_DWARF) != 0)
-		return false;
-	*/
-	/* eat elves for now
-	else if ((c->second->eat_effects & EAT_EFFECT_ELF) != 0)
-		return false;
-	*/
-	/* eat gnomes for now
-	else if ((c->second->eat_effects & EAT_EFFECT_GNOME) != 0)
-		return false;
-	*/
+		/* eat dwarves for now
+		else if ((c->second->eat_effects & EAT_EFFECT_DWARF) != 0)
+			return false;
+		 */
+		/* eat elves for now
+		else if ((c->second->eat_effects & EAT_EFFECT_ELF) != 0)
+			return false;
+		 */
+		/* eat gnomes for now
+		else if ((c->second->eat_effects & EAT_EFFECT_GNOME) != 0)
+			return false;
+		 */
 	else if ((c->second->eat_effects & EAT_EFFECT_HALLUCINOGENIC) != 0)
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_HUMAN) != 0)
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_LYCANTHROPY) != 0)
 		return false;
-	/* mimic for some turns isn't that bad, is it?
-	else if ((c->second->eat_effects & EAT_EFFECT_MIMIC) != 0)
-		return false;
-	*/
+		/* mimic for some turns isn't that bad, is it?
+		else if ((c->second->eat_effects & EAT_EFFECT_MIMIC) != 0)
+			return false;
+		 */
 	else if ((c->second->eat_effects & EAT_EFFECT_PETRIFY) != 0)
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 &&
-			!(Saiph::intrinsics & PROPERTY_POISON ||
-			  Saiph::extrinsics & PROPERTY_POISON))
+		!(Saiph::intrinsics & PROPERTY_POISON ||
+		Saiph::extrinsics & PROPERTY_POISON))
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POLYMORPH) != 0)
 		return false;
@@ -229,47 +229,47 @@ bool Food::safeToEat(map<string, data::Corpse *>::iterator c) {
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_STUN) != 0)
 		return false;
-	/* teleportitis might be fun for a bot
-	else if ((c->second->eat_effects & EAT_EFFECT_TELEPORTITIS) != 0)
-		return false;
-	*/
-	/* we're not vegan
-	else if ((c->second->eat_effects & EAT_EFFECT_VEGAN) != 0)
-		return false;
-	*/
-	/* nor vegetarian
-	else if ((c->second->eat_effects & EAT_EFFECT_VEGETARIAN) != 0)
-		return false;
-	*/
-	/* let's eat stuff that makes us strong
-	else if ((c->second->eat_effects & EAT_EFFECT_STRENGTH) != 0)
-		return false;
-	*/
-	/* and stuff that gives us a level
-	else if ((c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) != 0)
-		return false;
-	*/
-	/* and stuff that heals us
-	else if ((c->second->eat_effects & EAT_EFFECT_HEAL) != 0)
-		return false;
-	*/
+		/* teleportitis might be fun for a bot
+		else if ((c->second->eat_effects & EAT_EFFECT_TELEPORTITIS) != 0)
+			return false;
+		 */
+		/* we're not vegan
+		else if ((c->second->eat_effects & EAT_EFFECT_VEGAN) != 0)
+			return false;
+		 */
+		/* nor vegetarian
+		else if ((c->second->eat_effects & EAT_EFFECT_VEGETARIAN) != 0)
+			return false;
+		 */
+		/* let's eat stuff that makes us strong
+		else if ((c->second->eat_effects & EAT_EFFECT_STRENGTH) != 0)
+			return false;
+		 */
+		/* and stuff that gives us a level
+		else if ((c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) != 0)
+			return false;
+		 */
+		/* and stuff that heals us
+		else if ((c->second->eat_effects & EAT_EFFECT_HEAL) != 0)
+			return false;
+		 */
 	else if ((c->second->eat_effects & EAT_EFFECT_SPEED_TOGGLE) != 0)
 		return false;
 	/* since we took out lizards from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_CURE_STONING) != 0)
 		return false;
-	*/
+	 */
 	/* since we took out lichens from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_REDUCE_STUNNING) != 0)
 		return false;
-	*/
+	 */
 	/* since we took out lichens from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_REDUCE_CONFUSION) != 0)
 		return false;
-	*/
+	 */
 	/* sure, let's go invisible if we can
 	else if ((c->second->eat_effects & EAT_EFFECT_INVISIBILITY) != 0)
 		return false;
-	*/
+	 */
 	return true;
 }

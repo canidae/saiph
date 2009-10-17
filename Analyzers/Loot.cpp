@@ -26,15 +26,15 @@ Loot::Loot() : Analyzer("Loot"), showing_pickup(false), showing_drop(false) {
 void Loot::analyze() {
 	/* check inventory if it's not updated */
 	if (!Inventory::updated) {
-		World::setAction(static_cast<action::Action *>(new action::ListInventory(this)));
+		World::setAction(static_cast<action::Action *> (new action::ListInventory(this)));
 		return;
 	}
 
 	/* visit new/changed stashes */
 	set<Coordinate>::iterator v = visit.begin();
 	while (v != visit.end()) {
-		map<Point, Stash>::iterator s = World::levels[Saiph::position.level].stashes.find(*v);
-		if (s == World::levels[Saiph::position.level].stashes.end() || s->second.last_look == World::turn) {
+		map<Point, Stash>::iterator s = World::levels[Saiph::position.level()].stashes.find(*v);
+		if (s == World::levels[Saiph::position.level()].stashes.end() || s->second.last_look == World::turn) {
 			/* stash is gone or we recently looked at it */
 			visit.erase(v++);
 			continue;
@@ -42,13 +42,13 @@ void Loot::analyze() {
 		const PathNode &node = World::shortestPath(*v);
 		if (node.dir == NOWHERE) {
 			/* standing on stash, look and remove from visit */
-			if (World::setAction(static_cast<action::Action *>(new action::Look(this)))) {
+			if (World::setAction(static_cast<action::Action *> (new action::Look(this)))) {
 				visit.erase(v++);
 				continue;
 			}
 		} else if (node.cost < UNPASSABLE) {
 			/* move to stash */
-			World::setAction(static_cast<action::Action *>(new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, node.moves))));
+			World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, node.moves))));
 		}
 		++v;
 	}
@@ -87,7 +87,7 @@ void Loot::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&wi));
+		EventBus::broadcast(static_cast<Event *> (&wi));
 		/* pick up stuff that was wanted by analyzers */
 		vector<string> pickup;
 		ostringstream tmp;
@@ -98,7 +98,7 @@ void Loot::parseMessages(const string &messages) {
 			tmp << w->second << w->first;
 			pickup.push_back(tmp.str());
 		}
-		World::setAction(static_cast<action::Action *>(new action::SelectMultiple(this, pickup)));
+		World::setAction(static_cast<action::Action *> (new action::SelectMultiple(this, pickup)));
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS)) != string::npos || showing_drop) {
 		/* dropping items */
 		if (showing_drop) {
@@ -106,7 +106,8 @@ void Loot::parseMessages(const string &messages) {
 			pos = 0;
 		} else {
 			/* first page, set menu */
-			showing_drop = true;;
+			showing_drop = true;
+			;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
@@ -134,7 +135,7 @@ void Loot::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *>(&wi));
+		EventBus::broadcast(static_cast<Event *> (&wi));
 		/* drop stuff no analyzer wanted */
 		vector<string> drop;
 		ostringstream tmp;
@@ -157,19 +158,19 @@ void Loot::parseMessages(const string &messages) {
 			tmp << (i->second.count - w->second) << w->first;
 			drop.push_back(tmp.str());
 		}
-		World::setAction(static_cast<action::Action *>(new action::SelectMultiple(this, drop)));
+		World::setAction(static_cast<action::Action *> (new action::SelectMultiple(this, drop)));
 	}
 
 	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_SEVERAL_MORE_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_MORE_OBJECTS_HERE) != string::npos) {
 		/* several/many objects herek, take a look around */
-		World::setAction(static_cast<action::Action *>(new action::Look(this)));
+		World::setAction(static_cast<action::Action *> (new action::Look(this)));
 	}
 }
 
-void Loot::onEvent(Event *const event) {
+void Loot::onEvent(Event * const event) {
 	if (event->getID() == StashChanged::id) {
 		/* stash changed, we need to visit it again */
-		StashChanged *e = static_cast<StashChanged *>(event);
+		StashChanged *e = static_cast<StashChanged *> (event);
 		visit.insert(e->stash);
 	}
 }

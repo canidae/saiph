@@ -5,14 +5,20 @@
 #include "../Inventory.h"
 
 namespace action {
+
 	class Apply : public Action {
 	public:
 		static int id;
 
-		Apply(analyzer::Analyzer *analyzer, unsigned char key, int priority, bool update_inventory = true) : Action(analyzer), do_apply("a", priority), apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), update_inventory(update_inventory) {}
-		virtual ~Apply() {}
+		Apply(analyzer::Analyzer *analyzer, unsigned char key, int priority, bool update_inventory = true) : Action(analyzer), do_apply("a", priority), apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), update_inventory(update_inventory) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Apply() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

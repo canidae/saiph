@@ -7,13 +7,16 @@
 #include "Monster.h"
 
 namespace data {
+
 	class Corpse : public Food {
 	public:
 		static std::map<std::string, Corpse *> corpses;
 		const int resistance_confer_probability;
 
 		Corpse(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability);
-		~Corpse() {}
+
+		~Corpse() {
+		}
 
 		static void init();
 

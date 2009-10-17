@@ -26,11 +26,16 @@ public:
 	std::string command;
 	int priority;
 
-	Command(const std::string &command = "", int priority = ILLEGAL_PRIORITY) : command(command), priority(priority) {}
-	Command(const Command &c) : command(c.command), priority(c.priority) {}
+	Command(const std::string &command = "", int priority = ILLEGAL_PRIORITY) : command(command), priority(priority) {
+	}
 
-	bool operator==(const Command &c) const {return priority == c.priority && command == command;}
+	Command(const Command &c) : command(c.command), priority(c.priority) {
+	}
+
+	bool operator==(const Command &c) const {
+		return priority == c.priority && command == command;
+	}
 };
 
-std::ostream &operator<<(std::ostream &os, const Command &c);
+std::ostream & operator<<(std::ostream &os, const Command &c);
 #endif

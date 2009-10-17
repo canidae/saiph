@@ -6,16 +6,25 @@
 #include "../Coordinate.h"
 
 namespace event {
+
 	class StashChanged : public Event {
 	public:
 		static int id;
 		Coordinate stash;
 
-		StashChanged() : stash() {}
-		virtual ~StashChanged() {}
+		StashChanged() : stash() {
+		}
 
-		virtual int getID() {return id;}
-		virtual std::string getName() {return "StashChanged";}
+		virtual ~StashChanged() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
+
+		virtual std::string getName() {
+			return "StashChanged";
+		}
 	};
 }
 #endif

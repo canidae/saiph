@@ -6,12 +6,15 @@
 #include "Armor.h"
 
 namespace data {
+
 	class Cloak : public Armor {
 	public:
 		static std::map<std::string, Cloak *> cloaks;
 
 		Cloak(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
-		virtual ~Cloak() {}
+
+		virtual ~Cloak() {
+		}
 
 		static void init();
 

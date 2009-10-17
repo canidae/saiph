@@ -19,6 +19,7 @@ void Helmet::create(const string &name, int cost, int weight, int material, int 
 }
 
 void Helmet::init() {
+	/* helms */
 	create("helm of brilliance", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_MAGIC | PROPERTY_BRILLIANCE);
 	create("helm of opposite alignment", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_MAGIC);
 	create("dunce cap", 1, 4, MATERIAL_CLOTH, 0, 0, PROPERTY_MAGIC | PROPERTY_STUPIDITY);
@@ -32,6 +33,7 @@ void Helmet::init() {
 	create("fedora", 1, 3, MATERIAL_CLOTH, 0, 0, 0);
 	create("orcish helm", 10, 30, MATERIAL_IRON, 1, 0, 0);
 
+	/* aliases */
 	addToMap("iron skull cap", helmets["orcish helm"]);
 	addToMap("conical hat", helmets["cornuthaum"]);
 	addToMap("leather hat", helmets["elven leather helm"]);

@@ -26,23 +26,26 @@
 #include <string>
 
 class Item {
-	public:
-		std::string name;
-		int count;
-		int beatitude;
-		bool greased;
-		bool fixed;
-		int damage;
-		bool unknown_enchantment;
-		int enchantment;
-		std::string additional;
+public:
+	std::string name;
+	int count;
+	int beatitude;
+	bool greased;
+	bool fixed;
+	int damage;
+	bool unknown_enchantment;
+	int enchantment;
+	std::string additional;
 
-		Item(const std::string &text);
-		Item();
+	Item(const std::string &text);
+	Item();
 
-		bool operator==(const Item &i);
-		bool operator!=(const Item &i) {return !(*this == i);}
+	bool operator==(const Item &i);
+
+	bool operator!=(const Item &i) {
+		return !(*this == i);
+	}
 };
 
-std::ostream& operator<<(std::ostream& out, const Item& item);
+std::ostream & operator<<(std::ostream& out, const Item& item);
 #endif

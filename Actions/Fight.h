@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Fight : public Action {
 	public:
 		static int id;
 
-		Fight(analyzer::Analyzer *analyzer, unsigned char direction, int priority, bool attack_friendly = true) : Action(analyzer), fight(std::string(1, 'F').append(std::string(1, direction)), priority), attack_friendly(std::string(1, attack_friendly ? YES : NO), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Fight() {}
+		Fight(analyzer::Analyzer *analyzer, unsigned char direction, int priority, bool attack_friendly = true) : Action(analyzer), fight(std::string(1, 'F').append(std::string(1, direction)), priority), attack_friendly(std::string(1, attack_friendly ? YES : NO), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Fight() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

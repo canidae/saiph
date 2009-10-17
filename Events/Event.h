@@ -6,9 +6,12 @@
 #define ILLEGAL_EVENT_ID -1
 
 namespace event {
+
 	class Event {
 	public:
-		virtual ~Event() {};
+
+		virtual ~Event() {
+		};
 
 		static void init();
 		static void destroy();

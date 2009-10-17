@@ -5,14 +5,20 @@
 #include "../Inventory.h"
 
 namespace action {
+
 	class Throw : public Action {
 	public:
 		static int id;
 
-		Throw(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), do_throw("t", priority), throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {}
-		virtual ~Throw() {}
+		Throw(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), do_throw("t", priority), throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Throw() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

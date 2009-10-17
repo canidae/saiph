@@ -4,14 +4,20 @@
 #include "Action.h"
 
 namespace action {
+
 	class Look : public Action {
 	public:
 		static int id;
 
-		Look(analyzer::Analyzer *analyzer) : Action(analyzer), look(":", PRIORITY_LOOK) {}
-		virtual ~Look() {}
+		Look(analyzer::Analyzer *analyzer) : Action(analyzer), look(":", PRIORITY_LOOK) {
+		}
 
-		virtual int getID() {return id;}
+		virtual ~Look() {
+		}
+
+		virtual int getID() {
+			return id;
+		}
 		virtual const Command &getCommand();
 		virtual void updateAction(const std::string &messages);
 

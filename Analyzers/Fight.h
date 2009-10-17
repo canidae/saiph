@@ -20,12 +20,13 @@ namespace event {
 class Item;
 
 namespace analyzer {
+
 	class Fight : public Analyzer {
 	public:
 		Fight();
 
 		void analyze();
-		void onEvent(event::Event *const event);
+		void onEvent(event::Event * const event);
 
 	private:
 		std::set<std::string> projectiles; // weapons we can throw

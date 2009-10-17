@@ -12,7 +12,9 @@ namespace data {
 		static std::map<std::string, TwoHandedSword *> two_handed_swords;
 
 		TwoHandedSword(const std::string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2);
-		virtual ~TwoHandedSword() {}
+
+		virtual ~TwoHandedSword() {
+		}
 
 		static void init();
 

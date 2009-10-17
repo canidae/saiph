@@ -1,5 +1,7 @@
 *.log
+*.err
 *.o
 .*
 gmon.out
 saiph
+nbproject/private
