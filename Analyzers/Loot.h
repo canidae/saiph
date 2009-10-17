@@ -24,10 +24,10 @@ namespace analyzer {
 		void onEvent(event::Event * const event);
 
 	private:
-		bool showing_pickup;
-		bool showing_drop;
-		event::WantItems wi;
-		std::set<Coordinate> visit;
+		bool _showing_pickup;
+		bool _showing_drop;
+		event::WantItems _wi;
+		std::set<Coordinate> _visit;
 	};
 }
 #endif

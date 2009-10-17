@@ -23,13 +23,13 @@ namespace analyzer {
 		void parseMessages(const std::string &messages);
 
 	private:
-		bool resting;
-		int prev_str;
-		int prev_dex;
-		int prev_con;
-		int prev_int;
-		int prev_wis;
-		int prev_cha;
+		bool _resting;
+		int _prev_str;
+		int _prev_dex;
+		int _prev_con;
+		int _prev_int;
+		int _prev_wis;
+		int _prev_cha;
 	};
 }
 #endif

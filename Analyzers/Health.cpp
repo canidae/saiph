@@ -13,7 +13,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Health::Health() : Analyzer("Health"), resting(false), prev_str(INT_MAX), prev_dex(INT_MAX), prev_con(INT_MAX), prev_int(INT_MAX), prev_wis(INT_MAX), prev_cha(INT_MAX) {
+Health::Health() : Analyzer("Health"), _resting(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX) {
 }
 
 /* methods */
@@ -37,13 +37,13 @@ void Health::analyze() {
 		}
 		if (!doing_something) {
 			/* we're not going to quaff/pray, set resting = true to make her elbereth/rest instead */
-			resting = true;
+			_resting = true;
 		}
 	}
 	if (Saiph::confused || Saiph::hallucinating || Saiph::foodpoisoned || Saiph::ill || Saiph::stunned) {
 		/* TODO: apply unihorn */
 		//req.priority = (Saiph::foodpoisoned || Saiph::ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
-		resting = false; // this is to prevent us from trying to elbereth when we got some bad effect
+		_resting = false; // this is to prevent us from trying to elbereth when we got some bad effect
 		if (Saiph::foodpoisoned || Saiph::ill) {
 			/* TODO: should not enter this block if we can use unihorn */
 			/* TODO: eat eucalyptus leaf (if foodpoisoned or ill and no unihorn) */
@@ -51,10 +51,10 @@ void Health::analyze() {
 			World::setAction(static_cast<action::Action *> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
 		}
 	}
-	if (resting) {
+	if (_resting) {
 		/* still resting */
 		if (Saiph::hitpoints > Saiph::hitpoints_max * 6 / 7) {
-			resting = false; // enough hp (greater than about 86%) to continue our journey
+			_resting = false; // enough hp (greater than about 86%) to continue our journey
 		} else if (!Saiph::blind && !Saiph::confused && !Saiph::stunned && !Saiph::hallucinating) {
 			ElberethQuery eq;
 			EventBus::broadcast(static_cast<Event *> (&eq));
@@ -83,16 +83,16 @@ void Health::analyze() {
 		if (action::Pray::isSafeToPray())
 			World::setAction(static_cast<action::Action *> (new action::Pray(this, PRIORITY_HEALTH_CURE_POLYMORPH)));
 	}
-	if (prev_str < Saiph::strength || prev_dex < Saiph::dexterity || prev_con < Saiph::constitution || prev_int < Saiph::intelligence || prev_wis < Saiph::wisdom || prev_cha < Saiph::charisma) {
+	if (_prev_str < Saiph::strength || _prev_dex < Saiph::dexterity || _prev_con < Saiph::constitution || _prev_int < Saiph::intelligence || _prev_wis < Saiph::wisdom || _prev_cha < Saiph::charisma) {
 		/* TODO: we lost some stats. apply unihorn */
 	}
 	/* set previous stat values */
-	prev_str = Saiph::strength;
-	prev_dex = Saiph::dexterity;
-	prev_con = Saiph::constitution;
-	prev_int = Saiph::intelligence;
-	prev_wis = Saiph::wisdom;
-	prev_cha = Saiph::charisma;
+	_prev_str = Saiph::strength;
+	_prev_dex = Saiph::dexterity;
+	_prev_con = Saiph::constitution;
+	_prev_int = Saiph::intelligence;
+	_prev_wis = Saiph::wisdom;
+	_prev_cha = Saiph::charisma;
 }
 
 void Health::parseMessages(const string &messages) {

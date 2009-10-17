@@ -102,11 +102,11 @@ void Explore::analyze() {
 	}
 
 	/* travel */
-	map<Coordinate, int>::iterator v = visit.begin();
-	while (v != visit.end()) {
+	map<Coordinate, int>::iterator v = _visit.begin();
+	while (v != _visit.end()) {
 		const PathNode &node = World::shortestPath(v->first);
 		if (node.dir == NOWHERE) {
-			visit.erase(v++);
+			_visit.erase(v++);
 			continue;
 		} else if (node.cost < UNPASSABLE) {
 			World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, action::Move::calculatePriority(v->second, node.moves))));
@@ -118,9 +118,9 @@ void Explore::analyze() {
 void Explore::onEvent(Event * const event) {
 	if (event->getID() == TakeMeThere::id) {
 		TakeMeThere *e = static_cast<TakeMeThere *> (event);
-		map<Coordinate, int>::iterator v = visit.find(e->coordinate);
-		if (v == visit.end() || v->second < e->max_priority)
-			visit[e->coordinate] = e->max_priority;
+		map<Coordinate, int>::iterator v = _visit.find(e->coordinate);
+		if (v == _visit.end() || v->second < e->max_priority)
+			_visit[e->coordinate] = e->max_priority;
 	}
 }
 

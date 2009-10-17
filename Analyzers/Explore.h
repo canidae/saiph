@@ -27,7 +27,7 @@ namespace analyzer {
 		void onEvent(event::Event * const event);
 
 	private:
-		std::map<Coordinate, int> visit;
+		std::map<Coordinate, int> _visit;
 
 		void explorePoint(Point p, unsigned int *min_moves, int *best_type);
 	};

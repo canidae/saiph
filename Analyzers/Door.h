@@ -26,9 +26,9 @@ namespace analyzer {
 		void onEvent(event::Event * const event);
 
 	private:
-		Point position;
-		unsigned char unlock_tool_key;
-		bool in_a_pit;
+		Point _position;
+		unsigned char _unlock_tool_key;
+		bool _in_a_pit;
 
 		bool wantItem(const Item &item);
 	};

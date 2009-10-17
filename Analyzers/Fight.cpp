@@ -30,13 +30,13 @@ Fight::Fight() : Analyzer("Fight") {
 	 * this'll work for valks for the time being */
 	/* daggers */
 	for (map<string, data::Dagger *>::iterator i = data::Dagger::daggers.begin(); i != data::Dagger::daggers.end(); ++i)
-		projectiles.insert(i->first);
+		_projectiles.insert(i->first);
 	/* spears */
 	for (map<string, data::Spear *>::iterator i = data::Spear::spears.begin(); i != data::Spear::spears.end(); ++i)
-		projectiles.insert(i->first);
+		_projectiles.insert(i->first);
 	/* darts */
 	for (map<string, data::Dart *>::iterator i = data::Dart::darts.begin(); i != data::Dart::darts.end(); ++i)
-		projectiles.insert(i->first);
+		_projectiles.insert(i->first);
 
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::id, this);
@@ -76,7 +76,7 @@ void Fight::analyze() {
 		}
 		int distance = max(abs(m->first.row() - Saiph::position.row()), abs(m->first.col() - Saiph::position.col()));
 		bool floating_eye = (m->second.symbol == S_EYE && m->second.color == BLUE);
-		if (m->second.visible && (distance > 1 || floating_eye) && projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
+		if (m->second.visible && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
 			unsigned char in_line = World::directLine(m->first, false, true);
@@ -84,7 +84,7 @@ void Fight::analyze() {
 				/* we can throw at monster */
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_THROW_MIN;
-				World::setAction(static_cast<action::Action *> (new action::Throw(this, *projectile_slots.begin(), in_line, priority)));
+				World::setAction(static_cast<action::Action *> (new action::Throw(this, *_projectile_slots.begin(), in_line, priority)));
 				Debug::analyzer(name()) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
@@ -113,22 +113,22 @@ void Fight::onEvent(Event * const event) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i == Inventory::items.end()) {
 				/* we lost this item, remove it from projectile_slots */
-				projectile_slots.erase(*k);
+				_projectile_slots.erase(*k);
 			} else {
 				/* this item is new or changed.
 				 * if we intend to throw it, add it to projectile_slots.
 				 * otherwise remove it from projectile_slots */
 				if (wantItem(i->second))
-					projectile_slots.insert(*k);
+					_projectile_slots.insert(*k);
 				else
-					projectile_slots.erase(*k);
+					_projectile_slots.erase(*k);
 			}
 		}
 	} else if (event->getID() == ReceivedItems::id) {
 		ReceivedItems *e = static_cast<ReceivedItems *> (event);
 		for (map<unsigned char, Item>::iterator i = e->items.begin(); i != e->items.end(); ++i) {
 			if (wantItem(i->second))
-				projectile_slots.insert(i->first);
+				_projectile_slots.insert(i->first);
 		}
 	} else if (event->getID() == WantItems::id) {
 		WantItems *e = static_cast<WantItems *> (event);
@@ -152,5 +152,5 @@ void Fight::onEvent(Event * const event) {
 /* private methods */
 bool Fight::wantItem(const Item &item) {
 	/* return whether we want this item or not */
-	return projectiles.find(item.name) != projectiles.end();
+	return _projectiles.find(item.name) != _projectiles.end();
 }

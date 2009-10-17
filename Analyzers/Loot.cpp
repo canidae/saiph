@@ -17,7 +17,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Loot::Loot() : Analyzer("Loot"), showing_pickup(false), showing_drop(false) {
+Loot::Loot() : Analyzer("Loot"), _showing_pickup(false), _showing_drop(false) {
 	/* register events */
 	EventBus::registerEvent(StashChanged::id, this);
 }
@@ -31,19 +31,19 @@ void Loot::analyze() {
 	}
 
 	/* visit new/changed stashes */
-	set<Coordinate>::iterator v = visit.begin();
-	while (v != visit.end()) {
+	set<Coordinate>::iterator v = _visit.begin();
+	while (v != _visit.end()) {
 		map<Point, Stash>::iterator s = World::levels[Saiph::position.level()].stashes.find(*v);
 		if (s == World::levels[Saiph::position.level()].stashes.end() || s->second.last_look == World::turn) {
 			/* stash is gone or we recently looked at it */
-			visit.erase(v++);
+			_visit.erase(v++);
 			continue;
 		}
 		const PathNode &node = World::shortestPath(*v);
 		if (node.dir == NOWHERE) {
 			/* standing on stash, look and remove from visit */
 			if (World::setAction(static_cast<action::Action *> (new action::Look(this)))) {
-				visit.erase(v++);
+				_visit.erase(v++);
 				continue;
 			}
 		} else if (node.cost < UNPASSABLE) {
@@ -58,22 +58,22 @@ void Loot::parseMessages(const string &messages) {
 	string::size_type pos;
 
 	if (!World::menu) {
-		showing_pickup = false;
-		showing_drop = false;
-	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT)) != string::npos || showing_pickup) {
+		_showing_pickup = false;
+		_showing_drop = false;
+	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT)) != string::npos || _showing_pickup) {
 		/* picking up stuff */
-		if (showing_pickup) {
+		if (_showing_pickup) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page */
-			showing_pickup = true;
+			_showing_pickup = true;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
 		/* reset WantItems lists */
-		wi.items.clear();
-		wi.want.clear();
+		_wi.items.clear();
+		_wi.want.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
@@ -81,17 +81,17 @@ void Loot::parseMessages(const string &messages) {
 				break;
 			length = length - pos;
 			if (messages[pos - 2] == '-') {
-				wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
-				wi.want[messages[pos - 4]] = 0;
+				_wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+				_wi.want[messages[pos - 4]] = 0;
 			}
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *> (&wi));
+		EventBus::broadcast(static_cast<Event *> (&_wi));
 		/* pick up stuff that was wanted by analyzers */
 		vector<string> pickup;
 		ostringstream tmp;
-		for (map<unsigned char, int>::iterator w = wi.want.begin(); w != wi.want.end(); ++w) {
+		for (map<unsigned char, int>::iterator w = _wi.want.begin(); w != _wi.want.end(); ++w) {
 			if (w->second <= 0)
 				continue;
 			tmp.str("");
@@ -99,21 +99,21 @@ void Loot::parseMessages(const string &messages) {
 			pickup.push_back(tmp.str());
 		}
 		World::setAction(static_cast<action::Action *> (new action::SelectMultiple(this, pickup)));
-	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS)) != string::npos || showing_drop) {
+	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS)) != string::npos || _showing_drop) {
 		/* dropping items */
-		if (showing_drop) {
+		if (_showing_drop) {
 			/* not the first page, set pos to 0 */
 			pos = 0;
 		} else {
 			/* first page, set menu */
-			showing_drop = true;
+			_showing_drop = true;
 			;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}
 		/* reset WantItems lists */
-		wi.items.clear();
-		wi.want.clear();
+		_wi.items.clear();
+		_wi.want.clear();
 		while (pos != string::npos && messages.size() > pos + 6) {
 			pos += 6;
 			string::size_type length = messages.find("  ", pos);
@@ -123,30 +123,30 @@ void Loot::parseMessages(const string &messages) {
 			if (messages[pos - 2] == '-') {
 				map<unsigned char, Item>::iterator i = Inventory::items.find(messages[pos - 4]);
 				if (i != Inventory::items.end()) {
-					wi.items[messages[pos - 4]] = i->second;
+					_wi.items[messages[pos - 4]] = i->second;
 					/* let's also pretend we don't have any examples of the item in our inventory */
 					i->second.count = 0;
 				} else {
 					/* this isn't supposed to happen (inventory not updated?) */
-					wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
+					_wi.items[messages[pos - 4]] = Item(messages.substr(pos, length));
 				}
-				wi.want[messages[pos - 4]] = 0;
+				_wi.want[messages[pos - 4]] = 0;
 			}
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *> (&wi));
+		EventBus::broadcast(static_cast<Event *> (&_wi));
 		/* drop stuff no analyzer wanted */
 		vector<string> drop;
 		ostringstream tmp;
-		for (map<unsigned char, int>::iterator w = wi.want.begin(); w != wi.want.end(); ++w) {
+		for (map<unsigned char, int>::iterator w = _wi.want.begin(); w != _wi.want.end(); ++w) {
 			if (w->second <= 0) {
 				/* drop for beatitude or we don't want the item */
 				drop.push_back(std::string(1, w->first));
 				continue;
 			}
-			map<unsigned char, Item>::iterator i = wi.items.find(w->first);
-			if (i == wi.items.end()) {
+			map<unsigned char, Item>::iterator i = _wi.items.find(w->first);
+			if (i == _wi.items.end()) {
 				/* what? no, this shouldn't happen */
 				continue;
 			} else if (i->second.count <= w->second) {
@@ -171,6 +171,6 @@ void Loot::onEvent(Event * const event) {
 	if (event->getID() == StashChanged::id) {
 		/* stash changed, we need to visit it again */
 		StashChanged *e = static_cast<StashChanged *> (event);
-		visit.insert(e->stash);
+		_visit.insert(e->stash);
 	}
 }

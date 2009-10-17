@@ -29,8 +29,8 @@ namespace analyzer {
 		void onEvent(event::Event * const event);
 
 	private:
-		std::set<std::string> projectiles; // weapons we can throw
-		std::set<unsigned char> projectile_slots; // slots where we got weapons we should throw
+		std::set<std::string> _projectiles; // weapons we can throw
+		std::set<unsigned char> _projectile_slots; // slots where we got weapons we should throw
 
 		bool wantItem(const Item &item);
 	};

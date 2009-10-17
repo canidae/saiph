@@ -11,7 +11,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Elbereth::Elbereth() : Analyzer("Elbereth"), elbereth_count(0), engraving_type(ELBERETH_MUST_CHECK) {
+Elbereth::Elbereth() : Analyzer("Elbereth"), _elbereth_count(0), _engraving_type(ELBERETH_MUST_CHECK) {
 	/* register events */
 	EventBus::registerEvent(ElberethQuery::id, this);
 }
@@ -21,11 +21,11 @@ void Elbereth::onEvent(Event * const evt) {
 		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
 		if (World::getLastActionID() != action::Look::id) {
 			/* data is outdated */
-			engraving_type = ELBERETH_MUST_CHECK;
-			elbereth_count = 0;
+			_engraving_type = ELBERETH_MUST_CHECK;
+			_elbereth_count = 0;
 		}
-		q->engraving_type = engraving_type;
-		q->number_of_elbereths = elbereth_count;
+		q->engraving_type = _engraving_type;
+		q->number_of_elbereths = _elbereth_count;
 	}
 }
 
@@ -34,29 +34,29 @@ void Elbereth::parseMessages(const string &messages) {
 	string::size_type pos = messages.find(MESSAGE_YOU_READ);
 	if (pos == string::npos) {
 		/* no elbereths here :( */
-		elbereth_count = 0;
-		engraving_type = ELBERETH_NONE;
+		_elbereth_count = 0;
+		_engraving_type = ELBERETH_NONE;
 		return;
 	}
 	/* is it written in dust, burned or digged? */
 	if (messages.find(MESSAGE_DUSTED_TEXT) != string::npos) {
 		/* it's dusted. */
-		engraving_type = ELBERETH_DUSTED;
+		_engraving_type = ELBERETH_DUSTED;
 	} else if (messages.find(MESSAGE_BURNED_TEXT) != string::npos) {
 		/* it's burned */
-		engraving_type = ELBERETH_PERMANENT;
+		_engraving_type = ELBERETH_PERMANENT;
 	} else if (messages.find(MESSAGE_DIGGED_TEXT) != string::npos) {
 		/* it's digged */
-		engraving_type = ELBERETH_SEMIPERM;
+		_engraving_type = ELBERETH_SEMIPERM;
 	} else if (messages.find(MESSAGE_FROSTED_TEXT) != string::npos) {
 		/* it's frosted */
-		engraving_type = ELBERETH_DUSTED;
+		_engraving_type = ELBERETH_DUSTED;
 	} else {
 		/* it's unexpected */
-		engraving_type = ELBERETH_NOT_HANDLED;
+		_engraving_type = ELBERETH_NOT_HANDLED;
 		return;
 	}
-	elbereth_count = 1; // we found one already with the first find() call
+	_elbereth_count = 1; // we found one already with the first find() call
 	while ((pos = messages.find(ELBERETH, pos + 1)) != string::npos)
-		++elbereth_count; // found another elbereth
+		++_elbereth_count; // found another elbereth
 }

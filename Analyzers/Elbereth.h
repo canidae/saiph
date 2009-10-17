@@ -14,8 +14,8 @@ namespace analyzer {
 		void onEvent(event::Event * const evt);
 
 	private:
-		int elbereth_count;
-		int engraving_type;
+		int _elbereth_count;
+		int _engraving_type;
 	};
 }
 #endif
