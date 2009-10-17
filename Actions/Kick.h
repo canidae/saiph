@@ -7,43 +7,41 @@ namespace action {
 
 	class Kick : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Kick(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), kick("", priority), kick_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Kick(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), _kick("", priority), _kick_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Kick() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _kick;
+
+			case 1:
+				return _kick_direction;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
+				_sequence = 1;
+			else if (_sequence == 1)
+				_sequence = 2;
+		}
 
 	private:
-		const Command kick;
-		const Command kick_direction;
+		const Command _kick;
+		const Command _kick_direction;
 	};
-
-	inline const Command &action::Kick::command() {
-		switch (sequence) {
-		case 0:
-			return kick;
-
-		case 1:
-			return kick_direction;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Kick::update(const std::string &messages) {
-		if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
-			sequence = 1;
-		else if (sequence == 1)
-			sequence = 2;
-	}
 }
 #endif

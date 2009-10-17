@@ -8,58 +8,56 @@ namespace action {
 
 	class Call : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Call(analyzer::Analyzer *analyzer, unsigned char item, std::string call) : Action(analyzer), do_call("#call", PRIORITY_LOOK), call_individual("n", PRIORITY_CONTINUE_ACTION), call_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), set_call(call, PRIORITY_CONTINUE_ACTION) {
+		Call(analyzer::Analyzer *analyzer, unsigned char item, const std::string &call) : Action(analyzer), _do_call("#call", PRIORITY_LOOK), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), _set_call(call, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Call() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _do_call;
+
+			case 1:
+				return _call_individual;
+
+			case 2:
+				return _call_item;
+
+			case 3:
+				return _set_call;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
+				_sequence = 1;
+			} else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos) {
+				_sequence = 2;
+			} else if (messages.find(MESSAGE_WHAT_TO_CALL_ITEM) != std::string::npos) {
+				_sequence = 3;
+			} else {
+				/* we need to mark inventory as not updated */
+				Inventory::updated = false;
+				_sequence = 4;
+			}
+		}
 
 	private:
-		const Command do_call;
-		const Command call_individual;
-		const Command call_item;
-		const Command set_call;
+		const Command _do_call;
+		const Command _call_individual;
+		const Command _call_item;
+		const Command _set_call;
 	};
-
-	inline const Command &Call::command() {
-		switch (sequence) {
-		case 0:
-			return do_call;
-
-		case 1:
-			return call_individual;
-
-		case 2:
-			return call_item;
-
-		case 3:
-			return set_call;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void Call::update(const std::string &messages) {
-		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
-			sequence = 1;
-		} else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos) {
-			sequence = 2;
-		} else if (messages.find(MESSAGE_WHAT_TO_CALL_ITEM) != std::string::npos) {
-			sequence = 3;
-		} else {
-			/* we need to mark inventory as not updated */
-			Inventory::updated = false;
-			sequence = 4;
-		}
-	}
 }
 #endif

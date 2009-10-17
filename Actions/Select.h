@@ -7,36 +7,34 @@ namespace action {
 
 	class Select : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Select(analyzer::Analyzer *analyzer, unsigned char key) : Action(analyzer), select(std::string(1, key), PRIORITY_SELECT_ITEM) {
+		Select(analyzer::Analyzer *analyzer, unsigned char key) : Action(analyzer), _select(std::string(1, key), PRIORITY_SELECT_ITEM) {
 		}
 
 		virtual ~Select() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _select;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			++_sequence;
+		}
 
 	private:
-		const Command select;
+		const Command _select;
 	};
-
-	inline const Command &action::Select::command() {
-		switch (sequence) {
-		case 0:
-			return select;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Select::update(const std::string &) {
-		++sequence;
-	}
 }
 #endif

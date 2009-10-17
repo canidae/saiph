@@ -7,43 +7,41 @@ namespace action {
 
 	class Open : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Open(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), open("o", priority), open_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Open(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), _open("o", priority), _open_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Open() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _open;
+
+			case 1:
+				return _open_direction;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
+				_sequence = 1;
+			else if (_sequence == 1)
+				_sequence = 2;
+		}
 
 	private:
-		const Command open;
-		const Command open_direction;
+		const Command _open;
+		const Command _open_direction;
 	};
-
-	inline const Command &action::Open::command() {
-		switch (sequence) {
-		case 0:
-			return open;
-
-		case 1:
-			return open_direction;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Open::update(const std::string &messages) {
-		if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
-			sequence = 1;
-		else if (sequence == 1)
-			sequence = 2;
-	}
 }
 #endif

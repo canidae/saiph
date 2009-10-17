@@ -527,7 +527,7 @@ void World::run() {
 		/* execute the command */
 		if (action->command().priority() <= PRIORITY_TURN_MAX)
 			++World::real_turn; // command that may increase turn counter
-		last_action_id = action->getID();
+		last_action_id = action->id();
 		executeCommand(action->command().command());
 
 		/* check if we're stuck */
@@ -1422,7 +1422,6 @@ int main(int argc, const char *argv[]) {
 
 	/* init */
 	Debug::init(logfile);
-	action::Action::init();
 	data::Monster::init();
 	data::Item::init();
 	event::Event::init();
@@ -1439,6 +1438,5 @@ int main(int argc, const char *argv[]) {
 	event::Event::destroy();
 	data::Monster::destroy();
 	data::Item::destroy();
-	action::Action::destroy();
 	Debug::destroy();
 }

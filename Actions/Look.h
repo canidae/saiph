@@ -7,37 +7,35 @@ namespace action {
 
 	class Look : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Look(analyzer::Analyzer *analyzer) : Action(analyzer), look(":", PRIORITY_LOOK) {
+		Look(analyzer::Analyzer *analyzer) : Action(analyzer), _look(":", PRIORITY_LOOK) {
 		}
 
 		virtual ~Look() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _look;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			if (_sequence == 0)
+				_sequence = 1;
+		}
 
 	private:
-		const Command look;
+		const Command _look;
 	};
-
-	inline const Command &action::Look::command() {
-		switch (sequence) {
-		case 0:
-			return look;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Look::update(const std::string &) {
-		if (sequence == 0)
-			sequence = 1;
-	}
 }
 #endif

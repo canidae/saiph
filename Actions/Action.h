@@ -16,15 +16,13 @@ namespace action {
 	public:
 		static const Command NOOP;
 
-		Action(analyzer::Analyzer * const analyzer) : sequence(0), _analyzer(analyzer) {
+		Action(analyzer::Analyzer *analyzer) : _sequence(0), _analyzer(analyzer) {
 		}
 
 		virtual ~Action() {
 		}
 
-		static void init();
-		static void destroy();
-		virtual int getID() = 0;
+		virtual int id() = 0;
 
 		virtual analyzer::Analyzer *analyzer() {
 			return _analyzer;
@@ -33,7 +31,7 @@ namespace action {
 		virtual void update(const std::string &messages) = 0;
 
 	protected:
-		int sequence;
+		int _sequence;
 
 	private:
 		analyzer::Analyzer *_analyzer;

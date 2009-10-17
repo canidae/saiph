@@ -7,56 +7,54 @@ namespace action {
 
 	class Unlock : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Unlock(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), do_apply("a", priority), apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), do_unlock("y", PRIORITY_CONTINUE_ACTION) {
+		Unlock(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_apply("a", priority), _apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), _do_unlock("y", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Unlock() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _do_apply;
+
+			case 1:
+				return _apply_item;
+
+			case 2:
+				return _apply_direction;
+
+			case 3:
+				return _do_unlock;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
+				_sequence = 1;
+			} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+				_sequence = 2;
+			} else if (messages.find(MESSAGE_UNLOCK_IT) != std::string::npos) {
+				_sequence = 3;
+			} else if (_sequence == 3) {
+				_sequence = 4;
+			}
+		}
 
 	private:
-		const Command do_apply;
-		const Command apply_item;
-		const Command apply_direction;
-		const Command do_unlock;
+		const Command _do_apply;
+		const Command _apply_item;
+		const Command _apply_direction;
+		const Command _do_unlock;
 	};
-
-	inline const Command &action::Unlock::command() {
-		switch (sequence) {
-		case 0:
-			return do_apply;
-
-		case 1:
-			return apply_item;
-
-		case 2:
-			return apply_direction;
-
-		case 3:
-			return do_unlock;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Unlock::update(const std::string &messages) {
-		if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
-			sequence = 1;
-		} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
-			sequence = 2;
-		} else if (messages.find(MESSAGE_UNLOCK_IT) != std::string::npos) {
-			sequence = 3;
-		} else if (sequence == 3) {
-			sequence = 4;
-		}
-	}
 }
 #endif

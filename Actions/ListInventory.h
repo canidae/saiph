@@ -8,43 +8,41 @@ namespace action {
 
 	class ListInventory : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), list_inventory("i", PRIORITY_LOOK), close_page(" ", PRIORITY_CONTINUE_ACTION) {
+		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), _list_inventory("i", PRIORITY_LOOK), _close_page(" ", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListInventory() {
 		};
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _list_inventory;
+
+			case 1:
+				return _close_page;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			if (World::menu)
+				_sequence = 1;
+			else
+				_sequence = 2;
+		}
 
 	private:
-		const Command list_inventory;
-		const Command close_page;
+		const Command _list_inventory;
+		const Command _close_page;
 	};
-
-	inline const Command &action::ListInventory::command() {
-		switch (sequence) {
-		case 0:
-			return list_inventory;
-
-		case 1:
-			return close_page;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::ListInventory::update(const std::string &) {
-		if (World::menu)
-			sequence = 1;
-		else
-			sequence = 2;
-	}
 }
 #endif

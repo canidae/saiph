@@ -9,9 +9,9 @@ namespace action {
 
 	class Move : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Move(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), move(std::string(1, direction), priority) {
+		Move(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), _move(std::string(1, direction), priority) {
 		}
 
 		virtual ~Move() {
@@ -21,28 +21,26 @@ namespace action {
 			return max_priority * MOVE_COST_MEDIAN / (moves + MOVE_COST_MEDIAN - 1);
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _move;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			++_sequence;
+		}
 
 	private:
-		const Command move;
+		const Command _move;
 	};
-
-	inline const Command &action::Move::command() {
-		switch (sequence) {
-		case 0:
-			return move;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Move::update(const std::string &) {
-		++sequence;
-	}
 }
 #endif

@@ -8,52 +8,50 @@ namespace action {
 
 	class Throw : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Throw(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), do_throw("t", priority), throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Throw(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_throw("t", priority), _throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Throw() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _do_throw;
+
+			case 1:
+				return _throw_item;
+
+			case 2:
+				return _throw_direction;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
+				_sequence = 1;
+			} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+				_sequence = 2;
+			} else if (_sequence == 2) {
+				/* mark inventory dirty */
+				Inventory::updated = false;
+				_sequence = 3;
+			}
+		}
 
 	private:
-		const Command do_throw;
-		const Command throw_item;
-		const Command throw_direction;
+		const Command _do_throw;
+		const Command _throw_item;
+		const Command _throw_direction;
 	};
-
-	inline const Command &action::Throw::command() {
-		switch (sequence) {
-		case 0:
-			return do_throw;
-
-		case 1:
-			return throw_item;
-
-		case 2:
-			return throw_direction;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Throw::update(const std::string &messages) {
-		if (messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
-			sequence = 1;
-		} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
-			sequence = 2;
-		} else if (sequence == 2) {
-			/* mark inventory dirty */
-			Inventory::updated = false;
-			sequence = 3;
-		}
-	}
 }
 #endif

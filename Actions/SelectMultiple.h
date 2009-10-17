@@ -8,37 +8,35 @@ namespace action {
 
 	class SelectMultiple : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		SelectMultiple(analyzer::Analyzer *analyzer, std::vector<std::string> keys) : Action(analyzer), keys(keys) {
+		SelectMultiple(analyzer::Analyzer *analyzer, const std::vector<std::string> &keys) : Action(analyzer), _keys(keys) {
 		}
 
 		virtual ~SelectMultiple() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			if (_sequence < (int) _keys.size())
+				_tmp = Command(_keys[_sequence], PRIORITY_SELECT_ITEM);
+			else if (_sequence == (int) _keys.size())
+				_tmp = Command(std::string(1, CLOSE_PAGE), PRIORITY_CLOSE_SELECT_PAGE);
+			else
+				_tmp = Action::NOOP;
+			return _tmp;
+		}
+
+		virtual void update(const std::string &) {
+			++_sequence;
+		}
 
 	private:
-		const std::vector<std::string> keys;
-		Command tmp;
+		const std::vector<std::string> _keys;
+		Command _tmp;
 	};
-
-	inline const Command &action::SelectMultiple::command() {
-		if (sequence < (int) keys.size())
-			tmp = Command(keys[sequence], PRIORITY_SELECT_ITEM);
-		else if (sequence == (int) keys.size())
-			tmp = Command(std::string(1, CLOSE_PAGE), PRIORITY_CLOSE_SELECT_PAGE);
-		else
-			tmp = Action::NOOP;
-		return tmp;
-	}
-
-	inline void action::SelectMultiple::update(const std::string &) {
-		++sequence;
-	}
 }
 #endif

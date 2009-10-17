@@ -8,58 +8,56 @@ namespace action {
 
 	class Name : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Name(analyzer::Analyzer *analyzer, unsigned char item, std::string name) : Action(analyzer), do_name("#name", PRIORITY_LOOK), name_individual("y", PRIORITY_CONTINUE_ACTION), name_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), set_name(name, PRIORITY_CONTINUE_ACTION) {
+		Name(analyzer::Analyzer *analyzer, unsigned char item, const std::string &name) : Action(analyzer), _do_name("#name", PRIORITY_LOOK), _name_individual("y", PRIORITY_CONTINUE_ACTION), _name_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), _set_name(name, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Name() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _do_name;
+
+			case 1:
+				return _name_individual;
+
+			case 2:
+				return _name_item;
+
+			case 3:
+				return _set_name;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
+				_sequence = 1;
+			} else if (messages.find(MESSAGE_ITEM_TO_NAME) != std::string::npos) {
+				_sequence = 2;
+			} else if (messages.find(MESSAGE_WHAT_TO_NAME_ITEM) != std::string::npos) {
+				_sequence = 3;
+			} else {
+				/* we need to mark inventory as not updated */
+				Inventory::updated = false;
+				_sequence = 4;
+			}
+		}
 
 	private:
-		const Command do_name;
-		const Command name_individual;
-		const Command name_item;
-		const Command set_name;
+		const Command _do_name;
+		const Command _name_individual;
+		const Command _name_item;
+		const Command _set_name;
 	};
-
-	inline const Command &Name::command() {
-		switch (sequence) {
-		case 0:
-			return do_name;
-
-		case 1:
-			return name_individual;
-
-		case 2:
-			return name_item;
-
-		case 3:
-			return set_name;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void Name::update(const std::string &messages) {
-		if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
-			sequence = 1;
-		} else if (messages.find(MESSAGE_ITEM_TO_NAME) != std::string::npos) {
-			sequence = 2;
-		} else if (messages.find(MESSAGE_WHAT_TO_NAME_ITEM) != std::string::npos) {
-			sequence = 3;
-		} else {
-			/* we need to mark inventory as not updated */
-			Inventory::updated = false;
-			sequence = 4;
-		}
-	}
 }
 #endif

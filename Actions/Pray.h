@@ -11,9 +11,9 @@ namespace action {
 
 	class Pray : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), pray("#pray\n", priority) {
+		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _pray("#pray\n", priority) {
 		}
 
 		virtual ~Pray() {
@@ -23,27 +23,25 @@ namespace action {
 			return World::turn - PRAY_PRAYER_TIMEOUT > Saiph::last_pray_turn;
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			if (_sequence == 0)
+				return _pray;
+			return Action::NOOP;
+		}
+
+		virtual void update(const std::string &messages) {
+			if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
+				Saiph::last_pray_turn = World::turn;
+				_sequence = 1;
+			}
+		}
 
 	private:
-		const Command pray;
+		const Command _pray;
 	};
-
-	inline const Command &action::Pray::command() {
-		if (sequence == 0)
-			return pray;
-		return Action::NOOP;
-	}
-
-	inline void action::Pray::update(const std::string &messages) {
-		if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
-			Saiph::last_pray_turn = World::turn;
-			sequence = 1;
-		}
-	}
 }
 #endif

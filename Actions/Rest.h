@@ -7,36 +7,34 @@ namespace action {
 
 	class Rest : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Rest(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), rest("16s", priority) {
+		Rest(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _rest("16s", priority) {
 		}
 
 		virtual ~Rest() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _rest;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			++_sequence;
+		}
 
 	private:
-		const Command rest;
+		const Command _rest;
 	};
-
-	inline const Command &action::Rest::command() {
-		switch (sequence) {
-		case 0:
-			return rest;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Rest::update(const std::string &) {
-		++sequence;
-	}
 }
 #endif

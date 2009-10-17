@@ -7,37 +7,35 @@ namespace action {
 
 	class Answer : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Answer(analyzer::Analyzer *analyzer, std::string answer) : Action(analyzer), answer(answer, PRIORITY_CONTINUE_ACTION) {
+		Answer(analyzer::Analyzer *analyzer, const std::string &answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Answer() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _answer;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			if (_sequence == 0)
+				_sequence = 1;
+		}
 
 	private:
-		const Command answer;
+		const Command _answer;
 	};
-
-	inline const Command &Answer::command() {
-		switch (sequence) {
-		case 0:
-			return answer;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void Answer::update(const std::string &) {
-		if (sequence == 0)
-			sequence = 1;
-	}
 }
 #endif

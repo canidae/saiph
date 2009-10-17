@@ -7,37 +7,35 @@ namespace action {
 
 	class Loot : public Action {
 	public:
-		static int id;
+		static const int ID;
 
-		Loot(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), loot(",", priority) {
+		Loot(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _loot(",", priority) {
 		}
 
 		virtual ~Loot() {
 		}
 
-		virtual int getID() {
-			return id;
+		virtual int id() {
+			return ID;
 		}
-		virtual const Command &command();
-		virtual void update(const std::string &messages);
+
+		virtual const Command &command() {
+			switch (_sequence) {
+			case 0:
+				return _loot;
+
+			default:
+				return Action::NOOP;
+			}
+		}
+
+		virtual void update(const std::string &) {
+			if (_sequence == 0)
+				_sequence = 1;
+		}
 
 	private:
-		const Command loot;
+		const Command _loot;
 	};
-
-	inline const Command &action::Loot::command() {
-		switch (sequence) {
-		case 0:
-			return loot;
-
-		default:
-			return Action::NOOP;
-		}
-	}
-
-	inline void action::Loot::update(const std::string &) {
-		if (sequence == 0)
-			sequence = 1;
-	}
 }
 #endif

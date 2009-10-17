@@ -28,60 +28,27 @@ using namespace action;
 
 /* define static variables */
 const Command Action::NOOP;
-int Apply::id = NO_ACTION;
-int Answer::id = NO_ACTION;
-int ApplyInDirection::id = NO_ACTION;
-int Call::id = NO_ACTION;
-int Eat::id = NO_ACTION;
-int EatCorpse::id = NO_ACTION;
-int Engrave::id = NO_ACTION;
-int Fight::id = NO_ACTION;
-int Kick::id = NO_ACTION;
-int ListInventory::id = NO_ACTION;
-int Look::id = NO_ACTION;
-int Loot::id = NO_ACTION;
-int Move::id = NO_ACTION;
-int Name::id = NO_ACTION;
-int Open::id = NO_ACTION;
-int Pray::id = NO_ACTION;
-int PutOn::id = NO_ACTION;
-int Remove::id = NO_ACTION;
-int Rest::id = NO_ACTION;
-int Search::id = NO_ACTION;
-int Select::id = NO_ACTION;
-int SelectMultiple::id = NO_ACTION;
-int Throw::id = NO_ACTION;
-int Unlock::id = NO_ACTION;
-
-/* methods */
-void Action::init() {
-	int id_counter = 0;
-	/* set ID for actions */
-	Apply::id = ++id_counter;
-	Answer::id = ++id_counter;
-	ApplyInDirection::id = ++id_counter;
-	Call::id = ++id_counter;
-	Eat::id = ++id_counter;
-	EatCorpse::id = ++id_counter;
-	Engrave::id = ++id_counter;
-	Fight::id = ++id_counter;
-	Kick::id = ++id_counter;
-	ListInventory::id = ++id_counter;
-	Look::id = ++id_counter;
-	Loot::id = ++id_counter;
-	Move::id = ++id_counter;
-	Name::id = ++id_counter;
-	Open::id = ++id_counter;
-	Pray::id = ++id_counter;
-	PutOn::id = ++id_counter;
-	Remove::id = ++id_counter;
-	Rest::id = ++id_counter;
-	Search::id = ++id_counter;
-	Select::id = ++id_counter;
-	SelectMultiple::id = ++id_counter;
-	Throw::id = ++id_counter;
-	Unlock::id = ++id_counter;
-}
-
-void Action::destroy() {
-}
+const int Answer::ID = 1;
+const int Apply::ID = 2;
+const int ApplyInDirection::ID = 3;
+const int Call::ID = 4;
+const int Eat::ID = 5;
+const int EatCorpse::ID = 6;
+const int Engrave::ID = 7;
+const int Fight::ID = 8;
+const int Kick::ID = 9;
+const int ListInventory::ID = 10;
+const int Look::ID = 11;
+const int Loot::ID = 12;
+const int Move::ID = 13;
+const int Name::ID = 14;
+const int Open::ID = 15;
+const int Pray::ID = 16;
+const int PutOn::ID = 17;
+const int Remove::ID = 18;
+const int Rest::ID = 19;
+const int Search::ID = 20;
+const int Select::ID = 21;
+const int SelectMultiple::ID = 22;
+const int Throw::ID = 23;
+const int Unlock::ID = 24;
