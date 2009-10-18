@@ -56,7 +56,7 @@ void Door::analyze() {
 		const PathNode& node = World::shortestPath(d->first);
 		if (node.cost == UNREACHABLE)
 			continue; // can't reach this door
-		if (World::levels[Saiph::position.level()].branch == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items[_unlock_tool_key].name == "lock pick" || Inventory::items[_unlock_tool_key].name == "credit card"))
+		if (World::levels[Saiph::position.level()].branch == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name == "lock pick" || Inventory::items()[_unlock_tool_key].name == "credit card"))
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
@@ -127,13 +127,13 @@ void Door::parseMessages(const string& messages) {
 void Door::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
-		map<unsigned char, Item>::iterator i = Inventory::items.find(_unlock_tool_key);
-		if (Inventory::items.find(_unlock_tool_key) == Inventory::items.end())
+		map<unsigned char, Item>::iterator i = Inventory::items().find(_unlock_tool_key);
+		if (Inventory::items().find(_unlock_tool_key) == Inventory::items().end())
 			_unlock_tool_key = 0; // darn, we lost our unlocking device
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
-			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
-			if (i != Inventory::items.end() && wantItem(i->second))
+			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
+			if (i != Inventory::items().end() && wantItem(i->second))
 				_unlock_tool_key = *k; // better key than what we currently got
 		}
 	} else if (event->id() == ReceivedItems::ID) {
@@ -163,8 +163,8 @@ bool Door::wantItem(const Item& item) {
 	if (k == data::Key::keys.end())
 		return false; // not a key
 
-	map<unsigned char, Item>::iterator i = Inventory::items.find(_unlock_tool_key);
-	if (i == Inventory::items.end())
+	map<unsigned char, Item>::iterator i = Inventory::items().find(_unlock_tool_key);
+	if (i == Inventory::items().end())
 		return true; // we got no key, we want this key
 
 	/* simple check to make us keep the best unlocking tool.

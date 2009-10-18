@@ -7,7 +7,7 @@
 #define DEBUG_INVENTORY "Inventory"
 #define DEBUG_INFO "Info"
 #define DEBUG_NOTICE "Notice"
-#define DEBUG_WARNING"Warning"
+#define DEBUG_WARNING "Warning"
 #define DEBUG_ERROR "Error"
 #define DEBUG_DATA "Data"
 

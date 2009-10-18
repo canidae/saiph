@@ -44,7 +44,7 @@ namespace action {
 			} else if (_sequence == 2) {
 				/* mark inventory dirty if update_inventory is true */
 				if (_update_inventory)
-					Inventory::updated = false;
+					Inventory::updated(false);
 				_sequence = 3;
 			}
 		};

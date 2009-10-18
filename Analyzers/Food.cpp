@@ -66,11 +66,11 @@ void Food::analyze() {
 	if (Saiph::hunger <= WEAK) {
 		/* yes, we are, eat the food item in our inventory with lowest priority */
 		if (_food_items.size() > 0) {
-			map<unsigned char, Item>::iterator eat = Inventory::items.end();
+			map<unsigned char, Item>::iterator eat = Inventory::items().end();
 			for (set<unsigned char>::iterator f = _food_items.begin(); f != _food_items.end(); ++f) {
-				map<unsigned char, Item>::iterator i = Inventory::items.find(*f);
+				map<unsigned char, Item>::iterator i = Inventory::items().find(*f);
 				map<string, int>::iterator ep = _eat_priority.find(i->second.name);
-				if (i == Inventory::items.end()) {
+				if (i == Inventory::items().end()) {
 					/* this should not happen */
 					Debug::analyzer(name()) << "Food item mysteriously disappeared from inventory slot '" << *f << "'" << endl;
 					continue;
@@ -78,12 +78,12 @@ void Food::analyze() {
 					/* neither should this */
 					Debug::analyzer(name()) << "Want to eat item '" << i->second << "', but that's not in our list of edible items" << endl;
 					continue;
-				} else if (eat == Inventory::items.end() || _eat_priority.find(eat->second.name)->second > ep->second) {
+				} else if (eat == Inventory::items().end() || _eat_priority.find(eat->second.name)->second > ep->second) {
 					/* this food item got a lower eat priority than previous (if any) food item */
 					eat = i;
 				}
 			}
-			if (eat != Inventory::items.end()) {
+			if (eat != Inventory::items().end()) {
 				/* we got something to eat, hooray! */
 				World::setAction(static_cast<action::Action*> (new action::Eat(this, eat->first, (Saiph::hunger == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
 				return;
@@ -155,8 +155,8 @@ void Food::onEvent(Event* const event) {
 	} else if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
-			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
-			if (i == Inventory::items.end()) {
+			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
+			if (i == Inventory::items().end()) {
 				/* lost this item */
 				_food_items.erase(*k);
 			} else {

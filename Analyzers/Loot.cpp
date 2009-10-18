@@ -25,7 +25,7 @@ Loot::Loot() : Analyzer("Loot"), _showing_pickup(false), _showing_drop(false) {
 /* methods */
 void Loot::analyze() {
 	/* check inventory if it's not updated */
-	if (!Inventory::updated) {
+	if (!Inventory::updated()) {
 		World::setAction(static_cast<action::Action*> (new action::ListInventory(this)));
 		return;
 	}
@@ -117,8 +117,8 @@ void Loot::parseMessages(const string& messages) {
 				break;
 			length = length - pos;
 			if (messages[pos - 2] == '-') {
-				map<unsigned char, Item>::iterator i = Inventory::items.find(messages[pos - 4]);
-				if (i != Inventory::items.end()) {
+				map<unsigned char, Item>::iterator i = Inventory::items().find(messages[pos - 4]);
+				if (i != Inventory::items().end()) {
 					i->second.want = 0;
 					_wi.addItem(messages[pos - 4], i->second);
 					/* let's also pretend we don't have any examples of the item in our inventory */

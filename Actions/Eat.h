@@ -52,7 +52,7 @@ namespace action {
 				_sequence = 3;
 			} else if (_sequence != 0) {
 				/* ate item, inventory is no longer updated */
-				Inventory::updated = false;
+				Inventory::updated(false);
 				_sequence = 4;
 			}
 		}

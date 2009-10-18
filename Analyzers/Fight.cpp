@@ -110,8 +110,8 @@ void Fight::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
-			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
-			if (i == Inventory::items.end()) {
+			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
+			if (i == Inventory::items().end()) {
 				/* we lost this item, remove it from projectile_slots */
 				_projectile_slots.erase(*k);
 			} else {

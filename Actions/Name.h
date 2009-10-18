@@ -48,7 +48,7 @@ namespace action {
 				_sequence = 3;
 			} else {
 				/* we need to mark inventory as not updated */
-				Inventory::updated = false;
+				Inventory::updated(false);
 				_sequence = 4;
 			}
 		}

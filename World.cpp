@@ -843,7 +843,7 @@ void World::dumpMaps() {
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
 
 	int ir = 0;
-	for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end() && ir < 46; ++i) {
+	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end() && ir < 46; ++i) {
 		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
 		if (i->second.beatitude == BLESSED)
