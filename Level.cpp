@@ -101,35 +101,35 @@ void Level::analyze() {
 	/* update pathmap */
 	updatePathMap();
 	/* set point we're standing on "fully searched" */
-	_searchmap[Saiph::position.row()][Saiph::position.col()] = INT_MAX;
+	_searchmap[Saiph::position().row()][Saiph::position().col()] = INT_MAX;
 }
 
 void Level::parseMessages(const string& messages) {
 	/* parse messages that can help us find doors/staircases/etc. */
 	string::size_type pos;
 	if (messages.find(LEVEL_STAIRCASE_UP_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position, STAIRS_UP);
+		setDungeonSymbol(Saiph::position(), STAIRS_UP);
 	} else if (messages.find(LEVEL_STAIRCASE_DOWN_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position, STAIRS_DOWN);
+		setDungeonSymbol(Saiph::position(), STAIRS_DOWN);
 	} else if (messages.find(LEVEL_OPEN_DOOR_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position, OPEN_DOOR);
+		setDungeonSymbol(Saiph::position(), OPEN_DOOR);
 	} else if (messages.find(LEVEL_GRAVE_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position, GRAVE);
+		setDungeonSymbol(Saiph::position(), GRAVE);
 	} else if (messages.find(LEVEL_FOUNTAIN_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position, FOUNTAIN);
+		setDungeonSymbol(Saiph::position(), FOUNTAIN);
 	} else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2) != string::npos) {
-		setDungeonSymbol(Saiph::position, FLOOR);
+		setDungeonSymbol(Saiph::position(), FLOOR);
 	} else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position, UNKNOWN_TILE);
+		setDungeonSymbol(Saiph::position(), UNKNOWN_TILE);
 	} else if ((pos = messages.find(LEVEL_ALTAR_HERE)) != string::npos) {
-		setDungeonSymbol(Saiph::position, ALTAR);
+		setDungeonSymbol(Saiph::position(), ALTAR);
 		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
-			_symbols[(unsigned char) ALTAR][Saiph::position] = NEUTRAL;
+			_symbols[(unsigned char) ALTAR][Saiph::position()] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
-			_symbols[(unsigned char) ALTAR][Saiph::position] = CHAOTIC;
+			_symbols[(unsigned char) ALTAR][Saiph::position()] = CHAOTIC;
 		else
-			_symbols[(unsigned char) ALTAR][Saiph::position] = LAWFUL;
+			_symbols[(unsigned char) ALTAR][Saiph::position()] = LAWFUL;
 	} else if (messages.find(LEVEL_WALL_UNDIGGABLE) != string::npos) {
 		_walls_diggable = false;
 	} else if (messages.find(LEVEL_FLOOR_OR_GROUND_UNDIGGABLE) != string::npos) {
@@ -139,11 +139,11 @@ void Level::parseMessages(const string& messages) {
 	/* figure out if there's something on the ground */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
 		/* we see a single item on ground */
-		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position());
 		if (s != _stashes.end())
 			s->second.items().clear(); // clear stash items
 		else
-			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn);
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
@@ -155,11 +155,11 @@ void Level::parseMessages(const string& messages) {
 		}
 	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
 		/* we feel a single item on the ground */
-		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position());
 		if (s != _stashes.end())
 			s->second.items().clear(); // clear stash items
 		else
-			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn);
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
@@ -171,11 +171,11 @@ void Level::parseMessages(const string& messages) {
 		}
 	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
 		/* we see/feel multiple items on the ground */
-		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position());
 		if (s != _stashes.end())
 			s->second.items().clear(); // clear stash items
 		else
-			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
@@ -191,7 +191,7 @@ void Level::parseMessages(const string& messages) {
 		}
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
-		_stashes.erase(Saiph::position);
+		_stashes.erase(Saiph::position());
 	}
 	if (!World::menu) {
 		/* check if we received items */
@@ -210,7 +210,7 @@ void Level::parseMessages(const string& messages) {
 			/* add item to changed.keys */
 			_received.addItem(messages[pos - 1], item);
 		}
-		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position());
 		if (_received.items().size() > 0) {
 			/* broadcast "ReceivedItems" */
 			EventBus::broadcast(static_cast<Event*> (&_received));
@@ -219,7 +219,7 @@ void Level::parseMessages(const string& messages) {
 				s->second.items().clear();
 			/* broadcast StashChanged */
 			StashChanged sc;
-			sc.stash(Coordinate(Saiph::position.level(), Saiph::position));
+			sc.stash(Coordinate(Saiph::position().level(), Saiph::position()));
 			EventBus::broadcast(static_cast<Event*> (&sc));
 		}
 
@@ -494,7 +494,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
 	/* update items */
-	if (!Saiph::hallucinating && _item[symbol]) {
+	if (!Saiph::hallucinating() && _item[symbol]) {
 		map<Point, Stash>::iterator s = _stashes.find(point);
 		if (s != _stashes.end()) {
 			if ((s->second.symbol() != symbol || s->second.color() != color)) {
@@ -503,7 +503,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 				s->second.color(color);
 				/* broadcast StashChanged */
 				StashChanged sc;
-				sc.stash(Coordinate(Saiph::position.level(), point));
+				sc.stash(Coordinate(Saiph::position().level(), point));
 				EventBus::broadcast(static_cast<Event*> (&sc));
 			}
 		} else {
@@ -511,7 +511,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			_stashes[point] = Stash(symbol, color);
 			/* broadcast StashChanged */
 			StashChanged sc;
-			sc.stash(Coordinate(Saiph::position.level(), point));
+			sc.stash(Coordinate(Saiph::position().level(), point));
 			EventBus::broadcast(static_cast<Event*> (&sc));
 		}
 	} else if (symbol == _dungeonmap[point.row()][point.col()]) {
@@ -520,7 +520,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 	}
 
 	/* update monsters */
-	if (_monster[symbol] && point != Saiph::position) {
+	if (_monster[symbol] && point != Saiph::position()) {
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
@@ -587,12 +587,12 @@ void Level::updateMonsters() {
 		else
 			symbol = World::view[m->first.row()][m->first.col()];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible((m->first != Saiph::position && symbol == m->second.symbol() && color == m->second.color()));
+		m->second.visible((m->first != Saiph::position() && symbol == m->second.symbol() && color == m->second.color()));
 		if (m->second.visible()) {
 			/* monster still visible, don't remove it */
 			++m;
 			continue;
-		} else if (abs(Saiph::position.row() - m->first.row()) > 1 || abs(Saiph::position.col() - m->first.col()) > 1) {
+		} else if (abs(Saiph::position().row() - m->first.row()) > 1 || abs(Saiph::position().col() - m->first.col()) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
@@ -615,7 +615,7 @@ void Level::updatePathMap() {
 	int curnode = 0;
 	int nodes = 0;
 	unsigned int cost = 0;
-	Point from = Saiph::position;
+	Point from = Saiph::position();
 	_pathmap[from.row()][from.col()].dir(NOWHERE);
 	_pathmap[from.row()][from.col()].moves(0);
 	_pathmap[from.row()][from.col()].cost(0);
@@ -837,7 +837,7 @@ unsigned int Level::updatePathMapHelper(const Point& to, const Point& from) {
 		return UNREACHABLE;
 	if (s == TRAP && _branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (_monstermap[to.row()][to.col()] != ILLEGAL_MONSTER && abs(Saiph::position.row() - to.row()) <= 1 && abs(Saiph::position.col() - to.col()) <= 1)
+	if (_monstermap[to.row()][to.col()] != ILLEGAL_MONSTER && abs(Saiph::position().row() - to.row()) <= 1 && abs(Saiph::position().col() - to.col()) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = _pathmap[from.row()][from.col()].cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += _pathcost[s];

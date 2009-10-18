@@ -1,12 +1,14 @@
 #ifndef SAIPH_H
 #define SAIPH_H
-/* debug */
-#define SAIPH_DEBUG_NAME "Saiph] "
 
-#include <map>
 #include <string>
 #include "Coordinate.h"
-#include "Item.h"
+
+/* for parsing effects */
+#define MAX_EFFECTS 8
+#define MAX_TEXT_LENGTH 16
+/* FIXME: SAIPH_DEBUG_NAME should go away */
+#define SAIPH_DEBUG_NAME "Saiph] "
 
 namespace analyzer {
 	class Analyzer;
@@ -14,44 +16,74 @@ namespace analyzer {
 
 class Saiph {
 public:
-	/* attributes */
-	static int alignment;
-	static int charisma;
-	static int constitution;
-	static int dexterity;
-	static int intelligence;
-	static int strength;
-	static int wisdom;
-	/* status */
-	static int armor_class;
-	static int encumbrance;
-	static int experience;
-	static int hunger;
-	static int hitpoints;
-	static int hitpoints_max;
-	static int power;
-	static int power_max;
-	/* effects */
-	static bool blind;
-	static bool confused;
-	static bool foodpoisoned;
-	static bool hallucinating;
-	static bool ill;
-	static bool slimed;
-	static bool stunned;
-	static bool hurt_leg;
-	static bool polymorphed;
-	/* position */
-	static Coordinate position;
-	/* zorkmids */
-	static int zorkmids;
-	/* intrinsics/extrinsics */
-	static unsigned long long int intrinsics;
-	static unsigned long long int extrinsics;
-	/* last pray turn */
-	static int last_pray_turn;
-
 	static void analyze();
 	static void parseMessages(const std::string& messages);
+	static bool parseAttributeRow(const char* attributerow);
+	static bool parseStatusRow(const char* statusrow, char* levelname, int* turn);
+
+	static int alignment();
+	static int charisma();
+	static int constitution();
+	static int dexterity();
+	static int intelligence();
+	static int strength();
+	static int wisdom();
+	static int encumbrance();
+	static int hunger();
+	static int hitpoints();
+	static int hitpointsMax();
+	static bool blind();
+	static bool confused();
+	static bool foodpoisoned();
+	static bool hallucinating();
+	static bool ill();
+	static bool stunned();
+	static bool hurtLeg();
+	static bool polymorphed();
+	static Coordinate& position();
+	static unsigned long long int intrinsics();
+	static unsigned long long int extrinsics();
+	static int lastPrayed();
+	static int lastPrayed(int turn);
+
+private:
+	/* attributes */
+	static int _alignment;
+	static int _charisma;
+	static int _constitution;
+	static int _dexterity;
+	static int _intelligence;
+	static int _strength;
+	static int _wisdom;
+	/* status */
+	static int _armor;
+	static int _encumbrance;
+	static int _experience;
+	static int _hunger;
+	static int _hitpoints;
+	static int _hitpoints_max;
+	static int _power;
+	static int _power_max;
+	/* effects */
+	static bool _blind;
+	static bool _confused;
+	static bool _foodpoisoned;
+	static bool _hallucinating;
+	static bool _ill;
+	static bool _slimed;
+	static bool _stunned;
+	static bool _hurt_leg;
+	static bool _polymorphed;
+	/* position */
+	static Coordinate _position;
+	/* zorkmids */
+	static int _zorkmids;
+	/* intrinsics/extrinsics */
+	static unsigned long long int _intrinsics;
+	static unsigned long long int _extrinsics;
+	/* last turn she prayed */
+	static int _last_prayed;
+	/* for parsing effects */
+	static char _effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 };
 #endif

@@ -52,18 +52,18 @@ Food::Food() : Analyzer("Food") {
 
 /* methods */
 void Food::analyze() {
-	if (Saiph::encumbrance >= OVERTAXED)
+	if (Saiph::encumbrance() >= OVERTAXED)
 		return; // we can't eat while carrying too much
 
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	_prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters().begin(); m != World::levels[Saiph::position.level()].monsters().end(); ++m) {
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position().level()].monsters().begin(); m != World::levels[Saiph::position().level()].monsters().end(); ++m) {
 		if (m->second.visible())
 			_prev_monster_loc[m->first] = m->second.symbol();
 	}
 
 	/* are we hungry? */
-	if (Saiph::hunger <= WEAK) {
+	if (Saiph::hunger() <= WEAK) {
 		/* yes, we are, eat the food item in our inventory with lowest priority */
 		if (_food_items.size() > 0) {
 			map<unsigned char, Item>::iterator eat = Inventory::items().end();
@@ -85,12 +85,12 @@ void Food::analyze() {
 			}
 			if (eat != Inventory::items().end()) {
 				/* we got something to eat, hooray! */
-				World::setAction(static_cast<action::Action*> (new action::Eat(this, eat->first, (Saiph::hunger == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
+				World::setAction(static_cast<action::Action*> (new action::Eat(this, eat->first, (Saiph::hunger() == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
 				return;
 			}
 		}
 		/* hmm, nothing to eat, how bad is it? */
-		if (Saiph::hunger <= WEAK) {
+		if (Saiph::hunger() <= WEAK) {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
 			if (action::Pray::isSafeToPray())
@@ -113,7 +113,7 @@ void Food::parseMessages(const string& messages) {
 		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
 		for (map<Point, int>::iterator c = _corpse_loc.begin(); c != _corpse_loc.end();) {
-			if (World::levels[Saiph::position.level()].monsters().find(c->first) == World::levels[Saiph::position.level()].monsters().end() && World::levels[Saiph::position.level()].stashes().find(c->first) == World::levels[Saiph::position.level()].stashes().end()) {
+			if (World::levels[Saiph::position().level()].monsters().find(c->first) == World::levels[Saiph::position().level()].monsters().end() && World::levels[Saiph::position().level()].stashes().find(c->first) == World::levels[Saiph::position().level()].stashes().end()) {
 				_corpse_loc.erase(c++);
 				continue;
 			}
@@ -125,7 +125,7 @@ void Food::parseMessages(const string& messages) {
 void Food::onEvent(Event* const event) {
 	if (event->id() == ItemsOnGround::ID && World::getDungeonSymbol() != SHOP_TILE) {
 		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-		map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position);
+		map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
 				/* it's safe to eat corpses here */
@@ -185,7 +185,7 @@ void Food::onEvent(Event* const event) {
 /* private methods */
 bool Food::safeToEat(map<string, data::Corpse*>::iterator c) {
 	/* this method returns true if it's safe to eat given corpse */
-	if (Saiph::hunger >= SATIATED && !(c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) && !(c->second->eat_effects & EAT_EFFECT_ESP))
+	if (Saiph::hunger() >= SATIATED && !(c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) && !(c->second->eat_effects & EAT_EFFECT_ESP))
 		return false; // satiated and eating it won't give us benefits that's worth the risk of choking
 		/* acidic ain't so bad
 		else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
@@ -220,8 +220,8 @@ bool Food::safeToEat(map<string, data::Corpse*>::iterator c) {
 	else if ((c->second->eat_effects & EAT_EFFECT_PETRIFY) != 0)
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 &&
-		!(Saiph::intrinsics & PROPERTY_POISON ||
-		Saiph::extrinsics & PROPERTY_POISON))
+		!(Saiph::intrinsics() & PROPERTY_POISON ||
+		Saiph::extrinsics() & PROPERTY_POISON))
 		return false;
 	else if ((c->second->eat_effects & EAT_EFFECT_POLYMORPH) != 0)
 		return false;

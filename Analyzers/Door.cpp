@@ -36,7 +36,7 @@ Door::Door() : Analyzer("Door"), _unlock_tool_key(0), _in_a_pit(false) {
 /* methods */
 void Door::analyze() {
 	/* open closed doors */
-	if (Saiph::blind)
+	if (Saiph::blind())
 		return; // don't move when blind
 	if (_in_a_pit) {
 		/* we're possibly in a pit.
@@ -44,7 +44,7 @@ void Door::analyze() {
 		 * but she might get teleported out or levitate out.
 		 * so we'll check if her position has changed, if it has
 		 * then she's probably no longer in a pit */
-		if (_position != Saiph::position)
+		if (_position != Saiph::position())
 			_in_a_pit = false; // no longer in the pit
 		else
 			return; // still in the pit
@@ -52,11 +52,11 @@ void Door::analyze() {
 
 	/* go to nearest closed door and get it open somehow */
 	unsigned int least_moves = UNREACHABLE;
-	for (map<Point, int>::iterator d = World::levels[Saiph::position.level()].symbols((unsigned char) CLOSED_DOOR).begin(); d != World::levels[Saiph::position.level()].symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
+	for (map<Point, int>::iterator d = World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR).begin(); d != World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
 		const PathNode& node = World::shortestPath(d->first);
 		if (node.cost() == UNREACHABLE)
 			continue; // can't reach this door
-		if (World::levels[Saiph::position.level()].branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
+		if (World::levels[Saiph::position().level()].branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
@@ -66,8 +66,8 @@ void Door::analyze() {
 				World::setAction(static_cast<action::Action*> (new action::Open(this, node.dir(), PRIORITY_DOOR_OPEN)));
 			} else {
 				/* we can't apply when we're overtaxed, but logically we can kick... */
-				if (_unlock_tool_key == 0 || Saiph::encumbrance >= OVERTAXED) {
-					if (Saiph::hurt_leg)
+				if (_unlock_tool_key == 0 || Saiph::encumbrance() >= OVERTAXED) {
+					if (Saiph::hurtLeg())
 						continue; // can't kick, hurt leg
 					else
 						World::setAction(static_cast<action::Action*> (new action::Kick(this, node.dir(), PRIORITY_DOOR_OPEN)));
@@ -88,17 +88,17 @@ void Door::analyze() {
 void Door::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos) {
 		/* door unlocked */
-		World::levels[Saiph::position.level()].symbols((unsigned char) CLOSED_DOOR)[_position] = UNKNOWN_SYMBOL_VALUE;
+		World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR)[_position] = UNKNOWN_SYMBOL_VALUE;
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
-		World::levels[Saiph::position.level()].symbols((unsigned char) CLOSED_DOOR)[_position] = 1;
+		World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR)[_position] = 1;
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, string(1, YES))));
 	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
 		/* we're in a pit, can't reach door from here */
 		_in_a_pit = true;
-		_position = Saiph::position;
+		_position = Saiph::position();
 	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
 		/* crawled out of pit */
 		_in_a_pit = false;
@@ -106,10 +106,10 @@ void Door::parseMessages(const string& messages) {
 		/* a shop that is closed for inventory */
 		stack<Point> door;
 
-		door.push(Point(Saiph::position.row() + 1, Saiph::position.col()));
-		door.push(Point(Saiph::position.row() - 1, Saiph::position.col()));
-		door.push(Point(Saiph::position.row(), Saiph::position.col() + 1));
-		door.push(Point(Saiph::position.row(), Saiph::position.col() - 1));
+		door.push(Point(Saiph::position().row() + 1, Saiph::position().col()));
+		door.push(Point(Saiph::position().row() - 1, Saiph::position().col()));
+		door.push(Point(Saiph::position().row(), Saiph::position().col() + 1));
+		door.push(Point(Saiph::position().row(), Saiph::position().col() - 1));
 
 		while (door.empty() == false) {
 			Point top = door.top();

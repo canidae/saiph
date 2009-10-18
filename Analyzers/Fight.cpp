@@ -54,12 +54,12 @@ void Fight::analyze() {
 	}
 	/* fight monsters */
 	int attack_score = INT_MIN;
-	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters().begin(); m != World::levels[Saiph::position.level()].monsters().end(); ++m) {
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position().level()].monsters().begin(); m != World::levels[Saiph::position().level()].monsters().end(); ++m) {
 		if (m->second.symbol() == PET)
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY)
 			continue; // don't attack friendlies
-		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment == CHAOTIC)))
+		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment() == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data() == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
@@ -74,9 +74,9 @@ void Fight::analyze() {
 			 * stuff, if they use wands, etc */
 			attack_score = m->second.data()->saiph_difficulty;
 		}
-		int distance = max(abs(m->first.row() - Saiph::position.row()), abs(m->first.col() - Saiph::position.col()));
+		int distance = max(abs(m->first.row() - Saiph::position().row()), abs(m->first.col() - Saiph::position().col()));
 		bool floating_eye = (m->second.symbol() == S_EYE && m->second.color() == BLUE);
-		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
+		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength() / 2) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
 			unsigned char in_line = World::directLine(m->first, false, true);

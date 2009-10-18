@@ -4,8 +4,6 @@
 #define WORLD_DEBUG_NAME "World] "
 /* buffer */
 #define BUFFER_SIZE 65536
-#define MAX_EFFECTS 8
-#define MAX_TEXT_LENGTH 16
 #define MAX_LEVELNAME_LENGTH 16
 /* stuff for parsing attribute & status rows */
 #define ATTRIBUTES_ROW 22
@@ -102,8 +100,6 @@ private:
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
 	static void fetchMessages();
 	static void handleEscapeSequence(int* pos, int* color);
-	static bool parseAttributeRow(const char* attributerow);
-	static bool parseStatusRow(const char* statusrow);
 	static void update();
 };
 
@@ -115,7 +111,7 @@ inline int World::getLastActionID() {
 
 inline unsigned char World::getDungeonSymbol() {
 	/* return dungeon symbol at player position */
-	return World::levels[Saiph::position.level()].getDungeonSymbol(Saiph::position);
+	return World::levels[Saiph::position().level()].getDungeonSymbol(Saiph::position());
 }
 
 inline unsigned char World::getDungeonSymbol(const Coordinate& coordinate) {
@@ -127,23 +123,23 @@ inline unsigned char World::getDungeonSymbol(const Coordinate& coordinate) {
 
 inline unsigned char World::getDungeonSymbol(const Point& point) {
 	/* return dungeon symbol at given point on current level */
-	return World::levels[Saiph::position.level()].getDungeonSymbol(point);
+	return World::levels[Saiph::position().level()].getDungeonSymbol(point);
 }
 
 inline unsigned char World::getDungeonSymbol(unsigned char direction) {
 	/* return dungeon symbol in given direction on current level */
 	switch (direction) {
 	case NW:
-		return getDungeonSymbol(Point(Saiph::position.row() - 1, Saiph::position.col() - 1));
+		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col() - 1));
 
 	case N:
-		return getDungeonSymbol(Point(Saiph::position.row() - 1, Saiph::position.col()));
+		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col()));
 
 	case NE:
-		return getDungeonSymbol(Point(Saiph::position.row() - 1, Saiph::position.col() + 1));
+		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col() + 1));
 
 	case W:
-		return getDungeonSymbol(Point(Saiph::position.row(), Saiph::position.col() - 1));
+		return getDungeonSymbol(Point(Saiph::position().row(), Saiph::position().col() - 1));
 
 	case NOWHERE:
 	case DOWN:
@@ -151,16 +147,16 @@ inline unsigned char World::getDungeonSymbol(unsigned char direction) {
 		return getDungeonSymbol();
 
 	case E:
-		return getDungeonSymbol(Point(Saiph::position.row(), Saiph::position.col() + 1));
+		return getDungeonSymbol(Point(Saiph::position().row(), Saiph::position().col() + 1));
 
 	case SW:
-		return getDungeonSymbol(Point(Saiph::position.row() + 1, Saiph::position.col() - 1));
+		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col() - 1));
 
 	case S:
-		return getDungeonSymbol(Point(Saiph::position.row() + 1, Saiph::position.col()));
+		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col()));
 
 	case SE:
-		return getDungeonSymbol(Point(Saiph::position.row() + 1, Saiph::position.col() + 1));
+		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col() + 1));
 
 	default:
 		return OUTSIDE_MAP;
@@ -176,19 +172,19 @@ inline unsigned char World::getMonsterSymbol(const Coordinate& coordinate) {
 
 inline unsigned char World::getMonsterSymbol(const Point& point) {
 	/* return monster symbol at given point on current level */
-	return World::levels[Saiph::position.level()].getMonsterSymbol(point);
+	return World::levels[Saiph::position().level()].getMonsterSymbol(point);
 }
 
 inline void World::setDirtyStash() {
 	/* set stash at player position dirty */
-	std::map<Point, Stash>::iterator s = World::levels[Saiph::position.level()].stashes().find(Saiph::position);
-	if (s != World::levels[Saiph::position.level()].stashes().end())
+	std::map<Point, Stash>::iterator s = World::levels[Saiph::position().level()].stashes().find(Saiph::position());
+	if (s != World::levels[Saiph::position().level()].stashes().end())
 		s->second.items().clear();
 }
 
 inline void World::setDungeonSymbol(unsigned char symbol) {
 	/* set dungeon symbol at player position */
-	World::levels[Saiph::position.level()].setDungeonSymbol(Saiph::position, symbol);
+	World::levels[Saiph::position().level()].setDungeonSymbol(Saiph::position(), symbol);
 }
 
 inline void World::setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol) {
@@ -200,11 +196,11 @@ inline void World::setDungeonSymbol(const Coordinate& coordinate, unsigned char 
 
 inline void World::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	/* set dungeon symbol at given point on current level */
-	World::levels[Saiph::position.level()].setDungeonSymbol(point, symbol);
+	World::levels[Saiph::position().level()].setDungeonSymbol(point, symbol);
 }
 
 inline const PathNode& World::shortestPath(const Point& point) {
 	/* returns PathNode for shortest path from player to target */
-	return World::levels[Saiph::position.level()].shortestPath(point);
+	return World::levels[Saiph::position().level()].shortestPath(point);
 }
 #endif

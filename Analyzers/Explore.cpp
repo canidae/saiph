@@ -22,12 +22,12 @@ void Explore::parseMessages(const string& messages) {
 }
 
 void Explore::analyze() {
-	if (Saiph::blind || Saiph::confused || Saiph::hallucinating || Saiph::stunned)
+	if (Saiph::blind() || Saiph::confused() || Saiph::hallucinating() || Saiph::stunned())
 		return; // don't explore when we're blind/confused/hallucinating/stunned
 
 	/* find stairs on rogue level */
-	if (World::levels[Saiph::position.level()].branch() == BRANCH_ROGUE) {
-		for (map<Point, int>::iterator s = World::levels[Saiph::position.level()].symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::levels[Saiph::position.level()].symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
+	if (World::levels[Saiph::position().level()].branch() == BRANCH_ROGUE) {
+		for (map<Point, int>::iterator s = World::levels[Saiph::position().level()].symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::levels[Saiph::position().level()].symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
 			const PathNode& node = World::shortestPath(s->first);
 			if (node.cost() >= UNPASSABLE)
 				continue;
@@ -40,8 +40,8 @@ void Explore::analyze() {
 	}
 
 	/* explore stairs up */
-	if (World::levels[Saiph::position.level()].depth() != 1) {
-		for (map<Point, int>::iterator s = World::levels[Saiph::position.level()].symbols((unsigned char) STAIRS_UP).begin(); s != World::levels[Saiph::position.level()].symbols((unsigned char) STAIRS_UP).end(); ++s) {
+	if (World::levels[Saiph::position().level()].depth() != 1) {
+		for (map<Point, int>::iterator s = World::levels[Saiph::position().level()].symbols((unsigned char) STAIRS_UP).begin(); s != World::levels[Saiph::position().level()].symbols((unsigned char) STAIRS_UP).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			const PathNode& node = World::shortestPath(s->first);
@@ -60,21 +60,21 @@ void Explore::analyze() {
 		unsigned int min_moves = UNREACHABLE;
 		int best_type = INT_MAX;
 		/* floor */
-		for (map<Point, int>::iterator w = World::levels[Saiph::position.level()].symbols((unsigned char) FLOOR).begin(); w != World::levels[Saiph::position.level()].symbols((unsigned char) FLOOR).end(); ++w)
+		for (map<Point, int>::iterator w = World::levels[Saiph::position().level()].symbols((unsigned char) FLOOR).begin(); w != World::levels[Saiph::position().level()].symbols((unsigned char) FLOOR).end(); ++w)
 			explorePoint(w->first, &min_moves, &best_type);
 		/* corridor */
-		for (map<Point, int>::iterator w = World::levels[Saiph::position.level()].symbols((unsigned char) CORRIDOR).begin(); w != World::levels[Saiph::position.level()].symbols((unsigned char) CORRIDOR).end(); ++w)
+		for (map<Point, int>::iterator w = World::levels[Saiph::position().level()].symbols((unsigned char) CORRIDOR).begin(); w != World::levels[Saiph::position().level()].symbols((unsigned char) CORRIDOR).end(); ++w)
 			explorePoint(w->first, &min_moves, &best_type);
 		/* open door */
-		for (map<Point, int>::iterator w = World::levels[Saiph::position.level()].symbols((unsigned char) OPEN_DOOR).begin(); w != World::levels[Saiph::position.level()].symbols((unsigned char) OPEN_DOOR).end(); ++w)
+		for (map<Point, int>::iterator w = World::levels[Saiph::position().level()].symbols((unsigned char) OPEN_DOOR).begin(); w != World::levels[Saiph::position().level()].symbols((unsigned char) OPEN_DOOR).end(); ++w)
 			explorePoint(w->first, &min_moves, &best_type);
 		/* unknown tile */
-		for (map<Point, int>::iterator w = World::levels[Saiph::position.level()].symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::levels[Saiph::position.level()].symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
+		for (map<Point, int>::iterator w = World::levels[Saiph::position().level()].symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::levels[Saiph::position().level()].symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
 			explorePoint(w->first, &min_moves, &best_type);
 	}
 
 	/* explore stairs down */
-	for (map<Point, int>::iterator s = World::levels[Saiph::position.level()].symbols((unsigned char) STAIRS_DOWN).begin(); s != World::levels[Saiph::position.level()].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+	for (map<Point, int>::iterator s = World::levels[Saiph::position().level()].symbols((unsigned char) STAIRS_DOWN).begin(); s != World::levels[Saiph::position().level()].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
 		if (s->second != UNKNOWN_SYMBOL_VALUE)
 			continue; // we know where these stairs lead
 		const PathNode& node = World::shortestPath(s->first);
@@ -88,7 +88,7 @@ void Explore::analyze() {
 	}
 
 	/* explore magic portals */
-	for (map<Point, int>::iterator s = World::levels[Saiph::position.level()].symbols((unsigned char) MAGIC_PORTAL).begin(); s != World::levels[Saiph::position.level()].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
+	for (map<Point, int>::iterator s = World::levels[Saiph::position().level()].symbols((unsigned char) MAGIC_PORTAL).begin(); s != World::levels[Saiph::position().level()].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
 		if (s->second != UNKNOWN_SYMBOL_VALUE)
 			continue; // we know where these stairs lead
 		const PathNode& node = World::shortestPath(s->first);
@@ -138,7 +138,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 			++solid_rock_count;
 		else
 			++wall_count;
-		int sc = World::levels[Saiph::position.level()].getSearchCount(p);
+		int sc = World::levels[Saiph::position().level()].getSearchCount(p);
 		if (sc > search_count)
 			search_count = sc;
 		hu = true;
@@ -151,7 +151,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 			++solid_rock_count;
 		else
 			++wall_count;
-		int sc = World::levels[Saiph::position.level()].getSearchCount(p);
+		int sc = World::levels[Saiph::position().level()].getSearchCount(p);
 		if (sc > search_count)
 			search_count = sc;
 		ju = true;
@@ -164,7 +164,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 			++solid_rock_count;
 		else
 			++wall_count;
-		int sc = World::levels[Saiph::position.level()].getSearchCount(p);
+		int sc = World::levels[Saiph::position().level()].getSearchCount(p);
 		if (sc > search_count)
 			search_count = sc;
 		lu = true;
@@ -177,7 +177,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 			++solid_rock_count;
 		else
 			++wall_count;
-		int sc = World::levels[Saiph::position.level()].getSearchCount(p);
+		int sc = World::levels[Saiph::position().level()].getSearchCount(p);
 		if (sc > search_count)
 			search_count = sc;
 		ku = true;
@@ -186,7 +186,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 	p.moveSouth();
 
 	/* get search count for point */
-	int point_search_count = World::levels[Saiph::position.level()].getSearchCount(p);
+	int point_search_count = World::levels[Saiph::position().level()].getSearchCount(p);
 
 	/* find out what "type" this place is.
 	 * a "type" pretty much just mean which order to explore places.
