@@ -152,5 +152,5 @@ void Fight::onEvent(Event* const event) {
 /* private methods */
 bool Fight::wantItem(const Item& item) {
 	/* return whether we want this item or not */
-	return _projectiles.find(item.name) != _projectiles.end();
+	return _projectiles.find(item.name()) != _projectiles.end();
 }

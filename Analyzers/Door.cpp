@@ -56,7 +56,7 @@ void Door::analyze() {
 		const PathNode& node = World::shortestPath(d->first);
 		if (node.cost == UNREACHABLE)
 			continue; // can't reach this door
-		if (World::levels[Saiph::position.level()].branch == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name == "lock pick" || Inventory::items()[_unlock_tool_key].name == "credit card"))
+		if (World::levels[Saiph::position.level()].branch == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
@@ -159,7 +159,7 @@ void Door::onEvent(Event* const event) {
 
 /* private methods */
 bool Door::wantItem(const Item& item) {
-	map<string, data::Key*>::iterator k = data::Key::keys.find(item.name);
+	map<string, data::Key*>::iterator k = data::Key::keys.find(item.name());
 	if (k == data::Key::keys.end())
 		return false; // not a key
 
@@ -169,19 +169,19 @@ bool Door::wantItem(const Item& item) {
 
 	/* simple check to make us keep the best unlocking tool.
 	 * this needs to be improved, though. doesn't care about beatitude */
-	if (i->second.name == "Master Key of Thievery")
+	if (i->second.name() == "Master Key of Thievery")
 		return false;
-	if (item.name == "Master Key of Thievery")
+	if (item.name() == "Master Key of Thievery")
 		return true;
-	if (i->second.name == "skeleton key" || i->second.name == "key")
+	if (i->second.name() == "skeleton key" || i->second.name() == "key")
 		return false;
-	if (item.name == "skeleton key" || item.name == "key")
+	if (item.name() == "skeleton key" || item.name() == "key")
 		return true;
-	if (i->second.name == "lock pick")
+	if (i->second.name() == "lock pick")
 		return false;
-	if (item.name == "lock pick")
+	if (item.name() == "lock pick")
 		return true;
-	if (i->second.name == "credit card")
+	if (i->second.name() == "credit card")
 		return false;
 	return true;
 }

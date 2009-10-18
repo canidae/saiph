@@ -89,10 +89,10 @@ void Loot::parseMessages(const string& messages) {
 		vector<string> pickup;
 		ostringstream tmp;
 		for (map<unsigned char, Item>::iterator i = _wi.items().begin(); i != _wi.items().end(); ++i) {
-			if (i->second.want <= 0)
+			if (i->second.want() <= 0)
 				continue;
 			tmp.str("");
-			tmp << i->second.want << i->first;
+			tmp << i->second.want() << i->first;
 			pickup.push_back(tmp.str());
 		}
 		World::setAction(static_cast<action::Action*> (new action::SelectMultiple(this, pickup)));
@@ -119,10 +119,10 @@ void Loot::parseMessages(const string& messages) {
 			if (messages[pos - 2] == '-') {
 				map<unsigned char, Item>::iterator i = Inventory::items().find(messages[pos - 4]);
 				if (i != Inventory::items().end()) {
-					i->second.want = 0;
+					i->second.want(0);
 					_wi.addItem(messages[pos - 4], i->second);
 					/* let's also pretend we don't have any examples of the item in our inventory */
-					i->second.count = 0;
+					i->second.count(0);
 				} else {
 					/* this isn't supposed to happen (inventory not updated?) */
 					_wi.addItem(messages[pos - 4], Item(messages.substr(pos, length), 0));
@@ -136,18 +136,18 @@ void Loot::parseMessages(const string& messages) {
 		vector<string> drop;
 		ostringstream tmp;
 		for (map<unsigned char, Item>::iterator i = _wi.items().begin(); i != _wi.items().end(); ++i) {
-			if (i->second.want <= 0) {
+			if (i->second.want() <= 0) {
 				/* drop for beatitude or we don't want the item */
 				drop.push_back(std::string(1, i->first));
 				continue;
 			}
-			if (i->second.count <= i->second.want) {
+			if (i->second.count() <= i->second.want()) {
 				/* we want all of these items, don't drop them */
 				continue;
 			}
 			/* drop some of these items */
 			tmp.str("");
-			tmp << (i->second.count - i->second.want) << i->first;
+			tmp << (i->second.count() - i->second.want()) << i->first;
 			drop.push_back(tmp.str());
 		}
 		World::setAction(static_cast<action::Action*> (new action::SelectMultiple(this, drop)));

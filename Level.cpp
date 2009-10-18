@@ -107,7 +107,7 @@ void Level::parseMessages(const string& messages) {
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			if (item.count > 0)
+			if (item.count() > 0)
 				s->second.items.push_back(item);
 		}
 	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
@@ -123,7 +123,7 @@ void Level::parseMessages(const string& messages) {
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			if (item.count > 0)
+			if (item.count() > 0)
 				s->second.items.push_back(item);
 		}
 	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
@@ -142,7 +142,7 @@ void Level::parseMessages(const string& messages) {
 				break;
 			length = length - pos;
 			Item item(messages.substr(pos, length));
-			if (item.count > 0)
+			if (item.count() > 0)
 				s->second.items.push_back(item);
 			pos += length;
 		}
@@ -159,7 +159,7 @@ void Level::parseMessages(const string& messages) {
 		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
 			/* add item to inventory */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
-			if (item.count <= 0) {
+			if (item.count() <= 0) {
 				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
 				continue;
 			}

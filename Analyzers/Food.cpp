@@ -69,7 +69,7 @@ void Food::analyze() {
 			map<unsigned char, Item>::iterator eat = Inventory::items().end();
 			for (set<unsigned char>::iterator f = _food_items.begin(); f != _food_items.end(); ++f) {
 				map<unsigned char, Item>::iterator i = Inventory::items().find(*f);
-				map<string, int>::iterator ep = _eat_priority.find(i->second.name);
+				map<string, int>::iterator ep = _eat_priority.find(i->second.name());
 				if (i == Inventory::items().end()) {
 					/* this should not happen */
 					Debug::analyzer(name()) << "Food item mysteriously disappeared from inventory slot '" << *f << "'" << endl;
@@ -78,7 +78,7 @@ void Food::analyze() {
 					/* neither should this */
 					Debug::analyzer(name()) << "Want to eat item '" << i->second << "', but that's not in our list of edible items" << endl;
 					continue;
-				} else if (eat == Inventory::items().end() || _eat_priority.find(eat->second.name)->second > ep->second) {
+				} else if (eat == Inventory::items().end() || _eat_priority.find(eat->second.name())->second > ep->second) {
 					/* this food item got a lower eat priority than previous (if any) food item */
 					eat = i;
 				}
@@ -129,15 +129,15 @@ void Food::onEvent(Event* const event) {
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
 				/* it's safe to eat corpses here */
-				map<string, data::Corpse*>::iterator c = data::Corpse::corpses.find(i->name);
+				map<string, data::Corpse*>::iterator c = data::Corpse::corpses.find(i->name());
 				/* check that item is a corpse, it's safe to eat and that the corpse rots */
 				if (c != data::Corpse::corpses.end() && safeToEat(c) && c->second->eat_effects & EAT_EFFECT_ROT) {
-					World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name, PRIORITY_FOOD_EAT_CORPSE)));
+					World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
 					break;
 				}
 			}
 			/* check if we want to pick up edible item that won't rot */
-			map<string, data::Food*>::iterator f = data::Food::foods.find(i->name);
+			map<string, data::Food*>::iterator f = data::Food::foods.find(i->name());
 			if (f != data::Food::foods.end() && !(f->second->eat_effects & EAT_EFFECT_ROT)) {
 				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
 				break;
@@ -146,7 +146,7 @@ void Food::onEvent(Event* const event) {
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name);
+			map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name());
 			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
 				continue; // not food or the food rots
 			World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
@@ -161,7 +161,7 @@ void Food::onEvent(Event* const event) {
 				_food_items.erase(*k);
 			} else {
 				/* received item, is it food? */
-				map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name);
+				map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name());
 				if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
 					_food_items.erase(*k); // ewww
 				else
@@ -171,7 +171,7 @@ void Food::onEvent(Event* const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name);
+			map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name());
 			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
 				continue; // not food or the food rots
 			_food_items.insert(i->first);

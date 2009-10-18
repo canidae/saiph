@@ -37,7 +37,7 @@ void Inventory::parseMessages(const string& messages) {
 		while ((pos = messages.find(" - ", pos + 1)) != string::npos && pos > 2 && messages[pos - 3] == ' ' && messages[pos - 2] == ' ' && (pos2 = messages.find("  ", pos + 3)) != string::npos) {
 			/* check that item match inventory item */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
-			if (item.count <= 0) {
+			if (item.count() <= 0) {
 				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
 				continue;
 			}
@@ -100,12 +100,13 @@ unsigned char Inventory::itemInSlot(int slot) {
 }
 
 void Inventory::addItem(unsigned char key, const Item& item) {
-	if (item.count <= 0)
+	if (item.count() <= 0)
 		return;
-	Debug::inventory() << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
-	if (_items.find(key) != _items.end()) {
+	Debug::inventory() << "Adding " << item << " to inventory slot " << key << endl;
+	map<unsigned char, Item>::iterator i = _items.find(key);
+	if (i != _items.end()) {
 		/* existing item, add amount */
-		_items[key].count += item.count;
+		i->second.count(i->second.count() + item.count());
 	} else {
 		/* new item */
 		_items[key] = item;
@@ -115,15 +116,15 @@ void Inventory::addItem(unsigned char key, const Item& item) {
 }
 
 void Inventory::removeItem(unsigned char key, const Item& item) {
-	if (item.count <= 0)
+	if (item.count() <= 0)
 		return;
 	map<unsigned char, Item>::iterator i = _items.find(key);
 	if (i == _items.end())
 		return;
-	Debug::inventory() << "Removing " << item.count << " " << item.name << " from inventory slot " << key << endl;
-	if (i->second.count > item.count) {
+	Debug::inventory() << "Removing " << item << " from inventory slot " << key << endl;
+	if (i->second.count() > item.count()) {
 		/* reduce stack */
-		i->second.count -= item.count;
+		i->second.count(i->second.count() - item.count());
 	} else {
 		/* remove stack entirely */
 		for (int a = 0; a < SLOTS; ++a) {
@@ -138,28 +139,28 @@ void Inventory::removeItem(unsigned char key, const Item& item) {
 
 /* private methods */
 void Inventory::setSlot(unsigned char key, const Item& item) {
-	if (item.additional == "being worn") {
+	if (item.additional() == "being worn") {
 		/* armor */
-		map<string, data::Armor*>::iterator a = data::Armor::armors.find(item.name);
+		map<string, data::Armor*>::iterator a = data::Armor::armors.find(item.name());
 		if (a != data::Armor::armors.end()) {
 			_slots[a->second->slot] = key;
 			return;
 		}
 		/* amulet */
-		map<string, data::Amulet*>::iterator b = data::Amulet::amulets.find(item.name);
+		map<string, data::Amulet*>::iterator b = data::Amulet::amulets.find(item.name());
 		if (b != data::Amulet::amulets.end()) {
 			_slots[SLOT_AMULET] = key;
 			return;
 		}
-	} else if (item.additional == "wielded") {
+	} else if (item.additional() == "wielded") {
 		_slots[SLOT_WEAPON] = key;
-	} else if (item.additional.find("weapon in ") == 0) {
+	} else if (item.additional().find("weapon in ") == 0) {
 		_slots[SLOT_WEAPON] = key;
-	} else if (item.additional.find("wielded in other ") == 0) {
+	} else if (item.additional().find("wielded in other ") == 0) {
 		_slots[SLOT_OFFHAND_WEAPON] = key;
-	} else if (item.additional.find("on left ") == 0) {
+	} else if (item.additional().find("on left ") == 0) {
 		_slots[SLOT_LEFT_RING] = key;
-	} else if (item.additional.find("on right ") == 0) {
+	} else if (item.additional().find("on right ") == 0) {
 		_slots[SLOT_RIGHT_RING] = key;
 	}
 }

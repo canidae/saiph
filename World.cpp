@@ -846,11 +846,11 @@ void World::dumpMaps() {
 	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end() && ir < 46; ++i) {
 		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		if (i->second.beatitude == BLESSED)
+		if (i->second.beatitude() == BLESSED)
 			cout << (unsigned char) 27 << "[32m";
-		else if (i->second.beatitude == CURSED)
+		else if (i->second.beatitude() == CURSED)
 			cout << (unsigned char) 27 << "[31m";
-		else if (i->second.beatitude == UNCURSED)
+		else if (i->second.beatitude() == UNCURSED)
 			cout << (unsigned char) 27 << "[33m";
 		cout << i->first;
 		cout << " - " << i->second;

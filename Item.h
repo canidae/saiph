@@ -1,52 +1,49 @@
 #ifndef ITEM_H
 #define ITEM_H
-/* parse text */
-#define ITEM_CALLED " called "
-#define ITEM_NAMED " named "
-#define ITEM_PARSE_TEXT "%7s %127[^\t\n]"
-#define ITEM_PARSE_BLESSED "blessed "
-#define ITEM_PARSE_UNCURSED "uncursed "
-#define ITEM_PARSE_CURSED "cursed "
-#define ITEM_PARSE_GREASED "greased "
-#define ITEM_PARSE_FIREPROOF "fireproof "
-#define ITEM_PARSE_RUSTPROOF "rustproof "
-#define ITEM_PARSE_BURNT "burnt "
-#define ITEM_PARSE_VERY_BURNT "very burnt "
-#define ITEM_PARSE_THOROUGHLY_BURNT "thoroughly burnt "
-#define ITEM_PARSE_CORRODED "corroded "
-#define ITEM_PARSE_VERY_CORRODED "very corroded "
-#define ITEM_PARSE_THOROUGHLY_CORRODED "thoroughly corroded "
-#define ITEM_PARSE_ROTTED "rotted "
-#define ITEM_PARSE_VERY_ROTTED "very rotted "
-#define ITEM_PARSE_THOROUGHLY_ROTTED "thoroughly rotted "
-#define ITEM_PARSE_RUSTY "rusty "
-#define ITEM_PARSE_VERY_RUSTY "very rusty "
-#define ITEM_PARSE_THOROUGHLY_RUSTY "thoroughly rusty "
 
 #include <string>
 
 class Item {
 public:
-	std::string name;
-	int count;
-	int beatitude;
-	bool greased;
-	bool fixed;
-	int damage;
-	bool unknown_enchantment;
-	int enchantment;
-	std::string additional;
-	int want; // this is used by analyzers and event::WantItem to determine how many we want of this item when looting/dropping
-
 	Item(const std::string& text, int want = 0);
 	Item();
 
-	bool operator==(const Item& i);
+	const std::string& name() const;
+	const std::string& name(const std::string &name);
+	int count() const;
+	int count(int count);
+	int beatitude() const;
+	int beatitude(int beatitude);
+	bool greased() const;
+	bool greased(bool greased);
+	bool fixed() const;
+	bool fixed(bool fixed);
+	int damage() const;
+	int damage(int damage);
+	bool unknownEnchantment() const;
+	bool unknownEnchantment(bool unknown_enchantment);
+	int enchantment() const;
+	int enchantment(int enchantment);
+	const std::string& additional() const;
+	const std::string& additional(const std::string& additional);
+	int want() const;
+	int want(int want);
 
-	bool operator!=(const Item& i) {
-		return !(*this == i);
-	}
+	bool operator==(const Item& i);
+	bool operator!=(const Item& i);
+
+private:
+	std::string _name;
+	int _count;
+	int _beatitude;
+	bool _greased;
+	bool _fixed;
+	int _damage;
+	bool _unknown_enchantment;
+	int _enchantment;
+	std::string _additional;
+	int _want; // this is used by analyzers and event::WantItem to determine how many we want of this item when looting/dropping
 };
 
-std::ostream& operator<<(std::ostream& out, const Item& item);
+std::ostream & operator<<(std::ostream& out, const Item& item);
 #endif

@@ -3,10 +3,33 @@
 #include "Globals.h"
 #include "Item.h"
 
+/* parse text */
+#define ITEM_CALLED " called "
+#define ITEM_NAMED " named "
+#define ITEM_PARSE_TEXT "%7s %127[^\t\n]"
+#define ITEM_PARSE_BLESSED "blessed "
+#define ITEM_PARSE_UNCURSED "uncursed "
+#define ITEM_PARSE_CURSED "cursed "
+#define ITEM_PARSE_GREASED "greased "
+#define ITEM_PARSE_FIREPROOF "fireproof "
+#define ITEM_PARSE_RUSTPROOF "rustproof "
+#define ITEM_PARSE_BURNT "burnt "
+#define ITEM_PARSE_VERY_BURNT "very burnt "
+#define ITEM_PARSE_THOROUGHLY_BURNT "thoroughly burnt "
+#define ITEM_PARSE_CORRODED "corroded "
+#define ITEM_PARSE_VERY_CORRODED "very corroded "
+#define ITEM_PARSE_THOROUGHLY_CORRODED "thoroughly corroded "
+#define ITEM_PARSE_ROTTED "rotted "
+#define ITEM_PARSE_VERY_ROTTED "very rotted "
+#define ITEM_PARSE_THOROUGHLY_ROTTED "thoroughly rotted "
+#define ITEM_PARSE_RUSTY "rusty "
+#define ITEM_PARSE_VERY_RUSTY "very rusty "
+#define ITEM_PARSE_THOROUGHLY_RUSTY "thoroughly rusty "
+
 using namespace std;
 
 /* constructors/destructor */
-Item::Item(const string& text, int want) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional(""), want(want) {
+Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(want) {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -15,134 +38,134 @@ Item::Item(const string& text, int want) : name(""), count(0), beatitude(BEATITU
 		return; // unable to parse text as item
 	/* figure out amount of items */
 	if ((amount[0] == 'a' && (amount[1] == '\0' || (amount[1] == 'n' && amount[2] == '\0'))) || ((amount[0] == 't' || amount[0] == 'T') && amount[1] == 'h' && amount[2] == 'e' && amount[3] == '\0'))
-		count = 1; // "a", "an" or "the" <item>
+		_count = 1; // "a", "an" or "the" <item>
 	else if (amount[0] >= '0' || amount[0] <= '9')
-		count = atoi(amount); // n <items>
+		_count = atoi(amount); // n <items>
 	else
 		return; // unable to parse text as item
 	string::size_type pos = 0;
-	name = name_long;
+	_name = name_long;
 	/* buc */
-	if (name.find(ITEM_PARSE_BLESSED, pos) == pos) {
-		beatitude = BLESSED;
+	if (_name.find(ITEM_PARSE_BLESSED, pos) == pos) {
+		_beatitude = BLESSED;
 		pos += sizeof (ITEM_PARSE_BLESSED) - 1;
-	} else if (name.find(ITEM_PARSE_UNCURSED, pos) == pos) {
-		beatitude = UNCURSED;
+	} else if (_name.find(ITEM_PARSE_UNCURSED, pos) == pos) {
+		_beatitude = UNCURSED;
 		pos += sizeof (ITEM_PARSE_UNCURSED) - 1;
-	} else if (name.find(ITEM_PARSE_CURSED, pos) == pos) {
-		beatitude = CURSED;
+	} else if (_name.find(ITEM_PARSE_CURSED, pos) == pos) {
+		_beatitude = CURSED;
 		pos += sizeof (ITEM_PARSE_CURSED) - 1;
 	} else {
-		beatitude = BEATITUDE_UNKNOWN;
+		_beatitude = BEATITUDE_UNKNOWN;
 	}
 	/* greased */
-	if (name.find(ITEM_PARSE_GREASED, pos) == pos) {
-		greased = true;
+	if (_name.find(ITEM_PARSE_GREASED, pos) == pos) {
+		_greased = true;
 		pos += sizeof (ITEM_PARSE_GREASED) - 1;
 	} else {
-		greased = false;
+		_greased = false;
 	}
 	/* fixed */
-	if (name.find(ITEM_PARSE_FIREPROOF, pos) == pos) {
-		fixed = true;
+	if (_name.find(ITEM_PARSE_FIREPROOF, pos) == pos) {
+		_fixed = true;
 		pos += sizeof (ITEM_PARSE_FIREPROOF) - 1;
-	} else if (name.find(ITEM_PARSE_RUSTPROOF, pos) == pos) {
-		fixed = true;
+	} else if (_name.find(ITEM_PARSE_RUSTPROOF, pos) == pos) {
+		_fixed = true;
 		pos += sizeof (ITEM_PARSE_RUSTPROOF) - 1;
 	} else {
-		fixed = false;
+		_fixed = false;
 	}
 	/* damage */
-	if (name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
-		if (damage < 3)
-			damage = 3;
+	if (_name.find(ITEM_PARSE_THOROUGHLY_RUSTY, pos) == pos) {
+		if (_damage < 3)
+			_damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_RUSTY) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
-		if (damage < 2)
-			damage = 2;
+	} else if (_name.find(ITEM_PARSE_VERY_RUSTY, pos) == pos) {
+		if (_damage < 2)
+			_damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_RUSTY) - 1;
-	} else if (name.find(ITEM_PARSE_RUSTY, pos) == pos) {
-		if (damage < 1)
-			damage = 1;
+	} else if (_name.find(ITEM_PARSE_RUSTY, pos) == pos) {
+		if (_damage < 1)
+			_damage = 1;
 		pos += sizeof (ITEM_PARSE_RUSTY) - 1;
 	}
-	if (name.find(ITEM_PARSE_THOROUGHLY_BURNT, pos) == pos) {
-		if (damage < 3)
-			damage = 3;
+	if (_name.find(ITEM_PARSE_THOROUGHLY_BURNT, pos) == pos) {
+		if (_damage < 3)
+			_damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_BURNT, pos) == pos) {
-		if (damage < 2)
-			damage = 2;
+	} else if (_name.find(ITEM_PARSE_VERY_BURNT, pos) == pos) {
+		if (_damage < 2)
+			_damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_BURNT) - 1;
-	} else if (name.find(ITEM_PARSE_BURNT, pos) == pos) {
-		if (damage < 1)
-			damage = 1;
+	} else if (_name.find(ITEM_PARSE_BURNT, pos) == pos) {
+		if (_damage < 1)
+			_damage = 1;
 		pos += sizeof (ITEM_PARSE_BURNT) - 1;
 	}
-	if (name.find(ITEM_PARSE_THOROUGHLY_CORRODED, pos) == pos) {
-		if (damage < 3)
-			damage = 3;
+	if (_name.find(ITEM_PARSE_THOROUGHLY_CORRODED, pos) == pos) {
+		if (_damage < 3)
+			_damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_CORRODED, pos) == pos) {
-		if (damage < 2)
-			damage = 2;
+	} else if (_name.find(ITEM_PARSE_VERY_CORRODED, pos) == pos) {
+		if (_damage < 2)
+			_damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_CORRODED) - 1;
-	} else if (name.find(ITEM_PARSE_CORRODED, pos) == pos) {
-		if (damage < 1)
-			damage = 1;
+	} else if (_name.find(ITEM_PARSE_CORRODED, pos) == pos) {
+		if (_damage < 1)
+			_damage = 1;
 		pos += sizeof (ITEM_PARSE_CORRODED) - 1;
 	}
-	if (name.find(ITEM_PARSE_THOROUGHLY_ROTTED, pos) == pos) {
-		if (damage < 3)
-			damage = 3;
+	if (_name.find(ITEM_PARSE_THOROUGHLY_ROTTED, pos) == pos) {
+		if (_damage < 3)
+			_damage = 3;
 		pos += sizeof (ITEM_PARSE_THOROUGHLY_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_VERY_ROTTED, pos) == pos) {
-		if (damage < 2)
-			damage = 2;
+	} else if (_name.find(ITEM_PARSE_VERY_ROTTED, pos) == pos) {
+		if (_damage < 2)
+			_damage = 2;
 		pos += sizeof (ITEM_PARSE_VERY_ROTTED) - 1;
-	} else if (name.find(ITEM_PARSE_ROTTED, pos) == pos) {
-		if (damage < 1)
-			damage = 1;
+	} else if (_name.find(ITEM_PARSE_ROTTED, pos) == pos) {
+		if (_damage < 1)
+			_damage = 1;
 		pos += sizeof (ITEM_PARSE_ROTTED) - 1;
 	}
 	/* enchantment */
-	if (name[pos] == '+') {
-		unknown_enchantment = false;
-		enchantment = name[pos + 1] - '0'; // assuming no item is enchanted beyond +9
+	if (_name[pos] == '+') {
+		_unknown_enchantment = false;
+		_enchantment = _name[pos + 1] - '0'; // assuming no item is enchanted beyond +9
 		pos += 3;
 		/* if we know enchantment, we (probably) know that it's uncursed unless it says otherwise */
 		/* sadly certain items won't say "uncursed" after dropping them on an altar
 		 * for example, the dagger valks start with is such an item.
 		 * to prevent her from dropping it over & over again,
 		 * we'll say items we know enchantment of, we also "know" is uncursed */
-		if (beatitude == BEATITUDE_UNKNOWN)
-			beatitude = UNCURSED;
-	} else if (name[pos] == '-') {
-		unknown_enchantment = false;
-		enchantment = 0 - (name[pos + 1] - '0'); // assuming no item is enchanted beyond -9
+		if (_beatitude == BEATITUDE_UNKNOWN)
+			_beatitude = UNCURSED;
+	} else if (_name[pos] == '-') {
+		_unknown_enchantment = false;
+		_enchantment = 0 - (_name[pos + 1] - '0'); // assuming no item is enchanted beyond -9
 		pos += 3;
 		/* if we know enchantment, we (probably) know that it's uncursed unless it says otherwise */
 		/* sadly certain items won't say "uncursed" after dropping them on an altar
 		 * for example, the dagger valks start with is such an item.
 		 * to prevent her from dropping it over & over again,
 		 * we'll say items we know enchantment of, we also "know" is uncursed */
-		if (beatitude == BEATITUDE_UNKNOWN)
-			beatitude = UNCURSED;
+		if (_beatitude == BEATITUDE_UNKNOWN)
+			_beatitude = UNCURSED;
 	}
 	/* erase up to pos as we've extracted all the info up to item name */
-	name.erase(0, pos);
+	_name.erase(0, pos);
 	/* set "(being worn)" and so on in additional */
-	if (name[name.size() - 1] == ')') {
-		pos = name.rfind("(", name.size() - 1);
+	if (_name[_name.size() - 1] == ')') {
+		pos = _name.rfind("(", _name.size() - 1);
 		if (pos != string::npos) {
-			additional = name.substr(pos + 1, name.size() - pos - 2); // ditch "(" and ")"
-			name.erase(pos - 1); // no need for this in name, and remove last space before "(" too
+			_additional = _name.substr(pos + 1, _name.size() - pos - 2); // ditch "(" and ")"
+			_name.erase(pos - 1); // no need for this in name, and remove last space before "(" too
 		}
 	}
 	/* if items are named something (else than "blessed", "uncursed" or "cursed"), replace name with that */
-	pos = name.rfind(ITEM_NAMED, name.size() - 1);
+	pos = _name.rfind(ITEM_NAMED, _name.size() - 1);
 	if (pos != string::npos) {
-		string named = name.substr(pos + sizeof (ITEM_NAMED) - 1);
+		string named = _name.substr(pos + sizeof (ITEM_NAMED) - 1);
 		int tmpbeatitude = BEATITUDE_UNKNOWN;
 		if (named == "blessed")
 			tmpbeatitude = BLESSED;
@@ -156,83 +179,179 @@ Item::Item(const string& text, int want) : name(""), count(0), beatitude(BEATITU
 			/* item was named "blessed", "uncursed" or "cursed".
 			 * unless we already know beatitude we should set beatitude
 			 * and clear "named" */
-			if (beatitude == BEATITUDE_UNKNOWN)
-				beatitude = tmpbeatitude;
+			if (_beatitude == BEATITUDE_UNKNOWN)
+				_beatitude = tmpbeatitude;
 			named.clear();
 		}
 		/* if items are named something (else than "blessed", "uncursed" or "cursed"), replace name with that */
 		if (!named.empty())
-			name = named;
+			_name = named;
 		else
-			name.erase(pos);
+			_name.erase(pos);
 	}
 	/* if items are called something, replace name with that */
-	pos = name.rfind(ITEM_CALLED, name.size() - 1);
+	pos = _name.rfind(ITEM_CALLED, _name.size() - 1);
 	if (pos != string::npos)
-		name = name.substr(pos + sizeof (ITEM_CALLED) - 1);
+		_name = _name.substr(pos + sizeof (ITEM_CALLED) - 1);
 	/* singularize name.
 	 * we'll only singularize stuff we care about for now */
-	if (name.find("pair of ") == 0) {
-		if (name.find("pair of lenses") == string::npos) {
+	if (_name.find("pair of ") == 0) {
+		if (_name.find("pair of lenses") == string::npos) {
 			//boots or gloves; remove "pair of"
-			name = name.erase(name.find("pair of "), string("pair of ").length());
+			_name = _name.erase(_name.find("pair of "), string("pair of ").length());
 		}
 		return; //don't de-pluluralize "boots", "gloves", or "lenses"
 	}
 	string::size_type stop = string::npos;
-	if ((stop = name.find(" of ", 0)) != string::npos || (stop = name.find(" labeled ", 0)) != string::npos || (stop = name.find(" called ", 0)) != string::npos || (stop = name.find(" named ", 0)) != string::npos || (stop = name.find(" from ", 0)) != string::npos) {
+	if ((stop = _name.find(" of ", 0)) != string::npos || (stop = _name.find(" labeled ", 0)) != string::npos || (stop = _name.find(" called ", 0)) != string::npos || (stop = _name.find(" named ", 0)) != string::npos || (stop = _name.find(" from ", 0)) != string::npos) {
 		/* no need to do anything here.
 		 * after this check "stop" should be placed just after the word that may be pluralized */
 	}
 	if (stop == string::npos)
-		stop = name.size();
-	string::size_type start = name.find_last_of(' ', stop - 1);
+		stop = _name.size();
+	string::size_type start = _name.find_last_of(' ', stop - 1);
 	if (start == string::npos)
 		start = 0;
 	else
 		++start; // or we'll get the space before the word
-	string word = name.substr(start, stop - start);
+	string word = _name.substr(start, stop - start);
 	if (word == "leaves")
 		word = "leaf";
 	else if (word.size() >= 2 && word[word.size() - 1] == 's' && word[word.size() - 2] != 's')
 		word.erase(word.size() - 1);
-	name.replace(start, stop, word);
+	_name.replace(start, stop, word);
 }
 
-Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
+Item::Item() : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(0) {
 }
 
+/* methods */
+const string& Item::name() const {
+	return _name;
+}
+
+const string& Item::name(const string& name) {
+	_name = name;
+	return this->name();
+}
+
+int Item::count() const {
+	return _count;
+}
+
+int Item::count(int count) {
+	_count = count;
+	return this->count();
+}
+
+int Item::beatitude() const {
+	return _beatitude;
+}
+
+int Item::beatitude(int beatitude) {
+	_beatitude = beatitude;
+	return this->beatitude();
+}
+
+bool Item::greased() const {
+	return _greased;
+}
+
+bool Item::greased(bool greased) {
+	_greased = greased;
+	return this->greased();
+}
+
+bool Item::fixed() const {
+	return _fixed;
+}
+
+bool Item::fixed(bool fixed) {
+	_fixed = fixed;
+	return this->fixed();
+}
+
+int Item::damage() const {
+	return _damage;
+}
+
+int Item::damage(int damage) {
+	_damage = damage;
+	return this->damage();
+}
+
+bool Item::unknownEnchantment() const {
+	return _unknown_enchantment;
+}
+
+bool Item::unknownEnchantment(bool unknown_enchantment) {
+	_unknown_enchantment = unknown_enchantment;
+	return this->unknownEnchantment();
+}
+
+int Item::enchantment() const {
+	return _enchantment;
+}
+
+int Item::enchantment(int enchantment) {
+	_enchantment = enchantment;
+	return this->enchantment();
+}
+
+const std::string& Item::additional() const {
+	return _additional;
+}
+
+const std::string& Item::additional(const std::string& additional) {
+	_additional = additional;
+	return this->additional();
+}
+
+int Item::want() const {
+	return _want;
+}
+
+int Item::want(int want) {
+	_want = want;
+	return this->want();
+}
+
+/* operator overloading */
 bool Item::operator==(const Item& i) {
-	return count == i.count && beatitude == i.beatitude && greased == i.greased && fixed == i.fixed && damage == i.damage && unknown_enchantment == i.unknown_enchantment && enchantment == i.enchantment && name == i.name && additional == i.additional;
+	return _count == i._count && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
 }
 
-ostream& operator<<(ostream& out, const Item& item) {
-	if (item.name == "") {
+bool Item::operator!=(const Item& i) {
+	return !(*this == i);
+}
+
+ostream & operator<<(ostream& out, const Item& item) {
+	if (item.name() == "") {
 		out << "(no item)";
 	} else {
-		out << item.count << " ";
-		if (item.beatitude == BLESSED)
+		out << item.count() << " ";
+		if (item.beatitude() == BLESSED)
 			out << "blessed ";
-		else if (item.beatitude == UNCURSED)
+		else if (item.beatitude() == UNCURSED)
 			out << "uncursed ";
-		else if (item.beatitude == CURSED)
+		else if (item.beatitude() == CURSED)
 			out << "cursed ";
-		if (item.greased)
+		if (item.greased())
 			out << "greased ";
-		if (item.fixed)
+		if (item.fixed())
 			out << "fixed ";
-		if (item.damage > 0) {
-			if (item.damage == 2)
+		if (item.damage() > 0) {
+			if (item.damage() == 2)
 				out << "very ";
-			else if (item.damage == 3)
+			else if (item.damage() == 3)
 				out << "thoroughly ";
 			out << "damaged ";
 		}
-		if (!item.unknown_enchantment)
-			out << ((item.enchantment >= 0) ? "+" : "") << item.enchantment << " ";
-		out << item.name;
-		if (item.additional != "")
-			out << " " << item.additional;
+		if (!item.unknownEnchantment())
+			out << ((item.enchantment() >= 0) ? "+" : "") << item.enchantment() << " ";
+		out << item.name();
+		if (item.additional() != "")
+			out << " " << item.additional();
 	}
 	return out;
 }
