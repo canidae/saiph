@@ -12,7 +12,7 @@ Connection::~Connection() {
 }
 
 /* static methods */
-Connection *Connection::create(int interface) {
+Connection* Connection::create(int interface) {
 	switch (interface) {
 	case CONNECTION_LOCAL:
 		return new Local();
@@ -30,11 +30,11 @@ Connection *Connection::create(int interface) {
 }
 
 /* methods */
-int Connection::retrieve(char *, int) {
+int Connection::retrieve(char*, int) {
 	return 0;
 }
 
-int Connection::transmit(const string &) {
+int Connection::transmit(const string&) {
 	return 0;
 }
 

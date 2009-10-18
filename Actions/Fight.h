@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Fight(analyzer::Analyzer *analyzer, unsigned char direction, int priority, bool attack_friendly = true) : Action(analyzer), _fight(std::string(1, 'F').append(std::string(1, direction)), priority), _attack_friendly(std::string(1, attack_friendly ? YES : NO), PRIORITY_CONTINUE_ACTION) {
+		Fight(analyzer::Analyzer* analyzer, unsigned char direction, int priority, bool attack_friendly = true) : Action(analyzer), _fight(std::string(1, 'F').append(std::string(1, direction)), priority), _attack_friendly(std::string(1, attack_friendly ? YES : NO), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Fight() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _fight;
@@ -32,7 +32,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (_sequence == 0) {
 				if (messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
 					_sequence = 1;

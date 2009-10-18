@@ -10,7 +10,7 @@
 using namespace analyzer;
 using namespace std;
 
-Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false), pushFailures(0) {
+Sokoban::Sokoban(Saiph* saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false), pushFailures(0) {
 	loadLevels();
 
 	for (unsigned int a = 0; a < levels.size(); ++a) {
@@ -19,7 +19,7 @@ Sokoban::Sokoban(Saiph *saiph) : Analyzer("Sokoban"), saiph(saiph), moving(false
 	}
 }
 
-void Sokoban::parseMessages(const string &messages) {
+void Sokoban::parseMessages(const string& messages) {
 	if (moving && currentTarget.level == saiph->position.level) {
 		if (messages.find(MESSAGE_PERHAPS_THATS_WHY, 0) != string::npos) {
 			if (++pushFailures > SOKOBAN_MAX_PUSH_FAILURES) {
@@ -33,7 +33,7 @@ void Sokoban::parseMessages(const string &messages) {
 			return;
 		}
 		int level = levelMap[saiph->position.level];
-		Point &boulder = levels[level].boulders[(*currentMove).boulder];
+		Point& boulder = levels[level].boulders[(*currentMove).boulder];
 		if ((Point)saiph->position == boulder) {
 			/* we made it to the square where the boulder was, so the bouler must be pushed */
 			moveBoulderToTarget(level, *currentMove);
@@ -58,7 +58,7 @@ void Sokoban::analyze() {
 	if (moving && currentTarget.level != saiph->position.level &&
 		pushFailures < SOKOBAN_MAX_PUSH_FAILURES) {
 		/* We must have fallen into one of the holes */
-		const PathNode &node = saiph->shortestPath(currentTarget);
+		const PathNode& node = saiph->shortestPath(currentTarget);
 		if (node.cost >= UNPASSABLE) {
 			Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Couldn't return to current target level. Giving up for now." << endl;
 			return;
@@ -96,7 +96,7 @@ void Sokoban::analyze() {
 			} else {
 				Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "Trying to path to " << (Point)currentTarget << " from " << (Point)saiph->position << endl;
 
-				const PathNode &node = saiph->shortestPath(currentTarget);
+				const PathNode& node = saiph->shortestPath(currentTarget);
 				if (node.cost >= UNPASSABLE) {
 					Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "pathing failed" << endl;
 					return;
@@ -109,7 +109,7 @@ void Sokoban::analyze() {
 	}
 }
 
-void Sokoban::targetNextLocation(int level, const Move &move) {
+void Sokoban::targetNextLocation(int level, const Move& move) {
 	Point boulder = levels[level].boulders[move.boulder];
 
 	switch (move.direction) {
@@ -134,8 +134,8 @@ void Sokoban::targetNextLocation(int level, const Move &move) {
 	}
 }
 
-void Sokoban::moveBoulderToTarget(int level, const Move &move) {
-	Point &boulder = levels[level].boulders[move.boulder];
+void Sokoban::moveBoulderToTarget(int level, const Move& move) {
+	Point& boulder = levels[level].boulders[move.boulder];
 	Debug::info(saiph->last_turn) << SOKOBAN_DEBUG_NAME << "moved boulder from " << boulder;
 	switch (move.direction) {
 	case N:
@@ -208,7 +208,7 @@ void Sokoban::loadLevels() {
 		Debug::info() << SOKOBAN_DEBUG_NAME << "Loaded " << levels.size() << " levels from sokoban.dat" << endl;
 }
 
-bool Sokoban::loadBoulders(ifstream &file, vector<Point> &boulders) {
+bool Sokoban::loadBoulders(ifstream& file, vector<Point> &boulders) {
 	string line;
 	getnextline(file, line);
 
@@ -230,7 +230,7 @@ bool Sokoban::loadBoulders(ifstream &file, vector<Point> &boulders) {
 		return true;
 }
 
-bool Sokoban::loadSolutions(ifstream &file, vector<Move> &moves) {
+bool Sokoban::loadSolutions(ifstream& file, vector<Move> &moves) {
 	string line;
 	getnextline(file, line);
 
@@ -282,7 +282,7 @@ bool Sokoban::loadSolutions(ifstream &file, vector<Move> &moves) {
 		return true;
 }
 
-void Sokoban::getnextline(ifstream &file, string &line) {
+void Sokoban::getnextline(ifstream& file, string& line) {
 	// get the next line ignoring blank lines and the comments
 	do {
 		getline(file, line);

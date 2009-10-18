@@ -38,15 +38,15 @@ public:
 	std::string additional;
 	int want; // this is used by analyzers and event::WantItem to determine how many we want of this item when looting/dropping
 
-	Item(const std::string &text, int want = 0);
+	Item(const std::string& text, int want = 0);
 	Item();
 
-	bool operator==(const Item &i);
+	bool operator==(const Item& i);
 
-	bool operator!=(const Item &i) {
+	bool operator!=(const Item& i) {
 		return !(*this == i);
 	}
 };
 
-std::ostream & operator<<(std::ostream& out, const Item& item);
+std::ostream& operator<<(std::ostream& out, const Item& item);
 #endif

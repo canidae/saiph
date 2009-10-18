@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		SelectMultiple(analyzer::Analyzer *analyzer, const std::vector<std::string> &keys) : Action(analyzer), _keys(keys) {
+		SelectMultiple(analyzer::Analyzer* analyzer, const std::vector<std::string> &keys) : Action(analyzer), _keys(keys) {
 		}
 
 		virtual ~SelectMultiple() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			if (_sequence < (int) _keys.size())
 				_tmp = Command(_keys[_sequence], PRIORITY_SELECT_ITEM);
 			else if (_sequence == (int) _keys.size())
@@ -30,7 +30,7 @@ namespace action {
 			return _tmp;
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			++_sequence;
 		}
 

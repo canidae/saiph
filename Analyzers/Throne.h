@@ -7,12 +7,12 @@
 namespace analyzer {
 	class Throne : public Analyzer {
 	public:
-		Throne(Saiph *saiph);
+		Throne(Saiph* saiph);
 
 		void analyze();
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 	};
 }
 #endif

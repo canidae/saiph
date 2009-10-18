@@ -39,13 +39,13 @@ class Saiph;
 namespace analyzer {
 	class Lamp : public Analyzer {
 	public:
-		Lamp(Saiph *saiph);
+		Lamp(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		Request req;
 		unsigned char lamp_key;
 		bool remove_lamp;

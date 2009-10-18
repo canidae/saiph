@@ -52,6 +52,6 @@ public:
 	static int last_pray_turn;
 
 	static void analyze();
-	static void parseMessages(const std::string &messages);
+	static void parseMessages(const std::string& messages);
 };
 #endif

@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Rest(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _rest("16s", priority) {
+		Rest(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _rest("16s", priority) {
 		}
 
 		virtual ~Rest() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _rest;
@@ -29,7 +29,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			++_sequence;
 		}
 

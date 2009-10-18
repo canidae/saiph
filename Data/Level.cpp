@@ -4,9 +4,9 @@
 using namespace data;
 using namespace std;
 
-map<string, Level *> Level::levels;
+map<string, Level*> Level::levels;
 
-Level::Level(const string &name, const vector< vector<char> > &symbols, int branch, int min_depth, int max_depth) : name(name), symbols(symbols), branch(branch), min_depth(min_depth), max_depth(max_depth) {
+Level::Level(const string& name, const vector< vector<char> > &symbols, int branch, int min_depth, int max_depth) : name(name), symbols(symbols), branch(branch), min_depth(min_depth), max_depth(max_depth) {
 }
 
 int Level::match(Level l) {

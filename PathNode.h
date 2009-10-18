@@ -12,6 +12,6 @@ public:
 	unsigned int moves;
 	unsigned int cost;
 
-	PathNode(const Point &next = Point(), unsigned char dir = ILLEGAL_DIRECTION, unsigned int moves = UNREACHABLE, unsigned int cost = UNREACHABLE);
+	PathNode(const Point& next = Point(), unsigned char dir = ILLEGAL_DIRECTION, unsigned int moves = UNREACHABLE, unsigned int cost = UNREACHABLE);
 };
 #endif

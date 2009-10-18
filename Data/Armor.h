@@ -10,12 +10,12 @@ namespace data {
 
 	class Armor : public Item {
 	public:
-		static std::map<std::string, Armor *> armors;
+		static std::map<std::string, Armor*> armors;
 		const int slot;
 		const int ac;
 		const int mc;
 
-		Armor(const std::string &name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
+		Armor(const std::string& name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
 
 		virtual ~Armor() {
 		}
@@ -23,7 +23,7 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Armor *armor);
+		static void addToMap(const std::string& name, Armor* armor);
 	};
 }
 #endif

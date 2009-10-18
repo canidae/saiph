@@ -9,10 +9,10 @@ namespace data {
 
 	class Amulet : public Item {
 	public:
-		static std::map<std::string, Amulet *> amulets;
+		static std::map<std::string, Amulet*> amulets;
 		const bool confer_effect;
 
-		Amulet(const std::string &name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
+		Amulet(const std::string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
 
 		~Amulet() {
 		}
@@ -20,10 +20,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Amulet *amulet);
+		static void addToMap(const std::string& name, Amulet* amulet);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
+		static void create(const std::string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
 	};
 }
 #endif

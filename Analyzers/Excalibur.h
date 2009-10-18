@@ -13,13 +13,13 @@ class Saiph;
 namespace analyzer {
 	class Excalibur : public Analyzer {
 	public:
-		Excalibur(Saiph *saiph);
+		Excalibur(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		Request req;
 		std::string command2;
 	};

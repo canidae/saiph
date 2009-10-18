@@ -8,10 +8,10 @@
 using namespace analyzer;
 using namespace std;
 
-Donate::Donate(Saiph *saiph) : Analyzer("Donate"), saiph(saiph), priest_dir(ILLEGAL_DIRECTION), priest_loc() {
+Donate::Donate(Saiph* saiph) : Analyzer("Donate"), saiph(saiph), priest_dir(ILLEGAL_DIRECTION), priest_loc() {
 }
 
-void Donate::parseMessages(const std::string &messages) {
+void Donate::parseMessages(const std::string& messages) {
 	if (priest_dir == ILLEGAL_DIRECTION)
 		return;
 	if (messages.find(DONATE_TALK_TO_WHOM) != string::npos) {
@@ -37,7 +37,7 @@ void Donate::analyze() {
 			for (map<Point, Monster>::iterator i = saiph->levels[lev].monsters.begin(); i != saiph->levels[lev].monsters.end(); ++i) {
 				if (!i->second.priest)
 					continue;
-				const PathNode &node = saiph->shortestPath(priest_loc);
+				const PathNode& node = saiph->shortestPath(priest_loc);
 				if (node.cost == UNREACHABLE)
 					continue; // can't path to this priest
 				if (node.moves < least_moves) {
@@ -50,7 +50,7 @@ void Donate::analyze() {
 	}
 	if (priest_loc.level != -1) {
 		int moves = 0;
-		const PathNode &node = saiph->shortestPath(priest_loc);
+		const PathNode& node = saiph->shortestPath(priest_loc);
 		priest_dir = node.dir;
 		if (priest_dir == ILLEGAL_DIRECTION)
 			return;

@@ -9,9 +9,9 @@ namespace data {
 
 	class Helmet : public Armor {
 	public:
-		static std::map<std::string, Helmet *> helmets;
+		static std::map<std::string, Helmet*> helmets;
 
-		Helmet(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		Helmet(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 
 		virtual ~Helmet() {
 		}
@@ -19,10 +19,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Helmet *helmet);
+		static void addToMap(const std::string& name, Helmet* helmet);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 	};
 }
 #endif

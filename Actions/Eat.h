@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Eat(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION) {
+		Eat(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Eat() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 
 			case 0:
@@ -40,7 +40,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {
 				/* tell the game which item to eat */
 				_sequence = 1;

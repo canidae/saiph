@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Call(analyzer::Analyzer *analyzer, unsigned char item, const std::string &call) : Action(analyzer), _do_call("#call", PRIORITY_LOOK), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), _set_call(call, PRIORITY_CONTINUE_ACTION) {
+		Call(analyzer::Analyzer* analyzer, unsigned char item, const std::string& call) : Action(analyzer), _do_call("#call", PRIORITY_LOOK), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(std::string(1, item), PRIORITY_CONTINUE_ACTION), _set_call(call, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Call() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _do_call;
@@ -39,7 +39,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
 				_sequence = 1;
 			} else if (messages.find(MESSAGE_ITEM_TO_CALL) != std::string::npos) {

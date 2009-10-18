@@ -7,7 +7,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Lamp::Lamp(Saiph *saiph) : Analyzer("Lamp"), saiph(saiph), lamp_key(0), remove_lamp(false), seen_oil_lamp(false), seen_magic_lamp(false) {
+Lamp::Lamp(Saiph* saiph) : Analyzer("Lamp"), saiph(saiph), lamp_key(0), remove_lamp(false), seen_oil_lamp(false), seen_magic_lamp(false) {
 }
 
 /* methods */
@@ -25,7 +25,7 @@ void Lamp::analyze() {
 	priority = PRIORITY_LAMP_TOGGLE;
 }
 
-void Lamp::parseMessages(const string &messages) {
+void Lamp::parseMessages(const string& messages) {
 	if (messages.find(LAMP_TURNED_ON, 0) != string::npos) {
 		/* lamp/lantern turned on, set "additional" */
 		map<unsigned char, Item>::iterator l = saiph->inventory.find(lamp_key);

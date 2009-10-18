@@ -22,13 +22,13 @@
 namespace analyzer {
 	class Passtune : public Analyzer {
 	public:
-		Passtune(Saiph *saiph);
+		Passtune(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 		void analyze(void);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		bool solved;
 		char instrument;
 		bool play_instrument;
@@ -43,7 +43,7 @@ namespace analyzer {
 		int nextGuess(int gears, int tumblers);
 
 		void findInstrument(void);
-		bool isInstrument(const Item &item);
+		bool isInstrument(const Item& item);
 	};
 }
 #endif

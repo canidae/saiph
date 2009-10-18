@@ -11,17 +11,17 @@ class Saiph;
 namespace analyzer {
 	class Beatitude : public Analyzer {
 	public:
-		Beatitude(Saiph *saiph);
+		Beatitude(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void parseMessages(const std::string& messages);
+		bool request(const Request& request);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		bool check_beatitude;
 
-		bool beatify(const Item &item);
+		bool beatify(const Item& item);
 	};
 }
 #endif

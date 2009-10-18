@@ -4,17 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Trident *> Trident::tridents;
+map<string, Trident*> Trident::tridents;
 
-Trident::Trident(const string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2) : Weapon(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+Trident::Trident(const string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
 }
 
-void Trident::addToMap(const string &name, Trident *trident) {
+void Trident::addToMap(const string& name, Trident* trident) {
 	Trident::tridents[name] = trident;
 	Weapon::addToMap(name, trident);
 }
 
-void Trident::create(const string &name, int cost, int weight, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment) {
+void Trident::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment) {
 	addToMap(name, new Trident(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
 }
 

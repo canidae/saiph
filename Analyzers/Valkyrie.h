@@ -9,12 +9,12 @@ class Saiph;
 namespace analyzer {
 	class Valkyrie : public Analyzer {
 	public:
-		Valkyrie(Saiph *saiph);
+		Valkyrie(Saiph* saiph);
 
 		void init();
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		Request req;
 		unsigned char loot_group;
 

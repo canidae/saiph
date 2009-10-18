@@ -33,71 +33,71 @@ public:
 		return row() >= MAP_ROW_BEGIN && row() <= MAP_ROW_END && col() >= MAP_COL_BEGIN && col() <= MAP_COL_END;
 	}
 
-	Point &moveNorth() {
+	Point& moveNorth() {
 		--_row;
 		return *this;
 	}
 
-	Point &moveNortheast() {
+	Point& moveNortheast() {
 		--_row;
 		++_col;
 		return *this;
 	}
 
-	Point &moveEast() {
+	Point& moveEast() {
 		++_col;
 		return *this;
 	}
 
-	Point &moveSoutheast() {
+	Point& moveSoutheast() {
 		++_row;
 		++_col;
 		return *this;
 	}
 
-	Point &moveSouth() {
+	Point& moveSouth() {
 		++_row;
 		return *this;
 	}
 
-	Point &moveSouthwest() {
+	Point& moveSouthwest() {
 		++_row;
 		--_col;
 		return *this;
 	}
 
-	Point &moveWest() {
+	Point& moveWest() {
 		--_col;
 		return *this;
 	}
 
-	Point &moveNorthwest() {
+	Point& moveNorthwest() {
 		--_row;
 		--_col;
 		return *this;
 	}
 
-	bool operator<(const Point &p) const {
+	bool operator<(const Point& p) const {
 		return (_row > p._row || (_row == p._row && _col > p._col));
 	}
 
-	bool operator>(const Point &p) const {
+	bool operator>(const Point& p) const {
 		return (_row > p._row || (_row == p._row && _col > p._col));
 	}
 
-	bool operator<=(const Point &p) const {
+	bool operator<=(const Point& p) const {
 		return (_row < p._row || (_row == p._row && _col <= p._col));
 	}
 
-	bool operator>=(const Point &p) const {
+	bool operator>=(const Point& p) const {
 		return (_row > p._row || (_row == p._row && _col >= p._col));
 	}
 
-	bool operator==(const Point &p) const {
+	bool operator==(const Point& p) const {
 		return (_row == p._row && _col == p._col);
 	}
 
-	bool operator!=(const Point &p) const {
+	bool operator!=(const Point& p) const {
 		return (_row != p._row || _col != p._col);
 	}
 
@@ -106,5 +106,5 @@ private:
 	int _col;
 };
 
-std::ostream & operator<<(std::ostream &os, const Point &p);
+std::ostream& operator<<(std::ostream& os, const Point& p);
 #endif

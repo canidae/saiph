@@ -20,7 +20,7 @@ namespace event {
 			return ID;
 		}
 
-		virtual Coordinate &coordinate() {
+		virtual Coordinate& coordinate() {
 			return _coordinate;
 		}
 

@@ -10,15 +10,15 @@ class Saiph;
 namespace analyzer {
 	class Blind : public Analyzer {
 	public:
-		Blind(Saiph *saiph);
+		Blind(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 		void analyze();
 		void complete();
-		bool request(const Request &request);
+		bool request(const Request& request);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		Request req;
 		bool willful_blindness;
 		unsigned char blinding_tool;
@@ -26,7 +26,7 @@ namespace analyzer {
 		int unblind_priority;
 
 		void findBlindingTool();
-		bool isBlindingTool(const Item &item);
+		bool isBlindingTool(const Item& item);
 	};
 }
 #endif

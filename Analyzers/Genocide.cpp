@@ -5,7 +5,7 @@
 using namespace analyzer;
 using namespace std;
 
-Genocide::Genocide(Saiph *saiph) : Analyzer("Genocide"), saiph(saiph) {
+Genocide::Genocide(Saiph* saiph) : Analyzer("Genocide"), saiph(saiph) {
 	monsters.push_back("mind flayer");
 	monsters.push_back("master mind flayer");
 	monsters.push_back("rust monster");
@@ -17,7 +17,7 @@ Genocide::Genocide(Saiph *saiph) : Analyzer("Genocide"), saiph(saiph) {
 	classes.push_back('R');
 }
 
-void Genocide::parseMessages(const string &messages) {
+void Genocide::parseMessages(const string& messages) {
 	if (!saiph->world->question)
 		return;
 	if (messages.find(MESSAGE_WHAT_TO_GENOCIDE_UNCURSED) != string::npos) {

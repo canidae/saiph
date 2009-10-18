@@ -26,8 +26,8 @@ namespace analyzer {
 		Food();
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		void onEvent(event::Event * const event);
+		void parseMessages(const std::string& messages);
+		void onEvent(event::Event* const event);
 
 	private:
 		std::map<Point, unsigned char> _prev_monster_loc;
@@ -35,7 +35,7 @@ namespace analyzer {
 		std::map<std::string, int> _eat_priority;
 		std::set<unsigned char> _food_items;
 
-		bool safeToEat(std::map<std::string, data::Corpse *>::iterator c);
+		bool safeToEat(std::map<std::string, data::Corpse*>::iterator c);
 	};
 }
 #endif

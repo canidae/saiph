@@ -6,7 +6,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Excalibur::Excalibur(Saiph *saiph) : Analyzer("Excalibur"), saiph(saiph), command2("") {
+Excalibur::Excalibur(Saiph* saiph) : Analyzer("Excalibur"), saiph(saiph), command2("") {
 }
 
 /* methods */
@@ -28,7 +28,7 @@ void Excalibur::analyze() {
 	if (got_long_sword == ILLEGAL_ITEM)
 		return;
 	/* path to nearest fountain */
-	const PathNode &node = saiph->shortestPath(FOUNTAIN);
+	const PathNode& node = saiph->shortestPath(FOUNTAIN);
 	if (node.cost >= UNPASSABLE)
 		return; // can't get to any fountains
 	if (node.dir == NOWHERE) {
@@ -44,7 +44,7 @@ void Excalibur::analyze() {
 	}
 }
 
-void Excalibur::parseMessages(const string &messages) {
+void Excalibur::parseMessages(const string& messages) {
 	if (command != "" && command2 != "" && messages.find(MESSAGE_WHAT_TO_DIP, 0) != string::npos) {
 		/* what to dip... the long sword ofcourse! */
 		command = command2;

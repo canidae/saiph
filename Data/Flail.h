@@ -9,9 +9,9 @@ namespace data {
 
 	class Flail : public Weapon {
 	public:
-		static std::map<std::string, Flail *> flails;
+		static std::map<std::string, Flail*> flails;
 
-		Flail(const std::string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2);
+		Flail(const std::string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
 
 		virtual ~Flail() {
 		}
@@ -19,10 +19,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Flail *flail);
+		static void addToMap(const std::string& name, Flail* flail);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment);
+		static void create(const std::string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment);
 	};
 }
 #endif

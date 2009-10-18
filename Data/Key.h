@@ -9,9 +9,9 @@ namespace data {
 
 	class Key : public Tool {
 	public:
-		static std::map<std::string, Key *> keys;
+		static std::map<std::string, Key*> keys;
 
-		Key(const std::string &name, int cost, int weight, int material, unsigned long long properties);
+		Key(const std::string& name, int cost, int weight, int material, unsigned long long properties);
 
 		~Key() {
 		}
@@ -19,10 +19,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Key *key);
+		static void addToMap(const std::string& name, Key* key);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties);
+		static void create(const std::string& name, int cost, int weight, int material, unsigned long long properties);
 	};
 }
 #endif

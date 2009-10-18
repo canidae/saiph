@@ -67,15 +67,15 @@ public:
 
 	Level(std::string name, int branch = BRANCH_MAIN);
 
-	unsigned char getDungeonSymbol(const Point &point);
-	unsigned char getMonsterSymbol(const Point &point);
-	int getSearchCount(const Point &point);
-	void setDungeonSymbol(const Point &point, unsigned char symbol);
-	void increaseAdjacentSearchCount(const Point &point);
-	const PathNode &shortestPath(const Point &target);
+	unsigned char getDungeonSymbol(const Point& point);
+	unsigned char getMonsterSymbol(const Point& point);
+	int getSearchCount(const Point& point);
+	void setDungeonSymbol(const Point& point, unsigned char symbol);
+	void increaseAdjacentSearchCount(const Point& point);
+	const PathNode& shortestPath(const Point& target);
 	void analyze();
-	void parseMessages(const std::string &messages);
-	void updateMapPoint(const Point &point, unsigned char symbol, int color);
+	void parseMessages(const std::string& messages);
+	void updateMapPoint(const Point& point, unsigned char symbol, int color);
 	void updateMonsters();
 	void updatePathMap();
 
@@ -96,34 +96,34 @@ private:
 	static event::ReceivedItems received;
 	static event::ItemsOnGround on_ground;
 
-	unsigned int updatePathMapHelper(const Point &to, const Point &from);
+	unsigned int updatePathMapHelper(const Point& to, const Point& from);
 
 	static void init();
 };
 
 /* inline methods */
-inline unsigned char Level::getDungeonSymbol(const Point &point) {
+inline unsigned char Level::getDungeonSymbol(const Point& point) {
 	/* return dungeon symbol at given point */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
 		return OUTSIDE_MAP;
 	return dungeonmap[point.row()][point.col()];
 }
 
-inline unsigned char Level::getMonsterSymbol(const Point &point) {
+inline unsigned char Level::getMonsterSymbol(const Point& point) {
 	/* return monster symbol at given point */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
 		return ILLEGAL_MONSTER;
 	return monstermap[point.row()][point.col()];
 }
 
-inline int Level::getSearchCount(const Point &point) {
+inline int Level::getSearchCount(const Point& point) {
 	/* return search count at given point */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
 		return POINT_FULLY_SEARCHED;
 	return searchmap[point.row()][point.col()];
 }
 
-inline void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
+inline void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	/* need to update both dungeonmap and symbols,
 	 * better keep it in a method */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
@@ -138,7 +138,7 @@ inline void Level::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	dungeonmap[point.row()][point.col()] = symbol;
 }
 
-inline void Level::increaseAdjacentSearchCount(const Point &point) {
+inline void Level::increaseAdjacentSearchCount(const Point& point) {
 	/* increase search count for adjacent points to given point */
 	for (int r = point.row() - 1; r <= point.row() + 1; ++r) {
 		if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
@@ -153,7 +153,7 @@ inline void Level::increaseAdjacentSearchCount(const Point &point) {
 	}
 }
 
-inline const PathNode &Level::shortestPath(const Point &point) {
+inline const PathNode& Level::shortestPath(const Point& point) {
 	/* return a PathNode that tells us which direction to move to get to given point */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
 		return pathnode_outside_map;

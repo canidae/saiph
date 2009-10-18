@@ -8,7 +8,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-MonsterInfo::MonsterInfo(Saiph *saiph) : Analyzer("MonsterInfo"), saiph(saiph) {
+MonsterInfo::MonsterInfo(Saiph* saiph) : Analyzer("MonsterInfo"), saiph(saiph) {
 }
 
 /* methods */
@@ -31,7 +31,7 @@ void MonsterInfo::analyze() {
 	}
 }
 
-void MonsterInfo::parseMessages(const string &messages) {
+void MonsterInfo::parseMessages(const string& messages) {
 	if (look_at != saiph->levels[saiph->position.level].monsters.end() && messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ') {
 		/* probably looked at a monster */
 		string::size_type pos = string::npos;
@@ -68,7 +68,7 @@ void MonsterInfo::parseMessages(const string &messages) {
 }
 
 /* private methods */
-void MonsterInfo::farlook(const Point &target) {
+void MonsterInfo::farlook(const Point& target) {
 	/* look at something, eg. monster */
 	farlook_command = ";";
 	Point cursor = position;

@@ -53,7 +53,7 @@ void Door::analyze() {
 	/* go to nearest closed door and get it open somehow */
 	unsigned int least_moves = UNREACHABLE;
 	for (map<Point, int>::iterator d = World::levels[Saiph::position.level()].symbols[(unsigned char) CLOSED_DOOR].begin(); d != World::levels[Saiph::position.level()].symbols[(unsigned char) CLOSED_DOOR].end(); ++d) {
-		const PathNode &node = World::shortestPath(d->first);
+		const PathNode& node = World::shortestPath(d->first);
 		if (node.cost == UNREACHABLE)
 			continue; // can't reach this door
 		if (World::levels[Saiph::position.level()].branch == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items[_unlock_tool_key].name == "lock pick" || Inventory::items[_unlock_tool_key].name == "credit card"))
@@ -63,29 +63,29 @@ void Door::analyze() {
 		if (node.moves == 1) {
 			/* open/pick/kick door */
 			if (d->second != DOOR_LOCKED) {
-				World::setAction(static_cast<action::Action *> (new action::Open(this, node.dir, PRIORITY_DOOR_OPEN)));
+				World::setAction(static_cast<action::Action*> (new action::Open(this, node.dir, PRIORITY_DOOR_OPEN)));
 			} else {
 				/* we can't apply when we're overtaxed, but logically we can kick... */
 				if (_unlock_tool_key == 0 || Saiph::encumbrance >= OVERTAXED) {
 					if (Saiph::hurt_leg)
 						continue; // can't kick, hurt leg
 					else
-						World::setAction(static_cast<action::Action *> (new action::Kick(this, node.dir, PRIORITY_DOOR_OPEN)));
+						World::setAction(static_cast<action::Action*> (new action::Kick(this, node.dir, PRIORITY_DOOR_OPEN)));
 				} else {
-					World::setAction(static_cast<action::Action *> (new action::Unlock(this, _unlock_tool_key, node.dir, PRIORITY_DOOR_OPEN)));
+					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, node.dir, PRIORITY_DOOR_OPEN)));
 				}
 			}
 			_position = d->first;
 			return;
 		} else if (node.moves < least_moves) {
 			/* go to door */
-			World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, node.moves))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, node.moves))));
 			least_moves = node.moves;
 		}
 	}
 }
 
-void Door::parseMessages(const string &messages) {
+void Door::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos) {
 		/* door unlocked */
 		World::levels[Saiph::position.level()].symbols[(unsigned char) CLOSED_DOOR][_position] = UNKNOWN_SYMBOL_VALUE;
@@ -94,7 +94,7 @@ void Door::parseMessages(const string &messages) {
 		World::levels[Saiph::position.level()].symbols[(unsigned char) CLOSED_DOOR][_position] = 1;
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
-		World::setAction(static_cast<action::Action *> (new action::Answer(this, string(1, YES))));
+		World::setAction(static_cast<action::Action*> (new action::Answer(this, string(1, YES))));
 	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
 		/* we're in a pit, can't reach door from here */
 		_in_a_pit = true;
@@ -124,42 +124,42 @@ void Door::parseMessages(const string &messages) {
 	}
 }
 
-void Door::onEvent(Event * const event) {
+void Door::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
 		map<unsigned char, Item>::iterator i = Inventory::items.find(_unlock_tool_key);
 		if (Inventory::items.find(_unlock_tool_key) == Inventory::items.end())
 			_unlock_tool_key = 0; // darn, we lost our unlocking device
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
+		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i != Inventory::items.end() && wantItem(i->second))
 				_unlock_tool_key = *k; // better key than what we currently got
 		}
 	} else if (event->id() == ReceivedItems::ID) {
-		ReceivedItems *e = static_cast<ReceivedItems *> (event);
+		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				_unlock_tool_key = i->first; // better key than what we currently got
 		}
 	} else if (event->id() == WantItems::ID) {
-		WantItems *e = static_cast<WantItems *> (event);
+		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
-				World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
+				World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
-		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
+		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(*i))
-				World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_DOOR_LOOT)));
+				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_DOOR_LOOT)));
 		}
 	}
 }
 
 /* private methods */
-bool Door::wantItem(const Item &item) {
-	map<string, data::Key *>::iterator k = data::Key::keys.find(item.name);
+bool Door::wantItem(const Item& item) {
+	map<string, data::Key*>::iterator k = data::Key::keys.find(item.name);
 	if (k == data::Key::keys.end())
 		return false; // not a key
 

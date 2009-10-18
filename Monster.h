@@ -13,7 +13,7 @@ namespace data {
 
 class Monster {
 public:
-	const data::Monster *data;
+	const data::Monster* data;
 	unsigned char symbol;
 	int color;
 	int last_seen;

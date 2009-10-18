@@ -31,7 +31,7 @@ Telnet::Telnet() {
 	password.append("\n");
 
 	/* connect to host using telnet */
-	struct hostent *he = gethostbyname(url.c_str());
+	struct hostent* he = gethostbyname(url.c_str());
 	if (he == NULL) {
 		herror("gethostbyname");
 		exit(1);
@@ -44,10 +44,10 @@ Telnet::Telnet() {
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(TELNET_NETHACK_PORT);
-	addr.sin_addr = *((struct in_addr *) he->h_addr);
+	addr.sin_addr = *((struct in_addr*) he->h_addr);
 	memset(addr.sin_zero, '\0', sizeof (addr.sin_zero));
 
-	if (connect(sock, (struct sockaddr *) & addr, sizeof (addr)) == -1) {
+	if (connect(sock, (struct sockaddr*) & addr, sizeof (addr)) == -1) {
 		perror("connect");
 		exit(1);
 	}
@@ -91,7 +91,7 @@ Telnet::~Telnet() {
 }
 
 /* methods */
-int Telnet::retrieve(char *buffer, int count) {
+int Telnet::retrieve(char* buffer, int count) {
 	/* this is borrowed from TAEB:
 	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
 	 * then we'll just read until last bytes equal [?, ?, ?] */
@@ -143,7 +143,7 @@ int Telnet::retrieve(char *buffer, int count) {
 	return retrieved;
 }
 
-int Telnet::transmit(const string &data) {
+int Telnet::transmit(const string& data) {
 	return transmit(data.c_str(), data.length());
 }
 
@@ -155,6 +155,6 @@ void Telnet::stop() {
 }
 
 /* private methods */
-int Telnet::transmit(const char *data, int length) {
+int Telnet::transmit(const char* data, int length) {
 	return send(sock, data, length, 0);
 }

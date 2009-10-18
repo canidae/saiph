@@ -41,12 +41,12 @@ namespace data {
 
 	class Food : public Item {
 	public:
-		static std::map<std::string, Food *> foods;
+		static std::map<std::string, Food*> foods;
 		const int nutrition;
 		const int eat_time;
 		const int eat_effects;
 
-		Food(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
+		Food(const std::string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
 
 		~Food() {
 		}
@@ -54,10 +54,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Food *food);
+		static void addToMap(const std::string& name, Food* food);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
+		static void create(const std::string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects);
 	};
 }
 #endif

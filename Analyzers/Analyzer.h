@@ -20,20 +20,20 @@ namespace analyzer {
 		virtual ~Analyzer() {
 		}
 
-		const std::string &name() {
+		const std::string& name() {
 			return _name;
 		}
 
 		static void init();
 		static void destroy();
 
-		virtual void parseMessages(const std::string &) {
+		virtual void parseMessages(const std::string&) {
 		}
 
 		virtual void analyze() {
 		}
 
-		virtual void onEvent(event::Event * const) {
+		virtual void onEvent(event::Event* const) {
 		}
 
 	private:

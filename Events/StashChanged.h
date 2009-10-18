@@ -21,11 +21,11 @@ namespace event {
 			return ID;
 		}
 
-		virtual Coordinate &stash() {
+		virtual Coordinate& stash() {
 			return _stash;
 		}
 
-		virtual Coordinate &stash(const Coordinate &stash) {
+		virtual Coordinate& stash(const Coordinate& stash) {
 			_stash = stash;
 			return this->stash();
 		}

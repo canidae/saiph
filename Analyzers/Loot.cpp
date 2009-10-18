@@ -26,7 +26,7 @@ Loot::Loot() : Analyzer("Loot"), _showing_pickup(false), _showing_drop(false) {
 void Loot::analyze() {
 	/* check inventory if it's not updated */
 	if (!Inventory::updated) {
-		World::setAction(static_cast<action::Action *> (new action::ListInventory(this)));
+		World::setAction(static_cast<action::Action*> (new action::ListInventory(this)));
 		return;
 	}
 
@@ -39,22 +39,22 @@ void Loot::analyze() {
 			_visit.erase(v++);
 			continue;
 		}
-		const PathNode &node = World::shortestPath(*v);
+		const PathNode& node = World::shortestPath(*v);
 		if (node.dir == NOWHERE) {
 			/* standing on stash, look and remove from visit */
-			if (World::setAction(static_cast<action::Action *> (new action::Look(this)))) {
+			if (World::setAction(static_cast<action::Action*> (new action::Look(this)))) {
 				_visit.erase(v++);
 				continue;
 			}
 		} else if (node.cost < UNPASSABLE) {
 			/* move to stash */
-			World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, node.moves))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, node.moves))));
 		}
 		++v;
 	}
 }
 
-void Loot::parseMessages(const string &messages) {
+void Loot::parseMessages(const string& messages) {
 	string::size_type pos;
 
 	if (!World::menu) {
@@ -84,7 +84,7 @@ void Loot::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *> (&_wi));
+		EventBus::broadcast(static_cast<Event*> (&_wi));
 		/* pick up stuff that was wanted by analyzers */
 		vector<string> pickup;
 		ostringstream tmp;
@@ -95,7 +95,7 @@ void Loot::parseMessages(const string &messages) {
 			tmp << i->second.want << i->first;
 			pickup.push_back(tmp.str());
 		}
-		World::setAction(static_cast<action::Action *> (new action::SelectMultiple(this, pickup)));
+		World::setAction(static_cast<action::Action*> (new action::SelectMultiple(this, pickup)));
 	} else if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS)) != string::npos || _showing_drop) {
 		/* dropping items */
 		if (_showing_drop) {
@@ -131,7 +131,7 @@ void Loot::parseMessages(const string &messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<Event *> (&_wi));
+		EventBus::broadcast(static_cast<Event*> (&_wi));
 		/* drop stuff no analyzer wanted */
 		vector<string> drop;
 		ostringstream tmp;
@@ -150,19 +150,19 @@ void Loot::parseMessages(const string &messages) {
 			tmp << (i->second.count - i->second.want) << i->first;
 			drop.push_back(tmp.str());
 		}
-		World::setAction(static_cast<action::Action *> (new action::SelectMultiple(this, drop)));
+		World::setAction(static_cast<action::Action*> (new action::SelectMultiple(this, drop)));
 	}
 
 	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_SEVERAL_MORE_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_MORE_OBJECTS_HERE) != string::npos) {
 		/* several/many objects herek, take a look around */
-		World::setAction(static_cast<action::Action *> (new action::Look(this)));
+		World::setAction(static_cast<action::Action*> (new action::Look(this)));
 	}
 }
 
-void Loot::onEvent(Event * const event) {
+void Loot::onEvent(Event* const event) {
 	if (event->id() == StashChanged::ID) {
 		/* stash changed, we need to visit it again */
-		StashChanged *e = static_cast<StashChanged *> (event);
+		StashChanged* e = static_cast<StashChanged*> (event);
 		_visit.insert(e->stash());
 	}
 }

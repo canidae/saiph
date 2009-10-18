@@ -11,13 +11,13 @@ namespace data {
 
 	class Weapon : public Item {
 	public:
-		static std::map<std::string, Weapon *> weapons;
+		static std::map<std::string, Weapon*> weapons;
 		bool one_handed;
 		int alignment;
 		Attack attack_small[3];
 		Attack attack_large[3];
 
-		Weapon(const std::string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2);
+		Weapon(const std::string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
 
 		virtual ~Weapon() {
 		}
@@ -25,7 +25,7 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Weapon *weapon);
+		static void addToMap(const std::string& name, Weapon* weapon);
 	};
 }
 #endif

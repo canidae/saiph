@@ -11,12 +11,12 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Armor *> Armor::armors;
+map<string, Armor*> Armor::armors;
 
-Armor::Armor(const string &name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties) : Item(name, cost, weight, ARMOR, material, properties), slot(slot), ac(ac), mc(mc) {
+Armor::Armor(const string& name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties) : Item(name, cost, weight, ARMOR, material, properties), slot(slot), ac(ac), mc(mc) {
 }
 
-void Armor::addToMap(const string &name, Armor *armor) {
+void Armor::addToMap(const string& name, Armor* armor) {
 	Armor::armors[name] = armor;
 	Item::addToMap(name, armor);
 }

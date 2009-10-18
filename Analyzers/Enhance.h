@@ -16,12 +16,12 @@ class Saiph;
 namespace analyzer {
 	class Enhance : public Analyzer {
 	public:
-		Enhance(Saiph *saiph);
+		Enhance(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		bool do_enhance;
 		bool got_enhance_menu;
 	};

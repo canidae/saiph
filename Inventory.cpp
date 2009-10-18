@@ -22,7 +22,7 @@ set<unsigned char> Inventory::lost;
 void Inventory::analyze() {
 }
 
-void Inventory::parseMessages(const string &messages) {
+void Inventory::parseMessages(const string& messages) {
 	if (World::getLastActionID() == action::ListInventory::ID && World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
 		/* last action was list inventory and we got a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
@@ -67,7 +67,7 @@ void Inventory::parseMessages(const string &messages) {
 		}
 		if (changed.keys().size() > 0) {
 			/* broadcast ChangedInventoryItems */
-			EventBus::broadcast(static_cast<Event *> (&changed));
+			EventBus::broadcast(static_cast<Event*> (&changed));
 		}
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
 		/* we're not carrying anything */
@@ -80,7 +80,7 @@ void Inventory::parseMessages(const string &messages) {
 	}
 }
 
-void Inventory::addItem(unsigned char key, const Item &item) {
+void Inventory::addItem(unsigned char key, const Item& item) {
 	if (item.count <= 0)
 		return;
 	Debug::inventory() << "Adding " << item.count << " " << item.name << " to inventory slot " << key << endl;
@@ -95,7 +95,7 @@ void Inventory::addItem(unsigned char key, const Item &item) {
 	setSlot(key, item);
 }
 
-void Inventory::removeItem(unsigned char key, const Item &item) {
+void Inventory::removeItem(unsigned char key, const Item& item) {
 	if (item.count <= 0)
 		return;
 	map<unsigned char, Item>::iterator i = items.find(key);
@@ -118,16 +118,16 @@ void Inventory::removeItem(unsigned char key, const Item &item) {
 }
 
 /* private methods */
-void Inventory::setSlot(unsigned char key, const Item &item) {
+void Inventory::setSlot(unsigned char key, const Item& item) {
 	if (item.additional == "being worn") {
 		/* armor */
-		map<string, data::Armor *>::iterator a = data::Armor::armors.find(item.name);
+		map<string, data::Armor*>::iterator a = data::Armor::armors.find(item.name);
 		if (a != data::Armor::armors.end()) {
 			slots[a->second->slot] = key;
 			return;
 		}
 		/* amulet */
-		map<string, data::Amulet *>::iterator b = data::Amulet::amulets.find(item.name);
+		map<string, data::Amulet*>::iterator b = data::Amulet::amulets.find(item.name);
 		if (b != data::Amulet::amulets.end()) {
 			slots[SLOT_AMULET] = key;
 			return;

@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Engrave(analyzer::Analyzer *analyzer, const std::string &engrave_msg, unsigned char engrave_with, int priority, bool should_append = true) : Action(analyzer), _engrave(std::string(1, 'E'), priority), _message(engrave_msg, PRIORITY_CONTINUE_ACTION), _item(std::string(1, engrave_with), PRIORITY_CONTINUE_ACTION), _append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {
+		Engrave(analyzer::Analyzer* analyzer, const std::string& engrave_msg, unsigned char engrave_with, int priority, bool should_append = true) : Action(analyzer), _engrave(std::string(1, 'E'), priority), _message(engrave_msg, PRIORITY_CONTINUE_ACTION), _item(std::string(1, engrave_with), PRIORITY_CONTINUE_ACTION), _append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Engrave() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 
 			case 0:
@@ -39,7 +39,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_ENGRAVE_WITH) != std::string::npos)
 				_sequence = 1;
 			else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos)

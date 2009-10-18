@@ -5,17 +5,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Food *> Food::foods;
+map<string, Food*> Food::foods;
 
-Food::Food(const string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) : Item(name, cost, weight, FOOD, material, properties), nutrition(nutrition), eat_time(eat_time), eat_effects(eat_effects) {
+Food::Food(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) : Item(name, cost, weight, FOOD, material, properties), nutrition(nutrition), eat_time(eat_time), eat_effects(eat_effects) {
 }
 
-void Food::addToMap(const string &name, Food *food) {
+void Food::addToMap(const string& name, Food* food) {
 	Food::foods[name] = food;
 	Item::addToMap(name, food);
 }
 
-void Food::create(const string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) {
+void Food::create(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) {
 	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects));
 	if (eat_time > 1 && name != "tin" && name != "tin of spinach") {
 		string partly_eaten = "partly eaten ";

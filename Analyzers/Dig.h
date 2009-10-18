@@ -16,14 +16,14 @@ class Saiph;
 namespace analyzer {
 	class Dig : public Analyzer {
 	public:
-		Dig(Saiph *saiph);
+		Dig(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &message);
+		void parseMessages(const std::string& message);
 
 	private:
 		Request req;
-		Saiph *saiph;
+		Saiph* saiph;
 		unsigned char digging_tool;
 		unsigned char dig_direction;
 		Point last_dig_target;
@@ -32,7 +32,7 @@ namespace analyzer {
 
 		void findDiggingTool();
 		bool freeWeaponHand();
-		bool isDiggingTool(const Item &item);
+		bool isDiggingTool(const Item& item);
 	};
 }
 #endif

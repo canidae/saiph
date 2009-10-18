@@ -4,17 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Helmet *> Helmet::helmets;
+map<string, Helmet*> Helmet::helmets;
 
-Helmet::Helmet(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_HELMET, ac, mc, properties) {
+Helmet::Helmet(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_HELMET, ac, mc, properties) {
 }
 
-void Helmet::addToMap(const string &name, Helmet *helmet) {
+void Helmet::addToMap(const string& name, Helmet* helmet) {
 	Helmet::helmets[name] = helmet;
 	Armor::addToMap(name, helmet);
 }
 
-void Helmet::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+void Helmet::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Helmet(name, cost, weight, material, ac, mc, properties));
 }
 

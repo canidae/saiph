@@ -8,7 +8,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Potion::Potion(Saiph *saiph) : Analyzer("Potion"), saiph(saiph), command2("") {
+Potion::Potion(Saiph* saiph) : Analyzer("Potion"), saiph(saiph), command2("") {
 	appearance.push_back("black");
 	appearance.push_back("brilliant blue");
 	appearance.push_back("brown");
@@ -52,7 +52,7 @@ void Potion::analyze() {
 	}
 }
 
-void Potion::parseMessages(const string &messages) {
+void Potion::parseMessages(const string& messages) {
 	if (command2 != "" && messages.find(MESSAGE_WHAT_TO_DRINK, 0) != string::npos) {
 		/* quaff the potion */
 		command = command2;
@@ -93,7 +93,7 @@ void Potion::parseMessages(const string &messages) {
 	}
 }
 
-bool Potion::request(const Request &request) {
+bool Potion::request(const Request& request) {
 	if (request.request == REQUEST_QUAFF_HEALING) {
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
 			if (i->second.name != "potion of healing" && i->second.name != "potion of extra healing" && i->second.name != "potion of full healing")

@@ -24,17 +24,17 @@
 class Command {
 public:
 
-	Command(const std::string &command = "", int priority = ILLEGAL_PRIORITY) : _command(command), _priority(priority) {
+	Command(const std::string& command = "", int priority = ILLEGAL_PRIORITY) : _command(command), _priority(priority) {
 	}
 
-	Command(const Command &c) : _command(c._command), _priority(c._priority) {
+	Command(const Command& c) : _command(c._command), _priority(c._priority) {
 	}
 
-	const std::string &command() const {
+	const std::string& command() const {
 		return _command;
 	}
 
-	const std::string &command(const std::string &command) {
+	const std::string& command(const std::string& command) {
 		_command = command;
 		return this->command();
 	}
@@ -48,7 +48,7 @@ public:
 		return this->priority();
 	}
 
-	bool operator==(const Command &c) const {
+	bool operator==(const Command& c) const {
 		return _priority == c._priority && _command == _command;
 	}
 
@@ -57,5 +57,5 @@ private:
 	int _priority;
 };
 
-std::ostream & operator<<(std::ostream &os, const Command &c);
+std::ostream& operator<<(std::ostream& os, const Command& c);
 #endif

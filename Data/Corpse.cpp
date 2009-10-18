@@ -4,18 +4,18 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Corpse *> Corpse::corpses;
+map<string, Corpse*> Corpse::corpses;
 
-Corpse::Corpse(const string &name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects), resistance_confer_probability(resistance_confer_probability) {
+Corpse::Corpse(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects), resistance_confer_probability(resistance_confer_probability) {
 }
 
-void Corpse::addToMap(const string &name, Corpse *corpse) {
+void Corpse::addToMap(const string& name, Corpse* corpse) {
 	Corpse::corpses[name] = corpse;
 	Food::addToMap(name, corpse);
 }
 
-void Corpse::create(const string &name, int nutrition, int eat_effects, int resistance_confer_probability) {
-	const Monster *monster = Monster::getMonsterData(name);
+void Corpse::create(const string& name, int nutrition, int eat_effects, int resistance_confer_probability) {
+	const Monster* monster = Monster::getMonsterData(name);
 	if (monster == NULL || monster->name.size() <= 0)
 		return;
 	/* corpses rot and become tainted, we use this to distinguish corpses (except lizards ands lichens)

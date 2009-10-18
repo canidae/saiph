@@ -6,11 +6,11 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Enhance::Enhance(Saiph *saiph) : Analyzer("Enhance"), saiph(saiph), do_enhance(true), got_enhance_menu(false) {
+Enhance::Enhance(Saiph* saiph) : Analyzer("Enhance"), saiph(saiph), do_enhance(true), got_enhance_menu(false) {
 }
 
 /* methods */
-void Enhance::parseMessages(const string &messages) {
+void Enhance::parseMessages(const string& messages) {
 	if (messages.find(ENHANCE_MESSAGE_CONFIDENT, 0) != string::npos) {
 		do_enhance = true;
 	} else if (messages.find(ENHANCE_CURRENT_SKILLS, 0) != string::npos || messages.find(ENHANCE_PICK_A_SKILL, 0) != string::npos) {

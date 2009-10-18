@@ -15,13 +15,13 @@ class Saiph;
 namespace analyzer {
 	class Scroll : public Analyzer {
 	public:
-		Scroll(Saiph *saiph);
+		Scroll(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
 		std::vector<std::string> appearance;
-		Saiph *saiph;
+		Saiph* saiph;
 	};
 }
 #endif

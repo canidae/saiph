@@ -10,8 +10,8 @@ namespace analyzer {
 	public:
 		Elbereth();
 
-		void parseMessages(const std::string &messages);
-		void onEvent(event::Event * const evt);
+		void parseMessages(const std::string& messages);
+		void onEvent(event::Event* const evt);
 
 	private:
 		int _elbereth_count;

@@ -8,9 +8,9 @@ using namespace analyzer;
 using namespace event;
 using namespace std;
 
-vector<vector<Analyzer *> > EventBus::events;
+vector<vector<Analyzer*> > EventBus::events;
 
-void EventBus::registerEvent(int event_id, Analyzer *analyzer) {
+void EventBus::registerEvent(int event_id, Analyzer* analyzer) {
 	if (event_id < 0)
 		return;
 	if (event_id >= (int) events.size())
@@ -19,11 +19,11 @@ void EventBus::registerEvent(int event_id, Analyzer *analyzer) {
 	events[event_id].push_back(analyzer);
 }
 
-void EventBus::unregisterEvent(int event_id, Analyzer *analyzer) {
+void EventBus::unregisterEvent(int event_id, Analyzer* analyzer) {
 	if (event_id < 0 || event_id >= (int) events.size())
 		return;
-	vector<Analyzer *> &subscribers = events[event_id];
-	for (vector<Analyzer *>::iterator s = subscribers.begin(); s != subscribers.end(); ++s) {
+	vector<Analyzer*> &subscribers = events[event_id];
+	for (vector<Analyzer*>::iterator s = subscribers.begin(); s != subscribers.end(); ++s) {
 		if (*s == analyzer) {
 			subscribers.erase(s);
 			Debug::notice() << EVENTBUS_DEBUG_NAME << "Unregistered " << analyzer->name() << " for event " << event_id << endl;
@@ -33,11 +33,11 @@ void EventBus::unregisterEvent(int event_id, Analyzer *analyzer) {
 	Debug::warning() << EVENTBUS_DEBUG_NAME << "Failed to unregister " << analyzer->name() << " for event " << event_id << endl;
 }
 
-void EventBus::broadcast(Event * const event) {
+void EventBus::broadcast(Event* const event) {
 	if (event->id() < 0 || event->id() >= (int) events.size())
 		return;
-	vector<Analyzer *> &subscribers = events[event->id()];
+	vector<Analyzer*> &subscribers = events[event->id()];
 	Debug::broadcast() << event->name() << " to " << subscribers.size() << " subscribers" << endl;
-	for (vector<Analyzer *>::iterator s = subscribers.begin(); s != subscribers.end(); ++s)
+	for (vector<Analyzer*>::iterator s = subscribers.begin(); s != subscribers.end(); ++s)
 		(*s)->onEvent(event);
 }

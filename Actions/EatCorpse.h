@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		EatCorpse(analyzer::Analyzer *analyzer, const std::string &corpse, int priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _corpse(corpse), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_CONTINUE_ACTION), _escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {
+		EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, int priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _corpse(corpse), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_CONTINUE_ACTION), _escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~EatCorpse() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 
 			case 0:
@@ -43,7 +43,7 @@ namespace action {
 			}
 		};
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {
 				/* we got "what do you want to eat?", we shouldn't get this
 				 * as we want to eat a corpse on the ground. escape */

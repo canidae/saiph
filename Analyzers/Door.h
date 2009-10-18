@@ -22,15 +22,15 @@ namespace analyzer {
 		Door();
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		void onEvent(event::Event * const event);
+		void parseMessages(const std::string& messages);
+		void onEvent(event::Event* const event);
 
 	private:
 		Point _position;
 		unsigned char _unlock_tool_key;
 		bool _in_a_pit;
 
-		bool wantItem(const Item &item);
+		bool wantItem(const Item& item);
 	};
 }
 #endif

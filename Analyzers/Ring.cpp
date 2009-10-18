@@ -6,7 +6,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Ring::Ring(Saiph *saiph) : Analyzer("Ring"), saiph(saiph), command2(""), wear_ring(false) {
+Ring::Ring(Saiph* saiph) : Analyzer("Ring"), saiph(saiph), command2(""), wear_ring(false) {
 }
 
 /* methods */
@@ -15,7 +15,7 @@ void Ring::analyze() {
 		wearRing();
 }
 
-void Ring::parseMessages(const string &messages) {
+void Ring::parseMessages(const string& messages) {
 	if (saiph->world->question && (messages.find(MESSAGE_WHAT_TO_PUT_ON, 0) != string::npos || messages.find(MESSAGE_WHAT_TO_REMOVE, 0) != string::npos)) {
 		/* put on or remove a ring */
 		command = command2;
@@ -35,7 +35,7 @@ void Ring::parseMessages(const string &messages) {
 	}
 }
 
-bool Ring::request(const Request &request) {
+bool Ring::request(const Request& request) {
 	if (request.request == REQUEST_RING_WEAR) {
 		/* player wish to wear this ring */
 		WearRing wr;

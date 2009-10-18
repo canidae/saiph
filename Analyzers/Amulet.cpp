@@ -29,31 +29,31 @@ Amulet::Amulet() : Analyzer("Amulet") {
 }
 
 /* methods */
-void Amulet::onEvent(Event * const event) {
+void Amulet::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
+		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		wearAmulet(e->keys());
 	} else if (event->id() == ReceivedItems::ID) {
 		// FIXME
-		//ReceivedItems *e = static_cast<ReceivedItems *>(event);
+		//ReceivedItems* e = static_cast<ReceivedItems*>(event);
 		//wearAmulet(e->items);
 	} else if (event->id() == WantItems::ID) {
-		WantItems *e = static_cast<WantItems *> (event);
+		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
-				World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
+				World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
-		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
+		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(*i))
-				World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_AMULET_LOOT)));
+				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_AMULET_LOOT)));
 		}
 	}
 }
 
 /* private methods */
-bool Amulet::wantItem(const Item &item) {
+bool Amulet::wantItem(const Item& item) {
 	return data::Amulet::amulets.find(item.name) != data::Amulet::amulets.end();
 }
 
@@ -65,13 +65,13 @@ void Amulet::wearAmulet(const set<unsigned char> &keys) {
 
 	/* find the best amulet */
 	unsigned char best_key = (worn == Inventory::items.end()) ? '\0' : worn->first;
-	map<string, data::Amulet *>::iterator best_amulet = (worn == Inventory::items.end()) ? data::Amulet::amulets.end() : data::Amulet::amulets.find(worn->second.name);
+	map<string, data::Amulet*>::iterator best_amulet = (worn == Inventory::items.end()) ? data::Amulet::amulets.end() : data::Amulet::amulets.find(worn->second.name);
 
 	for (set<unsigned char>::const_iterator k = keys.begin(); k != keys.end(); ++k) {
 		map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 		if (i == Inventory::items.end())
 			return; // huh? this can't happen
-		map<string, data::Amulet *>::iterator a = data::Amulet::amulets.find(i->second.name);
+		map<string, data::Amulet*>::iterator a = data::Amulet::amulets.find(i->second.name);
 		if (a == data::Amulet::amulets.end())
 			return; // this is no amulet
 
@@ -83,5 +83,5 @@ void Amulet::wearAmulet(const set<unsigned char> &keys) {
 		return; // no new amulet to put on or wearing best amulet
 
 	/* put on this amulet */
-	World::setAction(static_cast<action::Action *> (new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
+	World::setAction(static_cast<action::Action*> (new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
 }

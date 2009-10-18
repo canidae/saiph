@@ -36,9 +36,9 @@ int World::real_turn = 0;
 vector<Level> World::levels;
 Coordinate World::branch[BRANCHES];
 
-Connection *World::connection = NULL;
-action::Action *World::action = NULL;
-list<action::Action *> World::action_queue;
+Connection* World::connection = NULL;
+action::Action* World::action = NULL;
+list<action::Action*> World::action_queue;
 bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {
 	{false}
 };
@@ -54,7 +54,7 @@ string World::msg_str;
 Point World::last_menu;
 map<string, vector<int> > World::levelmap;
 time_t World::start_time = time(NULL);
-vector<Analyzer *> World::analyzers;
+vector<Analyzer*> World::analyzers;
 int World::last_action_id = NO_ACTION;
 
 /* methods */
@@ -71,18 +71,18 @@ void World::init(int connection_type) {
 void World::destroy() {
 	delete action;
 	delete connection;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+	for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 		delete *a;
 }
 
-void World::registerAnalyzer(Analyzer *analyzer) {
+void World::registerAnalyzer(Analyzer* analyzer) {
 	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name() << endl;
 	analyzers.push_back(analyzer);
 }
 
-void World::unregisterAnalyzer(Analyzer *analyzer) {
+void World::unregisterAnalyzer(Analyzer* analyzer) {
 	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name() << endl;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+	for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
 			analyzers.erase(a);
 			return;
@@ -96,7 +96,7 @@ int World::getPriority() {
 	return action->command().priority();
 }
 
-bool World::setAction(action::Action *action) {
+bool World::setAction(action::Action* action) {
 	if (World::action != NULL) {
 		if (action->command().priority() <= World::action->command().priority()) {
 			delete action;
@@ -108,7 +108,7 @@ bool World::setAction(action::Action *action) {
 	return true;
 }
 
-bool World::queueAction(action::Action *action) {
+bool World::queueAction(action::Action* action) {
 	if (action == NULL) {
 		return false; // shouldn't happen, though
 	} else if (action->command().priority() <= PRIORITY_TURN_MAX) {
@@ -209,7 +209,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 	while (++pivot < level_count) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols[symbol].begin(); s != levels[level_queue[pivot]].symbols[symbol].end(); ++s) {
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			Debug::info() << SAIPH_DEBUG_NAME << "Found '" << symbol << "' on level " << level_queue[pivot] << ": " << node.dir << " - " << node.moves << " - " << node.cost << endl;
 			if (node.cost == UNREACHABLE)
 				continue;
@@ -234,7 +234,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
 			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
@@ -263,7 +263,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
 			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
@@ -292,7 +292,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 				continue; // we don't know where this magic portal leads
 			if (level_added[s->second])
 				continue; // already added this level
-			const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost >= UNPASSABLE)
 				continue;
 			else if (node.cost + level_pathnode[level_queue[pivot]].cost >= best_pathnode.cost)
@@ -318,7 +318,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 	return best_pathnode;
 }
 
-PathNode World::shortestPath(const Coordinate &target) {
+PathNode World::shortestPath(const Coordinate& target) {
 	/* returns PathNode for shortest path from player to target */
 	if (target.level() < 0 || target.level() >= (int) levels.size()) {
 		return PathNode(); // outside the map
@@ -341,7 +341,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 			Debug::notice() << SAIPH_DEBUG_NAME << "interlevel pathing: " << pivot << " - " << level_count << endl;
 			/* check if target is on level */
 			if (level_queue[pivot] == target.level()) {
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(target);
+				const PathNode& node = levels[level_queue[pivot]].shortestPath(target);
 				if (node.cost == UNREACHABLE)
 					continue;
 				else if (node.cost == UNPASSABLE && node.moves > 1)
@@ -363,7 +363,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
 					continue; // already added this level
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 				if (node.cost >= UNPASSABLE)
 					continue;
 				/* distance to these stairs is shorter than shortest path found so far.
@@ -391,7 +391,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
 					continue; // already added this level
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 				if (node.cost >= UNPASSABLE)
 					continue;
 				/* distance to these stairs is shorter than shortest path found so far.
@@ -419,7 +419,7 @@ PathNode World::shortestPath(const Coordinate &target) {
 					continue; // we don't know where these stairs lead
 				else if (level_added[s->second])
 					continue; // already added this level
-				const PathNode &node = levels[level_queue[pivot]].shortestPath(s->first);
+				const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 				if (node.cost >= UNPASSABLE)
 					continue;
 				/* distance to these stairs is shorter than shortest path found so far.
@@ -466,18 +466,18 @@ void World::run() {
 		if (action == NULL || action->command() == action::Action::NOOP) {
 			/* we got no command, find a new one */
 			/* parse messages */
-			for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+			for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 				(*a)->parseMessages(messages);
 
 			/* analyze */
 			if (!question && !menu) {
-				for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+				for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
 					(*a)->analyze();
 			}
 		}
 
 		/* check if we got some queued actions */
-		for (list<action::Action *>::iterator a = action_queue.begin(); a != action_queue.end(); ++a) {
+		for (list<action::Action*>::iterator a = action_queue.begin(); a != action_queue.end(); ++a) {
 			if (setAction(*a)) {
 				/* we will execute this action, remove it from queue.
 				 * if it fails, the analyzer that queued the action needs to handle it */
@@ -588,7 +588,7 @@ void World::run() {
 }
 
 /* private methods */
-void World::addChangedLocation(const Point &point) {
+void World::addChangedLocation(const Point& point) {
 	/* add a location changed since last frame unless it's already added */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END || changed[point.row()][point.col()])
 		return;
@@ -756,7 +756,7 @@ Point World::directionToPoint(unsigned char direction) {
 	return pos;
 }
 
-bool World::directLineHelper(const Point &point, bool ignore_sinks, bool ignore_boulders) {
+bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders) {
 	unsigned char symbol = getDungeonSymbol(point);
 	if (!Level::passable[symbol] && (!ignore_boulders || symbol != BOULDER))
 		return false;
@@ -863,7 +863,7 @@ void World::dumpMaps() {
 	}
 }
 
-bool World::executeCommand(const string &command) {
+bool World::executeCommand(const string& command) {
 	/* send a command to nethack */
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
 		changed[c->row()][c->col()] = false;
@@ -1005,7 +1005,7 @@ void World::fetchMessages() {
 	}
 }
 
-void World::handleEscapeSequence(int *pos, int *color) {
+void World::handleEscapeSequence(int* pos, int* color) {
 	if (data[*pos] == 27) {
 		/* sometimes we get 2 escape chars in a row,
 		 * just return in those cases */
@@ -1189,7 +1189,7 @@ void World::handleEscapeSequence(int *pos, int *color) {
 	}
 }
 
-bool World::parseAttributeRow(const char *attributerow) {
+bool World::parseAttributeRow(const char* attributerow) {
 	/* fetch attributes */
 	int matched = sscanf(attributerow, "%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s", &Saiph::strength, &Saiph::dexterity, &Saiph::constitution, &Saiph::intelligence, &Saiph::wisdom, &Saiph::charisma, effects[0]);
 	if (matched < 7)
@@ -1203,7 +1203,7 @@ bool World::parseAttributeRow(const char *attributerow) {
 	return true;
 }
 
-bool World::parseStatusRow(const char *statusrow) {
+bool World::parseStatusRow(const char* statusrow) {
 	/* fetch status */
 	Saiph::encumbrance = UNENCUMBERED;
 	Saiph::hunger = CONTENT;
@@ -1370,7 +1370,7 @@ void World::update() {
 }
 
 /* main */
-int main(int argc, const char *argv[]) {
+int main(int argc, const char* argv[]) {
 	int connection_type = CONNECTION_TELNET;
 	string logfile = "saiph.log";
 

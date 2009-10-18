@@ -7,7 +7,7 @@
 using namespace analyzer;
 using namespace std;
 
-Rub::Rub(Saiph *saiph) : Analyzer("Rub"), saiph(saiph), magic_lamp_key(ILLEGAL_ITEM) {
+Rub::Rub(Saiph* saiph) : Analyzer("Rub"), saiph(saiph), magic_lamp_key(ILLEGAL_ITEM) {
 }
 
 void Rub::analyze() {
@@ -17,7 +17,7 @@ void Rub::analyze() {
 	command = RUB;
 }
 
-void Rub::parseMessages(const string &messages) {
+void Rub::parseMessages(const string& messages) {
 	if (saiph->inventory_changed)
 		findMagicLamp();
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_RUB) != string::npos) {
@@ -40,7 +40,7 @@ void Rub::findMagicLamp() {
 	magic_lamp_key = ILLEGAL_ITEM;
 }
 
-bool Rub::isMagicLamp(const Item &item) {
+bool Rub::isMagicLamp(const Item& item) {
 	if (item.beatitude == CURSED || item.beatitude == UNCURSED || item.name != "magic lamp")
 		return false;
 	if (item.beatitude == BEATITUDE_UNKNOWN) {

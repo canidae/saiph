@@ -4,17 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Shield *> Shield::shields;
+map<string, Shield*> Shield::shields;
 
-Shield::Shield(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SHIELD, ac, mc, properties) {
+Shield::Shield(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SHIELD, ac, mc, properties) {
 }
 
-void Shield::addToMap(const string &name, Shield *shield) {
+void Shield::addToMap(const string& name, Shield* shield) {
 	Shield::shields[name] = shield;
 	Armor::addToMap(name, shield);
 }
 
-void Shield::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+void Shield::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Shield(name, cost, weight, material, ac, mc, properties));
 }
 

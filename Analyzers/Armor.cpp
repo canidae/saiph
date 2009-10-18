@@ -34,7 +34,7 @@ Armor::Armor() : Analyzer("Armor"), wear_armor(false), last_armor_type(0), last_
 }
 
 /* methods */
-void Armor::parseMessages(const string &messages) {
+void Armor::parseMessages(const string& messages) {
 	string::size_type pos;
 
 	if (World::player.polymorphed != last_polymorphed) {
@@ -121,7 +121,7 @@ void Armor::parseMessages(const string &messages) {
 	}
 }
 
-bool Armor::request(const Request &request) {
+bool Armor::request(const Request& request) {
 	if (request.request == REQUEST_ARMOR_WEAR) {
 		/* player wish to wear this armor */
 		if (request.key >= SLOTS)
@@ -195,7 +195,7 @@ void Armor::wearArmor() {
 		cursed[i] = isCursed(i);
 	vector< vector<Item> > choices(SLOTS);
 	for (map<unsigned char, Item>::iterator i = Inventory::items.begin(); i != Inventory::items.end(); ++i) {
-		map<string, ArmorData *>::iterator a = ArmorData::armors.find(i->second.name);
+		map<string, ArmorData*>::iterator a = ArmorData::armors.find(i->second.name);
 		//we don't wear cursed armor, but if we're wearing something cursed we need to add it anyway
 		if (a != ArmorData::armors.end() && ((cursed[a->second->slot] && i->second.beatitude == CURSED) ||
 				(!cursed[a->second->slot] && !(i->second.beatitude == CURSED || i->second.beatitude == BEATITUDE_UNKNOWN))))
@@ -361,12 +361,12 @@ void Armor::resetCanWear() {
 #define WEIGHT_LIMIT 150
 #define WEIGHT_PENALTY 50
 
-int Armor::rank(const ArmorSet &armor) {
-	ArmorData *nulldata = 0;  //vector's constructor didn't like const 0 for some reason
-	vector<ArmorData *> data(SLOTS, nulldata);
+int Armor::rank(const ArmorSet& armor) {
+	ArmorData* nulldata = 0;  //vector's constructor didn't like const 0 for some reason
+	vector<ArmorData*> data(SLOTS, nulldata);
 	for (int i = 0; i < SLOTS; i++)
 		if (armor[i] != Item()) {
-			map<string, ArmorData *>::iterator iter = ArmorData::armors.find(armor[i].name);
+			map<string, ArmorData*>::iterator iter = ArmorData::armors.find(armor[i].name);
 			if (iter != ArmorData::armors.end())
 				data[i] = iter->second;
 		}

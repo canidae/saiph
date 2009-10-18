@@ -10,9 +10,9 @@ namespace data {
 
 	class Tool : public Item {
 	public:
-		static std::map<std::string, Tool *> tools;
+		static std::map<std::string, Tool*> tools;
 
-		Tool(const std::string &name, int cost, int weight, int material, unsigned long long properties);
+		Tool(const std::string& name, int cost, int weight, int material, unsigned long long properties);
 
 		virtual ~Tool() {
 		}
@@ -20,7 +20,7 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Tool *tool);
+		static void addToMap(const std::string& name, Tool* tool);
 	};
 }
 #endif

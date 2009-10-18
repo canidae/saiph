@@ -12,13 +12,13 @@ class Saiph;
 namespace analyzer {
 	class Donate : public Analyzer {
 	public:
-		Donate(Saiph *saiph);
+		Donate(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 		void analyze();
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		unsigned char priest_dir;
 		Coordinate priest_loc;
 	};

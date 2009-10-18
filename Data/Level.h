@@ -13,7 +13,7 @@ namespace data {
 
 	class Level {
 	public:
-		static std::map<std::string, Level *> levels;
+		static std::map<std::string, Level*> levels;
 		static void init();
 
 		const std::string name;
@@ -22,7 +22,7 @@ namespace data {
 		const int min_depth;
 		const int max_depth;
 
-		Level(const std::string &name, const std::vector< std::vector<char> > &symbols, int branch, int min_depth, int max_depth) {
+		Level(const std::string& name, const std::vector< std::vector<char> > &symbols, int branch, int min_depth, int max_depth) {
 		}
 		int match(Level level);
 	};

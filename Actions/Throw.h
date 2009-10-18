@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Throw(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_throw("t", priority), _throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Throw(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_throw("t", priority), _throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Throw() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _do_throw;
@@ -36,7 +36,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_WHAT_TO_THROW) != std::string::npos) {
 				_sequence = 1;
 			} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {

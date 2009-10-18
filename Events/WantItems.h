@@ -42,7 +42,7 @@ namespace event {
 			_items.clear();
 		}
 
-		virtual void addItem(unsigned char key, const Item &item) {
+		virtual void addItem(unsigned char key, const Item& item) {
 			_items[key] = item;
 		}
 

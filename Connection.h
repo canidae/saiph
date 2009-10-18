@@ -12,10 +12,10 @@ public:
 	Connection();
 	virtual ~Connection();
 
-	static Connection *create(int interface);
+	static Connection* create(int interface);
 
-	virtual int retrieve(char *buffer, int count);
-	virtual int transmit(const std::string &data);
+	virtual int retrieve(char* buffer, int count);
+	virtual int transmit(const std::string& data);
 	virtual void start();
 	virtual void stop();
 };

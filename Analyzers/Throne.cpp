@@ -6,7 +6,7 @@
 using namespace analyzer;
 using namespace std;
 
-Throne::Throne(Saiph *saiph) : Analyzer("Throne"), saiph(saiph) {
+Throne::Throne(Saiph* saiph) : Analyzer("Throne"), saiph(saiph) {
 }
 
 void Throne::analyze() {
@@ -17,7 +17,7 @@ void Throne::analyze() {
 		return; // don't get killed by an electric chair
 	else if (saiph->world->player.hitpoints - saiph->world->player.hitpoints_max > 5)
 		return; // for the HP boost result
-	const PathNode &node = saiph->shortestPath(THRONE);
+	const PathNode& node = saiph->shortestPath(THRONE);
 	if (node.cost >= UNPASSABLE)
 		return;
 	else if (node.dir == NOWHERE)

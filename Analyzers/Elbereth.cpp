@@ -16,9 +16,9 @@ Elbereth::Elbereth() : Analyzer("Elbereth"), _elbereth_count(0), _engraving_type
 	EventBus::registerEvent(ElberethQuery::ID, this);
 }
 
-void Elbereth::onEvent(Event * const evt) {
+void Elbereth::onEvent(Event* const evt) {
 	if (evt->id() == ElberethQuery::ID) {
-		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
+		ElberethQuery* const q = static_cast<ElberethQuery* const> (evt);
 		if (World::getLastActionID() != action::Look::ID) {
 			/* data is outdated */
 			_engraving_type = ELBERETH_MUST_CHECK;
@@ -29,7 +29,7 @@ void Elbereth::onEvent(Event * const evt) {
 	}
 }
 
-void Elbereth::parseMessages(const string &messages) {
+void Elbereth::parseMessages(const string& messages) {
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(MESSAGE_YOU_READ);
 	if (pos == string::npos) {

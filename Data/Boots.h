@@ -9,9 +9,9 @@ namespace data {
 
 	class Boots : public Armor {
 	public:
-		static std::map<std::string, Boots *> boots;
+		static std::map<std::string, Boots*> boots;
 
-		Boots(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		Boots(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 
 		virtual ~Boots() {
 		}
@@ -19,10 +19,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Boots *boots);
+		static void addToMap(const std::string& name, Boots* boots);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 	};
 }
 #endif

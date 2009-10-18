@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Remove(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), _remove("R", priority), _remove_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
+		Remove(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _remove("R", priority), _remove_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Remove() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _remove;
@@ -33,7 +33,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (World::question && messages.find(MESSAGE_WHAT_TO_REMOVE) != std::string::npos) {
 				_sequence = 1;
 			} else if (_sequence == 1) {

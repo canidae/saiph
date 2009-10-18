@@ -28,24 +28,24 @@ struct SokobanLevel {
 namespace analyzer {
 	class Sokoban : public Analyzer {
 	public:
-		Sokoban(Saiph *saiph);
+		Sokoban(Saiph* saiph);
 		bool isSokobanLevel(void);
 		bool isSokobanLevel(unsigned int level);
 		int whichSokobanLevel();
 
 		void analyze(void);
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
-		void targetNextLocation(int level, const Move &move);
-		void moveBoulderToTarget(int level, const Move &move);
+		void targetNextLocation(int level, const Move& move);
+		void moveBoulderToTarget(int level, const Move& move);
 
 		void loadLevels();
-		bool loadBoulders(std::ifstream &file, std::vector<Point> &boulders);
-		bool loadSolutions(std::ifstream &file, std::vector<Move> &moves);
-		void getnextline(std::ifstream &file, std::string &line);
+		bool loadBoulders(std::ifstream& file, std::vector<Point> &boulders);
+		bool loadSolutions(std::ifstream& file, std::vector<Move> &moves);
+		void getnextline(std::ifstream& file, std::string& line);
 
-		Saiph *saiph;
+		Saiph* saiph;
 
 		int lineNumber;
 		std::vector<SokobanLevel> levels;

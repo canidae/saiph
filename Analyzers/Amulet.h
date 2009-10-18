@@ -16,10 +16,10 @@ namespace analyzer {
 	public:
 		Amulet();
 
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
-		bool wantItem(const Item &item);
+		bool wantItem(const Item& item);
 		void wearAmulet(const std::set<unsigned char> &keys);
 	};
 }

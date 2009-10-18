@@ -15,9 +15,9 @@ public:
 	Telnet();
 	~Telnet();
 
-	int retrieve(char *buffer, int count);
-	int transmit(const char *data, int length);
-	int transmit(const std::string &data);
+	int retrieve(char* buffer, int count);
+	int transmit(const char* data, int length);
+	int transmit(const std::string& data);
 	void start();
 	void stop();
 

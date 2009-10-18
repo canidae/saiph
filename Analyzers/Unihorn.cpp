@@ -7,7 +7,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Unihorn::Unihorn(Saiph *saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(ILLEGAL_ITEM), apply_priority(-1), unihorn_use_turn(-1) {
+Unihorn::Unihorn(Saiph* saiph) : Analyzer("Unihorn"), saiph(saiph), unihorn_key(ILLEGAL_ITEM), apply_priority(-1), unihorn_use_turn(-1) {
 }
 
 /* methods */
@@ -19,7 +19,7 @@ void Unihorn::analyze() {
 	}
 }
 
-void Unihorn::parseMessages(const string &messages) {
+void Unihorn::parseMessages(const string& messages) {
 	if (saiph->inventory_changed)
 		findUnihorn();
 	if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_APPLY) != string::npos) {
@@ -31,7 +31,7 @@ void Unihorn::parseMessages(const string &messages) {
 	}
 }
 
-bool Unihorn::request(const Request &request) {
+bool Unihorn::request(const Request& request) {
 	if (request.request == REQUEST_APPLY_UNIHORN) {
 		command = APPLY;
 		priority = apply_priority;
@@ -54,7 +54,7 @@ void Unihorn::findUnihorn() {
 	unihorn_key = ILLEGAL_ITEM;
 }
 
-bool Unihorn::isUnihorn(const Item &item) {
+bool Unihorn::isUnihorn(const Item& item) {
 	if (item.beatitude == CURSED || item.name != "unicorn horn")
 		return false;
 	if (item.beatitude == BEATITUDE_UNKNOWN) {

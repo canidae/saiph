@@ -5,17 +5,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Amulet *> Amulet::amulets;
+map<string, Amulet*> Amulet::amulets;
 
-Amulet::Amulet(const string &name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) : Item(name, cost, weight, AMULET, material, properties), confer_effect(confer_effect) {
+Amulet::Amulet(const string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) : Item(name, cost, weight, AMULET, material, properties), confer_effect(confer_effect) {
 }
 
-void Amulet::addToMap(const string &name, Amulet *amulet) {
+void Amulet::addToMap(const string& name, Amulet* amulet) {
 	Amulet::amulets[name] = amulet;
 	Item::addToMap(name, amulet);
 }
 
-void Amulet::create(const string &name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) {
+void Amulet::create(const string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) {
 	addToMap(name, new Amulet(name, cost, weight, material, properties, confer_effect));
 }
 

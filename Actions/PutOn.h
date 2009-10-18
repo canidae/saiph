@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		PutOn(analyzer::Analyzer *analyzer, unsigned char key, int priority) : Action(analyzer), _put_on("P", priority), _put_on_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
+		PutOn(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _put_on("P", priority), _put_on_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~PutOn() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _put_on;
@@ -33,7 +33,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (World::question && messages.find(MESSAGE_WHAT_TO_PUT_ON) != std::string::npos) {
 				_sequence = 1;
 			} else if (_sequence == 1) {

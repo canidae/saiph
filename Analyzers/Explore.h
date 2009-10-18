@@ -22,14 +22,14 @@ namespace analyzer {
 	public:
 		Explore();
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 		void analyze();
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		std::map<Coordinate, int> _visit;
 
-		void explorePoint(Point p, unsigned int *min_moves, int *best_type);
+		void explorePoint(Point p, unsigned int* min_moves, int* best_type);
 	};
 }
 #endif

@@ -8,7 +8,7 @@
 using namespace analyzer;
 using namespace std;
 
-Dig::Dig(Saiph *saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITEM), dig_direction(NOWHERE) {
+Dig::Dig(Saiph* saiph) : Analyzer("Dig"), saiph(saiph), digging_tool(ILLEGAL_ITEM), dig_direction(NOWHERE) {
 }
 
 void Dig::analyze() {
@@ -64,7 +64,7 @@ void Dig::analyze() {
 	/* dig nearest dig_location */
 	unsigned int least_moves = UNREACHABLE;
 	for (list<Point>::iterator d = dig_locations.begin(); d != dig_locations.end(); ) {
-		const PathNode &node = saiph->shortestPath(*d);
+		const PathNode& node = saiph->shortestPath(*d);
 		if (node.cost == UNREACHABLE || node.moves > least_moves) {
 			++d;
 			continue;
@@ -103,7 +103,7 @@ void Dig::analyze() {
 	}
 }
 
-void Dig::parseMessages(const string &messages) {
+void Dig::parseMessages(const string& messages) {
 	if (saiph->inventory_changed)
 		findDiggingTool();
 	if (priority >= PRIORITY_DIG_PATH || dig_direction == NOWHERE)
@@ -147,7 +147,7 @@ bool Dig::freeWeaponHand() {
 	return true; //not wielding anything
 }
 
-bool Dig::isDiggingTool(const Item &item) {
+bool Dig::isDiggingTool(const Item& item) {
 	if (item.beatitude == CURSED || item.name != "pick-axe")
 		return false;
 	if (item.beatitude == BEATITUDE_UNKNOWN) {

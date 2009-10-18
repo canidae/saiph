@@ -10,7 +10,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Beatitude::Beatitude(Saiph *saiph) : Analyzer("Beatitude"), saiph(saiph), check_beatitude(false) {
+Beatitude::Beatitude(Saiph* saiph) : Analyzer("Beatitude"), saiph(saiph), check_beatitude(false) {
 }
 
 /* methods */
@@ -23,7 +23,7 @@ void Beatitude::analyze() {
 		return; // no buc-testing while blind
 
 	/* path to nearest altar */
-	const PathNode &node = saiph->shortestPath(ALTAR);
+	const PathNode& node = saiph->shortestPath(ALTAR);
 	if (node.cost >= UNPASSABLE)
 		return; // don't know of any altars
 	else if (node.dir == NOWHERE)
@@ -33,7 +33,7 @@ void Beatitude::analyze() {
 	priority = PRIORITY_BEATITUDE_DROP_ALTAR;
 }
 
-void Beatitude::parseMessages(const string &messages) {
+void Beatitude::parseMessages(const string& messages) {
 	if (saiph->got_drop_menu && saiph->getDungeonSymbol() == ALTAR) {
 		/* drop stuff we don't know beatitude of */
 		for (map<unsigned char, Item>::iterator d = saiph->drop.begin(); d != saiph->drop.end(); ++d) {
@@ -51,7 +51,7 @@ void Beatitude::parseMessages(const string &messages) {
 	}
 }
 
-bool Beatitude::request(const Request &request) {
+bool Beatitude::request(const Request& request) {
 	if (request.request == REQUEST_BEATIFY_ITEMS) {
 		check_beatitude = true;
 		return true;
@@ -60,7 +60,7 @@ bool Beatitude::request(const Request &request) {
 }
 
 /* private methods */
-bool Beatitude::beatify(const Item &item) {
+bool Beatitude::beatify(const Item& item) {
 	if (item.beatitude != BEATITUDE_UNKNOWN)
 		return false;
 	if (item.name == "gold piece")

@@ -11,7 +11,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Move(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), _move(std::string(1, direction), priority) {
+		Move(analyzer::Analyzer* analyzer, unsigned char direction, int priority) : Action(analyzer), _move(std::string(1, direction), priority) {
 		}
 
 		virtual ~Move() {
@@ -25,7 +25,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _move;
@@ -35,7 +35,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			++_sequence;
 		}
 

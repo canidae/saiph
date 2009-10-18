@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Open(analyzer::Analyzer *analyzer, unsigned char direction, int priority) : Action(analyzer), _open("o", priority), _open_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Open(analyzer::Analyzer* analyzer, unsigned char direction, int priority) : Action(analyzer), _open("o", priority), _open_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Open() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _open;
@@ -32,7 +32,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos)
 				_sequence = 1;
 			else if (_sequence == 1)

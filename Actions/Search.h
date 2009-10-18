@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Search(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _search("s", priority) {
+		Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _search("s", priority) {
 		}
 
 		virtual ~Search() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _search;
@@ -29,7 +29,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			if (_sequence == 0) {
 				/* increase search counter on level */
 				World::levels[Saiph::position.level()].increaseAdjacentSearchCount(Saiph::position);

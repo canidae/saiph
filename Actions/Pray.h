@@ -13,7 +13,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Pray(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _pray("#pray\n", priority) {
+		Pray(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _pray("#pray\n", priority) {
 		}
 
 		virtual ~Pray() {
@@ -27,13 +27,13 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			if (_sequence == 0)
 				return _pray;
 			return Action::NOOP;
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
 				Saiph::last_pray_turn = World::turn;
 				_sequence = 1;

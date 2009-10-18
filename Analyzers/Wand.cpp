@@ -9,7 +9,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Wand::Wand(Saiph *saiph) : Analyzer("Wand"), saiph(saiph), wand_key(0), state(WAND_STATE_INIT) {
+Wand::Wand(Saiph* saiph) : Analyzer("Wand"), saiph(saiph), wand_key(0), state(WAND_STATE_INIT) {
 	wand_appearances.push_back("glass");
 	wand_appearances.push_back("balsa");
 	wand_appearances.push_back("crystal");
@@ -52,7 +52,7 @@ void Wand::analyze() {
 
 }
 
-void Wand::parseMessages(const string &messages) {
+void Wand::parseMessages(const string& messages) {
 	if (messages.find(WAND_WORN_OUT_MESSAGE, 0) != string::npos)
 		state = WAND_STATE_WANT_DIRTY_INVENTORY;
 	if (state == WAND_STATE_INIT) {

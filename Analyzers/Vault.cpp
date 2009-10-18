@@ -6,11 +6,11 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Vault::Vault(Saiph *saiph) : Analyzer("Vault"), saiph(saiph), drop_gold(false), look_at_ground(false), follow_guard(false) {
+Vault::Vault(Saiph* saiph) : Analyzer("Vault"), saiph(saiph), drop_gold(false), look_at_ground(false), follow_guard(false) {
 }
 
 /* methods */
-void Vault::parseMessages(const string &messages) {
+void Vault::parseMessages(const string& messages) {
 	if (saiph->world->question && messages.find(VAULT_MESSAGE_STRANGER, 0) != string::npos) {
 		/* guard asking who we are */
 		/* if we got some means of getting out (teleportitis, wand of teleport, scroll of teleport, pick-axe),
@@ -55,7 +55,7 @@ void Vault::parseMessages(const string &messages) {
 		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
 				continue;
-			const PathNode &node = saiph->shortestPath(m->first);
+			const PathNode& node = saiph->shortestPath(m->first);
 			if (node.cost == UNREACHABLE)
 				continue;
 			if (node.moves == 1)

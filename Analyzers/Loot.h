@@ -20,8 +20,8 @@ namespace analyzer {
 		Loot();
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		void onEvent(event::Event * const event);
+		void parseMessages(const std::string& messages);
+		void onEvent(event::Event* const event);
 
 	private:
 		bool _showing_pickup;

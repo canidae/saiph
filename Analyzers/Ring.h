@@ -18,14 +18,14 @@ class Saiph;
 namespace analyzer {
 	class Ring : public Analyzer {
 	public:
-		Ring(Saiph *saiph);
+		Ring(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void parseMessages(const std::string& messages);
+		bool request(const Request& request);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		std::string command2;
 		std::vector<WearRing> rings;
 		bool wear_ring;

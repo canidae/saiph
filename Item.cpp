@@ -6,7 +6,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Item::Item(const string &text, int want) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional(""), want(want) {
+Item::Item(const string& text, int want) : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional(""), want(want) {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -202,11 +202,11 @@ Item::Item(const string &text, int want) : name(""), count(0), beatitude(BEATITU
 Item::Item() : name(""), count(0), beatitude(BEATITUDE_UNKNOWN), greased(false), fixed(false), damage(0), unknown_enchantment(true), enchantment(0), additional("") {
 }
 
-bool Item::operator==(const Item &i) {
+bool Item::operator==(const Item& i) {
 	return count == i.count && beatitude == i.beatitude && greased == i.greased && fixed == i.fixed && damage == i.damage && unknown_enchantment == i.unknown_enchantment && enchantment == i.enchantment && name == i.name && additional == i.additional;
 }
 
-ostream & operator<<(ostream &out, const Item &item) {
+ostream& operator<<(ostream& out, const Item& item) {
 	if (item.name == "") {
 		out << "(no item)";
 	} else {

@@ -15,14 +15,14 @@ public:
 	static unsigned char slots[SLOTS];
 
 	static void analyze();
-	static void parseMessages(const std::string &messages);
-	static void addItem(unsigned char key, const Item &item);
-	static void removeItem(unsigned char key, const Item &item);
+	static void parseMessages(const std::string& messages);
+	static void addItem(unsigned char key, const Item& item);
+	static void removeItem(unsigned char key, const Item& item);
 
 private:
 	static event::ChangedInventoryItems changed;
 	static std::set<unsigned char> lost;
 
-	static void setSlot(unsigned char key, const Item &item);
+	static void setSlot(unsigned char key, const Item& item);
 };
 #endif

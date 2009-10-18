@@ -16,8 +16,8 @@ public:
 	Local();
 	~Local();
 
-	virtual int retrieve(char *buffer, int count);
-	virtual int transmit(const std::string &data);
+	virtual int retrieve(char* buffer, int count);
+	virtual int transmit(const std::string& data);
 	virtual void start();
 	virtual void stop();
 

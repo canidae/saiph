@@ -15,12 +15,12 @@ class Saiph;
 namespace analyzer {
 	class Vault : public Analyzer {
 	public:
-		Vault(Saiph *saiph);
+		Vault(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		bool drop_gold;
 		bool look_at_ground;
 		bool follow_guard;

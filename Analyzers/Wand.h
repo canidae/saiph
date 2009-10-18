@@ -42,12 +42,12 @@ class Saiph;
 namespace analyzer {
 	class Wand : public Analyzer {
 	public:
-		Wand(Saiph *saiph);
+		Wand(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		Request req;
 		unsigned char wand_key;
 		int state;

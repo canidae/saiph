@@ -12,12 +12,12 @@ class Saiph;
 namespace analyzer {
 	class Wish : public Analyzer {
 	public:
-		Wish(Saiph *saiph);
+		Wish(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 		void analyze();
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		bool MRarmor, MRcloak, haveMR;
 		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;
 		unsigned char wand_of_wishing_key;

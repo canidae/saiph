@@ -9,10 +9,10 @@
 using namespace analyzer;
 using namespace std;
 
-Blind::Blind(Saiph *saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(false), blinding_tool(ILLEGAL_ITEM), blind_priority(ILLEGAL_PRIORITY), unblind_priority(ILLEGAL_PRIORITY) {
+Blind::Blind(Saiph* saiph) : Analyzer("Blind"), saiph(saiph), willful_blindness(false), blinding_tool(ILLEGAL_ITEM), blind_priority(ILLEGAL_PRIORITY), unblind_priority(ILLEGAL_PRIORITY) {
 }
 
-void Blind::parseMessages(const string &messages) {
+void Blind::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_WHAT_TO_PUT_ON) != string::npos) {
 		command = blinding_tool;
 		priority = PRIORITY_CONTINUE_ACTION;
@@ -55,7 +55,7 @@ void Blind::complete() {
 	unblind_priority = ILLEGAL_PRIORITY;
 }
 
-bool Blind::request(const Request &request) {
+bool Blind::request(const Request& request) {
 	if (request.request == REQUEST_BECOME_BLIND) {
 		if (willful_blindness) {
 			Debug::notice(saiph->last_turn) << "Recieved REQUEST_BECOME_BLIND while already willfully blind" << endl;
@@ -88,7 +88,7 @@ void Blind::findBlindingTool() {
 	blinding_tool = ILLEGAL_ITEM;
 }
 
-bool Blind::isBlindingTool(const Item &item) {
+bool Blind::isBlindingTool(const Item& item) {
 	if (item.beatitude == CURSED || (item.name != "blindfold" && item.name != "towel"))
 		return false;
 	if (item.beatitude == BEATITUDE_UNKNOWN) {

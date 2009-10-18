@@ -35,7 +35,7 @@ namespace data {
 
 	class Item {
 	public:
-		static std::map<std::string, Item *> items;
+		static std::map<std::string, Item*> items;
 		const std::string name;
 		const int base_cost;
 		const int weight;
@@ -43,7 +43,7 @@ namespace data {
 		const int material;
 		const unsigned long long properties;
 
-		Item(const std::string &name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
+		Item(const std::string& name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
 
 		virtual ~Item() {
 		}
@@ -52,7 +52,7 @@ namespace data {
 		static void destroy();
 
 	protected:
-		static void addToMap(const std::string &name, Item *item);
+		static void addToMap(const std::string& name, Item* item);
 	};
 }
 #endif

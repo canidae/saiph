@@ -4,17 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Cloak *> Cloak::cloaks;
+map<string, Cloak*> Cloak::cloaks;
 
-Cloak::Cloak(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_CLOAK, ac, mc, properties) {
+Cloak::Cloak(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_CLOAK, ac, mc, properties) {
 }
 
-void Cloak::addToMap(const string& name, Cloak *cloak) {
+void Cloak::addToMap(const string& name, Cloak* cloak) {
 	Cloak::cloaks[name] = cloak;
 	Armor::addToMap(name, cloak);
 }
 
-void Cloak::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+void Cloak::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Cloak(name, cost, weight, material, ac, mc, properties));
 }
 

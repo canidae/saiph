@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		ListInventory(analyzer::Analyzer *analyzer) : Action(analyzer), _list_inventory("i", PRIORITY_LOOK), _close_page(" ", PRIORITY_CONTINUE_ACTION) {
+		ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer), _list_inventory("i", PRIORITY_LOOK), _close_page(" ", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListInventory() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _list_inventory;
@@ -33,7 +33,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			if (World::menu)
 				_sequence = 1;
 			else

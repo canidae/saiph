@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Loot(analyzer::Analyzer *analyzer, int priority) : Action(analyzer), _loot(",", priority) {
+		Loot(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _loot(",", priority) {
 		}
 
 		virtual ~Loot() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _loot;
@@ -29,7 +29,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			if (_sequence == 0)
 				_sequence = 1;
 		}

@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Select(analyzer::Analyzer *analyzer, unsigned char key) : Action(analyzer), _select(std::string(1, key), PRIORITY_SELECT_ITEM) {
+		Select(analyzer::Analyzer* analyzer, unsigned char key) : Action(analyzer), _select(std::string(1, key), PRIORITY_SELECT_ITEM) {
 		}
 
 		virtual ~Select() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _select;
@@ -29,7 +29,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			++_sequence;
 		}
 

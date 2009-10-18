@@ -29,13 +29,13 @@ Fight::Fight() : Analyzer("Fight") {
 	 * this should be dynamic, this varies with the class we play.
 	 * this'll work for valks for the time being */
 	/* daggers */
-	for (map<string, data::Dagger *>::iterator i = data::Dagger::daggers.begin(); i != data::Dagger::daggers.end(); ++i)
+	for (map<string, data::Dagger*>::iterator i = data::Dagger::daggers.begin(); i != data::Dagger::daggers.end(); ++i)
 		_projectiles.insert(i->first);
 	/* spears */
-	for (map<string, data::Spear *>::iterator i = data::Spear::spears.begin(); i != data::Spear::spears.end(); ++i)
+	for (map<string, data::Spear*>::iterator i = data::Spear::spears.begin(); i != data::Spear::spears.end(); ++i)
 		_projectiles.insert(i->first);
 	/* darts */
-	for (map<string, data::Dart *>::iterator i = data::Dart::darts.begin(); i != data::Dart::darts.end(); ++i)
+	for (map<string, data::Dart*>::iterator i = data::Dart::darts.begin(); i != data::Dart::darts.end(); ++i)
 		_projectiles.insert(i->first);
 
 	/* register events */
@@ -49,7 +49,7 @@ Fight::Fight() : Analyzer("Fight") {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (World::engulfed) {
-		World::setAction(static_cast<action::Action *> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
+		World::setAction(static_cast<action::Action*> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
 		return;
 	}
 	/* fight monsters */
@@ -84,31 +84,31 @@ void Fight::analyze() {
 				/* we can throw at monster */
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_THROW_MIN;
-				World::setAction(static_cast<action::Action *> (new action::Throw(this, *_projectile_slots.begin(), in_line, priority)));
+				World::setAction(static_cast<action::Action*> (new action::Throw(this, *_projectile_slots.begin(), in_line, priority)));
 				Debug::analyzer(name()) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MELEE_MIN;
-			World::setAction(static_cast<action::Action *> (new action::Fight(this, World::shortestPath(m->first).dir, priority)));
+			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).dir, priority)));
 			Debug::analyzer(name()) << "Setting action to melee '" << m->second.symbol << "' with priority " << priority << endl;
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
-		const PathNode &node = World::shortestPath(m->first);
+		const PathNode& node = World::shortestPath(m->first);
 		if (node.dir == ILLEGAL_DIRECTION)
 			continue; // can't move to monster
 		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
 		priority = action::Move::calculatePriority(priority, node.moves);
-		World::setAction(static_cast<action::Action *> (new action::Move(this, node.dir, priority)));
+		World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir, priority)));
 		Debug::analyzer(name()) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 
-void Fight::onEvent(Event * const event) {
+void Fight::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
-		ChangedInventoryItems *e = static_cast<ChangedInventoryItems *> (event);
+		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items.find(*k);
 			if (i == Inventory::items.end()) {
@@ -125,32 +125,32 @@ void Fight::onEvent(Event * const event) {
 			}
 		}
 	} else if (event->id() == ReceivedItems::ID) {
-		ReceivedItems *e = static_cast<ReceivedItems *> (event);
+		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				_projectile_slots.insert(i->first);
 		}
 	} else if (event->id() == WantItems::ID) {
-		WantItems *e = static_cast<WantItems *> (event);
+		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (!wantItem(i->second))
 				continue;
-			World::setAction(static_cast<action::Action *> (new action::Select(this, i->first)));
+			World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
 			break;
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
-		ItemsOnGround *e = static_cast<ItemsOnGround *> (event);
+		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (!wantItem(*i))
 				continue;
-			World::setAction(static_cast<action::Action *> (new action::Loot(this, PRIORITY_FIGHT_LOOT)));
+			World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FIGHT_LOOT)));
 			break;
 		}
 	}
 }
 
 /* private methods */
-bool Fight::wantItem(const Item &item) {
+bool Fight::wantItem(const Item& item) {
 	/* return whether we want this item or not */
 	return _projectiles.find(item.name) != _projectiles.end();
 }

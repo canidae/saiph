@@ -7,7 +7,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Scroll::Scroll(Saiph *saiph) : Analyzer("Scroll"), saiph(saiph) {
+Scroll::Scroll(Saiph* saiph) : Analyzer("Scroll"), saiph(saiph) {
 	appearance.push_back("ANDOVA BEGARIN");
 	appearance.push_back("DAIYEN FOOELS");
 	appearance.push_back("DUAM XNAHT");
@@ -36,7 +36,7 @@ Scroll::Scroll(Saiph *saiph) : Analyzer("Scroll"), saiph(saiph) {
 }
 
 /* methods */
-void Scroll::parseMessages(const string &messages) {
+void Scroll::parseMessages(const string& messages) {
 	if (saiph->world->question) {
 		string::size_type start = messages.find(SCROLL_CALL_SCROLL, 0);
 		if (start == string::npos)

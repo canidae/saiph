@@ -18,14 +18,14 @@ class Saiph;
 namespace analyzer {
 	class Potion : public Analyzer {
 	public:
-		Potion(Saiph *saiph);
+		Potion(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void parseMessages(const std::string& messages);
+		bool request(const Request& request);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		std::vector<std::string> appearance;
 		std::string command2;
 		Request req;

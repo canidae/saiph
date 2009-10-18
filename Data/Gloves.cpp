@@ -4,17 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Gloves *> Gloves::gloves;
+map<string, Gloves*> Gloves::gloves;
 
-Gloves::Gloves(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_GLOVES, ac, mc, properties) {
+Gloves::Gloves(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_GLOVES, ac, mc, properties) {
 }
 
-void Gloves::addToMap(const string &name, Gloves *gloves) {
+void Gloves::addToMap(const string& name, Gloves* gloves) {
 	Gloves::gloves[name] = gloves;
 	Armor::addToMap(name, gloves);
 }
 
-void Gloves::create(const string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
+void Gloves::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Gloves(name, cost, weight, material, ac, mc, properties));
 }
 

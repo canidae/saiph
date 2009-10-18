@@ -56,7 +56,7 @@ Local::~Local() {
 }
 
 /* methods */
-int Local::retrieve(char *buffer, int count) {
+int Local::retrieve(char* buffer, int count) {
 	/* retrieve data */
 	ssize_t data_received = 0;
 	/* make reading blocking */
@@ -79,7 +79,7 @@ int Local::retrieve(char *buffer, int count) {
 	return (int) data_received;
 }
 
-int Local::transmit(const string &data) {
+int Local::transmit(const string& data) {
 	/* send data */
 	return (int) write(link[1], data.c_str(), data.size());
 }

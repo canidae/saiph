@@ -11,26 +11,26 @@ extern "C" {
 
 class Debug {
 public:
-	static void init(const std::string &file);
+	static void init(const std::string& file);
 	static void destroy();
-	static std::ofstream &analyzer(const std::string &name);
-	static std::ofstream &broadcast();
-	static std::ofstream &info();
-	static std::ofstream &inventory();
-	static std::ofstream &notice();
-	static std::ofstream &warning();
-	static std::ofstream &error();
-	static void rawCharArray(const char *data, int start, int stop);
+	static std::ofstream& analyzer(const std::string& name);
+	static std::ofstream& broadcast();
+	static std::ofstream& info();
+	static std::ofstream& inventory();
+	static std::ofstream& notice();
+	static std::ofstream& warning();
+	static std::ofstream& error();
+	static void rawCharArray(const char* data, int start, int stop);
 
 private:
 	static std::ofstream debugfile;
 	static std::string timestamp;
 
-	static std::string &printTime();
+	static std::string& printTime();
 };
 
 /* inline methods */
-inline void Debug::init(const std::string &file) {
+inline void Debug::init(const std::string& file) {
 	debugfile.open(file.c_str(), std::ios_base::trunc);
 }
 
@@ -38,42 +38,42 @@ inline void Debug::destroy() {
 	debugfile.close();
 }
 
-inline std::ofstream &Debug::analyzer(const std::string &name) {
+inline std::ofstream& Debug::analyzer(const std::string& name) {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [" << name << "] ";
 	return debugfile;
 }
 
-inline std::ofstream &Debug::broadcast() {
+inline std::ofstream& Debug::broadcast() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Broadcast] ";
 	return debugfile;
 }
 
-inline std::ofstream &Debug::info() {
+inline std::ofstream& Debug::info() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Info] ";
 	return debugfile;
 }
 
-inline std::ofstream &Debug::inventory() {
+inline std::ofstream& Debug::inventory() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Inventory] ";
 	return debugfile;
 }
 
-inline std::ofstream &Debug::notice() {
+inline std::ofstream& Debug::notice() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Notice] ";
 	return debugfile;
 }
 
-inline std::ofstream &Debug::warning() {
+inline std::ofstream& Debug::warning() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Warning] ";
 	return debugfile;
 }
 
-inline std::ofstream &Debug::error() {
+inline std::ofstream& Debug::error() {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Error] ";
 	return debugfile;
 }
 
-inline void Debug::rawCharArray(const char *data, int start, int stop) {
+inline void Debug::rawCharArray(const char* data, int start, int stop) {
 	debugfile << "<T" << World::turn << "> " << printTime() << ": [Data] ";
 	for (int a = start; a < stop; ++a)
 		debugfile << data[a];
@@ -81,7 +81,7 @@ inline void Debug::rawCharArray(const char *data, int start, int stop) {
 }
 
 /* inline private methods */
-inline std::string &Debug::printTime() {
+inline std::string& Debug::printTime() {
 	time_t rawtime;
 	time(&rawtime);
 	timestamp = asctime(localtime(&rawtime));

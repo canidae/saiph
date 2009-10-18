@@ -46,7 +46,7 @@ int Saiph::last_pray_turn = 0;
 void Saiph::analyze() {
 }
 
-void Saiph::parseMessages(const string &messages) {
+void Saiph::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_COLD_RES_GAIN1, 0) != string::npos)
 		intrinsics |= PROPERTY_COLD;
 	if (messages.find(MESSAGE_COLD_RES_LOSE1, 0) != string::npos)

@@ -4,17 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, TwoHandedSword *> TwoHandedSword::two_handed_swords;
+map<string, TwoHandedSword*> TwoHandedSword::two_handed_swords;
 
-TwoHandedSword::TwoHandedSword(const string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2) : Weapon(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+TwoHandedSword::TwoHandedSword(const string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
 }
 
-void TwoHandedSword::addToMap(const string &name, TwoHandedSword *two_handed_sword) {
+void TwoHandedSword::addToMap(const string& name, TwoHandedSword* two_handed_sword) {
 	TwoHandedSword::two_handed_swords[name] = two_handed_sword;
 	Weapon::addToMap(name, two_handed_sword);
 }
 
-void TwoHandedSword::create(const string &name, int cost, int weight, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment) {
+void TwoHandedSword::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment) {
 	addToMap(name, new TwoHandedSword(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
 }
 

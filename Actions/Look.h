@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Look(analyzer::Analyzer *analyzer) : Action(analyzer), _look(":", PRIORITY_LOOK) {
+		Look(analyzer::Analyzer* analyzer) : Action(analyzer), _look(":", PRIORITY_LOOK) {
 		}
 
 		virtual ~Look() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _look;
@@ -29,7 +29,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			if (_sequence == 0)
 				_sequence = 1;
 		}

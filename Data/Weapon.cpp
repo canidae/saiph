@@ -33,9 +33,9 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Weapon *> Weapon::weapons;
+map<string, Weapon*> Weapon::weapons;
 
-Weapon::Weapon(const string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2) : Item(name, cost, weight, item_class, material, properties), one_handed(one_handed), alignment(alignment) {
+Weapon::Weapon(const string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Item(name, cost, weight, item_class, material, properties), one_handed(one_handed), alignment(alignment) {
 	attack_small[0] = as0;
 	attack_small[1] = as1;
 	attack_small[2] = as2;
@@ -44,7 +44,7 @@ Weapon::Weapon(const string &name, int cost, int weight, char item_class, int ma
 	attack_large[2] = al2;
 }
 
-void Weapon::addToMap(const string &name, Weapon *weapon) {
+void Weapon::addToMap(const string& name, Weapon* weapon) {
 	Weapon::weapons[name] = weapon;
 	Item::addToMap(name, weapon);
 }

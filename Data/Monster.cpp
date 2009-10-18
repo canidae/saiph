@@ -10,11 +10,11 @@ bool Monster::initialized = false;
 int Monster::monster_symbol_mapping[UCHAR_MAX + 1][INVERSE_BOLD_WHITE + 1] = {
 	{0}
 };
-vector<Monster *> Monster::monsters;
+vector<Monster*> Monster::monsters;
 map<string, int> Monster::monster_name_mapping;
 
 /* constructors/destructors */
-Monster::Monster(const string &name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const Attack &a0, const Attack &a1, const Attack &a2, const Attack &a3, const Attack &a4, const Attack &a5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color) : name(name), symbol(symbol), difficulty(difficulty), move_rate(move_rate), armor_class(armor_class), magic_resistance(magic_resistance), alignment(alignment), geno_flags(geno_flags), weight(weight), nutrition(nutrition), extension(extension), sounds(sounds), size(size), resistances(resistances), resistances_conferred(resistances_conferred), m1(m1), m2(m2), m3(m3), color(color) {
+Monster::Monster(const string& name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const Attack& a0, const Attack& a1, const Attack& a2, const Attack& a3, const Attack& a4, const Attack& a5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color) : name(name), symbol(symbol), difficulty(difficulty), move_rate(move_rate), armor_class(armor_class), magic_resistance(magic_resistance), alignment(alignment), geno_flags(geno_flags), weight(weight), nutrition(nutrition), extension(extension), sounds(sounds), size(size), resistances(resistances), resistances_conferred(resistances_conferred), m1(m1), m2(m2), m3(m3), color(color) {
 	attack[0] = a0;
 	attack[1] = a1;
 	attack[2] = a2;
@@ -43,7 +43,7 @@ Monster::Monster(const string &name, unsigned char symbol, int difficulty, int m
 
 /* methods */
 void Monster::destroy() {
-	for (vector<Monster *>::iterator m = monsters.begin(); m != monsters.end(); ++m)
+	for (vector<Monster*>::iterator m = monsters.begin(); m != monsters.end(); ++m)
 		delete *m;
 	monsters.clear();
 }

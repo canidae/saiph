@@ -9,9 +9,9 @@ namespace data {
 
 	class Mace : public Weapon {
 	public:
-		static std::map<std::string, Mace *> maces;
+		static std::map<std::string, Mace*> maces;
 
-		Mace(const std::string &name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2);
+		Mace(const std::string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
 
 		virtual ~Mace() {
 		}
@@ -19,10 +19,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Mace *mace);
+		static void addToMap(const std::string& name, Mace* mace);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, const Attack &as0, const Attack &as1, const Attack &as2, const Attack &al0, const Attack &al1, const Attack &al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment);
+		static void create(const std::string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment);
 	};
 }
 #endif

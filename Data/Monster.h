@@ -251,8 +251,8 @@ namespace data {
 		static int saiph_difficulty_max;
 		bool ignore_elbereth;
 
-		static const Monster *getMonsterData(unsigned char symbol, int color);
-		static const Monster *getMonsterData(const std::string &name);
+		static const Monster* getMonsterData(unsigned char symbol, int color);
+		static const Monster* getMonsterData(const std::string& name);
 		static void init();
 		static void destroy();
 
@@ -260,21 +260,21 @@ namespace data {
 		static bool initialized;
 		static int monster_symbol_mapping[UCHAR_MAX + 1][INVERSE_BOLD_WHITE + 1];
 		static std::map<std::string, int> monster_name_mapping;
-		static std::vector<Monster *> monsters;
+		static std::vector<Monster*> monsters;
 
-		Monster(const std::string &name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const Attack &a0, const Attack &a1, const Attack &a2, const Attack &a3, const Attack &a4, const Attack &a5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color);
+		Monster(const std::string& name, unsigned char symbol, int difficulty, int move_rate, int armor_class, int magic_resistance, int alignment, int geno_flags, const Attack& a0, const Attack& a1, const Attack& a2, const Attack& a3, const Attack& a4, const Attack& a5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color);
 
-		static const Monster *getMonsterData(int id);
+		static const Monster* getMonsterData(int id);
 	};
 
 	/* inline methods */
-	inline const Monster *Monster::getMonsterData(unsigned char symbol, int color) {
+	inline const Monster* Monster::getMonsterData(unsigned char symbol, int color) {
 		if (color < 0 || color > INVERSE_BOLD_WHITE)
 			return NULL;
 		return getMonsterData(monster_symbol_mapping[symbol][color]);
 	}
 
-	inline const Monster *Monster::getMonsterData(const std::string &name) {
+	inline const Monster* Monster::getMonsterData(const std::string& name) {
 		std::map<std::string, int>::iterator m = monster_name_mapping.find(name);
 		if (m == monster_name_mapping.end())
 			return NULL;
@@ -282,7 +282,7 @@ namespace data {
 	}
 
 	/* inline private methods */
-	inline const Monster *Monster::getMonsterData(int id) {
+	inline const Monster* Monster::getMonsterData(int id) {
 		if (id < 0 || id > (int) monsters.size())
 			return NULL;
 		return monsters[id];

@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		ApplyInDirection(analyzer::Analyzer *analyzer, unsigned char key, unsigned char direction, int priority, bool update_inventory = true) : Action(analyzer), _do_apply("a", priority), _apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
+		ApplyInDirection(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority, bool update_inventory = true) : Action(analyzer), _do_apply("a", priority), _apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
 		}
 
 		virtual ~ApplyInDirection() {
@@ -20,7 +20,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _do_apply;
@@ -36,7 +36,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &messages) {
+		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
 				_sequence = 1;
 			} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {

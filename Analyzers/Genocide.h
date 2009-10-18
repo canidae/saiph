@@ -9,12 +9,12 @@
 namespace analyzer {
 	class Genocide : public Analyzer {
 	public:
-		Genocide(Saiph *saiph);
+		Genocide(Saiph* saiph);
 
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		std::list<std::string> monsters;
 		std::list<char> classes;
 	};

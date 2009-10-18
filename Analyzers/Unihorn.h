@@ -17,21 +17,21 @@ class Saiph;
 namespace analyzer {
 	class Unihorn : public Analyzer {
 	public:
-		Unihorn(Saiph *saiph);
+		Unihorn(Saiph* saiph);
 
 		void analyze();
-		void parseMessages(const std::string &messages);
-		bool request(const Request &request);
+		void parseMessages(const std::string& messages);
+		bool request(const Request& request);
 
 	private:
-		Saiph *saiph;
+		Saiph* saiph;
 		Request req;
 		unsigned char unihorn_key;
 		int apply_priority;
 		int unihorn_use_turn;
 
 		void findUnihorn();
-		bool isUnihorn(const Item &item);
+		bool isUnihorn(const Item& item);
 	};
 }
 #endif

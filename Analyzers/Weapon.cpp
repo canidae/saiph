@@ -6,11 +6,11 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Weapon::Weapon(Saiph *saiph) : Analyzer("Weapon"), saiph(saiph), wield_weapon(false), can_wield_weapon(true), last_polymorphed(false) {
+Weapon::Weapon(Saiph* saiph) : Analyzer("Weapon"), saiph(saiph), wield_weapon(false), can_wield_weapon(true), last_polymorphed(false) {
 }
 
 /* methods */
-void Weapon::parseMessages(const string &messages) {
+void Weapon::parseMessages(const string& messages) {
 	if (last_polymorphed != saiph->world->player.polymorphed) {
 		/* we polymorphed; assume we can wield unless determined otherwise */
 		can_wield_weapon = true;
@@ -40,7 +40,7 @@ void Weapon::parseMessages(const string &messages) {
 	}
 }
 
-bool Weapon::request(const Request &request) {
+bool Weapon::request(const Request& request) {
 	if (request.request == REQUEST_WEAPON_WIELD) {
 		/* player wish to wield this weapon */
 		WeaponData wd;

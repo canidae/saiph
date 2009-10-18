@@ -22,13 +22,13 @@ const int TakeMeThere::ID = 6;
 const int WantItems::ID = 7;
 
 /* constructors/destructor */
-Event::Event(const std::string &name) : _name(name) {
+Event::Event(const std::string& name) : _name(name) {
 }
 
 Event::~Event() {
 }
 
 /* methods */
-const std::string &Event::name() {
+const std::string& Event::name() {
 	return _name;
 }

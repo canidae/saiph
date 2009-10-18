@@ -20,7 +20,7 @@ namespace analyzer {
 		Health();
 
 		void analyze();
-		void parseMessages(const std::string &messages);
+		void parseMessages(const std::string& messages);
 
 	private:
 		bool _resting;

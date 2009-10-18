@@ -9,11 +9,11 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish(Saiph *saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0), zapping_wand(false) {
+Wish::Wish(Saiph* saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0), zapping_wand(false) {
 }
 
 /* methods */
-void Wish::parseMessages(const string &messages) {
+void Wish::parseMessages(const string& messages) {
 	if (saiph->inventory_changed) {
 		wand_of_wishing_key = 0;
 		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {

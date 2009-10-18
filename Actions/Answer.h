@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Answer(analyzer::Analyzer *analyzer, const std::string &answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
+		Answer(analyzer::Analyzer* analyzer, const std::string& answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Answer() {
@@ -19,7 +19,7 @@ namespace action {
 			return ID;
 		}
 
-		virtual const Command &command() {
+		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
 				return _answer;
@@ -29,7 +29,7 @@ namespace action {
 			}
 		}
 
-		virtual void update(const std::string &) {
+		virtual void update(const std::string&) {
 			if (_sequence == 0)
 				_sequence = 1;
 		}

@@ -7,7 +7,7 @@
 using namespace analyzer;
 using namespace std;
 
-Passtune::Passtune(Saiph *saiph) : Analyzer("Passtune"), saiph(saiph), solved(false), instrument(ILLEGAL_ITEM), castle_level(-1) {
+Passtune::Passtune(Saiph* saiph) : Analyzer("Passtune"), saiph(saiph), solved(false), instrument(ILLEGAL_ITEM), castle_level(-1) {
 	drawbridge_location = Point(12, 14);
 
 	knights_moves.push_back(Point(11, 12));
@@ -21,7 +21,7 @@ Passtune::Passtune(Saiph *saiph) : Analyzer("Passtune"), saiph(saiph), solved(fa
 	Debug::info() << PASSTUNE_DEBUG_NAME << "Resizing to " << TOTAL_COMBINATIONS << endl;
 }
 
-void Passtune::parseMessages(const string &messages) {
+void Passtune::parseMessages(const string& messages) {
 	string::size_type gear_loc, tumbler_loc;
 	if (messages.find(MESSAGE_DRAWBRIDGE_LOWERED, 0) != string::npos) {
 		if (saiph->position.level == castle_level)
@@ -91,7 +91,7 @@ void Passtune::analyze(void) {
 		unsigned int nearest = UNREACHABLE;
 		unsigned char dir = ILLEGAL_DIRECTION;
 		for (unsigned int i = 0; i < knights_moves.size(); ++i) {
-			const PathNode &node = saiph->shortestPath(knights_moves[i]);
+			const PathNode& node = saiph->shortestPath(knights_moves[i]);
 			if (node.cost >= UNPASSABLE || node.cost >= nearest)
 				continue;
 			dir = node.dir;
@@ -198,7 +198,7 @@ void Passtune::findInstrument() {
 	instrument = ILLEGAL_ITEM;
 }
 
-bool Passtune::isInstrument(const Item &item) {
+bool Passtune::isInstrument(const Item& item) {
 	if (item.beatitude == CURSED ||
 		(item.name != "flute" && item.name != "horn" &&
 		item.name != "harp" && item.name != "bugle" &&

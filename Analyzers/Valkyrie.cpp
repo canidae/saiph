@@ -5,7 +5,7 @@
 using namespace analyzer;
 
 /* constructors/destructor */
-Valkyrie::Valkyrie(Saiph *saiph) : Analyzer("Valkyrie"), saiph(saiph), loot_group(0) {
+Valkyrie::Valkyrie(Saiph* saiph) : Analyzer("Valkyrie"), saiph(saiph), loot_group(0) {
 }
 
 /* methods */

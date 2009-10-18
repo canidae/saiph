@@ -9,9 +9,9 @@ namespace data {
 
 	class Gloves : public Armor {
 	public:
-		static std::map<std::string, Gloves *> gloves;
+		static std::map<std::string, Gloves*> gloves;
 
-		Gloves(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		Gloves(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 
 		~Gloves() {
 		}
@@ -19,10 +19,10 @@ namespace data {
 		static void init();
 
 	protected:
-		static void addToMap(const std::string &name, Gloves *gloves);
+		static void addToMap(const std::string& name, Gloves* gloves);
 
 	private:
-		static void create(const std::string &name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 	};
 }
 #endif
