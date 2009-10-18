@@ -16,17 +16,11 @@ namespace action {
 	public:
 		static const Command NOOP;
 
-		Action(analyzer::Analyzer *analyzer) : _sequence(0), _analyzer(analyzer) {
-		}
-
-		virtual ~Action() {
-		}
+		Action(analyzer::Analyzer *analyzer);
+		virtual ~Action();
 
 		virtual int id() = 0;
-
-		analyzer::Analyzer *analyzer() {
-			return _analyzer;
-		}
+		analyzer::Analyzer *analyzer();
 		virtual const Command &command() = 0;
 		virtual void update(const std::string &messages) = 0;
 

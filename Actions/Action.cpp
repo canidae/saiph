@@ -52,3 +52,15 @@ const int Select::ID = 21;
 const int SelectMultiple::ID = 22;
 const int Throw::ID = 23;
 const int Unlock::ID = 24;
+
+/* constructors/destructor */
+Action::Action(analyzer::Analyzer *analyzer) : _sequence(0), _analyzer(analyzer) {
+}
+
+Action::~Action() {
+}
+
+/* methods */
+analyzer::Analyzer *Action::analyzer() {
+	return _analyzer;
+}
