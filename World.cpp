@@ -522,7 +522,7 @@ void World::run() {
 		cout << (unsigned char) 27 << "[" << cursor.row() + 1 << ";" << cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::notice() << "Analyzer " << action->analyzer()->name() << " " << action->command() << endl;
+		Debug::command() << "Analyzer " << action->analyzer()->name() << " " << action->command() << endl;
 
 		/* execute the command */
 		if (action->command().priority() <= PRIORITY_TURN_MAX)

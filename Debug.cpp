@@ -2,8 +2,9 @@
 #include "World.h"
 
 #define DEBUG_CATEGORY_MAX_LENGTH 9
-#define DEBUG_INVENTORY "Inventory"
 #define DEBUG_BROADCAST "Broadcast"
+#define DEBUG_COMMAND "Command"
+#define DEBUG_INVENTORY "Inventory"
 #define DEBUG_INFO "Info"
 #define DEBUG_NOTICE "Notice"
 #define DEBUG_WARNING"Warning"
@@ -33,12 +34,16 @@ ofstream& Debug::broadcast() {
 	return header(DEBUG_BROADCAST);
 }
 
-ofstream& Debug::info() {
-	return header(DEBUG_INFO);
+ofstream& Debug::command() {
+	return header(DEBUG_COMMAND);
 }
 
 ofstream& Debug::inventory() {
 	return header(DEBUG_INVENTORY);
+}
+
+ofstream& Debug::info() {
+	return header(DEBUG_INFO);
 }
 
 ofstream& Debug::notice() {
