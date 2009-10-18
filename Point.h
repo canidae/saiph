@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#include "Globals.h"
-
 class Point {
 public:
 	Point(int row = -1, int col = -1);
@@ -14,6 +12,7 @@ public:
 	int row() const;
 	int row(int row);
 	bool insideMap() const;
+	Point& moveNorthwest();
 	Point& moveNorth();
 	Point& moveNortheast();
 	Point& moveEast();
@@ -21,7 +20,6 @@ public:
 	Point& moveSouth();
 	Point& moveSouthwest();
 	Point& moveWest();
-	Point& moveNorthwest();
 
 	bool operator<(const Point& p) const;
 	bool operator>(const Point& p) const;

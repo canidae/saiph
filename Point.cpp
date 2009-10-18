@@ -1,4 +1,5 @@
 #include "Point.h"
+#include "Globals.h"
 
 using namespace std;
 
@@ -27,6 +28,12 @@ int Point::row(int row) {
 
 bool Point::insideMap() const {
 	return row() >= MAP_ROW_BEGIN && row() <= MAP_ROW_END && col() >= MAP_COL_BEGIN && col() <= MAP_COL_END;
+}
+
+Point& Point::moveNorthwest() {
+	--_row;
+	--_col;
+	return *this;
 }
 
 Point& Point::moveNorth() {
@@ -63,12 +70,6 @@ Point& Point::moveSouthwest() {
 }
 
 Point& Point::moveWest() {
-	--_col;
-	return *this;
-}
-
-Point& Point::moveNorthwest() {
-	--_row;
 	--_col;
 	return *this;
 }
