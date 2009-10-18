@@ -57,7 +57,7 @@ void Food::analyze() {
 
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	_prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters.begin(); m != World::levels[Saiph::position.level()].monsters.end(); ++m) {
+	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters().begin(); m != World::levels[Saiph::position.level()].monsters().end(); ++m) {
 		if (m->second.visible)
 			_prev_monster_loc[m->first] = m->second.symbol;
 	}
@@ -113,7 +113,7 @@ void Food::parseMessages(const string& messages) {
 		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
 		for (map<Point, int>::iterator c = _corpse_loc.begin(); c != _corpse_loc.end();) {
-			if (World::levels[Saiph::position.level()].monsters.find(c->first) == World::levels[Saiph::position.level()].monsters.end() && World::levels[Saiph::position.level()].stashes.find(c->first) == World::levels[Saiph::position.level()].stashes.end()) {
+			if (World::levels[Saiph::position.level()].monsters().find(c->first) == World::levels[Saiph::position.level()].monsters().end() && World::levels[Saiph::position.level()].stashes().find(c->first) == World::levels[Saiph::position.level()].stashes().end()) {
 				_corpse_loc.erase(c++);
 				continue;
 			}

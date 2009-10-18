@@ -8,47 +8,88 @@
 #include "World.h"
 #include "Events/StashChanged.h"
 
+/* pathing */
+#define COST_CARDINAL 2
+#define COST_DIAGONAL 3
+#define COST_FOUNTAIN 4 // better not fight on fountains
+#define COST_GRAVE 4 // better not fight on graves
+#define COST_ALTAR 4 // better not fight on altars
+#define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
+#define COST_LAVA 512 // lava, hot!
+#define COST_MONSTER 64 // try not to path through monsters
+#define COST_TRAP 128 // avoid traps
+#define COST_WATER 256 // avoid water if possible
+/* max moves a monster can do before we think it's a new monster */
+#define MAX_MONSTER_MOVE 3 // if a monster is more than this distance from where we last saw it, then it's probably a new monster
+/* debugging that should be moved to Debug in the future */
+#define LEVEL_DEBUG_NAME "Level] "
+/* messages */
+#define LEVEL_ALTAR_HERE "  There is an altar to "
+#define LEVEL_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
+#define LEVEL_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
+#define LEVEL_FOUNTAIN_HERE "  There is a fountain here.  "
+#define LEVEL_GRAVE_HERE "  There is a grave here.  "
+#define LEVEL_NO_STAIRS_DOWN_HERE "  You can't go down here.  "
+#define LEVEL_NO_STAIRS_UP_HERE "  You can't go up here.  "
+#define LEVEL_OPEN_DOOR_HERE "  There is an open door here.  "
+#define LEVEL_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
+#define LEVEL_STAIRCASE_UP_HERE "  There is a staircase up here.  "
+#define LEVEL_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
+#define LEVEL_THINGS_THAT_ARE_HERE "  Things that are here:  "
+#define LEVEL_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
+#define LEVEL_YOU_FEEL_HERE "  You feel here " // not two spaces here as it's followed by eg. "a lichen corpse"
+#define LEVEL_YOU_FEEL_NO_OBJECTS "  You feel no objects here.  "
+#define LEVEL_YOU_SEE_HERE "  You see here " // not two spaces here as it's followed by eg. "a lichen corpse"
+#define LEVEL_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
+#define LEVEL_WALL_UNDIGGABLE "wall is too hard to dig into."
+#define LEVEL_FLOOR_OR_GROUND_UNDIGGABLE "here is too hard to dig in."
+
 using namespace event;
 using namespace std;
 
 /* define static variables */
 /* public */
-bool Level::passable[UCHAR_MAX + 1] = {false};
+bool Level::_passable[UCHAR_MAX + 1] = {false};
 /* private */
-Point Level::pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
-unsigned char Level::uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1] = {
+Point Level::_pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
+unsigned char Level::_uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1] = {
 	{0}
 };
-int Level::pathcost[UCHAR_MAX + 1] = {0};
-bool Level::dungeon[UCHAR_MAX + 1] = {false};
-bool Level::monster[UCHAR_MAX + 1] = {false};
-bool Level::item[UCHAR_MAX + 1] = {false};
-bool Level::initialized = false;
-ReceivedItems Level::received;
-ItemsOnGround Level::on_ground;
+int Level::_pathcost[UCHAR_MAX + 1] = {0};
+bool Level::_dungeon[UCHAR_MAX + 1] = {false};
+bool Level::_monster[UCHAR_MAX + 1] = {false};
+bool Level::_item[UCHAR_MAX + 1] = {false};
+bool Level::_initialized = false;
+ReceivedItems Level::_received;
+ItemsOnGround Level::_on_ground;
 
 /* constructors/destructor */
-Level::Level(string name, int branch) : name(name), branch(branch), undiggable(false) {
+Level::Level(const string& name, int branch) : _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b) {
-			dungeonmap[a][b] = SOLID_ROCK;
-			monstermap[a][b] = ILLEGAL_MONSTER;
-			searchmap[a][b] = 0;
+			_dungeonmap[a][b] = SOLID_ROCK;
+			_monstermap[a][b] = ILLEGAL_MONSTER;
+			_searchmap[a][b] = 0;
 		}
 	}
-	sscanf(name.c_str(), "%*[^0123456789]%d", &depth);
-	if (!initialized)
+	sscanf(name.c_str(), "%*[^0123456789]%d", &_depth);
+	if (!_initialized)
 		init();
 }
 
-/* methods */
+/* public static methods */
+bool Level::isPassable(unsigned char symbol) {
+	return _passable[symbol];
+}
+
+/* public methods */
 void Level::analyze() {
 	if (World::menu)
 		return; // menu hides map, don't update
 	if (World::engulfed) {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster she can't see */
-		for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ++m)
+		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
 			m->second.visible = false;
 		return;
 	}
@@ -60,7 +101,7 @@ void Level::analyze() {
 	/* update pathmap */
 	updatePathMap();
 	/* set point we're standing on "fully searched" */
-	searchmap[Saiph::position.row()][Saiph::position.col()] = INT_MAX;
+	_searchmap[Saiph::position.row()][Saiph::position.col()] = INT_MAX;
 }
 
 void Level::parseMessages(const string& messages) {
@@ -84,23 +125,25 @@ void Level::parseMessages(const string& messages) {
 		setDungeonSymbol(Saiph::position, ALTAR);
 		/* set symbol value too */
 		if (messages.find(" (unaligned) ", pos) != string::npos)
-			symbols[(unsigned char) ALTAR][Saiph::position] = NEUTRAL;
+			_symbols[(unsigned char) ALTAR][Saiph::position] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
-			symbols[(unsigned char) ALTAR][Saiph::position] = CHAOTIC;
+			_symbols[(unsigned char) ALTAR][Saiph::position] = CHAOTIC;
 		else
-			symbols[(unsigned char) ALTAR][Saiph::position] = LAWFUL;
-	} else if (messages.find(LEVEL_UNDIGGABLE) != string::npos) {
-		undiggable = true;
+			_symbols[(unsigned char) ALTAR][Saiph::position] = LAWFUL;
+	} else if (messages.find(LEVEL_WALL_UNDIGGABLE) != string::npos) {
+		_walls_diggable = false;
+	} else if (messages.find(LEVEL_FLOOR_OR_GROUND_UNDIGGABLE) != string::npos) {
+		_floor_diggable = false;
 	}
 
 	/* figure out if there's something on the ground */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
 		/* we see a single item on ground */
-		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-		if (s != stashes.end())
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		if (s != _stashes.end())
 			s->second.items.clear(); // clear stash items
 		else
-			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
 		s->second.last_look = World::turn;
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
@@ -112,11 +155,11 @@ void Level::parseMessages(const string& messages) {
 		}
 	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
 		/* we feel a single item on the ground */
-		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-		if (s != stashes.end())
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		if (s != _stashes.end())
 			s->second.items.clear(); // clear stash items
 		else
-			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
 		s->second.last_look = World::turn;
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
@@ -128,11 +171,11 @@ void Level::parseMessages(const string& messages) {
 		}
 	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
 		/* we see/feel multiple items on the ground */
-		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-		if (s != stashes.end())
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		if (s != _stashes.end())
 			s->second.items.clear(); // clear stash items
 		else
-			s = stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
+			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
 		s->second.last_look = World::turn;
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
@@ -148,14 +191,14 @@ void Level::parseMessages(const string& messages) {
 		}
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
-		stashes.erase(Saiph::position);
+		_stashes.erase(Saiph::position);
 	}
 	if (!World::menu) {
 		/* check if we received items */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
 		/* reset received list */
-		received.clear();
+		_received.clear();
 		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
 			/* add item to inventory */
 			Item item(messages.substr(pos + 3, pos2 - pos - 3));
@@ -165,14 +208,14 @@ void Level::parseMessages(const string& messages) {
 			}
 			Inventory::addItem(messages[pos - 1], item);
 			/* add item to changed.keys */
-			received.addItem(messages[pos - 1], item);
+			_received.addItem(messages[pos - 1], item);
 		}
-		map<Point, Stash>::iterator s = stashes.find(Saiph::position);
-		if (received.items().size() > 0) {
+		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
+		if (_received.items().size() > 0) {
 			/* broadcast "ReceivedItems" */
-			EventBus::broadcast(static_cast<Event*> (&received));
+			EventBus::broadcast(static_cast<Event*> (&_received));
 			/* make stash dirty too */
-			if (s != stashes.end())
+			if (s != _stashes.end())
 				s->second.items.clear();
 			/* broadcast StashChanged */
 			StashChanged sc;
@@ -182,17 +225,220 @@ void Level::parseMessages(const string& messages) {
 
 		if (!World::question) {
 			/* send event if we're standing on stash (except when we got a question or menu) */
-			if (s != stashes.end() && s->second.items.size() > 0) {
-				on_ground.items(s->second.items);
+			if (s != _stashes.end() && s->second.items.size() > 0) {
+				_on_ground.items(s->second.items);
 				/* broadcast "ItemsOnGround" */
-				EventBus::broadcast(static_cast<Event*> (&on_ground));
+				EventBus::broadcast(static_cast<Event*> (&_on_ground));
 			}
 		}
 	}
 }
 
+int Level::branch() const {
+	return _branch;
+}
+
+int Level::branch(int branch) {
+	_branch = branch;
+	return this->branch();
+}
+
+int Level::depth() const {
+	return _depth;
+}
+
+const string& Level::name() const {
+	return _name;
+}
+
+map<Point, Monster>& Level::monsters() {
+	return _monsters;
+}
+
+map<Point, Stash>& Level::stashes() {
+	return _stashes;
+}
+
+map<Point, int>& Level::symbols(unsigned char symbol) {
+	return _symbols[symbol];
+}
+
+unsigned char Level::getDungeonSymbol(const Point& point) {
+	/* return dungeon symbol at given point */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
+		return OUTSIDE_MAP;
+	return _dungeonmap[point.row()][point.col()];
+}
+
+unsigned char Level::getMonsterSymbol(const Point& point) {
+	/* return monster symbol at given point */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
+		return ILLEGAL_MONSTER;
+	return _monstermap[point.row()][point.col()];
+}
+
+int Level::getSearchCount(const Point& point) {
+	/* return search count at given point */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
+		return POINT_FULLY_SEARCHED;
+	return _searchmap[point.row()][point.col()];
+}
+
+void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
+	/* need to update both dungeonmap and symbols,
+	 * better keep it in a method */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
+		return; // outside map
+	if (_dungeonmap[point.row()][point.col()] == symbol)
+		return; // no change
+	/* erase old symbol from symbols */
+	_symbols[_dungeonmap[point.row()][point.col()]].erase(point);
+	/* set new symbol in symbols */
+	_symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
+	/* update dungeonmap */
+	_dungeonmap[point.row()][point.col()] = symbol;
+}
+
+void Level::increaseAdjacentSearchCount(const Point& point) {
+	/* increase search count for adjacent points to given point */
+	for (int r = point.row() - 1; r <= point.row() + 1; ++r) {
+		if (r < MAP_ROW_BEGIN || r > MAP_ROW_END)
+			continue;
+		for (int c = point.col() - 1; c <= point.col() + 1; ++c) {
+			if (c < MAP_COL_BEGIN || c > MAP_COL_END)
+				continue;
+			if (_searchmap[r][c] >= POINT_FULLY_SEARCHED)
+				continue;
+			++_searchmap[r][c];
+		}
+	}
+}
+
+const PathNode& Level::shortestPath(const Point& point) {
+	/* return a PathNode that tells us which direction to move to get to given point */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
+		return _pathnode_outside_map;
+	return _pathmap[point.row()][point.col()];
+}
+
+/* private static methods */
+void Level::init() {
+	_initialized = true;
+	/* monsters */
+	for (int a = 0; a <= UCHAR_MAX; ++a) {
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5') || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
+			_monster[a] = true;
+	}
+	/* items */
+	_item[(unsigned char) WEAPON] = true;
+	_item[(unsigned char) ARMOR] = true;
+	_item[(unsigned char) RING] = true;
+	_item[(unsigned char) AMULET] = true;
+	_item[(unsigned char) TOOL] = true;
+	_item[(unsigned char) FOOD] = true;
+	_item[(unsigned char) POTION] = true;
+	_item[(unsigned char) SCROLL] = true;
+	_item[(unsigned char) SPELLBOOK] = true;
+	_item[(unsigned char) WAND] = true;
+	_item[(unsigned char) GOLD] = true;
+	_item[(unsigned char) GEM] = true;
+	_item[(unsigned char) STATUE] = true;
+	// skipping boulder as that's a special item
+	_item[(unsigned char) IRON_BALL] = true;
+	_item[(unsigned char) CHAINS] = true;
+	_item[(unsigned char) VENOM] = true;
+	/* stuff we can walk on */
+	_passable[(unsigned char) FLOOR] = true;
+	_passable[(unsigned char) OPEN_DOOR] = true;
+	_passable[(unsigned char) CORRIDOR] = true;
+	_passable[(unsigned char) STAIRS_UP] = true;
+	_passable[(unsigned char) STAIRS_DOWN] = true;
+	_passable[(unsigned char) ALTAR] = true;
+	_passable[(unsigned char) GRAVE] = true;
+	_passable[(unsigned char) THRONE] = true;
+	_passable[(unsigned char) SINK] = true;
+	_passable[(unsigned char) FOUNTAIN] = true;
+	_passable[(unsigned char) WATER] = true;
+	_passable[(unsigned char) ICE] = true;
+	_passable[(unsigned char) LAVA] = true;
+	_passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	_passable[(unsigned char) TRAP] = true;
+	_passable[(unsigned char) UNKNOWN_TILE] = true;
+	_passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
+	_passable[(unsigned char) ROGUE_STAIRS] = true;
+	_passable[(unsigned char) MINES_FOUNTAIN] = true;
+	_passable[(unsigned char) SHOP_TILE] = true;
+	_passable[(unsigned char) WEAPON] = true;
+	_passable[(unsigned char) ARMOR] = true;
+	_passable[(unsigned char) RING] = true;
+	_passable[(unsigned char) AMULET] = true;
+	_passable[(unsigned char) TOOL] = true;
+	_passable[(unsigned char) FOOD] = true;
+	_passable[(unsigned char) POTION] = true;
+	_passable[(unsigned char) SCROLL] = true;
+	_passable[(unsigned char) SPELLBOOK] = true;
+	_passable[(unsigned char) WAND] = true;
+	_passable[(unsigned char) GOLD] = true;
+	_passable[(unsigned char) GEM] = true;
+	_passable[(unsigned char) STATUE] = true;
+	_passable[(unsigned char) IRON_BALL] = true;
+	_passable[(unsigned char) CHAINS] = true;
+	_passable[(unsigned char) VENOM] = true;
+	/* dungeon layout */
+	_dungeon[(unsigned char) VERTICAL_WALL] = true;
+	_dungeon[(unsigned char) HORIZONTAL_WALL] = true;
+	_dungeon[(unsigned char) FLOOR] = true;
+	_dungeon[(unsigned char) OPEN_DOOR] = true;
+	_dungeon[(unsigned char) CLOSED_DOOR] = true;
+	_dungeon[(unsigned char) IRON_BARS] = true;
+	_dungeon[(unsigned char) TREE] = true;
+	_dungeon[(unsigned char) CORRIDOR] = true;
+	_dungeon[(unsigned char) STAIRS_UP] = true;
+	_dungeon[(unsigned char) STAIRS_DOWN] = true;
+	_dungeon[(unsigned char) ALTAR] = true;
+	_dungeon[(unsigned char) GRAVE] = true;
+	_dungeon[(unsigned char) THRONE] = true;
+	_dungeon[(unsigned char) SINK] = true;
+	_dungeon[(unsigned char) FOUNTAIN] = true;
+	_dungeon[(unsigned char) WATER] = true;
+	_dungeon[(unsigned char) ICE] = true;
+	_dungeon[(unsigned char) LAVA] = true;
+	_dungeon[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	_dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
+	_dungeon[(unsigned char) TRAP] = true;
+	_dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
+	_dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
+	_dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
+	_dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
+	/* cost for pathing on certain tiles */
+	_pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
+	_pathcost[(unsigned char) GRAVE] = COST_GRAVE;
+	_pathcost[(unsigned char) ALTAR] = COST_ALTAR;
+	_pathcost[(unsigned char) ICE] = COST_ICE;
+	_pathcost[(unsigned char) LAVA] = COST_LAVA;
+	_pathcost[(unsigned char) MINES_FOUNTAIN] = COST_FOUNTAIN;
+	_pathcost[(unsigned char) TRAP] = COST_TRAP;
+	_pathcost[(unsigned char) WATER] = COST_WATER;
+	/* remapping ambigous symbols */
+	for (int s = 0; s <= UCHAR_MAX; ++s) {
+		for (int c = 0; c <= CHAR_MAX; ++c)
+			_uniquemap[s][c] = s;
+	}
+	_uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
+	_uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
+	_uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
+	_uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
+	_uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
+	_uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
+	_uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
+	_uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
+	_uniquemap[(unsigned char) WATER][RED] = LAVA;
+	_uniquemap[(unsigned char) TRAP][BOLD_MAGENTA] = MAGIC_PORTAL;
+}
+
+/* private methods */
 void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) {
-	if (branch == BRANCH_ROGUE) {
+	if (_branch == BRANCH_ROGUE) {
 		/* we need a special symbol remapping for rogue level */
 		switch ((char) symbol) {
 		case '+':
@@ -218,10 +464,10 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		case '%':
 			/* set symbol to ROGUE_STAIRS if we don't know where the stairs lead.
 			 * if we do know where the stairs lead, then set the symbol accordingly */
-			if (dungeonmap[point.row()][point.col()] != STAIRS_DOWN && dungeonmap[point.row()][point.col()] != STAIRS_UP)
+			if (_dungeonmap[point.row()][point.col()] != STAIRS_DOWN && _dungeonmap[point.row()][point.col()] != STAIRS_UP)
 				symbol = ROGUE_STAIRS;
 			else
-				symbol = dungeonmap[point.row()][point.col()];
+				symbol = _dungeonmap[point.row()][point.col()];
 			break;
 
 		default:
@@ -229,17 +475,17 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		}
 	} else {
 		/* remap ambigous symbols */
-		symbol = uniquemap[symbol][color];
+		symbol = _uniquemap[symbol][color];
 		/* some special cases */
-		if (symbol == FOUNTAIN && branch == BRANCH_MINES)
+		if (symbol == FOUNTAIN && _branch == BRANCH_MINES)
 			symbol = MINES_FOUNTAIN; // to avoid dipping & such
-		else if (symbol == FLOOR && dungeonmap[point.row()][point.col()] == SHOP_TILE)
+		else if (symbol == FLOOR && _dungeonmap[point.row()][point.col()] == SHOP_TILE)
 			symbol = SHOP_TILE; // don't overwrite shop tiles here
 	}
-	if (dungeon[symbol] || (symbol == SOLID_ROCK && dungeonmap[point.row()][point.col()] == CORRIDOR)) {
+	if (_dungeon[symbol] || (symbol == SOLID_ROCK && _dungeonmap[point.row()][point.col()] == CORRIDOR)) {
 		/* update the map showing static stuff */
 		setDungeonSymbol(point, symbol);
-	} else if (symbol != SOLID_ROCK && !passable[dungeonmap[point.row()][point.col()]] && dungeonmap[point.row()][point.col()] != UNKNOWN_TILE_UNPASSABLE) {
+	} else if (symbol != SOLID_ROCK && !_passable[_dungeonmap[point.row()][point.col()]] && _dungeonmap[point.row()][point.col()] != UNKNOWN_TILE_UNPASSABLE) {
 		/* we can't see the floor here, but we believe we can pass this tile.
 		 * place an UNKNOWN_TILE here.
 		 * the reason we check if stored tile is !passable is because if we don't,
@@ -248,9 +494,9 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
 	/* update items */
-	if (!Saiph::hallucinating && item[symbol]) {
-		map<Point, Stash>::iterator s = stashes.find(point);
-		if (s != stashes.end()) {
+	if (!Saiph::hallucinating && _item[symbol]) {
+		map<Point, Stash>::iterator s = _stashes.find(point);
+		if (s != _stashes.end()) {
 			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
 				/* top symbol/color changed, update */
 				s->second.top_symbol = symbol;
@@ -262,19 +508,19 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			}
 		} else {
 			/* new stash */
-			stashes[point] = Stash(symbol, color);
+			_stashes[point] = Stash(symbol, color);
 			/* broadcast StashChanged */
 			StashChanged sc;
 			sc.stash(Coordinate(Saiph::position.level(), point));
 			EventBus::broadcast(static_cast<Event*> (&sc));
 		}
-	} else if (symbol == dungeonmap[point.row()][point.col()]) {
+	} else if (symbol == _dungeonmap[point.row()][point.col()]) {
 		/* if there ever was a stash here, it's gone now */
-		stashes.erase(point);
+		_stashes.erase(point);
 	}
 
 	/* update monsters */
-	if (monster[symbol] && point != Saiph::position) {
+	if (_monster[symbol] && point != Saiph::position) {
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
@@ -283,8 +529,8 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			msymbol = symbol;
 		/* find nearest monster */
 		int min_distance = INT_MAX;
-		map<Point, Monster>::iterator nearest = monsters.end();
-		for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end(); ++m) {
+		map<Point, Monster>::iterator nearest = _monsters.end();
+		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m) {
 			if (m->second.symbol != msymbol || m->second.color != color)
 				continue; // not the same monster
 			unsigned char old_symbol;
@@ -313,27 +559,27 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			min_distance = distance;
 			nearest = m;
 		}
-		if (nearest != monsters.end()) {
+		if (nearest != _monsters.end()) {
 			/* we know of this monster, move it to new location */
 			/* remove monster from monstermap */
-			monstermap[nearest->first.row()][nearest->first.col()] = ILLEGAL_MONSTER;
+			_monstermap[nearest->first.row()][nearest->first.col()] = ILLEGAL_MONSTER;
 			/* update monster */
 			nearest->second.last_seen = World::turn;
-			monsters[point] = nearest->second;
-			monsters.erase(nearest);
+			_monsters[point] = nearest->second;
+			_monsters.erase(nearest);
 		} else {
 			/* add monster */
-			monsters[point] = Monster(msymbol, color, World::turn);
+			_monsters[point] = Monster(msymbol, color, World::turn);
 		}
 		/* set monster on monstermap */
-		monstermap[point.row()][point.col()] = msymbol;
+		_monstermap[point.row()][point.col()] = msymbol;
 	}
 }
 
 void Level::updateMonsters() {
 	/* remove monsters that seems to be gone
 	 * and make monsters we can't see !visible */
-	for (map<Point, Monster>::iterator m = monsters.begin(); m != monsters.end();) {
+	for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end();) {
 		unsigned char symbol;
 		int color = World::color[m->first.row()][m->first.col()];
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
@@ -352,9 +598,9 @@ void Level::updateMonsters() {
 			continue;
 		}
 		/* remove monster from monstermap */
-		monstermap[m->first.row()][m->first.col()] = ILLEGAL_MONSTER;
+		_monstermap[m->first.row()][m->first.col()] = ILLEGAL_MONSTER;
 		/* remove monster from list */
-		monsters.erase(m++);
+		_monsters.erase(m++);
 	}
 }
 
@@ -362,7 +608,7 @@ void Level::updatePathMap() {
 	/* reset all nodes */
 	for (int r = MAP_ROW_BEGIN; r <= MAP_ROW_END; ++r) {
 		for (int c = MAP_COL_BEGIN; c <= MAP_COL_END; ++c)
-			pathmap[r][c] = PathNode();
+			_pathmap[r][c] = PathNode();
 	}
 
 	/* create pathmap */
@@ -370,9 +616,9 @@ void Level::updatePathMap() {
 	int nodes = 0;
 	unsigned int cost = 0;
 	Point from = Saiph::position;
-	pathmap[from.row()][from.col()].dir = NOWHERE;
-	pathmap[from.row()][from.col()].moves = 0;
-	pathmap[from.row()][from.col()].cost = 0;
+	_pathmap[from.row()][from.col()].dir = NOWHERE;
+	_pathmap[from.row()][from.col()].moves = 0;
+	_pathmap[from.row()][from.col()].cost = 0;
 
 	/* check first northwest node */
 	Point to(from);
@@ -380,10 +626,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, NW, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, NW, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, NW, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, NW, 1, UNPASSABLE);
 		}
 	}
 	/* check first north node */
@@ -391,10 +637,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, N, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, N, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, N, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, N, 1, UNPASSABLE);
 		}
 	}
 	/* check first northeast node */
@@ -402,10 +648,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, NE, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, NE, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, NE, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, NE, 1, UNPASSABLE);
 		}
 	}
 	/* check first east node */
@@ -413,10 +659,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, E, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, E, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, E, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, E, 1, UNPASSABLE);
 		}
 	}
 	/* check first southeast node */
@@ -424,10 +670,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, SE, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, SE, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, SE, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, SE, 1, UNPASSABLE);
 		}
 	}
 	/* check first south node */
@@ -435,10 +681,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, S, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, S, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, S, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, S, 1, UNPASSABLE);
 		}
 	}
 	/* check first southwest node */
@@ -446,10 +692,10 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, SW, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, SW, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, SW, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, SW, 1, UNPASSABLE);
 		}
 	}
 	/* check first west node */
@@ -457,130 +703,129 @@ void Level::updatePathMap() {
 	if (to.insideMap()) {
 		cost = updatePathMapHelper(to, from);
 		if (cost < UNREACHABLE) {
-			pathing_queue[nodes++] = to;
-			pathmap[to.row()][to.col()] = PathNode(from, W, 1, cost);
+			_pathing_queue[nodes++] = to;
+			_pathmap[to.row()][to.col()] = PathNode(from, W, 1, cost);
 		} else {
-			pathmap[to.row()][to.col()] = PathNode(from, W, 1, UNPASSABLE);
+			_pathmap[to.row()][to.col()] = PathNode(from, W, 1, UNPASSABLE);
 		}
 	}
 
 	/* calculate remaining nodes */
 	while (curnode < nodes) {
-		from = pathing_queue[curnode++];
+		from = _pathing_queue[curnode++];
 		/* check northwest node */
 		Point to(from);
 		to.moveNorthwest();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check north node */
 		to.moveEast();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check northeast node */
 		to.moveEast();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check east node */
 		to.moveSouth();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check southeast node */
 		to.moveSouth();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check south node */
 		to.moveWest();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check southwest node */
 		to.moveWest();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 		/* check west node */
 		to.moveNorth();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < pathmap[to.row()][to.col()].cost) {
-				pathing_queue[nodes++] = to;
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				pathmap[to.row()][to.col()] = PathNode(from, pathmap[from.row()][from.col()].dir, pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+			if (cost < _pathmap[to.row()][to.col()].cost) {
+				_pathing_queue[nodes++] = to;
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
 			}
 		}
 	}
 }
 
-/* private methods */
 unsigned int Level::updatePathMapHelper(const Point& to, const Point& from) {
 	/* helper method for updatePathMap()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
-	unsigned char s = dungeonmap[to.row()][to.col()];
-	if (!passable[s])
+	unsigned char s = _dungeonmap[to.row()][to.col()];
+	if (!_passable[s])
 		return UNREACHABLE;
 	bool cardinal_move = (to.row() == from.row() || to.col() == from.col());
 	if (!cardinal_move) {
-		if (s == OPEN_DOOR || dungeonmap[from.row()][from.col()] == OPEN_DOOR)
+		if (s == OPEN_DOOR || _dungeonmap[from.row()][from.col()] == OPEN_DOOR)
 			return UNREACHABLE; // diagonally in/out of door
-		if (s == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || dungeonmap[from.row()][from.col()] == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
+		if (s == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || _dungeonmap[from.row()][from.col()] == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
 			return UNREACHABLE; // don't know what tile this is, but we know we can't pass it diagonally
-		unsigned char sc1 = dungeonmap[to.row()][from.col()];
-		unsigned char sc2 = dungeonmap[from.row()][to.col()];
-		if (!passable[sc1] && !passable[sc2]) {
+		unsigned char sc1 = _dungeonmap[to.row()][from.col()];
+		unsigned char sc2 = _dungeonmap[from.row()][to.col()];
+		if (!_passable[sc1] && !_passable[sc2]) {
 			/* moving past two corners
 			 * while we may pass two corners if we're not carrying too much we'll just ignore this.
 			 * it's bound to cause issues */
 			if (sc1 != BOULDER && sc2 != BOULDER)
 				return UNREACHABLE; // neither corner is a boulder, we may not pass
-			else if (branch == BRANCH_SOKOBAN)
+			else if (_branch == BRANCH_SOKOBAN)
 				return UNREACHABLE; // in sokoban we can't pass by boulders diagonally
 		}
 		//if (polymorphed_to_grid_bug)
@@ -590,128 +835,13 @@ unsigned int Level::updatePathMapHelper(const Point& to, const Point& from) {
 		return UNREACHABLE;
 	if (s == WATER) // && (!levitating || !waterwalk))
 		return UNREACHABLE;
-	if (s == TRAP && branch == BRANCH_SOKOBAN)
+	if (s == TRAP && _branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (monstermap[to.row()][to.col()] != ILLEGAL_MONSTER && abs(Saiph::position.row() - to.row()) <= 1 && abs(Saiph::position.col() - to.col()) <= 1)
+	if (_monstermap[to.row()][to.col()] != ILLEGAL_MONSTER && abs(Saiph::position.row() - to.row()) <= 1 && abs(Saiph::position.col() - to.col()) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
-	unsigned int cost = pathmap[from.row()][from.col()].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
-	cost += pathcost[s];
-	if (monstermap[to.row()][to.col()] != ILLEGAL_MONSTER)
+	unsigned int cost = _pathmap[from.row()][from.col()].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
+	cost += _pathcost[s];
+	if (_monstermap[to.row()][to.col()] != ILLEGAL_MONSTER)
 		cost += COST_MONSTER;
 	return cost;
-}
-
-/* private static methods */
-void Level::init() {
-	initialized = true;
-	/* monsters */
-	for (int a = 0; a <= UCHAR_MAX; ++a) {
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5') || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
-			monster[a] = true;
-	}
-	/* items */
-	item[(unsigned char) WEAPON] = true;
-	item[(unsigned char) ARMOR] = true;
-	item[(unsigned char) RING] = true;
-	item[(unsigned char) AMULET] = true;
-	item[(unsigned char) TOOL] = true;
-	item[(unsigned char) FOOD] = true;
-	item[(unsigned char) POTION] = true;
-	item[(unsigned char) SCROLL] = true;
-	item[(unsigned char) SPELLBOOK] = true;
-	item[(unsigned char) WAND] = true;
-	item[(unsigned char) GOLD] = true;
-	item[(unsigned char) GEM] = true;
-	item[(unsigned char) STATUE] = true;
-	// skipping boulder as that's a special item
-	item[(unsigned char) IRON_BALL] = true;
-	item[(unsigned char) CHAINS] = true;
-	item[(unsigned char) VENOM] = true;
-	/* stuff we can walk on */
-	passable[(unsigned char) FLOOR] = true;
-	passable[(unsigned char) OPEN_DOOR] = true;
-	passable[(unsigned char) CORRIDOR] = true;
-	passable[(unsigned char) STAIRS_UP] = true;
-	passable[(unsigned char) STAIRS_DOWN] = true;
-	passable[(unsigned char) ALTAR] = true;
-	passable[(unsigned char) GRAVE] = true;
-	passable[(unsigned char) THRONE] = true;
-	passable[(unsigned char) SINK] = true;
-	passable[(unsigned char) FOUNTAIN] = true;
-	passable[(unsigned char) WATER] = true;
-	passable[(unsigned char) ICE] = true;
-	passable[(unsigned char) LAVA] = true;
-	passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	passable[(unsigned char) TRAP] = true;
-	passable[(unsigned char) UNKNOWN_TILE] = true;
-	passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
-	passable[(unsigned char) ROGUE_STAIRS] = true;
-	passable[(unsigned char) MINES_FOUNTAIN] = true;
-	passable[(unsigned char) SHOP_TILE] = true;
-	passable[(unsigned char) WEAPON] = true;
-	passable[(unsigned char) ARMOR] = true;
-	passable[(unsigned char) RING] = true;
-	passable[(unsigned char) AMULET] = true;
-	passable[(unsigned char) TOOL] = true;
-	passable[(unsigned char) FOOD] = true;
-	passable[(unsigned char) POTION] = true;
-	passable[(unsigned char) SCROLL] = true;
-	passable[(unsigned char) SPELLBOOK] = true;
-	passable[(unsigned char) WAND] = true;
-	passable[(unsigned char) GOLD] = true;
-	passable[(unsigned char) GEM] = true;
-	passable[(unsigned char) STATUE] = true;
-	passable[(unsigned char) IRON_BALL] = true;
-	passable[(unsigned char) CHAINS] = true;
-	passable[(unsigned char) VENOM] = true;
-	/* dungeon layout */
-	dungeon[(unsigned char) VERTICAL_WALL] = true;
-	dungeon[(unsigned char) HORIZONTAL_WALL] = true;
-	dungeon[(unsigned char) FLOOR] = true;
-	dungeon[(unsigned char) OPEN_DOOR] = true;
-	dungeon[(unsigned char) CLOSED_DOOR] = true;
-	dungeon[(unsigned char) IRON_BARS] = true;
-	dungeon[(unsigned char) TREE] = true;
-	dungeon[(unsigned char) CORRIDOR] = true;
-	dungeon[(unsigned char) STAIRS_UP] = true;
-	dungeon[(unsigned char) STAIRS_DOWN] = true;
-	dungeon[(unsigned char) ALTAR] = true;
-	dungeon[(unsigned char) GRAVE] = true;
-	dungeon[(unsigned char) THRONE] = true;
-	dungeon[(unsigned char) SINK] = true;
-	dungeon[(unsigned char) FOUNTAIN] = true;
-	dungeon[(unsigned char) WATER] = true;
-	dungeon[(unsigned char) ICE] = true;
-	dungeon[(unsigned char) LAVA] = true;
-	dungeon[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
-	dungeon[(unsigned char) TRAP] = true;
-	dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
-	dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
-	dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
-	dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
-	/* cost for pathing on certain tiles */
-	pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
-	pathcost[(unsigned char) GRAVE] = COST_GRAVE;
-	pathcost[(unsigned char) ALTAR] = COST_ALTAR;
-	pathcost[(unsigned char) ICE] = COST_ICE;
-	pathcost[(unsigned char) LAVA] = COST_LAVA;
-	pathcost[(unsigned char) MINES_FOUNTAIN] = COST_FOUNTAIN;
-	pathcost[(unsigned char) TRAP] = COST_TRAP;
-	pathcost[(unsigned char) WATER] = COST_WATER;
-	/* remapping ambigous symbols */
-	for (int s = 0; s <= UCHAR_MAX; ++s) {
-		for (int c = 0; c <= CHAR_MAX; ++c)
-			uniquemap[s][c] = s;
-	}
-	uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
-	uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
-	uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
-	uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
-	uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
-	uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
-	uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
-	uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
-	uniquemap[(unsigned char) WATER][RED] = LAVA;
-	uniquemap[(unsigned char) TRAP][BOLD_MAGENTA] = MAGIC_PORTAL;
 }

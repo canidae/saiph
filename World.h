@@ -181,8 +181,8 @@ inline unsigned char World::getMonsterSymbol(const Point& point) {
 
 inline void World::setDirtyStash() {
 	/* set stash at player position dirty */
-	std::map<Point, Stash>::iterator s = World::levels[Saiph::position.level()].stashes.find(Saiph::position);
-	if (s != World::levels[Saiph::position.level()].stashes.end())
+	std::map<Point, Stash>::iterator s = World::levels[Saiph::position.level()].stashes().find(Saiph::position);
+	if (s != World::levels[Saiph::position.level()].stashes().end())
 		s->second.items.clear();
 }
 
