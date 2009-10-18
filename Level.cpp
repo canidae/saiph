@@ -141,42 +141,42 @@ void Level::parseMessages(const string& messages) {
 		/* we see a single item on ground */
 		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
 		if (s != _stashes.end())
-			s->second.items.clear(); // clear stash items
+			s->second.items().clear(); // clear stash items
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
-		s->second.last_look = World::turn;
+		s->second.lastInspected(World::turn);
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
 			if (item.count() > 0)
-				s->second.items.push_back(item);
+				s->second.items().push_back(item);
 		}
 	} else if ((pos = messages.find(LEVEL_YOU_FEEL_HERE)) != string::npos) {
 		/* we feel a single item on the ground */
 		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
 		if (s != _stashes.end())
-			s->second.items.clear(); // clear stash items
+			s->second.items().clear(); // clear stash items
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
-		s->second.last_look = World::turn;
+		s->second.lastInspected(World::turn);
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
 			if (item.count() > 0)
-				s->second.items.push_back(item);
+				s->second.items().push_back(item);
 		}
 	} else if ((pos = messages.find(LEVEL_THINGS_THAT_ARE_HERE)) != string::npos || (pos = messages.find(LEVEL_THINGS_THAT_YOU_FEEL_HERE)) != string::npos) {
 		/* we see/feel multiple items on the ground */
 		map<Point, Stash>::iterator s = _stashes.find(Saiph::position);
 		if (s != _stashes.end())
-			s->second.items.clear(); // clear stash items
+			s->second.items().clear(); // clear stash items
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position, Stash())); // no stash at location, create one
-		s->second.last_look = World::turn;
+		s->second.lastInspected(World::turn);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -186,7 +186,7 @@ void Level::parseMessages(const string& messages) {
 			length = length - pos;
 			Item item(messages.substr(pos, length));
 			if (item.count() > 0)
-				s->second.items.push_back(item);
+				s->second.items().push_back(item);
 			pos += length;
 		}
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
@@ -216,7 +216,7 @@ void Level::parseMessages(const string& messages) {
 			EventBus::broadcast(static_cast<Event*> (&_received));
 			/* make stash dirty too */
 			if (s != _stashes.end())
-				s->second.items.clear();
+				s->second.items().clear();
 			/* broadcast StashChanged */
 			StashChanged sc;
 			sc.stash(Coordinate(Saiph::position.level(), Saiph::position));
@@ -225,8 +225,8 @@ void Level::parseMessages(const string& messages) {
 
 		if (!World::question) {
 			/* send event if we're standing on stash (except when we got a question or menu) */
-			if (s != _stashes.end() && s->second.items.size() > 0) {
-				_on_ground.items(s->second.items);
+			if (s != _stashes.end() && s->second.items().size() > 0) {
+				_on_ground.items(s->second.items());
 				/* broadcast "ItemsOnGround" */
 				EventBus::broadcast(static_cast<Event*> (&_on_ground));
 			}
@@ -497,10 +497,10 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 	if (!Saiph::hallucinating && _item[symbol]) {
 		map<Point, Stash>::iterator s = _stashes.find(point);
 		if (s != _stashes.end()) {
-			if ((s->second.top_symbol != symbol || s->second.top_color != color)) {
+			if ((s->second.symbol() != symbol || s->second.color() != color)) {
 				/* top symbol/color changed, update */
-				s->second.top_symbol = symbol;
-				s->second.top_color = color;
+				s->second.symbol(symbol);
+				s->second.color(color);
 				/* broadcast StashChanged */
 				StashChanged sc;
 				sc.stash(Coordinate(Saiph::position.level(), point));

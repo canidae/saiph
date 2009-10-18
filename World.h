@@ -183,7 +183,7 @@ inline void World::setDirtyStash() {
 	/* set stash at player position dirty */
 	std::map<Point, Stash>::iterator s = World::levels[Saiph::position.level()].stashes().find(Saiph::position);
 	if (s != World::levels[Saiph::position.level()].stashes().end())
-		s->second.items.clear();
+		s->second.items().clear();
 }
 
 inline void World::setDungeonSymbol(unsigned char symbol) {
