@@ -12,8 +12,8 @@ public:
 	static void init(const std::string& file);
 	static void destroy();
 	static std::ofstream& analyzer(const std::string& name);
-	static std::ofstream& broadcast();
 	static std::ofstream& command();
+	static std::ofstream& event();
 	static std::ofstream& inventory();
 	static std::ofstream& info();
 	static std::ofstream& notice();

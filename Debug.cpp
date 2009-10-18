@@ -2,8 +2,8 @@
 #include "World.h"
 
 #define DEBUG_CATEGORY_MAX_LENGTH 9
-#define DEBUG_BROADCAST "Broadcast"
 #define DEBUG_COMMAND "Command"
+#define DEBUG_EVENT "Broadcast"
 #define DEBUG_INVENTORY "Inventory"
 #define DEBUG_INFO "Info"
 #define DEBUG_NOTICE "Notice"
@@ -30,12 +30,12 @@ ofstream& Debug::analyzer(const string& name) {
 	return header(name);
 }
 
-ofstream& Debug::broadcast() {
-	return header(DEBUG_BROADCAST);
-}
-
 ofstream& Debug::command() {
 	return header(DEBUG_COMMAND);
+}
+
+ofstream& Debug::event() {
+	return header(DEBUG_EVENT);
 }
 
 ofstream& Debug::inventory() {
