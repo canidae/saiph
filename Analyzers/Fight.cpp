@@ -55,13 +55,13 @@ void Fight::analyze() {
 	/* fight monsters */
 	int attack_score = INT_MIN;
 	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters().begin(); m != World::levels[Saiph::position.level()].monsters().end(); ++m) {
-		if (m->second.symbol == PET)
+		if (m->second.symbol() == PET)
 			continue; // we're not fighting pets :)
-		else if (m->second.attitude == FRIENDLY)
+		else if (m->second.attitude() == FRIENDLY)
 			continue; // don't attack friendlies
-		else if (m->second.symbol == S_UNICORN && ((m->second.color == BOLD_WHITE && Saiph::alignment == LAWFUL) || (m->second.color == WHITE && Saiph::alignment == NEUTRAL) || (m->second.color == BLUE && Saiph::alignment == CHAOTIC)))
+		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
-		else if (m->second.data == NULL) {
+		else if (m->second.data() == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
 			Debug::analyzer(name()) << "Found monster we don't know data about. Hmm" << endl;
 			attack_score = data::Monster::saiph_difficulty_max;
@@ -72,11 +72,11 @@ void Fight::analyze() {
 			 * currently we use "saiph_difficulty", whether we can melee/throw at it and how far away it is.
 			 * this is a too simple solution, we need to consider stuff as how hard they hit, if they steal
 			 * stuff, if they use wands, etc */
-			attack_score = m->second.data->saiph_difficulty;
+			attack_score = m->second.data()->saiph_difficulty;
 		}
 		int distance = max(abs(m->first.row() - Saiph::position.row()), abs(m->first.col() - Saiph::position.col()));
-		bool floating_eye = (m->second.symbol == S_EYE && m->second.color == BLUE);
-		if (m->second.visible && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
+		bool floating_eye = (m->second.symbol() == S_EYE && m->second.color() == BLUE);
+		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength / 2) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
 			unsigned char in_line = World::directLine(m->first, false, true);
@@ -85,14 +85,14 @@ void Fight::analyze() {
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_THROW_MIN;
 				World::setAction(static_cast<action::Action*> (new action::Throw(this, *_projectile_slots.begin(), in_line, priority)));
-				Debug::analyzer(name()) << "Setting action to throw at '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
+				Debug::analyzer(name()) << "Setting action to throw at '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MELEE_MIN;
 			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).dir, priority)));
-			Debug::analyzer(name()) << "Setting action to melee '" << m->second.symbol << "' with priority " << priority << endl;
+			Debug::analyzer(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
@@ -102,7 +102,7 @@ void Fight::analyze() {
 		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
 		priority = action::Move::calculatePriority(priority, node.moves);
 		World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir, priority)));
-		Debug::analyzer(name()) << "Setting action to move towards '" << m->second.symbol << "' which is " << distance << " squares away with priority " << priority << endl;
+		Debug::analyzer(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 

@@ -762,7 +762,7 @@ bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_
 		return false;
 	else if (!ignore_sinks && symbol == SINK)
 		return false;
-	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[Saiph::position.level()].monsters()[point].visible)
+	else if (getMonsterSymbol(point) != ILLEGAL_MONSTER && levels[Saiph::position.level()].monsters()[point].visible())
 		return false;
 	return true;
 }

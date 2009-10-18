@@ -1,10 +1,6 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
-#include <limits.h>
-#include <map>
-#include <string>
-#include <vector>
 #include "Globals.h"
 
 namespace data {
@@ -13,15 +9,33 @@ namespace data {
 
 class Monster {
 public:
-	const data::Monster* data;
-	unsigned char symbol;
-	int color;
-	int last_seen;
-	bool visible;
-	int attitude;
-	bool shopkeeper;
-	bool priest;
-
 	Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, int last_seen = -1);
+
+	unsigned char symbol() const;
+	unsigned char symbol(unsigned char symbol);
+	int color() const;
+	int color(int color);
+	bool visible() const;
+	bool visible(bool visible);
+	int attitude() const;
+	int attitude(int attitude);
+	int lastSeen() const;
+	int lastSeen(int last_seen);
+	bool shopkeeper() const;
+	bool shopkeeper(bool shopkeeper);
+	bool priest() const;
+	bool priest(bool priest);
+	const data::Monster* data() const;
+	const data::Monster* data(const data::Monster* data);
+
+private:
+	unsigned char _symbol;
+	int _color;
+	bool _visible;
+	int _attitude;
+	int _last_seen;
+	bool _shopkeeper;
+	bool _priest;
+	const data::Monster* _data;
 };
 #endif

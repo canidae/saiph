@@ -90,7 +90,7 @@ void Level::analyze() {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster she can't see */
 		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
-			m->second.visible = false;
+			m->second.visible(false);
 		return;
 	}
 	/* update changed symbols */
@@ -531,14 +531,14 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		int min_distance = INT_MAX;
 		map<Point, Monster>::iterator nearest = _monsters.end();
 		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m) {
-			if (m->second.symbol != msymbol || m->second.color != color)
+			if (m->second.symbol() != msymbol || m->second.color() != color)
 				continue; // not the same monster
 			unsigned char old_symbol;
 			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 				old_symbol = PET;
 			else
 				old_symbol = World::view[m->first.row()][m->first.col()];
-			if (m->second.symbol == old_symbol && m->second.color == World::color[m->first.row()][m->first.col()]) {
+			if (m->second.symbol() == old_symbol && m->second.color() == World::color[m->first.row()][m->first.col()]) {
 				/* note about this "point == m->first":
 				 * the character for the monster may be updated even if it hasn't moved,
 				 * if this is the case, we should return and neither move nor add the
@@ -553,7 +553,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 				continue; // too far away from where we last saw it, probably new monster
 			else if (distance >= min_distance)
 				continue;
-			else if ((m->second.priest || m->second.shopkeeper) && distance > 1)
+			else if ((m->second.priest() || m->second.shopkeeper()) && distance > 1)
 				continue; // shopkeepers and priests are very close to eachother in minetown
 			/* it is */
 			min_distance = distance;
@@ -564,7 +564,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			/* remove monster from monstermap */
 			_monstermap[nearest->first.row()][nearest->first.col()] = ILLEGAL_MONSTER;
 			/* update monster */
-			nearest->second.last_seen = World::turn;
+			nearest->second.lastSeen(World::turn);
 			_monsters[point] = nearest->second;
 			_monsters.erase(nearest);
 		} else {
@@ -587,8 +587,8 @@ void Level::updateMonsters() {
 		else
 			symbol = World::view[m->first.row()][m->first.col()];
 		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible = (m->first != Saiph::position && symbol == m->second.symbol && color == m->second.color);
-		if (m->second.visible) {
+		m->second.visible((m->first != Saiph::position && symbol == m->second.symbol() && color == m->second.color()));
+		if (m->second.visible()) {
 			/* monster still visible, don't remove it */
 			++m;
 			continue;

@@ -58,8 +58,8 @@ void Food::analyze() {
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	_prev_monster_loc.clear();
 	for (map<Point, Monster>::iterator m = World::levels[Saiph::position.level()].monsters().begin(); m != World::levels[Saiph::position.level()].monsters().end(); ++m) {
-		if (m->second.visible)
-			_prev_monster_loc[m->first] = m->second.symbol;
+		if (m->second.visible())
+			_prev_monster_loc[m->first] = m->second.symbol();
 	}
 
 	/* are we hungry? */
