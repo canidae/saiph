@@ -616,9 +616,9 @@ void Level::updatePathMap() {
 	int nodes = 0;
 	unsigned int cost = 0;
 	Point from = Saiph::position;
-	_pathmap[from.row()][from.col()].dir = NOWHERE;
-	_pathmap[from.row()][from.col()].moves = 0;
-	_pathmap[from.row()][from.col()].cost = 0;
+	_pathmap[from.row()][from.col()].dir(NOWHERE);
+	_pathmap[from.row()][from.col()].moves(0);
+	_pathmap[from.row()][from.col()].cost(0);
 
 	/* check first northwest node */
 	Point to(from);
@@ -718,88 +718,88 @@ void Level::updatePathMap() {
 		to.moveNorthwest();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check north node */
 		to.moveEast();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check northeast node */
 		to.moveEast();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check east node */
 		to.moveSouth();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check southeast node */
 		to.moveSouth();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check south node */
 		to.moveWest();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check southwest node */
 		to.moveWest();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 		/* check west node */
 		to.moveNorth();
 		if (to.insideMap()) {
 			cost = updatePathMapHelper(to, from);
-			if (cost < _pathmap[to.row()][to.col()].cost) {
+			if (cost < _pathmap[to.row()][to.col()].cost()) {
 				_pathing_queue[nodes++] = to;
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, cost);
-			} else if (cost == _pathmap[to.row()][to.col()].cost && cost == UNREACHABLE) {
-				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir, _pathmap[from.row()][from.col()].moves + 1, UNPASSABLE);
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, cost);
+			} else if (cost == _pathmap[to.row()][to.col()].cost() && cost == UNREACHABLE) {
+				_pathmap[to.row()][to.col()] = PathNode(from, _pathmap[from.row()][from.col()].dir(), _pathmap[from.row()][from.col()].moves() + 1, UNPASSABLE);
 			}
 		}
 	}
@@ -839,7 +839,7 @@ unsigned int Level::updatePathMapHelper(const Point& to, const Point& from) {
 		return UNREACHABLE;
 	if (_monstermap[to.row()][to.col()] != ILLEGAL_MONSTER && abs(Saiph::position.row() - to.row()) <= 1 && abs(Saiph::position.col() - to.col()) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
-	unsigned int cost = _pathmap[from.row()][from.col()].cost + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
+	unsigned int cost = _pathmap[from.row()][from.col()].cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += _pathcost[s];
 	if (_monstermap[to.row()][to.col()] != ILLEGAL_MONSTER)
 		cost += COST_MONSTER;

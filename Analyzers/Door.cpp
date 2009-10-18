@@ -54,33 +54,33 @@ void Door::analyze() {
 	unsigned int least_moves = UNREACHABLE;
 	for (map<Point, int>::iterator d = World::levels[Saiph::position.level()].symbols((unsigned char) CLOSED_DOOR).begin(); d != World::levels[Saiph::position.level()].symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
 		const PathNode& node = World::shortestPath(d->first);
-		if (node.cost == UNREACHABLE)
+		if (node.cost() == UNREACHABLE)
 			continue; // can't reach this door
 		if (World::levels[Saiph::position.level()].branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
-		if (node.moves == 1) {
+		if (node.moves() == 1) {
 			/* open/pick/kick door */
 			if (d->second != DOOR_LOCKED) {
-				World::setAction(static_cast<action::Action*> (new action::Open(this, node.dir, PRIORITY_DOOR_OPEN)));
+				World::setAction(static_cast<action::Action*> (new action::Open(this, node.dir(), PRIORITY_DOOR_OPEN)));
 			} else {
 				/* we can't apply when we're overtaxed, but logically we can kick... */
 				if (_unlock_tool_key == 0 || Saiph::encumbrance >= OVERTAXED) {
 					if (Saiph::hurt_leg)
 						continue; // can't kick, hurt leg
 					else
-						World::setAction(static_cast<action::Action*> (new action::Kick(this, node.dir, PRIORITY_DOOR_OPEN)));
+						World::setAction(static_cast<action::Action*> (new action::Kick(this, node.dir(), PRIORITY_DOOR_OPEN)));
 				} else {
-					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, node.dir, PRIORITY_DOOR_OPEN)));
+					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, node.dir(), PRIORITY_DOOR_OPEN)));
 				}
 			}
 			_position = d->first;
 			return;
-		} else if (node.moves < least_moves) {
+		} else if (node.moves() < least_moves) {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, node.moves))));
-			least_moves = node.moves;
+			World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir(), action::Move::calculatePriority(PRIORITY_DOOR_OPEN, node.moves()))));
+			least_moves = node.moves();
 		}
 	}
 }
