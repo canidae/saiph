@@ -33,6 +33,7 @@ bool Saiph::_slimed = false;
 bool Saiph::_stunned = false;
 bool Saiph::_hurt_leg = false;
 bool Saiph::_polymorphed = false;
+bool Saiph::_engulfed = false;
 /* position */
 Coordinate Saiph::_position;
 /* zorkmids */
@@ -247,6 +248,15 @@ bool Saiph::hurtLeg() {
 
 bool Saiph::polymorphed() {
 	return _polymorphed;
+}
+
+bool Saiph::engulfed() {
+	return _engulfed;
+}
+
+bool Saiph::engulfed(bool engulfed) {
+	_engulfed = engulfed;
+	return Saiph::engulfed();
 }
 
 Coordinate& Saiph::position() {

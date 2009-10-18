@@ -22,42 +22,41 @@ char World::view[ROWS][COLS + 1] = {
 int World::color[ROWS][COLS] = {
 	{0}
 };
-Point World::cursor;
+Point World::_cursor;
 int World::cur_page = -1;
 int World::max_page = -1;
-int World::command_count = 0;
-int World::frame_count = 0;
+int World::_command_count = 0;
+int World::_frame_count = 0;
 bool World::menu = false;
 bool World::question = false;
-bool World::engulfed = false;
-char World::levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
+char World::_levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
-int World::real_turn = 0;
+int World::_real_turn = 0;
 vector<Level> World::levels;
-Coordinate World::branch[BRANCHES];
+Coordinate World::_branch[BRANCHES];
 
-Connection* World::connection = NULL;
-action::Action* World::action = NULL;
-list<action::Action*> World::action_queue;
-bool World::changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {
+Connection* World::_connection = NULL;
+action::Action* World::_action = NULL;
+list<action::Action*> World::_action_queue;
+bool World::_changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {
 	{false}
 };
-string World::messages = " ";
-bool World::inverse = false;
-bool World::bold = false;
-char World::data[BUFFER_SIZE * 2] = {'\0'};
-int World::data_size = -1;
-string World::msg_str;
-Point World::last_menu;
-map<string, vector<int> > World::levelmap;
-time_t World::start_time = time(NULL);
-vector<Analyzer*> World::analyzers;
-int World::last_action_id = NO_ACTION;
+string World::_messages = " ";
+bool World::_inverse = false;
+bool World::_bold = false;
+char World::_data[BUFFER_SIZE * 2] = {'\0'};
+int World::_data_size = -1;
+string World::_msg_str;
+Point World::_last_menu;
+map<string, vector<int> > World::_levelmap;
+time_t World::_start_time = time(NULL);
+vector<Analyzer*> World::_analyzers;
+int World::_last_action_id = NO_ACTION;
 
 /* methods */
 void World::init(int connection_type) {
-	connection = Connection::create(connection_type);
-	if (connection == NULL) {
+	_connection = Connection::create(connection_type);
+	if (_connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
 		exit(1);
 	}
@@ -66,42 +65,47 @@ void World::init(int connection_type) {
 }
 
 void World::destroy() {
-	delete action;
-	delete connection;
-	for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+	delete _action;
+	delete _connection;
+	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 		delete *a;
 }
 
 void World::registerAnalyzer(Analyzer* analyzer) {
 	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name() << endl;
-	analyzers.push_back(analyzer);
+	_analyzers.push_back(analyzer);
 }
 
 void World::unregisterAnalyzer(Analyzer* analyzer) {
 	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name() << endl;
-	for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
+	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
-			analyzers.erase(a);
+			_analyzers.erase(a);
 			return;
 		}
 	}
 }
 
 int World::getPriority() {
-	if (action == NULL)
+	if (_action == NULL)
 		return action::Action::NOOP.priority();
-	return action->command().priority();
+	return _action->command().priority();
+}
+
+int World::getLastActionID() {
+	/* return the id of the last action */
+	return _last_action_id;
 }
 
 bool World::setAction(action::Action* action) {
-	if (World::action != NULL) {
-		if (action->command().priority() <= World::action->command().priority()) {
+	if (World::_action != NULL) {
+		if (action->command().priority() <= World::_action->command().priority()) {
 			delete action;
 			return false; // already got an action with higher priority
 		}
-		delete World::action;
+		delete World::_action;
 	}
-	World::action = action;
+	World::_action = action;
 	return true;
 }
 
@@ -113,7 +117,7 @@ bool World::queueAction(action::Action* action) {
 		delete action;
 		return false;
 	}
-	action_queue.push_back(action);
+	_action_queue.push_back(action);
 	return true;
 }
 
@@ -188,6 +192,101 @@ unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boul
 		}
 	}
 	return ILLEGAL_DIRECTION;
+}
+
+unsigned char World::getDungeonSymbol() {
+	/* return dungeon symbol at player position */
+	return World::levels[Saiph::position().level()].getDungeonSymbol(Saiph::position());
+}
+
+unsigned char World::getDungeonSymbol(const Coordinate& coordinate) {
+	/* return dungeon symbol at given coordinate */
+	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
+		return OUTSIDE_MAP;
+	return World::levels[coordinate.level()].getDungeonSymbol(coordinate);
+}
+
+unsigned char World::getDungeonSymbol(const Point& point) {
+	/* return dungeon symbol at given point on current level */
+	return World::levels[Saiph::position().level()].getDungeonSymbol(point);
+}
+
+unsigned char World::getDungeonSymbol(unsigned char direction) {
+	/* return dungeon symbol in given direction on current level */
+	switch (direction) {
+	case NW:
+		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col() - 1));
+
+	case N:
+		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col()));
+
+	case NE:
+		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col() + 1));
+
+	case W:
+		return getDungeonSymbol(Point(Saiph::position().row(), Saiph::position().col() - 1));
+
+	case NOWHERE:
+	case DOWN:
+	case UP:
+		return getDungeonSymbol();
+
+	case E:
+		return getDungeonSymbol(Point(Saiph::position().row(), Saiph::position().col() + 1));
+
+	case SW:
+		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col() - 1));
+
+	case S:
+		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col()));
+
+	case SE:
+		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col() + 1));
+
+	default:
+		return OUTSIDE_MAP;
+	}
+}
+
+unsigned char World::getMonsterSymbol(const Coordinate& coordinate) {
+	/* return monster symbol at given point on current level */
+	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
+		return ILLEGAL_MONSTER;
+	return World::levels[coordinate.level()].getMonsterSymbol(coordinate);
+}
+
+unsigned char World::getMonsterSymbol(const Point& point) {
+	/* return monster symbol at given point on current level */
+	return World::levels[Saiph::position().level()].getMonsterSymbol(point);
+}
+
+void World::setDirtyStash() {
+	/* set stash at player position dirty */
+	std::map<Point, Stash>::iterator s = World::levels[Saiph::position().level()].stashes().find(Saiph::position());
+	if (s != World::levels[Saiph::position().level()].stashes().end())
+		s->second.items().clear();
+}
+
+void World::setDungeonSymbol(unsigned char symbol) {
+	/* set dungeon symbol at player position */
+	World::levels[Saiph::position().level()].setDungeonSymbol(Saiph::position(), symbol);
+}
+
+void World::setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol) {
+	/* set dungeon symbol at given coordinate */
+	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
+		return;
+	World::levels[coordinate.level()].setDungeonSymbol(coordinate, symbol);
+}
+
+void World::setDungeonSymbol(const Point& point, unsigned char symbol) {
+	/* set dungeon symbol at given point on current level */
+	World::levels[Saiph::position().level()].setDungeonSymbol(point, symbol);
+}
+
+const PathNode& World::shortestPath(const Point& point) {
+	/* returns PathNode for shortest path from player to target */
+	return World::levels[Saiph::position().level()].shortestPath(point);
 }
 
 PathNode World::shortestPath(unsigned char symbol) {
@@ -447,9 +546,9 @@ void World::run() {
 	int stuck_counter = 0;
 	while (true) {
 		/* let Saiph, Inventory and current level parse messages */
-		Saiph::parseMessages(messages);
-		Inventory::parseMessages(messages);
-		levels[Saiph::position().level()].parseMessages(messages);
+		Saiph::parseMessages(_messages);
+		Inventory::parseMessages(_messages);
+		levels[Saiph::position().level()].parseMessages(_messages);
 
 		/* let Saiph, Inventory and current level analyze */
 		Saiph::analyze();
@@ -460,40 +559,40 @@ void World::run() {
 		dumpMaps();
 
 		/* check if we're in the middle of an action */
-		if (action == NULL || action->command() == action::Action::NOOP) {
+		if (_action == NULL || _action->command() == action::Action::NOOP) {
 			/* we got no command, find a new one */
 			/* parse messages */
-			for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
-				(*a)->parseMessages(messages);
+			for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
+				(*a)->parseMessages(_messages);
 
 			/* analyze */
 			if (!question && !menu) {
-				for (vector<Analyzer*>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+				for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 					(*a)->analyze();
 			}
 		}
 
 		/* check if we got some queued actions */
-		for (list<action::Action*>::iterator a = action_queue.begin(); a != action_queue.end(); ++a) {
+		for (list<action::Action*>::iterator a = _action_queue.begin(); a != _action_queue.end(); ++a) {
 			if (setAction(*a)) {
 				/* we will execute this action, remove it from queue.
 				 * if it fails, the analyzer that queued the action needs to handle it */
-				action_queue.erase(a);
+				_action_queue.erase(a);
 				break;
 			}
 		}
 
 		/* check if we got a command */
-		if (action == NULL || action->command() == action::Action::NOOP) {
+		if (_action == NULL || _action->command() == action::Action::NOOP) {
 			/* we do not. print debugging and just answer something sensible */
 			if (question) {
-				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << messages << endl;
-				last_action_id = NO_ACTION;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << _messages << endl;
+				_last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else if (menu) {
-				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << messages << endl;
-				last_action_id = NO_ACTION;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << _messages << endl;
+				_last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else {
@@ -502,10 +601,10 @@ void World::run() {
 				cout << (unsigned char) 27 << "[K"; // erase everything to the right
 				cout << "No idea what to do: s";
 				/* return cursor back to where it was */
-				cout << (unsigned char) 27 << "[" << cursor.row() + 1 << ";" << cursor.col() + 1 << "H";
+				cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 				cout.flush();
-				++World::real_turn; // command than may increase turn counter
-				last_action_id = NO_ACTION;
+				++World::_real_turn; // command than may increase turn counter
+				_last_action_id = NO_ACTION;
 				executeCommand("s");
 				continue;
 			}
@@ -514,25 +613,25 @@ void World::run() {
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << action->analyzer()->name() << " " << action->command();
+		cout << _action->analyzer()->name() << " " << _action->command();
 		/* return cursor back to where it was */
-		cout << (unsigned char) 27 << "[" << cursor.row() + 1 << ";" << cursor.col() + 1 << "H";
+		cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
 		cout.flush();
-		Debug::command() << "Analyzer " << action->analyzer()->name() << " " << action->command() << endl;
+		Debug::command() << "Analyzer " << _action->analyzer()->name() << " " << _action->command() << endl;
 
 		/* execute the command */
-		if (action->command().priority() <= PRIORITY_TURN_MAX)
-			++World::real_turn; // command that may increase turn counter
-		last_action_id = action->id();
-		executeCommand(action->command().command());
+		if (_action->command().priority() <= PRIORITY_TURN_MAX)
+			++World::_real_turn; // command that may increase turn counter
+		_last_action_id = _action->id();
+		executeCommand(_action->command().command());
 
 		/* check if we're stuck */
-		if (action != NULL && stuck_counter % 42 == 41 && action->command().command().size() == 1) {
+		if (_action != NULL && stuck_counter % 42 == 41 && _action->command().command().size() == 1) {
 			bool was_move = false;
 			/* we'll assume we're moving if the command that's stuck is a direction.
 			 * if not, it's probably not a big deal */
-			switch (action->command().command()[0]) {
+			switch (_action->command().command()[0]) {
 			case NW:
 			case NE:
 			case SW:
@@ -541,7 +640,7 @@ void World::run() {
 				 * we could be trying to move diagonally into a door we're
 				 * unaware of because of an item blocking the door symbol.
 				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+				setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -551,7 +650,7 @@ void World::run() {
 			case W:
 				/* moving cardinally failed, possibly item in wall.
 				 * make the tile UNKNOWN_TILE_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
+				setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -561,12 +660,12 @@ void World::run() {
 			}
 			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << action->analyzer()->name() << ": " << action->command() << endl;
+				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
 			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
-			last_action_id = NO_ACTION;
+			_last_action_id = NO_ACTION;
 			executeCommand(string(1, (char) 27));
 			executeCommand(QUIT);
 			executeCommand(string(1, YES));
@@ -579,47 +678,47 @@ void World::run() {
 		last_turn = turn;
 
 		/* and finally update current action */
-		if (action != NULL)
-			action->update(messages);
+		if (_action != NULL)
+			_action->update(_messages);
 	}
 }
 
 /* private methods */
 void World::addChangedLocation(const Point& point) {
 	/* add a location changed since last frame unless it's already added */
-	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END || changed[point.row()][point.col()])
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END || _changed[point.row()][point.col()])
 		return;
 	changes.push_back(point);
 }
 
 void World::detectPosition() {
-	string level = levelname;
+	string level = _levelname;
 	if (Saiph::position().level() < 0) {
 		/* this happens when we start */
-		Saiph::position().row(cursor.row());
-		Saiph::position().col(cursor.col());
+		Saiph::position().row(_cursor.row());
+		Saiph::position().col(_cursor.col());
 		Saiph::position().level(levels.size());
-		branch[BRANCH_MAIN] = Saiph::position();
+		_branch[BRANCH_MAIN] = Saiph::position();
 		levels.push_back(Level(level));
-		levelmap[level].push_back(Saiph::position().level());
+		_levelmap[level].push_back(Saiph::position().level());
 		return;
 	}
 	if ((int) levels.size() > Saiph::position().level() && level == levels[Saiph::position().level()].name()) {
 		/* same level as last frame, update row & col */
-		Saiph::position().row(cursor.row());
-		Saiph::position().col(cursor.col());
-		if (branch[BRANCH_SOKOBAN].level() == -1 && levels[Saiph::position().level()].branch() == BRANCH_MAIN && levels[Saiph::position().level()].depth() >= 5 && levels[Saiph::position().level()].depth() <= 9) {
+		Saiph::position().row(_cursor.row());
+		Saiph::position().col(_cursor.col());
+		if (_branch[BRANCH_SOKOBAN].level() == -1 && levels[Saiph::position().level()].branch() == BRANCH_MAIN && levels[Saiph::position().level()].depth() >= 5 && levels[Saiph::position().level()].depth() <= 9) {
 			/* look for sokoban level 1a or 1b */
 			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
 				/* sokoban 1a */
 				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << Saiph::position() << endl;
 				levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
-				branch[BRANCH_SOKOBAN] = Saiph::position();
+				_branch[BRANCH_SOKOBAN] = Saiph::position();
 			} else if (getDungeonSymbol(Point(8, 34)) == BOULDER && getDungeonSymbol(Point(8, 42)) == BOULDER && getDungeonSymbol(Point(9, 34)) == BOULDER && getDungeonSymbol(Point(9, 41)) == BOULDER && getDungeonSymbol(Point(10, 42)) == BOULDER && getDungeonSymbol(Point(13, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(15, 41)) == BOULDER && getDungeonSymbol(Point(16, 40)) == BOULDER && getDungeonSymbol(Point(16, 42)) == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << Saiph::position() << endl;
 				levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
-				branch[BRANCH_SOKOBAN] = Saiph::position();
+				_branch[BRANCH_SOKOBAN] = Saiph::position();
 			}
 
 		}
@@ -634,7 +733,7 @@ void World::detectPosition() {
 					/* we're in the mines */
 					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << Saiph::position() << endl;
 					levels[Saiph::position().level()].branch(BRANCH_MINES);
-					branch[BRANCH_MINES] = Saiph::position();
+					_branch[BRANCH_MINES] = Saiph::position();
 					break;
 				}
 			}
@@ -666,7 +765,7 @@ void World::detectPosition() {
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
-		for (vector<int>::iterator lm = levelmap[level].begin(); lm != levelmap[level].end(); ++lm) {
+		for (vector<int>::iterator lm = _levelmap[level].begin(); lm != _levelmap[level].end(); ++lm) {
 			/* check if level got walls on same locations.
 			 * since walls can disappear, we'll allow a 80% match */
 			int total = 0;
@@ -695,7 +794,7 @@ void World::detectPosition() {
 		 * same branch as the previous level.
 		 * exception is rogue level, which really isn't a branch */
 		levels.push_back(Level(level, (levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? levels[Saiph::position().level()].branch() : BRANCH_MAIN));
-		levelmap[level].push_back(found);
+		_levelmap[level].push_back(found);
 		Debug::notice() << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
 	}
 	/* were we on stairs on last Saiph::position()? */
@@ -709,8 +808,8 @@ void World::detectPosition() {
 		/* yes, we were on a magic portal */
 		levels[Saiph::position().level()].symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()] = found;
 	}
-	Saiph::position().row(cursor.row());
-	Saiph::position().col(cursor.col());
+	Saiph::position().row(_cursor.row());
+	Saiph::position().col(_cursor.col());
 	Saiph::position().level(found);
 }
 
@@ -767,11 +866,11 @@ bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_
 void World::dumpMaps() {
 	/* XXX: World echoes output from the game in the top left corner */
 	/* commands/frames/turns per second */
-	int seconds = (int) difftime(time(NULL), start_time);
+	int seconds = (int) difftime(time(NULL), _start_time);
 	if (seconds == 0)
 		++seconds;
-	int cps = command_count / seconds;
-	int fps = frame_count / seconds;
+	int cps = _command_count / seconds;
+	int fps = _frame_count / seconds;
 	int tps = turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
 	cout << "CPS/FPS/TPS: ";
@@ -863,15 +962,15 @@ void World::dumpMaps() {
 bool World::executeCommand(const string& command) {
 	/* send a command to nethack */
 	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
-		changed[c->row()][c->col()] = false;
+		_changed[c->row()][c->col()] = false;
 	changes.clear();
-	messages = "  "; // we want 2 spaces before the first message too
+	_messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */
 		return false;
 	}
-	connection->transmit(command);
-	++command_count;
+	_connection->transmit(command);
+	++_command_count;
 	update();
 	return true;
 }
@@ -879,44 +978,44 @@ bool World::executeCommand(const string& command) {
 void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 	/* fetch text from a menu */
 	for (int r = 0; r <= stoprow; ++r) {
-		msg_str = &view[r][startcol];
+		_msg_str = &view[r][startcol];
 		/* trim */
-		string::size_type fns = msg_str.find_first_not_of(" ");
-		string::size_type lns = msg_str.find_last_not_of(" ");
+		string::size_type fns = _msg_str.find_first_not_of(" ");
+		string::size_type lns = _msg_str.find_last_not_of(" ");
 		if (fns == string::npos || lns == string::npos || fns >= lns)
 			continue; // blank line?
-		msg_str = msg_str.substr(fns, lns - fns + 1);
+		_msg_str = _msg_str.substr(fns, lns - fns + 1);
 		if (addspaces)
-			msg_str.append(2, ' '); // append 2 spaces for later splitting
-		messages.append(msg_str);
+			_msg_str.append(2, ' '); // append 2 spaces for later splitting
+		_messages.append(_msg_str);
 	}
 }
 
 void World::fetchMessages() {
 	/* even yet a try on fetching messages sanely */
 	question = false; // we can do this as a question max last 1 turn
-	msg_str = &data[data_size - sizeof (MORE)];
+	_msg_str = &_data[_data_size - sizeof (MORE)];
 	string::size_type pos = string::npos;
-	if ((pos = msg_str.find(MORE, 0)) != string::npos) {
+	if ((pos = _msg_str.find(MORE, 0)) != string::npos) {
 		/* "--More--" found */
 		menu = false; // we don't have a menu then
-		int r = cursor.row();
-		int c = cursor.col() - sizeof (MORE) + 1; // +1 because sizeof (MORE) is 9, not 8
+		int r = _cursor.row();
+		int c = _cursor.col() - sizeof (MORE) + 1; // +1 because sizeof (MORE) is 9, not 8
 		if (r == 0) {
 			/* only one line, remove "--More--" from end of line */
-			msg_str = view[r];
-			msg_str = msg_str.substr(0, c);
+			_msg_str = view[r];
+			_msg_str = _msg_str.substr(0, c);
 			/* append 2 spaces for later splitting */
-			msg_str.append(2, ' ');
-			messages.append(msg_str);
+			_msg_str.append(2, ' ');
+			_messages.append(_msg_str);
 		} else {
 			/* more than 1 line */
 			if (c == 0 || view[r][c - 1] != ' ') {
 				/* this is just a very long line, not a list */
 				c = 0;
 				fetchMenuText(r, c, false);
-				messages.erase(messages.size() - sizeof (MORE) + 1); // remove "--More--"
-				messages.append(2, ' '); // add two spaces
+				_messages.erase(_messages.size() - sizeof (MORE) + 1); // remove "--More--"
+				_messages.append(2, ' '); // add two spaces
 			} else {
 				/* this is a list */
 				/* sometimes "--More--" is placed 1 char to the right of the menu.
@@ -929,11 +1028,11 @@ void World::fetchMessages() {
 			}
 		}
 		/* request the remaining messages */
-		connection->transmit(" ");
-		++command_count;
+		_connection->transmit(" ");
+		++_command_count;
 		update();
 		return;
-	} else if (cursor.row() == 0) {
+	} else if (_cursor.row() == 0) {
 		/* looks like we got a question.
 		 * we might want to significantly improve this later,
 		 * as we sometimes get partial data */
@@ -944,14 +1043,14 @@ void World::fetchMessages() {
 		 * this is pain */
 		if (menu) {
 			/* we had a menu last frame, check if we still do */
-			msg_str = &view[last_menu.row()][last_menu.col()];
+			_msg_str = &view[_last_menu.row()][_last_menu.col()];
 			cur_page = -1;
 			max_page = -1;
-			if (msg_str.find(END, 0) == string::npos && sscanf(&view[last_menu.row()][last_menu.col()], PAGE, &cur_page, &max_page) != 2) {
+			if (_msg_str.find(END, 0) == string::npos && sscanf(&view[_last_menu.row()][_last_menu.col()], PAGE, &cur_page, &max_page) != 2) {
 				/* nah, last menu is gone */
 				menu = false;
-				last_menu.row(-1);
-				last_menu.col(-1);
+				_last_menu.row(-1);
+				_last_menu.col(-1);
 			} else {
 				/* still got a menu */
 				if (cur_page == -1) {
@@ -963,10 +1062,10 @@ void World::fetchMessages() {
 		}
 		if (!menu) {
 			/* check if we got a new menu */
-			msg_str = &data[data_size - sizeof (PAGE_DIRTY)];
+			_msg_str = &_data[_data_size - sizeof (PAGE_DIRTY)];
 			cur_page = -1;
 			max_page = -1;
-			if (msg_str.find(END, 0) != string::npos || sscanf(msg_str.c_str(), PAGE_DIRTY, &cur_page, &max_page) == 2) {
+			if (_msg_str.find(END, 0) != string::npos || sscanf(_msg_str.c_str(), PAGE_DIRTY, &cur_page, &max_page) == 2) {
 				/* hot jiggity! we got a list */
 				/* now find the "(" in "(end) " or "(x of y)" */
 				if (cur_page == -1) {
@@ -975,138 +1074,138 @@ void World::fetchMessages() {
 					max_page = 1;
 				}
 				int c;
-				for (c = cursor.col(); c >= 0 && view[cursor.row()][c] != '('; --c)
+				for (c = _cursor.col(); c >= 0 && view[_cursor.row()][c] != '('; --c)
 					;
 				menu = true;
-				last_menu.row(cursor.row());
-				last_menu.col(c);
+				_last_menu.row(_cursor.row());
+				_last_menu.col(c);
 			}
 		}
 		if (menu) {
 			/* finally parse the menu */
-			fetchMenuText(last_menu.row() - 1, last_menu.col(), true); // "r - 1" to avoid the last "(end) " or "(x of y)"
+			fetchMenuText(_last_menu.row() - 1, _last_menu.col(), true); // "r - 1" to avoid the last "(end) " or "(x of y)"
 		}
 	}
 	if (!menu) {
 		/* no "--More--", no question and no menu?
 		 * well, it gotta be no messages or the message is on 1 line, then */
-		msg_str = view[0];
+		_msg_str = view[0];
 		/* trim */
-		string::size_type fns = msg_str.find_first_not_of(" ");
-		string::size_type lns = msg_str.find_last_not_of(" ");
+		string::size_type fns = _msg_str.find_first_not_of(" ");
+		string::size_type lns = _msg_str.find_last_not_of(" ");
 		if (fns == string::npos || lns == string::npos || fns >= lns)
 			return; // blank line?
-		msg_str = msg_str.substr(fns, lns - fns + 1);
-		messages.append(msg_str);
-		messages.append(2, ' ');
+		_msg_str = _msg_str.substr(fns, lns - fns + 1);
+		_messages.append(_msg_str);
+		_messages.append(2, ' ');
 	}
 }
 
 void World::handleEscapeSequence(int* pos, int* color) {
-	if (data[*pos] == 27) {
+	if (_data[*pos] == 27) {
 		/* sometimes we get 2 escape chars in a row,
 		 * just return in those cases */
 		return;
-	} else if (data[*pos] == '[') {
+	} else if (_data[*pos] == '[') {
 		int divider = -1;
 		int start = *pos;
-		for (; *pos < data_size; ++*pos) {
-			if (data[*pos] == ';') {
+		for (; *pos < _data_size; ++*pos) {
+			if (_data[*pos] == ';') {
 				/* divider for values */
 				divider = *pos;
-			} else if (data[*pos] == 'A') {
+			} else if (_data[*pos] == 'A') {
 				/* move cursor up */
-				if (cursor.row() > 0)
-					cursor.moveNorth();
+				if (_cursor.row() > 0)
+					_cursor.moveNorth();
 				break;
-			} else if (data[*pos] == 'B') {
+			} else if (_data[*pos] == 'B') {
 				/* move cursor down */
-				if (cursor.row() < ROWS)
-					cursor.moveSouth();
+				if (_cursor.row() < ROWS)
+					_cursor.moveSouth();
 				break;
-			} else if (data[*pos] == 'C') {
+			} else if (_data[*pos] == 'C') {
 				/* move cursor right */
-				if (cursor.col() < COLS)
-					cursor.moveEast();
+				if (_cursor.col() < COLS)
+					_cursor.moveEast();
 				break;
-			} else if (data[*pos] == 'D') {
+			} else if (_data[*pos] == 'D') {
 				/* move cursor left */
-				if (cursor.col() > 0)
-					cursor.moveWest();
+				if (_cursor.col() > 0)
+					_cursor.moveWest();
 				break;
-			} else if (data[*pos] == 'H') {
+			} else if (_data[*pos] == 'H') {
 				/* set cursor position */
-				cursor.row(0);
-				cursor.col(0);
+				_cursor.row(0);
+				_cursor.col(0);
 				if (divider < 0)
 					break;
 				/* we got a position */
-				int tmprow = cursor.row();
-				int tmpcol = cursor.col();
-				if (sscanf(&data[start + 1], "%d;%d", &tmprow, &tmpcol) < 2) {
-					Debug::error() << WORLD_DEBUG_NAME << "Unable to place cursor: " << &data[start] << endl;
+				int tmprow = _cursor.row();
+				int tmpcol = _cursor.col();
+				if (sscanf(&_data[start + 1], "%d;%d", &tmprow, &tmpcol) < 2) {
+					Debug::error() << WORLD_DEBUG_NAME << "Unable to place cursor: " << &_data[start] << endl;
 					exit(13);
 				}
-				cursor.row(--tmprow); // terminal starts counting from 1
-				cursor.col(--tmpcol); // ditto ^^
+				_cursor.row(--tmprow); // terminal starts counting from 1
+				_cursor.col(--tmpcol); // ditto ^^
 				break;
-			} else if (data[*pos] == 'J') {
+			} else if (_data[*pos] == 'J') {
 				/* erase in display */
-				if (data[*pos - 1] == '[') {
+				if (_data[*pos - 1] == '[') {
 					/* erase everything below current position */
-					for (int r = cursor.row() + 1; r < ROWS; ++r) {
+					for (int r = _cursor.row() + 1; r < ROWS; ++r) {
 						for (int c = 0; c < COLS; ++c)
 							view[r][c] = ' ';
 					}
-				} else if (data[*pos - 1] == '1') {
+				} else if (_data[*pos - 1] == '1') {
 					/* erase everything above current position */
-					for (int r = cursor.row() - 1; r >= 0; --r) {
+					for (int r = _cursor.row() - 1; r >= 0; --r) {
 						for (int c = 0; c < COLS; ++c)
 							view[r][c] = ' ';
 					}
-				} else if (data[*pos - 1] == '2') {
+				} else if (_data[*pos - 1] == '2') {
 					/* erase entire display */
 					memset(view, ' ', sizeof (view));
 					for (int r = 0; r < ROWS; ++r)
 						view[r][COLS] = '\0';
-					cursor.row(0);
-					cursor.col(0);
+					_cursor.row(0);
+					_cursor.col(0);
 					*color = 0;
 				} else {
-					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &data[*pos] << endl;
+					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &_data[*pos] << endl;
 					exit(9);
 				}
 				break;
-			} else if (data[*pos] == 'K') {
+			} else if (_data[*pos] == 'K') {
 				/* erase in line */
-				if (data[*pos - 1] == '[') {
+				if (_data[*pos - 1] == '[') {
 					/* erase everything to the right */
-					for (int c = cursor.col(); c < COLS; ++c)
-						view[cursor.row()][c] = ' ';
-				} else if (data[*pos - 1] == '1') {
+					for (int c = _cursor.col(); c < COLS; ++c)
+						view[_cursor.row()][c] = ' ';
+				} else if (_data[*pos - 1] == '1') {
 					/* erase everything to the left */
-					for (int c = 0; c < cursor.col(); ++c)
-						view[cursor.row()][c] = ' ';
-				} else if (data[*pos - 1] == '2') {
+					for (int c = 0; c < _cursor.col(); ++c)
+						view[_cursor.row()][c] = ' ';
+				} else if (_data[*pos - 1] == '2') {
 					/* erase entire line */
 					for (int c = 0; c < COLS; ++c)
-						view[cursor.row()][c] = ' ';
+						view[_cursor.row()][c] = ' ';
 				} else {
-					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &data[*pos] << endl;
+					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &_data[*pos] << endl;
 					exit(9);
 				}
 				break;
-			} else if (data[*pos] == 'h') {
+			} else if (_data[*pos] == 'h') {
 				/* can possibly be ignored */
 				/* probably [?1049h */
 				break;
-			} else if (data[*pos] == 'l') {
+			} else if (_data[*pos] == 'l') {
 				/* DEC Private Mode Reset? :s */
 				break;
-			} else if (data[*pos] == 'm') {
+			} else if (_data[*pos] == 'm') {
 				/* character attribute (bold, inverse, color, etc) */
 				if (divider > 0) {
-					Debug::error() << WORLD_DEBUG_NAME << "Unsupported character color" << &data[*pos] << endl;
+					Debug::error() << WORLD_DEBUG_NAME << "Unsupported character color" << &_data[*pos] << endl;
 					exit(15);
 					break;
 				}
@@ -1114,74 +1213,74 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				if (*pos == start + 1)
 					break;
 				int value = 0;
-				int matched = sscanf(&data[start + 1], "%d", &value);
+				int matched = sscanf(&_data[start + 1], "%d", &value);
 				if (matched < 1) {
-					Debug::error() << WORLD_DEBUG_NAME << "Expected numeric value for character attribute: " << &data[*pos] << endl;
+					Debug::error() << WORLD_DEBUG_NAME << "Expected numeric value for character attribute: " << &_data[*pos] << endl;
 					exit(14);
 				}
 				switch (value) {
 				case NO_COLOR:
-					bold = false;
-					inverse = false;
+					_bold = false;
+					_inverse = false;
 					break;
 
 				case BOLD:
-					bold = true;
+					_bold = true;
 					break;
 
 				case INVERSE:
-					inverse = true;
+					_inverse = true;
 					break;
 
 				default:
-					if (bold)
+					if (_bold)
 						value += BOLD_OFFSET;
-					if (inverse)
+					if (_inverse)
 						value += INVERSE_OFFSET;
 					*color = value;
 				}
 				break;
-			} else if (data[*pos] == 'r') {
+			} else if (_data[*pos] == 'r') {
 				/* this is some scrolling crap, ignore it */
 				break;
-			} else if (data[*pos] == 27) {
+			} else if (_data[*pos] == 27) {
 				/* escape char found, that shouldn't happen */
-				Debug::rawCharArray(data, start, *pos + 1);
+				Debug::rawCharArray(_data, start, *pos + 1);
 				exit(7);
 			} else if (*pos - start > 7) {
 				/* too long escape sequence? */
-				Debug::error() << WORLD_DEBUG_NAME << "Suspiciously long sequence: " << &data[*pos] << endl;
+				Debug::error() << WORLD_DEBUG_NAME << "Suspiciously long sequence: " << &_data[*pos] << endl;
 				exit(8);
 			}
 		}
-		if (*pos >= data_size) {
-			Debug::error() << WORLD_DEBUG_NAME << "Did not find stop char for sequence: " << data << endl;
+		if (*pos >= _data_size) {
+			Debug::error() << WORLD_DEBUG_NAME << "Did not find stop char for sequence: " << _data << endl;
 			exit(6);
 		}
-	} else if (data[*pos] == '(') {
+	} else if (_data[*pos] == '(') {
 		/* designate character set, ignore */
 		++*pos;
-	} else if (data[*pos] == ')') {
+	} else if (_data[*pos] == ')') {
 		/* designate character set, ignore */
 		++*pos;
-	} else if (data[*pos] == '*') {
+	} else if (_data[*pos] == '*') {
 		/* designate character set, ignore */
 		++*pos;
-	} else if (data[*pos] == '+') {
+	} else if (_data[*pos] == '+') {
 		/* designate character set, ignore */
 		++*pos;
-	} else if (data[*pos] == 'M') {
+	} else if (_data[*pos] == 'M') {
 		/* reverse linefeed? */
-		if (cursor.row() > 0)
-			cursor.moveNorth();
-	} else if (data[*pos] == '=') {
+		if (_cursor.row() > 0)
+			_cursor.moveNorth();
+	} else if (_data[*pos] == '=') {
 		/* application numpad?
 		 * ignore */
-	} else if (data[*pos] == '>') {
+	} else if (_data[*pos] == '>') {
 		/* normal numpad?
 		 * ignore */
 	} else {
-		Debug::error() << WORLD_DEBUG_NAME << "Unsupported escape sequence code at char " << *pos << ": " << &data[*pos] << endl;
+		Debug::error() << WORLD_DEBUG_NAME << "Unsupported escape sequence code at char " << *pos << ": " << &_data[*pos] << endl;
 		exit(5);
 	}
 }
@@ -1189,12 +1288,12 @@ void World::handleEscapeSequence(int* pos, int* color) {
 void World::update() {
 	/* update the view */
 	int charcolor = 0; // color of the char
-	data_size = connection->retrieve(data, BUFFER_SIZE);
-	if (data_size <= 0) {
+	_data_size = _connection->retrieve(_data, BUFFER_SIZE);
+	if (_data_size <= 0) {
 		/* no data? sleep a sec and try again */
 		sleep(1);
-		data_size = connection->retrieve(data, BUFFER_SIZE);
-		if (data_size <= 0) {
+		_data_size = _connection->retrieve(_data, BUFFER_SIZE);
+		if (_data_size <= 0) {
 			Debug::error() << "No data received, quitting" << endl;
 			exit(42);
 		}
@@ -1202,12 +1301,12 @@ void World::update() {
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
 	/* also, we do this in two loops because otherwise it flickers a lot */
-	for (int a = 0; a < data_size; ++a)
-		cout << data[a];
+	for (int a = 0; a < _data_size; ++a)
+		cout << _data[a];
 	cout.flush(); // same reason as in saiph.dumpMaps()
-	Debug::rawCharArray(data, 0, data_size);
-	for (int pos = 0; pos < data_size; ++pos) {
-		switch (data[pos]) {
+	Debug::rawCharArray(_data, 0, _data_size);
+	for (int pos = 0; pos < _data_size; ++pos) {
+		switch (_data[pos]) {
 		case 0:
 			/* sometimes we get lots of \0 characters.
 			 * seemingly this happens when certain effects happen.
@@ -1217,18 +1316,18 @@ void World::update() {
 		case 8:
 			/* backspace.
 			 * make it go 1 char left */
-			if (cursor.col() > 0)
-				cursor.moveWest();
+			if (_cursor.col() > 0)
+				_cursor.moveWest();
 			break;
 
 		case 10:
 			/* line feed */
-			cursor.moveSouth();
+			_cursor.moveSouth();
 			break;
 
 		case 13:
 			/* carriage return */
-			cursor.col(0);
+			_cursor.col(0);
 			break;
 
 		case 14:
@@ -1247,14 +1346,14 @@ void World::update() {
 
 		default:
 			/* add this char to the view */
-			if (cursor.col() >= COLS || cursor.row() >= ROWS || cursor.col() < 0 || cursor.row() < 0) {
-				Debug::warning() << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << cursor.row() << ", " << cursor.col() << endl;
+			if (_cursor.col() >= COLS || _cursor.row() >= ROWS || _cursor.col() < 0 || _cursor.row() < 0) {
+				Debug::warning() << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << _cursor.row() << ", " << _cursor.col() << endl;
 				break;
 			}
-			view[cursor.row()][cursor.col()] = (unsigned char) data[pos];
-			color[cursor.row()][cursor.col()] = charcolor;
-			addChangedLocation(cursor);
-			cursor.moveEast();
+			view[_cursor.row()][_cursor.col()] = (unsigned char) _data[pos];
+			color[_cursor.row()][_cursor.col()] = charcolor;
+			addChangedLocation(_cursor);
+			_cursor.moveEast();
 			break;
 		}
 	}
@@ -1263,22 +1362,22 @@ void World::update() {
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = Saiph::parseAttributeRow(view[ATTRIBUTES_ROW]);
-	bool parsed_status = Saiph::parseStatusRow(view[STATUS_ROW], levelname, &turn);
+	bool parsed_status = Saiph::parseStatusRow(view[STATUS_ROW], _levelname, &turn);
 	/* check that the data we received seems ok */
-	if (!menu && !question && (!parsed_attributes || !parsed_status || cursor.row() < MAP_ROW_BEGIN || cursor.row() > MAP_ROW_END || cursor.col() < MAP_COL_BEGIN || cursor.col() > MAP_COL_END)) {
+	if (!menu && !question && (!parsed_attributes || !parsed_status || _cursor.row() < MAP_ROW_BEGIN || _cursor.row() > MAP_ROW_END || _cursor.col() < MAP_COL_BEGIN || _cursor.col() > MAP_COL_END)) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
-		Debug::warning() << WORLD_DEBUG_NAME << "CURSOR ON UNEXPECTED LOCATION: " << cursor.row() << ", " << cursor.col() << endl;
+		Debug::warning() << WORLD_DEBUG_NAME << "CURSOR ON UNEXPECTED LOCATION: " << _cursor.row() << ", " << _cursor.col() << endl;
 		update();
 		return;
 	}
-	++frame_count;
-	if (messages == "  ")
-		messages.clear(); // no messages
+	++_frame_count;
+	if (_messages == "  ")
+		_messages.clear(); // no messages
 
 	/* check if we get the question where we want to teleport */
-	if (messages.find(MESSAGE_FOR_INSTRUCTIONS, 0) != string::npos) {
+	if (_messages.find(MESSAGE_FOR_INSTRUCTIONS, 0) != string::npos) {
 		/* a bit unique case, this is a question.
 		 * the data doesn't end with the sequence we check in World.
 		 * however, the cursor is placed on the player when we get this message */
@@ -1286,12 +1385,10 @@ void World::update() {
 	}
 
 	/* check if we're engulfed */
-	if (cursor.row() > MAP_ROW_BEGIN && cursor.row() < MAP_ROW_END && cursor.col() > MAP_COL_BEGIN && cursor.col() < MAP_COL_END && view[cursor.row() - 1][cursor.col() - 1] == '/' && view[cursor.row() - 1][cursor.col() + 1] == '\\' && view[cursor.row() + 1][cursor.col() - 1] == '\\' && view[cursor.row() + 1][cursor.col() + 1] == '/')
-		engulfed = true;
-	else
-		engulfed = false;
+	/* TODO: somehow this should be done in Saiph::analyze() */
+	Saiph::engulfed(_cursor.insideMap() && view[_cursor.row() - 1][_cursor.col() - 1] == '/' && view[_cursor.row() - 1][_cursor.col() + 1] == '\\' && view[_cursor.row() + 1][_cursor.col() - 1] == '\\' && view[_cursor.row() + 1][_cursor.col() + 1] == '/');
 
-	if (!menu && !question && !engulfed)
+	if (!menu && !question && !Saiph::engulfed())
 		detectPosition();
 }
 

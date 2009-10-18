@@ -48,7 +48,7 @@ Fight::Fight() : Analyzer("Fight") {
 /* methods */
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
-	if (World::engulfed) {
+	if (Saiph::engulfed()) {
 		World::setAction(static_cast<action::Action*> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
 		return;
 	}

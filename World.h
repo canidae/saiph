@@ -34,19 +34,12 @@ public:
 	static std::vector<Point> changes; // list of locations changed since last "frame"
 	static char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 	static int color[ROWS][COLS]; // not used for string reading, no need for + 1
-	static Point cursor; // cursor position
 	static int cur_page;
 	static int max_page;
-	static int command_count;
-	static int frame_count;
 	static bool menu;
 	static bool question;
-	static bool engulfed;
-	static char levelname[MAX_LEVELNAME_LENGTH];
 	static int turn;
-	static int real_turn;
 	static std::vector<Level> levels;
-	static Coordinate branch[BRANCHES];
 
 	static void init(int connection_type);
 	static void destroy();
@@ -73,22 +66,27 @@ public:
 	static void run();
 
 private:
-	static Connection* connection;
-	static action::Action* action;
-	static std::list<action::Action*> action_queue;
-	static bool changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
-	static std::string messages;
-	static bool inverse;
-	static bool bold;
-	static char data[BUFFER_SIZE * 2]; // weird errors from valgrind, oh well, we got enough memory
-	static char effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
-	static int data_size;
-	static std::string msg_str; // helps fetching messages
-	static Point last_menu; // needed to help detect menus that persist over turns
-	static std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
-	static time_t start_time;
-	static std::vector<analyzer::Analyzer*> analyzers;
-	static int last_action_id;
+	static Connection* _connection;
+	static action::Action* _action;
+	static std::list<action::Action*> _action_queue;
+	static bool _changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
+	static std::string _messages;
+	static bool _inverse;
+	static bool _bold;
+	static char _data[BUFFER_SIZE * 2]; // weird errors from valgrind, oh well, we got enough memory
+	static int _data_size;
+	static Point _cursor; // cursor position
+	static std::string _msg_str; // helps fetching messages
+	static Point _last_menu; // needed to help detect menus that persist over turns
+	static std::map<std::string, std::vector<int> > _levelmap; // used for faster map recognition
+	static char _levelname[MAX_LEVELNAME_LENGTH];
+	static time_t _start_time;
+	static int _command_count;
+	static int _frame_count;
+	static std::vector<analyzer::Analyzer*> _analyzers;
+	static int _last_action_id;
+	static int _real_turn;
+	static Coordinate _branch[BRANCHES];
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
@@ -102,105 +100,4 @@ private:
 	static void handleEscapeSequence(int* pos, int* color);
 	static void update();
 };
-
-/* inline methods */
-inline int World::getLastActionID() {
-	/* return the id of the last action */
-	return last_action_id;
-}
-
-inline unsigned char World::getDungeonSymbol() {
-	/* return dungeon symbol at player position */
-	return World::levels[Saiph::position().level()].getDungeonSymbol(Saiph::position());
-}
-
-inline unsigned char World::getDungeonSymbol(const Coordinate& coordinate) {
-	/* return dungeon symbol at given coordinate */
-	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
-		return OUTSIDE_MAP;
-	return World::levels[coordinate.level()].getDungeonSymbol(coordinate);
-}
-
-inline unsigned char World::getDungeonSymbol(const Point& point) {
-	/* return dungeon symbol at given point on current level */
-	return World::levels[Saiph::position().level()].getDungeonSymbol(point);
-}
-
-inline unsigned char World::getDungeonSymbol(unsigned char direction) {
-	/* return dungeon symbol in given direction on current level */
-	switch (direction) {
-	case NW:
-		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col() - 1));
-
-	case N:
-		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col()));
-
-	case NE:
-		return getDungeonSymbol(Point(Saiph::position().row() - 1, Saiph::position().col() + 1));
-
-	case W:
-		return getDungeonSymbol(Point(Saiph::position().row(), Saiph::position().col() - 1));
-
-	case NOWHERE:
-	case DOWN:
-	case UP:
-		return getDungeonSymbol();
-
-	case E:
-		return getDungeonSymbol(Point(Saiph::position().row(), Saiph::position().col() + 1));
-
-	case SW:
-		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col() - 1));
-
-	case S:
-		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col()));
-
-	case SE:
-		return getDungeonSymbol(Point(Saiph::position().row() + 1, Saiph::position().col() + 1));
-
-	default:
-		return OUTSIDE_MAP;
-	}
-}
-
-inline unsigned char World::getMonsterSymbol(const Coordinate& coordinate) {
-	/* return monster symbol at given point on current level */
-	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
-		return ILLEGAL_MONSTER;
-	return World::levels[coordinate.level()].getMonsterSymbol(coordinate);
-}
-
-inline unsigned char World::getMonsterSymbol(const Point& point) {
-	/* return monster symbol at given point on current level */
-	return World::levels[Saiph::position().level()].getMonsterSymbol(point);
-}
-
-inline void World::setDirtyStash() {
-	/* set stash at player position dirty */
-	std::map<Point, Stash>::iterator s = World::levels[Saiph::position().level()].stashes().find(Saiph::position());
-	if (s != World::levels[Saiph::position().level()].stashes().end())
-		s->second.items().clear();
-}
-
-inline void World::setDungeonSymbol(unsigned char symbol) {
-	/* set dungeon symbol at player position */
-	World::levels[Saiph::position().level()].setDungeonSymbol(Saiph::position(), symbol);
-}
-
-inline void World::setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol) {
-	/* set dungeon symbol at given coordinate */
-	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
-		return;
-	World::levels[coordinate.level()].setDungeonSymbol(coordinate, symbol);
-}
-
-inline void World::setDungeonSymbol(const Point& point, unsigned char symbol) {
-	/* set dungeon symbol at given point on current level */
-	World::levels[Saiph::position().level()].setDungeonSymbol(point, symbol);
-}
-
-inline const PathNode& World::shortestPath(const Point& point) {
-	/* returns PathNode for shortest path from player to target */
-	return World::levels[Saiph::position().level()].shortestPath(point);
-}
 #endif

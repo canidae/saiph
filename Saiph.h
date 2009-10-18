@@ -40,6 +40,8 @@ public:
 	static bool stunned();
 	static bool hurtLeg();
 	static bool polymorphed();
+	static bool engulfed();
+	static bool engulfed(bool engulfed);
 	static Coordinate& position();
 	static unsigned long long int intrinsics();
 	static unsigned long long int extrinsics();
@@ -74,6 +76,7 @@ private:
 	static bool _stunned;
 	static bool _hurt_leg;
 	static bool _polymorphed;
+	static bool _engulfed;
 	/* position */
 	static Coordinate _position;
 	/* zorkmids */

@@ -86,7 +86,7 @@ bool Level::isPassable(unsigned char symbol) {
 void Level::analyze() {
 	if (World::menu)
 		return; // menu hides map, don't update
-	if (World::engulfed) {
+	if (Saiph::engulfed()) {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster she can't see */
 		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
