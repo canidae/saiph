@@ -45,6 +45,7 @@ public:
 	static void destroy();
 	static void registerAnalyzer(analyzer::Analyzer* analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer* analyzer);
+	static unsigned int internalTurn();
 	static int getPriority();
 	static int getLastActionID();
 	static bool setAction(action::Action* action);
@@ -85,7 +86,7 @@ private:
 	static int _frame_count;
 	static std::vector<analyzer::Analyzer*> _analyzers;
 	static int _last_action_id;
-	static int _real_turn;
+	static unsigned int _internal_turn;
 	static Coordinate _branch[BRANCHES];
 
 	static void addChangedLocation(const Point& point);

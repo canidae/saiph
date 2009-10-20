@@ -31,7 +31,7 @@ bool World::menu = false;
 bool World::question = false;
 char World::_levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
-int World::_real_turn = 0;
+unsigned int World::_internal_turn = 0;
 vector<Level> World::levels;
 Coordinate World::_branch[BRANCHES];
 
@@ -84,6 +84,10 @@ void World::unregisterAnalyzer(Analyzer* analyzer) {
 			return;
 		}
 	}
+}
+
+unsigned int World::internalTurn() {
+	return _internal_turn;
 }
 
 int World::getPriority() {
@@ -603,7 +607,7 @@ void World::run() {
 				/* return cursor back to where it was */
 				cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 				cout.flush();
-				++World::_real_turn; // command than may increase turn counter
+				++World::_internal_turn; // command than may increase turn counter
 				_last_action_id = NO_ACTION;
 				executeCommand("s");
 				continue;
@@ -622,7 +626,7 @@ void World::run() {
 
 		/* execute the command */
 		if (_action->command().priority() <= PRIORITY_TURN_MAX)
-			++World::_real_turn; // command that may increase turn counter
+			++World::_internal_turn; // command that may increase turn counter
 		_last_action_id = _action->id();
 		executeCommand(_action->command().command());
 
