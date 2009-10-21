@@ -23,6 +23,7 @@
 #include "Level.h"
 #include "Point.h"
 #include "Saiph.h"
+#include "Tile.h"
 
 namespace action {
 	class Action;
@@ -61,9 +62,9 @@ public:
 	static void setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol);
 	static void setDungeonSymbol(const Point& point, unsigned char symbol);
 	static void setDungeonSymbol(unsigned char symbol);
-	static const PathNode& shortestPath(const Point& target);
-	static PathNode shortestPath(unsigned char symbol);
-	static PathNode shortestPath(const Coordinate& target);
+	static const Tile& shortestPath(const Point& target);
+	static Tile shortestPath(unsigned char symbol);
+	static Tile shortestPath(const Coordinate& target);
 	static void run();
 
 private:

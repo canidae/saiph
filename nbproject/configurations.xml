@@ -226,15 +226,16 @@
       <in>Local.h</in>
       <in>Monster.cpp</in>
       <in>Monster.h</in>
-      <in>PathNode.cpp</in>
-      <in>PathNode.h</in>
       <in>Point.cpp</in>
       <in>Point.h</in>
       <in>Saiph.cpp</in>
       <in>Saiph.h</in>
+      <in>Stash.cpp</in>
       <in>Stash.h</in>
       <in>Telnet.cpp</in>
       <in>Telnet.h</in>
+      <in>Tile.cpp</in>
+      <in>Tile.h</in>
       <in>World.cpp</in>
       <in>World.h</in>
     </df>

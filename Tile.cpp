@@ -2,7 +2,7 @@
 #include "World.h"
 
 /* constructors/destructor */
-Tile::Tile() : _symbol(UNKNOWN_TILE), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _next(Point()) {
+Tile::Tile() : _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _next(Point()) {
 }
 
 Tile::~Tile() {
@@ -32,6 +32,12 @@ unsigned char Tile::monster() const {
 }
 
 unsigned int Tile::search() const {
+	return _search;
+}
+
+unsigned int Tile::searchInc() {
+	if (_search < TILE_FULLY_SEARCHED)
+		return ++_search;
 	return _search;
 }
 

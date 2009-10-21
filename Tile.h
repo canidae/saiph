@@ -3,6 +3,9 @@
 
 #include "Point.h"
 
+/* max searching on a point */
+#define TILE_FULLY_SEARCHED 256
+
 class Tile {
 public:
 	Tile();
@@ -13,6 +16,7 @@ public:
 	unsigned int distance() const;
 	unsigned char monster() const; // only character, most analyzers should use list of Monster from Level instead
 	unsigned int search() const;
+	unsigned int searchInc();
 	unsigned char symbol() const;
 	/* maybe private and friends of Level? */
 	unsigned char monster(unsigned char monster);

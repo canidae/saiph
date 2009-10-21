@@ -200,19 +200,19 @@ unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boul
 
 unsigned char World::getDungeonSymbol() {
 	/* return dungeon symbol at player position */
-	return World::levels[Saiph::position().level()].getDungeonSymbol(Saiph::position());
+	return World::levels[Saiph::position().level()].tile(Saiph::position()).symbol();
 }
 
 unsigned char World::getDungeonSymbol(const Coordinate& coordinate) {
 	/* return dungeon symbol at given coordinate */
 	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
 		return OUTSIDE_MAP;
-	return World::levels[coordinate.level()].getDungeonSymbol(coordinate);
+	return World::levels[coordinate.level()].tile(coordinate).symbol();
 }
 
 unsigned char World::getDungeonSymbol(const Point& point) {
 	/* return dungeon symbol at given point on current level */
-	return World::levels[Saiph::position().level()].getDungeonSymbol(point);
+	return World::levels[Saiph::position().level()].tile(point).symbol();
 }
 
 unsigned char World::getDungeonSymbol(unsigned char direction) {
@@ -256,12 +256,12 @@ unsigned char World::getMonsterSymbol(const Coordinate& coordinate) {
 	/* return monster symbol at given point on current level */
 	if (coordinate.level() < 0 || coordinate.level() > (int) World::levels.size())
 		return ILLEGAL_MONSTER;
-	return World::levels[coordinate.level()].getMonsterSymbol(coordinate);
+	return World::levels[coordinate.level()].tile(coordinate).monster();
 }
 
 unsigned char World::getMonsterSymbol(const Point& point) {
 	/* return monster symbol at given point on current level */
-	return World::levels[Saiph::position().level()].getMonsterSymbol(point);
+	return World::levels[Saiph::position().level()].tile(point).monster();
 }
 
 void World::setDirtyStash() {
@@ -288,24 +288,24 @@ void World::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	World::levels[Saiph::position().level()].setDungeonSymbol(point, symbol);
 }
 
-const PathNode& World::shortestPath(const Point& point) {
+const Tile& World::shortestPath(const Point& point) {
 	/* returns PathNode for shortest path from player to target */
-	return World::levels[Saiph::position().level()].shortestPath(point);
+	return World::levels[Saiph::position().level()].tile(point);
 }
 
-PathNode World::shortestPath(unsigned char symbol) {
+Tile World::shortestPath(unsigned char symbol) {
 	/* returns PathNode for shortest path from player to nearest symbol */
 	int pivot = -1;
 	int level_count = 1;
-	PathNode best_pathnode;
+	Tile best_tile;
 	int level_queue[levels.size()];
 	level_queue[0] = Saiph::position().level();
 	bool level_added[levels.size()];
 	for (int a = 0; a < (int) levels.size(); ++a)
 		level_added[a] = false;
 	level_added[Saiph::position().level()] = true;
-	PathNode level_pathnode[levels.size()];
-	level_pathnode[Saiph::position().level()] = PathNode(Point(), NOWHERE, 0, 0);
+	Tile level_tile[levels.size()];
+	level_tile[Saiph::position().level()] = PathNode(Point(), NOWHERE, 0, 0);
 	while (++pivot < level_count) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = levels[level_queue[pivot]].symbols(symbol).begin(); s != levels[level_queue[pivot]].symbols(symbol).end(); ++s) {
@@ -315,15 +315,15 @@ PathNode World::shortestPath(unsigned char symbol) {
 				continue;
 			else if (node.cost() == UNPASSABLE && node.moves() > 1)
 				continue;
-			else if (node.cost() + level_pathnode[level_queue[pivot]].cost() >= best_pathnode.cost())
+			else if (node.cost() + level_tile[level_queue[pivot]].cost() >= best_tile.cost())
 				continue;
 			/* this symbol is closer than the previously found one */
-			best_pathnode = node;
+			best_tile = node;
 			if (pivot != 0) {
 				/* symbol is on another level, gotta modify this pathnode a bit */
-				best_pathnode.dir(level_pathnode[level_queue[pivot]].dir());
-				best_pathnode.moves(best_pathnode.moves() + level_pathnode[level_queue[pivot]].moves());
-				best_pathnode.cost(best_pathnode.cost() + level_pathnode[level_queue[pivot]].cost());
+				best_tile.dir(level_tile[level_queue[pivot]].dir());
+				best_tile.moves(best_tile.moves() + level_tile[level_queue[pivot]].moves());
+				best_tile.cost(best_tile.cost() + level_tile[level_queue[pivot]].cost());
 			}
 			Debug::info() << SAIPH_DEBUG_NAME << "Pathing to '" << symbol << "' on level " << level_queue[pivot] << endl;
 		}
@@ -337,7 +337,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost() >= UNPASSABLE)
 				continue;
-			else if (node.cost() + level_pathnode[level_queue[pivot]].cost() >= best_pathnode.cost())
+			else if (node.cost() + level_tile[level_queue[pivot]].cost() >= best_tile.cost())
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -345,14 +345,14 @@ PathNode World::shortestPath(unsigned char symbol) {
 			level_queue[level_count++] = s->second;
 			if (pivot == 0) {
 				/* pathing to upstairs on level we're standing on */
-				level_pathnode[s->second] = node;
+				level_tile[s->second] = node;
 				if (node.dir() == NOWHERE)
-					level_pathnode[s->second].dir(UP);
+					level_tile[s->second].dir(UP);
 			} else {
 				/* pathing to upstairs on another level */
-				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-				level_pathnode[s->second].moves(level_pathnode[s->second].moves() + node.moves());
-				level_pathnode[s->second].cost(level_pathnode[s->second].cost() + node.cost());
+				level_tile[s->second] = level_tile[level_queue[pivot]];
+				level_tile[s->second].moves(level_tile[s->second].moves() + node.moves());
+				level_tile[s->second].cost(level_tile[s->second].cost() + node.cost());
 			}
 			Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
@@ -366,7 +366,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost() >= UNPASSABLE)
 				continue;
-			else if (node.cost() + level_pathnode[level_queue[pivot]].cost() >= best_pathnode.cost())
+			else if (node.cost() + level_tile[level_queue[pivot]].cost() >= best_tile.cost())
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -374,14 +374,14 @@ PathNode World::shortestPath(unsigned char symbol) {
 			level_queue[level_count++] = s->second;
 			if (pivot == 0) {
 				/* pathing to downstairs on level we're standing on */
-				level_pathnode[s->second] = node;
+				level_tile[s->second] = node;
 				if (node.dir() == NOWHERE)
-					level_pathnode[s->second].dir(DOWN);
+					level_tile[s->second].dir(DOWN);
 			} else {
 				/* pathing to downstairs on another level */
-				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-				level_pathnode[s->second].moves(level_pathnode[s->second].moves() + node.moves());
-				level_pathnode[s->second].cost(level_pathnode[s->second].cost() + node.cost());
+				level_tile[s->second] = level_tile[level_queue[pivot]];
+				level_tile[s->second].moves(level_tile[s->second].moves() + node.moves());
+				level_tile[s->second].cost(level_tile[s->second].cost() + node.cost());
 			}
 			Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
@@ -395,7 +395,7 @@ PathNode World::shortestPath(unsigned char symbol) {
 			const PathNode& node = levels[level_queue[pivot]].shortestPath(s->first);
 			if (node.cost() >= UNPASSABLE)
 				continue;
-			else if (node.cost() + level_pathnode[level_queue[pivot]].cost() >= best_pathnode.cost())
+			else if (node.cost() + level_tile[level_queue[pivot]].cost() >= best_tile.cost())
 				continue;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
@@ -403,28 +403,28 @@ PathNode World::shortestPath(unsigned char symbol) {
 			level_queue[level_count++] = s->second;
 			if (pivot == 0) {
 				/* pathing to downstairs on level we're standing on */
-				level_pathnode[s->second] = node;
+				level_tile[s->second] = node;
 				if (node.dir() == NOWHERE)
-					level_pathnode[s->second].dir(NOWHERE);
+					level_tile[s->second].dir(NOWHERE);
 			} else {
 				/* pathing to downstairs on another level */
-				level_pathnode[s->second] = level_pathnode[level_queue[pivot]];
-				level_pathnode[s->second].moves(level_pathnode[s->second].moves() + node.moves());
-				level_pathnode[s->second].cost(level_pathnode[s->second].cost() + node.cost());
+				level_tile[s->second] = level_tile[level_queue[pivot]];
+				level_tile[s->second].moves(level_tile[s->second].moves() + node.moves());
+				level_tile[s->second].cost(level_tile[s->second].cost() + node.cost());
 			}
 			Debug::info() << SAIPH_DEBUG_NAME << "Added level " << s->second << " to the queue" << endl;
 		}
 	}
-	return best_pathnode;
+	return best_tile;
 }
 
-PathNode World::shortestPath(const Coordinate& target) {
+Tile World::shortestPath(const Coordinate& target) {
 	/* returns PathNode for shortest path from player to target */
 	if (target.level() < 0 || target.level() >= (int) levels.size()) {
-		return PathNode(); // outside the map
+		return Tile(); // outside the map
 	} else if (target.level() == Saiph::position().level()) {
 		/* target on same level */
-		return levels[Saiph::position().level()].shortestPath(target);
+		return levels[Saiph::position().level()].tile(target);
 	} else {
 		int pivot = -1;
 		int level_count = 1;

@@ -209,7 +209,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		intervals = 0;
 	if (World::getDungeonSymbol(p) == CORRIDOR) {
 		/* point is in a corridor */
-		if (point_search_count < POINT_FULLY_SEARCHED) {
+		if (point_search_count < TILE_FULLY_SEARCHED) {
 			/* not visited, visit it */
 			type = 1;
 		} else {
@@ -230,7 +230,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		}
 	} else {
 		/* probably in a room */
-		if (solid_rock_count > 0 && point_search_count < POINT_FULLY_SEARCHED) {
+		if (solid_rock_count > 0 && point_search_count < TILE_FULLY_SEARCHED) {
 			type = 1; // solid rock next to point not visited, should visit
 		} else if (wall_count == 2 && solid_rock_count == 1) {
 			/* probably in doorway with no path out, search */
