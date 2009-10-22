@@ -460,6 +460,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 	}
 	if (_dungeon[symbol] || (symbol == SOLID_ROCK && t.symbol() == CORRIDOR)) {
 		/* update the map showing static stuff, also forgets disappearing corridors (ie. following guard out of vault) */
+		setDungeonSymbol(point, symbol);
 	} else if (symbol != SOLID_ROCK && !_passable[t.symbol()] && t.symbol() != UNKNOWN_TILE_UNPASSABLE) {
 		/* we can't see the floor here, but we believe we can pass this tile.
 		 * place an UNKNOWN_TILE here.
