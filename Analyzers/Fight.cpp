@@ -91,17 +91,17 @@ void Fight::analyze() {
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MELEE_MIN;
-			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).dir(), priority)));
+			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).direction(), priority)));
 			Debug::analyzer(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
-		const PathNode& node = World::shortestPath(m->first);
-		if (node.dir() == ILLEGAL_DIRECTION)
+		const Tile& tile = World::shortestPath(m->first);
+		if (tile.direction() == ILLEGAL_DIRECTION)
 			continue; // can't move to monster
 		int priority = (attack_score - data::Monster::saiph_difficulty_min) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiph_difficulty_max - data::Monster::saiph_difficulty_min) + PRIORITY_FIGHT_MOVE_MIN;
-		priority = action::Move::calculatePriority(priority, node.moves());
-		World::setAction(static_cast<action::Action*> (new action::Move(this, node.dir(), priority)));
+		priority = action::Move::calculatePriority(priority, tile.distance());
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), priority)));
 		Debug::analyzer(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }

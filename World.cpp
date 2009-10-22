@@ -72,12 +72,12 @@ void World::destroy() {
 }
 
 void World::registerAnalyzer(Analyzer* analyzer) {
-	Debug::info() << SAIPH_DEBUG_NAME << "Registering analyzer " << analyzer->name() << endl;
+	Debug::info() << "Registering analyzer " << analyzer->name() << endl;
 	_analyzers.push_back(analyzer);
 }
 
 void World::unregisterAnalyzer(Analyzer* analyzer) {
-	Debug::info() << SAIPH_DEBUG_NAME << "Unregistering analyzer " << analyzer->name() << endl;
+	Debug::info() << "Unregistering analyzer " << analyzer->name() << endl;
 	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
 			_analyzers.erase(a);
@@ -564,17 +564,17 @@ void World::run() {
 		if (_action == NULL || _action->command() == action::Action::NOOP) {
 			/* we do not. print debugging and just answer something sensible */
 			if (question) {
-				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled question: " << _messages << endl;
+				Debug::warning() << "Unhandled question: " << _messages << endl;
 				_last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else if (menu) {
-				Debug::warning() << SAIPH_DEBUG_NAME << "Unhandled menu: " << _messages << endl;
+				Debug::warning() << "Unhandled menu: " << _messages << endl;
 				_last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else {
-				Debug::warning() << SAIPH_DEBUG_NAME << "I have no idea what to do... Searching" << endl;
+				Debug::warning() << "I have no idea what to do... Searching" << endl;
 				cout << (unsigned char) 27 << "[1;82H";
 				cout << (unsigned char) 27 << "[K"; // erase everything to the right
 				cout << "No idea what to do: s";
@@ -638,11 +638,11 @@ void World::run() {
 			}
 			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
-				Debug::warning() << SAIPH_DEBUG_NAME << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
+				Debug::warning() << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
-			Debug::error() << SAIPH_DEBUG_NAME << "Appear to be stuck, quitting game" << endl;
+			Debug::error() << "Appear to be stuck, quitting game" << endl;
 			_last_action_id = NO_ACTION;
 			executeCommand(string(1, (char) 27));
 			executeCommand(QUIT);
@@ -686,12 +686,12 @@ void World::detectPosition() {
 			/* look for sokoban level 1a or 1b */
 			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
 				/* sokoban 1a */
-				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1a: " << Saiph::position() << endl;
+				Debug::notice() << "Found Sokoban level 1a: " << Saiph::position() << endl;
 				levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
 				_branch[BRANCH_SOKOBAN] = Saiph::position();
 			} else if (getDungeonSymbol(Point(8, 34)) == BOULDER && getDungeonSymbol(Point(8, 42)) == BOULDER && getDungeonSymbol(Point(9, 34)) == BOULDER && getDungeonSymbol(Point(9, 41)) == BOULDER && getDungeonSymbol(Point(10, 42)) == BOULDER && getDungeonSymbol(Point(13, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(15, 41)) == BOULDER && getDungeonSymbol(Point(16, 40)) == BOULDER && getDungeonSymbol(Point(16, 42)) == BOULDER) {
 				/* sokoban 1b */
-				Debug::notice() << SAIPH_DEBUG_NAME << "Found Sokoban level 1b: " << Saiph::position() << endl;
+				Debug::notice() << "Found Sokoban level 1b: " << Saiph::position() << endl;
 				levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
 				_branch[BRANCH_SOKOBAN] = Saiph::position();
 			}
@@ -706,7 +706,7 @@ void World::detectPosition() {
 				 * then we're in the mines */
 				if (getDungeonSymbol(Point(hw->first.row() - 1, hw->first.col() - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row() - 1, hw->first.col())) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row() - 1, hw->first.col() + 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row() + 1, hw->first.col() - 1)) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row() + 1, hw->first.col())) == HORIZONTAL_WALL || getDungeonSymbol(Point(hw->first.row() + 1, hw->first.col() + 1)) == HORIZONTAL_WALL) {
 					/* we're in the mines */
-					Debug::notice() << SAIPH_DEBUG_NAME << "Found the mines: " << Saiph::position() << endl;
+					Debug::notice() << "Found the mines: " << Saiph::position() << endl;
 					levels[Saiph::position().level()].branch(BRANCH_MINES);
 					_branch[BRANCH_MINES] = Saiph::position();
 					break;
@@ -715,7 +715,7 @@ void World::detectPosition() {
 		}
 		if (levels[Saiph::position().level()].branch() != BRANCH_ROGUE && view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
-			Debug::notice() << SAIPH_DEBUG_NAME << "Found the rogue level: " << Saiph::position() << endl;
+			Debug::notice() << "Found the rogue level: " << Saiph::position() << endl;
 			levels[Saiph::position().level()].branch(BRANCH_ROGUE);
 		}
 		return;
@@ -757,7 +757,7 @@ void World::detectPosition() {
 			}
 			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
 				found = *lm;
-				Debug::notice() << SAIPH_DEBUG_NAME << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name() << "'" << endl;
+				Debug::notice() << "Recognized level " << found << ": '" << level << "' - '" << levels[found].name() << "'" << endl;
 				break;
 			}
 		}
@@ -770,7 +770,7 @@ void World::detectPosition() {
 		 * exception is rogue level, which really isn't a branch */
 		levels.push_back(Level(level, (levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? levels[Saiph::position().level()].branch() : BRANCH_MAIN));
 		_levelmap[level].push_back(found);
-		Debug::notice() << SAIPH_DEBUG_NAME << "Found new level " << found << ": " << level << endl;
+		Debug::notice() << "Found new level " << found << ": " << level << endl;
 	}
 	/* were we on stairs on last Saiph::position()? */
 	if (symbol == STAIRS_DOWN) {
@@ -1425,7 +1425,7 @@ int main(int argc, const char* argv[]) {
 
 	/* run */
 	World::run();
-	Debug::notice() << SAIPH_DEBUG_NAME << "Quitting gracefully" << endl;
+	Debug::notice() << "Quitting gracefully" << endl;
 
 	/* destroy */
 	Analyzer::destroy();

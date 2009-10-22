@@ -63,6 +63,7 @@ bool Level::_item[UCHAR_MAX + 1] = {false};
 bool Level::_initialized = false;
 ReceivedItems Level::_received;
 ItemsOnGround Level::_on_ground;
+Tile Level::_outside_map;
 
 /* constructors/destructor */
 Level::Level(const string& name, int branch) : _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {

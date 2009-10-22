@@ -7,8 +7,6 @@
 /* for parsing effects */
 #define MAX_EFFECTS 8
 #define MAX_TEXT_LENGTH 16
-/* FIXME: SAIPH_DEBUG_NAME should go away */
-#define SAIPH_DEBUG_NAME "Saiph] "
 
 namespace analyzer {
 	class Analyzer;
