@@ -51,7 +51,6 @@ using namespace std;
 /* public */
 bool Level::_passable[UCHAR_MAX + 1] = {false};
 /* private */
-Point Level::_pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
 unsigned char Level::_uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1] = {
 	{0}
 };
@@ -578,221 +577,70 @@ void Level::updateMonsters() {
 }
 
 void Level::updatePathMap() {
-	int curnode = 0;
-	int nodes = 0;
-	unsigned int cost = 0;
 	Point from = Saiph::position();
+	Point to = from;
+
+	/* set node we're standing on */
 	tile(from).updatePath(Point(), NOWHERE, 0, 0);
 
 	/* check first northwest node */
-	Point to = from;
-	to.moveNorthwest();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, NW, 1, cost);
-		} else {
-			tile(to).updatePath(from, NW, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveNorthwest(), from, NW, 0);
 	/* check first north node */
-	to.moveEast();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, N, 1, cost);
-		} else {
-			tile(to).updatePath(from, N, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveEast(), from, N, 0);
 	/* check first northeast node */
-	to.moveEast();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, NE, 1, cost);
-		} else {
-			tile(to).updatePath(from, NE, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveEast(), from, NE, 0);
 	/* check first east node */
-	to.moveSouth();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, E, 1, cost);
-		} else {
-			tile(to).updatePath(from, E, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveSouth(), from, E, 0);
 	/* check first southeast node */
-	to.moveSouth();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, SE, 1, cost);
-		} else {
-			tile(to).updatePath(from, SE, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveSouth(), from, SE, 0);
 	/* check first south node */
-	to.moveWest();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, S, 1, cost);
-		} else {
-			tile(to).updatePath(from, S, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveWest(), from, S, 0);
 	/* check first southwest node */
-	to.moveWest();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, SW, 1, cost);
-		} else {
-			tile(to).updatePath(from, SW, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveWest(), from, SW, 0);
 	/* check first west node */
-	to.moveNorth();
-	if (to.insideMap()) {
-		cost = updatePathMapHelper(to, from);
-		if (cost < UNREACHABLE) {
-			_pathing_queue[nodes++] = to;
-			tile(to).updatePath(from, W, 1, cost);
-		} else {
-			tile(to).updatePath(from, W, 1, UNPASSABLE);
-		}
-	}
+	updatePathMapSetCost(to.moveNorth(), from, W, 0);
 
 	/* calculate remaining nodes */
-	while (curnode < nodes) {
-		from = _pathing_queue[curnode++];
+	while (!_pathing_queue.empty()) {
+		from = _pathing_queue.front();
+		Point to = from;
+		_pathing_queue.pop();
+
 		/* previous tile, the tile we came from */
 		Tile& prev = tile(from);
+
 		/* check northwest node */
-		Point to = from;
-		to.moveNorthwest();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveNorthwest(), from, prev.direction(), prev.distance());
 		/* check north node */
-		to.moveEast();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveEast(), from, prev.direction(), prev.distance());
 		/* check northeast node */
-		to.moveEast();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveEast(), from, prev.direction(), prev.distance());
 		/* check east node */
-		to.moveSouth();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveSouth(), from, prev.direction(), prev.distance());
 		/* check southeast node */
-		to.moveSouth();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveSouth(), from, prev.direction(), prev.distance());
 		/* check south node */
-		to.moveWest();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveWest(), from, prev.direction(), prev.distance());
 		/* check southwest node */
-		to.moveWest();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveWest(), from, prev.direction(), prev.distance());
 		/* check west node */
-		to.moveNorth();
-		if (to.insideMap()) {
-			cost = updatePathMapHelper(to, from);
-			Tile& next = tile(to);
-			if (cost < next.cost()) {
-				_pathing_queue[nodes++] = to;
-				next.updatePath(from, prev.direction(), prev.distance() + 1, cost);
-			} else if (cost == next.cost() && cost == UNREACHABLE) {
-				next.updatePath(from, prev.direction(), prev.distance() + 1, UNPASSABLE);
-			}
-		}
+		updatePathMapSetCost(to.moveNorth(), from, prev.direction(), prev.distance());
 	}
 }
 
-unsigned int Level::updatePathMapHelper(const Point& to, const Point& from) {
+unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& from) {
 	/* helper method for updatePathMap()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
 	Tile& next = tile(to);
 	Tile& prev = tile(from);
-	unsigned char next_symbol = next.symbol();
-	if (!_passable[next_symbol])
+	if (!_passable[next.symbol()])
 		return UNREACHABLE;
 	bool cardinal_move = (to.row() == from.row() || to.col() == from.col());
 	if (!cardinal_move) {
 		unsigned char prev_symbol = prev.symbol();
-		if (next_symbol == OPEN_DOOR || prev_symbol == OPEN_DOOR)
+		if (next.symbol() == OPEN_DOOR || prev_symbol == OPEN_DOOR)
 			return UNREACHABLE; // diagonally in/out of door
-		if (next_symbol == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || prev_symbol == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
+		if (next.symbol() == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || prev_symbol == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
 			return UNREACHABLE; // don't know what tile this is, but we know we can't pass it diagonally
 		Tile& sc1 = tile(Point(to.row(), from.col()));
 		Tile& sc2 = tile(Point(from.row(), to.col()));
@@ -808,17 +656,30 @@ unsigned int Level::updatePathMapHelper(const Point& to, const Point& from) {
 		//if (polymorphed_to_grid_bug)
 		//return UNREACHABLE;
 	}
-	if (next_symbol == LAVA) // && !levitating)
+	if (next.symbol() == LAVA) // && !levitating)
 		return UNREACHABLE;
-	if (next_symbol == WATER) // && (!levitating || !waterwalk))
+	if (next.symbol() == WATER) // && (!levitating || !waterwalk))
 		return UNREACHABLE;
-	if (next_symbol == TRAP && _branch == BRANCH_SOKOBAN)
+	if (next.symbol() == TRAP && _branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
 	if (next.monster() != ILLEGAL_MONSTER && abs(Saiph::position().row() - to.row()) <= 1 && abs(Saiph::position().col() - to.col()) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
-	cost += _pathcost[next_symbol];
+	cost += _pathcost[next.symbol()];
 	if (next.monster() != ILLEGAL_MONSTER)
 		cost += COST_MONSTER;
 	return cost;
+}
+
+void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance) {
+	if (!to.insideMap())
+		return;
+	unsigned int cost = updatePathMapCalculateCost(to, from);
+	Tile& next = tile(to);
+	if (cost < next.cost()) {
+		_pathing_queue.push(to);
+		next.updatePath(from, direction, distance + 1, cost);
+	} else if (cost == next.cost() && cost == UNREACHABLE) {
+		next.updatePath(from, direction, distance + 1, UNPASSABLE);
+	}
 }

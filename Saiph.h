@@ -42,7 +42,7 @@ public:
 	static bool polymorphed();
 	static bool engulfed();
 	static bool engulfed(bool engulfed);
-	static Coordinate& position();
+	static const Coordinate& position();
 	static unsigned long long int intrinsics();
 	static unsigned long long int extrinsics();
 	static int lastPrayed();

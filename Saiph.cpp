@@ -259,7 +259,7 @@ bool Saiph::engulfed(bool engulfed) {
 	return Saiph::engulfed();
 }
 
-Coordinate& Saiph::position() {
+const Coordinate& Saiph::position() {
 	return _position;
 }
 
