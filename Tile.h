@@ -18,7 +18,8 @@ public:
 	unsigned int search() const;
 	unsigned int searchInc();
 	unsigned char symbol() const;
-	/* maybe private and friends of Level? */
+	/* maybe private and friends of Level & World? */
+	unsigned char direction(unsigned char direction);
 	unsigned char monster(unsigned char monster);
 	unsigned int search(unsigned int search);
 	unsigned char symbol(unsigned char symbol);

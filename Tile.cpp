@@ -45,6 +45,11 @@ unsigned char Tile::symbol() const {
 	return _symbol;
 }
 
+unsigned char Tile::direction(unsigned char direction) {
+	_direction = direction;
+	return this->direction();
+}
+
 unsigned char Tile::monster(unsigned char monster) {
 	_monster = monster;
 	return this->monster();

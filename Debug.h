@@ -15,6 +15,7 @@ public:
 	static std::ofstream& command();
 	static std::ofstream& event();
 	static std::ofstream& inventory();
+	static std::ofstream& pathing();
 	static std::ofstream& info();
 	static std::ofstream& notice();
 	static std::ofstream& warning();

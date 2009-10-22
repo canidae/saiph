@@ -5,6 +5,7 @@
 #define DEBUG_COMMAND "Command"
 #define DEBUG_EVENT "Broadcast"
 #define DEBUG_INVENTORY "Inventory"
+#define DEBUG_PATHING "Pathing"
 #define DEBUG_INFO "Info"
 #define DEBUG_NOTICE "Notice"
 #define DEBUG_WARNING "Warning"
@@ -40,6 +41,10 @@ ofstream& Debug::event() {
 
 ofstream& Debug::inventory() {
 	return header(DEBUG_INVENTORY);
+}
+
+ofstream& Debug::pathing() {
+	return header(DEBUG_PATHING);
 }
 
 ofstream& Debug::info() {
