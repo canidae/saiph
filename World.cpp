@@ -699,9 +699,7 @@ void World::detectPosition() {
 	string level = _levelname;
 	if (Saiph::position().level() < 0) {
 		/* this happens when we start */
-		Saiph::position().row(_cursor.row());
-		Saiph::position().col(_cursor.col());
-		Saiph::position().level(levels.size());
+		Saiph::position(Coordinate(levels.size(), _cursor));
 		_branch[BRANCH_MAIN] = Saiph::position();
 		levels.push_back(Level(level));
 		_levelmap[level].push_back(Saiph::position().level());
@@ -709,8 +707,7 @@ void World::detectPosition() {
 	}
 	if ((int) levels.size() > Saiph::position().level() && level == levels[Saiph::position().level()].name()) {
 		/* same level as last frame, update row & col */
-		Saiph::position().row(_cursor.row());
-		Saiph::position().col(_cursor.col());
+		Saiph::position(Coordinate(Saiph::position().level(), _cursor));
 		if (_branch[BRANCH_SOKOBAN].level() == -1 && levels[Saiph::position().level()].branch() == BRANCH_MAIN && levels[Saiph::position().level()].depth() >= 5 && levels[Saiph::position().level()].depth() <= 9) {
 			/* look for sokoban level 1a or 1b */
 			if (getDungeonSymbol(Point(8, 37)) == BOULDER && getDungeonSymbol(Point(8, 38)) == BOULDER && getDungeonSymbol(Point(8, 43)) == BOULDER && getDungeonSymbol(Point(9, 38)) == BOULDER && getDungeonSymbol(Point(9, 39)) == BOULDER && getDungeonSymbol(Point(9, 42)) == BOULDER && getDungeonSymbol(Point(9, 44)) == BOULDER && getDungeonSymbol(Point(11, 41)) == BOULDER && getDungeonSymbol(Point(14, 39)) == BOULDER && getDungeonSymbol(Point(14, 40)) == BOULDER && getDungeonSymbol(Point(14, 41)) == BOULDER && getDungeonSymbol(Point(14, 42)) == BOULDER) {
@@ -812,9 +809,7 @@ void World::detectPosition() {
 		/* yes, we were on a magic portal */
 		levels[Saiph::position().level()].symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()] = found;
 	}
-	Saiph::position().row(_cursor.row());
-	Saiph::position().col(_cursor.col());
-	Saiph::position().level(found);
+	Saiph::position(Coordinate(found, _cursor));
 }
 
 Point World::directionToPoint(unsigned char direction) {

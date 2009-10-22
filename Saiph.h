@@ -20,6 +20,7 @@ public:
 	static void parseMessages(const std::string& messages);
 	static bool parseAttributeRow(const char* attributerow);
 	static bool parseStatusRow(const char* statusrow, char* levelname, int* turn);
+	static const Coordinate& position(const Coordinate& coordinate);
 
 	static int alignment();
 	static int charisma();

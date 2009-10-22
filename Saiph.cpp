@@ -174,6 +174,11 @@ bool Saiph::parseStatusRow(const char* statusrow, char* levelname, int* turn) {
 	return true;
 }
 
+const Coordinate& Saiph::position(const Coordinate& coordinate) {
+	_position = coordinate;
+	return Saiph::position();
+}
+
 int Saiph::alignment() {
 	return _alignment;
 }
