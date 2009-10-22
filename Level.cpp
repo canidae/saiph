@@ -51,6 +51,8 @@ using namespace std;
 /* public */
 bool Level::_passable[UCHAR_MAX + 1] = {false};
 /* private */
+Point Level::_pathing_queue[PATHING_QUEUE_SIZE] = {Point()};
+int Level::_pathing_queue_size = 0;
 unsigned char Level::_uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1] = {
 	{0}
 };
@@ -579,6 +581,7 @@ void Level::updateMonsters() {
 void Level::updatePathMap() {
 	Point from = Saiph::position();
 	Point to = from;
+	_pathing_queue_size = 0;
 
 	/* set node we're standing on */
 	tile(from).updatePath(Point(), NOWHERE, 0, 0);
@@ -601,10 +604,10 @@ void Level::updatePathMap() {
 	updatePathMapSetCost(to.moveNorth(), from, W, 0);
 
 	/* calculate remaining nodes */
-	while (!_pathing_queue.empty()) {
-		from = _pathing_queue.front();
+	int index = 0;
+	while (index < _pathing_queue_size) {
+		from = _pathing_queue[index++];
 		Point to = from;
-		_pathing_queue.pop();
 
 		/* previous tile, the tile we came from */
 		Tile& prev = tile(from);
@@ -677,7 +680,7 @@ void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned ch
 	unsigned int cost = updatePathMapCalculateCost(to, from);
 	Tile& next = tile(to);
 	if (cost < next.cost()) {
-		_pathing_queue.push(to);
+		_pathing_queue[_pathing_queue_size++] = to;
 		next.updatePath(from, direction, distance + 1, cost);
 	} else if (cost == next.cost() && cost == UNREACHABLE) {
 		next.updatePath(from, direction, distance + 1, UNPASSABLE);

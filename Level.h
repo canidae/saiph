@@ -3,7 +3,6 @@
 
 #include <limits.h>
 #include <map>
-#include <queue>
 #include <string>
 #include "Globals.h"
 #include "Monster.h"
@@ -12,6 +11,9 @@
 #include "Tile.h"
 #include "Events/ItemsOnGround.h"
 #include "Events/ReceivedItems.h"
+
+/* max amount of nodes in pathing_queue */
+#define PATHING_QUEUE_SIZE 16384
 
 class Item;
 
@@ -34,7 +36,8 @@ public:
 	void increaseAdjacentSearchCount(const Point& point);
 
 private:
-	static std::queue<Point> _pathing_queue;
+	static Point _pathing_queue[PATHING_QUEUE_SIZE];
+	static int _pathing_queue_size;
 	static unsigned char _uniquemap[UCHAR_MAX + 1][CHAR_MAX + 1];
 	static int _pathcost[UCHAR_MAX + 1];
 	static bool _passable[UCHAR_MAX + 1];
