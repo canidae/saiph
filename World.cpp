@@ -15,7 +15,7 @@ using namespace analyzer;
 using namespace std;
 
 /* static variables */
-vector<Point> World::changes;
+vector<Point> World::_changes;
 char World::_view[ROWS][COLS + 1] = {
 	{'\0'}
 };
@@ -116,6 +116,10 @@ int World::turn() {
 
 unsigned int World::internalTurn() {
 	return _internal_turn;
+}
+
+const vector<Point>& World::changes() {
+	return _changes;
 }
 
 int World::getPriority() {
@@ -694,7 +698,7 @@ void World::addChangedLocation(const Point& point) {
 	/* add a location changed since last frame unless it's already added */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END || _changed[point.row()][point.col()])
 		return;
-	changes.push_back(point);
+	_changes.push_back(point);
 }
 
 void World::detectPosition() {
@@ -962,9 +966,9 @@ void World::dumpMaps() {
 
 bool World::executeCommand(const string& command) {
 	/* send a command to nethack */
-	for (vector<Point>::iterator c = changes.begin(); c != changes.end(); ++c)
+	for (vector<Point>::iterator c = _changes.begin(); c != _changes.end(); ++c)
 		_changed[c->row()][c->col()] = false;
-	changes.clear();
+	_changes.clear();
 	_messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */

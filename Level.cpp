@@ -93,7 +93,7 @@ void Level::analyze() {
 		return;
 	}
 	/* update changed symbols */
-	for (vector<Point>::iterator c = World::changes.begin(); c != World::changes.end(); ++c)
+	for (vector<Point>::const_iterator c = World::changes().begin(); c != World::changes().end(); ++c)
 		updateMapPoint(*c, (unsigned char) World::view(*c), World::color(*c));
 	/* update monsters */
 	updateMonsters();
