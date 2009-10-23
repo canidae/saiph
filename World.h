@@ -32,8 +32,6 @@ class Connection;
 
 class World {
 public:
-	static std::vector<Level> levels;
-
 	static void init(int connection_type);
 	static void destroy();
 	static void registerAnalyzer(analyzer::Analyzer* analyzer);
@@ -47,6 +45,7 @@ public:
 	static int turn();
 	static unsigned int internalTurn();
 	static const std::vector<Point>& changes();
+	static Level& level(int level);
 	static int getPriority();
 	static int getLastActionID();
 	static bool setAction(action::Action* action);
@@ -75,6 +74,7 @@ private:
 	static char _view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 	static int _color[ROWS][COLS]; // not used for string reading, no need for + 1
 	static std::vector<Point> _changes; // list of locations changed since last "frame"
+	static std::vector<Level> _levels;
 	static std::string _messages;
 	static bool _inverse;
 	static bool _bold;

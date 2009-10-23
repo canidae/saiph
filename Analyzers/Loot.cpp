@@ -33,8 +33,8 @@ void Loot::analyze() {
 	/* visit new/changed stashes */
 	set<Coordinate>::iterator v = _visit.begin();
 	while (v != _visit.end()) {
-		map<Point, Stash>::iterator s = World::levels[Saiph::position().level()].stashes().find(*v);
-		if (s == World::levels[Saiph::position().level()].stashes().end() || s->second.lastInspected() == World::turn()) {
+		map<Point, Stash>::iterator s = World::level(Saiph::position().level()).stashes().find(*v);
+		if (s == World::level(Saiph::position().level()).stashes().end() || s->second.lastInspected() == World::turn()) {
 			/* stash is gone or we recently looked at it */
 			_visit.erase(v++);
 			continue;

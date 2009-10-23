@@ -52,11 +52,11 @@ void Door::analyze() {
 
 	/* go to nearest closed door and get it open somehow */
 	unsigned int min_distance = UNREACHABLE;
-	for (map<Point, int>::iterator d = World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR).begin(); d != World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
+	for (map<Point, int>::iterator d = World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).begin(); d != World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
 		const Tile& tile = World::shortestPath(d->first);
 		if (tile.cost() == UNREACHABLE)
 			continue; // can't reach this door
-		if (World::levels[Saiph::position().level()].branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
+		if (World::level(Saiph::position().level()).branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
@@ -88,10 +88,10 @@ void Door::analyze() {
 void Door::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos) {
 		/* door unlocked */
-		World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR)[_position] = UNKNOWN_SYMBOL_VALUE;
+		World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR)[_position] = UNKNOWN_SYMBOL_VALUE;
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
-		World::levels[Saiph::position().level()].symbols((unsigned char) CLOSED_DOOR)[_position] = 1;
+		World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR)[_position] = 1;
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, string(1, YES))));

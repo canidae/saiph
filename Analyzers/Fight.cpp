@@ -54,7 +54,7 @@ void Fight::analyze() {
 	}
 	/* fight monsters */
 	int attack_score = INT_MIN;
-	for (map<Point, Monster>::iterator m = World::levels[Saiph::position().level()].monsters().begin(); m != World::levels[Saiph::position().level()].monsters().end(); ++m) {
+	for (map<Point, Monster>::iterator m = World::level(Saiph::position().level()).monsters().begin(); m != World::level(Saiph::position().level()).monsters().end(); ++m) {
 		if (m->second.symbol() == PET)
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY)
