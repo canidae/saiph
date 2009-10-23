@@ -250,7 +250,7 @@ const string& Level::name() const {
 	return _name;
 }
 
-Tile& Level::tile(const Point& point) {
+const Tile& Level::tile(const Point& point) {
 	if (!point.insideMap())
 		return _outside_map;
 	return _map[point.row()][point.col()];
@@ -273,7 +273,7 @@ void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	 * better keep it in a method */
 	if (!point.insideMap())
 		return;
-	Tile& t = tile(point);
+	Tile& t = _map[point.row()][point.col()];
 	if (t.symbol() == symbol)
 		return; // no change
 	/* erase old symbol from symbols */
@@ -291,7 +291,7 @@ void Level::increaseAdjacentSearchCount(const Point& point) {
 		for (p.moveWest(); p.col() <= point.col() + 1; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
-			tile(p).searchInc();
+			_map[p.row()][p.col()].searchInc();
 		}
 	}
 }
@@ -413,7 +413,7 @@ void Level::init() {
 
 /* private methods */
 void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) {
-	Tile& t = tile(point);
+	Tile& t = _map[point.row()][point.col()];
 	if (_branch == BRANCH_ROGUE) {
 		/* we need a special symbol remapping for rogue level */
 		switch ((char) symbol) {
@@ -538,7 +538,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		if (nearest != _monsters.end()) {
 			/* we know of this monster, move it to new location */
 			/* remove monster from _map */
-			tile(nearest->first).monster(ILLEGAL_MONSTER);
+			_map[nearest->first.row()][nearest->first.col()].monster(ILLEGAL_MONSTER);
 			/* update monster */
 			nearest->second.lastSeen(World::turn);
 			_monsters[point] = nearest->second;
@@ -574,7 +574,7 @@ void Level::updateMonsters() {
 			continue;
 		}
 		/* remove monster from _map */
-		tile(m->first).monster(ILLEGAL_MONSTER);
+		_map[m->first.row()][m->first.col()].monster(ILLEGAL_MONSTER);
 		/* remove monster from list */
 		_monsters.erase(m++);
 	}
@@ -586,7 +586,7 @@ void Level::updatePathMap() {
 	_pathing_queue_size = 0;
 
 	/* set node we're standing on */
-	tile(from).updatePath(Point(), NOWHERE, 0, 0);
+	_map[from.row()][from.col()].updatePath(Point(), NOWHERE, 0, 0);
 
 	/* check first northwest node */
 	updatePathMapSetCost(to.moveNorthwest(), from, NW, 0);
@@ -612,7 +612,7 @@ void Level::updatePathMap() {
 		Point to = from;
 
 		/* previous tile, the tile we came from */
-		Tile& prev = tile(from);
+		Tile& prev = _map[from.row()][from.col()];
 
 		/* check northwest node */
 		updatePathMapSetCost(to.moveNorthwest(), from, prev.direction(), prev.distance());
@@ -636,8 +636,8 @@ void Level::updatePathMap() {
 unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& from) {
 	/* helper method for updatePathMap()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
-	Tile& next = tile(to);
-	Tile& prev = tile(from);
+	Tile& next = _map[to.row()][to.col()];
+	Tile& prev = _map[from.row()][from.col()];
 	if (!_passable[next.symbol()])
 		return UNREACHABLE;
 	bool cardinal_move = (to.row() == from.row() || to.col() == from.col());
@@ -647,8 +647,8 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 			return UNREACHABLE; // diagonally in/out of door
 		if (next.symbol() == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || prev_symbol == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
 			return UNREACHABLE; // don't know what tile this is, but we know we can't pass it diagonally
-		Tile& sc1 = tile(Point(to.row(), from.col()));
-		Tile& sc2 = tile(Point(from.row(), to.col()));
+		Tile& sc1 = _map[to.row()][from.col()];
+		Tile& sc2 = _map[from.row()][to.col()];
 		if (!_passable[sc1.symbol()] && !_passable[sc2.symbol()]) {
 			/* moving past two corners
 			 * while we may pass two corners if we're not carrying too much we'll just ignore this.
@@ -680,7 +680,7 @@ void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned ch
 	if (!to.insideMap())
 		return;
 	unsigned int cost = updatePathMapCalculateCost(to, from);
-	Tile& next = tile(to);
+	Tile& next = _map[to.row()][to.col()];
 	if (cost < next.cost()) {
 		_pathing_queue[_pathing_queue_size++] = to;
 		next.updatePath(from, direction, distance + 1, cost);

@@ -28,7 +28,7 @@ public:
 	int branch(int branch);
 	int depth() const;
 	const std::string& name() const;
-	Tile& tile(const Point& point);
+	const Tile& tile(const Point& point);
 	std::map<Point, Monster>& monsters();
 	std::map<Point, Stash>& stashes();
 	std::map<Point, int>& symbols(unsigned char symbol);
