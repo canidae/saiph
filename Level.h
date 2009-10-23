@@ -22,6 +22,7 @@ public:
 	Level(const std::string &name, int branch = BRANCH_MAIN);
 
 	static bool isPassable(unsigned char symbol);
+	static const Tile& outsideMap();
 	void analyze();
 	void parseMessages(const std::string& messages);
 	int branch() const;

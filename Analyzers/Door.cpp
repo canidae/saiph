@@ -115,7 +115,7 @@ void Door::parseMessages(const string& messages) {
 			Point top = door.top();
 			door.pop();
 
-			if (World::getDungeonSymbol(top) == CLOSED_DOOR) {
+			if (World::tile(top).symbol() == CLOSED_DOOR) {
 				Debug::analyzer(name()) << "Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
 				World::setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
 				break;

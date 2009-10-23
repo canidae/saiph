@@ -51,12 +51,9 @@ public:
 	static bool setAction(action::Action* action);
 	static bool queueAction(action::Action* action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
-	static unsigned char getDungeonSymbol();
-	static unsigned char getDungeonSymbol(const Coordinate& coordinate);
-	static unsigned char getDungeonSymbol(const Point& point);
-	static unsigned char getDungeonSymbol(unsigned char direction);
-	static unsigned char getMonsterSymbol(const Coordinate& coordinate);
-	static unsigned char getMonsterSymbol(const Point& point);
+	static const Tile& tile();
+	static const Tile& tile(const Coordinate& coordinate);
+	static const Tile& tile(const Point& point);
 	static void setDirtyStash();
 	static void setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol);
 	static void setDungeonSymbol(const Point& point, unsigned char symbol);

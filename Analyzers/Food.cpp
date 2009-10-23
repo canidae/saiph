@@ -123,7 +123,7 @@ void Food::parseMessages(const string& messages) {
 }
 
 void Food::onEvent(Event* const event) {
-	if (event->id() == ItemsOnGround::ID && World::getDungeonSymbol() != SHOP_TILE) {
+	if (event->id() == ItemsOnGround::ID && World::tile().symbol() != SHOP_TILE) {
 		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 		map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {

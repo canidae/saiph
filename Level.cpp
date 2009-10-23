@@ -81,6 +81,10 @@ bool Level::isPassable(unsigned char symbol) {
 	return _passable[symbol];
 }
 
+const Tile& Level::outsideMap() {
+	return _outside_map;
+}
+
 /* public methods */
 void Level::analyze() {
 	if (World::menu())
