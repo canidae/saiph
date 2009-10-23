@@ -17,15 +17,15 @@ namespace event {
 		virtual ~ItemsOnGround() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
-		virtual std::list<Item> &items() {
+		virtual std::list<Item>& items() {
 			return _items;
 		}
 
-		virtual std::list<Item> &items(const std::list<Item> &items) {
+		virtual std::list<Item>& items(const std::list<Item>& items) {
 			_items = items;
 			return this->items();
 		}

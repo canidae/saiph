@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, int priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _corpse(corpse), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_CONTINUE_ACTION), _escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {
+		EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, const int& priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _corpse(corpse), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_CONTINUE_ACTION), _escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~EatCorpse() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
@@ -59,7 +59,9 @@ namespace action {
 				_sequence = 2;
 			} else if (_sequence == 1 || _sequence == 2 || _sequence == 4) {
 				/* either ate a corpse or cancelled the eat request, make stash dirty and look at ground */
-				World::setDirtyStash();
+				std::map<Point, Stash>::iterator stash = World::level().stashes().find(Saiph::position());
+				if (stash != World::level().stashes().end())
+					stash->second.items().clear();
 				_sequence = 3;
 			} else if (_sequence == 3) {
 				/* looked at ground, action is complete */

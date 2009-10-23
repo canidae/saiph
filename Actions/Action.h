@@ -19,7 +19,7 @@ namespace action {
 		Action(analyzer::Analyzer* analyzer);
 		virtual ~Action();
 
-		virtual int id() = 0;
+		virtual const int& id() = 0;
 		analyzer::Analyzer* analyzer();
 		virtual const Command& command() = 0;
 		virtual void update(const std::string& messages) = 0;
@@ -28,7 +28,7 @@ namespace action {
 		int _sequence;
 
 	private:
-		analyzer::Analyzer *_analyzer;
+		analyzer::Analyzer* _analyzer;
 	};
 }
 #endif

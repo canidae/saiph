@@ -208,7 +208,7 @@ void Sokoban::loadLevels() {
 		Debug::info() << SOKOBAN_DEBUG_NAME << "Loaded " << levels.size() << " levels from sokoban.dat" << endl;
 }
 
-bool Sokoban::loadBoulders(ifstream& file, vector<Point> &boulders) {
+bool Sokoban::loadBoulders(ifstream& file, vector<Point>& boulders) {
 	string line;
 	getnextline(file, line);
 
@@ -230,7 +230,7 @@ bool Sokoban::loadBoulders(ifstream& file, vector<Point> &boulders) {
 		return true;
 }
 
-bool Sokoban::loadSolutions(ifstream& file, vector<Move> &moves) {
+bool Sokoban::loadSolutions(ifstream& file, vector<Move>& moves) {
 	string line;
 	getnextline(file, line);
 

@@ -20,7 +20,7 @@ public:
 	static std::ofstream& notice();
 	static std::ofstream& warning();
 	static std::ofstream& error();
-	static void rawCharArray(const char* data, int start, int stop);
+	static void rawCharArray(const char* data, const int& start, const int& stop);
 
 private:
 	static std::ofstream _debugfile;

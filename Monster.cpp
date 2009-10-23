@@ -2,69 +2,69 @@
 #include "Data/Monster.h"
 
 /* constructors/destructor */
-Monster::Monster(unsigned char symbol, int color, int last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::getMonsterData(symbol, color)) {
+Monster::Monster(const unsigned char& symbol, const int& color, const int& last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::getMonsterData(symbol, color)) {
 }
 
 /* methods */
-unsigned char Monster::symbol() const {
+const unsigned char& Monster::symbol() const {
 	return _symbol;
 }
 
-unsigned char Monster::symbol(unsigned char symbol) {
+const unsigned char& Monster::symbol(const unsigned char& symbol) {
 	_symbol = symbol;
 	return this->symbol();
 }
 
-int Monster::color() const {
+const int& Monster::color() const {
 	return _color;
 }
 
-int Monster::color(int color) {
+const int& Monster::color(const int& color) {
 	_color = color;
 	return this->color();
 }
 
-bool Monster::visible() const {
+const bool& Monster::visible() const {
 	return _visible;
 }
 
-bool Monster::visible(bool visible) {
+const bool& Monster::visible(const bool& visible) {
 	_visible = visible;
 	return this->visible();
 }
 
-int Monster::attitude() const {
+const int& Monster::attitude() const {
 	return _attitude;
 }
 
-int Monster::attitude(int attitude) {
+const int& Monster::attitude(const int& attitude) {
 	_attitude = attitude;
 	return this->attitude();
 }
 
-int Monster::lastSeen() const {
+const int& Monster::lastSeen() const {
 	return _last_seen;
 }
 
-int Monster::lastSeen(int last_seen) {
+const int& Monster::lastSeen(const int& last_seen) {
 	_last_seen = last_seen;
 	return this->lastSeen();
 }
 
-bool Monster::shopkeeper() const {
+const bool& Monster::shopkeeper() const {
 	return _shopkeeper;
 }
 
-bool Monster::shopkeeper(bool shopkeeper) {
+const bool& Monster::shopkeeper(const bool& shopkeeper) {
 	_shopkeeper = shopkeeper;
 	return this->shopkeeper();
 }
 
-bool Monster::priest() const {
+const bool& Monster::priest() const {
 	return _priest;
 }
 
-bool Monster::priest(bool priest) {
+const bool& Monster::priest(const bool& priest) {
 	_priest = priest;
 	return this->priest();
 }

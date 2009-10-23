@@ -1,6 +1,10 @@
 #include "Tile.h"
 #include "World.h"
 
+/* static */
+unsigned int Tile::_unreachable = UNREACHABLE;
+unsigned char Tile::_illegal_direction = ILLEGAL_DIRECTION;
+
 /* constructors/destructor */
 Tile::Tile() : _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _next(Point()) {
 }
@@ -9,63 +13,63 @@ Tile::~Tile() {
 }
 
 /* methods */
-unsigned int Tile::cost() const {
+const unsigned int& Tile::cost() const {
 	if (_updated != World::internalTurn())
-		return UNREACHABLE;
+		return _unreachable;
 	return _cost;
 }
 
-unsigned char Tile::direction() const {
+const unsigned char& Tile::direction() const {
 	if (_updated != World::internalTurn())
-		return ILLEGAL_DIRECTION;
+		return _illegal_direction;
 	return _direction;
 }
 
-unsigned int Tile::distance() const {
+const unsigned char& Tile::direction(const unsigned char& direction) {
+	_direction = direction;
+	return this->direction();
+}
+
+const unsigned int& Tile::distance() const {
 	if (_updated != World::internalTurn())
-		return UNREACHABLE;
+		return _unreachable;
 	return _distance;
 }
 
-unsigned char Tile::monster() const {
+const unsigned char& Tile::monster() const {
 	return _monster;
 }
 
-unsigned int Tile::search() const {
+const unsigned char& Tile::monster(const unsigned char& monster) {
+	_monster = monster;
+	return this->monster();
+}
+
+const unsigned int& Tile::search() const {
 	return _search;
 }
 
-unsigned int Tile::searchInc() {
+const unsigned int& Tile::search(const unsigned int& search) {
+	_search = search;
+	return this->search();
+}
+
+const unsigned int& Tile::searchInc() {
 	if (_search < TILE_FULLY_SEARCHED)
 		return ++_search;
 	return _search;
 }
 
-unsigned char Tile::symbol() const {
+const unsigned char& Tile::symbol() const {
 	return _symbol;
 }
 
-unsigned char Tile::direction(unsigned char direction) {
-	_direction = direction;
-	return this->direction();
-}
-
-unsigned char Tile::monster(unsigned char monster) {
-	_monster = monster;
-	return this->monster();
-}
-
-unsigned int Tile::search(unsigned int search) {
-	_search = search;
-	return this->search();
-}
-
-unsigned char Tile::symbol(unsigned char symbol) {
+const unsigned char& Tile::symbol(const unsigned char& symbol) {
 	_symbol = symbol;
 	return this->symbol();
 }
 
-void Tile::updatePath(const Point& next, unsigned char direction, unsigned int distance, unsigned int cost) {
+void Tile::updatePath(const Point& next, const unsigned char& direction, const unsigned int& distance, const unsigned int& cost) {
 	_next = next;
 	_direction = direction;
 	_distance = distance;

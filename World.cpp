@@ -54,7 +54,62 @@ vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
 
 /* methods */
-void World::init(int connection_type) {
+const char& World::view(const Point& point) {
+	return _view[point.row()][point.col()];
+}
+
+const int& World::color(const Point& point) {
+	return _color[point.row()][point.col()];
+}
+
+const bool& World::menu() {
+	return _menu;
+}
+
+const bool& World::question() {
+	return _question;
+}
+
+const int& World::curPage() {
+	return _cur_page;
+}
+
+const int& World::maxPage() {
+	return _max_page;
+}
+
+const int& World::turn() {
+	return _turn;
+}
+
+const unsigned int& World::internalTurn() {
+	return _internal_turn;
+}
+
+const vector<Point>& World::changes() {
+	return _changes;
+}
+
+Level& World::level() {
+	return level(Saiph::position().level());
+}
+
+Level& World::level(const int& level) {
+	return _levels[level];
+}
+
+const int& World::currentPriority() {
+	if (_action == NULL)
+		return action::Action::NOOP.priority();
+	return _action->command().priority();
+}
+
+const int& World::lastActionID() {
+	/* return the id of the last action */
+	return _last_action_id;
+}
+
+void World::init(const int& connection_type) {
 	_connection = Connection::create(connection_type);
 	if (_connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
@@ -71,12 +126,12 @@ void World::destroy() {
 		delete *a;
 }
 
-void World::registerAnalyzer(Analyzer* analyzer) {
+void World::registerAnalyzer(Analyzer * const analyzer) {
 	Debug::info() << "Registering analyzer " << analyzer->name() << endl;
 	_analyzers.push_back(analyzer);
 }
 
-void World::unregisterAnalyzer(Analyzer* analyzer) {
+void World::unregisterAnalyzer(Analyzer * const analyzer) {
 	Debug::info() << "Unregistering analyzer " << analyzer->name() << endl;
 	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
@@ -84,57 +139,6 @@ void World::unregisterAnalyzer(Analyzer* analyzer) {
 			return;
 		}
 	}
-}
-
-char World::view(const Point& point) {
-	return _view[point.row()][point.col()];
-}
-
-int World::color(const Point& point) {
-	return _color[point.row()][point.col()];
-}
-
-bool World::menu() {
-	return _menu;
-}
-
-bool World::question() {
-	return _question;
-}
-
-int World::curPage() {
-	return _cur_page;
-}
-
-int World::maxPage() {
-	return _max_page;
-}
-
-int World::turn() {
-	return _turn;
-}
-
-unsigned int World::internalTurn() {
-	return _internal_turn;
-}
-
-const vector<Point>& World::changes() {
-	return _changes;
-}
-
-Level& World::level(int level) {
-	return _levels[level];
-}
-
-int World::getPriority() {
-	if (_action == NULL)
-		return action::Action::NOOP.priority();
-	return _action->command().priority();
-}
-
-int World::getLastActionID() {
-	/* return the id of the last action */
-	return _last_action_id;
 }
 
 bool World::setAction(action::Action* action) {
@@ -161,7 +165,7 @@ bool World::queueAction(action::Action* action) {
 	return true;
 }
 
-unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
+unsigned char World::directLine(Point point, const bool& ignore_sinks, const bool& ignore_boulders) {
 	/* is the target in a direct line from the player? */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END) {
 		/* outside map */
@@ -234,53 +238,120 @@ unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boul
 	return ILLEGAL_DIRECTION;
 }
 
-const Tile& World::tile() {
-	/* return dungeon symbol at player position */
-	return World::_levels[Saiph::position().level()].tile(Saiph::position());
-}
-
-const Tile& World::tile(const Coordinate& coordinate) {
-	/* return dungeon symbol at given coordinate */
-	if (coordinate.level() < 0 || coordinate.level() > (int) World::_levels.size())
-		return Level::outsideMap();
-	return World::_levels[coordinate.level()].tile(coordinate);
-}
-
-const Tile& World::tile(const Point& point) {
-	/* return dungeon symbol at given point on current level */
-	return World::_levels[Saiph::position().level()].tile(point);
-}
-
-void World::setDirtyStash() {
-	/* set stash at player position dirty */
-	std::map<Point, Stash>::iterator s = World::_levels[Saiph::position().level()].stashes().find(Saiph::position());
-	if (s != World::_levels[Saiph::position().level()].stashes().end())
-		s->second.items().clear();
-}
-
-void World::setDungeonSymbol(unsigned char symbol) {
-	/* set dungeon symbol at player position */
-	World::_levels[Saiph::position().level()].setDungeonSymbol(Saiph::position(), symbol);
-}
-
-void World::setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol) {
-	/* set dungeon symbol at given coordinate */
-	if (coordinate.level() < 0 || coordinate.level() > (int) World::_levels.size())
-		return;
-	World::_levels[coordinate.level()].setDungeonSymbol(coordinate, symbol);
-}
-
-void World::setDungeonSymbol(const Point& point, unsigned char symbol) {
-	/* set dungeon symbol at given point on current level */
-	World::_levels[Saiph::position().level()].setDungeonSymbol(point, symbol);
-}
-
 const Tile& World::shortestPath(const Point& point) {
 	/* returns PathNode for shortest path from player to target */
 	return World::_levels[Saiph::position().level()].tile(point);
 }
 
-Tile World::shortestPath(unsigned char symbol) {
+Tile World::shortestPath(const Coordinate& target) {
+	/* returns a "fake" Tile with data for shortest path from player to target */
+	if (target.level() < 0 || target.level() >= (int) _levels.size())
+		return Tile(); // outside map
+	else if (target.level() == Saiph::position().level())
+		return _levels[Saiph::position().level()].tile(target); // target on same level
+
+	int pivot = -1;
+	int level_count = 1;
+	int level_queue[_levels.size()];
+	level_queue[0] = Saiph::position().level();
+	bool level_added[_levels.size()];
+	for (int a = 0; a < (int) _levels.size(); ++a)
+		level_added[a] = false;
+	level_added[Saiph::position().level()] = true;
+	Tile level_tile[_levels.size()];
+	level_tile[Saiph::position().level()] = Tile();
+	level_tile[Saiph::position().level()].updatePath(Point(), NOWHERE, 0, 0);
+	Debug::pathing() << "Trying to find path to " << target << endl;
+	while (++pivot < level_count) {
+		/* check if target is on level */
+		if (level_queue[pivot] == target.level()) {
+			Tile tile = _levels[level_queue[pivot]].tile(target);
+			if (tile.cost() == UNREACHABLE)
+				continue;
+			else if (tile.cost() == UNPASSABLE && tile.distance() > 1)
+				continue;
+			/* gotta modify this tile a bit since it's on another level */
+			tile.updatePath(target, level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
+			Debug::pathing() << "Found " << target << " " << tile.distance() << " tiles away" << endl;
+			return tile;
+		}
+		/* path to upstairs on level */
+		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where these stairs lead
+			else if (level_added[s->second])
+				continue; // already added this level
+			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			if (tile.cost() >= UNPASSABLE)
+				continue;
+			Debug::pathing() << "Following upstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			/* we know where these stairs lead, add the level to the queue */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to upstairs on level we're standing on */
+				level_tile[s->second] = tile;
+				if (tile.direction() == NOWHERE)
+					level_tile[s->second].direction(UP);
+			} else {
+				/* pathing to upstairs on another level */
+				level_tile[s->second] = level_tile[level_queue[pivot]];
+				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+			}
+		}
+		/* path to downstairs on level */
+		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where these stairs lead
+			else if (level_added[s->second])
+				continue; // already added this level
+			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			if (tile.cost() >= UNPASSABLE)
+				continue;
+			Debug::pathing() << "Following downstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			/* we know where these stairs lead, add the level to the queue */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to downstairs on level we're standing on */
+				level_tile[s->second] = tile;
+				if (tile.direction() == NOWHERE)
+					level_tile[s->second].direction(DOWN);
+			} else {
+				/* pathing to downstairs on another level */
+				level_tile[s->second] = level_tile[level_queue[pivot]];
+				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+			}
+		}
+		/* path to portals on level */
+		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
+			if (s->second == UNKNOWN_SYMBOL_VALUE)
+				continue; // we don't know where this portal leads
+			else if (level_added[s->second])
+				continue; // already added this level
+			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			if (tile.cost() >= UNPASSABLE)
+				continue;
+			Debug::info() << "Following magic portal on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			/* we know where this portal leads, add the level to the queue */
+			level_added[s->second] = true;
+			level_queue[level_count++] = s->second;
+			if (pivot == 0) {
+				/* pathing to portal on level we're standing on */
+				level_tile[s->second] = tile;
+				if (tile.direction() == NOWHERE)
+					level_tile[s->second].direction(DOWN);
+			} else {
+				/* pathing to portal on another level */
+				level_tile[s->second] = level_tile[level_queue[pivot]];
+				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+			}
+		}
+	}
+	return Tile(); // symbol not found
+}
+
+Tile World::shortestPath(const unsigned char& symbol) {
 	/* returns PathNode for shortest path from player to nearest symbol */
 	int pivot = -1;
 	int level_count = 1;
@@ -398,114 +469,6 @@ Tile World::shortestPath(unsigned char symbol) {
 	return best_tile;
 }
 
-Tile World::shortestPath(const Coordinate& target) {
-	/* returns a "fake" Tile with data for shortest path from player to target */
-	if (target.level() < 0 || target.level() >= (int) _levels.size())
-		return Tile(); // outside map
-	else if (target.level() == Saiph::position().level())
-		return _levels[Saiph::position().level()].tile(target); // target on same level
-
-	int pivot = -1;
-	int level_count = 1;
-	int level_queue[_levels.size()];
-	level_queue[0] = Saiph::position().level();
-	bool level_added[_levels.size()];
-	for (int a = 0; a < (int) _levels.size(); ++a)
-		level_added[a] = false;
-	level_added[Saiph::position().level()] = true;
-	Tile level_tile[_levels.size()];
-	level_tile[Saiph::position().level()] = Tile();
-	level_tile[Saiph::position().level()].updatePath(Point(), NOWHERE, 0, 0);
-	Debug::pathing() << "Trying to find path to " << target << endl;
-	while (++pivot < level_count) {
-		/* check if target is on level */
-		if (level_queue[pivot] == target.level()) {
-			Tile tile = _levels[level_queue[pivot]].tile(target);
-			if (tile.cost() == UNREACHABLE)
-				continue;
-			else if (tile.cost() == UNPASSABLE && tile.distance() > 1)
-				continue;
-			/* gotta modify this tile a bit since it's on another level */
-			tile.updatePath(target, level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
-			Debug::pathing() << "Found " << target << " " << tile.distance() << " tiles away" << endl;
-			return tile;
-		}
-		/* path to upstairs on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
-			if (s->second == UNKNOWN_SYMBOL_VALUE)
-				continue; // we don't know where these stairs lead
-			else if (level_added[s->second])
-				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
-			if (tile.cost() >= UNPASSABLE)
-				continue;
-			Debug::pathing() << "Following upstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
-			/* we know where these stairs lead, add the level to the queue */
-			level_added[s->second] = true;
-			level_queue[level_count++] = s->second;
-			if (pivot == 0) {
-				/* pathing to upstairs on level we're standing on */
-				level_tile[s->second] = tile;
-				if (tile.direction() == NOWHERE)
-					level_tile[s->second].direction(UP);
-			} else {
-				/* pathing to upstairs on another level */
-				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
-			}
-		}
-		/* path to downstairs on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
-			if (s->second == UNKNOWN_SYMBOL_VALUE)
-				continue; // we don't know where these stairs lead
-			else if (level_added[s->second])
-				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
-			if (tile.cost() >= UNPASSABLE)
-				continue;
-			Debug::pathing() << "Following downstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
-			/* we know where these stairs lead, add the level to the queue */
-			level_added[s->second] = true;
-			level_queue[level_count++] = s->second;
-			if (pivot == 0) {
-				/* pathing to downstairs on level we're standing on */
-				level_tile[s->second] = tile;
-				if (tile.direction() == NOWHERE)
-					level_tile[s->second].direction(DOWN);
-			} else {
-				/* pathing to downstairs on another level */
-				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
-			}
-		}
-		/* path to portals on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
-			if (s->second == UNKNOWN_SYMBOL_VALUE)
-				continue; // we don't know where this portal leads
-			else if (level_added[s->second])
-				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
-			if (tile.cost() >= UNPASSABLE)
-				continue;
-			Debug::info() << "Following magic portal on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
-			/* we know where this portal leads, add the level to the queue */
-			level_added[s->second] = true;
-			level_queue[level_count++] = s->second;
-			if (pivot == 0) {
-				/* pathing to portal on level we're standing on */
-				level_tile[s->second] = tile;
-				if (tile.direction() == NOWHERE)
-					level_tile[s->second].direction(DOWN);
-			} else {
-				/* pathing to portal on another level */
-				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
-			}
-		}
-	}
-	return Tile(); // symbol not found
-}
-
 void World::run() {
 	int last_turn = 0;
 	int stuck_counter = 0;
@@ -605,7 +568,7 @@ void World::run() {
 				 * we could be trying to move diagonally into a door we're
 				 * unaware of because of an item blocking the door symbol.
 				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+				level().setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -615,7 +578,7 @@ void World::run() {
 			case W:
 				/* moving cardinally failed, possibly item in wall.
 				 * make the tile UNKNOWN_TILE_UNPASSABLE */
-				setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
+				level().setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
 				was_move = true;
 				break;
 
@@ -657,26 +620,25 @@ void World::addChangedLocation(const Point& point) {
 }
 
 void World::detectPosition() {
-	string level = _levelname;
 	if (Saiph::position().level() < 0) {
 		/* this happens when we start */
 		Saiph::position(Coordinate(_levels.size(), _cursor));
 		_branch[BRANCH_MAIN] = Saiph::position();
-		_levels.push_back(Level(level));
-		_levelmap[level].push_back(Saiph::position().level());
+		_levels.push_back(Level(_levelname));
+		_levelmap[_levelname].push_back(Saiph::position().level());
 		return;
 	}
-	if ((int) _levels.size() > Saiph::position().level() && level == _levels[Saiph::position().level()].name()) {
+	if ((int) _levels.size() > Saiph::position().level() && _levelname == _levels[Saiph::position().level()].name()) {
 		/* same level as last frame, update row & col */
 		Saiph::position(Coordinate(Saiph::position().level(), _cursor));
 		if (_branch[BRANCH_SOKOBAN].level() == -1 && _levels[Saiph::position().level()].branch() == BRANCH_MAIN && _levels[Saiph::position().level()].depth() >= 5 && _levels[Saiph::position().level()].depth() <= 9) {
 			/* look for sokoban level 1a or 1b */
-			if (tile(Point(8, 37)).symbol() == BOULDER && tile(Point(8, 38)).symbol() == BOULDER && tile(Point(8, 43)).symbol() == BOULDER && tile(Point(9, 38)).symbol() == BOULDER && tile(Point(9, 39)).symbol() == BOULDER && tile(Point(9, 42)).symbol() == BOULDER && tile(Point(9, 44)).symbol() == BOULDER && tile(Point(11, 41)).symbol() == BOULDER && tile(Point(14, 39)).symbol() == BOULDER && tile(Point(14, 40)).symbol() == BOULDER && tile(Point(14, 41)).symbol() == BOULDER && tile(Point(14, 42)).symbol() == BOULDER) {
+			if (level().tile(Point(8, 37)).symbol() == BOULDER && level().tile(Point(8, 38)).symbol() == BOULDER && level().tile(Point(8, 43)).symbol() == BOULDER && level().tile(Point(9, 38)).symbol() == BOULDER && level().tile(Point(9, 39)).symbol() == BOULDER && level().tile(Point(9, 42)).symbol() == BOULDER && level().tile(Point(9, 44)).symbol() == BOULDER && level().tile(Point(11, 41)).symbol() == BOULDER && level().tile(Point(14, 39)).symbol() == BOULDER && level().tile(Point(14, 40)).symbol() == BOULDER && level().tile(Point(14, 41)).symbol() == BOULDER && level().tile(Point(14, 42)).symbol() == BOULDER) {
 				/* sokoban 1a */
 				Debug::notice() << "Found Sokoban level 1a: " << Saiph::position() << endl;
 				_levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
 				_branch[BRANCH_SOKOBAN] = Saiph::position();
-			} else if (tile(Point(8, 34)).symbol() == BOULDER && tile(Point(8, 42)).symbol() == BOULDER && tile(Point(9, 34)).symbol() == BOULDER && tile(Point(9, 41)).symbol() == BOULDER && tile(Point(10, 42)).symbol() == BOULDER && tile(Point(13, 40)).symbol() == BOULDER && tile(Point(14, 41)).symbol() == BOULDER && tile(Point(15, 41)).symbol() == BOULDER && tile(Point(16, 40)).symbol() == BOULDER && tile(Point(16, 42)).symbol() == BOULDER) {
+			} else if (level().tile(Point(8, 34)).symbol() == BOULDER && level().tile(Point(8, 42)).symbol() == BOULDER && level().tile(Point(9, 34)).symbol() == BOULDER && level().tile(Point(9, 41)).symbol() == BOULDER && level().tile(Point(10, 42)).symbol() == BOULDER && level().tile(Point(13, 40)).symbol() == BOULDER && level().tile(Point(14, 41)).symbol() == BOULDER && level().tile(Point(15, 41)).symbol() == BOULDER && level().tile(Point(16, 40)).symbol() == BOULDER && level().tile(Point(16, 42)).symbol() == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice() << "Found Sokoban level 1b: " << Saiph::position() << endl;
 				_levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
@@ -691,7 +653,7 @@ void World::detectPosition() {
 					continue;
 				/* if we see horizontal walls adjacent to this point (except west & east),
 				 * then we're in the mines */
-				if (tile(Point(hw->first.row() - 1, hw->first.col() - 1)).symbol() == HORIZONTAL_WALL || tile(Point(hw->first.row() - 1, hw->first.col())).symbol() == HORIZONTAL_WALL || tile(Point(hw->first.row() - 1, hw->first.col() + 1)).symbol() == HORIZONTAL_WALL || tile(Point(hw->first.row() + 1, hw->first.col() - 1)).symbol() == HORIZONTAL_WALL || tile(Point(hw->first.row() + 1, hw->first.col())).symbol() == HORIZONTAL_WALL || tile(Point(hw->first.row() + 1, hw->first.col() + 1)).symbol() == HORIZONTAL_WALL) {
+				if (level().tile(Point(hw->first.row() - 1, hw->first.col() - 1)).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() - 1, hw->first.col())).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() - 1, hw->first.col() + 1)).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() + 1, hw->first.col() - 1)).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() + 1, hw->first.col())).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() + 1, hw->first.col() + 1)).symbol() == HORIZONTAL_WALL) {
 					/* we're in the mines */
 					Debug::notice() << "Found the mines: " << Saiph::position() << endl;
 					_levels[Saiph::position().level()].branch(BRANCH_MINES);
@@ -710,7 +672,7 @@ void World::detectPosition() {
 	/* level has changed.
 	 * we need to figure out if it's a new level or one we already know of */
 	int found = UNKNOWN_SYMBOL_VALUE;
-	unsigned char symbol = tile().symbol();
+	unsigned char symbol = level().tile().symbol();
 	/* maybe we already know where these stairs lead? */
 	if (symbol == STAIRS_DOWN) {
 		/* we did stand on stairs down, and if we don't know where they lead then
@@ -727,7 +689,7 @@ void World::detectPosition() {
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
-		for (vector<int>::iterator lm = _levelmap[level].begin(); lm != _levelmap[level].end(); ++lm) {
+		for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
 			/* check if level got walls on same locations.
 			 * since walls can disappear, we'll allow a 80% match */
 			int total = 0;
@@ -744,7 +706,7 @@ void World::detectPosition() {
 			}
 			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
 				found = *lm;
-				Debug::notice() << "Recognized level " << found << ": '" << level << "' - '" << _levels[found].name() << "'" << endl;
+				Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
 				break;
 			}
 		}
@@ -755,9 +717,9 @@ void World::detectPosition() {
 		/* when we discover a new level it's highly likely it's in the
 		 * same branch as the previous level.
 		 * exception is rogue level, which really isn't a branch */
-		_levels.push_back(Level(level, (_levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? _levels[Saiph::position().level()].branch() : BRANCH_MAIN));
-		_levelmap[level].push_back(found);
-		Debug::notice() << "Found new level " << found << ": " << level << endl;
+		_levels.push_back(Level(_levelname, (_levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? _levels[Saiph::position().level()].branch() : BRANCH_MAIN));
+		_levelmap[_levelname].push_back(found);
+		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
 	}
 	/* were we on stairs on last Saiph::position()? */
 	if (symbol == STAIRS_DOWN) {
@@ -773,7 +735,7 @@ void World::detectPosition() {
 	Saiph::position(Coordinate(found, _cursor));
 }
 
-Point World::directionToPoint(unsigned char direction) {
+Point World::directionToPoint(const unsigned char& direction) {
 	/* return the position we'd be at if we do the given move */
 	Point pos = Saiph::position();
 	switch (direction) {
@@ -812,8 +774,8 @@ Point World::directionToPoint(unsigned char direction) {
 	return pos;
 }
 
-bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders) {
-	const Tile& t = tile(point);
+bool World::directLineHelper(const Point& point, const bool& ignore_sinks, const bool& ignore_boulders) {
+	const Tile& t = level().tile(point);
 	if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
 		return false;
 	else if (!ignore_sinks && t.symbol() == SINK)
@@ -843,7 +805,7 @@ void World::dumpMaps() {
 	for (p.row(MAP_ROW_BEGIN); p.insideMap(); p.moveSouth()) {
 		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";2H";
 		for (p.col(MAP_COL_BEGIN); p.insideMap(); p.moveEast()) {
-			const Tile& t = tile(p);
+			const Tile& t = level().tile(p);
 			if (p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (t.monster() != ILLEGAL_MONSTER)
@@ -935,7 +897,7 @@ bool World::executeCommand(const string& command) {
 	return true;
 }
 
-void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
+void World::fetchMenuText(const int& stoprow, const int& startcol, const bool& addspaces) {
 	/* fetch text from a menu */
 	for (int r = 0; r <= stoprow; ++r) {
 		_msg_str = &_view[r][startcol];
@@ -1407,6 +1369,7 @@ int main(int argc, const char* argv[]) {
 	Debug::init(logfile);
 	data::Monster::init();
 	data::Item::init();
+	Level::init();
 	World::init(connection_type);
 	Analyzer::init();
 
@@ -1417,6 +1380,7 @@ int main(int argc, const char* argv[]) {
 	/* destroy */
 	Analyzer::destroy();
 	World::destroy();
+	Level::destroy();
 	data::Monster::destroy();
 	data::Item::destroy();
 	Debug::destroy();

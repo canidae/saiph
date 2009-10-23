@@ -4,24 +4,24 @@
 using namespace std;
 
 /* constructors/destructor */
-Point::Point(int row, int col) : _row(row), _col(col) {
+Point::Point(const int& row, const int& col) : _row(row), _col(col) {
 }
 
 /* methods */
-int Point::col() const {
+const int& Point::col() const {
 	return _col;
 }
 
-int Point::col(int col) {
+const int& Point::col(const int& col) {
 	_col = col;
 	return this->col();
 }
 
-int Point::row() const {
+const int& Point::row() const {
 	return _row;
 }
 
-int Point::row(int row) {
+const int& Point::row(const int& row) {
 	_row = row;
 	return this->row();
 }

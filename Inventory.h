@@ -10,14 +10,14 @@
 
 class Inventory {
 public:
+	static std::map<unsigned char, Item>& items();
+	static const bool& updated();
+	static const bool& updated(const bool& updated);
 	static void analyze();
 	static void parseMessages(const std::string& messages);
-	static std::map<unsigned char, Item>& items();
-	static bool updated();
-	static bool updated(bool updated);
-	static unsigned char itemInSlot(int slot);
-	static void addItem(unsigned char key, const Item& item);
-	static void removeItem(unsigned char key, const Item& item);
+	static const unsigned char& itemInSlot(const int& slot);
+	static void addItem(const unsigned char& key, const Item& item);
+	static void removeItem(const unsigned char& key, const Item& item);
 
 private:
 	static bool _updated;
@@ -26,6 +26,6 @@ private:
 	static event::ChangedInventoryItems _changed;
 	static std::set<unsigned char> _lost;
 
-	static void setSlot(unsigned char key, const Item& item);
+	static void setSlot(const unsigned char& key, const Item& item);
 };
 #endif

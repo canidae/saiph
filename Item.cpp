@@ -29,7 +29,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(want) {
+Item::Item(const string& text, const int& want) : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(want) {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
@@ -235,65 +235,65 @@ const string& Item::name(const string& name) {
 	return this->name();
 }
 
-int Item::count() const {
+const int& Item::count() const {
 	return _count;
 }
 
-int Item::count(int count) {
+const int& Item::count(const int& count) {
 	_count = count;
 	return this->count();
 }
 
-int Item::beatitude() const {
+const int& Item::beatitude() const {
 	return _beatitude;
 }
 
-int Item::beatitude(int beatitude) {
+const int& Item::beatitude(const int& beatitude) {
 	_beatitude = beatitude;
 	return this->beatitude();
 }
 
-bool Item::greased() const {
+const bool& Item::greased() const {
 	return _greased;
 }
 
-bool Item::greased(bool greased) {
+const bool& Item::greased(const bool& greased) {
 	_greased = greased;
 	return this->greased();
 }
 
-bool Item::fixed() const {
+const bool& Item::fixed() const {
 	return _fixed;
 }
 
-bool Item::fixed(bool fixed) {
+const bool& Item::fixed(const bool& fixed) {
 	_fixed = fixed;
 	return this->fixed();
 }
 
-int Item::damage() const {
+const int& Item::damage() const {
 	return _damage;
 }
 
-int Item::damage(int damage) {
+const int& Item::damage(const int& damage) {
 	_damage = damage;
 	return this->damage();
 }
 
-bool Item::unknownEnchantment() const {
+const bool& Item::unknownEnchantment() const {
 	return _unknown_enchantment;
 }
 
-bool Item::unknownEnchantment(bool unknown_enchantment) {
+const bool& Item::unknownEnchantment(const bool& unknown_enchantment) {
 	_unknown_enchantment = unknown_enchantment;
 	return this->unknownEnchantment();
 }
 
-int Item::enchantment() const {
+const int& Item::enchantment() const {
 	return _enchantment;
 }
 
-int Item::enchantment(int enchantment) {
+const int& Item::enchantment(const int& enchantment) {
 	_enchantment = enchantment;
 	return this->enchantment();
 }
@@ -307,11 +307,11 @@ const std::string& Item::additional(const std::string& additional) {
 	return this->additional();
 }
 
-int Item::want() const {
+const int& Item::want() const {
 	return _want;
 }
 
-int Item::want(int want) {
+const int& Item::want(const int& want) {
 	_want = want;
 	return this->want();
 }

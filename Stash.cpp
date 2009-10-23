@@ -3,24 +3,24 @@
 using namespace std;
 
 /* constructors/destructor */
-Stash::Stash(unsigned char symbol, int color, int last_inspected) : _symbol(symbol), _color(color), _items(), _last_inspected(last_inspected) {
+Stash::Stash(const unsigned char& symbol, const int& color, const int& last_inspected) : _symbol(symbol), _color(color), _items(), _last_inspected(last_inspected) {
 }
 
 /* methods */
-unsigned char Stash::symbol() const {
+const unsigned char& Stash::symbol() const {
 	return _symbol;
 }
 
-unsigned char Stash::symbol(unsigned char symbol) {
+const unsigned char& Stash::symbol(const unsigned char& symbol) {
 	_symbol = symbol;
 	return this->symbol();
 }
 
-int Stash::color() const {
+const int& Stash::color() const {
 	return _color;
 }
 
-int Stash::color(int color) {
+const int& Stash::color(const int& color) {
 	_color = color;
 	return this->color();
 }
@@ -29,11 +29,11 @@ list<Item>& Stash::items() {
 	return _items;
 }
 
-int Stash::lastInspected() const {
+const int& Stash::lastInspected() const {
 	return _last_inspected;
 }
 
-int Stash::lastInspected(int last_inspected) {
+const int& Stash::lastInspected(const int& last_inspected) {
 	_last_inspected = last_inspected;
 	return this->lastInspected();
 }

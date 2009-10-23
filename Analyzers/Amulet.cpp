@@ -57,7 +57,7 @@ bool Amulet::wantItem(const Item& item) {
 	return data::Amulet::amulets.find(item.name()) != data::Amulet::amulets.end();
 }
 
-void Amulet::wearAmulet(const set<unsigned char> &keys) {
+void Amulet::wearAmulet(const set<unsigned char>& keys) {
 	/* FIXME: need to make this smarter, so we can handle both ChangedInventoryItems and ReceivedItems events */
 	map<unsigned char, Item>::iterator worn = Inventory::items().find(Inventory::itemInSlot(SLOT_AMULET));
 	if (worn != Inventory::items().end() && worn->second.beatitude() == CURSED)

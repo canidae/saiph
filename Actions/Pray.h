@@ -13,7 +13,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Pray(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _pray("#pray\n", priority) {
+		Pray(analyzer::Analyzer* analyzer, const int& priority) : Action(analyzer), _pray("#pray\n", priority) {
 		}
 
 		virtual ~Pray() {
@@ -23,7 +23,7 @@ namespace action {
 			return World::turn() - PRAY_PRAYER_TIMEOUT > Saiph::lastPrayed();
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

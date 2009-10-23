@@ -16,15 +16,15 @@ namespace event {
 		virtual ~ChangedInventoryItems() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
-		virtual std::set<unsigned char> &keys() {
+		virtual std::set<unsigned char>& keys() {
 			return _keys;
 		}
 
-		virtual std::set<unsigned char> &keys(const std::set<unsigned char> &keys) {
+		virtual std::set<unsigned char>& keys(const std::set<unsigned char>& keys) {
 			_keys = keys;
 			return this->keys();
 		}
@@ -33,7 +33,7 @@ namespace event {
 			_keys.clear();
 		}
 
-		virtual void add(unsigned char key) {
+		virtual void add(const unsigned char& key) {
 			_keys.insert(key);
 		}
 

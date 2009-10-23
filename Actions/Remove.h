@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Remove(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _remove("R", priority), _remove_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
+		Remove(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _remove("R", priority), _remove_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Remove() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

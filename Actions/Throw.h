@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Throw(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_throw("t", priority), _throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Throw(analyzer::Analyzer* analyzer, const unsigned char& key, const unsigned char& direction, const int& priority) : Action(analyzer), _do_throw("t", priority), _throw_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _throw_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Throw() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

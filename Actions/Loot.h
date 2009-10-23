@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Loot(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _loot(",", priority) {
+		Loot(analyzer::Analyzer* analyzer, const int& priority) : Action(analyzer), _loot(",", priority) {
 		}
 
 		virtual ~Loot() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

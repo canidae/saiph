@@ -19,7 +19,7 @@ Elbereth::Elbereth() : Analyzer("Elbereth"), _elbereth_count(0), _engraving_type
 void Elbereth::onEvent(Event* const evt) {
 	if (evt->id() == ElberethQuery::ID) {
 		ElberethQuery* const q = static_cast<ElberethQuery* const> (evt);
-		if (World::getLastActionID() != action::Look::ID) {
+		if (World::lastActionID() != action::Look::ID) {
 			/* data is outdated */
 			_engraving_type = ELBERETH_MUST_CHECK;
 			_elbereth_count = 0;

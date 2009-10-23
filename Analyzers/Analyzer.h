@@ -13,32 +13,18 @@ namespace analyzer {
 
 	class Analyzer {
 	public:
-
-		Analyzer(std::string name) : _name(name) {
-		}
-
-		virtual ~Analyzer() {
-		}
-
-		const std::string& name() {
-			return _name;
-		}
+		Analyzer(const std::string& name);
+		virtual ~Analyzer();
 
 		static void init();
 		static void destroy();
-
-		virtual void parseMessages(const std::string&) {
-		}
-
-		virtual void analyze() {
-		}
-
-		virtual void onEvent(event::Event* const) {
-		}
+		const std::string& name();
+		virtual void parseMessages(const std::string&);
+		virtual void analyze();
+		virtual void onEvent(event::Event * const);
 
 	private:
 		std::string _name;
-		static bool _initialized;
 	};
 }
 #endif

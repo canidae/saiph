@@ -5,7 +5,7 @@
 using namespace analyzer;
 using namespace std;
 
-/* static variables */
+/* variables */
 /* attributes */
 int Saiph::_alignment = NEUTRAL; // see defined constants
 int Saiph::_charisma = 0;
@@ -174,92 +174,117 @@ bool Saiph::parseStatusRow(const char* statusrow, char* levelname, int* turn) {
 	return true;
 }
 
-const Coordinate& Saiph::position(const Coordinate& coordinate) {
-	_position = coordinate;
-	return Saiph::position();
-}
-
-int Saiph::alignment() {
+const int& Saiph::alignment() {
 	return _alignment;
 }
 
-int Saiph::charisma() {
+const int& Saiph::charisma() {
 	return _charisma;
 }
 
-int Saiph::constitution() {
+const int& Saiph::constitution() {
 	return _constitution;
 }
 
-int Saiph::dexterity() {
+const int& Saiph::dexterity() {
 	return _dexterity;
 }
 
-int Saiph::intelligence() {
+const int& Saiph::intelligence() {
 	return _intelligence;
 }
 
-int Saiph::strength() {
+const int& Saiph::strength() {
 	return _strength;
 }
 
-int Saiph::wisdom() {
+const int& Saiph::wisdom() {
 	return _wisdom;
 }
 
-int Saiph::encumbrance() {
+const int& Saiph::armor() {
+	return _armor;
+}
+
+const int& Saiph::encumbrance() {
 	return _encumbrance;
 }
 
-int Saiph::hunger() {
+const int& Saiph::experience() {
+	return _experience;
+}
+
+const int& Saiph::hunger() {
 	return _hunger;
 }
 
-int Saiph::hitpoints() {
+const int& Saiph::hitpoints() {
 	return _hitpoints;
 }
 
-int Saiph::hitpointsMax() {
+const int& Saiph::hitpointsMax() {
 	return _hitpoints_max;
 }
 
-bool Saiph::blind() {
+const int& Saiph::power() {
+	return _power;
+}
+
+const int& Saiph::powerMax() {
+	return _power_max;
+}
+
+const bool& Saiph::blind() {
 	return _blind;
 }
 
-bool Saiph::confused() {
+const bool& Saiph::confused() {
 	return _confused;
 }
 
-bool Saiph::foodpoisoned() {
+const bool& Saiph::foodpoisoned() {
 	return _foodpoisoned;
 }
 
-bool Saiph::hallucinating() {
+const bool& Saiph::hallucinating() {
 	return _hallucinating;
 }
 
-bool Saiph::ill() {
+const bool& Saiph::ill() {
 	return _ill;
 }
 
-bool Saiph::stunned() {
+const bool& Saiph::slimed() {
+	return _slimed;
+}
+
+const bool& Saiph::stunned() {
 	return _stunned;
 }
 
-bool Saiph::hurtLeg() {
+const bool& Saiph::hurtLeg() {
 	return _hurt_leg;
 }
 
-bool Saiph::polymorphed() {
+const bool& Saiph::hurtLeg(const bool& hurt_leg) {
+	_hurt_leg = hurt_leg;
+	return Saiph::hurtLeg();
+}
+
+const bool& Saiph::polymorphed() {
 	return _polymorphed;
 }
 
-bool Saiph::engulfed() {
+const bool& Saiph::polymorphed(const bool& polymorphed) {
+	_polymorphed = polymorphed;
+	return Saiph::polymorphed();
+}
+
+const bool& Saiph::engulfed() {
 	return _engulfed;
 }
 
-bool Saiph::engulfed(bool engulfed) {
+const bool& Saiph::engulfed(const bool& engulfed) {
 	_engulfed = engulfed;
 	return Saiph::engulfed();
 }
@@ -268,19 +293,48 @@ const Coordinate& Saiph::position() {
 	return _position;
 }
 
-unsigned long long int Saiph::intrinsics() {
+const Coordinate& Saiph::position(const Coordinate& position) {
+	_position = position;
+	return Saiph::position();
+}
+
+const int& Saiph::zorkmids() {
+	return _zorkmids;
+}
+
+const unsigned long long int& Saiph::intrinsics() {
 	return _intrinsics;
 }
 
-unsigned long long int Saiph::extrinsics() {
+const unsigned long long int& Saiph::addIntrinsics(const unsigned long long int& intrinsics) {
+	_intrinsics |= intrinsics;
+	return Saiph::intrinsics();
+}
+
+const unsigned long long int& Saiph::removeIntrinsics(const unsigned long long int& intrinsics) {
+	_intrinsics ^= (intrinsics & _intrinsics);
+	return Saiph::intrinsics();
+}
+
+const unsigned long long int& Saiph::extrinsics() {
 	return _extrinsics;
 }
 
-int Saiph::lastPrayed() {
+const unsigned long long int& Saiph::addExtrinsics(const unsigned long long int& extrinsics) {
+	_extrinsics |= extrinsics;
+	return Saiph::extrinsics();
+}
+
+const unsigned long long int& Saiph::removeExtrinsics(const unsigned long long int& extrinsics) {
+	_extrinsics ^= (extrinsics & _extrinsics);
+	return Saiph::extrinsics();
+}
+
+const int& Saiph::lastPrayed() {
 	return _last_prayed;
 }
 
-int Saiph::lastPrayed(int last_prayed) {
+const int& Saiph::lastPrayed(const int& last_prayed) {
 	_last_prayed = last_prayed;
 	return Saiph::lastPrayed();
 }

@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Unlock(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_apply("a", priority), _apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), _do_unlock("y", PRIORITY_CONTINUE_ACTION) {
+		Unlock(analyzer::Analyzer* analyzer, const unsigned char& key, const unsigned char& direction, const int& priority) : Action(analyzer), _do_apply("a", priority), _apply_item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _apply_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION), _do_unlock("y", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Unlock() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

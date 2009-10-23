@@ -5,12 +5,12 @@
 
 class Point {
 public:
-	Point(int row = -1, int col = -1);
+	Point(const int& row = -1, const int& col = -1);
 
-	int col() const;
-	int col(int col);
-	int row() const;
-	int row(int row);
+	const int& col() const;
+	const int& col(const int& col);
+	const int& row() const;
+	const int& row(const int& row);
 	bool insideMap() const;
 	Point& moveNorthwest();
 	Point& moveNorth();

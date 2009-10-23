@@ -36,8 +36,8 @@ Telnet::Telnet() {
 		herror("gethostbyname");
 		exit(1);
 	}
-	sock = socket(PF_INET, SOCK_STREAM, 0);
-	if (sock == -1) {
+	_sock = socket(PF_INET, SOCK_STREAM, 0);
+	if (_sock == -1) {
 		perror("socket");
 		exit(1);
 	}
@@ -47,15 +47,15 @@ Telnet::Telnet() {
 	addr.sin_addr = *((struct in_addr*) he->h_addr);
 	memset(addr.sin_zero, '\0', sizeof (addr.sin_zero));
 
-	if (connect(sock, (struct sockaddr*) & addr, sizeof (addr)) == -1) {
+	if (connect(_sock, (struct sockaddr*) & addr, sizeof (addr)) == -1) {
 		perror("connect");
 		exit(1);
 	}
 
 	/* set up ping */
-	ping[0] = 0xff; // IAC
-	ping[1] = 0xfd; // DO
-	ping[2] = 0x63; // decimal 99, which is our "ping"
+	_ping[0] = 0xff; // IAC
+	_ping[1] = 0xfd; // DO
+	_ping[2] = 0x63; // decimal 99, which is our "ping"
 
 	/* tell server our terminal (xterm-color) and size (80x24) and set some other things */
 	char data[] = {0xff, 0xfb, 0x18, 0xff, 0xfa, 0x18, 0x00, 'x', 't', 'e', 'r', 'm', 0xff, 0xf0, 0xff, 0xfc, 0x20, 0xff, 0xfc, 0x23, 0xff, 0xfc, 0x27, 0xff, 0xfe, 0x03, 0xff, 0xfb, 0x01, 0xff, 0xfd, 0x05, 0xff, 0xfb, 0x21, 0xff, 0xfb, 0x1f, 0xff, 0xfa, 0x1f, 0x00, 0x50, 0x00, 0x18, 0xff, 0xf0};
@@ -87,22 +87,22 @@ Telnet::Telnet() {
 /* destructor */
 Telnet::~Telnet() {
 	stop();
-	close(sock);
+	close(_sock);
 }
 
 /* methods */
-int Telnet::retrieve(char* buffer, int count) {
+int Telnet::retrieve(char* buffer, const int& count) {
 	/* this is borrowed from TAEB:
 	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
 	 * then we'll just read until last bytes equal [?, ?, ?] */
-	transmit(ping, 3);
+	transmit(_ping, 3);
 	/* sleep a bit in case of very low latency */
 	usleep(50000);
 	int retrieved = 0;
 	int more_data = true;
 	int tries = 5;
 	while (more_data && tries >= 0) {
-		retrieved += recv(sock, &buffer[retrieved], count, 0);
+		retrieved += recv(_sock, &buffer[retrieved], count, 0);
 		for (int a = retrieved - 3; a >= 0; --a) {
 			/* search for pong backwards (we're expecting pong to be last).
 			 * we do it like this because if we find it somewhere else than
@@ -122,13 +122,13 @@ int Telnet::retrieve(char* buffer, int count) {
 					} else {
 						/* no, we didn't. hmmm */
 						retrieved = 0;
-						transmit(ping, 3);
+						transmit(_ping, 3);
 						--tries; // also decrease this, in case we're not getting any data */
 					}
 				} else {
 					/* no, it isn't.
 					 * we should send a new ping */
-					transmit(ping, 3);
+					transmit(_ping, 3);
 					/* and we'll have to remove the pong reply, gah */
 					for (int b = a; b < retrieved - 3; ++b)
 						buffer[b] = buffer[b + 3];
@@ -155,6 +155,6 @@ void Telnet::stop() {
 }
 
 /* private methods */
-int Telnet::transmit(const char* data, int length) {
-	return send(sock, data, length, 0);
+int Telnet::transmit(const char* data, const int& length) {
+	return send(_sock, data, length, 0);
 }

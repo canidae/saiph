@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Rest(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _rest("16s", priority) {
+		Rest(analyzer::Analyzer* analyzer, const int& priority) : Action(analyzer), _rest("16s", priority) {
 		}
 
 		virtual ~Rest() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

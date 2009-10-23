@@ -19,21 +19,24 @@ class Item;
 
 class Level {
 public:
-	Level(const std::string &name, int branch = BRANCH_MAIN);
+	Level(const std::string &name, const int& branch = BRANCH_MAIN);
 
-	static bool isPassable(unsigned char symbol);
+	static const bool& isPassable(const unsigned char& symbol);
 	static const Tile& outsideMap();
-	void analyze();
-	void parseMessages(const std::string& messages);
-	int branch() const;
-	int branch(int branch);
-	int depth() const;
+	static void init();
+	static void destroy();
+	const int& branch() const;
+	const int& branch(const int& branch);
+	const int& depth() const;
 	const std::string& name() const;
-	const Tile& tile(const Point& point);
+	Tile& tile();
+	Tile& tile(const Point& point);
 	std::map<Point, Monster>& monsters();
 	std::map<Point, Stash>& stashes();
-	std::map<Point, int>& symbols(unsigned char symbol);
-	void setDungeonSymbol(const Point& point, unsigned char symbol);
+	std::map<Point, int>& symbols(const unsigned char& symbol);
+	void analyze();
+	void parseMessages(const std::string& messages);
+	void setDungeonSymbol(const Point& point, const unsigned char& symbol);
 	void increaseAdjacentSearchCount(const Point& point);
 
 private:
@@ -45,7 +48,6 @@ private:
 	static bool _dungeon[UCHAR_MAX + 1];
 	static bool _monster[UCHAR_MAX + 1];
 	static bool _item[UCHAR_MAX + 1];
-	static bool _initialized;
 	static bool _got_pickup_menu;
 	static bool _got_drop_menu;
 	static event::ReceivedItems _received;
@@ -61,11 +63,10 @@ private:
 	bool _walls_diggable;
 	bool _floor_diggable;
 
-	static void init();
-	void updateMapPoint(const Point& point, unsigned char symbol, int color);
+	void updateMapPoint(const Point& point, unsigned char symbol, const int& color);
 	void updateMonsters();
 	void updatePathMap();
 	unsigned int updatePathMapCalculateCost(const Point& to, const Point& from);
-	void updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance);
+	void updatePathMapSetCost(const Point& to, const Point& from, const unsigned char& direction, const unsigned int& distance);
 };
 #endif

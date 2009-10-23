@@ -12,7 +12,7 @@ Connection::~Connection() {
 }
 
 /* static methods */
-Connection* Connection::create(int interface) {
+Connection* Connection::create(const int& interface) {
 	switch (interface) {
 	case CONNECTION_LOCAL:
 		return new Local();
@@ -30,7 +30,7 @@ Connection* Connection::create(int interface) {
 }
 
 /* methods */
-int Connection::retrieve(char*, int) {
+int Connection::retrieve(char*, const int&) {
 	return 0;
 }
 

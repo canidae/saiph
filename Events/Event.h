@@ -12,7 +12,7 @@ namespace event {
 		Event(const std::string& name);
 		virtual ~Event();
 
-		virtual int id() = 0;
+		virtual const int& id() = 0;
 		virtual const std::string& name();
 
 	private:

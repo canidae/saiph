@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Select(analyzer::Analyzer* analyzer, unsigned char key) : Action(analyzer), _select(std::string(1, key), PRIORITY_SELECT_ITEM) {
+		Select(analyzer::Analyzer* analyzer, const unsigned char& key) : Action(analyzer), _select(std::string(1, key), PRIORITY_SELECT_ITEM) {
 		}
 
 		virtual ~Select() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

@@ -3,18 +3,18 @@
 using namespace std;
 
 /* constructors/destructors */
-Coordinate::Coordinate(int level, int row, int col) : Point(row, col), _level(level) {
+Coordinate::Coordinate(const int& level, const int& row, const int& col) : Point(row, col), _level(level) {
 }
 
-Coordinate::Coordinate(int level, const Point& point) : Point(point), _level(level) {
+Coordinate::Coordinate(const int& level, const Point& point) : Point(point), _level(level) {
 }
 
 /* methods */
-int Coordinate::level() const {
+const int& Coordinate::level() const {
 	return _level;
 }
 
-int Coordinate::level(int level) {
+const int& Coordinate::level(const int& level) {
 	_level = level;
 	return this->level();
 }

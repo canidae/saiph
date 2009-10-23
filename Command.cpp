@@ -19,11 +19,11 @@ const std::string& Command::command(const std::string& command) {
 	return this->command();
 }
 
-int Command::priority() const {
+const int& Command::priority() const {
 	return _priority;
 }
 
-int Command::priority(int priority) {
+const int& Command::priority(const int& priority) {
 	_priority = priority;
 	return this->priority();
 }

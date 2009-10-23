@@ -16,15 +16,15 @@ namespace event {
 		virtual ~TakeMeThere() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
-		virtual Coordinate& coordinate() {
+		virtual const Coordinate& coordinate() {
 			return _coordinate;
 		}
 
-		virtual int max_priority() {
+		virtual const int& max_priority() {
 			return _max_priority;
 		}
 

@@ -5,11 +5,11 @@
 
 class Coordinate : public Point {
 public:
-	Coordinate(int level = -1, int row = -1, int col = -1);
-	Coordinate(int level, const Point& point = Point());
+	Coordinate(const int& level = -1, const int& row = -1, const int& col = -1);
+	Coordinate(const int& level, const Point& point = Point());
 
-	int level() const;
-	int level(int level);
+	const int& level() const;
+	const int& level(const int& level);
 
 	bool operator<(const Coordinate& c) const;
 	bool operator>(const Coordinate& c) const;

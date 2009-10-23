@@ -17,15 +17,15 @@ namespace event {
 		virtual ~StashChanged() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
-		virtual Coordinate& stash() {
+		virtual const Coordinate& stash() {
 			return _stash;
 		}
 
-		virtual Coordinate& stash(const Coordinate& stash) {
+		virtual const Coordinate& stash(const Coordinate& stash) {
 			_stash = stash;
 			return this->stash();
 		}

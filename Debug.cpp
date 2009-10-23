@@ -63,7 +63,7 @@ ofstream& Debug::error() {
 	return header(DEBUG_ERROR);
 }
 
-void Debug::rawCharArray(const char* data, int start, int stop) {
+void Debug::rawCharArray(const char* data, const int& start, const int& stop) {
 	header(DEBUG_DATA);
 	for (int a = start; a < stop; ++a)
 		_debugfile << data[a];

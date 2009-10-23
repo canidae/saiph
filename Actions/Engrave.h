@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Engrave(analyzer::Analyzer* analyzer, const std::string& engrave_msg, unsigned char engrave_with, int priority, bool should_append = true) : Action(analyzer), _engrave(std::string(1, 'E'), priority), _message(engrave_msg, PRIORITY_CONTINUE_ACTION), _item(std::string(1, engrave_with), PRIORITY_CONTINUE_ACTION), _append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {
+		Engrave(analyzer::Analyzer* analyzer, const std::string& engrave_msg, const unsigned char& engrave_with, const int& priority, const bool& should_append = true) : Action(analyzer), _engrave(std::string(1, 'E'), priority), _message(engrave_msg, PRIORITY_CONTINUE_ACTION), _item(std::string(1, engrave_with), PRIORITY_CONTINUE_ACTION), _append(std::string(1, should_append ? 'y' : 'n'), PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Engrave() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

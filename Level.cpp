@@ -60,24 +60,21 @@ int Level::_pathcost[UCHAR_MAX + 1] = {0};
 bool Level::_dungeon[UCHAR_MAX + 1] = {false};
 bool Level::_monster[UCHAR_MAX + 1] = {false};
 bool Level::_item[UCHAR_MAX + 1] = {false};
-bool Level::_initialized = false;
 ReceivedItems Level::_received;
 ItemsOnGround Level::_on_ground;
 Tile Level::_outside_map;
 
 /* constructors/destructor */
-Level::Level(const string& name, int branch) : _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
+Level::Level(const string& name, const int& branch) : _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b)
 			_map[a][b] = Tile();
 	}
 	sscanf(name.c_str(), "%*[^0123456789]%d", &_depth);
-	if (!_initialized)
-		init();
 }
 
 /* public static methods */
-bool Level::isPassable(unsigned char symbol) {
+const bool& Level::isPassable(const unsigned char& symbol) {
 	return _passable[symbol];
 }
 
@@ -85,7 +82,164 @@ const Tile& Level::outsideMap() {
 	return _outside_map;
 }
 
+void Level::init() {
+	/* monsters */
+	for (int a = 0; a <= UCHAR_MAX; ++a) {
+		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5') || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
+			_monster[a] = true;
+	}
+	/* items */
+	_item[(unsigned char) WEAPON] = true;
+	_item[(unsigned char) ARMOR] = true;
+	_item[(unsigned char) RING] = true;
+	_item[(unsigned char) AMULET] = true;
+	_item[(unsigned char) TOOL] = true;
+	_item[(unsigned char) FOOD] = true;
+	_item[(unsigned char) POTION] = true;
+	_item[(unsigned char) SCROLL] = true;
+	_item[(unsigned char) SPELLBOOK] = true;
+	_item[(unsigned char) WAND] = true;
+	_item[(unsigned char) GOLD] = true;
+	_item[(unsigned char) GEM] = true;
+	_item[(unsigned char) STATUE] = true;
+	// skipping boulder as that's a special item
+	_item[(unsigned char) IRON_BALL] = true;
+	_item[(unsigned char) CHAINS] = true;
+	_item[(unsigned char) VENOM] = true;
+	/* stuff we can walk on */
+	_passable[(unsigned char) FLOOR] = true;
+	_passable[(unsigned char) OPEN_DOOR] = true;
+	_passable[(unsigned char) CORRIDOR] = true;
+	_passable[(unsigned char) STAIRS_UP] = true;
+	_passable[(unsigned char) STAIRS_DOWN] = true;
+	_passable[(unsigned char) ALTAR] = true;
+	_passable[(unsigned char) GRAVE] = true;
+	_passable[(unsigned char) THRONE] = true;
+	_passable[(unsigned char) SINK] = true;
+	_passable[(unsigned char) FOUNTAIN] = true;
+	_passable[(unsigned char) WATER] = true;
+	_passable[(unsigned char) ICE] = true;
+	_passable[(unsigned char) LAVA] = true;
+	_passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	_passable[(unsigned char) TRAP] = true;
+	_passable[(unsigned char) UNKNOWN_TILE] = true;
+	_passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
+	_passable[(unsigned char) ROGUE_STAIRS] = true;
+	_passable[(unsigned char) MINES_FOUNTAIN] = true;
+	_passable[(unsigned char) SHOP_TILE] = true;
+	_passable[(unsigned char) WEAPON] = true;
+	_passable[(unsigned char) ARMOR] = true;
+	_passable[(unsigned char) RING] = true;
+	_passable[(unsigned char) AMULET] = true;
+	_passable[(unsigned char) TOOL] = true;
+	_passable[(unsigned char) FOOD] = true;
+	_passable[(unsigned char) POTION] = true;
+	_passable[(unsigned char) SCROLL] = true;
+	_passable[(unsigned char) SPELLBOOK] = true;
+	_passable[(unsigned char) WAND] = true;
+	_passable[(unsigned char) GOLD] = true;
+	_passable[(unsigned char) GEM] = true;
+	_passable[(unsigned char) STATUE] = true;
+	_passable[(unsigned char) IRON_BALL] = true;
+	_passable[(unsigned char) CHAINS] = true;
+	_passable[(unsigned char) VENOM] = true;
+	/* dungeon layout */
+	_dungeon[(unsigned char) VERTICAL_WALL] = true;
+	_dungeon[(unsigned char) HORIZONTAL_WALL] = true;
+	_dungeon[(unsigned char) FLOOR] = true;
+	_dungeon[(unsigned char) OPEN_DOOR] = true;
+	_dungeon[(unsigned char) CLOSED_DOOR] = true;
+	_dungeon[(unsigned char) IRON_BARS] = true;
+	_dungeon[(unsigned char) TREE] = true;
+	_dungeon[(unsigned char) CORRIDOR] = true;
+	_dungeon[(unsigned char) STAIRS_UP] = true;
+	_dungeon[(unsigned char) STAIRS_DOWN] = true;
+	_dungeon[(unsigned char) ALTAR] = true;
+	_dungeon[(unsigned char) GRAVE] = true;
+	_dungeon[(unsigned char) THRONE] = true;
+	_dungeon[(unsigned char) SINK] = true;
+	_dungeon[(unsigned char) FOUNTAIN] = true;
+	_dungeon[(unsigned char) WATER] = true;
+	_dungeon[(unsigned char) ICE] = true;
+	_dungeon[(unsigned char) LAVA] = true;
+	_dungeon[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	_dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
+	_dungeon[(unsigned char) TRAP] = true;
+	_dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
+	_dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
+	_dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
+	_dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
+	/* cost for pathing on certain tiles */
+	_pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
+	_pathcost[(unsigned char) GRAVE] = COST_GRAVE;
+	_pathcost[(unsigned char) ALTAR] = COST_ALTAR;
+	_pathcost[(unsigned char) ICE] = COST_ICE;
+	_pathcost[(unsigned char) LAVA] = COST_LAVA;
+	_pathcost[(unsigned char) MINES_FOUNTAIN] = COST_FOUNTAIN;
+	_pathcost[(unsigned char) TRAP] = COST_TRAP;
+	_pathcost[(unsigned char) WATER] = COST_WATER;
+	/* remapping ambigous symbols */
+	for (int s = 0; s <= UCHAR_MAX; ++s) {
+		for (int c = 0; c <= CHAR_MAX; ++c)
+			_uniquemap[s][c] = s;
+	}
+	_uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
+	_uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
+	_uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
+	_uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
+	_uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
+	_uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
+	_uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
+	_uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
+	_uniquemap[(unsigned char) WATER][RED] = LAVA;
+	_uniquemap[(unsigned char) TRAP][BOLD_MAGENTA] = MAGIC_PORTAL;
+}
+
+void Level::destroy() {
+}
+
 /* public methods */
+const int& Level::branch() const {
+	return _branch;
+}
+
+const int& Level::branch(const int& branch) {
+	_branch = branch;
+	return this->branch();
+}
+
+const int& Level::depth() const {
+	return _depth;
+}
+
+const string& Level::name() const {
+	return _name;
+}
+
+Tile& Level::tile() {
+	if (!Saiph::position().insideMap())
+		return _outside_map;
+	return _map[Saiph::position().row()][Saiph::position().col()];
+}
+
+Tile& Level::tile(const Point& point) {
+	if (!point.insideMap())
+		return _outside_map;
+	return _map[point.row()][point.col()];
+}
+
+map<Point, Monster>& Level::monsters() {
+	return _monsters;
+}
+
+map<Point, Stash>& Level::stashes() {
+	return _stashes;
+}
+
+map<Point, int>& Level::symbols(const unsigned char& symbol) {
+	return _symbols[symbol];
+}
+
 void Level::analyze() {
 	if (World::menu())
 		return; // menu hides map, don't update
@@ -237,42 +391,7 @@ void Level::parseMessages(const string& messages) {
 	}
 }
 
-int Level::branch() const {
-	return _branch;
-}
-
-int Level::branch(int branch) {
-	_branch = branch;
-	return this->branch();
-}
-
-int Level::depth() const {
-	return _depth;
-}
-
-const string& Level::name() const {
-	return _name;
-}
-
-const Tile& Level::tile(const Point& point) {
-	if (!point.insideMap())
-		return _outside_map;
-	return _map[point.row()][point.col()];
-}
-
-map<Point, Monster>& Level::monsters() {
-	return _monsters;
-}
-
-map<Point, Stash>& Level::stashes() {
-	return _stashes;
-}
-
-map<Point, int>& Level::symbols(unsigned char symbol) {
-	return _symbols[symbol];
-}
-
-void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
+void Level::setDungeonSymbol(const Point& point, const unsigned char& symbol) {
 	/* need to update both _map and _symbols,
 	 * better keep it in a method */
 	if (!point.insideMap())
@@ -300,123 +419,8 @@ void Level::increaseAdjacentSearchCount(const Point& point) {
 	}
 }
 
-/* private static methods */
-void Level::init() {
-	_initialized = true;
-	/* monsters */
-	for (int a = 0; a <= UCHAR_MAX; ++a) {
-		if ((a >= '@' && a <= 'Z') || (a >= 'a' && a <= 'z') || (a >= '1' && a <= '5') || a == '&' || a == '\'' || a == ':' || a == ';' || a == '~' || a == PET)
-			_monster[a] = true;
-	}
-	/* items */
-	_item[(unsigned char) WEAPON] = true;
-	_item[(unsigned char) ARMOR] = true;
-	_item[(unsigned char) RING] = true;
-	_item[(unsigned char) AMULET] = true;
-	_item[(unsigned char) TOOL] = true;
-	_item[(unsigned char) FOOD] = true;
-	_item[(unsigned char) POTION] = true;
-	_item[(unsigned char) SCROLL] = true;
-	_item[(unsigned char) SPELLBOOK] = true;
-	_item[(unsigned char) WAND] = true;
-	_item[(unsigned char) GOLD] = true;
-	_item[(unsigned char) GEM] = true;
-	_item[(unsigned char) STATUE] = true;
-	// skipping boulder as that's a special item
-	_item[(unsigned char) IRON_BALL] = true;
-	_item[(unsigned char) CHAINS] = true;
-	_item[(unsigned char) VENOM] = true;
-	/* stuff we can walk on */
-	_passable[(unsigned char) FLOOR] = true;
-	_passable[(unsigned char) OPEN_DOOR] = true;
-	_passable[(unsigned char) CORRIDOR] = true;
-	_passable[(unsigned char) STAIRS_UP] = true;
-	_passable[(unsigned char) STAIRS_DOWN] = true;
-	_passable[(unsigned char) ALTAR] = true;
-	_passable[(unsigned char) GRAVE] = true;
-	_passable[(unsigned char) THRONE] = true;
-	_passable[(unsigned char) SINK] = true;
-	_passable[(unsigned char) FOUNTAIN] = true;
-	_passable[(unsigned char) WATER] = true;
-	_passable[(unsigned char) ICE] = true;
-	_passable[(unsigned char) LAVA] = true;
-	_passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	_passable[(unsigned char) TRAP] = true;
-	_passable[(unsigned char) UNKNOWN_TILE] = true;
-	_passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
-	_passable[(unsigned char) ROGUE_STAIRS] = true;
-	_passable[(unsigned char) MINES_FOUNTAIN] = true;
-	_passable[(unsigned char) SHOP_TILE] = true;
-	_passable[(unsigned char) WEAPON] = true;
-	_passable[(unsigned char) ARMOR] = true;
-	_passable[(unsigned char) RING] = true;
-	_passable[(unsigned char) AMULET] = true;
-	_passable[(unsigned char) TOOL] = true;
-	_passable[(unsigned char) FOOD] = true;
-	_passable[(unsigned char) POTION] = true;
-	_passable[(unsigned char) SCROLL] = true;
-	_passable[(unsigned char) SPELLBOOK] = true;
-	_passable[(unsigned char) WAND] = true;
-	_passable[(unsigned char) GOLD] = true;
-	_passable[(unsigned char) GEM] = true;
-	_passable[(unsigned char) STATUE] = true;
-	_passable[(unsigned char) IRON_BALL] = true;
-	_passable[(unsigned char) CHAINS] = true;
-	_passable[(unsigned char) VENOM] = true;
-	/* dungeon layout */
-	_dungeon[(unsigned char) VERTICAL_WALL] = true;
-	_dungeon[(unsigned char) HORIZONTAL_WALL] = true;
-	_dungeon[(unsigned char) FLOOR] = true;
-	_dungeon[(unsigned char) OPEN_DOOR] = true;
-	_dungeon[(unsigned char) CLOSED_DOOR] = true;
-	_dungeon[(unsigned char) IRON_BARS] = true;
-	_dungeon[(unsigned char) TREE] = true;
-	_dungeon[(unsigned char) CORRIDOR] = true;
-	_dungeon[(unsigned char) STAIRS_UP] = true;
-	_dungeon[(unsigned char) STAIRS_DOWN] = true;
-	_dungeon[(unsigned char) ALTAR] = true;
-	_dungeon[(unsigned char) GRAVE] = true;
-	_dungeon[(unsigned char) THRONE] = true;
-	_dungeon[(unsigned char) SINK] = true;
-	_dungeon[(unsigned char) FOUNTAIN] = true;
-	_dungeon[(unsigned char) WATER] = true;
-	_dungeon[(unsigned char) ICE] = true;
-	_dungeon[(unsigned char) LAVA] = true;
-	_dungeon[(unsigned char) LOWERED_DRAWBRIDGE] = true;
-	_dungeon[(unsigned char) RAISED_DRAWBRIDGE] = true;
-	_dungeon[(unsigned char) TRAP] = true;
-	_dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
-	_dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
-	_dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
-	_dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
-	/* cost for pathing on certain tiles */
-	_pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
-	_pathcost[(unsigned char) GRAVE] = COST_GRAVE;
-	_pathcost[(unsigned char) ALTAR] = COST_ALTAR;
-	_pathcost[(unsigned char) ICE] = COST_ICE;
-	_pathcost[(unsigned char) LAVA] = COST_LAVA;
-	_pathcost[(unsigned char) MINES_FOUNTAIN] = COST_FOUNTAIN;
-	_pathcost[(unsigned char) TRAP] = COST_TRAP;
-	_pathcost[(unsigned char) WATER] = COST_WATER;
-	/* remapping ambigous symbols */
-	for (int s = 0; s <= UCHAR_MAX; ++s) {
-		for (int c = 0; c <= CHAR_MAX; ++c)
-			_uniquemap[s][c] = s;
-	}
-	_uniquemap[(unsigned char) CORRIDOR][CYAN] = IRON_BARS;
-	_uniquemap[(unsigned char) CORRIDOR][GREEN] = TREE;
-	_uniquemap[(unsigned char) FLOOR][CYAN] = ICE;
-	_uniquemap[(unsigned char) FLOOR][YELLOW] = LOWERED_DRAWBRIDGE;
-	_uniquemap[(unsigned char) FOUNTAIN][NO_COLOR] = SINK;
-	_uniquemap[(unsigned char) GRAVE][YELLOW] = THRONE;
-	_uniquemap[(unsigned char) HORIZONTAL_WALL][YELLOW] = OPEN_DOOR;
-	_uniquemap[(unsigned char) VERTICAL_WALL][YELLOW] = OPEN_DOOR;
-	_uniquemap[(unsigned char) WATER][RED] = LAVA;
-	_uniquemap[(unsigned char) TRAP][BOLD_MAGENTA] = MAGIC_PORTAL;
-}
-
 /* private methods */
-void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) {
+void Level::updateMapPoint(const Point& point, unsigned char symbol, const int& color) {
 	Tile& t = _map[point.row()][point.col()];
 	if (_branch == BRANCH_ROGUE) {
 		/* we need a special symbol remapping for rogue level */
@@ -680,7 +684,7 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 	return cost;
 }
 
-void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance) {
+void Level::updatePathMapSetCost(const Point& to, const Point& from, const unsigned char& direction, const unsigned int& distance) {
 	if (!to.insideMap())
 		return;
 	unsigned int cost = updatePathMapCalculateCost(to, from);

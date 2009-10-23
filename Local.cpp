@@ -16,7 +16,7 @@ using namespace std;
 /* constructors/destructor */
 Local::Local() {
 	/* set up pipes */
-	if (pipe(link) < 0) {
+	if (pipe(_link) < 0) {
 		Debug::error() << LOCAL_DEBUG_NAME << "Plumbing failed" << endl;
 		exit(1);
 	}
@@ -36,8 +36,8 @@ Local::Local() {
 	} else if (pid) {
 		/* main thread */
 		/* fix plumbing */
-		link[0] = fd; // reading
-		link[1] = fd; // writing
+		_link[0] = fd; // reading
+		_link[1] = fd; // writing
 	} else {
 		/* this is our pty, start nethack here */
 		int result;
@@ -56,7 +56,7 @@ Local::~Local() {
 }
 
 /* methods */
-int Local::retrieve(char* buffer, int count) {
+int Local::retrieve(char* buffer, const int& count) {
 	/* retrieve data */
 	ssize_t data_received = 0;
 	/* make reading blocking */
@@ -64,14 +64,14 @@ int Local::retrieve(char* buffer, int count) {
 	/* read 8 bytes, this will block until there's data available */
 	//data_received += read(link[0], buffer, 8);
 	/* make reading non-blocking */
-	fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) | O_NONBLOCK);
+	fcntl(_link[0], F_SETFL, fcntl(_link[0], F_GETFL) | O_NONBLOCK);
 	ssize_t amount;
 	do {
 		/* usleep some ms here (after the blocked reading) both to
 		 * make sure that we've received all the data and to make the
 		 * game watchable  */
 		usleep(100000);
-		amount = read(link[0], &buffer[data_received], count - data_received - 2);
+		amount = read(_link[0], &buffer[data_received], count - data_received - 2);
 		data_received += amount;
 	} while (amount > 1000 && !(amount & (amount + 1))); // power of 2 test
 	if (data_received < (ssize_t) count)
@@ -81,7 +81,7 @@ int Local::retrieve(char* buffer, int count) {
 
 int Local::transmit(const string& data) {
 	/* send data */
-	return (int) write(link[1], data.c_str(), data.size());
+	return (int) write(_link[1], data.c_str(), data.size());
 }
 
 void Local::start() {

@@ -20,7 +20,7 @@ namespace analyzer {
 
 	private:
 		bool wantItem(const Item& item);
-		void wearAmulet(const std::set<unsigned char> &keys);
+		void wearAmulet(const std::set<unsigned char>& keys);
 	};
 }
 #endif

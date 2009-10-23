@@ -22,24 +22,24 @@ namespace event {
 		virtual ~ElberethQuery() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
-		virtual int count() {
+		virtual const int& count() {
 			return _count;
 		}
 
-		virtual int count(int count) {
+		virtual const int& count(int count) {
 			_count = count;
 			return this->count();
 		}
 
-		virtual int type() {
+		virtual const int& type() {
 			return _type;
 		}
 
-		virtual int type(int type) {
+		virtual const int& type(int type) {
 			_type = type;
 			return this->type();
 		}

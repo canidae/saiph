@@ -7,15 +7,15 @@
 
 class Stash {
 public:
-	Stash(unsigned char symbol = ILLEGAL_ITEM, int color = NO_COLOR, int last_inspected = 0);
+	Stash(const unsigned char& symbol = ILLEGAL_ITEM, const int& color = NO_COLOR, const int& last_inspected = 0);
 
-	unsigned char symbol() const;
-	unsigned char symbol(unsigned char symbol);
-	int color() const;
-	int color(int color);
+	const unsigned char& symbol() const;
+	const unsigned char& symbol(const unsigned char& symbol);
+	const int& color() const;
+	const int& color(const int& color);
 	std::list<Item>& items();
-	int lastInspected() const;
-	int lastInspected(int last_inspected);
+	const int& lastInspected() const;
+	const int& lastInspected(const int& last_inspected);
 
 private:
 	unsigned char _symbol;

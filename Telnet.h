@@ -13,16 +13,17 @@
 class Telnet : public Connection {
 public:
 	Telnet();
-	~Telnet();
+	virtual ~Telnet();
 
-	int retrieve(char* buffer, int count);
-	int transmit(const char* data, int length);
-	int transmit(const std::string& data);
-	void start();
-	void stop();
+	virtual int retrieve(char* buffer, const int& count);
+	virtual int transmit(const std::string& data);
+	virtual void start();
+	virtual void stop();
 
 private:
-	int sock;
-	char ping[3];
+	int _sock;
+	char _ping[3];
+
+	int transmit(const char* data, const int& length);
 };
 #endif

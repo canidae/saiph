@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		SelectMultiple(analyzer::Analyzer* analyzer, const std::vector<std::string> &keys) : Action(analyzer), _keys(keys) {
+		SelectMultiple(analyzer::Analyzer* analyzer, const std::vector<std::string>& keys) : Action(analyzer), _keys(keys) {
 		}
 
 		virtual ~SelectMultiple() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

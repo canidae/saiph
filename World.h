@@ -32,35 +32,29 @@ class Connection;
 
 class World {
 public:
-	static void init(int connection_type);
-	static void destroy();
-	static void registerAnalyzer(analyzer::Analyzer* analyzer);
-	static void unregisterAnalyzer(analyzer::Analyzer* analyzer);
-	static char view(const Point& point);
-	static int color(const Point& point);
-	static bool menu();
-	static bool question();
-	static int curPage();
-	static int maxPage();
-	static int turn();
-	static unsigned int internalTurn();
+	static const char& view(const Point& point);
+	static const int& color(const Point& point);
+	static const bool& menu();
+	static const bool& question();
+	static const int& curPage();
+	static const int& maxPage();
+	static const int& turn();
+	static const unsigned int& internalTurn();
 	static const std::vector<Point>& changes();
-	static Level& level(int level);
-	static int getPriority();
-	static int getLastActionID();
+	static Level& level();
+	static Level& level(const int& level);
+	static const int& currentPriority();
+	static const int& lastActionID();
+	static void init(const int& connection_type);
+	static void destroy();
+	static void registerAnalyzer(analyzer::Analyzer * const analyzer);
+	static void unregisterAnalyzer(analyzer::Analyzer * const analyzer);
 	static bool setAction(action::Action* action);
 	static bool queueAction(action::Action* action);
-	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
-	static const Tile& tile();
-	static const Tile& tile(const Coordinate& coordinate);
-	static const Tile& tile(const Point& point);
-	static void setDirtyStash();
-	static void setDungeonSymbol(const Coordinate& coordinate, unsigned char symbol);
-	static void setDungeonSymbol(const Point& point, unsigned char symbol);
-	static void setDungeonSymbol(unsigned char symbol);
+	static unsigned char directLine(Point point, const bool& ignore_sinks, const bool& ignore_boulders);
 	static const Tile& shortestPath(const Point& target);
-	static Tile shortestPath(unsigned char symbol);
 	static Tile shortestPath(const Coordinate& target);
+	static Tile shortestPath(const unsigned char& symbol);
 	static void run();
 
 private:
@@ -97,12 +91,12 @@ private:
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
-	static Point directionToPoint(unsigned char direction);
-	static bool directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders);
+	static Point directionToPoint(const unsigned char& direction);
+	static bool directLineHelper(const Point& point, const bool& ignore_sinks, const bool& ignore_boulders);
 	static void dumpMaps();
 	static bool executeCommand(const std::string& command);
 	static void fetchMenu();
-	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
+	static void fetchMenuText(const int& stoprow, const int& startcol, const bool& addspaces);
 	static void fetchMessages();
 	static void handleEscapeSequence(int* pos, int* color);
 	static void update();

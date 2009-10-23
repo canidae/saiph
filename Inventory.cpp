@@ -13,17 +13,28 @@ using namespace std;
 bool Inventory::_updated = false;
 map<unsigned char, Item> Inventory::_items;
 unsigned char Inventory::_slots[] = {'\0'};
-
-/* define private static variables */
 ChangedInventoryItems Inventory::_changed;
 set<unsigned char> Inventory::_lost;
 
 /* methods */
+std::map<unsigned char, Item>& Inventory::items() {
+	return _items;
+}
+
+const bool& Inventory::updated() {
+	return _updated;
+}
+
+const bool& Inventory::updated(const bool& updated) {
+	_updated = updated;
+	return Inventory::updated();
+}
+
 void Inventory::analyze() {
 }
 
 void Inventory::parseMessages(const string& messages) {
-	if (World::getLastActionID() == action::ListInventory::ID && World::menu() && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
+	if (World::lastActionID() == action::ListInventory::ID && World::menu() && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
 		/* last action was list inventory and we got a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
@@ -80,26 +91,13 @@ void Inventory::parseMessages(const string& messages) {
 	}
 }
 
-std::map<unsigned char, Item>& Inventory::items() {
-	return _items;
-}
-
-bool Inventory::updated() {
-	return _updated;
-}
-
-bool Inventory::updated(bool updated) {
-	_updated = updated;
-	return Inventory::updated();
-}
-
-unsigned char Inventory::itemInSlot(int slot) {
+const unsigned char& Inventory::itemInSlot(const int& slot) {
 	if (slot < 0 || slot >= SLOTS)
-		return '\0';
+		return _slots[INVALID_SLOT];
 	return _slots[slot];
 }
 
-void Inventory::addItem(unsigned char key, const Item& item) {
+void Inventory::addItem(const unsigned char& key, const Item& item) {
 	if (item.count() <= 0)
 		return;
 	Debug::inventory() << "Adding " << item << " to inventory slot " << key << endl;
@@ -115,7 +113,7 @@ void Inventory::addItem(unsigned char key, const Item& item) {
 	setSlot(key, item);
 }
 
-void Inventory::removeItem(unsigned char key, const Item& item) {
+void Inventory::removeItem(const unsigned char& key, const Item& item) {
 	if (item.count() <= 0)
 		return;
 	map<unsigned char, Item>::iterator i = _items.find(key);
@@ -138,7 +136,7 @@ void Inventory::removeItem(unsigned char key, const Item& item) {
 }
 
 /* private methods */
-void Inventory::setSlot(unsigned char key, const Item& item) {
+void Inventory::setSlot(const unsigned char& key, const Item& item) {
 	if (item.additional() == "being worn") {
 		/* armor */
 		map<string, data::Armor*>::iterator a = data::Armor::armors.find(item.name());

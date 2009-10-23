@@ -41,8 +41,8 @@ namespace analyzer {
 		void moveBoulderToTarget(int level, const Move& move);
 
 		void loadLevels();
-		bool loadBoulders(std::ifstream& file, std::vector<Point> &boulders);
-		bool loadSolutions(std::ifstream& file, std::vector<Move> &moves);
+		bool loadBoulders(std::ifstream& file, std::vector<Point>& boulders);
+		bool loadSolutions(std::ifstream& file, std::vector<Move>& moves);
 		void getnextline(std::ifstream& file, std::string& line);
 
 		Saiph* saiph;

@@ -11,21 +11,22 @@ public:
 	Tile();
 	virtual ~Tile();
 
-	unsigned int cost() const;
-	unsigned char direction() const;
-	unsigned int distance() const;
-	unsigned char monster() const; // only character, most analyzers should use list of Monster from Level instead
-	unsigned int search() const;
-	unsigned int searchInc();
-	unsigned char symbol() const;
-	/* maybe private and friends of Level & World? */
-	unsigned char direction(unsigned char direction);
-	unsigned char monster(unsigned char monster);
-	unsigned int search(unsigned int search);
-	unsigned char symbol(unsigned char symbol);
-	void updatePath(const Point& next, unsigned char direction, unsigned int distance, unsigned int cost);
+	const unsigned int& cost() const;
+	const unsigned char& direction() const;
+	const unsigned char& direction(const unsigned char& direction);
+	const unsigned int& distance() const;
+	const unsigned char& monster() const; // only character, most analyzers should use list of Monster from Level instead
+	const unsigned char& monster(const unsigned char& monster);
+	const unsigned int& search() const;
+	const unsigned int& search(const unsigned int& search);
+	const unsigned int& searchInc();
+	const unsigned char& symbol() const;
+	const unsigned char& symbol(const unsigned char& symbol);
+	void updatePath(const Point& next, const unsigned char& direction, const unsigned int& distance, const unsigned int& cost);
 
 private:
+	static unsigned int _unreachable;
+	static unsigned char _illegal_direction;
 	unsigned char _symbol; // dungeon symbol on this tile
 	unsigned char _monster; // monster symbol on this tile, used for pathing
 	unsigned char _direction; // direction to move to get to this tile when on same level

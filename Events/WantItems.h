@@ -25,15 +25,15 @@ namespace event {
 		virtual ~WantItems() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 
-		virtual std::map<unsigned char, Item> &items() {
+		virtual std::map<unsigned char, Item>& items() {
 			return _items;
 		}
 
-		virtual std::map<unsigned char, Item> &items(const std::map<unsigned char, Item> &items) {
+		virtual std::map<unsigned char, Item>& items(const std::map<unsigned char, Item>& items) {
 			_items = items;
 			return this->items();
 		}

@@ -115,16 +115,16 @@ void Door::parseMessages(const string& messages) {
 			Point top = door.top();
 			door.pop();
 
-			if (World::tile(top).symbol() == CLOSED_DOOR) {
+			if (World::level().tile(top).symbol() == CLOSED_DOOR) {
 				Debug::analyzer(name()) << "Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
-				World::setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
+				World::level().setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
 				break;
 			}
 		}
 	}
 }
 
-void Door::onEvent(Event* const event) {
+void Door::onEvent(Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
 		map<unsigned char, Item>::iterator i = Inventory::items().find(_unlock_tool_key);

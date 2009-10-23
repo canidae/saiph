@@ -11,15 +11,15 @@
 
 using namespace analyzer;
 
-/* define static variables */
-bool Analyzer::_initialized = false;
+/* constructors/destructor */
+Analyzer::Analyzer(const std::string& name) : _name(name) {
+}
 
-/* methods */
+Analyzer::~Analyzer() {
+}
+
+/* static methods */
 void Analyzer::init() {
-	if (_initialized)
-		return;
-	_initialized = true;
-
 	/* init analyzers */
 	World::registerAnalyzer(new Amulet());
 	World::registerAnalyzer(new Elbereth());
@@ -32,4 +32,18 @@ void Analyzer::init() {
 }
 
 void Analyzer::destroy() {
+}
+
+/* methods */
+const std::string& Analyzer::name() {
+	return _name;
+}
+
+void Analyzer::parseMessages(const std::string&) {
+}
+
+void Analyzer::analyze() {
+}
+
+void Analyzer::onEvent(event::Event * const) {
 }

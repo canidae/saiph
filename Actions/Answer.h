@@ -15,7 +15,7 @@ namespace action {
 		virtual ~Answer() {
 		}
 
-		virtual int id() {
+		virtual const int& id() {
 			return ID;
 		}
 

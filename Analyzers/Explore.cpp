@@ -56,7 +56,7 @@ void Explore::analyze() {
 	}
 
 	/* explore level */
-	if (World::getPriority() < PRIORITY_EXPLORE_LEVEL) {
+	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		unsigned int min_moves = UNREACHABLE;
 		int best_type = INT_MAX;
 		/* floor */
@@ -131,7 +131,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 	int solid_rock_count = 0;
 	int wall_count = 0;
 	p.moveWest();
-	unsigned char hs = World::tile(p).symbol();
+	unsigned char hs = World::level().tile(p).symbol();
 	bool hu = false;
 	if (hs == SOLID_ROCK || hs == VERTICAL_WALL || hs == HORIZONTAL_WALL) {
 		if (hs == SOLID_ROCK)
@@ -144,7 +144,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		hu = true;
 	}
 	p.moveSoutheast();
-	unsigned char js = World::tile(p).symbol();
+	unsigned char js = World::level().tile(p).symbol();
 	bool ju = false;
 	if (js == SOLID_ROCK || js == VERTICAL_WALL || js == HORIZONTAL_WALL) {
 		if (js == SOLID_ROCK)
@@ -157,7 +157,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		ju = true;
 	}
 	p.moveNortheast();
-	unsigned char ls = World::tile(p).symbol();
+	unsigned char ls = World::level().tile(p).symbol();
 	bool lu = false;
 	if (ls == SOLID_ROCK || ls == VERTICAL_WALL || ls == HORIZONTAL_WALL) {
 		if (ls == SOLID_ROCK)
@@ -170,7 +170,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		lu = true;
 	}
 	p.moveNorthwest();
-	unsigned char ks = World::tile(p).symbol();
+	unsigned char ks = World::level().tile(p).symbol();
 	bool ku = false;
 	if (ks == SOLID_ROCK || ks == VERTICAL_WALL || ks == HORIZONTAL_WALL) {
 		if (ks == SOLID_ROCK)
@@ -207,7 +207,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		intervals = search_count / EXPLORE_SEARCH_INTERVAL;
 	else
 		intervals = 0;
-	if (World::tile(p).symbol() == CORRIDOR) {
+	if (World::level().tile(p).symbol() == CORRIDOR) {
 		/* point is in a corridor */
 		if (point_search_count < TILE_FULLY_SEARCHED) {
 			/* not visited, visit it */
@@ -258,7 +258,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 		/* same type as previous best, check distance */
 		if (tile.distance() > *min_moves)
 			return; // found a shorter path already
-		if (World::tile(p).symbol() == CORRIDOR && tile.distance() == 1 && tile.distance() == *min_moves && type == *best_type && (tile.direction() == NW || tile.direction() == NE || tile.direction() == SW || tile.direction() == SE))
+		if (World::level().tile(p).symbol() == CORRIDOR && tile.distance() == 1 && tile.distance() == *min_moves && type == *best_type && (tile.direction() == NW || tile.direction() == NE || tile.direction() == SW || tile.direction() == SE))
 			return; // prefer cardinal moves in corridors when distance is 1
 	}
 	*min_moves = tile.distance();
