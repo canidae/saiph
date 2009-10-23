@@ -30,7 +30,7 @@ int World::_frame_count = 0;
 bool World::_menu = false;
 bool World::_question = false;
 char World::_levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
-int World::turn = 0;
+int World::_turn = 0;
 unsigned int World::_internal_turn = 0;
 vector<Level> World::levels;
 Coordinate World::_branch[BRANCHES];
@@ -92,6 +92,10 @@ bool World::menu() {
 
 bool World::question() {
 	return _question;
+}
+
+int World::turn() {
+	return _turn;
 }
 
 unsigned int World::internalTurn() {
@@ -657,11 +661,11 @@ void World::run() {
 			executeCommand(string(1, YES));
 			return;
 		}
-		if (last_turn == turn)
+		if (last_turn == _turn)
 			stuck_counter++;
 		else
 			stuck_counter = 0;
-		last_turn = turn;
+		last_turn = _turn;
 
 		/* and finally update current action */
 		if (_action != NULL)
@@ -852,7 +856,7 @@ void World::dumpMaps() {
 		++seconds;
 	int cps = _command_count / seconds;
 	int fps = _frame_count / seconds;
-	int tps = turn / seconds;
+	int tps = _turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
 	cout << "CPS/FPS/TPS: ";
 	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
@@ -1343,7 +1347,7 @@ void World::update() {
 
 	/* parse attribute & status rows */
 	bool parsed_attributes = Saiph::parseAttributeRow(view[ATTRIBUTES_ROW]);
-	bool parsed_status = Saiph::parseStatusRow(view[STATUS_ROW], _levelname, &turn);
+	bool parsed_status = Saiph::parseStatusRow(view[STATUS_ROW], _levelname, &_turn);
 	/* check that the data we received seems ok */
 	if (!_menu && !_question && (!parsed_attributes || !parsed_status || _cursor.row() < MAP_ROW_BEGIN || _cursor.row() > MAP_ROW_END || _cursor.col() < MAP_COL_BEGIN || _cursor.col() > MAP_COL_END)) {
 		/* hmm, what else can it be?

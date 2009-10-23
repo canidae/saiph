@@ -37,7 +37,6 @@ public:
 	static int color[ROWS][COLS]; // not used for string reading, no need for + 1
 	static int cur_page;
 	static int max_page;
-	static int turn;
 	static std::vector<Level> levels;
 
 	static void init(int connection_type);
@@ -46,6 +45,7 @@ public:
 	static void unregisterAnalyzer(analyzer::Analyzer* analyzer);
 	static bool menu();
 	static bool question();
+	static int turn();
 	static unsigned int internalTurn();
 	static int getPriority();
 	static int getLastActionID();
@@ -87,6 +87,7 @@ private:
 	static int _frame_count;
 	static bool _menu;
 	static bool _question;
+	static int _turn;
 	static std::vector<analyzer::Analyzer*> _analyzers;
 	static int _last_action_id;
 	static unsigned int _internal_turn;

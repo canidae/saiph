@@ -72,7 +72,7 @@ void Debug::rawCharArray(const char* data, int start, int stop) {
 
 /* private methods */
 ofstream& Debug::header(const string &category) {
-	_debugfile << "<T" << World::turn << "> " << printTime() << " [";
+	_debugfile << "<T" << World::turn() << "> " << printTime() << " [";
 	if (category.size() > DEBUG_CATEGORY_MAX_LENGTH)
 		_debugfile << category.substr(0, DEBUG_CATEGORY_MAX_LENGTH);
 	else

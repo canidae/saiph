@@ -143,7 +143,7 @@ void Level::parseMessages(const string& messages) {
 			s->second.items().clear(); // clear stash items
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
-		s->second.lastInspected(World::turn);
+		s->second.lastInspected(World::turn());
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -159,7 +159,7 @@ void Level::parseMessages(const string& messages) {
 			s->second.items().clear(); // clear stash items
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
-		s->second.lastInspected(World::turn);
+		s->second.lastInspected(World::turn());
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -175,7 +175,7 @@ void Level::parseMessages(const string& messages) {
 			s->second.items().clear(); // clear stash items
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
-		s->second.lastInspected(World::turn);
+		s->second.lastInspected(World::turn());
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -540,12 +540,12 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			/* remove monster from _map */
 			_map[nearest->first.row()][nearest->first.col()].monster(ILLEGAL_MONSTER);
 			/* update monster */
-			nearest->second.lastSeen(World::turn);
+			nearest->second.lastSeen(World::turn());
 			_monsters[point] = nearest->second;
 			_monsters.erase(nearest);
 		} else {
 			/* add monster */
-			_monsters[point] = Monster(msymbol, color, World::turn);
+			_monsters[point] = Monster(msymbol, color, World::turn());
 		}
 		/* set monster on tile */
 		t.monster(msymbol);

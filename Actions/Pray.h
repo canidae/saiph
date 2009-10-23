@@ -20,7 +20,7 @@ namespace action {
 		}
 
 		static bool isSafeToPray() {
-			return World::turn - PRAY_PRAYER_TIMEOUT > Saiph::lastPrayed();
+			return World::turn() - PRAY_PRAYER_TIMEOUT > Saiph::lastPrayed();
 		}
 
 		virtual int id() {
@@ -35,7 +35,7 @@ namespace action {
 
 		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
-				Saiph::lastPrayed(World::turn);
+				Saiph::lastPrayed(World::turn());
 				_sequence = 1;
 			}
 		}

@@ -108,7 +108,7 @@ void Food::parseMessages(const string& messages) {
 				_corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
 			} else if (_corpse_loc.find(p->first) == _corpse_loc.end()) {
 				/* monster probably leaves an edible corpse */
-				_corpse_loc[p->first] = World::turn;
+				_corpse_loc[p->first] = World::turn();
 			}
 		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
@@ -127,7 +127,7 @@ void Food::onEvent(Event* const event) {
 		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 		map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn) {
+			if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
 				/* it's safe to eat corpses here */
 				map<string, data::Corpse*>::iterator c = data::Corpse::corpses.find(i->name());
 				/* check that item is a corpse, it's safe to eat and that the corpse rots */
