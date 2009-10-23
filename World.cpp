@@ -27,8 +27,8 @@ int World::cur_page = -1;
 int World::max_page = -1;
 int World::_command_count = 0;
 int World::_frame_count = 0;
-bool World::menu = false;
-bool World::question = false;
+bool World::_menu = false;
+bool World::_question = false;
 char World::_levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::turn = 0;
 unsigned int World::_internal_turn = 0;
@@ -84,6 +84,14 @@ void World::unregisterAnalyzer(Analyzer* analyzer) {
 			return;
 		}
 	}
+}
+
+bool World::menu() {
+	return _menu;
+}
+
+bool World::question() {
+	return _question;
 }
 
 unsigned int World::internalTurn() {
@@ -544,7 +552,7 @@ void World::run() {
 				(*a)->parseMessages(_messages);
 
 			/* analyze */
-			if (!question && !menu) {
+			if (!_question && !_menu) {
 				for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 					(*a)->analyze();
 			}
@@ -563,12 +571,12 @@ void World::run() {
 		/* check if we got a command */
 		if (_action == NULL || _action->command() == action::Action::NOOP) {
 			/* we do not. print debugging and just answer something sensible */
-			if (question) {
+			if (_question) {
 				Debug::warning() << "Unhandled question: " << _messages << endl;
 				_last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
 				continue;
-			} else if (menu) {
+			} else if (_menu) {
 				Debug::warning() << "Unhandled menu: " << _messages << endl;
 				_last_action_id = NO_ACTION;
 				executeCommand(string(1, (char) 27));
@@ -966,12 +974,12 @@ void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 
 void World::fetchMessages() {
 	/* even yet a try on fetching messages sanely */
-	question = false; // we can do this as a question max last 1 turn
+	_question = false; // we can do this as a question max last 1 turn
 	_msg_str = &_data[_data_size - sizeof (MORE)];
 	string::size_type pos = string::npos;
 	if ((pos = _msg_str.find(MORE, 0)) != string::npos) {
 		/* "--More--" found */
-		menu = false; // we don't have a menu then
+		_menu = false; // we don't have a menu then
 		int r = _cursor.row();
 		int c = _cursor.col() - sizeof (MORE) + 1; // +1 because sizeof (MORE) is 9, not 8
 		if (r == 0) {
@@ -1009,19 +1017,19 @@ void World::fetchMessages() {
 		/* looks like we got a question.
 		 * we might want to significantly improve this later,
 		 * as we sometimes get partial data */
-		question = true;
-		menu = false; // no menu when we got a question
+		_question = true;
+		_menu = false; // no menu when we got a question
 	} else {
 		/* --More-- not found, but we might have a menu.
 		 * this is pain */
-		if (menu) {
+		if (_menu) {
 			/* we had a menu last frame, check if we still do */
 			_msg_str = &view[_last_menu.row()][_last_menu.col()];
 			cur_page = -1;
 			max_page = -1;
 			if (_msg_str.find(END, 0) == string::npos && sscanf(&view[_last_menu.row()][_last_menu.col()], PAGE, &cur_page, &max_page) != 2) {
 				/* nah, last menu is gone */
-				menu = false;
+				_menu = false;
 				_last_menu.row(-1);
 				_last_menu.col(-1);
 			} else {
@@ -1033,7 +1041,7 @@ void World::fetchMessages() {
 				}
 			}
 		}
-		if (!menu) {
+		if (!_menu) {
 			/* check if we got a new menu */
 			_msg_str = &_data[_data_size - sizeof (PAGE_DIRTY)];
 			cur_page = -1;
@@ -1049,17 +1057,17 @@ void World::fetchMessages() {
 				int c;
 				for (c = _cursor.col(); c >= 0 && view[_cursor.row()][c] != '('; --c)
 					;
-				menu = true;
+				_menu = true;
 				_last_menu.row(_cursor.row());
 				_last_menu.col(c);
 			}
 		}
-		if (menu) {
+		if (_menu) {
 			/* finally parse the menu */
 			fetchMenuText(_last_menu.row() - 1, _last_menu.col(), true); // "r - 1" to avoid the last "(end) " or "(x of y)"
 		}
 	}
-	if (!menu) {
+	if (!_menu) {
 		/* no "--More--", no question and no menu?
 		 * well, it gotta be no messages or the message is on 1 line, then */
 		_msg_str = view[0];
@@ -1337,7 +1345,7 @@ void World::update() {
 	bool parsed_attributes = Saiph::parseAttributeRow(view[ATTRIBUTES_ROW]);
 	bool parsed_status = Saiph::parseStatusRow(view[STATUS_ROW], _levelname, &turn);
 	/* check that the data we received seems ok */
-	if (!menu && !question && (!parsed_attributes || !parsed_status || _cursor.row() < MAP_ROW_BEGIN || _cursor.row() > MAP_ROW_END || _cursor.col() < MAP_COL_BEGIN || _cursor.col() > MAP_COL_END)) {
+	if (!_menu && !_question && (!parsed_attributes || !parsed_status || _cursor.row() < MAP_ROW_BEGIN || _cursor.row() > MAP_ROW_END || _cursor.col() < MAP_COL_BEGIN || _cursor.col() > MAP_COL_END)) {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
@@ -1354,14 +1362,14 @@ void World::update() {
 		/* a bit unique case, this is a question.
 		 * the data doesn't end with the sequence we check in World.
 		 * however, the cursor is placed on the player when we get this message */
-		question = true;
+		_question = true;
 	}
 
 	/* check if we're engulfed */
 	/* TODO: somehow this should be done in Saiph::analyze() */
 	Saiph::engulfed(_cursor.insideMap() && view[_cursor.row() - 1][_cursor.col() - 1] == '/' && view[_cursor.row() - 1][_cursor.col() + 1] == '\\' && view[_cursor.row() + 1][_cursor.col() - 1] == '\\' && view[_cursor.row() + 1][_cursor.col() + 1] == '/');
 
-	if (!menu && !question && !Saiph::engulfed())
+	if (!_menu && !_question && !Saiph::engulfed())
 		detectPosition();
 }
 

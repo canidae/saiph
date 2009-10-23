@@ -23,7 +23,7 @@ void Inventory::analyze() {
 }
 
 void Inventory::parseMessages(const string& messages) {
-	if (World::getLastActionID() == action::ListInventory::ID && World::menu && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
+	if (World::getLastActionID() == action::ListInventory::ID && World::menu() && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
 		/* last action was list inventory and we got a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;

@@ -83,7 +83,7 @@ bool Level::isPassable(unsigned char symbol) {
 
 /* public methods */
 void Level::analyze() {
-	if (World::menu)
+	if (World::menu())
 		return; // menu hides map, don't update
 	if (Saiph::engulfed()) {
 		/* we'll still need to update monster's "visible" while engulfed,
@@ -192,7 +192,7 @@ void Level::parseMessages(const string& messages) {
 		/* we see/feel no items on the ground */
 		_stashes.erase(Saiph::position());
 	}
-	if (!World::menu) {
+	if (!World::menu()) {
 		/* check if we received items */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
@@ -222,7 +222,7 @@ void Level::parseMessages(const string& messages) {
 			EventBus::broadcast(static_cast<Event*> (&sc));
 		}
 
-		if (!World::question) {
+		if (!World::question()) {
 			/* send event if we're standing on stash (except when we got a question or menu) */
 			if (s != _stashes.end() && s->second.items().size() > 0) {
 				_on_ground.items(s->second.items());

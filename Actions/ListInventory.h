@@ -34,7 +34,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string&) {
-			if (World::menu)
+			if (World::menu())
 				_sequence = 1;
 			else
 				_sequence = 2;

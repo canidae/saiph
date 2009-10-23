@@ -57,7 +57,7 @@ void Loot::analyze() {
 void Loot::parseMessages(const string& messages) {
 	string::size_type pos;
 
-	if (!World::menu) {
+	if (!World::menu()) {
 		_showing_pickup = false;
 		_showing_drop = false;
 	} else if ((pos = messages.find(MESSAGE_PICK_UP_WHAT)) != string::npos || _showing_pickup) {

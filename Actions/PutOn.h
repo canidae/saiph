@@ -34,7 +34,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			if (World::question && messages.find(MESSAGE_WHAT_TO_PUT_ON) != std::string::npos) {
+			if (World::question() && messages.find(MESSAGE_WHAT_TO_PUT_ON) != std::string::npos) {
 				_sequence = 1;
 			} else if (_sequence == 1) {
 				/* also mark the inventory dirty when we do this */
