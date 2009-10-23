@@ -35,8 +35,6 @@ public:
 	static std::vector<Point> changes; // list of locations changed since last "frame"
 	static char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
 	static int color[ROWS][COLS]; // not used for string reading, no need for + 1
-	static int cur_page;
-	static int max_page;
 	static std::vector<Level> levels;
 
 	static void init(int connection_type);
@@ -45,6 +43,8 @@ public:
 	static void unregisterAnalyzer(analyzer::Analyzer* analyzer);
 	static bool menu();
 	static bool question();
+	static int curPage();
+	static int maxPage();
 	static int turn();
 	static unsigned int internalTurn();
 	static int getPriority();
@@ -87,6 +87,8 @@ private:
 	static int _frame_count;
 	static bool _menu;
 	static bool _question;
+	static int _cur_page;
+	static int _max_page;
 	static int _turn;
 	static std::vector<analyzer::Analyzer*> _analyzers;
 	static int _last_action_id;

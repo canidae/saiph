@@ -23,8 +23,8 @@ int World::color[ROWS][COLS] = {
 	{0}
 };
 Point World::_cursor;
-int World::cur_page = -1;
-int World::max_page = -1;
+int World::_cur_page = -1;
+int World::_max_page = -1;
 int World::_command_count = 0;
 int World::_frame_count = 0;
 bool World::_menu = false;
@@ -92,6 +92,14 @@ bool World::menu() {
 
 bool World::question() {
 	return _question;
+}
+
+int World::curPage() {
+	return _cur_page;
+}
+
+int World::maxPage() {
+	return _max_page;
 }
 
 int World::turn() {
@@ -1029,34 +1037,34 @@ void World::fetchMessages() {
 		if (_menu) {
 			/* we had a menu last frame, check if we still do */
 			_msg_str = &view[_last_menu.row()][_last_menu.col()];
-			cur_page = -1;
-			max_page = -1;
-			if (_msg_str.find(END, 0) == string::npos && sscanf(&view[_last_menu.row()][_last_menu.col()], PAGE, &cur_page, &max_page) != 2) {
+			_cur_page = -1;
+			_max_page = -1;
+			if (_msg_str.find(END, 0) == string::npos && sscanf(&view[_last_menu.row()][_last_menu.col()], PAGE, &_cur_page, &_max_page) != 2) {
 				/* nah, last menu is gone */
 				_menu = false;
 				_last_menu.row(-1);
 				_last_menu.col(-1);
 			} else {
 				/* still got a menu */
-				if (cur_page == -1) {
+				if (_cur_page == -1) {
 					/* only 1 page */
-					cur_page = 1;
-					max_page = 1;
+					_cur_page = 1;
+					_max_page = 1;
 				}
 			}
 		}
 		if (!_menu) {
 			/* check if we got a new menu */
 			_msg_str = &_data[_data_size - sizeof (PAGE_DIRTY)];
-			cur_page = -1;
-			max_page = -1;
-			if (_msg_str.find(END, 0) != string::npos || sscanf(_msg_str.c_str(), PAGE_DIRTY, &cur_page, &max_page) == 2) {
+			_cur_page = -1;
+			_max_page = -1;
+			if (_msg_str.find(END, 0) != string::npos || sscanf(_msg_str.c_str(), PAGE_DIRTY, &_cur_page, &_max_page) == 2) {
 				/* hot jiggity! we got a list */
 				/* now find the "(" in "(end) " or "(x of y)" */
-				if (cur_page == -1) {
+				if (_cur_page == -1) {
 					/* only 1 page */
-					cur_page = 1;
-					max_page = 1;
+					_cur_page = 1;
+					_max_page = 1;
 				}
 				int c;
 				for (c = _cursor.col(); c >= 0 && view[_cursor.row()][c] != '('; --c)

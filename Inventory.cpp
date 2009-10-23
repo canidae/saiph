@@ -27,7 +27,7 @@ void Inventory::parseMessages(const string& messages) {
 		/* last action was list inventory and we got a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
-		if (World::cur_page == 1) {
+		if (World::curPage() == 1) {
 			/* listing first page, clear changed and lost and add every inventory item to "lost" */
 			_changed.clear();
 			_lost.clear();
@@ -56,7 +56,7 @@ void Inventory::parseMessages(const string& messages) {
 			/* we (still) got this item, so it's not lost. remove it from lost */
 			_lost.erase(messages[pos - 1]);
 		}
-		if (World::cur_page == World::max_page) {
+		if (World::curPage() == World::maxPage()) {
 			/* listing last page, add lost items to changed and remove them from inventory */
 			for (set<unsigned char>::iterator l = _lost.begin(); l != _lost.end(); ++l) {
 				_changed.add(*l);
