@@ -33,14 +33,14 @@ class Connection;
 class World {
 public:
 	static std::vector<Point> changes; // list of locations changed since last "frame"
-	static char view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
-	static int color[ROWS][COLS]; // not used for string reading, no need for + 1
 	static std::vector<Level> levels;
 
 	static void init(int connection_type);
 	static void destroy();
 	static void registerAnalyzer(analyzer::Analyzer* analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer* analyzer);
+	static char view(const Point& point);
+	static int color(const Point& point);
 	static bool menu();
 	static bool question();
 	static int curPage();
@@ -72,6 +72,8 @@ private:
 	static action::Action* _action;
 	static std::list<action::Action*> _action_queue;
 	static bool _changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
+	static char _view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
+	static int _color[ROWS][COLS]; // not used for string reading, no need for + 1
 	static std::string _messages;
 	static bool _inverse;
 	static bool _bold;

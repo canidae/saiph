@@ -16,10 +16,10 @@ using namespace std;
 
 /* static variables */
 vector<Point> World::changes;
-char World::view[ROWS][COLS + 1] = {
+char World::_view[ROWS][COLS + 1] = {
 	{'\0'}
 };
-int World::color[ROWS][COLS] = {
+int World::_color[ROWS][COLS] = {
 	{0}
 };
 Point World::_cursor;
@@ -84,6 +84,14 @@ void World::unregisterAnalyzer(Analyzer* analyzer) {
 			return;
 		}
 	}
+}
+
+char World::view(const Point& point) {
+	return _view[point.row()][point.col()];
+}
+
+int World::color(const Point& point) {
+	return _color[point.row()][point.col()];
 }
 
 bool World::menu() {
@@ -733,7 +741,7 @@ void World::detectPosition() {
 				}
 			}
 		}
-		if (levels[Saiph::position().level()].branch() != BRANCH_ROGUE && view[STATUS_ROW][8] == '*') {
+		if (levels[Saiph::position().level()].branch() != BRANCH_ROGUE && _view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
 			Debug::notice() << "Found the rogue level: " << Saiph::position() << endl;
 			levels[Saiph::position().level()].branch(BRANCH_ROGUE);
@@ -766,12 +774,12 @@ void World::detectPosition() {
 			int total = 0;
 			int matched = 0;
 			for (map<Point, int>::iterator s = levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
-				if (view[s->first.row()][s->first.col()] == VERTICAL_WALL)
+				if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
 					++matched;
 				++total;
 			}
 			for (map<Point, int>::iterator s = levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
-				if (view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
+				if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
 					++matched;
 				++total;
 			}
@@ -971,7 +979,7 @@ bool World::executeCommand(const string& command) {
 void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 	/* fetch text from a menu */
 	for (int r = 0; r <= stoprow; ++r) {
-		_msg_str = &view[r][startcol];
+		_msg_str = &_view[r][startcol];
 		/* trim */
 		string::size_type fns = _msg_str.find_first_not_of(" ");
 		string::size_type lns = _msg_str.find_last_not_of(" ");
@@ -996,14 +1004,14 @@ void World::fetchMessages() {
 		int c = _cursor.col() - sizeof (MORE) + 1; // +1 because sizeof (MORE) is 9, not 8
 		if (r == 0) {
 			/* only one line, remove "--More--" from end of line */
-			_msg_str = view[r];
+			_msg_str = _view[r];
 			_msg_str = _msg_str.substr(0, c);
 			/* append 2 spaces for later splitting */
 			_msg_str.append(2, ' ');
 			_messages.append(_msg_str);
 		} else {
 			/* more than 1 line */
-			if (c == 0 || view[r][c - 1] != ' ') {
+			if (c == 0 || _view[r][c - 1] != ' ') {
 				/* this is just a very long line, not a list */
 				c = 0;
 				fetchMenuText(r, c, false);
@@ -1014,7 +1022,7 @@ void World::fetchMessages() {
 				/* sometimes "--More--" is placed 1 char to the right of the menu.
 				 * this happens at least when the entire page is filled.
 				 * check that the line above also is ' ', if not, c - 1 */
-				if (view[r - 1][c - 1] == ' ')
+				if (_view[r - 1][c - 1] == ' ')
 					fetchMenuText(r - 1, c, true); // "r - 1" to avoid the last "--More--"
 				else
 					fetchMenuText(r - 1, c - 1, true); // "r - 1" to avoid the last "--More--"
@@ -1036,10 +1044,10 @@ void World::fetchMessages() {
 		 * this is pain */
 		if (_menu) {
 			/* we had a menu last frame, check if we still do */
-			_msg_str = &view[_last_menu.row()][_last_menu.col()];
+			_msg_str = &_view[_last_menu.row()][_last_menu.col()];
 			_cur_page = -1;
 			_max_page = -1;
-			if (_msg_str.find(END, 0) == string::npos && sscanf(&view[_last_menu.row()][_last_menu.col()], PAGE, &_cur_page, &_max_page) != 2) {
+			if (_msg_str.find(END, 0) == string::npos && sscanf(&_view[_last_menu.row()][_last_menu.col()], PAGE, &_cur_page, &_max_page) != 2) {
 				/* nah, last menu is gone */
 				_menu = false;
 				_last_menu.row(-1);
@@ -1067,7 +1075,7 @@ void World::fetchMessages() {
 					_max_page = 1;
 				}
 				int c;
-				for (c = _cursor.col(); c >= 0 && view[_cursor.row()][c] != '('; --c)
+				for (c = _cursor.col(); c >= 0 && _view[_cursor.row()][c] != '('; --c)
 					;
 				_menu = true;
 				_last_menu.row(_cursor.row());
@@ -1082,7 +1090,7 @@ void World::fetchMessages() {
 	if (!_menu) {
 		/* no "--More--", no question and no menu?
 		 * well, it gotta be no messages or the message is on 1 line, then */
-		_msg_str = view[0];
+		_msg_str = _view[0];
 		/* trim */
 		string::size_type fns = _msg_str.find_first_not_of(" ");
 		string::size_type lns = _msg_str.find_last_not_of(" ");
@@ -1148,19 +1156,19 @@ void World::handleEscapeSequence(int* pos, int* color) {
 					/* erase everything below current position */
 					for (int r = _cursor.row() + 1; r < ROWS; ++r) {
 						for (int c = 0; c < COLS; ++c)
-							view[r][c] = ' ';
+							_view[r][c] = ' ';
 					}
 				} else if (_data[*pos - 1] == '1') {
 					/* erase everything above current position */
 					for (int r = _cursor.row() - 1; r >= 0; --r) {
 						for (int c = 0; c < COLS; ++c)
-							view[r][c] = ' ';
+							_view[r][c] = ' ';
 					}
 				} else if (_data[*pos - 1] == '2') {
 					/* erase entire display */
-					memset(view, ' ', sizeof (view));
+					memset(_view, ' ', sizeof (_view));
 					for (int r = 0; r < ROWS; ++r)
-						view[r][COLS] = '\0';
+						_view[r][COLS] = '\0';
 					_cursor.row(0);
 					_cursor.col(0);
 					*color = 0;
@@ -1174,15 +1182,15 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				if (_data[*pos - 1] == '[') {
 					/* erase everything to the right */
 					for (int c = _cursor.col(); c < COLS; ++c)
-						view[_cursor.row()][c] = ' ';
+						_view[_cursor.row()][c] = ' ';
 				} else if (_data[*pos - 1] == '1') {
 					/* erase everything to the left */
 					for (int c = 0; c < _cursor.col(); ++c)
-						view[_cursor.row()][c] = ' ';
+						_view[_cursor.row()][c] = ' ';
 				} else if (_data[*pos - 1] == '2') {
 					/* erase entire line */
 					for (int c = 0; c < COLS; ++c)
-						view[_cursor.row()][c] = ' ';
+						_view[_cursor.row()][c] = ' ';
 				} else {
 					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &_data[*pos] << endl;
 					exit(9);
@@ -1343,8 +1351,8 @@ void World::update() {
 				Debug::warning() << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << _cursor.row() << ", " << _cursor.col() << endl;
 				break;
 			}
-			view[_cursor.row()][_cursor.col()] = (unsigned char) _data[pos];
-			color[_cursor.row()][_cursor.col()] = charcolor;
+			_view[_cursor.row()][_cursor.col()] = (unsigned char) _data[pos];
+			_color[_cursor.row()][_cursor.col()] = charcolor;
 			addChangedLocation(_cursor);
 			_cursor.moveEast();
 			break;
@@ -1354,8 +1362,8 @@ void World::update() {
 	fetchMessages();
 
 	/* parse attribute & status rows */
-	bool parsed_attributes = Saiph::parseAttributeRow(view[ATTRIBUTES_ROW]);
-	bool parsed_status = Saiph::parseStatusRow(view[STATUS_ROW], _levelname, &_turn);
+	bool parsed_attributes = Saiph::parseAttributeRow(_view[ATTRIBUTES_ROW]);
+	bool parsed_status = Saiph::parseStatusRow(_view[STATUS_ROW], _levelname, &_turn);
 	/* check that the data we received seems ok */
 	if (!_menu && !_question && (!parsed_attributes || !parsed_status || _cursor.row() < MAP_ROW_BEGIN || _cursor.row() > MAP_ROW_END || _cursor.col() < MAP_COL_BEGIN || _cursor.col() > MAP_COL_END)) {
 		/* hmm, what else can it be?
@@ -1379,7 +1387,7 @@ void World::update() {
 
 	/* check if we're engulfed */
 	/* TODO: somehow this should be done in Saiph::analyze() */
-	Saiph::engulfed(_cursor.insideMap() && view[_cursor.row() - 1][_cursor.col() - 1] == '/' && view[_cursor.row() - 1][_cursor.col() + 1] == '\\' && view[_cursor.row() + 1][_cursor.col() - 1] == '\\' && view[_cursor.row() + 1][_cursor.col() + 1] == '/');
+	Saiph::engulfed(_cursor.insideMap() && _view[_cursor.row() - 1][_cursor.col() - 1] == '/' && _view[_cursor.row() - 1][_cursor.col() + 1] == '\\' && _view[_cursor.row() + 1][_cursor.col() - 1] == '\\' && _view[_cursor.row() + 1][_cursor.col() + 1] == '/');
 
 	if (!_menu && !_question && !Saiph::engulfed())
 		detectPosition();

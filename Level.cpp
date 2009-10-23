@@ -94,7 +94,7 @@ void Level::analyze() {
 	}
 	/* update changed symbols */
 	for (vector<Point>::iterator c = World::changes.begin(); c != World::changes.end(); ++c)
-		updateMapPoint(*c, (unsigned char) World::view[c->row()][c->col()], World::color[c->row()][c->col()]);
+		updateMapPoint(*c, (unsigned char) World::view(*c), World::color(*c));
 	/* update monsters */
 	updateMonsters();
 	/* update pathmap */
@@ -513,8 +513,8 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 				old_symbol = PET;
 			else
-				old_symbol = World::view[m->first.row()][m->first.col()];
-			if (m->second.symbol() == old_symbol && m->second.color() == World::color[m->first.row()][m->first.col()]) {
+				old_symbol = World::view(m->first);
+			if (m->second.symbol() == old_symbol && m->second.color() == World::color(m->first)) {
 				/* note about this "point == m->first":
 				 * the character for the monster may be updated even if it hasn't moved,
 				 * if this is the case, we should return and neither move nor add the
@@ -557,11 +557,11 @@ void Level::updateMonsters() {
 	 * and make monsters we can't see !visible */
 	for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end();) {
 		unsigned char symbol;
-		int color = World::color[m->first.row()][m->first.col()];
+		int color = World::color(m->first);
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 			symbol = PET;
 		else
-			symbol = World::view[m->first.row()][m->first.col()];
+			symbol = World::view(m->first);
 		/* if we don't see the monster on world->view then it's not visible */
 		m->second.visible((m->first != Saiph::position() && symbol == m->second.symbol() && color == m->second.color()));
 		if (m->second.visible()) {
