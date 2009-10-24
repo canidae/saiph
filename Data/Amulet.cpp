@@ -1,24 +1,21 @@
 #include "Amulet.h"
-#include "Corpse.h"
+
+#include "../Globals.h"
 
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Amulet*> Amulet::amulets;
+map<const string, const Amulet*> Amulet::_amulets;
 
-Amulet::Amulet(const string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) : Item(name, cost, weight, AMULET, material, properties), confer_effect(confer_effect) {
+/* constructors/destructor */
+Amulet::Amulet(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect) : Item(name, cost, weight, AMULET, material, properties), _confer_effect(confer_effect) {
 }
 
-void Amulet::addToMap(const string& name, Amulet* amulet) {
-	Amulet::amulets[name] = amulet;
-	Item::addToMap(name, amulet);
+Amulet::~Amulet() {
 }
 
-void Amulet::create(const string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) {
-	addToMap(name, new Amulet(name, cost, weight, material, properties, confer_effect));
-}
-
+/* public static methods */
 void Amulet::init() {
 	create("amulet of change", 150, 20, MATERIAL_METAL, PROPERTY_SEX_CHANGE, true);
 	create("amulet of ESP", 150, 20, MATERIAL_METAL, PROPERTY_ESP, true);
@@ -42,4 +39,24 @@ void Amulet::init() {
 	create("concave amulet", 150, 20, MATERIAL_METAL, PROPERTY_RANDOM_APPEARANCE, false);
 	create("hexagonal amulet", 150, 20, MATERIAL_METAL, PROPERTY_RANDOM_APPEARANCE, false);
 	create("octagonal amulet", 150, 20, MATERIAL_METAL, PROPERTY_RANDOM_APPEARANCE, false);
+}
+
+const map<const string, const Amulet*>& Amulet::amulets() {
+	return _amulets;
+}
+
+/* public methods */
+const bool& Amulet::conferEffect() const {
+	return _confer_effect;
+}
+
+/* protected static methods */
+void Amulet::addToMap(const string& name, const Amulet* amulet) {
+	_amulets[name] = amulet;
+	Item::addToMap(name, amulet);
+}
+
+/* private static methods */
+void Amulet::create(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect) {
+	addToMap(name, new Amulet(name, cost, weight, material, properties, confer_effect));
 }

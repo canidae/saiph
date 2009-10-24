@@ -103,6 +103,7 @@
         <in>Amulet.h</in>
         <in>Armor.cpp</in>
         <in>Armor.h</in>
+        <in>Attack.cpp</in>
         <in>Attack.h</in>
         <in>Axe.cpp</in>
         <in>Axe.h</in>

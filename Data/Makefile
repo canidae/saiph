@@ -1,12 +1,13 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = Amulet.o Armor.o Axe.o Boomerang.o Boots.o Bow.o BroadSword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lance.o LongSword.o Mace.o Monster.o MorningStar.o PickAxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o ShortSword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
+OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o BroadSword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lance.o LongSword.o Mace.o Monster.o MorningStar.o PickAxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o ShortSword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
 
 analyzers: $(OBJECTS)
 
 Amulet.o: Amulet.h Amulet.cpp
 Armor.o: Armor.h Armor.cpp
+Attack.o: Attack.h Attack.cpp
 Axe.o: Axe.h Axe.cpp
 Boomerang.o: Boomerang.h Boomerang.cpp
 Boots.o: Boots.h Boots.cpp

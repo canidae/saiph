@@ -23,21 +23,21 @@ using namespace std;
 /* constructors/destructor */
 Food::Food() : Analyzer("Food") {
 	/* try to eat the food with lowest nutrition/weight first, and avoid food that cures bad effects */
-	for (map<string, data::Food*>::iterator f = data::Food::foods.begin(); f != data::Food::foods.end(); ++f) {
-		if (f->second->eat_effects & EAT_EFFECT_ROT)
+	for (map<const string, const data::Food*>::const_iterator f = data::Food::foods().begin(); f != data::Food::foods().end(); ++f) {
+		if (f->second->effects() & EAT_EFFECT_ROT)
 			continue; // we're not gonna carry food that rot
 		int priority = 1000;
-		if (f->second->weight <= 0)
-			priority -= f->second->nutrition / 1; // prevent divide-by-zero (or negative values)
+		if (f->second->weight() <= 0)
+			priority -= f->second->nutrition() / 1; // prevent divide-by-zero (or negative values)
 		else
-			priority -= f->second->nutrition / f->second->weight;
-		if (f->second->eat_effects & EAT_EFFECT_CURE_BLINDNESS)
+			priority -= f->second->nutrition() / f->second->weight();
+		if (f->second->effects() & EAT_EFFECT_CURE_BLINDNESS)
 			priority -= 200;
-		if (f->second->eat_effects & EAT_EFFECT_CURE_SICKNESS)
+		if (f->second->effects() & EAT_EFFECT_CURE_SICKNESS)
 			priority -= 400;
-		if (f->second->eat_effects & EAT_EFFECT_CURE_LYCANTHROPY)
+		if (f->second->effects() & EAT_EFFECT_CURE_LYCANTHROPY)
 			priority -= 600;
-		if (f->second->eat_effects & EAT_EFFECT_CURE_STONING)
+		if (f->second->effects() & EAT_EFFECT_CURE_STONING)
 			priority -= 800;
 		_eat_priority[f->first] = priority;
 	}
@@ -129,16 +129,16 @@ void Food::onEvent(Event * const event) {
 		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
 				/* it's safe to eat corpses here */
-				map<string, data::Corpse*>::iterator c = data::Corpse::corpses.find(i->name());
+				map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
 				/* check that item is a corpse, it's safe to eat and that the corpse rots */
-				if (c != data::Corpse::corpses.end() && safeToEat(c) && c->second->eat_effects & EAT_EFFECT_ROT) {
+				if (c != data::Corpse::corpses().end() && safeToEat(c) && c->second->effects() & EAT_EFFECT_ROT) {
 					World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
 					break;
 				}
 			}
 			/* check if we want to pick up edible item that won't rot */
-			map<string, data::Food*>::iterator f = data::Food::foods.find(i->name());
-			if (f != data::Food::foods.end() && !(f->second->eat_effects & EAT_EFFECT_ROT)) {
+			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->name());
+			if (f != data::Food::foods().end() && !(f->second->effects() & EAT_EFFECT_ROT)) {
 				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
 				break;
 			}
@@ -146,8 +146,8 @@ void Food::onEvent(Event * const event) {
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name());
-			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
+			if (f == data::Food::foods().end() || f->second->effects() & EAT_EFFECT_ROT)
 				continue; // not food or the food rots
 			World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
 			break;
@@ -161,8 +161,8 @@ void Food::onEvent(Event * const event) {
 				_food_items.erase(*k);
 			} else {
 				/* received item, is it food? */
-				map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name());
-				if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+				map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
+				if (f == data::Food::foods().end() || f->second->effects() & EAT_EFFECT_ROT)
 					_food_items.erase(*k); // ewww
 				else
 					_food_items.insert(*k); // cheezeburger!
@@ -171,8 +171,8 @@ void Food::onEvent(Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			map<string, data::Food*>::iterator f = data::Food::foods.find(i->second.name());
-			if (f == data::Food::foods.end() || f->second->eat_effects & EAT_EFFECT_ROT)
+			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
+			if (f == data::Food::foods().end() || f->second->effects() & EAT_EFFECT_ROT)
 				continue; // not food or the food rots
 			_food_items.insert(i->first);
 		}
@@ -183,51 +183,51 @@ void Food::onEvent(Event * const event) {
 }
 
 /* private methods */
-bool Food::safeToEat(map<string, data::Corpse*>::iterator c) {
+bool Food::safeToEat(const map<const string, const data::Corpse*>::const_iterator& c) {
 	/* this method returns true if it's safe to eat given corpse */
-	if (Saiph::hunger() >= SATIATED && !(c->second->eat_effects & EAT_EFFECT_GAIN_LEVEL) && !(c->second->eat_effects & EAT_EFFECT_ESP))
+	if (Saiph::hunger() >= SATIATED && !(c->second->effects() & EAT_EFFECT_GAIN_LEVEL) && !(c->second->effects() & EAT_EFFECT_ESP))
 		return false; // satiated and eating it won't give us benefits that's worth the risk of choking
 		/* acidic ain't so bad
 		else if ((c->second->eat_effects & EAT_EFFECT_ACIDIC) != 0)
 			return false;
 		 */
-	else if ((c->second->eat_effects & EAT_EFFECT_AGGRAVATE) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_AGGRAVATE) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_DIE) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_DIE) != 0)
 		return false;
 		/* eat dwarves for now
-		else if ((c->second->eat_effects & EAT_EFFECT_DWARF) != 0)
+		else if ((c->second->effects() & EAT_EFFECT_DWARF) != 0)
 			return false;
 		 */
 		/* eat elves for now
-		else if ((c->second->eat_effects & EAT_EFFECT_ELF) != 0)
+		else if ((c->second->effects() & EAT_EFFECT_ELF) != 0)
 			return false;
 		 */
 		/* eat gnomes for now
-		else if ((c->second->eat_effects & EAT_EFFECT_GNOME) != 0)
+		else if ((c->second->effects() & EAT_EFFECT_GNOME) != 0)
 			return false;
 		 */
-	else if ((c->second->eat_effects & EAT_EFFECT_HALLUCINOGENIC) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_HALLUCINOGENIC) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_HUMAN) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_HUMAN) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_LYCANTHROPY) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_LYCANTHROPY) != 0)
 		return false;
 		/* mimic for some turns isn't that bad, is it?
 		else if ((c->second->eat_effects & EAT_EFFECT_MIMIC) != 0)
 			return false;
 		 */
-	else if ((c->second->eat_effects & EAT_EFFECT_PETRIFY) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_PETRIFY) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_POISONOUS) != 0 &&
+	else if ((c->second->effects() & EAT_EFFECT_POISONOUS) != 0 &&
 		!(Saiph::intrinsics() & PROPERTY_POISON ||
 		Saiph::extrinsics() & PROPERTY_POISON))
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_POLYMORPH) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_POLYMORPH) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_SLIME) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_SLIME) != 0)
 		return false;
-	else if ((c->second->eat_effects & EAT_EFFECT_STUN) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_STUN) != 0)
 		return false;
 		/* teleportitis might be fun for a bot
 		else if ((c->second->eat_effects & EAT_EFFECT_TELEPORTITIS) != 0)
@@ -253,7 +253,7 @@ bool Food::safeToEat(map<string, data::Corpse*>::iterator c) {
 		else if ((c->second->eat_effects & EAT_EFFECT_HEAL) != 0)
 			return false;
 		 */
-	else if ((c->second->eat_effects & EAT_EFFECT_SPEED_TOGGLE) != 0)
+	else if ((c->second->effects() & EAT_EFFECT_SPEED_TOGGLE) != 0)
 		return false;
 	/* since we took out lizards from data::Corpse, no monster got this effect
 	else if ((c->second->eat_effects & EAT_EFFECT_CURE_STONING) != 0)

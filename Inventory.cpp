@@ -139,14 +139,14 @@ void Inventory::removeItem(const unsigned char& key, const Item& item) {
 void Inventory::setSlot(const unsigned char& key, const Item& item) {
 	if (item.additional() == "being worn") {
 		/* armor */
-		map<string, data::Armor*>::iterator a = data::Armor::armors.find(item.name());
-		if (a != data::Armor::armors.end()) {
-			_slots[a->second->slot] = key;
+		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(item.name());
+		if (a != data::Armor::armors().end()) {
+			_slots[a->second->slot()] = key;
 			return;
 		}
 		/* amulet */
-		map<string, data::Amulet*>::iterator b = data::Amulet::amulets.find(item.name());
-		if (b != data::Amulet::amulets.end()) {
+		map<const string, const data::Amulet*>::const_iterator b = data::Amulet::amulets().find(item.name());
+		if (b != data::Amulet::amulets().end()) {
 			_slots[SLOT_AMULET] = key;
 			return;
 		}

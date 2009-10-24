@@ -79,25 +79,25 @@ namespace data {
 
 	class Attack {
 	public:
-		int type;
-		int damage_type;
-		int dice;
-		int sides;
+		Attack(const int& type = 0, const int& damage_type = 0, const int& dices = 0, const int& sides = 0);
+		virtual ~Attack();
 
-		Attack(int type = 0, int damage_type = 0, int dice = 0, int sides = 0) : type(type), damage_type(damage_type), dice(dice), sides(sides) {
-		};
+		const int& type() const;
+		const int& damageType() const;
+		const int& dices() const;
+		const int& sides() const;
+		const int& minDamage() const;
+		const int& avgDamage() const;
+		const int& maxDamage() const;
 
-		int minDamage() const {
-			return dice;
-		}
-
-		int avgDamage() const {
-			return (dice * sides + dice) / 2;
-		}
-
-		int maxDamage() const {
-			return dice * sides;
-		}
+	private:
+		int _type;
+		int _damage_type;
+		int _dices;
+		int _sides;
+		int _min_damage;
+		int _avg_damage;
+		int _max_damage;
 	};
 }
 #endif

@@ -2,9 +2,7 @@
 #define DATA_ITEM_H
 
 #include <map>
-#include <set>
 #include <string>
-#include "../Globals.h"
 
 /* material */
 #define MATERIAL_WAX         ((unsigned int)(1 << 0))
@@ -35,24 +33,30 @@ namespace data {
 
 	class Item {
 	public:
-		static std::map<std::string, Item*> items;
-		const std::string name;
-		const int base_cost;
-		const int weight;
-		const char item_class;
-		const int material;
-		const unsigned long long properties;
-
-		Item(const std::string& name, int base_cost, int weight, char item_class, int material, unsigned long long properties);
-
-		virtual ~Item() {
-		}
+		Item(const std::string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties);
+		virtual ~Item();
 
 		static void init();
 		static void destroy();
+		static const std::map<const std::string, const Item*>& items();
+		const std::string& name() const;
+		const int& cost() const;
+		const int& weight() const;
+		const char& type() const;
+		const int& material() const;
+		const unsigned long long& properties() const;
 
 	protected:
-		static void addToMap(const std::string& name, Item* item);
+		static void addToMap(const std::string& name, const Item* item);
+
+	private:
+		static std::map<const std::string, const Item*> _items;
+		const std::string _name;
+		const int _cost;
+		const int _weight;
+		const char _type;
+		const int _material;
+		const unsigned long long _properties;
 	};
 }
 #endif

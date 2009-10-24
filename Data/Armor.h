@@ -4,26 +4,28 @@
 #include <map>
 #include <string>
 #include "Item.h"
-#include "../Globals.h"
 
 namespace data {
 
 	class Armor : public Item {
 	public:
-		static std::map<std::string, Armor*> armors;
-		const int slot;
-		const int ac;
-		const int mc;
-
-		Armor(const std::string& name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
-
-		virtual ~Armor() {
-		}
+		Armor(const std::string& name, const int& cost, const int& weight, const int& material, const int& slot, const int& ac, const int& mc, const unsigned long long& properties);
+		virtual ~Armor();
 
 		static void init();
+		static const std::map<const std::string, const Armor*>& armors();
+		const int& slot() const;
+		const int& ac() const;
+		const int& mc() const;
 
 	protected:
-		static void addToMap(const std::string& name, Armor* armor);
+		static void addToMap(const std::string& name, const Armor* armor);
+
+	private:
+		static std::map<const std::string, const Armor*> _armors;
+		const int _slot;
+		const int _ac;
+		const int _mc;
 	};
 }
 #endif

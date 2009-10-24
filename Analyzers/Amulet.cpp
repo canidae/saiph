@@ -54,7 +54,7 @@ void Amulet::onEvent(Event* const event) {
 
 /* private methods */
 bool Amulet::wantItem(const Item& item) {
-	return data::Amulet::amulets.find(item.name()) != data::Amulet::amulets.end();
+	return data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end();
 }
 
 void Amulet::wearAmulet(const set<unsigned char>& keys) {
@@ -65,14 +65,14 @@ void Amulet::wearAmulet(const set<unsigned char>& keys) {
 
 	/* find the best amulet */
 	unsigned char best_key = (worn == Inventory::items().end()) ? '\0' : worn->first;
-	map<string, data::Amulet*>::iterator best_amulet = (worn == Inventory::items().end()) ? data::Amulet::amulets.end() : data::Amulet::amulets.find(worn->second.name());
+	map<const string, const data::Amulet*>::const_iterator best_amulet = (worn == Inventory::items().end()) ? data::Amulet::amulets().end() : data::Amulet::amulets().find(worn->second.name());
 
 	for (set<unsigned char>::const_iterator k = keys.begin(); k != keys.end(); ++k) {
 		map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
 		if (i == Inventory::items().end())
 			return; // huh? this can't happen
-		map<string, data::Amulet*>::iterator a = data::Amulet::amulets.find(i->second.name());
-		if (a == data::Amulet::amulets.end())
+		map<const string, const data::Amulet*>::const_iterator a = data::Amulet::amulets().find(i->second.name());
+		if (a == data::Amulet::amulets().end())
 			return; // this is no amulet
 
 		/* TODO: is this amulet better than the one we wear? */

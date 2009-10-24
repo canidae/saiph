@@ -4,46 +4,16 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Corpse*> Corpse::corpses;
+map<const string, const Corpse*> Corpse::_corpses;
 
-Corpse::Corpse(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability) : Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects), resistance_confer_probability(resistance_confer_probability) {
+/* constructors/destructor */
+Corpse::Corpse(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, int nutrition, const int& time, const int& effects, const int& confer_probability) : Food(name, cost, weight, material, properties, nutrition, time, effects), _confer_probability(confer_probability) {
 }
 
-void Corpse::addToMap(const string& name, Corpse* corpse) {
-	Corpse::corpses[name] = corpse;
-	Food::addToMap(name, corpse);
+Corpse::~Corpse() {
 }
 
-void Corpse::create(const string& name, int nutrition, int eat_effects, int resistance_confer_probability) {
-	const Monster* monster = Monster::getMonsterData(name);
-	if (monster == NULL || monster->name.size() <= 0)
-		return;
-	/* corpses rot and become tainted, we use this to distinguish corpses (except lizards ands lichens)
-	 * from food that never goes bad */
-	if (monster->name != "lizard" && monster->name != "lichen")
-		eat_effects |= EAT_EFFECT_ROT;
-	string corpse_name = monster->name;
-	string partly_eaten_name = monster->name;
-	if (monster->name[0] >= 'A' && monster->name[0] <= 'Z' && (monster->geno_flags & G_GENO) != 0) {
-		/* unique monster that can't be genocided.
-		 * unique corpse name */
-		if (monster->name[monster->name.size() - 1] == 's') {
-			corpse_name.append("' corpse");
-			partly_eaten_name.append("' partly eaten corpse");
-		} else {
-			corpse_name.append("'s corpse");
-			partly_eaten_name.append("'s partly eaten corpse");
-		}
-	} else {
-		corpse_name.append(" corpse");
-		partly_eaten_name.insert(0, "partly eaten ");
-		partly_eaten_name.append(" corpse");
-	}
-	int material = ((eat_effects & EAT_EFFECT_VEGETARIAN) == 0) ? MATERIAL_FLESH : MATERIAL_VEGGY;
-	addToMap(corpse_name, new Corpse(corpse_name, 5, monster->weight, material, monster->resistances_conferred, nutrition, monster->weight / 64 + 3, eat_effects, resistance_confer_probability));
-	addToMap(partly_eaten_name, new Corpse(partly_eaten_name, 0, monster->weight / 2, material, monster->resistances_conferred, nutrition / 2, (monster->weight / 64 + 3) / 2, eat_effects, resistance_confer_probability));
-}
-
+/* public static methods */
 void Corpse::init() {
 	Monster::init();
 	create("abbot", 400, EAT_EFFECT_HUMAN | EAT_EFFECT_HALLUCINOGENIC, 0);
@@ -331,4 +301,46 @@ void Corpse::init() {
 	create("yellow mold", 30, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN | EAT_EFFECT_POISONOUS | EAT_EFFECT_HALLUCINOGENIC, 7);
 	create("yeti", 700, 0, 33);
 	create("zruty", 600, 0, 0);
+}
+
+/* public methods */
+const int& Corpse::conferProbability() const {
+	return _confer_probability;
+}
+
+/* protected static methods */
+void Corpse::addToMap(const string& name, const Corpse* corpse) {
+	Corpse::_corpses[name] = corpse;
+	Food::addToMap(name, corpse);
+}
+
+/* private static methods */
+void Corpse::create(const string& name, const int& nutrition, const int& effects, const int& confer_probability) {
+	const Monster* monster = Monster::getMonsterData(name);
+	if (monster == NULL || monster->name.size() <= 0)
+		return;
+	/* corpses rot and become tainted, we use this to distinguish corpses (except lizards ands lichens)
+	 * from food that never goes bad */
+	if (monster->name != "lizard" && monster->name != "lichen")
+		effects |= EAT_EFFECT_ROT;
+	string corpse_name = monster->name;
+	string partly_eaten_name = monster->name;
+	if (monster->name[0] >= 'A' && monster->name[0] <= 'Z' && (monster->geno_flags & G_GENO) != 0) {
+		/* unique monster that can't be genocided.
+		 * unique corpse name */
+		if (monster->name[monster->name.size() - 1] == 's') {
+			corpse_name.append("' corpse");
+			partly_eaten_name.append("' partly eaten corpse");
+		} else {
+			corpse_name.append("'s corpse");
+			partly_eaten_name.append("'s partly eaten corpse");
+		}
+	} else {
+		corpse_name.append(" corpse");
+		partly_eaten_name.insert(0, "partly eaten ");
+		partly_eaten_name.append(" corpse");
+	}
+	int material = ((effects & EAT_EFFECT_VEGETARIAN) == 0) ? MATERIAL_FLESH : MATERIAL_VEGGY;
+	addToMap(corpse_name, new Corpse(corpse_name, 5, monster->weight, material, monster->resistances_conferred, nutrition, monster->weight / 64 + 3, effects, confer_probability));
+	addToMap(partly_eaten_name, new Corpse(partly_eaten_name, 0, monster->weight / 2, material, monster->resistances_conferred, nutrition / 2, (monster->weight / 64 + 3) / 2, effects, confer_probability));
 }

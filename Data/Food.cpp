@@ -1,29 +1,21 @@
 #include "Food.h"
+
 #include "Corpse.h"
 
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Food*> Food::foods;
+map<const string, const Food*> Food::_foods;
 
-Food::Food(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) : Item(name, cost, weight, FOOD, material, properties), nutrition(nutrition), eat_time(eat_time), eat_effects(eat_effects) {
+/* constructors/destructor */
+Food::Food(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) : Item(name, cost, weight, FOOD, material, properties), nutrition(nutrition), _time(time), _effects(effects) {
 }
 
-void Food::addToMap(const string& name, Food* food) {
-	Food::foods[name] = food;
-	Item::addToMap(name, food);
+Food::~Food() {
 }
 
-void Food::create(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects) {
-	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, eat_time, eat_effects));
-	if (eat_time > 1 && name != "tin" && name != "tin of spinach") {
-		string partly_eaten = "partly eaten ";
-		partly_eaten.append(name);
-		addToMap(partly_eaten, new Food(partly_eaten, 0, weight / 2, material, properties, nutrition / 2, eat_time / 2, eat_effects));
-	}
-}
-
+/* public static methods */
 void Food::init() {
 	create("meatball", 5, 1, MATERIAL_FLESH, 0, 5, 1, 0);
 	create("meat ring", 5, 1, MATERIAL_FLESH, 0, 5, 1, 0);
@@ -58,3 +50,33 @@ void Food::init() {
 
 	Corpse::init();
 }
+
+/* public methods */
+const int& Food::nutrition() const {
+	return _nutrition;
+}
+
+const int& Food::time() const {
+	return _time;
+}
+
+const int& Food::effects() const {
+	return _effects;
+}
+
+/* protected static methods */
+void Food::addToMap(const string& name, const Food* food) {
+	Food::_foods[name] = food;
+	Item::addToMap(name, food);
+}
+
+/* private static methods */
+void Food::create(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) {
+	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, time, effects));
+	if (time > 1 && name != "tin" && name != "tin of spinach") {
+		string partly_eaten = "partly eaten ";
+		partly_eaten.append(name);
+		addToMap(partly_eaten, new Food(partly_eaten, 0, weight / 2, material, properties, nutrition / 2, time / 2, effects));
+	}
+}
+

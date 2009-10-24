@@ -10,21 +10,21 @@ namespace data {
 
 	class Corpse : public Food {
 	public:
-		static std::map<std::string, Corpse*> corpses;
-		const int resistance_confer_probability;
-
-		Corpse(const std::string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int eat_time, int eat_effects, int resistance_confer_probability);
-
-		~Corpse() {
-		}
+		Corpse(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects, const int& confer_probability);
+		virtual ~Corpse();
 
 		static void init();
+		static const std::map<const std::string, const Corpse*> corpses();
+		const int& conferProbability() const;
 
 	protected:
-		static void addToMap(const std::string& name, Corpse* corpse);
+		static void addToMap(const std::string& name, const Corpse* corpse);
 
 	private:
-		static void create(const std::string& name, int nutrition, int eat_effects, int resistance_confer_probability);
+		static std::map<const std::string, const Corpse*> _corpses;
+		const int _confer_probability;
+
+		static void create(const std::string& name, const int& nutrition, const int& effects, const int& confer_probability);
 	};
 }
 #endif
