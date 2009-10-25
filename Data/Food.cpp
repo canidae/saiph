@@ -77,11 +77,11 @@ void Food::addToMap(const string& name, const Food* food) {
 
 /* private static methods */
 void Food::create(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) {
-	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, time, effects));
+	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, time, effects | EAT_EFFECT_NEVER_ROT));
 	if (time > 1 && name != "tin" && name != "tin of spinach") {
 		string partly_eaten = "partly eaten ";
 		partly_eaten.append(name);
-		addToMap(partly_eaten, new Food(partly_eaten, 0, weight / 2, material, properties, nutrition / 2, time / 2, effects));
+		addToMap(partly_eaten, new Food(partly_eaten, 0, weight / 2, material, properties, nutrition / 2, time / 2, effects | EAT_EFFECT_NEVER_ROT));
 	}
 }
 
