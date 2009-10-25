@@ -807,6 +807,8 @@ void World::dumpMaps() {
 	/* monsters and map as saiph sees it */
 	Point p;
 	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
+		if (!p.insideMap())
+			continue;
 		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";2H";
 		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
 			if (!p.insideMap())
