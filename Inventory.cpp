@@ -82,8 +82,15 @@ void Inventory::parseMessages(const string& messages) {
 		}
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
 		/* we're not carrying anything */
+		_changed.clear();
+		for (map<unsigned char, Item>::iterator i = _items.begin(); i != _items.end(); ++i)
+			_changed.add(i->first);
 		_items.clear();
 		_updated = true;
+		if (_changed.keys().size() > 0) {
+			/* broadcast ChangedInventoryItems */
+			EventBus::broadcast(static_cast<Event*> (&_changed));
+		}
 	} else if (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2, 0) != string::npos || messages.find(MESSAGE_DESTROY_RING, 0) != string::npos || messages.find(MESSAGE_DESTROY_RING2, 0) != string::npos || messages.find(MESSAGE_DESTROY_WAND, 0) != string::npos || messages.find(MESSAGE_DESTROY_WAND2, 0) != string::npos || messages.find(MESSAGE_POLYMORPH, 0) != string::npos) {
 		/* we got robbed, some of our stuff was destroyed or we polymorphed.
 		 * mark inventory as not updated */

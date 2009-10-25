@@ -802,9 +802,11 @@ void World::dumpMaps() {
 
 	/* monsters and map as saiph sees it */
 	Point p;
-	for (p.row(MAP_ROW_BEGIN); p.insideMap(); p.moveSouth()) {
+	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
 		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";2H";
-		for (p.col(MAP_COL_BEGIN); p.insideMap(); p.moveEast()) {
+		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
+			if (!p.insideMap())
+				continue;
 			const Tile& t = level().tile(p);
 			if (p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
