@@ -473,27 +473,31 @@ void World::run() {
 	int last_turn = 0;
 	int stuck_counter = 0;
 	while (true) {
+		/* check if we're in the middle of an action
+		 * Inventory and Level may send events that analyzers react on and set an action,
+		 * so we check if we're in the middle of an action here and remember it for later */
+		bool analyze_and_parse = (_action == NULL || _action->command() == action::Action::NOOP);
+
 		/* let Saiph, Inventory and current level parse messages */
 		Saiph::parseMessages(_messages);
 		Inventory::parseMessages(_messages);
-		_levels[Saiph::position().level()].parseMessages(_messages);
+		level().parseMessages(_messages);
 
 		/* let Saiph, Inventory and current level analyze */
 		Saiph::analyze();
 		Inventory::analyze();
-		_levels[Saiph::position().level()].analyze();
+		level().analyze();
 
 		/* dump maps */
 		dumpMaps();
 
-		/* check if we're in the middle of an action */
-		if (_action == NULL || _action->command() == action::Action::NOOP) {
-			/* we got no command, find a new one */
-			/* parse messages */
+		/* analyze and parse messages if we're not continuing an action */
+		if (analyze_and_parse) {
+			/* let analyzers parse messages */
 			for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 				(*a)->parseMessages(_messages);
 
-			/* analyze */
+			/* let analyzers analyze */
 			if (!_question && !_menu) {
 				for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 					(*a)->analyze();
