@@ -114,6 +114,23 @@ void Explore::analyze() {
 		}
 	}
 
+	/* travel */
+	map<Coordinate, int>::iterator v = _visit.begin();
+	while (v != _visit.end()) {
+		const Tile& tile = World::shortestPath(v->first);
+		if (tile.direction() == NOWHERE) {
+			_visit.erase(v++);
+			Debug::analyzer(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
+			continue;
+		} else if (tile.cost() < UNPASSABLE) {
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(v->second, tile.distance()))));
+			Debug::analyzer(name()) << "Travelling to " << v->first << endl;
+		} else {
+			Debug::analyzer(name()) << "Unable to travel to " << v->first << ", tile = " << tile << endl;
+		}
+		++v;
+	}
+
 	/* go to a level we've explored less than this level */
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL && best_type > 1) {
 		Coordinate best_level;
@@ -142,23 +159,6 @@ void Explore::analyze() {
 			_visit[best_level] = PRIORITY_EXPLORE_LEVEL;
 			Debug::analyzer(name()) << "Heading towards " << best_level << " to explore that level" << endl;
 		}
-	}
-
-	/* travel */
-	map<Coordinate, int>::iterator v = _visit.begin();
-	while (v != _visit.end()) {
-		const Tile& tile = World::shortestPath(v->first);
-		if (tile.direction() == NOWHERE) {
-			_visit.erase(v++);
-			Debug::analyzer(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
-			continue;
-		} else if (tile.cost() < UNPASSABLE) {
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(v->second, tile.distance()))));
-			Debug::analyzer(name()) << "Travelling to " << v->first << endl;
-		} else {
-			Debug::analyzer(name()) << "Unable to travel to " << v->first << ", tile = " << tile << endl;
-		}
-		++v;
 	}
 }
 

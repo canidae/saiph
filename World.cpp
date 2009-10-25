@@ -814,8 +814,10 @@ void World::dumpMaps() {
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
 			else if (t.monster() != ILLEGAL_MONSTER)
 				cout << t.monster();
-			else
+			else if (t.symbol() > 31 && t.symbol() < 127)
 				cout << t.symbol();
+			else
+				cout << ','; // can't display character
 		}
 	}
 
