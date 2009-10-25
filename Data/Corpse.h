@@ -10,14 +10,15 @@ namespace data {
 
 	class Corpse : public Food {
 	public:
-		Corpse(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects, const int& confer_probability);
 		virtual ~Corpse();
 
 		static void init();
-		static const std::map<const std::string, const Corpse*> corpses();
+		static const std::map<const std::string, const Corpse*>& corpses();
 		const int& conferProbability() const;
 
 	protected:
+		Corpse(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects, const int& confer_probability);
+
 		static void addToMap(const std::string& name, const Corpse* corpse);
 
 	private:

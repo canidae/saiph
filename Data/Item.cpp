@@ -13,10 +13,11 @@ using namespace std;
 /* initialize static variables */
 map<const string, const Item*> Item::_items;
 
-/* constructors/destructor */
+/* protected constructors */
 Item::Item(const string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties) : _name(name), _cost(cost), _weight(weight), _type(type), _material(material), _properties(properties) {
 }
 
+/* destructor */
 Item::~Item() {
 }
 

@@ -1,23 +1,22 @@
 #include "Boots.h"
 
+#include "../Globals.h"
+
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Boots*> Boots::boots;
+map<const string, const Boots*> Boots::_boots;
 
-Boots::Boots(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_BOOTS, ac, mc, properties) {
+/* protected constructors */
+Boots::Boots(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_BOOTS, ac, mc, properties) {
 }
 
-void Boots::addToMap(const string& name, Boots* boots) {
-	Boots::boots[name] = boots;
-	Armor::addToMap(name, boots);
+/* destructor */
+Boots::~Boots() {
 }
 
-void Boots::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new Boots(name, cost, weight, material, ac, mc, properties));
-}
-
+/* public static methods */
 void Boots::init() {
 	/* boots */
 	create("low boots", 8, 10, MATERIAL_LEATHER, 1, 0, 0);
@@ -32,10 +31,25 @@ void Boots::init() {
 	create("water walking boots", 50, 20, MATERIAL_LEATHER, 1, 0, PROPERTY_WATERWALKING | PROPERTY_MAGIC);
 
 	/* aliases */
-	addToMap("walking shoes", boots["low boots"]);
-	addToMap("jackboots", boots["high boots"]);
-	addToMap("hard shoes", boots["iron shoes"]);
+	addToMap("walking shoes", _boots["low boots"]);
+	addToMap("jackboots", _boots["high boots"]);
+	addToMap("hard shoes", _boots["iron shoes"]);
 
 	/* TODO: random appearances: */
 	// buckled, combat, hiking, jungle, riding, snow, mud
+}
+
+const map<const string, const Boots*>& Boots::boots() {
+	return _boots;
+}
+
+/* protected static methods */
+void Boots::addToMap(const string& name, const Boots* boots) {
+	_boots[name] = boots;
+	Armor::addToMap(name, boots);
+}
+
+/* private static methods */
+void Boots::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+	addToMap(name, new Boots(name, cost, weight, material, ac, mc, properties));
 }

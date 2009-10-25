@@ -1,23 +1,22 @@
 #include "Cloak.h"
 
+#include "../Globals.h"
+
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Cloak*> Cloak::cloaks;
+map<const string, const Cloak*> Cloak::_cloaks;
 
-Cloak::Cloak(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_CLOAK, ac, mc, properties) {
+/* protected constructors */
+Cloak::Cloak(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_CLOAK, ac, mc, properties) {
 }
 
-void Cloak::addToMap(const string& name, Cloak* cloak) {
-	Cloak::cloaks[name] = cloak;
-	Armor::addToMap(name, cloak);
+/* destructor */
+Cloak::~Cloak() {
 }
 
-void Cloak::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new Cloak(name, cost, weight, material, ac, mc, properties));
-}
-
+/* public static methods */
 void Cloak::init() {
 	/* cloaks */
 	create("mummy wrapping", 2, 3, MATERIAL_CLOTH, 0, 1, PROPERTY_VISIBLE);
@@ -34,12 +33,27 @@ void Cloak::init() {
 	create("cloak of protection", 50, 10, MATERIAL_CLOTH, 3, 3, PROPERTY_MAGIC);
 
 	/* aliases */
-	addToMap("coarse mantelet", cloaks["orcish cloak"]);
-	addToMap("hooded cloak", cloaks["dwarvish cloak"]);
-	addToMap("slippery cloak", cloaks["oilskin cloak"]);
-	addToMap("apron", cloaks["alchemy smock"]);
-	addToMap("faded pall", cloaks["elven cloak"]);
+	addToMap("coarse mantelet", _cloaks["orcish cloak"]);
+	addToMap("hooded cloak", _cloaks["dwarvish cloak"]);
+	addToMap("slippery cloak", _cloaks["oilskin cloak"]);
+	addToMap("apron", _cloaks["alchemy smock"]);
+	addToMap("faded pall", _cloaks["elven cloak"]);
 
 	/* TODO: randomized appearance */
 	// tattered cape, ornamental cope, opera cloak, piece of cloth
+}
+
+const map<const string, const Cloak*> Cloak::cloaks() {
+	return _cloaks;
+}
+
+/* protected static methods */
+void Cloak::addToMap(const string& name, const Cloak* cloak) {
+	_cloaks[name] = cloak;
+	Armor::addToMap(name, cloak);
+}
+
+/* private static methods */
+void Cloak::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+	addToMap(name, new Cloak(name, cost, weight, material, ac, mc, properties));
 }

@@ -15,10 +15,11 @@ using namespace std;
 /* initialize static variables */
 map<const string, const Armor*> Armor::_armors;
 
-/* constructors/destructor */
+/* protected constructors */
 Armor::Armor(const string& name, const int& cost, const int& weight, const int& material, const int& slot, const int& ac, const int& mc, const unsigned long long& properties) : Item(name, cost, weight, ARMOR, material, properties), _slot(slot), _ac(ac), _mc(mc) {
 }
 
+/* destructor */
 Armor::~Armor() {
 }
 
@@ -31,6 +32,10 @@ void Armor::init() {
 	Shield::init();
 	Shirt::init();
 	Suit::init();
+}
+
+const map<const string, const Armor*>& Armor::armors() {
+	return _armors;
 }
 
 /* public methods */

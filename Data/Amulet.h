@@ -9,7 +9,6 @@ namespace data {
 
 	class Amulet : public Item {
 	public:
-		Amulet(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect);
 		virtual ~Amulet();
 
 		static void init();
@@ -17,6 +16,8 @@ namespace data {
 		const bool& conferEffect() const;
 
 	protected:
+		Amulet(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect);
+
 		static void addToMap(const std::string& name, const Amulet* amulet);
 
 	private:

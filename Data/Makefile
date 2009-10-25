@@ -1,7 +1,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o BroadSword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lance.o LongSword.o Mace.o Monster.o MorningStar.o PickAxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o ShortSword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
+OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o Broadsword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lance.o Longsword.o Mace.o Monster.o MorningStar.o Pickaxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o Shortsword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
 
 analyzers: $(OBJECTS)
 
@@ -12,7 +12,7 @@ Axe.o: Axe.h Axe.cpp
 Boomerang.o: Boomerang.h Boomerang.cpp
 Boots.o: Boots.h Boots.cpp
 Bow.o: Bow.h Bow.cpp
-BroadSword.o: BroadSword.h BroadSword.cpp
+Broadsword.o: Broadsword.h Broadsword.cpp
 Cloak.o: Cloak.h Cloak.cpp
 Club.o: Club.h Club.cpp
 Corpse.o: Corpse.h Corpse.cpp
@@ -29,18 +29,18 @@ Javelin.o: Javelin.h Javelin.cpp
 Key.o: Key.h Key.cpp
 Knife.o: Knife.h Knife.cpp
 Lance.o: Lance.h Lance.cpp
-LongSword.o: LongSword.h LongSword.cpp
+Longsword.o: Longsword.h Longsword.cpp
 Mace.o: Mace.h Mace.cpp
 Monster.o: Monster.h Monster.cpp
 MorningStar.o: MorningStar.h MorningStar.cpp
-PickAxe.o: PickAxe.h PickAxe.cpp
+Pickaxe.o: Pickaxe.h Pickaxe.cpp
 Polearm.o: Polearm.h Polearm.cpp
 Quarterstaff.o: Quarterstaff.h Quarterstaff.cpp
 Saber.o: Saber.h Saber.cpp
 Scimitar.o: Scimitar.h Scimitar.cpp
 Shield.o: Shield.h Shield.cpp
 Shirt.o: Shirt.h Shirt.cpp
-ShortSword.o: ShortSword.h ShortSword.cpp
+Shortsword.o: Shortsword.h Shortsword.cpp
 Shuriken.o: Shuriken.h Shuriken.cpp
 Sling.o: Sling.h Sling.cpp
 Spear.o: Spear.h Spear.cpp

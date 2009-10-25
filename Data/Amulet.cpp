@@ -8,10 +8,11 @@ using namespace std;
 /* initialize static variables */
 map<const string, const Amulet*> Amulet::_amulets;
 
-/* constructors/destructor */
+/* protected constructors */
 Amulet::Amulet(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect) : Item(name, cost, weight, AMULET, material, properties), _confer_effect(confer_effect) {
 }
 
+/* destructor */
 Amulet::~Amulet() {
 }
 

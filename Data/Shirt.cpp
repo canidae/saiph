@@ -1,25 +1,39 @@
 #include "Shirt.h"
 
+#include "../Globals.h"
+
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Shirt*> Shirt::shirts;
+map<const string, const Shirt*> Shirt::_shirts;
 
-Shirt::Shirt(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SHIRT, ac, mc, properties) {
+/* protected constructors */
+Shirt::Shirt(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_SHIRT, ac, mc, properties) {
 }
 
-void Shirt::addToMap(const string& name, Shirt* shirt) {
-	Shirt::shirts[name] = shirt;
-	Armor::addToMap(name, shirt);
+/* destructor */
+Shirt::~Shirt() {
 }
 
-void Shirt::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new Shirt(name, cost, weight, material, ac, mc, properties));
-}
-
+/* public static methods */
 void Shirt::init() {
 	/* shirts */
 	create("Hawaiian shirt", 3, 5, MATERIAL_CLOTH, 0, 0, 0);
 	create("T-shirt", 2, 5, MATERIAL_CLOTH, 0, 0, 0);
+}
+
+const map<const string, const Shirt*>& Shirt::shirts() {
+	return _shirts;
+}
+
+/* protected static methods */
+void Shirt::addToMap(const string& name, const Shirt* shirt) {
+	_shirts[name] = shirt;
+	Armor::addToMap(name, shirt);
+}
+
+/* private static methods */
+void Shirt::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+	addToMap(name, new Shirt(name, cost, weight, material, ac, mc, properties));
 }

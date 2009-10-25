@@ -9,20 +9,20 @@ namespace data {
 
 	class Suit : public Armor {
 	public:
-		static std::map<std::string, Suit*> suits;
-
-		Suit(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
-
-		virtual ~Suit() {
-		}
+		virtual ~Suit();
 
 		static void init();
+		static const std::map<const std::string, const Suit*>& suits();
 
 	protected:
-		static void addToMap(const std::string& name, Suit* suit);
+		Suit(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
+
+		static void addToMap(const std::string& name, const Suit* suit);
 
 	private:
-		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		static std::map<const std::string, const Suit*> _suits;
+
+		static void create(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
 	};
 }
 #endif

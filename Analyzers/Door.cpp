@@ -159,8 +159,8 @@ void Door::onEvent(Event * const event) {
 
 /* private methods */
 bool Door::wantItem(const Item& item) {
-	map<string, data::Key*>::iterator k = data::Key::keys.find(item.name());
-	if (k == data::Key::keys.end())
+	map<const string, const data::Key*>::const_iterator k = data::Key::keys().find(item.name());
+	if (k == data::Key::keys().end())
 		return false; // not a key
 
 	map<unsigned char, Item>::iterator i = Inventory::items().find(_unlock_tool_key);

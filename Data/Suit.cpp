@@ -1,23 +1,22 @@
 #include "Suit.h"
 
+#include "../Globals.h"
+
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Suit*> Suit::suits;
+map<const string, const Suit*> Suit::_suits;
 
-Suit::Suit(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SUIT, ac, mc, properties) {
+/* protected constructors */
+Suit::Suit(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_SUIT, ac, mc, properties) {
 }
 
-void Suit::addToMap(const string& name, Suit* suit) {
-	Suit::suits[name] = suit;
-	Armor::addToMap(name, suit);
+/* destructor */
+Suit::~Suit() {
 }
 
-void Suit::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new Suit(name, cost, weight, material, ac, mc, properties));
-}
-
+/* public static methods */
 void Suit::init() {
 	/* suits */
 	create("white dragon scale mail", 900, 40, MATERIAL_DRAGON_HIDE, 9, 0, PROPERTY_COLD | PROPERTY_MAGIC);
@@ -55,6 +54,21 @@ void Suit::init() {
 	create("dwarvish mithril-coat", 240, 150, MATERIAL_MITHRIL, 6, 3, 0);
 
 	/* aliases */
-	addToMap("crude ring mail", suits["orcish ring mail"]);
-	addToMap("crude chain mail", suits["orcish chain mail"]);
+	addToMap("crude ring mail", _suits["orcish ring mail"]);
+	addToMap("crude chain mail", _suits["orcish chain mail"]);
+}
+
+const map<const string, const Suit*>& Suit::suits() {
+	return _suits;
+}
+
+/* protected static methods */
+void Suit::addToMap(const string& name, const Suit* suit) {
+	_suits[name] = suit;
+	Armor::addToMap(name, suit);
+}
+
+/* private static methods */
+void Suit::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+	addToMap(name, new Suit(name, cost, weight, material, ac, mc, properties));
 }

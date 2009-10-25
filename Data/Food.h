@@ -34,23 +34,24 @@
 #define EAT_EFFECT_CURE_BLINDNESS   (1 << 26)
 #define EAT_EFFECT_CURE_SICKNESS    (1 << 27)
 #define EAT_EFFECT_CURE_LYCANTHROPY (1 << 28)
-#define EAT_EFFECT_ROT              (1 << 29)
+#define EAT_EFFECT_NEVER_ROT        (1 << 29)
 #define EAT_EFFECT_ESP              (1 << 30)
 
 namespace data {
 
 	class Food : public Item {
 	public:
-		Food(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects);
 		virtual ~Food();
 
 		static void init();
-		static const std::map<const std::string, const Food*> foods();
+		static const std::map<const std::string, const Food*>& foods();
 		const int& nutrition() const;
 		const int& time() const;
 		const int& effects() const;
 
 	protected:
+		Food(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects);
+
 		static void addToMap(const std::string& name, const Food* food);
 
 	private:

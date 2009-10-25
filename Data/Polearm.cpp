@@ -4,20 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Polearm*> Polearm::polearms;
+map<const string, const Polearm*> Polearm::_polearms;
 
-Polearm::Polearm(const string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+/* protected constructors */
+Polearm::Polearm(const string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties, bool one_handed, const int& alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
 }
 
-void Polearm::addToMap(const string& name, Polearm* polearm) {
-	Polearm::polearms[name] = polearm;
-	Weapon::addToMap(name, polearm);
+/* destructor */
+Polearm::~Polearm() {
 }
 
-void Polearm::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment) {
-	addToMap(name, new Polearm(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
-}
-
+/* public static methods */
 void Polearm::init() {
 	/* polearms */
 	create("partisan", 10, 80, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), MATERIAL_IRON, ')', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
@@ -34,16 +31,31 @@ void Polearm::init() {
 	create("halberd", 10, 150, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(), Attack(), MATERIAL_IRON, ')', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
-	addToMap("vulgar polearm", polearms["partisan"]);
-	addToMap("pole sickle", polearms["fauchard"]);
-	addToMap("single-edged polearm", polearms["glaive"]);
-	addToMap("beaked polearm", polearms["bec-de-corbin"]);
-	addToMap("forked polearm", polearms["spetum"]);
-	addToMap("pronged polearm", polearms["lucern hammer"]);
-	addToMap("pruning hook", polearms["guisarme"]);
-	addToMap("hilted polearm", polearms["ranseur"]);
-	addToMap("pole cleaver", polearms["voulge"]);
-	addToMap("hooked polearm", polearms["bill-guisarme"]);
-	addToMap("long poleaxe", polearms["bardiche"]);
-	addToMap("angled poleaxe", polearms["halberd"]);
+	addToMap("vulgar polearm", _polearms["partisan"]);
+	addToMap("pole sickle", _polearms["fauchard"]);
+	addToMap("single-edged polearm", _polearms["glaive"]);
+	addToMap("beaked polearm", _polearms["bec-de-corbin"]);
+	addToMap("forked polearm", _polearms["spetum"]);
+	addToMap("pronged polearm", _polearms["lucern hammer"]);
+	addToMap("pruning hook", _polearms["guisarme"]);
+	addToMap("hilted polearm", _polearms["ranseur"]);
+	addToMap("pole cleaver", _polearms["voulge"]);
+	addToMap("hooked polearm", _polearms["bill-guisarme"]);
+	addToMap("long poleaxe", _polearms["bardiche"]);
+	addToMap("angled poleaxe", _polearms["halberd"]);
+}
+
+const map<const string, const Polearm*>& Polearm::polearms() {
+	return _polearms;
+}
+
+/* protected static methods */
+void Polearm::addToMap(const string& name, const Polearm* polearm) {
+	_polearms[name] = polearm;
+	Weapon::addToMap(name, polearm);
+}
+
+/* private static methods */
+void Polearm::create(const string& name, const int& cost, const int& weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, const int& material, const char& type, const unsigned long long& properties, bool one_handed, const int& alignment) {
+	addToMap(name, new Polearm(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
 }

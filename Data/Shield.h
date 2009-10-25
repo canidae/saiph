@@ -9,20 +9,20 @@ namespace data {
 
 	class Shield : public Armor {
 	public:
-		static std::map<std::string, Shield*> shields;
-
-		Shield(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
-
-		virtual ~Shield() {
-		}
+		virtual ~Shield();
 
 		static void init();
+		static const std::map<const std::string, const Shield*>& shields();
 
 	protected:
-		static void addToMap(const std::string& name, Shield* shield);
+		Shield(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
+
+		static void addToMap(const std::string& name, const Shield* shield);
 
 	private:
-		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
+		static std::map<const std::string, const Shield*> _shields;
+
+		static void create(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
 	};
 }
 #endif

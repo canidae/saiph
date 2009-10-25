@@ -6,10 +6,11 @@ using namespace std;
 /* initialize static variables */
 map<const string, const Corpse*> Corpse::_corpses;
 
-/* constructors/destructor */
-Corpse::Corpse(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, int nutrition, const int& time, const int& effects, const int& confer_probability) : Food(name, cost, weight, material, properties, nutrition, time, effects), _confer_probability(confer_probability) {
+/* protected constructors */
+Corpse::Corpse(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects, const int& confer_probability) : Food(name, cost, weight, material, properties, nutrition, time, effects), _confer_probability(confer_probability) {
 }
 
+/* destructor */
 Corpse::~Corpse() {
 }
 
@@ -162,10 +163,10 @@ void Corpse::init() {
 	create("large mimic", 400, EAT_EFFECT_MIMIC, 0);
 	create("leocrotta", 500, 0, 0);
 	create("leprechaun", 30, 0, 50);
-	create("lichen", 200, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN, 0);
+	create("lichen", 200, EAT_EFFECT_VEGETARIAN | EAT_EFFECT_VEGAN | EAT_EFFECT_NEVER_ROT, 0);
 	create("lieutenant", 400, EAT_EFFECT_HUMAN, 0);
 	create("little dog", 150, EAT_EFFECT_AGGRAVATE, 0);
-	create("lizard", 40, EAT_EFFECT_CURE_STONING | EAT_EFFECT_REDUCE_STUNNING | EAT_EFFECT_REDUCE_CONFUSION, 0);
+	create("lizard", 40, EAT_EFFECT_CURE_STONING | EAT_EFFECT_REDUCE_STUNNING | EAT_EFFECT_REDUCE_CONFUSION | EAT_EFFECT_NEVER_ROT, 0);
 	create("long worm", 500, 0, 0);
 	create("Lord Carnarvon", 400, EAT_EFFECT_HUMAN, 0);
 	create("Lord Sato", 400, EAT_EFFECT_HUMAN, 0);
@@ -303,6 +304,10 @@ void Corpse::init() {
 	create("zruty", 600, 0, 0);
 }
 
+const map<const string, const Corpse*>& Corpse::corpses() {
+	return _corpses;
+}
+
 /* public methods */
 const int& Corpse::conferProbability() const {
 	return _confer_probability;
@@ -310,25 +315,21 @@ const int& Corpse::conferProbability() const {
 
 /* protected static methods */
 void Corpse::addToMap(const string& name, const Corpse* corpse) {
-	Corpse::_corpses[name] = corpse;
+	_corpses[name] = corpse;
 	Food::addToMap(name, corpse);
 }
 
 /* private static methods */
 void Corpse::create(const string& name, const int& nutrition, const int& effects, const int& confer_probability) {
-	const Monster* monster = Monster::getMonsterData(name);
-	if (monster == NULL || monster->name.size() <= 0)
+	const Monster* monster = Monster::monster(name);
+	if (monster == NULL || monster->name().size() <= 0)
 		return;
-	/* corpses rot and become tainted, we use this to distinguish corpses (except lizards ands lichens)
-	 * from food that never goes bad */
-	if (monster->name != "lizard" && monster->name != "lichen")
-		effects |= EAT_EFFECT_ROT;
-	string corpse_name = monster->name;
-	string partly_eaten_name = monster->name;
-	if (monster->name[0] >= 'A' && monster->name[0] <= 'Z' && (monster->geno_flags & G_GENO) != 0) {
+	string corpse_name = monster->name();
+	string partly_eaten_name = monster->name();
+	if (monster->name()[0] >= 'A' && monster->name()[0] <= 'Z' && (monster->genoFlags() & G_GENO) != 0) {
 		/* unique monster that can't be genocided.
 		 * unique corpse name */
-		if (monster->name[monster->name.size() - 1] == 's') {
+		if (monster->name()[monster->name().size() - 1] == 's') {
 			corpse_name.append("' corpse");
 			partly_eaten_name.append("' partly eaten corpse");
 		} else {
@@ -341,6 +342,6 @@ void Corpse::create(const string& name, const int& nutrition, const int& effects
 		partly_eaten_name.append(" corpse");
 	}
 	int material = ((effects & EAT_EFFECT_VEGETARIAN) == 0) ? MATERIAL_FLESH : MATERIAL_VEGGY;
-	addToMap(corpse_name, new Corpse(corpse_name, 5, monster->weight, material, monster->resistances_conferred, nutrition, monster->weight / 64 + 3, effects, confer_probability));
-	addToMap(partly_eaten_name, new Corpse(partly_eaten_name, 0, monster->weight / 2, material, monster->resistances_conferred, nutrition / 2, (monster->weight / 64 + 3) / 2, effects, confer_probability));
+	addToMap(corpse_name, new Corpse(corpse_name, 5, monster->weight(), material, monster->resistancesConferred(), nutrition, monster->weight() / 64 + 3, effects, confer_probability));
+	addToMap(partly_eaten_name, new Corpse(partly_eaten_name, 0, monster->weight() / 2, material, monster->resistancesConferred(), nutrition / 2, (monster->weight() / 64 + 3) / 2, effects, confer_probability));
 }

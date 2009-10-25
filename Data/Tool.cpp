@@ -5,16 +5,27 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Tool*> Tool::tools;
+map<const string, const Tool*> Tool::_tools;
 
-Tool::Tool(const string& name, int cost, int weight, int material, unsigned long long properties) : Item(name, cost, weight, TOOL, material, properties) {
+/* protected constructors */
+Tool::Tool(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties) : Item(name, cost, weight, TOOL, material, properties) {
 }
 
-void Tool::addToMap(const string& name, Tool* tool) {
-	Tool::tools[name] = tool;
-	Item::addToMap(name, tool);
+/* destructor */
+Tool::~Tool() {
 }
 
+/* public static methods */
 void Tool::init() {
 	Key::init();
+}
+
+const map<const string, const Tool*>& Tool::tools() {
+	return _tools;
+}
+
+/* protected static methods */
+void Tool::addToMap(const string& name, const Tool* tool) {
+	_tools[name] = tool;
+	Item::addToMap(name, tool);
 }

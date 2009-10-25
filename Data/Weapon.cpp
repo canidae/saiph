@@ -1,7 +1,7 @@
 #include "Axe.h"
 #include "Boomerang.h"
 #include "Bow.h"
-#include "BroadSword.h"
+#include "Broadsword.h"
 #include "Club.h"
 #include "Crossbow.h"
 #include "Dagger.h"
@@ -11,15 +11,15 @@
 #include "Javelin.h"
 #include "Knife.h"
 #include "Lance.h"
-#include "LongSword.h"
+#include "Longsword.h"
 #include "Mace.h"
 #include "MorningStar.h"
-#include "PickAxe.h"
+#include "Pickaxe.h"
 #include "Polearm.h"
 #include "Quarterstaff.h"
 #include "Saber.h"
 #include "Scimitar.h"
-#include "ShortSword.h"
+#include "Shortsword.h"
 #include "Shuriken.h"
 #include "Sling.h"
 #include "Spear.h"
@@ -33,27 +33,28 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Weapon*> Weapon::weapons;
+map<const string, const Weapon*> Weapon::_weapons;
 
-Weapon::Weapon(const string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Item(name, cost, weight, item_class, material, properties), one_handed(one_handed), alignment(alignment) {
-	attack_small[0] = as0;
-	attack_small[1] = as1;
-	attack_small[2] = as2;
-	attack_large[0] = al0;
-	attack_large[1] = al1;
-	attack_large[2] = al2;
+/* protected constructors */
+Weapon::Weapon(const string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties, bool one_handed, const int& alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Item(name, cost, weight, type, material, properties), _one_handed(one_handed), _alignment(alignment) {
+	_attack_small.push_back(as0);
+	_attack_small.push_back(as1);
+	_attack_small.push_back(as2);
+	_attack_large.push_back(al0);
+	_attack_large.push_back(al1);
+	_attack_large.push_back(al2);
 }
 
-void Weapon::addToMap(const string& name, Weapon* weapon) {
-	Weapon::weapons[name] = weapon;
-	Item::addToMap(name, weapon);
+/* destructor */
+Weapon::~Weapon() {
 }
 
+/* public static methods */
 void Weapon::init() {
 	Axe::init();
 	Boomerang::init();
 	Bow::init();
-	BroadSword::init();
+	Broadsword::init();
 	Club::init();
 	Crossbow::init();
 	Dagger::init();
@@ -63,15 +64,15 @@ void Weapon::init() {
 	Javelin::init();
 	Knife::init();
 	Lance::init();
-	LongSword::init();
+	Longsword::init();
 	Mace::init();
 	MorningStar::init();
-	PickAxe::init();
+	Pickaxe::init();
 	Polearm::init();
 	Quarterstaff::init();
 	Saber::init();
 	Scimitar::init();
-	ShortSword::init();
+	Shortsword::init();
 	Shuriken::init();
 	Sling::init();
 	Spear::init();
@@ -79,4 +80,31 @@ void Weapon::init() {
 	TwoHandedSword::init();
 	UnicornHorn::init();
 	Whip::init();
+}
+
+const map<const string, const Weapon*> Weapon::weapons() {
+	return _weapons;
+}
+
+/* public methods */
+const bool& Weapon::oneHanded() {
+	return _one_handed;
+}
+
+const int& Weapon::alignment() {
+	return _alignment;
+}
+
+const vector<Attack>& Weapon::attackSmall() {
+	return _attack_small;
+}
+
+const vector<Attack>& Weapon::attackLarge() {
+	return _attack_large;
+}
+
+/* protected static methods */
+void Weapon::addToMap(const string& name, const Weapon* weapon) {
+	_weapons[name] = weapon;
+	Item::addToMap(name, weapon);
 }

@@ -2,10 +2,11 @@
 
 using namespace data;
 
-/* constructors/destructor */
+/* public constructors */
 Attack::Attack(const int& type, const int& damage_type, const int& dices, const int& sides) : _type(type), _damage_type(damage_type), _dices(dices), _sides(sides), _min_damage(_dices), _avg_damage((_dices * _sides + _dices) / 2), _max_damage(_dices * _sides) {
 }
 
+/* destructor */
 Attack::~Attack() {
 }
 

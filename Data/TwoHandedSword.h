@@ -9,20 +9,20 @@ namespace data {
 
 	class TwoHandedSword : public Weapon {
 	public:
-		static std::map<std::string, TwoHandedSword*> two_handed_swords;
-
-		TwoHandedSword(const std::string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
-
-		virtual ~TwoHandedSword() {
-		}
+		virtual ~TwoHandedSword();
 
 		static void init();
+		const std::map<const std::string, const TwoHandedSword*>& twoHandedSwords();
 
 	protected:
-		static void addToMap(const std::string& name, TwoHandedSword* two_handed_sword);
+		TwoHandedSword(const std::string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties, bool one_handed, const int& alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
+
+		static void addToMap(const std::string& name, const TwoHandedSword* two_handed_sword);
 
 	private:
-		static void create(const std::string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment);
+		static std::map<const std::string, const TwoHandedSword*> _two_handed_swords;
+
+		static void create(const std::string& name, const int& cost, const int& weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, const int& material, const char& type, const unsigned long long& properties, bool one_handed, const int& alignment);
 	};
 }
 #endif

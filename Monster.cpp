@@ -2,7 +2,7 @@
 #include "Data/Monster.h"
 
 /* constructors/destructor */
-Monster::Monster(const unsigned char& symbol, const int& color, const int& last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::getMonsterData(symbol, color)) {
+Monster::Monster(const unsigned char& symbol, const int& color, const int& last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::monster(symbol, color)) {
 }
 
 /* methods */

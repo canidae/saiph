@@ -1,23 +1,22 @@
 #include "Helmet.h"
 
+#include "../Globals.h"
+
 using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Helmet*> Helmet::helmets;
+map<const string, const Helmet*> Helmet::_helmets;
 
-Helmet::Helmet(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_HELMET, ac, mc, properties) {
+/* protected constructors */
+Helmet::Helmet(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_HELMET, ac, mc, properties) {
 }
 
-void Helmet::addToMap(const string& name, Helmet* helmet) {
-	Helmet::helmets[name] = helmet;
-	Armor::addToMap(name, helmet);
+/* destructor */
+Helmet::~Helmet() {
 }
 
-void Helmet::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
-	addToMap(name, new Helmet(name, cost, weight, material, ac, mc, properties));
-}
-
+/* public static methods */
 void Helmet::init() {
 	/* helms */
 	create("helm of brilliance", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_MAGIC | PROPERTY_BRILLIANCE);
@@ -34,8 +33,23 @@ void Helmet::init() {
 	create("orcish helm", 10, 30, MATERIAL_IRON, 1, 0, 0);
 
 	/* aliases */
-	addToMap("iron skull cap", helmets["orcish helm"]);
-	addToMap("conical hat", helmets["cornuthaum"]);
-	addToMap("leather hat", helmets["elven leather helm"]);
-	addToMap("hard hat", helmets["dwarvish iron helm"]);
+	addToMap("iron skull cap", _helmets["orcish helm"]);
+	addToMap("conical hat", _helmets["cornuthaum"]);
+	addToMap("leather hat", _helmets["elven leather helm"]);
+	addToMap("hard hat", _helmets["dwarvish iron helm"]);
+}
+
+const map<const string, const Helmet*>& Helmet::helmets() {
+	return _helmets;
+}
+
+/* protected static methods */
+void Helmet::addToMap(const string& name, const Helmet* helmet) {
+	_helmets[name] = helmet;
+	Armor::addToMap(name, helmet);
+}
+
+/* private static methods */
+void Helmet::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+	addToMap(name, new Helmet(name, cost, weight, material, ac, mc, properties));
 }

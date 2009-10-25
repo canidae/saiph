@@ -9,7 +9,6 @@ namespace data {
 
 	class Armor : public Item {
 	public:
-		Armor(const std::string& name, const int& cost, const int& weight, const int& material, const int& slot, const int& ac, const int& mc, const unsigned long long& properties);
 		virtual ~Armor();
 
 		static void init();
@@ -19,6 +18,8 @@ namespace data {
 		const int& mc() const;
 
 	protected:
+		Armor(const std::string& name, const int& cost, const int& weight, const int& material, const int& slot, const int& ac, const int& mc, const unsigned long long& properties);
+
 		static void addToMap(const std::string& name, const Armor* armor);
 
 	private:

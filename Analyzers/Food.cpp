@@ -24,7 +24,7 @@ using namespace std;
 Food::Food() : Analyzer("Food") {
 	/* try to eat the food with lowest nutrition/weight first, and avoid food that cures bad effects */
 	for (map<const string, const data::Food*>::const_iterator f = data::Food::foods().begin(); f != data::Food::foods().end(); ++f) {
-		if (f->second->effects() & EAT_EFFECT_ROT)
+		if (!(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 			continue; // we're not gonna carry food that rot
 		int priority = 1000;
 		if (f->second->weight() <= 0)
@@ -131,14 +131,14 @@ void Food::onEvent(Event * const event) {
 				/* it's safe to eat corpses here */
 				map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
 				/* check that item is a corpse, it's safe to eat and that the corpse rots */
-				if (c != data::Corpse::corpses().end() && safeToEat(c) && c->second->effects() & EAT_EFFECT_ROT) {
+				if (c != data::Corpse::corpses().end() && safeToEat(c) && !(c->second->effects() & EAT_EFFECT_NEVER_ROT)) {
 					World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
 					break;
 				}
 			}
 			/* check if we want to pick up edible item that won't rot */
 			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->name());
-			if (f != data::Food::foods().end() && !(f->second->effects() & EAT_EFFECT_ROT)) {
+			if (f != data::Food::foods().end() && f->second->effects() & EAT_EFFECT_NEVER_ROT) {
 				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
 				break;
 			}
@@ -147,7 +147,7 @@ void Food::onEvent(Event * const event) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
-			if (f == data::Food::foods().end() || f->second->effects() & EAT_EFFECT_ROT)
+			if (f == data::Food::foods().end() || !(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 				continue; // not food or the food rots
 			World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
 			break;
@@ -162,7 +162,7 @@ void Food::onEvent(Event * const event) {
 			} else {
 				/* received item, is it food? */
 				map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
-				if (f == data::Food::foods().end() || f->second->effects() & EAT_EFFECT_ROT)
+				if (f == data::Food::foods().end() || !(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 					_food_items.erase(*k); // ewww
 				else
 					_food_items.insert(*k); // cheezeburger!
@@ -172,7 +172,7 @@ void Food::onEvent(Event * const event) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
-			if (f == data::Food::foods().end() || f->second->effects() & EAT_EFFECT_ROT)
+			if (f == data::Food::foods().end() || !(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 				continue; // not food or the food rots
 			_food_items.insert(i->first);
 		}

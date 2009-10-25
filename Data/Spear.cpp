@@ -4,20 +4,17 @@ using namespace data;
 using namespace std;
 
 /* initialize static variables */
-map<string, Spear*> Spear::spears;
+map<const string, const Spear*> Spear::_spears;
 
-Spear::Spear(const string& name, int cost, int weight, char item_class, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+/* protected constructors */
+Spear::Spear(const string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties, bool one_handed, const int& alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
 }
 
-void Spear::addToMap(const string& name, Spear* spear) {
-	Spear::spears[name] = spear;
-	Weapon::addToMap(name, spear);
+/* destructor */
+Spear::~Spear() {
 }
 
-void Spear::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char item_class, unsigned long long properties, bool one_handed, int alignment) {
-	addToMap(name, new Spear(name, cost, weight, item_class, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
-}
-
+/* public static methods */
 void Spear::init() {
 	/* spears */
 	create("orcish spear", 3, 30, Attack(AT_CLAW, AD_PHYS, 1, 5), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
@@ -27,7 +24,22 @@ void Spear::init() {
 	create("dwarvish spear", 3, 35, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
-	addToMap("crude spear", spears["orcish spear"]);
-	addToMap("runed spear", spears["elven spear"]);
-	addToMap("stout spear", spears["dwarvish spear"]);
+	addToMap("crude spear", _spears["orcish spear"]);
+	addToMap("runed spear", _spears["elven spear"]);
+	addToMap("stout spear", _spears["dwarvish spear"]);
+}
+
+const map<const string, const Spear*>& Spear::spears() {
+	return _spears;
+}
+
+/* protected static methods */
+void Spear::addToMap(const string& name, const Spear* spear) {
+	_spears[name] = spear;
+	Weapon::addToMap(name, spear);
+}
+
+/* private static methods */
+void Spear::create(const string& name, const int& cost, const int& weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, const int& material, const char& type, const unsigned long long& properties, bool one_handed, const int& alignment) {
+	addToMap(name, new Spear(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
 }

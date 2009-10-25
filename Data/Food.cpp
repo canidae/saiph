@@ -8,10 +8,11 @@ using namespace std;
 /* initialize static variables */
 map<const string, const Food*> Food::_foods;
 
-/* constructors/destructor */
-Food::Food(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) : Item(name, cost, weight, FOOD, material, properties), nutrition(nutrition), _time(time), _effects(effects) {
+/* protected constructors */
+Food::Food(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) : Item(name, cost, weight, FOOD, material, properties), _nutrition(nutrition), _time(time), _effects(effects) {
 }
 
+/* destructor */
 Food::~Food() {
 }
 
@@ -51,6 +52,10 @@ void Food::init() {
 	Corpse::init();
 }
 
+const map<const string, const Food*>& Food::foods() {
+	return _foods;
+}
+
 /* public methods */
 const int& Food::nutrition() const {
 	return _nutrition;
@@ -66,7 +71,7 @@ const int& Food::effects() const {
 
 /* protected static methods */
 void Food::addToMap(const string& name, const Food* food) {
-	Food::_foods[name] = food;
+	_foods[name] = food;
 	Item::addToMap(name, food);
 }
 
