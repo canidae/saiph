@@ -240,7 +240,7 @@ unsigned char World::directLine(Point point, const bool& ignore_sinks, const boo
 
 const Tile& World::shortestPath(const Point& point) {
 	/* returns PathNode for shortest path from player to target */
-	return World::_levels[Saiph::position().level()].tile(point);
+	return level().tile(point);
 }
 
 Tile World::shortestPath(const Coordinate& target) {
@@ -259,8 +259,7 @@ Tile World::shortestPath(const Coordinate& target) {
 		level_added[a] = false;
 	level_added[Saiph::position().level()] = true;
 	Tile level_tile[_levels.size()];
-	level_tile[Saiph::position().level()] = Tile();
-	level_tile[Saiph::position().level()].updatePath(Point(), NOWHERE, 0, 0);
+	level_tile[Saiph::position().level()] = shortestPath(Saiph::position());
 	Debug::pathing() << "Trying to find path to " << target << endl;
 	while (++pivot < level_count) {
 		/* check if target is on level */
@@ -363,8 +362,7 @@ Tile World::shortestPath(const unsigned char& symbol) {
 		level_added[a] = false;
 	level_added[Saiph::position().level()] = true;
 	Tile level_tile[_levels.size()];
-	level_tile[Saiph::position().level()] = Tile();
-	level_tile[Saiph::position().level()].updatePath(Point(), NOWHERE, 0, 0);
+	level_tile[Saiph::position().level()] = shortestPath(Saiph::position());
 	Debug::pathing() << "Trying to find path to nearest '" << symbol << "'" << endl;
 	while (++pivot < level_count) {
 		/* path to symbols on level */
@@ -628,7 +626,7 @@ void World::detectPosition() {
 		/* this happens when we start */
 		Saiph::position(Coordinate(_levels.size(), _cursor));
 		_branch[BRANCH_MAIN] = Saiph::position();
-		_levels.push_back(Level(_levelname));
+		_levels.push_back(Level(_levels.size(), _levelname));
 		_levelmap[_levelname].push_back(Saiph::position().level());
 		return;
 	}
@@ -721,7 +719,7 @@ void World::detectPosition() {
 		/* when we discover a new level it's highly likely it's in the
 		 * same branch as the previous level.
 		 * exception is rogue level, which really isn't a branch */
-		_levels.push_back(Level(_levelname, (_levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? _levels[Saiph::position().level()].branch() : BRANCH_MAIN));
+		_levels.push_back(Level(_levels.size(), _levelname, (_levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? _levels[Saiph::position().level()].branch() : BRANCH_MAIN));
 		_levelmap[_levelname].push_back(found);
 		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
 	}

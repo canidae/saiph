@@ -85,9 +85,9 @@ void Saiph::parseMessages(const string& messages) {
 		_intrinsics |= PROPERTY_TELEPORT;
 	if (messages.find(MESSAGE_TELEPORTITIS_LOSE1, 0) != string::npos)
 		_intrinsics &= ~PROPERTY_TELEPORT;
-	if (messages.find(MESSAGE_LYCANTHROPY_LOSE1, 0) != string::npos)
-		_intrinsics |= PROPERTY_LYCANTHROPY;
 	if (messages.find(MESSAGE_LYCANTHROPY_GAIN1, 0) != string::npos)
+		_intrinsics |= PROPERTY_LYCANTHROPY;
+	if (messages.find(MESSAGE_LYCANTHROPY_LOSE1, 0) != string::npos)
 		_intrinsics &= ~PROPERTY_LYCANTHROPY;
 	if (messages.find(MESSAGE_HURT_LEFT_LEG, 0) != string::npos || messages.find(MESSAGE_HURT_RIGHT_LEG, 0) != string::npos)
 		_hurt_leg = true;
@@ -312,7 +312,7 @@ const unsigned long long int& Saiph::addIntrinsics(const unsigned long long int&
 }
 
 const unsigned long long int& Saiph::removeIntrinsics(const unsigned long long int& intrinsics) {
-	_intrinsics ^= (intrinsics & _intrinsics);
+	_intrinsics &= ~intrinsics;
 	return Saiph::intrinsics();
 }
 
@@ -326,7 +326,7 @@ const unsigned long long int& Saiph::addExtrinsics(const unsigned long long int&
 }
 
 const unsigned long long int& Saiph::removeExtrinsics(const unsigned long long int& extrinsics) {
-	_extrinsics ^= (extrinsics & _extrinsics);
+	_extrinsics &= ~extrinsics;
 	return Saiph::extrinsics();
 }
 

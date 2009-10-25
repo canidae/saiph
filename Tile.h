@@ -1,6 +1,7 @@
 #ifndef TILE_H
 #define	TILE_H
 
+#include "Coordinate.h"
 #include "Point.h"
 
 /* max searching on a point */
@@ -8,9 +9,10 @@
 
 class Tile {
 public:
-	Tile();
+	Tile(const Coordinate& coordinate = Coordinate());
 	virtual ~Tile();
 
+	const Coordinate& coordinate() const;
 	const unsigned int& cost() const;
 	const unsigned char& direction() const;
 	const unsigned char& direction(const unsigned char& direction);
@@ -27,6 +29,7 @@ public:
 private:
 	static unsigned int _unreachable;
 	static unsigned char _illegal_direction;
+	Coordinate _coordinate; // where this tile is located
 	unsigned char _symbol; // dungeon symbol on this tile
 	unsigned char _monster; // monster symbol on this tile, used for pathing
 	unsigned char _direction; // direction to move to get to this tile when on same level
@@ -36,4 +39,6 @@ private:
 	unsigned int _updated; // last internal turn this node was updated, used for pathing
 	Point _next; // the location of the next tile in the path towards the player
 };
+
+std::ostream & operator<<(std::ostream& os, const Tile& t);
 #endif

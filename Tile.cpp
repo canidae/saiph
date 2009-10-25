@@ -1,26 +1,32 @@
 #include "Tile.h"
 #include "World.h"
 
+using namespace std;
+
 /* static */
 unsigned int Tile::_unreachable = UNREACHABLE;
 unsigned char Tile::_illegal_direction = ILLEGAL_DIRECTION;
 
 /* constructors/destructor */
-Tile::Tile() : _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _next(Point()) {
+Tile::Tile(const Coordinate& coordinate) : _coordinate(coordinate), _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _next(Point()) {
 }
 
 Tile::~Tile() {
 }
 
 /* methods */
+const Coordinate& Tile::coordinate() const {
+	return _coordinate;
+}
+
 const unsigned int& Tile::cost() const {
-	if (_updated != World::internalTurn())
+	if (_updated != World::internalTurn() && _coordinate.level() == Saiph::position().level())
 		return _unreachable;
 	return _cost;
 }
 
 const unsigned char& Tile::direction() const {
-	if (_updated != World::internalTurn())
+	if (_updated != World::internalTurn() && _coordinate.level() == Saiph::position().level())
 		return _illegal_direction;
 	return _direction;
 }
@@ -31,7 +37,7 @@ const unsigned char& Tile::direction(const unsigned char& direction) {
 }
 
 const unsigned int& Tile::distance() const {
-	if (_updated != World::internalTurn())
+	if (_updated != World::internalTurn() && _coordinate.level() == Saiph::position().level())
 		return _unreachable;
 	return _distance;
 }
@@ -75,4 +81,8 @@ void Tile::updatePath(const Point& next, const unsigned char& direction, const u
 	_distance = distance;
 	_cost = cost;
 	_updated = World::internalTurn();
+}
+
+ostream & operator<<(ostream& os, const Tile& t) {
+	return os << "(coordinate=" << t.coordinate() << ", symbol=" << t.symbol() << ", monster=" << t.monster() << ", direction=" << t.direction() << ", search=" << t.search() << ", distance=" << t.distance() << ", cost=" << t.cost() << ")";
 }

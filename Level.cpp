@@ -65,10 +65,10 @@ ItemsOnGround Level::_on_ground;
 Tile Level::_outside_map;
 
 /* constructors/destructor */
-Level::Level(const string& name, const int& branch) : _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
+Level::Level(const int& level, const string& name, const int& branch) : _level(level), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b)
-			_map[a][b] = Tile();
+			_map[a][b] = Tile(Coordinate(_level, a, b));
 	}
 	sscanf(name.c_str(), "%*[^0123456789]%d", &_depth);
 }

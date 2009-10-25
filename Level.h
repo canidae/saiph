@@ -19,7 +19,7 @@ class Item;
 
 class Level {
 public:
-	Level(const std::string &name, const int& branch = BRANCH_MAIN);
+	Level(const int& level, const std::string &name, const int& branch = BRANCH_MAIN);
 
 	static const bool& isPassable(const unsigned char& symbol);
 	static const Tile& outsideMap();
@@ -53,6 +53,7 @@ private:
 	static event::ReceivedItems _received;
 	static event::ItemsOnGround _on_ground;
 	static Tile _outside_map;
+	int _level;
 	Tile _map[MAP_ROW_END + 1][MAP_COL_END + 1];
 	std::map<Point, Monster> _monsters;
 	std::map<Point, Stash> _stashes;
