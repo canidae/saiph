@@ -12,6 +12,7 @@
         <in>Eat.h</in>
         <in>EatCorpse.h</in>
         <in>Engrave.h</in>
+        <in>FarLook.h</in>
         <in>Fight.h</in>
         <in>Kick.h</in>
         <in>ListInventory.h</in>
@@ -113,8 +114,8 @@
         <in>Boots.h</in>
         <in>Bow.cpp</in>
         <in>Bow.h</in>
-        <in>BroadSword.cpp</in>
-        <in>BroadSword.h</in>
+        <in>Broadsword.cpp</in>
+        <in>Broadsword.h</in>
         <in>Cloak.cpp</in>
         <in>Cloak.h</in>
         <in>Club.cpp</in>
@@ -149,16 +150,16 @@
         <in>Lance.h</in>
         <in>Level.cpp</in>
         <in>Level.h</in>
-        <in>LongSword.cpp</in>
-        <in>LongSword.h</in>
+        <in>Longsword.cpp</in>
+        <in>Longsword.h</in>
         <in>Mace.cpp</in>
         <in>Mace.h</in>
         <in>Monster.cpp</in>
         <in>Monster.h</in>
         <in>MorningStar.cpp</in>
         <in>MorningStar.h</in>
-        <in>PickAxe.cpp</in>
-        <in>PickAxe.h</in>
+        <in>Pickaxe.cpp</in>
+        <in>Pickaxe.h</in>
         <in>Polearm.cpp</in>
         <in>Polearm.h</in>
         <in>Quarterstaff.cpp</in>
@@ -171,8 +172,8 @@
         <in>Shield.h</in>
         <in>Shirt.cpp</in>
         <in>Shirt.h</in>
-        <in>ShortSword.cpp</in>
-        <in>ShortSword.h</in>
+        <in>Shortsword.cpp</in>
+        <in>Shortsword.h</in>
         <in>Shuriken.cpp</in>
         <in>Shuriken.h</in>
         <in>Sling.cpp</in>

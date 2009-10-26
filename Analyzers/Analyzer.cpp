@@ -7,6 +7,7 @@
 #include "Food.h"
 #include "Health.h"
 #include "Loot.h"
+#include "MonsterInfo.h"
 #include "../World.h"
 
 using namespace analyzer;
@@ -29,6 +30,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Food());
 	World::registerAnalyzer(new Health());
 	World::registerAnalyzer(new Loot());
+	World::registerAnalyzer(new MonsterInfo());
 }
 
 void Analyzer::destroy() {
