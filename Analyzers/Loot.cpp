@@ -8,9 +8,11 @@
 #include "../World.h"
 #include "../Actions/ListInventory.h"
 #include "../Actions/Look.h"
+#include "../Actions/Loot.h"
 #include "../Actions/Move.h"
 #include "../Actions/SelectMultiple.h"
 #include "../Events/StashChanged.h"
+#include "../Events/ItemsOnGround.h"
 
 using namespace analyzer;
 using namespace event;
@@ -20,6 +22,7 @@ using namespace std;
 Loot::Loot() : Analyzer("Loot"), _showing_pickup(false), _showing_drop(false) {
 	/* register events */
 	EventBus::registerEvent(StashChanged::ID, this);
+	EventBus::registerEvent(ItemsOnGround::ID, this);
 }
 
 /* methods */
@@ -166,5 +169,32 @@ void Loot::onEvent(Event * const event) {
 		/* stash changed, we need to visit it again */
 		StashChanged* e = static_cast<StashChanged*> (event);
 		_visit.insert(e->stash());
+	} else if (event->id() == ItemsOnGround::ID) {
+		// TODO: proper shopping code
+		if (World::level().tile().symbol() != SHOP_TILE) {
+			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
+			_wi.clear();
+			int index = 0;
+			bool looting = false;
+			list<Item>::iterator i = e->items().begin();
+			while (!looting) {
+				_wi.addItem(index++, *i);
+				++i;
+				if (index == UCHAR_MAX || i == e->items().end()) {
+					EventBus::broadcast(static_cast<Event*> (&_wi));
+					for (map<unsigned char, Item>::iterator i = _wi.items().begin(); i != _wi.items().end(); ++i) {
+						if (i->second.want() <= 0)
+							continue;
+						/* someone want an item in this stash */
+						World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_LOOT)));
+						looting = true;
+						break;
+					}
+					_wi.clear();
+				}
+				if (i == e->items().end())
+					break;
+			}
+		}
 	}
 }

@@ -6,7 +6,6 @@
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Fight.h"
-#include "../Actions/Loot.h"
 #include "../Actions/Move.h"
 #include "../Actions/Select.h"
 #include "../Actions/Throw.h"
@@ -15,7 +14,6 @@
 #include "../Data/Monster.h"
 #include "../Data/Spear.h"
 #include "../Events/ChangedInventoryItems.h"
-#include "../Events/ItemsOnGround.h"
 #include "../Events/ReceivedItems.h"
 #include "../Events/WantItems.h"
 
@@ -40,7 +38,6 @@ Fight::Fight() : Analyzer("Fight") {
 
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
-	EventBus::registerEvent(ItemsOnGround::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
@@ -135,17 +132,6 @@ void Fight::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				i->second.want(i->second.count());
-		}
-	} else if (event->id() == ItemsOnGround::ID) {
-		// FIXME: need proper shopping
-		if (World::level().tile().symbol() != SHOP_TILE) {
-			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (!wantItem(*i))
-					continue;
-				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FIGHT_LOOT)));
-				break;
-			}
 		}
 	}
 }

@@ -8,7 +8,6 @@
 #include "../World.h"
 #include "../Actions/Answer.h"
 #include "../Actions/Kick.h"
-#include "../Actions/Loot.h"
 #include "../Actions/Move.h"
 #include "../Actions/Open.h"
 #include "../Actions/Select.h"
@@ -16,7 +15,6 @@
 #include "../Data/Key.h"
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
-#include "../Events/ItemsOnGround.h"
 #include "../Events/ReceivedItems.h"
 #include "../Events/WantItems.h"
 
@@ -28,7 +26,6 @@ using namespace std;
 Door::Door() : Analyzer("Door"), _unlock_tool_key(0), _in_a_pit(false) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
-	EventBus::registerEvent(ItemsOnGround::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
@@ -147,15 +144,6 @@ void Door::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				i->second.want(i->second.count());
-		}
-	} else if (event->id() == ItemsOnGround::ID) {
-		// FIXME: need proper shopping
-		if (World::level().tile().symbol() != SHOP_TILE) {
-			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (wantItem(*i))
-					World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_DOOR_LOOT)));
-			}
 		}
 	}
 }

@@ -5,7 +5,6 @@
 #include "../World.h"
 #include "../Actions/Eat.h"
 #include "../Actions/EatCorpse.h"
-#include "../Actions/Loot.h"
 #include "../Actions/Pray.h"
 #include "../Actions/Select.h"
 #include "../Data/Corpse.h"
@@ -124,7 +123,7 @@ void Food::parseMessages(const string& messages) {
 
 void Food::onEvent(Event * const event) {
 	if (event->id() == ItemsOnGround::ID) {
-		// FIXME: need proper shopping
+		// FIXME?: do we want/need to eat corpses in shops?
 		if (World::level().tile().symbol() != SHOP_TILE) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
@@ -137,12 +136,6 @@ void Food::onEvent(Event * const event) {
 						World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
 						break;
 					}
-				}
-				/* check if we want to pick up edible item that won't rot */
-				map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->name());
-				if (f != data::Food::foods().end() && f->second->effects() & EAT_EFFECT_NEVER_ROT) {
-					World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
-					break;
 				}
 			}
 		}

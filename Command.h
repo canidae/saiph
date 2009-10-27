@@ -11,6 +11,8 @@
 #define PRIORITY_CLOSE_SELECT_PAGE 1001
 #define PRIORITY_LOOK 1000
 #define PRIORITY_TURN_MAX 999
+/* loot priority (when picking up, not moving to), due to centralized handling of looting */
+#define PRIORITY_LOOT 300
 
 /* some common answers */
 #define CLOSE_PAGE ' '

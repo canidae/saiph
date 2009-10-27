@@ -4,14 +4,12 @@
 #include "../Inventory.h"
 #include "../Item.h"
 #include "../World.h"
-#include "../Actions/Loot.h"
 #include "../Actions/PutOn.h"
 #include "../Actions/Remove.h"
 #include "../Actions/Select.h"
 #include "../Data/Amulet.h"
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
-#include "../Events/ItemsOnGround.h"
 #include "../Events/ReceivedItems.h"
 #include "../Events/WantItems.h"
 
@@ -23,7 +21,6 @@ using namespace std;
 Amulet::Amulet() : Analyzer("Amulet") {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
-	EventBus::registerEvent(ItemsOnGround::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
@@ -42,15 +39,6 @@ void Amulet::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
 				i->second.want(i->second.count());
-		}
-	} else if (event->id() == ItemsOnGround::ID) {
-		// FIXME: need proper shopping
-		if (World::level().tile().symbol() != SHOP_TILE) {
-			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (wantItem(*i))
-					World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_AMULET_LOOT)));
-			}
 		}
 	}
 }
