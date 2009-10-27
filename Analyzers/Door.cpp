@@ -146,7 +146,7 @@ void Door::onEvent(Event * const event) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
-				World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
+				i->second.want(i->second.count());
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
 		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);

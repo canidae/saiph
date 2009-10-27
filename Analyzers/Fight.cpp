@@ -106,7 +106,7 @@ void Fight::analyze() {
 	}
 }
 
-void Fight::onEvent(Event* const event) {
+void Fight::onEvent(Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
@@ -133,10 +133,8 @@ void Fight::onEvent(Event* const event) {
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (!wantItem(i->second))
-				continue;
-			World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
-			break;
+			if (wantItem(i->second))
+				i->second.want(i->second.count());
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
 		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);

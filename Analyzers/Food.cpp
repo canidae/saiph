@@ -149,7 +149,7 @@ void Food::onEvent(Event * const event) {
 			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
 			if (f == data::Food::foods().end() || !(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 				continue; // not food or the food rots
-			World::setAction(static_cast<action::Action*> (new action::Select(this, i->first)));
+			i->second.want(i->second.count());
 			break;
 		}
 	} else if (event->id() == ChangedInventoryItems::ID) {

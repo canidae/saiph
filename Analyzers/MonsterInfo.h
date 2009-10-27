@@ -7,8 +7,6 @@
 #include "../Point.h"
 #include "../Monster.h"
 
-class Saiph;
-
 namespace analyzer {
 
 	class MonsterInfo : public Analyzer {

@@ -419,14 +419,6 @@
           </incDir>
         </ccTool>
       </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/MonsterInfo.cpp"
-            ex="true"
-            tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/MonsterInfo.h"
-            ex="true"
-            tool="3">
-      </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Passtune.cpp"
             ex="true"
             tool="1">
@@ -454,10 +446,6 @@
             tool="1">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Scroll.h" ex="true" tool="3">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Shop.cpp" ex="true" tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Shop.h" ex="true" tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Sokoban.cpp"
             ex="true"

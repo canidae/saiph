@@ -92,7 +92,10 @@ void Loot::parseMessages(const string& messages) {
 			if (i->second.want() <= 0)
 				continue;
 			tmp.str("");
-			tmp << i->second.want() << i->first;
+			if (i->second.want() >= i->second.count())
+				tmp << i->first;
+			else
+				tmp << i->second.want() << i->first;
 			pickup.push_back(tmp.str());
 		}
 		World::setAction(static_cast<action::Action*> (new action::SelectMultiple(this, pickup)));
@@ -136,12 +139,11 @@ void Loot::parseMessages(const string& messages) {
 		vector<string> drop;
 		ostringstream tmp;
 		for (map<unsigned char, Item>::iterator i = _wi.items().begin(); i != _wi.items().end(); ++i) {
-			if (i->second.want() <= 0) {
+			if (i->second.count() <= 0 || i->second.want() <= 0) {
 				/* drop for beatitude or we don't want the item */
 				drop.push_back(std::string(1, i->first));
 				continue;
-			}
-			if (i->second.count() <= i->second.want()) {
+			} else if (i->second.count() <= i->second.want()) {
 				/* we want all of these items, don't drop them */
 				continue;
 			}
