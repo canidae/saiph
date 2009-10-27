@@ -410,8 +410,8 @@ void Level::setDungeonSymbol(const Point& point, const unsigned char& symbol) {
 void Level::increaseAdjacentSearchCount(const Point& point) {
 	/* increase search count for adjacent points to given point */
 	Point p = point;
-	for (p.row(point.row()); p.row() <= point.row() + 1; p.moveSouth()) {
-		for (p.col(point.col()); p.col() <= point.col() + 1; p.moveEast()) {
+	for (p.row(point.row() - 1); p.row() <= point.row() + 1; p.moveSouth()) {
+		for (p.col(point.col() - 1); p.col() <= point.col() + 1; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
 			_map[p.row()][p.col()].searchInc();
