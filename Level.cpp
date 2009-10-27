@@ -258,7 +258,7 @@ void Level::analyze() {
 	/* update pathmap */
 	updatePathMap();
 	/* set point we're standing on "fully searched" */
-	_map[Saiph::position().row()][Saiph::position().col()].search(INT_MAX);
+	_map[Saiph::position().row()][Saiph::position().col()].search(TILE_FULLY_SEARCHED);
 }
 
 void Level::parseMessages(const string& messages) {
@@ -410,8 +410,8 @@ void Level::setDungeonSymbol(const Point& point, const unsigned char& symbol) {
 void Level::increaseAdjacentSearchCount(const Point& point) {
 	/* increase search count for adjacent points to given point */
 	Point p = point;
-	for (p.moveNorth(); p.row() <= point.row() + 1; p.moveSouth()) {
-		for (p.moveWest(); p.col() <= point.col() + 1; p.moveEast()) {
+	for (p.row(point.row()); p.row() <= point.row() + 1; p.moveSouth()) {
+		for (p.col(point.col()); p.col() <= point.col() + 1; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
 			_map[p.row()][p.col()].searchInc();

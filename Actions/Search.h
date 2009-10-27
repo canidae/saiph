@@ -32,7 +32,7 @@ namespace action {
 		virtual void update(const std::string&) {
 			if (_sequence == 0) {
 				/* increase search counter on level */
-				World::level(Saiph::position().level()).increaseAdjacentSearchCount(Saiph::position());
+				World::level().increaseAdjacentSearchCount(Saiph::position());
 				_sequence = 1;
 			}
 		}
