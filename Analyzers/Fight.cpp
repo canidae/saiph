@@ -137,12 +137,15 @@ void Fight::onEvent(Event * const event) {
 				i->second.want(i->second.count());
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
-		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (!wantItem(*i))
-				continue;
-			World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FIGHT_LOOT)));
-			break;
+		// FIXME: need proper shopping
+		if (World::level().tile().symbol() != SHOP_TILE) {
+			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
+			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+				if (!wantItem(*i))
+					continue;
+				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FIGHT_LOOT)));
+				break;
+			}
 		}
 	}
 }

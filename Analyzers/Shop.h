@@ -15,10 +15,6 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string& messages);
-
-	private:
-		bool drop_pick_axe;
-		bool look_at_ground;
 	};
 }
 #endif

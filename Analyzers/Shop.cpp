@@ -5,12 +5,14 @@
 #include "../Globals.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Events/ReceivedItems.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Shop::Shop() : Analyzer("Shop"), drop_pick_axe(false), look_at_ground(false) {
+Shop::Shop() : Analyzer("Shop") {
 }
 
 /* methods */

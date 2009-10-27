@@ -16,9 +16,9 @@ Elbereth::Elbereth() : Analyzer("Elbereth"), _elbereth_count(0), _engraving_type
 	EventBus::registerEvent(ElberethQuery::ID, this);
 }
 
-void Elbereth::onEvent(Event* const evt) {
+void Elbereth::onEvent(Event * const evt) {
 	if (evt->id() == ElberethQuery::ID) {
-		ElberethQuery* const q = static_cast<ElberethQuery* const> (evt);
+		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
 		if (World::lastActionID() != action::Look::ID) {
 			/* data is outdated */
 			_engraving_type = ELBERETH_MUST_CHECK;
@@ -56,7 +56,7 @@ void Elbereth::parseMessages(const string& messages) {
 		_engraving_type = ELBERETH_NOT_HANDLED;
 		return;
 	}
-	_elbereth_count = 1; // we found one already with the first find() call
+	_elbereth_count = 0;
 	while ((pos = messages.find(ELBERETH, pos + 1)) != string::npos)
 		++_elbereth_count; // found another elbereth
 }

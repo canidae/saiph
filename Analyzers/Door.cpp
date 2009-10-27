@@ -149,10 +149,13 @@ void Door::onEvent(Event * const event) {
 				i->second.want(i->second.count());
 		}
 	} else if (event->id() == ItemsOnGround::ID) {
-		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (wantItem(*i))
-				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_DOOR_LOOT)));
+		// FIXME: need proper shopping
+		if (World::level().tile().symbol() != SHOP_TILE) {
+			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
+			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+				if (wantItem(*i))
+					World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_DOOR_LOOT)));
+			}
 		}
 	}
 }

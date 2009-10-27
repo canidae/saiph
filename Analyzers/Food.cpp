@@ -123,24 +123,27 @@ void Food::parseMessages(const string& messages) {
 }
 
 void Food::onEvent(Event * const event) {
-	if (event->id() == ItemsOnGround::ID && World::level().tile().symbol() != SHOP_TILE) {
-		ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-		map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
-		for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
-				/* it's safe to eat corpses here */
-				map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
-				/* check that item is a corpse, it's safe to eat and that the corpse rots */
-				if (c != data::Corpse::corpses().end() && safeToEat(c) && !(c->second->effects() & EAT_EFFECT_NEVER_ROT)) {
-					World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
+	if (event->id() == ItemsOnGround::ID) {
+		// FIXME: need proper shopping
+		if (World::level().tile().symbol() != SHOP_TILE) {
+			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
+			map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
+			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+				if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
+					/* it's safe to eat corpses here */
+					map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
+					/* check that item is a corpse, it's safe to eat and that the corpse rots */
+					if (c != data::Corpse::corpses().end() && safeToEat(c) && !(c->second->effects() & EAT_EFFECT_NEVER_ROT)) {
+						World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
+						break;
+					}
+				}
+				/* check if we want to pick up edible item that won't rot */
+				map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->name());
+				if (f != data::Food::foods().end() && f->second->effects() & EAT_EFFECT_NEVER_ROT) {
+					World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
 					break;
 				}
-			}
-			/* check if we want to pick up edible item that won't rot */
-			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->name());
-			if (f != data::Food::foods().end() && f->second->effects() & EAT_EFFECT_NEVER_ROT) {
-				World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_FOOD_LOOT)));
-				break;
 			}
 		}
 	} else if (event->id() == WantItems::ID) {
