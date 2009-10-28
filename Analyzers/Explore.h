@@ -30,7 +30,7 @@ namespace analyzer {
 		std::map<Coordinate, int> _visit;
 		std::map<int, int> _explore_levels;
 
-		void explorePoint(Point p, unsigned int* min_moves, int* best_type);
+		void explorePoint(Point p, unsigned int* min_cost, int* best_type);
 	};
 }
 #endif
