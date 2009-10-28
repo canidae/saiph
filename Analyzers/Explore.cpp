@@ -27,11 +27,6 @@ void Explore::analyze() {
 	if (Saiph::blind() || Saiph::confused() || Saiph::hallucinating() || Saiph::stunned())
 		return; // don't explore when we're blind/confused/hallucinating/stunned
 
-	/* add current level as "not explored" if we haven't already.
-	 * TODO: create event "LevelDiscovered" and do this on a such event */
-	if (_explore_levels.find(Saiph::position().level()) == _explore_levels.end())
-		_explore_levels[Saiph::position().level()] = 0;
-
 	/* find stairs on rogue level */
 	if (World::currentPriority() < PRIORITY_EXPLORE_ROGUE && World::level().branch() == BRANCH_ROGUE) {
 		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::level().symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
@@ -65,19 +60,19 @@ void Explore::analyze() {
 	/* explore level */
 	int best_type = INT_MAX;
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
-		unsigned int min_moves = UNREACHABLE;
+		unsigned int min_cost = UNREACHABLE;
 		/* floor */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w)
-			explorePoint(w->first, &min_moves, &best_type);
+			explorePoint(w->first, &min_cost, &best_type);
 		/* corridor */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) CORRIDOR).begin(); w != World::level().symbols((unsigned char) CORRIDOR).end(); ++w)
-			explorePoint(w->first, &min_moves, &best_type);
+			explorePoint(w->first, &min_cost, &best_type);
 		/* open door */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) OPEN_DOOR).begin(); w != World::level().symbols((unsigned char) OPEN_DOOR).end(); ++w)
-			explorePoint(w->first, &min_moves, &best_type);
+			explorePoint(w->first, &min_cost, &best_type);
 		/* unknown tile */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::level().symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
-			explorePoint(w->first, &min_moves, &best_type);
+			explorePoint(w->first, &min_cost, &best_type);
 		/* update value for this level in _explore_levels */
 		_explore_levels[Saiph::position().level()] = best_type;
 	}
@@ -172,7 +167,7 @@ void Explore::onEvent(Event * const event) {
 }
 
 /* private methods */
-void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
+void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
 	/* get the symbol, wall/solid rock/search count and unpassable directions to the east, north, south and west */
 	int search_count = 0;
 	int solid_rock_count = 0;
@@ -238,8 +233,7 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 	/* find out what "type" this place is.
 	 * a "type" pretty much just mean which order to explore places.
 	 * we should explore places in this order:
-	 * 0. visit unlit rooms (and search dead ends)
-	 * 1. visit all corridor squares (and search dead ends)
+	 * 1. visit unlit rooms, corridor squares (and search dead ends)
 	 * - explore another level -
 	 * 2. search corridor corners & room corners
 	 * - explore another level -
@@ -304,14 +298,9 @@ void Explore::explorePoint(Point p, unsigned int* min_moves, int* best_type) {
 	const Tile& tile = World::shortestPath(p);
 	if (tile.cost() >= UNPASSABLE)
 		return;
-	if (type == *best_type) {
-		/* same type as previous best, check distance */
-		if (tile.distance() > *min_moves)
-			return; // found a shorter path already
-		if (World::level().tile(p).symbol() == CORRIDOR && tile.distance() == 1 && tile.distance() == *min_moves && type == *best_type && (tile.direction() == NW || tile.direction() == NE || tile.direction() == SW || tile.direction() == SE))
-			return; // prefer cardinal moves in corridors when distance is 1
-	}
-	*min_moves = tile.distance();
+	else if (type == *best_type && tile.cost() > *min_cost)
+		return; // found a shorter path already
+	*min_cost = tile.cost();
 	*best_type = type;
 	if (tile.direction() == NOWHERE)
 		World::setAction(static_cast<action::Action*> (new action::Search(this, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), tile.distance()))));
