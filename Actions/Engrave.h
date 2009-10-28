@@ -3,6 +3,9 @@
 
 #include "Action.h"
 
+// TODO: (can't engrave)
+#define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
+
 namespace action {
 
 	class Engrave : public Action {
