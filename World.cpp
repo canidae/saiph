@@ -630,27 +630,28 @@ void World::detectPosition() {
 		_levelmap[_levelname].push_back(Saiph::position().level());
 		return;
 	}
-	if ((int) _levels.size() > Saiph::position().level() && _levelname == _levels[Saiph::position().level()].name()) {
+	Debug::info() << _levelname << " - " << level().name() << ": " << level().tile().symbol() << " - " << Saiph::position() << endl;
+	if ((int) _levels.size() > Saiph::position().level() && _levelname == level().name()) {
 		/* same level as last frame, update row & col */
 		Saiph::position(Coordinate(Saiph::position().level(), _cursor));
-		if (_branch[BRANCH_SOKOBAN].level() == -1 && _levels[Saiph::position().level()].branch() == BRANCH_MAIN && _levels[Saiph::position().level()].depth() >= 5 && _levels[Saiph::position().level()].depth() <= 9) {
+		if (_branch[BRANCH_SOKOBAN].level() == -1 && level().branch() == BRANCH_MAIN && level().depth() >= 5 && level().depth() <= 9) {
 			/* look for sokoban level 1a or 1b */
 			if (level().tile(Point(8, 37)).symbol() == BOULDER && level().tile(Point(8, 38)).symbol() == BOULDER && level().tile(Point(8, 43)).symbol() == BOULDER && level().tile(Point(9, 38)).symbol() == BOULDER && level().tile(Point(9, 39)).symbol() == BOULDER && level().tile(Point(9, 42)).symbol() == BOULDER && level().tile(Point(9, 44)).symbol() == BOULDER && level().tile(Point(11, 41)).symbol() == BOULDER && level().tile(Point(14, 39)).symbol() == BOULDER && level().tile(Point(14, 40)).symbol() == BOULDER && level().tile(Point(14, 41)).symbol() == BOULDER && level().tile(Point(14, 42)).symbol() == BOULDER) {
 				/* sokoban 1a */
 				Debug::notice() << "Found Sokoban level 1a: " << Saiph::position() << endl;
-				_levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
+				level().branch(BRANCH_SOKOBAN);
 				_branch[BRANCH_SOKOBAN] = Saiph::position();
 			} else if (level().tile(Point(8, 34)).symbol() == BOULDER && level().tile(Point(8, 42)).symbol() == BOULDER && level().tile(Point(9, 34)).symbol() == BOULDER && level().tile(Point(9, 41)).symbol() == BOULDER && level().tile(Point(10, 42)).symbol() == BOULDER && level().tile(Point(13, 40)).symbol() == BOULDER && level().tile(Point(14, 41)).symbol() == BOULDER && level().tile(Point(15, 41)).symbol() == BOULDER && level().tile(Point(16, 40)).symbol() == BOULDER && level().tile(Point(16, 42)).symbol() == BOULDER) {
 				/* sokoban 1b */
 				Debug::notice() << "Found Sokoban level 1b: " << Saiph::position() << endl;
-				_levels[Saiph::position().level()].branch(BRANCH_SOKOBAN);
+				level().branch(BRANCH_SOKOBAN);
 				_branch[BRANCH_SOKOBAN] = Saiph::position();
 			}
 
 		}
-		if (_levels[Saiph::position().level()].branch() == BRANCH_MAIN && _levels[Saiph::position().level()].depth() >= 3 && _levels[Saiph::position().level()].depth() <= 5) {
+		if (level().branch() == BRANCH_MAIN && level().depth() >= 3 && level().depth() <= 5) {
 			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
-			for (map<Point, int>::iterator hw = _levels[Saiph::position().level()].symbols((unsigned char) HORIZONTAL_WALL).begin(); hw != _levels[Saiph::position().level()].symbols((unsigned char) HORIZONTAL_WALL).end(); ++hw) {
+			for (map<Point, int>::iterator hw = level().symbols((unsigned char) HORIZONTAL_WALL).begin(); hw != level().symbols((unsigned char) HORIZONTAL_WALL).end(); ++hw) {
 				if (hw->first.row() <= MAP_ROW_BEGIN || hw->first.row() >= MAP_ROW_END || hw->first.col() <= MAP_COL_BEGIN || hw->first.col() >= MAP_COL_END)
 					continue;
 				/* if we see horizontal walls adjacent to this point (except west & east),
@@ -658,16 +659,16 @@ void World::detectPosition() {
 				if (level().tile(Point(hw->first.row() - 1, hw->first.col() - 1)).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() - 1, hw->first.col())).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() - 1, hw->first.col() + 1)).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() + 1, hw->first.col() - 1)).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() + 1, hw->first.col())).symbol() == HORIZONTAL_WALL || level().tile(Point(hw->first.row() + 1, hw->first.col() + 1)).symbol() == HORIZONTAL_WALL) {
 					/* we're in the mines */
 					Debug::notice() << "Found the mines: " << Saiph::position() << endl;
-					_levels[Saiph::position().level()].branch(BRANCH_MINES);
+					level().branch(BRANCH_MINES);
 					_branch[BRANCH_MINES] = Saiph::position();
 					break;
 				}
 			}
 		}
-		if (_levels[Saiph::position().level()].branch() != BRANCH_ROGUE && _view[STATUS_ROW][8] == '*') {
+		if (level().branch() != BRANCH_ROGUE && _view[STATUS_ROW][8] == '*') {
 			/* rogue level, set branch attribute */
 			Debug::notice() << "Found the rogue level: " << Saiph::position() << endl;
-			_levels[Saiph::position().level()].branch(BRANCH_ROGUE);
+			level().branch(BRANCH_ROGUE);
 		}
 		return;
 	}
@@ -679,15 +680,15 @@ void World::detectPosition() {
 	if (symbol == STAIRS_DOWN) {
 		/* we did stand on stairs down, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = _levels[Saiph::position().level()].symbols((unsigned char) STAIRS_DOWN)[Saiph::position()];
+		found = level().symbols((unsigned char) STAIRS_DOWN)[Saiph::position()];
 	} else if (symbol == STAIRS_UP) {
 		/* we did stand on stairs up, and if we don't know where they lead then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = _levels[Saiph::position().level()].symbols((unsigned char) STAIRS_UP)[Saiph::position()];
+		found = level().symbols((unsigned char) STAIRS_UP)[Saiph::position()];
 	} else if (symbol == MAGIC_PORTAL) {
 		/* we did stand on a magic portal, and if we don't know where it leads then
 		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = _levels[Saiph::position().level()].symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()];
+		found = level().symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()];
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
@@ -719,20 +720,20 @@ void World::detectPosition() {
 		/* when we discover a new level it's highly likely it's in the
 		 * same branch as the previous level.
 		 * exception is rogue level, which really isn't a branch */
-		_levels.push_back(Level(_levels.size(), _levelname, (_levels[Saiph::position().level()].branch() != BRANCH_ROGUE) ? _levels[Saiph::position().level()].branch() : BRANCH_MAIN));
+		_levels.push_back(Level(_levels.size(), _levelname, (level().branch() != BRANCH_ROGUE) ? level().branch() : BRANCH_MAIN));
 		_levelmap[_levelname].push_back(found);
 		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
 	}
 	/* were we on stairs on last Saiph::position()? */
 	if (symbol == STAIRS_DOWN) {
 		/* yes, we were on stairs down */
-		_levels[Saiph::position().level()].symbols((unsigned char) STAIRS_DOWN)[Saiph::position()] = found;
+		level().symbols((unsigned char) STAIRS_DOWN)[Saiph::position()] = found;
 	} else if (symbol == STAIRS_UP) {
 		/* yes, we were on stairs up */
-		_levels[Saiph::position().level()].symbols((unsigned char) STAIRS_UP)[Saiph::position()] = found;
+		level().symbols((unsigned char) STAIRS_UP)[Saiph::position()] = found;
 	} else if (symbol == MAGIC_PORTAL) {
 		/* yes, we were on a magic portal */
-		_levels[Saiph::position().level()].symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()] = found;
+		level().symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()] = found;
 	}
 	Saiph::position(Coordinate(found, _cursor));
 }
