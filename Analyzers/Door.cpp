@@ -50,7 +50,7 @@ void Door::analyze() {
 	/* go to nearest closed door and get it open somehow */
 	unsigned int min_distance = UNREACHABLE;
 	for (map<Point, int>::iterator d = World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).begin(); d != World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
-		const Tile& tile = World::shortestPath(d->first);
+		Tile& tile = World::shortestPath(d->first);
 		if (tile.cost() == UNREACHABLE)
 			continue; // can't reach this door
 		if (World::level(Saiph::position().level()).branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))

@@ -238,7 +238,7 @@ unsigned char World::directLine(Point point, const bool& ignore_sinks, const boo
 	return ILLEGAL_DIRECTION;
 }
 
-const Tile& World::shortestPath(const Point& point) {
+Tile& World::shortestPath(const Point& point) {
 	/* returns PathNode for shortest path from player to target */
 	return level().tile(point);
 }
@@ -280,7 +280,7 @@ Tile World::shortestPath(const Coordinate& target) {
 				continue; // we don't know where these stairs lead
 			else if (level_added[s->second])
 				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			Debug::pathing() << "Following upstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
@@ -304,7 +304,7 @@ Tile World::shortestPath(const Coordinate& target) {
 				continue; // we don't know where these stairs lead
 			else if (level_added[s->second])
 				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			Debug::pathing() << "Following downstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
@@ -328,7 +328,7 @@ Tile World::shortestPath(const Coordinate& target) {
 				continue; // we don't know where this portal leads
 			else if (level_added[s->second])
 				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			Debug::info() << "Following magic portal on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
@@ -367,7 +367,7 @@ Tile World::shortestPath(const unsigned char& symbol) {
 	while (++pivot < level_count) {
 		/* path to symbols on level */
 		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols(symbol).begin(); s != _levels[level_queue[pivot]].symbols(symbol).end(); ++s) {
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() == UNREACHABLE)
 				continue;
 			else if (tile.cost() == UNPASSABLE && tile.distance() > 1)
@@ -388,7 +388,7 @@ Tile World::shortestPath(const unsigned char& symbol) {
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() + 1 >= best_tile.cost())
@@ -415,7 +415,7 @@ Tile World::shortestPath(const unsigned char& symbol) {
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() + 1 >= best_tile.cost())
@@ -442,7 +442,7 @@ Tile World::shortestPath(const unsigned char& symbol) {
 				continue; // we don't know where this magic portal leads
 			if (level_added[s->second])
 				continue; // already added this level
-			const Tile& tile = _levels[level_queue[pivot]].tile(s->first);
+			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() >= best_tile.cost())

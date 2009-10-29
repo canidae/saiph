@@ -42,7 +42,7 @@ void Loot::analyze() {
 			_visit.erase(v++);
 			continue;
 		}
-		const Tile& tile = World::shortestPath(*v);
+		Tile tile = World::shortestPath(*v);
 		if (tile.direction() == NOWHERE) {
 			/* standing on stash, look and remove from visit */
 			if (World::setAction(static_cast<action::Action*> (new action::Look(this)))) {

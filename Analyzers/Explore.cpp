@@ -30,7 +30,7 @@ void Explore::analyze() {
 	/* find stairs on rogue level */
 	if (World::currentPriority() < PRIORITY_EXPLORE_ROGUE && World::level().branch() == BRANCH_ROGUE) {
 		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::level().symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
-			const Tile& tile = World::shortestPath(s->first);
+			Tile& tile = World::shortestPath(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
@@ -46,7 +46,7 @@ void Explore::analyze() {
 		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) STAIRS_UP).begin(); s != World::level().symbols((unsigned char) STAIRS_UP).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
-			const Tile& tile = World::shortestPath(s->first);
+			Tile& tile = World::shortestPath(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
@@ -89,7 +89,7 @@ void Explore::analyze() {
 		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
-			const Tile& tile = World::shortestPath(s->first);
+			Tile& tile = World::shortestPath(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
@@ -105,7 +105,7 @@ void Explore::analyze() {
 		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) MAGIC_PORTAL).begin(); s != World::level().symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
-			const Tile& tile = World::shortestPath(s->first);
+			Tile& tile = World::shortestPath(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
@@ -149,7 +149,7 @@ void Explore::analyze() {
 	/* travel */
 	map<Coordinate, int>::iterator v = _visit.begin();
 	while (v != _visit.end()) {
-		const Tile& tile = World::shortestPath(v->first);
+		Tile tile = World::shortestPath(v->first);
 		if (tile.direction() == NOWHERE) {
 			_visit.erase(v++);
 			Debug::analyzer(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
@@ -158,7 +158,7 @@ void Explore::analyze() {
 			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(v->second, tile.cost()))));
 			Debug::analyzer(name()) << "Travelling to " << v->first << endl;
 		} else {
-			Debug::analyzer(name()) << "Unable to travel to " << v->first << ", tile = " << tile << endl;
+			Debug::analyzer(name()) << "Unable to travel from " << Saiph::position() << " to tile " << tile << endl;
 		}
 		++v;
 	}
@@ -300,7 +300,7 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type, unsi
 	/* check if this "type" is worse than what we already got */
 	if (type > *best_type)
 		return;
-	const Tile& tile = World::shortestPath(p);
+	Tile& tile = World::shortestPath(p);
 	if (tile.cost() >= UNPASSABLE)
 		return;
 	else if (type == *best_type && tile.cost() > *min_cost)

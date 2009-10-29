@@ -52,7 +52,7 @@ public:
 	static bool setAction(action::Action* action);
 	static bool queueAction(action::Action* action);
 	static unsigned char directLine(Point point, const bool& ignore_sinks, const bool& ignore_boulders);
-	static const Tile& shortestPath(const Point& target);
+	static Tile& shortestPath(const Point& target);
 	static Tile shortestPath(const Coordinate& target);
 	static Tile shortestPath(const unsigned char& symbol);
 	static void run();

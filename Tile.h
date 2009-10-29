@@ -13,10 +13,10 @@ public:
 	virtual ~Tile();
 
 	const Coordinate& coordinate() const;
-	const unsigned int& cost() const;
-	const unsigned char& direction() const;
+	const unsigned int& cost();
+	const unsigned char& direction();
 	const unsigned char& direction(const unsigned char& direction);
-	const unsigned int& distance() const;
+	const unsigned int& distance();
 	const unsigned char& monster() const; // only character, most analyzers should use list of Monster from Level instead
 	const unsigned char& monster(const unsigned char& monster);
 	const unsigned int& search() const;
@@ -40,5 +40,5 @@ private:
 	Point _next; // the location of the next tile in the path towards the player
 };
 
-std::ostream & operator<<(std::ostream& os, const Tile& t);
+std::ostream & operator<<(std::ostream& os, Tile& t);
 #endif

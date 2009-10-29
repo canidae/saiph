@@ -93,7 +93,7 @@ void Fight::analyze() {
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
-		const Tile& tile = World::shortestPath(m->first);
+		Tile& tile = World::shortestPath(m->first);
 		if (tile.direction() == ILLEGAL_DIRECTION)
 			continue; // can't move to monster
 		int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN;
