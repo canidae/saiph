@@ -26,7 +26,7 @@ void Elbereth::onEvent(Event * const evt) {
 			_elbereth_count = 0;
 		}
 		for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-			if (m->second.data() == NULL || !m->second.data()->ignoresElbereth())
+			if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
 				continue;
 			if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
 				continue;
