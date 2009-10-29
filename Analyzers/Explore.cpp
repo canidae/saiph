@@ -27,6 +27,9 @@ void Explore::analyze() {
 	if (Saiph::blind() || Saiph::confused() || Saiph::hallucinating() || Saiph::stunned())
 		return; // don't explore when we're blind/confused/hallucinating/stunned
 
+	if (_explore_levels.find(Saiph::position().level()) == _explore_levels.end())
+		_explore_levels[Saiph::position().level()] = 0;
+
 	/* find stairs on rogue level */
 	if (World::currentPriority() < PRIORITY_EXPLORE_ROGUE && World::level().branch() == BRANCH_ROGUE) {
 		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::level().symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
@@ -118,31 +121,35 @@ void Explore::analyze() {
 
 	/* go to a level we've explored less than this level */
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL && best_type > 1) {
-		Coordinate best_level;
+		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
-			if (l->second >= best_type || l->first == Saiph::position().level())
+			if (l->second >= best_type) {
+				Debug::analyzer(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
 				continue;
-			Tile tile;
+			}
 			/* can we path to upstairs on this level? */
+			Tile tile;
 			for (map<Point, int>::iterator s = World::level(l->first).symbols(STAIRS_UP).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(STAIRS_UP).end(); ++s) {
 				tile = World::shortestPath(Coordinate(l->first, s->first));
-				best_level = Coordinate(l->first, s->first);
+				if (tile.cost() < best_tile.cost())
+					best_tile = tile;
 			}
 			/* can we path to downstairs on this level? */
 			for (map<Point, int>::iterator s = World::level(l->first).symbols(STAIRS_DOWN).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(STAIRS_DOWN).end(); ++s) {
 				tile = World::shortestPath(Coordinate(l->first, s->first));
-				best_level = Coordinate(l->first, s->first);
+				if (tile.cost() < best_tile.cost())
+					best_tile = tile;
 			}
 			/* can we path to portals on this level? */
 			for (map<Point, int>::iterator s = World::level(l->first).symbols(MAGIC_PORTAL).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(MAGIC_PORTAL).end(); ++s) {
 				tile = World::shortestPath(Coordinate(l->first, s->first));
-				best_level = Coordinate(l->first, s->first);
+				if (tile.cost() < best_tile.cost())
+					best_tile = tile;
 			}
-			best_type = l->second;
 		}
-		if (best_level.level() != -1) {
-			_visit[best_level] = PRIORITY_EXPLORE_LEVEL;
-			Debug::analyzer(name()) << "Heading towards " << best_level << " to explore that level" << endl;
+		if (best_tile.cost() < UNREACHABLE) {
+			Debug::analyzer(name()) << "Heading towards " << best_tile.coordinate() << " to explore that level" << endl;
+			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
 		}
 	}
 
