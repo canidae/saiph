@@ -18,51 +18,47 @@ MonsterInfo::MonsterInfo() : Analyzer("MonsterInfo") {
 void MonsterInfo::analyze() {
 	if (Saiph::hallucinating())
 		return; // if we're hallucinating, the output is garbage
-	for (look_at = World::level().monsters().begin(); look_at != World::level().monsters().end(); ++look_at) {
-		if (!look_at->second.visible())
+	for (_look_at = World::level().monsters().begin(); _look_at != World::level().monsters().end(); ++_look_at) {
+		if (!_look_at->second.visible())
 			continue; // don't farlook monsters we can't see
-		else if (look_at->second.symbol() == 'I' || look_at->second.symbol() == 'm')
+		else if (_look_at->second.symbol() == 'I' || _look_at->second.symbol() == 'm')
 			continue; // don't farlook 'I' or 'm' monsters
-		/* farlook monster if:
-		 * - we don't know the monster data
-		 * - we don't know the monster's attitude
-		 * - we believe the monster is friendly and the monster is next to us */
-		if (look_at->second.data() == NULL || look_at->second.attitude() == ATTITUDE_UNKNOWN || (look_at->second.attitude() == FRIENDLY && abs(look_at->first.row() - Saiph::position().row()) <= 1 && abs(look_at->first.col() - Saiph::position().col()) <= 1)) {
-			World::setAction(static_cast<action::Action*> (new action::FarLook(this, look_at->first)));
-			return;
-		}
+		else if (_look_at->second.attitude() != ATTITUDE_UNKNOWN)
+			continue; // don't farlook monsters we know the attitude of
+		World::setAction(static_cast<action::Action*> (new action::FarLook(this, _look_at->first)));
+		return;
 	}
 }
 
 void MonsterInfo::parseMessages(const string& messages) {
-	if (look_at != World::level().monsters().end() && messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ') {
+	if (_look_at != World::level().monsters().end() && messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ') {
 		/* probably looked at a monster */
 		string::size_type pos = string::npos;
 		if ((pos = messages.find(" (peaceful ", 0)) != string::npos) {
 			/* it's friendly */
-			look_at->second.attitude(FRIENDLY);
+			_look_at->second.attitude(FRIENDLY);
 			pos += sizeof (" (peaceful ") - 1;
 		} else if ((pos = messages.find(" (", 0)) != string::npos) {
 			/* hostile */
 			if (messages.find(" (Oracle", pos) == pos)
-				look_at->second.attitude(FRIENDLY); // never attack oracle
+				_look_at->second.attitude(FRIENDLY); // never attack oracle
 			else
-				look_at->second.attitude(HOSTILE);
+				_look_at->second.attitude(HOSTILE);
 			pos += sizeof (" (") - 1;
 		}
-		if (pos != string::npos && pos < messages.size() && look_at->second.symbol() == '@' && look_at->second.color() == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z')
-			look_at->second.shopkeeper(true); // shopkeepers are always white @, and their names are capitalized
+		if (pos != string::npos && pos < messages.size() && _look_at->second.symbol() == '@' && _look_at->second.color() == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z')
+			_look_at->second.shopkeeper(true); // shopkeepers are always white @, and their names are capitalized
 		else
-			look_at->second.shopkeeper(false);
+			_look_at->second.shopkeeper(false);
 		if (messages.find("priest of ", pos) != string::npos || messages.find("priestess of ", pos) != string::npos)
-			look_at->second.priest(true);
+			_look_at->second.priest(true);
 		else
-			look_at->second.priest(false);
+			_look_at->second.priest(false);
 		string::size_type pos2 = messages.find(" - ", pos);
 		if (pos2 == string::npos)
 			pos2 = messages.find(")", pos);
 		if (pos2 != string::npos)
-			look_at->second.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
+			_look_at->second.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
 	} else if (messages.find(" gets angry!", 0) != string::npos) {
 		/* uh oh, we pissed someone off, make every visible monster's attitude unknown */
 		for (map<Point, Monster>::iterator look_at = World::level().monsters().begin(); look_at != World::level().monsters().end(); ++look_at) {

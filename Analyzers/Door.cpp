@@ -76,7 +76,7 @@ void Door::analyze() {
 			return;
 		} else if (tile.distance() < min_distance) {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.cost()))));
 			min_distance = tile.distance();
 		}
 	}

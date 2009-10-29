@@ -36,7 +36,7 @@ void Explore::analyze() {
 			else if (tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Look(this)));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, tile.distance()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, tile.cost()))));
 			break;
 		}
 	}
@@ -50,9 +50,9 @@ void Explore::analyze() {
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
-				World::setAction(static_cast<action::Action*> (new action::Move(this, UP, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.distance()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, UP, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.cost()))));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.distance()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.cost()))));
 			break;
 		}
 	}
@@ -61,20 +61,27 @@ void Explore::analyze() {
 	int best_type = INT_MAX - 1;
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		unsigned int min_cost = UNREACHABLE;
+		unsigned char best_direction = '\0';
 		/* floor */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type);
+			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* corridor */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) CORRIDOR).begin(); w != World::level().symbols((unsigned char) CORRIDOR).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type);
+			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* open door */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) OPEN_DOOR).begin(); w != World::level().symbols((unsigned char) OPEN_DOOR).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type);
+			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* unknown tile */
 		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::level().symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type);
+			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* update value for this level in _explore_levels */
 		_explore_levels[Saiph::position().level()] = best_type;
+		if (best_direction != '\0') {
+			if (best_direction == NOWHERE)
+				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
+			else
+				World::setAction(static_cast<action::Action*> (new action::Move(this, best_direction, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1), min_cost))));
+		}
 	}
 
 	/* explore stairs down */
@@ -86,9 +93,9 @@ void Explore::analyze() {
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
-				World::setAction(static_cast<action::Action*> (new action::Move(this, DOWN, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.distance()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, DOWN, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.cost()))));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.distance()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.cost()))));
 			break;
 		}
 	}
@@ -104,7 +111,7 @@ void Explore::analyze() {
 			else if (tile.direction() == NOWHERE)
 				continue; // shouldn't happen
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, tile.distance()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, tile.cost()))));
 			break;
 		}
 	}
@@ -148,7 +155,7 @@ void Explore::analyze() {
 			Debug::analyzer(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
 			continue;
 		} else if (tile.cost() < UNPASSABLE) {
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(v->second, tile.distance()))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(v->second, tile.cost()))));
 			Debug::analyzer(name()) << "Travelling to " << v->first << endl;
 		} else {
 			Debug::analyzer(name()) << "Unable to travel to " << v->first << ", tile = " << tile << endl;
@@ -167,7 +174,7 @@ void Explore::onEvent(Event * const event) {
 }
 
 /* private methods */
-void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
+void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type, unsigned char* best_direction) {
 	/* get the symbol, wall/solid rock/search count and unpassable directions to the east, north, south and west */
 	int search_count = 0;
 	int solid_rock_count = 0;
@@ -300,8 +307,5 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
 		return; // found a shorter path already
 	*min_cost = tile.cost();
 	*best_type = type;
-	if (tile.direction() == NOWHERE)
-		World::setAction(static_cast<action::Action*> (new action::Search(this, (type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1))));
-	else
-		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), tile.cost()))));
+	*best_direction = tile.direction();
 }
