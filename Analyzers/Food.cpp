@@ -77,8 +77,8 @@ void Food::analyze() {
 					/* neither should this */
 					Debug::analyzer(name()) << "Want to eat item '" << i->second << "', but that's not in our list of edible items" << endl;
 					continue;
-				} else if (eat == Inventory::items().end() || _eat_priority.find(eat->second.name())->second > ep->second) {
-					/* this food item got a lower eat priority than previous (if any) food item */
+				} else if (eat == Inventory::items().end() || _eat_priority.find(eat->second.name())->second < ep->second) {
+					/* this food item got a higher eat priority than previous (if any) food item */
 					eat = i;
 				}
 			}
