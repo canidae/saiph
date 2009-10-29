@@ -3,7 +3,7 @@
 
 #include "Action.h"
 
-#define MOVE_COST_MEDIAN 50
+#define MOVE_COST_MEDIAN 200
 
 namespace action {
 
@@ -17,8 +17,8 @@ namespace action {
 		virtual ~Move() {
 		}
 
-		static int calculatePriority(const int& max_priority, const int& moves) {
-			return max_priority * MOVE_COST_MEDIAN / (moves + MOVE_COST_MEDIAN - 1);
+		static int calculatePriority(const int& max_priority, const int& cost) {
+			return max_priority * MOVE_COST_MEDIAN / (cost + MOVE_COST_MEDIAN - 1);
 		}
 
 		virtual const int& id() {

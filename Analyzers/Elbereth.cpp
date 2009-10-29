@@ -4,6 +4,7 @@
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Look.h"
+#include "../Data/Monster.h"
 #include "../Events/ElberethQuery.h"
 
 using namespace analyzer;
@@ -23,6 +24,16 @@ void Elbereth::onEvent(Event * const evt) {
 			/* data is outdated */
 			_engraving_type = ELBERETH_MUST_CHECK;
 			_elbereth_count = 0;
+		}
+		for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+			if (m->second.data() == NULL || !m->second.data()->ignoresElbereth())
+				continue;
+			if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
+				continue;
+			/* this monster ignores elbereth and is next to us */
+			_engraving_type = ELBERETH_INEFFECTIVE;
+			_elbereth_count = 0;
+			break;
 		}
 		q->type(_engraving_type);
 		q->count(_elbereth_count);

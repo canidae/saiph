@@ -58,7 +58,7 @@ void Explore::analyze() {
 	}
 
 	/* explore level */
-	int best_type = INT_MAX;
+	int best_type = INT_MAX - 1;
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		unsigned int min_cost = UNREACHABLE;
 		/* floor */
@@ -233,7 +233,7 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
 	/* find out what "type" this place is.
 	 * a "type" pretty much just mean which order to explore places.
 	 * we should explore places in this order:
-	 * 1. visit unlit rooms, corridor squares (and search dead ends)
+	 * 1. visit unlit rooms, corridor tiles and search dead ends
 	 * - explore another level -
 	 * 2. search corridor corners & room corners
 	 * - explore another level -
@@ -241,8 +241,7 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
 	 * - explore another level -
 	 * 4. search dead ends
 	 * - explore another level -
-	 *
-	 * repeat step 2-4
+	 * 5. goto step 2.
 	 */
 	int type = INT_MAX;
 	int intervals;
@@ -292,9 +291,8 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
 	}
 
 	/* check if this "type" is worse than what we already got */
-	if (type == INT_MAX || type > *best_type)
+	if (type > *best_type)
 		return;
-
 	const Tile& tile = World::shortestPath(p);
 	if (tile.cost() >= UNPASSABLE)
 		return;
@@ -303,7 +301,7 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type) {
 	*min_cost = tile.cost();
 	*best_type = type;
 	if (tile.direction() == NOWHERE)
-		World::setAction(static_cast<action::Action*> (new action::Search(this, action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), tile.distance()))));
+		World::setAction(static_cast<action::Action*> (new action::Search(this, (type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1))));
 	else
-		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), tile.distance()))));
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority((type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (type + 1), tile.cost()))));
 }

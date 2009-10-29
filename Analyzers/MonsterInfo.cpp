@@ -1,5 +1,7 @@
-#include <stdlib.h>
 #include "MonsterInfo.h"
+
+#include <stdlib.h>
+#include "../Debug.h"
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/FarLook.h"
@@ -18,16 +20,17 @@ void MonsterInfo::analyze() {
 		return; // if we're hallucinating, the output is garbage
 	for (look_at = World::level().monsters().begin(); look_at != World::level().monsters().end(); ++look_at) {
 		if (!look_at->second.visible())
-			continue; // monster not visible
+			continue; // don't farlook monsters we can't see
 		else if (look_at->second.symbol() == 'I' || look_at->second.symbol() == 'm')
 			continue; // don't farlook 'I' or 'm' monsters
-		else if (look_at->second.data() != NULL && look_at->second.symbol() != '@' && look_at->second.symbol() != 'A')
-			continue; // not an interesting monster
-		else if (look_at->second.attitude() != ATTITUDE_UNKNOWN)
-			continue; // known attitude
-		/* farlook this monster */
-		World::setAction(static_cast<action::Action*> (new action::FarLook(this, look_at->first)));
-		return;
+		/* farlook monster if:
+		 * - we don't know the monster data
+		 * - we don't know the monster's attitude
+		 * - we believe the monster is friendly and the monster is next to us */
+		if (look_at->second.data() == NULL || look_at->second.attitude() == ATTITUDE_UNKNOWN || (look_at->second.attitude() == FRIENDLY && abs(look_at->first.row() - Saiph::position().row()) <= 1 && abs(look_at->first.col() - Saiph::position().col()) <= 1)) {
+			World::setAction(static_cast<action::Action*> (new action::FarLook(this, look_at->first)));
+			return;
+		}
 	}
 }
 
@@ -55,9 +58,9 @@ void MonsterInfo::parseMessages(const string& messages) {
 			look_at->second.priest(true);
 		else
 			look_at->second.priest(false);
-		string::size_type pos2 = messages.find(")", pos);
+		string::size_type pos2 = messages.find(" - ", pos);
 		if (pos2 == string::npos)
-			pos2 = messages.find(" - ", pos);
+			pos2 = messages.find(")", pos);
 		if (pos2 != string::npos)
 			look_at->second.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
 	} else if (messages.find(" gets angry!", 0) != string::npos) {
