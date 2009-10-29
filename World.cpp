@@ -630,7 +630,6 @@ void World::detectPosition() {
 		_levelmap[_levelname].push_back(Saiph::position().level());
 		return;
 	}
-	Debug::info() << _levelname << " - " << level().name() << ": " << level().tile().symbol() << " - " << Saiph::position() << endl;
 	if ((int) _levels.size() > Saiph::position().level() && _levelname == level().name()) {
 		/* same level as last frame, update row & col */
 		Saiph::position(Coordinate(Saiph::position().level(), _cursor));
