@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Enhance(analyzer::Analyzer* analyzer) : Action(analyzer), _do_enhance("#enhance\n", PRIORITY_CONTINUE_ACTION), _enhance_a("a", PRIORITY_CONTINUE_ACTION), _close(std::string(1, CLOSE_PAGE), PRIORITY_CONTINUE_ACTION) {
+		Enhance(analyzer::Analyzer* analyzer) : Action(analyzer), _do_enhance("#enhance\n", PRIORITY_CONTINUE_ACTION), _enhance_a("a", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Enhance() {
@@ -27,23 +27,18 @@ namespace action {
 			case 1:
 				return _enhance_a;
 
-			case 2:
-				return _close;
-
 			default:
 				return Action::NOOP;
 			}
 		}
 
 		virtual void update(const std::string&) {
-			if (World::menu())
-				++_sequence;
+			++_sequence;
 		}
 
 	private:
 		const Command _do_enhance;
 		const Command _enhance_a;
-		const Command _close;
 	};
 }
 #endif
