@@ -811,13 +811,13 @@ void World::dumpMaps() {
 				continue;
 			const Tile& t = level().tile(p);
 			if (p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
-				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
+				cout << (unsigned char) 27 << "[95m@" << (unsigned char) 27 << "[0m";
 			else if (t.monster() != ILLEGAL_MONSTER)
-				cout << t.monster();
+				cout << (unsigned char) 27 << "[" << (t.monster() == _view[p.row()][p.col()] ? "91" : "31") << "m" << t.monster() << (unsigned char) 27 << "[0m";
 			else if (t.symbol() > 31 && t.symbol() < 127)
 				cout << t.symbol();
 			else
-				cout << ','; // can't display character
+				cout << (unsigned char) 27 << "[93m?" << (unsigned char) 27 << "[0m"; // can't display character
 		}
 	}
 
