@@ -6,6 +6,7 @@
 #include "Eat.h"
 #include "EatCorpse.h"
 #include "Engrave.h"
+#include "Enhance.h"
 #include "FarLook.h"
 #include "Fight.h"
 #include "Kick.h"
@@ -54,6 +55,7 @@ const int SelectMultiple::ID = 22;
 const int Throw::ID = 23;
 const int Unlock::ID = 24;
 const int FarLook::ID = 25;
+const int Enhance::ID = 26;
 
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {

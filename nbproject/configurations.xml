@@ -6,6 +6,7 @@
         <in>Action.cpp</in>
         <in>Action.h</in>
         <in>Answer.h</in>
+        <in>Answer_1.h</in>
         <in>Apply.h</in>
         <in>ApplyInDirection.h</in>
         <in>Call.h</in>
@@ -343,14 +344,6 @@
             <pElem>Actions</pElem>
           </incDir>
         </ccTool>
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Enhance.cpp"
-            ex="true"
-            tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Enhance.h"
-            ex="true"
-            tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Excalibur.cpp"
             ex="true"

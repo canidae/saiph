@@ -1,6 +1,8 @@
 #include "Analyzer.h"
+
 #include "Amulet.h"
 #include "Elbereth.h"
+#include "Enhance.h"
 #include "Explore.h"
 #include "Door.h"
 #include "Fight.h"
@@ -24,9 +26,10 @@ Analyzer::~Analyzer() {
 void Analyzer::init() {
 	/* init analyzers */
 	World::registerAnalyzer(new Amulet());
-	World::registerAnalyzer(new Elbereth());
-	World::registerAnalyzer(new Explore());
 	World::registerAnalyzer(new Door());
+	World::registerAnalyzer(new Elbereth());
+	World::registerAnalyzer(new Enhance());
+	World::registerAnalyzer(new Explore());
 	World::registerAnalyzer(new Fight());
 	World::registerAnalyzer(new Food());
 	World::registerAnalyzer(new Health());
