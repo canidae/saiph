@@ -18,8 +18,6 @@ MonsterInfo::MonsterInfo() : Analyzer("MonsterInfo") {
 void MonsterInfo::analyze() {
 	if (Saiph::hallucinating())
 		return; // if we're hallucinating, the output is garbage
-	if (_updated == World::internalTurn())
-		return; // already farlooked this turn
 	for (_look_at = World::level().monsters().begin(); _look_at != World::level().monsters().end(); ++_look_at) {
 		if (!_look_at->second.visible())
 			continue; // don't farlook monsters we can't see
@@ -27,11 +25,13 @@ void MonsterInfo::analyze() {
 			continue; // don't farlook 'I' or 'm' monsters
 		else if (_look_at->second.attitude() == HOSTILE)
 			continue; // we don't expect hostile monsters to go friendly (XXX: scroll of taming, etc will need special handling)
+		map<Point, int>::iterator c = _checked.find(_look_at->first);
+		if (c != _checked.end() && c->second == World::internalTurn())
+			continue; // already checked this monster this turn
 		World::setAction(static_cast<action::Action*> (new action::FarLook(this, _look_at->first)));
+		_checked[_look_at->first] = World::internalTurn();
 		return;
 	}
-	/* farlooked all friendly monster this turn, set _updated */
-	_updated = World::internalTurn();
 }
 
 void MonsterInfo::parseMessages(const string& messages) {
