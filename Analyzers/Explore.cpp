@@ -124,7 +124,7 @@ void Explore::analyze() {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
 			if (l->second >= best_type) {
-				Debug::analyzer(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
+				Debug::custom(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
 				continue;
 			}
 			/* can we path to upstairs on this level? */
@@ -148,7 +148,7 @@ void Explore::analyze() {
 			}
 		}
 		if (best_tile.cost() < UNREACHABLE) {
-			Debug::analyzer(name()) << "Heading towards " << best_tile.coordinate() << " to explore that level" << endl;
+			Debug::custom(name()) << "Heading towards " << best_tile.coordinate() << " to explore that level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile.direction(), action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
 		}
 	}
@@ -159,13 +159,13 @@ void Explore::analyze() {
 		Tile tile = World::shortestPath(v->first);
 		if (tile.direction() == NOWHERE) {
 			_visit.erase(v++);
-			Debug::analyzer(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
+			Debug::custom(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
 			continue;
 		} else if (tile.cost() < UNPASSABLE) {
 			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(v->second, tile.cost()))));
-			Debug::analyzer(name()) << "Travelling to " << v->first << endl;
+			Debug::custom(name()) << "Travelling to " << v->first << endl;
 		} else {
-			Debug::analyzer(name()) << "Unable to travel from " << Saiph::position() << " to tile " << tile << endl;
+			Debug::custom(name()) << "Unable to travel from " << Saiph::position() << " to tile " << tile << endl;
 		}
 		++v;
 	}

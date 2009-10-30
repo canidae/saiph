@@ -60,7 +60,7 @@ void Fight::analyze() {
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data() == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
-			Debug::analyzer(name()) << "Found monster we don't know data about. Hmm" << endl;
+			Debug::custom(name()) << "Found monster we don't know data about. Hmm" << endl;
 			attack_score = data::Monster::saiphDifficultyMax();
 		} else {
 			/* figure out the attack score */
@@ -82,14 +82,14 @@ void Fight::analyze() {
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_THROW_MIN;
 				World::setAction(static_cast<action::Action*> (new action::Throw(this, *_projectile_slots.begin(), in_line, priority)));
-				Debug::analyzer(name()) << "Setting action to throw at '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
+				Debug::custom(name()) << "Setting action to throw at '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		} else if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN;
 			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).direction(), priority)));
-			Debug::analyzer(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
+			Debug::custom(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
 			continue;
 		}
 		/* we can neither melee nor throw at the monster, move towards it */
@@ -99,7 +99,7 @@ void Fight::analyze() {
 		int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN;
 		priority = action::Move::calculatePriority(priority, tile.cost());
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), priority)));
-		Debug::analyzer(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
+		Debug::custom(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 
@@ -111,17 +111,17 @@ void Fight::onEvent(Event * const event) {
 			if (i == Inventory::items().end()) {
 				/* we lost this item, remove it from projectile_slots */
 				_projectile_slots.erase(*k);
-				Debug::analyzer(name()) << "Removing key '" << *k << "' from projectile_slots" << endl;
+				Debug::custom(name()) << "Removing key '" << *k << "' from projectile_slots" << endl;
 			} else {
 				/* this item is new or changed.
 				 * if we intend to throw it, add it to projectile_slots.
 				 * otherwise remove it from projectile_slots */
 				if (wantItem(i->second)) {
 					_projectile_slots.insert(*k);
-					Debug::analyzer(name()) << "Adding key '" << *k << "' to projectile_slots, item: " << i->second << endl;
+					Debug::custom(name()) << "Adding key '" << *k << "' to projectile_slots, item: " << i->second << endl;
 				} else {
 					_projectile_slots.erase(*k);
-					Debug::analyzer(name()) << "Removing key '" << *k << "' from projectile_slots" << endl;
+					Debug::custom(name()) << "Removing key '" << *k << "' from projectile_slots" << endl;
 				}
 			}
 		}

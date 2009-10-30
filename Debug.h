@@ -11,7 +11,7 @@ class Debug {
 public:
 	static void init(const std::string& file);
 	static void destroy();
-	static std::ofstream& analyzer(const std::string& name);
+	static std::ofstream& custom(const std::string& name);
 	static std::ofstream& command();
 	static std::ofstream& event();
 	static std::ofstream& inventory();

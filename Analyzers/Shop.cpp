@@ -138,7 +138,7 @@ void Shop::analyze() {
 			}
 		}
 
-		Debug::analyzer(name()) << "Shop bounds are " << nw << " to " << se << endl;
+		Debug::custom(name()) << "Shop bounds are " << nw << " to " << se << endl;
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		for (p.row(nw.row()); p.row() <= se.row(); p.moveSouth()) {

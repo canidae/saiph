@@ -1,4 +1,5 @@
 #include "Debug.h"
+
 #include "World.h"
 
 #define DEBUG_CATEGORY_MAX_LENGTH 9
@@ -27,7 +28,7 @@ void Debug::destroy() {
 	_debugfile.close();
 }
 
-ofstream& Debug::analyzer(const string& name) {
+ofstream& Debug::custom(const string& name) {
 	return header(name);
 }
 

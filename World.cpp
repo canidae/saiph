@@ -489,6 +489,9 @@ void World::run() {
 		/* dump maps */
 		dumpMaps();
 
+		/* and messages */
+		Debug::custom("Messages") << "'" << _messages << "'" << endl;
+
 		/* analyze and parse messages if we're not continuing an action */
 		if (analyze_and_parse) {
 			/* let analyzers parse messages */
