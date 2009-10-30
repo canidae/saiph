@@ -20,7 +20,6 @@ void MonsterInfo::analyze() {
 		return; // if we're hallucinating, the output is garbage
 	if (_updated == World::internalTurn())
 		return; // already farlooked this turn
-	_updated = World::internalTurn();
 	for (_look_at = World::level().monsters().begin(); _look_at != World::level().monsters().end(); ++_look_at) {
 		if (!_look_at->second.visible())
 			continue; // don't farlook monsters we can't see
@@ -31,6 +30,8 @@ void MonsterInfo::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::FarLook(this, _look_at->first)));
 		return;
 	}
+	/* farlooked all friendly monster this turn, set _updated */
+	_updated = World::internalTurn();
 }
 
 void MonsterInfo::parseMessages(const string& messages) {
