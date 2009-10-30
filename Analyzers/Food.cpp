@@ -25,6 +25,8 @@ Food::Food() : Analyzer("Food") {
 	for (map<const string, const data::Food*>::const_iterator f = data::Food::foods().begin(); f != data::Food::foods().end(); ++f) {
 		if (!(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 			continue; // we're not gonna carry food that rot
+		if (f->second->name() == "tin" || f->second->name() == "egg")
+			continue; // screw eggs & tins
 		int priority = 1000;
 		if (f->second->weight() <= 0)
 			priority -= f->second->nutrition() / 1; // prevent divide-by-zero (or negative values)

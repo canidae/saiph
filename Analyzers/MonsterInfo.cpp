@@ -25,7 +25,7 @@ void MonsterInfo::analyze() {
 			continue; // don't farlook 'I' or 'm' monsters
 		else if (_look_at->second.attitude() == HOSTILE)
 			continue; // we don't expect hostile monsters to go friendly (XXX: scroll of taming, etc will need special handling)
-		map<Point, int>::iterator c = _checked.find(_look_at->first);
+		map<Point, unsigned int>::iterator c = _checked.find(_look_at->first);
 		if (c != _checked.end() && c->second == World::internalTurn())
 			continue; // already checked this monster this turn
 		World::setAction(static_cast<action::Action*> (new action::FarLook(this, _look_at->first)));
