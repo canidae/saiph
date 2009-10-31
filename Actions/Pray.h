@@ -28,14 +28,19 @@ namespace action {
 		}
 
 		virtual const Command& command() {
-			if (_sequence == 0)
+			switch (_sequence) {
+			case 0:
 				return _pray;
-			return Action::NOOP;
+
+			default:
+				return Action::NOOP;
+			}
 		}
 
 		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
 				Saiph::lastPrayed(World::turn());
+				analyzer()->actionCompleted();
 				_sequence = 1;
 			}
 		}

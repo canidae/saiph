@@ -45,6 +45,7 @@ namespace action {
 				/* mark inventory dirty if update_inventory is true */
 				if (_update_inventory)
 					Inventory::updated(false);
+				analyzer()->actionCompleted();
 				_sequence = 3;
 			}
 		};

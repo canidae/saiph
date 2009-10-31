@@ -65,6 +65,7 @@ namespace action {
 				_sequence = 3;
 			} else if (_sequence == 3) {
 				/* looked at ground, action is complete */
+				analyzer()->actionCompleted();
 				_sequence = 5;
 			}
 		}

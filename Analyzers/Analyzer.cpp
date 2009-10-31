@@ -56,3 +56,6 @@ void Analyzer::analyze() {
 
 void Analyzer::onEvent(event::Event * const) {
 }
+
+void Analyzer::actionCompleted() {
+}

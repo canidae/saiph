@@ -15,6 +15,7 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string& messages);
+		void actionCompleted();
 
 	private:
 		std::map<Point, Monster>::iterator _look_at;

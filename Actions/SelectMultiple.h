@@ -31,7 +31,12 @@ namespace action {
 		}
 
 		virtual void update(const std::string&) {
-			++_sequence;
+			if (_sequence < (int) _keys.size()) {
+				++_sequence;
+			} else if (_sequence == (int) _keys.size()) {
+				analyzer()->actionCompleted();
+				++_sequence;
+			}
 		}
 
 	private:

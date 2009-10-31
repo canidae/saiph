@@ -50,9 +50,10 @@ namespace action {
 			} else if (messages.find(MESSAGE_STOP_EATING) != std::string::npos) {
 				/* we're about to choke, abort eating */
 				_sequence = 3;
-			} else if (_sequence != 0) {
+			} else if (_sequence < 4) {
 				/* ate item, inventory is no longer updated */
 				Inventory::updated(false);
+				analyzer()->actionCompleted();
 				_sequence = 4;
 			}
 		}

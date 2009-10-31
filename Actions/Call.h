@@ -46,9 +46,10 @@ namespace action {
 				_sequence = 2;
 			} else if (messages.find(MESSAGE_WHAT_TO_CALL_ITEM) != std::string::npos) {
 				_sequence = 3;
-			} else {
+			} else if (_sequence == 3) {
 				/* we need to mark inventory as not updated */
 				Inventory::updated(false);
+				analyzer()->actionCompleted();
 				_sequence = 4;
 			}
 		}

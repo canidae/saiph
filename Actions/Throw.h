@@ -44,6 +44,7 @@ namespace action {
 			} else if (_sequence == 2) {
 				/* mark inventory dirty */
 				Inventory::updated(false);
+				analyzer()->actionCompleted();
 				_sequence = 3;
 			}
 		}

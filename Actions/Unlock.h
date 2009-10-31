@@ -46,6 +46,7 @@ namespace action {
 			} else if (messages.find(MESSAGE_UNLOCK_IT) != std::string::npos) {
 				_sequence = 3;
 			} else if (_sequence == 3) {
+				analyzer()->actionCompleted();
 				_sequence = 4;
 			}
 		}

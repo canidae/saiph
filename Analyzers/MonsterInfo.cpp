@@ -21,15 +21,14 @@ void MonsterInfo::analyze() {
 	for (_look_at = World::level().monsters().begin(); _look_at != World::level().monsters().end(); ++_look_at) {
 		if (!_look_at->second.visible())
 			continue; // don't farlook monsters we can't see
-		else if (_look_at->second.symbol() == 'I' || _look_at->second.symbol() == 'm')
+		if (_look_at->second.symbol() == 'I' || _look_at->second.symbol() == 'm')
 			continue; // don't farlook 'I' or 'm' monsters
-		else if (_look_at->second.attitude() == HOSTILE)
+		if (_look_at->second.attitude() == HOSTILE)
 			continue; // we don't expect hostile monsters to go friendly (XXX: scroll of taming, etc will need special handling)
 		map<Point, unsigned int>::iterator c = _checked.find(_look_at->first);
 		if (c != _checked.end() && c->second == World::internalTurn())
 			continue; // already checked this monster this turn
 		World::setAction(static_cast<action::Action*> (new action::FarLook(this, _look_at->first)));
-		_checked[_look_at->first] = World::internalTurn();
 		return;
 	}
 }
@@ -64,4 +63,8 @@ void MonsterInfo::parseMessages(const string& messages) {
 		if (pos2 != string::npos)
 			_look_at->second.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
 	}
+}
+
+void MonsterInfo::actionCompleted() {
+	_checked[_look_at->first] = World::internalTurn();
 }

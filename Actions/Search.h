@@ -33,6 +33,7 @@ namespace action {
 			if (_sequence == 0) {
 				/* increase search counter on level */
 				World::level().increaseAdjacentSearchCount(Saiph::position());
+				analyzer()->actionCompleted();
 				_sequence = 1;
 			}
 		}

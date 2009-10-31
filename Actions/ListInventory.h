@@ -34,10 +34,12 @@ namespace action {
 		}
 
 		virtual void update(const std::string&) {
-			if (World::menu())
+			if (World::menu()) {
 				_sequence = 1;
-			else
+			} else if (_sequence == 1) {
+				analyzer()->actionCompleted();
 				_sequence = 2;
+			}
 		}
 
 	private:

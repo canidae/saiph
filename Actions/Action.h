@@ -3,12 +3,9 @@
 
 #include <string>
 #include "../Command.h"
+#include "../Analyzers/Analyzer.h"
 
 #define NO_ACTION 0
-
-namespace analyzer {
-	class Analyzer;
-}
 
 namespace action {
 

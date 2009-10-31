@@ -34,10 +34,15 @@ namespace action {
 
 		virtual void update(const std::string& messages) {
 			if (_sequence == 0) {
-				if (messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos)
+				if (messages.find(MESSAGE_REALLY_ATTACK) != std::string::npos) {
 					_sequence = 1;
-				else
+				} else {
+					analyzer()->actionCompleted();
 					_sequence = 2;
+				}
+			} else if (_sequence == 1) {
+				analyzer()->actionCompleted();
+				_sequence = 2;
 			}
 		}
 

@@ -22,6 +22,7 @@ namespace analyzer {
 		virtual void parseMessages(const std::string&);
 		virtual void analyze();
 		virtual void onEvent(event::Event * const);
+		virtual void actionCompleted();
 
 	private:
 		std::string _name;
