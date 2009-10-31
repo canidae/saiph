@@ -153,9 +153,8 @@ void Food::onEvent(Event * const event) {
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
-			if (f == data::Food::foods().end() || !(f->second->effects() & EAT_EFFECT_NEVER_ROT))
-				continue; // not food or the food rots
+			if (_eat_priority.find(i->second.name()) == _eat_priority.end())
+				continue; // don't want this food item
 			i->second.want(i->second.count());
 			break;
 		}
