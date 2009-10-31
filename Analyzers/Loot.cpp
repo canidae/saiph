@@ -34,6 +34,10 @@ void Loot::analyze() {
 		return;
 	}
 
+	/* don't move around when blind/confused/stunned */
+	if (Saiph::blind() || Saiph::confused() || Saiph::stunned())
+		return;
+
 	/* visit new/changed stashes */
 	set<Coordinate>::iterator v = _visit.begin();
 	while (v != _visit.end()) {
