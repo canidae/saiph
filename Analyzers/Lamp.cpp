@@ -1,5 +1,6 @@
 #include "Lamp.h"
 
+#include "../EventBus.h"
 #include "../Inventory.h"
 #include "../Saiph.h"
 #include "../World.h"
@@ -8,6 +9,7 @@
 #include "../Actions/Call.h"
 #include "../Actions/Name.h"
 #include "../Data/Lamp.h"
+#include "../Events/ChangedInventoryItems.h"
 #include "../Events/WantItems.h"
 
 using namespace analyzer;
@@ -16,6 +18,8 @@ using namespace std;
 
 /* constructors/destructor */
 Lamp::Lamp() : Analyzer("Lamp"), _lamp_key(0), _lamp_depleted(false), _seen_oil_lamp(false), _seen_magic_lamp(false) {
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */

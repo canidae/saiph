@@ -17,29 +17,6 @@ Elbereth::Elbereth() : Analyzer("Elbereth"), _elbereth_count(0), _engraving_type
 	EventBus::registerEvent(ElberethQuery::ID, this);
 }
 
-void Elbereth::onEvent(Event * const evt) {
-	if (evt->id() == ElberethQuery::ID) {
-		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
-		if (World::lastActionID() != action::Look::ID) {
-			/* data is outdated */
-			_engraving_type = ELBERETH_MUST_CHECK;
-			_elbereth_count = 0;
-		}
-		for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-			if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
-				continue;
-			if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
-				continue;
-			/* this monster ignores elbereth and is next to us */
-			_engraving_type = ELBERETH_INEFFECTIVE;
-			_elbereth_count = 0;
-			break;
-		}
-		q->type(_engraving_type);
-		q->count(_elbereth_count);
-	}
-}
-
 void Elbereth::parseMessages(const string& messages) {
 	/* figure out if something is engraved here */
 	string::size_type pos = messages.find(MESSAGE_YOU_READ);
@@ -70,4 +47,27 @@ void Elbereth::parseMessages(const string& messages) {
 	_elbereth_count = 0;
 	while ((pos = messages.find(ELBERETH, pos + 1)) != string::npos)
 		++_elbereth_count; // found another elbereth
+}
+
+void Elbereth::onEvent(Event * const evt) {
+	if (evt->id() == ElberethQuery::ID) {
+		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
+		if (World::lastActionID() != action::Look::ID) {
+			/* data is outdated */
+			_engraving_type = ELBERETH_MUST_CHECK;
+			_elbereth_count = 0;
+		}
+		for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+			if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
+				continue;
+			if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
+				continue;
+			/* this monster ignores elbereth and is next to us */
+			_engraving_type = ELBERETH_INEFFECTIVE;
+			_elbereth_count = 0;
+			break;
+		}
+		q->type(_engraving_type);
+		q->count(_elbereth_count);
+	}
 }

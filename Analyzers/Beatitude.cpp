@@ -1,5 +1,6 @@
 #include "Beatitude.h"
 
+#include "../EventBus.h"
 #include "../Globals.h"
 #include "../Item.h"
 #include "../Saiph.h"
@@ -15,6 +16,8 @@ using namespace std;
 
 /* constructors/destructor */
 Beatitude::Beatitude() : Analyzer("Beatitude") {
+	EventBus::registerEvent(Beatify::ID, this);
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
