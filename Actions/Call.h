@@ -49,7 +49,6 @@ namespace action {
 			} else if (_sequence == 3) {
 				/* we need to mark inventory as not updated */
 				Inventory::updated(false);
-				analyzer()->actionCompleted();
 				_sequence = 4;
 			}
 		}

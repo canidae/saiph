@@ -9,6 +9,8 @@
         <in>Apply.h</in>
         <in>ApplyInDirection.h</in>
         <in>Call.h</in>
+        <in>Drop.h</in>
+        <in>DropGold.h</in>
         <in>Eat.h</in>
         <in>EatCorpse.h</in>
         <in>Engrave.h</in>
@@ -462,12 +464,6 @@
       <item path="/home/canidae/projects/saiph/Analyzers/Valkyrie.h"
             ex="true"
             tool="3">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Vault.cpp"
-            ex="true"
-            tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Vault.h" ex="true" tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Wand.cpp" ex="true" tool="1">
       </item>

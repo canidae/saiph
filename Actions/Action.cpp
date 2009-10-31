@@ -4,6 +4,7 @@
 #include "ApplyInDirection.h"
 #include "Call.h"
 #include "Drop.h"
+#include "DropGold.h"
 #include "Eat.h"
 #include "EatCorpse.h"
 #include "Engrave.h"
@@ -58,6 +59,7 @@ const int Unlock::ID = 24;
 const int FarLook::ID = 25;
 const int Enhance::ID = 26;
 const int Drop::ID = 27;
+const int DropGold::ID = 28;
 
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {

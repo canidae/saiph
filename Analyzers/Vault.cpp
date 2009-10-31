@@ -1,69 +1,72 @@
 #include "Vault.h"
+
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Actions/Action.h"
+#include "../Actions/Answer.h"
+#include "../Actions/DropGold.h"
+#include "../Actions/Look.h"
+#include "../Actions/Move.h"
+#include "../Actions/Rest.h"
+#include "../Data/Monster.h"
 
 using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Vault::Vault(Saiph* saiph) : Analyzer("Vault"), saiph(saiph), drop_gold(false), look_at_ground(false), follow_guard(false) {
+Vault::Vault() : Analyzer("Vault"), _drop_gold(false), _look_at_ground(false), _follow_guard(false) {
 }
 
 /* methods */
 void Vault::parseMessages(const string& messages) {
-	if (saiph->world->question && messages.find(VAULT_MESSAGE_STRANGER, 0) != string::npos) {
+	if (World::question() && messages.find(VAULT_MESSAGE_STRANGER) != string::npos) {
 		/* guard asking who we are */
 		/* if we got some means of getting out (teleportitis, wand of teleport, scroll of teleport, pick-axe),
 		 * then claim we're Croesus */
-		if (saiph->world->player.intrinsics & PROPERTY_TELEPORT) {
-			command = VAULT_CROESUS;
-			priority = PRIORITY_CONTINUE_ACTION;
+		if (Saiph::intrinsics() & PROPERTY_TELEPORT) {
+			World::setAction(static_cast<action::Action*> (new action::Answer(this, VAULT_CROESUS)));
 			return;
 		}
 		/* otherwise, tell our real name */
-		command = "saiph\n";
-		priority = PRIORITY_CONTINUE_ACTION;
-		drop_gold = true;
-	} else if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_DROP, 0) == 0 && drop_gold) {
-		/* drop our gold */
-		command = "$";
-		priority = PRIORITY_CONTINUE_ACTION;
-		look_at_ground = true;
-	} else if (drop_gold && !look_at_ground) {
-		/* bring up drop menu */
-		command = DROP;
-		priority = PRIORITY_VAULT_GO_OUT;
-	} else if (look_at_ground) {
-		/* we'll look at ground after dropping the gold.
-		 * this makes us aware of the stash,
-		 * and the loot analyzer won't "visit" the stash after we move */
-		command = LOOK;
-		priority = PRIORITY_LOOK;
-		drop_gold = false;
-		look_at_ground = false;
-		follow_guard = true;
-	} else if (messages.find(VAULT_MESSAGE_DISAPPEAR, 0) != string::npos) {
+		World::setAction(static_cast<action::Action*> (new action::Answer(this, "saiph\n")));
+		_drop_gold = true;
+	} else if (_drop_gold) {
+		/* drop gold */
+		World::setAction(static_cast<action::Action*> (new action::DropGold(this, 999)));
+	} else if (_look_at_ground) {
+		/* XXX: look at ground to prevent us from picking up the gold again */
+		World::setAction(static_cast<action::Action*> (new action::Look(this)));
+	} else if (messages.find(VAULT_MESSAGE_DISAPPEAR) != string::npos) {
 		/* guard is gone, stop following */
-		follow_guard = false;
-	} else if (follow_guard) {
+		_follow_guard = false;
+	} else if (_follow_guard) {
 		/* follow the guard out */
-		/* this is really tricky.
+		/* this is fairly tricky.
 		 * general idea:
 		 * if we're next to guard, rest.
 		 * if we can see guard, move towards guard.
-		 * otherwise, hope the explore analyzer lead us out */
-		for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
-			if (m->second.symbol != '@' || m->second.color != BLUE || !m->second.visible)
+		 * XXX: otherwise, hope the explore analyzer lead us out */
+		for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+			if (m->second.data()->name() != "guard")
 				continue;
-			const PathNode& node = saiph->shortestPath(m->first);
-			if (node.cost == UNREACHABLE)
+			Tile& tile = World::shortestPath(m->first);
+			if (tile.cost() == UNREACHABLE)
 				continue;
-			if (node.moves == 1)
-				command = REST;
+			if (tile.distance() == 1)
+				World::setAction(static_cast<action::Action*> (new action::Rest(this, 999)));
 			else
-				command = node.dir;
-			priority = PRIORITY_VAULT_GO_OUT;
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), 999)));
 			return;
 		}
+	}
+}
+
+void Vault::actionCompleted() {
+	if (_drop_gold) {
+		_drop_gold = false;
+		_look_at_ground = true;
+	} else if (_look_at_ground) {
+		_look_at_ground = false;
+		_follow_guard = true;
 	}
 }

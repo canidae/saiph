@@ -12,6 +12,7 @@
 #include "Loot.h"
 #include "MonsterInfo.h"
 #include "Shop.h"
+#include "Vault.h"
 #include "../World.h"
 
 using namespace analyzer;
@@ -38,6 +39,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Loot());
 	World::registerAnalyzer(new MonsterInfo());
 	World::registerAnalyzer(new Shop());
+	World::registerAnalyzer(new Vault());
 }
 
 void Analyzer::destroy() {

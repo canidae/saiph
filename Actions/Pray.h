@@ -40,7 +40,6 @@ namespace action {
 		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_YOU_FINISH_YOUR_PRAYER) != std::string::npos) {
 				Saiph::lastPrayed(World::turn());
-				analyzer()->actionCompleted();
 				_sequence = 1;
 			}
 		}

@@ -53,7 +53,6 @@ namespace action {
 			} else if (_sequence < 4) {
 				/* ate item, inventory is no longer updated */
 				Inventory::updated(false);
-				analyzer()->actionCompleted();
 				_sequence = 4;
 			}
 		}

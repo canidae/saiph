@@ -39,7 +39,6 @@ namespace action {
 			} else if (_sequence == 1) {
 				/* also mark the inventory dirty when we do this */
 				Inventory::updated(false);
-				analyzer()->actionCompleted();
 				_sequence = 2;
 			}
 		}

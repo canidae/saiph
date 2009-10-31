@@ -43,16 +43,14 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			if (messages.find(MESSAGE_ENGRAVE_WITH) != std::string::npos) {
+			if (messages.find(MESSAGE_ENGRAVE_WITH) != std::string::npos)
 				_sequence = 1;
-			} else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos) {
+			else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos)
 				_sequence = 2;
-			} else if (_sequence < 3) {
+			else if (_sequence < 3)
 				_sequence = 3;
-			} else if (_sequence == 3) {
-				analyzer()->actionCompleted();
+			else if (_sequence == 3)
 				_sequence = 4;
-			}
 		};
 
 	private:

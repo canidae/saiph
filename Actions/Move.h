@@ -36,10 +36,8 @@ namespace action {
 		}
 
 		virtual void update(const std::string&) {
-			if (_sequence == 0) {
-				analyzer()->actionCompleted();
+			if (_sequence == 0)
 				_sequence = 1;
-			}
 		}
 
 	private:

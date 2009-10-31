@@ -471,10 +471,13 @@ void World::run() {
 	int last_turn = 0;
 	int stuck_counter = 0;
 	while (true) {
-		/* check if we're in the middle of an action
+		/* check if we're in the middle of an action.
 		 * Inventory and Level may send events that analyzers react on and set an action,
-		 * so we check if we're in the middle of an action here and remember it for later */
+		 * so we check if we're in the middle of an action here and remember it for later.
+		 * analyzer->actionCompleted() may too set an action, so we need to call this
+		 * method a bit later as well. */
 		bool analyze_and_parse = (_action == NULL || _action->command() == action::Action::NOOP);
+		Analyzer* prev_analyzer = (_action == NULL ? NULL : _action->analyzer());
 
 		/* let Saiph, Inventory and current level parse messages */
 		Saiph::parseMessages(_messages);
@@ -494,6 +497,10 @@ void World::run() {
 
 		/* analyze and parse messages if we're not continuing an action */
 		if (analyze_and_parse) {
+			/* let the previous analyzer know that the action was completed */
+			if (prev_analyzer != NULL)
+				prev_analyzer->actionCompleted();
+
 			/* let analyzers parse messages */
 			for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 				(*a)->parseMessages(_messages);
