@@ -10,8 +10,6 @@
 #define VAULT_MESSAGE_STRANGER "  \"Hello stranger, who are you?\" -  "
 #define VAULT_MESSAGE_DISAPPEAR "  Suddenly, the guard disappears.  "
 
-class Saiph;
-
 namespace analyzer {
 
 	class Vault : public Analyzer {

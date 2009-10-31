@@ -1,7 +1,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o Broadsword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lance.o Longsword.o Mace.o Monster.o MorningStar.o Pickaxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o Shortsword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
+OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o Broadsword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lamp.o Lance.o Longsword.o Mace.o Monster.o MorningStar.o Pickaxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o Shortsword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
 
 analyzers: $(OBJECTS)
 
@@ -28,6 +28,7 @@ Item.o: Item.h Item.cpp
 Javelin.o: Javelin.h Javelin.cpp
 Key.o: Key.h Key.cpp
 Knife.o: Knife.h Knife.cpp
+Lamp.o: Lamp.h Lamp.cpp
 Lance.o: Lance.h Lance.cpp
 Longsword.o: Longsword.h Longsword.cpp
 Mace.o: Mace.h Mace.cpp

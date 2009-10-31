@@ -3,7 +3,6 @@
 
 #include <string>
 #include "Analyzer.h"
-#include "../Request.h"
 
 /* messages */
 // This lamp has no oil.
@@ -34,23 +33,21 @@
 /* threshold for turning lamp on/off */
 #define LAMP_LIT_AREAS_THRESHOLD 0
 
-class Saiph;
-
 namespace analyzer {
+
 	class Lamp : public Analyzer {
 	public:
-		Lamp(Saiph* saiph);
+		Lamp();
 
 		void analyze();
 		void parseMessages(const std::string& messages);
+		void onEvent(event::Event * const event);
 
 	private:
-		Saiph* saiph;
-		Request req;
-		unsigned char lamp_key;
-		bool remove_lamp;
-		bool seen_oil_lamp;
-		bool seen_magic_lamp;
+		unsigned char _lamp_key;
+		bool _lamp_depleted;
+		bool _seen_oil_lamp;
+		bool _seen_magic_lamp;
 
 		void findLamp();
 	};

@@ -149,6 +149,8 @@
         <in>Key.h</in>
         <in>Knife.cpp</in>
         <in>Knife.h</in>
+        <in>Lamp.cpp</in>
+        <in>Lamp.h</in>
         <in>Lance.cpp</in>
         <in>Lance.h</in>
         <in>Level.cpp</in>
@@ -393,10 +395,6 @@
             <pElem>Actions</pElem>
           </incDir>
         </ccTool>
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Lamp.cpp" ex="true" tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Lamp.h" ex="true" tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Loot.cpp"
             ex="false"

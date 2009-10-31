@@ -1,5 +1,7 @@
 #include "Tool.h"
+
 #include "Key.h"
+#include "Lamp.h"
 
 using namespace data;
 using namespace std;
@@ -18,6 +20,7 @@ Tool::~Tool() {
 /* public static methods */
 void Tool::init() {
 	Key::init();
+	Lamp::init();
 }
 
 const map<const string, const Tool*>& Tool::tools() {

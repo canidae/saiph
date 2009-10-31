@@ -9,6 +9,7 @@
 #include "Fight.h"
 #include "Food.h"
 #include "Health.h"
+#include "Lamp.h"
 #include "Loot.h"
 #include "MonsterInfo.h"
 #include "Shop.h"
@@ -36,6 +37,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Fight());
 	World::registerAnalyzer(new Food());
 	World::registerAnalyzer(new Health());
+	World::registerAnalyzer(new Lamp());
 	World::registerAnalyzer(new Loot());
 	World::registerAnalyzer(new MonsterInfo());
 	World::registerAnalyzer(new Shop());

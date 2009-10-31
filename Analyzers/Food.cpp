@@ -156,7 +156,6 @@ void Food::onEvent(Event * const event) {
 			if (_eat_priority.find(i->second.name()) == _eat_priority.end())
 				continue; // don't want this food item
 			i->second.want(i->second.count());
-			break;
 		}
 	} else if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
