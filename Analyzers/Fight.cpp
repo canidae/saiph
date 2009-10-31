@@ -92,6 +92,8 @@ void Fight::analyze() {
 			Debug::custom(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
 			continue;
 		}
+		if (Saiph::blind() || Saiph::confused() || Saiph::stunned())
+			continue; // don't move while blind/confused/stunned
 		/* we can neither melee nor throw at the monster, move towards it */
 		Tile& tile = World::shortestPath(m->first);
 		if (tile.direction() == ILLEGAL_DIRECTION)
