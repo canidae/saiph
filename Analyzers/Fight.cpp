@@ -85,7 +85,8 @@ void Fight::analyze() {
 				Debug::custom(name()) << "Setting action to throw at '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
-		} else if (distance == 1 && !floating_eye) {
+		}
+		if (distance == 1 && !floating_eye) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN;
 			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).direction(), priority)));
