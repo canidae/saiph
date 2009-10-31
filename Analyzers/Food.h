@@ -31,7 +31,7 @@ namespace analyzer {
 
 	private:
 		std::map<Point, unsigned char> _prev_monster_loc;
-		std::map<Point, int> _corpse_loc;
+		std::map<Point, int> _stashes;
 		std::map<std::string, int> _eat_priority;
 		std::set<unsigned char> _food_items;
 

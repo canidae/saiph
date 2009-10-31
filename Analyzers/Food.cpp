@@ -54,15 +54,15 @@ Food::Food() : Analyzer("Food") {
 
 /* methods */
 void Food::analyze() {
-	if (Saiph::encumbrance() >= OVERTAXED)
-		return; // we can't eat while carrying too much
-
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	_prev_monster_loc.clear();
 	for (map<Point, Monster>::iterator m = World::level(Saiph::position().level()).monsters().begin(); m != World::level(Saiph::position().level()).monsters().end(); ++m) {
 		if (m->second.visible())
 			_prev_monster_loc[m->first] = m->second.symbol();
 	}
+
+	if (Saiph::encumbrance() >= OVERTAXED)
+		return; // we can't eat while carrying too much
 
 	/* are we hungry? */
 	if (Saiph::hunger() <= WEAK) {
@@ -107,16 +107,24 @@ void Food::parseMessages(const string& messages) {
 		for (map<Point, unsigned char>::iterator p = _prev_monster_loc.begin(); p != _prev_monster_loc.end(); ++p) {
 			if (p->second == 'Z' || p->second == 'M' || p->second == 'V') {
 				/* wherever monsters with symbol Z, M or V die, we'll mark as "tainted corpse" */
-				_corpse_loc[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
-			} else if (_corpse_loc.find(p->first) == _corpse_loc.end()) {
+				_stashes[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
+			} else if (_stashes.find(p->first) == _stashes.end()) {
 				/* monster probably leaves an edible corpse */
-				_corpse_loc[p->first] = World::turn();
+				_stashes[p->first] = World::turn();
 			}
 		}
+		/* mark stashes that didn't appear after a monster died as dangerous */
+		for (map<Point, Stash>::iterator s = World::level().stashes().begin(); s != World::level().stashes().end(); ++s) {
+			map<Point, int>::iterator t = _stashes.find(s->first);
+			if (t != _stashes.end())
+				continue;
+			/* this is a stash where a monster didn't recently die */
+			_stashes[s->first] = 0 - FOOD_CORPSE_EAT_TIME;
+		}
 		/* also clear "corpse_loc" on squares where there are no items nor monsters */
-		for (map<Point, int>::iterator c = _corpse_loc.begin(); c != _corpse_loc.end();) {
-			if (World::level(Saiph::position().level()).monsters().find(c->first) == World::level(Saiph::position().level()).monsters().end() && World::level(Saiph::position().level()).stashes().find(c->first) == World::level(Saiph::position().level()).stashes().end()) {
-				_corpse_loc.erase(c++);
+		for (map<Point, int>::iterator c = _stashes.begin(); c != _stashes.end();) {
+			if (World::level().monsters().find(c->first) == World::level().monsters().end() && World::level().stashes().find(c->first) == World::level().stashes().end()) {
+				_stashes.erase(c++);
 				continue;
 			}
 			++c;
@@ -129,9 +137,9 @@ void Food::onEvent(Event * const event) {
 		// FIXME?: do we want/need to eat corpses in shops?
 		if (World::level().tile().symbol() != SHOP_TILE) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-			map<Point, int>::iterator cl = _corpse_loc.find(Saiph::position());
+			map<Point, int>::iterator cl = _stashes.find(Saiph::position());
 			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (cl != _corpse_loc.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
+				if (cl != _stashes.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
 					/* it's safe to eat corpses here */
 					map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
 					/* check that item is a corpse, it's safe to eat and that the corpse rots */
