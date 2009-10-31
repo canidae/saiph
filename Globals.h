@@ -333,6 +333,7 @@
 #define MESSAGE_STOLE " stole "
 #define MESSAGE_STOP_EATING "  Stop eating? [yn] (y)  "
 #define MESSAGE_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
+#define MESSAGE_SUCCEED_PICKING "  You succeed in picking the lock.  "
 #define MESSAGE_TELEPATHY_GAIN1 "  You feel a strange mental acuity.  "
 #define MESSAGE_TELEPATHY_LOSE1 "  Your senses fail!  "
 #define MESSAGE_TELEPORT_CONTROL_GAIN1 "  You feel in control of yourself.  "

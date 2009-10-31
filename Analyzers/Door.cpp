@@ -83,7 +83,7 @@ void Door::analyze() {
 }
 
 void Door::parseMessages(const string& messages) {
-	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos) {
+	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos || messages.find(MESSAGE_SUCCEED_PICKING) != string::npos) {
 		/* door unlocked */
 		World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR)[_position] = UNKNOWN_SYMBOL_VALUE;
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
