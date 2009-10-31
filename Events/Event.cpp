@@ -1,4 +1,6 @@
 #include "Event.h"
+
+#include "Beatify.h"
 #include "ChangedInventoryItems.h"
 #include "EatItem.h"
 #include "ElberethQuery.h"
@@ -20,6 +22,7 @@ const int ReceivedItems::ID = 4;
 const int StashChanged::ID = 5;
 const int TakeMeThere::ID = 6;
 const int WantItems::ID = 7;
+const int Beatify::ID = 8;
 
 /* constructors/destructor */
 Event::Event(const std::string& name) : _name(name) {

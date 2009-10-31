@@ -19,7 +19,7 @@ namespace event {
 	public:
 		static const int ID;
 
-		WantItems() : Event("WantItems"), _items() {
+		WantItems() : Event("WantItems"), _items(), _dropping(false) {
 		}
 
 		virtual ~WantItems() {
@@ -46,8 +46,18 @@ namespace event {
 			_items[key] = item;
 		}
 
+		virtual bool dropping() {
+			return _dropping;
+		}
+
+		virtual bool dropping(const bool& dropping) {
+			_dropping = dropping;
+			return this->dropping();
+		}
+
 	private:
 		std::map<unsigned char, Item> _items;
+		bool _dropping;
 	};
 }
 #endif

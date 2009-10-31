@@ -3,7 +3,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = Analyzer.o Amulet.o Door.o Elbereth.o Enhance.o Explore.o Fight.o Food.o Health.o Loot.o MonsterInfo.o Shop.o
+OBJECTS = Analyzer.o Amulet.o Beatitude.o Door.o Elbereth.o Enhance.o Explore.o Fight.o Food.o Health.o Loot.o MonsterInfo.o Shop.o
 
 analyzers: $(OBJECTS)
 

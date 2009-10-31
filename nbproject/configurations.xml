@@ -6,13 +6,13 @@
         <in>Action.cpp</in>
         <in>Action.h</in>
         <in>Answer.h</in>
-        <in>Answer_1.h</in>
         <in>Apply.h</in>
         <in>ApplyInDirection.h</in>
         <in>Call.h</in>
         <in>Eat.h</in>
         <in>EatCorpse.h</in>
         <in>Engrave.h</in>
+        <in>Enhance.h</in>
         <in>FarLook.h</in>
         <in>Fight.h</in>
         <in>Kick.h</in>
@@ -197,6 +197,7 @@
         <in>Whip.h</in>
       </df>
       <df name="Events">
+        <in>Beatify.h</in>
         <in>ChangedInventoryItems.h</in>
         <in>EatItem.h</in>
         <in>ElberethQuery.h</in>
@@ -301,14 +302,6 @@
             tool="1">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Armor.h" ex="true" tool="3">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Beatitude.cpp"
-            ex="true"
-            tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Beatitude.h"
-            ex="true"
-            tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Blind.cpp"
             ex="true"

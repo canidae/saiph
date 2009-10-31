@@ -1,27 +1,25 @@
 #ifndef ANALYZER_BEATITUDE_H
 #define ANALYZER_BEATITUDE_H
 
-#include <string>
+#include <set>
 #include "Analyzer.h"
 
 class Item;
-class Request;
-class Saiph;
 
 namespace analyzer {
+
 	class Beatitude : public Analyzer {
 	public:
-		Beatitude(Saiph* saiph);
+		Beatitude();
 
 		void analyze();
-		void parseMessages(const std::string& messages);
-		bool request(const Request& request);
+		void onEvent(event::Event * const event);
 
 	private:
-		Saiph* saiph;
-		bool check_beatitude;
+		std::set<unsigned char> _beatify;
+		int _max_priority;
 
-		bool beatify(const Item& item);
+		bool dropItem(const Item& item);
 	};
 }
 #endif

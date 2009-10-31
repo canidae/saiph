@@ -1,4 +1,5 @@
 #include "Amulet.h"
+
 #include "../EventBus.h"
 #include "../Globals.h"
 #include "../Inventory.h"
@@ -8,6 +9,7 @@
 #include "../Actions/Remove.h"
 #include "../Actions/Select.h"
 #include "../Data/Amulet.h"
+#include "../Events/Beatify.h"
 #include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
 #include "../Events/ReceivedItems.h"
@@ -31,8 +33,18 @@ void Amulet::onEvent(Event * const event) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		wearAmulet(e->keys());
 	} else if (event->id() == ReceivedItems::ID) {
+		ReceivedItems* e = static_cast<ReceivedItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+				if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
+					/* beatify amulet */
+					Beatify b(i->first, 100);
+					EventBus::broadcast(&b);
+				}
+			}
+
+		}
 		// FIXME
-		//ReceivedItems* e = static_cast<ReceivedItems*>(event);
 		//wearAmulet(e->items);
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);

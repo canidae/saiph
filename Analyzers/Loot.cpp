@@ -1,6 +1,7 @@
+#include "Loot.h"
+
 #include <sstream>
 #include <stdlib.h>
-#include "Loot.h"
 #include "../Debug.h"
 #include "../EventBus.h"
 #include "../Inventory.h"
@@ -86,6 +87,7 @@ void Loot::parseMessages(const string& messages) {
 				_wi.addItem(messages[pos - 4], Item(messages.substr(pos, length), 0));
 			pos += length;
 		}
+		_wi.dropping(false);
 		/* broadcast event */
 		EventBus::broadcast(static_cast<Event*> (&_wi));
 		/* pick up stuff that was wanted by analyzers */
@@ -136,6 +138,7 @@ void Loot::parseMessages(const string& messages) {
 			}
 			pos += length;
 		}
+		_wi.dropping(true);
 		/* broadcast event */
 		EventBus::broadcast(static_cast<Event*> (&_wi));
 		/* drop stuff no analyzer wanted */
