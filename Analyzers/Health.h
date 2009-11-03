@@ -12,6 +12,11 @@
 #define PRIORITY_HEALTH_REST_FOR_HP_HIGH 500
 #define PRIORITY_HEALTH_CURE_NON_DEADLY 480
 #define PRIORITY_HEALTH_CURE_LYCANTHROPY 400
+/* turns we'll have to wait before applying unihorn again after successful use */
+#define UNIHORN_UNIHORN_TIMEOUT 5
+/* messages */
+#define UNIHORN_NOTHING_HAPPENS "  Nothing happens.  " // nothing can be fixed
+#define UNIHORN_NOTHING_SEEMS_TO_HAPPEN "  Nothing seems to happen.  " // something can be fixed, but it wasn't
 
 namespace analyzer {
 
@@ -21,6 +26,7 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string& messages);
+		void onEvent(event::Event * const event);
 
 	private:
 		bool _resting;
@@ -30,6 +36,11 @@ namespace analyzer {
 		int _prev_int;
 		int _prev_wis;
 		int _prev_cha;
+		unsigned char _unihorn_key;
+		unsigned int _unihorn_use_turn;
+		int _unihorn_priority;
+
+		bool canApplyUnihorn();
 	};
 }
 #endif

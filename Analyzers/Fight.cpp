@@ -114,18 +114,14 @@ void Fight::onEvent(Event * const event) {
 			if (i == Inventory::items().end()) {
 				/* we lost this item, remove it from projectile_slots */
 				_projectile_slots.erase(*k);
-				Debug::custom(name()) << "Removing key '" << *k << "' from projectile_slots" << endl;
 			} else {
 				/* this item is new or changed.
 				 * if we intend to throw it, add it to projectile_slots.
 				 * otherwise remove it from projectile_slots */
-				if (wantItem(i->second)) {
+				if (wantItem(i->second))
 					_projectile_slots.insert(*k);
-					Debug::custom(name()) << "Adding key '" << *k << "' to projectile_slots, item: " << i->second << endl;
-				} else {
+				else
 					_projectile_slots.erase(*k);
-					Debug::custom(name()) << "Removing key '" << *k << "' from projectile_slots" << endl;
-				}
 			}
 		}
 	} else if (event->id() == ReceivedItems::ID) {

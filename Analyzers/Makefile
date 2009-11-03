@@ -33,7 +33,6 @@ Rub.o: Rub.h Rub.cpp
 Scroll.o: Scroll.h Scroll.cpp
 Shop.o: Shop.h Shop.cpp
 Throne.o: Throne.h Throne.cpp
-Unihorn.o: Unihorn.h Unihorn.cpp
 Valkyrie.o: Valkyrie.h Valkyrie.cpp
 Vault.o: Vault.h Vault.cpp
 Wand.o: Wand.h Wand.cpp

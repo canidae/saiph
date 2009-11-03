@@ -3,12 +3,18 @@
 #include <stdlib.h>
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Actions/Apply.h"
 #include "../Actions/Engrave.h"
 #include "../Actions/Look.h"
 #include "../Actions/Pray.h"
 #include "../Actions/Rest.h"
+#include "../Data/UnicornHorn.h"
 #include "../EventBus.h"
+#include "../Events/Beatify.h"
+#include "../Events/ChangedInventoryItems.h"
 #include "../Events/ElberethQuery.h"
+#include "../Events/ReceivedItems.h"
+#include "../Events/WantItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -16,6 +22,10 @@ using namespace std;
 
 /* constructors/destructor */
 Health::Health() : Analyzer("Health"), _resting(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX) {
+	/* register events */
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(ReceivedItems::ID, this);
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
@@ -43,19 +53,21 @@ void Health::analyze() {
 		}
 	}
 	if (Saiph::confused() || Saiph::hallucinating() || Saiph::foodpoisoned() || Saiph::ill() || Saiph::stunned()) {
-		/* TODO: apply unihorn */
-		//req.priority = (Saiph::foodpoisoned || Saiph::ill) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
-		_resting = false; // this is to prevent us from trying to elbereth when we got some bad effect
-		if (Saiph::foodpoisoned() || Saiph::ill()) {
-			/* TODO: should not enter this block if we can use unihorn */
+		if (canApplyUnihorn()) {
+			/* apply unihorn */
+			_unihorn_priority = (Saiph::foodpoisoned() || Saiph::ill()) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
+		} else if (Saiph::foodpoisoned() || Saiph::ill()) {
+			/* unable to use unihorn, need to try something else */
 			/* TODO: eat eucalyptus leaf (if foodpoisoned or ill and no unihorn) */
 			/* if we can't cure this in any other way, just pray even if it's not safe, because we'll die for sure if we don't */
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
 		}
-	}
-	if (_resting) {
-		/* still resting */
-		if (Saiph::hitpoints() > Saiph::hitpointsMax() * 4 / 7 && Saiph::hitpointsMax() > 42) {
+	} else if (_resting) {
+		/* [still] resting */
+		if (Saiph::hitpoints() > Saiph::hitpointsMax() * 6 / 7) {
+			/* enough hp (greater than about 86%) to continue our journey */
+			_resting = false;
+		} else if (Saiph::hitpoints() > Saiph::hitpointsMax() * 4 / 7 && Saiph::hitpointsMax() > 42) {
 			/* if we don't see any monsters, then we won't rest for so long */
 			bool monster_nearby = false;
 			for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
@@ -65,10 +77,8 @@ void Health::analyze() {
 				}
 			}
 			_resting = monster_nearby;
-		}
-		if (Saiph::hitpoints() > Saiph::hitpointsMax() * 6 / 7) {
-			_resting = false; // enough hp (greater than about 86%) to continue our journey
-		} else if (!Saiph::blind() && !Saiph::confused() && !Saiph::stunned() && !Saiph::hallucinating()) {
+		} else {
+			/* not enough hp and we want to rest, we should elbereth */
 			ElberethQuery eq;
 			EventBus::broadcast(static_cast<Event*> (&eq));
 			if (eq.type() == ELBERETH_MUST_CHECK) {
@@ -97,8 +107,17 @@ void Health::analyze() {
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_POLYMORPH)));
 	}
 	if (_prev_str < Saiph::strength() || _prev_dex < Saiph::dexterity() || _prev_con < Saiph::constitution() || _prev_int < Saiph::intelligence() || _prev_wis < Saiph::wisdom() || _prev_cha < Saiph::charisma()) {
-		/* TODO: we lost some stats. apply unihorn */
+		/* we lost some stats, apply unihorn */
+		if (canApplyUnihorn() && _unihorn_priority < PRIORITY_HEALTH_CURE_NON_DEADLY)
+			_unihorn_priority = PRIORITY_HEALTH_CURE_NON_DEADLY;
 	}
+
+	/* apply unihorn until we've cured everything */
+	if (_unihorn_priority >= 0 && canApplyUnihorn()) {
+		/* unihorn failed last attempt, try again */
+		World::setAction(static_cast<action::Action*> (new action::Apply(this, _unihorn_key, _unihorn_priority, false)));
+	}
+
 
 	/* set previous stat values */
 	_prev_str = Saiph::strength();
@@ -116,4 +135,51 @@ void Health::parseMessages(const string& messages) {
 		/* pray if all else fails, don't even bother checking if it's safe to pray, we're dead anyways */
 		World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
 	}
+	if (messages.find(UNIHORN_NOTHING_HAPPENS) != string::npos) {
+		_unihorn_priority = -1;
+		_unihorn_use_turn = World::internalTurn() + UNIHORN_UNIHORN_TIMEOUT;
+	}
+}
+
+void Health::onEvent(event::Event * const event) {
+	if (event->id() == ChangedInventoryItems::ID) {
+		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
+		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
+			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
+			if (i == Inventory::items().end() || i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end()) {
+				if (*k == _unihorn_key)
+					_unihorn_key = ILLEGAL_ITEM;
+				continue;
+			}
+			map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
+			if (u == Inventory::items().end() || u->second.beatitude() == UNCURSED)
+				_unihorn_key = i->first;
+		}
+	} else if (event->id() == ReceivedItems::ID) {
+		ReceivedItems* e = static_cast<ReceivedItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
+				continue; // not an unihorn
+			if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
+				Beatify b(i->first, 100);
+				EventBus::broadcast(&b);
+			} else if (i->second.beatitude() != CURSED) {
+				map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
+				if (u == Inventory::items().end() || u->second.beatitude() == UNCURSED)
+					_unihorn_key = i->first;
+			}
+		}
+	} else if (event->id() == WantItems::ID) {
+		WantItems* e = static_cast<WantItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
+				continue; // cursed or not an unihorn
+			i->second.want(i->second.count());
+		}
+	}
+}
+
+/* private methods */
+bool Health::canApplyUnihorn() {
+	return (_unihorn_key != ILLEGAL_ITEM && _unihorn_use_turn <= World::internalTurn() && Saiph::encumbrance() < OVERTAXED);
 }

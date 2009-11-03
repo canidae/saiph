@@ -89,8 +89,6 @@
         <in>Sokoban.h</in>
         <in>Throne.cpp</in>
         <in>Throne.h</in>
-        <in>Unihorn.cpp</in>
-        <in>Unihorn.h</in>
         <in>Valkyrie.cpp</in>
         <in>Valkyrie.h</in>
         <in>Vault.cpp</in>
@@ -446,14 +444,6 @@
             tool="1">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Throne.h" ex="true" tool="3">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Unihorn.cpp"
-            ex="true"
-            tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Unihorn.h"
-            ex="true"
-            tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Valkyrie.cpp"
             ex="true"

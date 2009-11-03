@@ -116,7 +116,6 @@ void Loot::parseMessages(const string& messages) {
 		} else {
 			/* first page, set menu */
 			_showing_drop = true;
-			;
 			/* and find first "  " */
 			pos = messages.find("  ", pos + 1);
 		}

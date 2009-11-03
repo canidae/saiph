@@ -35,14 +35,10 @@ void Amulet::onEvent(Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
-				if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-					/* beatify amulet */
-					Beatify b(i->first, 100);
-					EventBus::broadcast(&b);
-				}
-			}
-
+			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
+				continue; // known beatitude or not an amulet
+			Beatify b(i->first, 100);
+			EventBus::broadcast(&b);
 		}
 		// FIXME
 		//wearAmulet(e->items);

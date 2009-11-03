@@ -17,18 +17,18 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Lamp::Lamp() : Analyzer("Lamp"), _lamp_key(0), _lamp_depleted(false), _seen_oil_lamp(false), _seen_magic_lamp(false) {
+Lamp::Lamp() : Analyzer("Lamp"), _lamp_key(ILLEGAL_ITEM), _lamp_depleted(false), _seen_oil_lamp(false), _seen_magic_lamp(false) {
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
 void Lamp::analyze() {
-	if (_lamp_key == 0 || Saiph::encumbrance() >= OVERTAXED)
+	if (_lamp_key == ILLEGAL_ITEM || Saiph::encumbrance() >= OVERTAXED)
 		return; // no lamp/lantern or got something more important to do
 	/* find lamp */
 	findLamp();
-	if (_lamp_key == 0)
+	if (_lamp_key == ILLEGAL_ITEM)
 		return; // no more lamps/lanterns in inventory
 	/* turn lamp/lantern on */
 	World::setAction(static_cast<action::Action*> (new action::Apply(this, _lamp_key, 100, false)));
@@ -64,7 +64,7 @@ void Lamp::onEvent(event::Event * const event) {
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
 			if (i != Inventory::items().end() && data::Lamp::lamps().find(i->second.name()) != data::Lamp::lamps().end()) {
-				if (_lamp_depleted && _lamp_key == 0 && i->second.additional() != LAMP_LIT) {
+				if (_lamp_depleted && _lamp_key == ILLEGAL_ITEM && i->second.additional() != LAMP_LIT) {
 					/* a lamp got depleted and all our lamps were lit,
 					 * any unlit lamps must be oil lamps */
 					if (i->second.name() == "lamp" || i->second.name() == "magic lamp") {
@@ -114,5 +114,5 @@ void Lamp::findLamp() {
 		return;
 	}
 	/* no lamp/lantern */
-	_lamp_key = 0;
+	_lamp_key = ILLEGAL_ITEM;
 }
