@@ -45,7 +45,6 @@ namespace analyzer {
 
 	private:
 		unsigned char _lamp_key;
-		bool _lamp_depleted;
 		bool _seen_oil_lamp;
 		bool _seen_magic_lamp;
 
