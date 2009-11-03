@@ -26,12 +26,12 @@ Lamp::Lamp() : Analyzer("Lamp"), _lamp_key(ILLEGAL_ITEM), _seen_oil_lamp(false),
 void Lamp::analyze() {
 	if (_lamp_key == ILLEGAL_ITEM || Saiph::encumbrance() >= OVERTAXED)
 		return; // no lamp/lantern or can't use it
-	/* find lamp */
-	findLamp();
-	if (_lamp_key == ILLEGAL_ITEM)
-		return; // no more lamps/lanterns in inventory
-	/* turn lamp/lantern on */
-	World::setAction(static_cast<action::Action*> (new action::Apply(this, _lamp_key, 100, false)));
+
+	map<unsigned char, Item>::iterator l = Inventory::items().find(_lamp_key);
+	if (l == Inventory::items().end())
+		Inventory::updated(false); // something must've happened to our inventory
+	else if (l->second.additional() == "")
+		World::setAction(static_cast<action::Action*> (new action::Apply(this, _lamp_key, 100, false))); // turn on lamp
 }
 
 void Lamp::parseMessages(const string& messages) {
@@ -42,6 +42,13 @@ void Lamp::parseMessages(const string& messages) {
 			Inventory::updated(false); // something must've happened to our inventory
 		else
 			l->second.additional(LAMP_LIT); // set "additional" instead of flashing inventory
+	} else if (messages.find(LAMP_TURNED_OFF) != string::npos) {
+		/* lamp/lantern turned off */
+		map<unsigned char, Item>::iterator l = Inventory::items().find(_lamp_key);
+		if (l == Inventory::items().end())
+			Inventory::updated(false); // something must've happened to our inventory
+		else
+			l->second.additional(""); // set "additional" instead of flashing inventory
 	}
 	if (messages.find(LAMP_LAMP_GOES_OUT) != string::npos || messages.find(LAMP_LANTERN_GOES_OUT) != string::npos) {
 		/* probably got engulfed or something, lamp/lantern went out */
@@ -57,7 +64,6 @@ void Lamp::parseMessages(const string& messages) {
 			/* if the name is "lamp" then it's an oil lamp */
 			if (i->second.name() == "lamp") {
 				World::queueAction(static_cast<action::Action*> (new action::Call(this, i->first, "oil lamp")));
-				i->second.name("oil lamp");
 				_seen_oil_lamp = true;
 			}
 			/* since it's empty, we'll also discard it */

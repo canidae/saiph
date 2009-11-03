@@ -32,6 +32,7 @@ namespace action {
 				return _call_item;
 
 			case 3:
+				Inventory::updated(false);
 				return _set_call;
 
 			default:
