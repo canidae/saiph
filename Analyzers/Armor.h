@@ -10,7 +10,10 @@
 #define ARMOR_WONT_FIT_HORN " won't fit over your horn"
 #define ARMOR_TOO_MANY_HOOVES "  You have too many hooves to wear "
 
+class Item;
+
 namespace analyzer {
+
 	class Armor : public Analyzer {
 	public:
 		Armor();
@@ -20,6 +23,8 @@ namespace analyzer {
 
 	private:
 		bool _change_armor;
+
+		bool wantItem(const Item& item);
 	};
 }
 #endif

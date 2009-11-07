@@ -32,7 +32,7 @@ namespace action {
 				return _name_item;
 
 			case 3:
-				Inventory::updated(false);
+				Inventory::update();
 				return _set_name;
 
 			default:
@@ -49,7 +49,7 @@ namespace action {
 				_sequence = 3;
 			} else if (_sequence == 3) {
 				/* we need to mark inventory as not updated */
-				Inventory::updated(false);
+				Inventory::update();
 				_sequence = 4;
 			}
 		}

@@ -12,6 +12,9 @@ namespace action {
 		Answer(analyzer::Analyzer* analyzer, const std::string& answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 		}
 
+		Answer(analyzer::Analyzer* analyzer, const unsigned char& answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
+		}
+
 		virtual ~Answer() {
 		}
 

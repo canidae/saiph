@@ -38,7 +38,7 @@ namespace action {
 				_sequence = 1;
 			} else if (_sequence == 1) {
 				/* also mark the inventory dirty when we do this */
-				Inventory::updated(false);
+				Inventory::update(false);
 				_sequence = 2;
 			}
 		}

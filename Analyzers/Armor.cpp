@@ -1,4 +1,6 @@
 #include "Armor.h"
+
+#include "../EventBus.h"
 #include "../Inventory.h"
 #include "../Item.h"
 #include "../Saiph.h"
@@ -17,6 +19,10 @@ using namespace std;
 
 /* constructors/destructor */
 Armor::Armor() : Analyzer("Armor"), _change_armor(false) {
+	/* register events */
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(ReceivedItems::ID, this);
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
@@ -48,12 +54,8 @@ void Armor::parseMessages(const string& messages) {
 				remove = true;
 		}
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, (remove ? YES : NO))));
-	} else if (messages.find(MESSAGE_YOU_FINISH_TAKING_OFF, 0) != string::npos) {
-		/* took of last armor, mark inventory dirty */
-		req.request = REQUEST_DIRTY_INVENTORY;
-		Saiph::request(req);
-	} else if (Saiph::inventory_changed || _change_armor) {
-		wearArmor();
+	} else if (_change_armor) {
+		//wearArmor();
 	}
 }
 
@@ -64,19 +66,22 @@ void Armor::onEvent(event::Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			// TODO:
-			//			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
-			//				continue; // known beatitude or not an amulet
-			//			Beatify b(i->first, 100);
-			//			EventBus::broadcast(&b);
+			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Armor::armors().find(i->second.name()) != data::Armor::armors().end())
+				continue; // known beatitude or not armor
+			Beatify b(i->first, 100);
+			EventBus::broadcast(&b);
 		}
-		// TODO: check if we should wear armor
+		// TODO: check if we should change armor
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			// TODO:
-			//			if (wantItem(i->second))
-			//				i->second.want(i->second.count());
+			if (wantItem(i->second))
+				i->second.want(i->second.count());
 		}
 	}
+}
+
+/* private methods */
+bool Armor::wantItem(const Item& item) {
+	return Saiph::encumbrance() < BURDENED && item.beatitude() != CURSED && data::Armor::armors().find(item.name()) != data::Armor::armors().end();
 }

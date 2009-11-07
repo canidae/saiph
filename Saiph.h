@@ -53,9 +53,9 @@ public:
 	static const unsigned long long int& intrinsics();
 	static const unsigned long long int& addIntrinsics(const unsigned long long int& intrinsics);
 	static const unsigned long long int& removeIntrinsics(const unsigned long long int& intrinsics);
-	static const unsigned long long int& extrinsics();
-	static const unsigned long long int& addExtrinsics(const unsigned long long int& extrinsics);
-	static const unsigned long long int& removeExtrinsics(const unsigned long long int& extrinsics);
+	static unsigned long long int extrinsics();
+	static unsigned long long int addExtrinsics(const unsigned long long int& extrinsics);
+	static unsigned long long int removeExtrinsics(const unsigned long long int& extrinsics);
 	static const int& lastPrayed();
 	static const int& lastPrayed(const int& last_prayed);
 

@@ -16,6 +16,8 @@ map<unsigned char, Item> Inventory::_items;
 unsigned char Inventory::_slots[] = {'\0'};
 ChangedInventoryItems Inventory::_changed;
 set<unsigned char> Inventory::_lost;
+unsigned long long int Inventory::_extrinsics_from_items = 0;
+bool Inventory::_extrinsics_updated = false;
 
 /* methods */
 void Inventory::analyze() {
@@ -67,9 +69,11 @@ void Inventory::parseMessages(const string& messages) {
 		if (_changed.keys().size() > 0) {
 			/* broadcast ChangedInventoryItems */
 			EventBus::broadcast(static_cast<Event*> (&_changed));
+			_extrinsics_updated = false;
 		}
 	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
 		/* we're not carrying anything */
+		_extrinsics_updated = true;
 		_changed.clear();
 		for (map<unsigned char, Item>::iterator i = _items.begin(); i != _items.end(); ++i)
 			_changed.add(i->first);
@@ -82,7 +86,7 @@ void Inventory::parseMessages(const string& messages) {
 	} else if (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2) != string::npos || messages.find(MESSAGE_DESTROY_RING) != string::npos || messages.find(MESSAGE_DESTROY_RING2) != string::npos || messages.find(MESSAGE_DESTROY_WAND) != string::npos || messages.find(MESSAGE_DESTROY_WAND2) != string::npos || messages.find(MESSAGE_POLYMORPH) != string::npos || messages.find(MESSAGE_FOOCUBUS_QUESTION) != string::npos || messages.find(MESSAGE_FOOCUBUS_REMOVE) != string::npos) {
 		/* we got robbed, some of our stuff was destroyed. we polymorphed or encountered a foocubi.
 		 * mark inventory as not updated */
-		_updated = false;
+		update();
 	}
 }
 
@@ -113,6 +117,7 @@ void Inventory::addItem(const unsigned char& key, const Item& item) {
 	if (item.count() <= 0)
 		return;
 	Debug::inventory() << "Adding " << item << " to inventory slot " << key << endl;
+	_extrinsics_updated = false;
 	map<unsigned char, Item>::iterator i = _items.find(key);
 	if (i != _items.end()) {
 		/* existing item, add amount */
@@ -132,6 +137,7 @@ void Inventory::removeItem(const unsigned char& key, const Item& item) {
 	if (i == _items.end())
 		return;
 	Debug::inventory() << "Removing " << item << " from inventory slot " << key << endl;
+	_extrinsics_updated = false;
 	if (i->second.count() > item.count()) {
 		/* reduce stack */
 		i->second.count(i->second.count() - item.count());
@@ -147,12 +153,19 @@ void Inventory::removeItem(const unsigned char& key, const Item& item) {
 	}
 }
 
+const unsigned long long int& Inventory::extrinsicsFromItems() {
+	if (!_extrinsics_updated)
+		updateExtrinsics();
+	return _extrinsics_from_items;
+}
+
 const bool& Inventory::updated() {
 	return _updated;
 }
 
-const bool& Inventory::updated(const bool& updated) {
-	_updated = updated;
+const bool& Inventory::update() {
+	_updated = false;
+	_extrinsics_updated = false;
 	return Inventory::updated();
 }
 
@@ -182,4 +195,19 @@ void Inventory::setSlot(const unsigned char& key, const Item& item) {
 	} else if (item.additional().find("on right ") == 0) {
 		_slots[SLOT_RIGHT_RING] = key;
 	}
+}
+
+void Inventory::updateExtrinsics() {
+	/* figure out what extrinsics we get from items */
+	for (int s = 0; s < SLOTS; ++s) {
+		const Item& item = itemInSlot(s);
+		if (item.count() <= 0)
+			continue; // no item in slot
+		map<const string, const data::Item*>::const_iterator i = data::Item::items().find(item.name());
+		if (i == data::Item::items().end())
+			continue; // item not in database, shouldn't happen very often
+		_extrinsics_updated |= i->second->properties();
+	}
+	/* TODO: items that give extrinsics by only carrying them (ie. longbow of diana) */
+	_extrinsics_updated = true;
 }

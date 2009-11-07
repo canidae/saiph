@@ -1,6 +1,8 @@
+#include "Saiph.h"
+
 #include <string.h>
 #include "Globals.h"
-#include "Saiph.h"
+#include "Inventory.h"
 
 using namespace analyzer;
 using namespace std;
@@ -316,16 +318,16 @@ const unsigned long long int& Saiph::removeIntrinsics(const unsigned long long i
 	return Saiph::intrinsics();
 }
 
-const unsigned long long int& Saiph::extrinsics() {
-	return _extrinsics;
+unsigned long long int Saiph::extrinsics() {
+	return _extrinsics | Inventory::extrinsicsFromItems();
 }
 
-const unsigned long long int& Saiph::addExtrinsics(const unsigned long long int& extrinsics) {
+unsigned long long int Saiph::addExtrinsics(const unsigned long long int& extrinsics) {
 	_extrinsics |= extrinsics;
 	return Saiph::extrinsics();
 }
 
-const unsigned long long int& Saiph::removeExtrinsics(const unsigned long long int& extrinsics) {
+unsigned long long int Saiph::removeExtrinsics(const unsigned long long int& extrinsics) {
 	_extrinsics &= ~extrinsics;
 	return Saiph::extrinsics();
 }

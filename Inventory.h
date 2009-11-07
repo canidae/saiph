@@ -20,8 +20,9 @@ public:
 	static const unsigned char& keyForSlot(const int& slot);
 	static void addItem(const unsigned char& key, const Item& item);
 	static void removeItem(const unsigned char& key, const Item& item);
+	static const unsigned long long int& extrinsicsFromItems();
 	static const bool& updated();
-	static const bool& updated(const bool& updated);
+	static const bool& update();
 
 private:
 	static bool _updated;
@@ -29,7 +30,10 @@ private:
 	static unsigned char _slots[SLOTS];
 	static event::ChangedInventoryItems _changed;
 	static std::set<unsigned char> _lost;
+	static unsigned long long int _extrinsics_from_items;
+	static bool _extrinsics_updated;
 
 	static void setSlot(const unsigned char& key, const Item& item);
+	static void updateExtrinsics();
 };
 #endif

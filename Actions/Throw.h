@@ -43,7 +43,7 @@ namespace action {
 				_sequence = 2;
 			} else if (_sequence == 2) {
 				/* mark inventory dirty */
-				Inventory::updated(false);
+				Inventory::update();
 				_sequence = 3;
 			}
 		}
