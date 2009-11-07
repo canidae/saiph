@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Eat(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _item(std::string(1, key), PRIORITY_CONTINUE_ACTION), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION) {
+		Eat(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _eat("e", priority), _item(key, PRIORITY_CONTINUE_ACTION), _answer_no(NO, PRIORITY_CONTINUE_ACTION), _answer_yes(YES, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Eat() {

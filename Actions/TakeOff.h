@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		TakeOff(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _take_off("T", priority), _take_off_key(std::string(1, key), PRIORITY_CONTINUE_ACTION) {
+		TakeOff(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _take_off("T", priority), _take_off_key(key, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~TakeOff() {

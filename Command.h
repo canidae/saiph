@@ -27,6 +27,7 @@ class Command {
 public:
 
 	Command(const std::string& command = "", int priority = ILLEGAL_PRIORITY);
+	Command(const unsigned char& key, int priority);
 	Command(const Command& c);
 
 	const std::string& command() const;

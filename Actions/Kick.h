@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Kick(analyzer::Analyzer* analyzer, const unsigned char& direction, const int& priority) : Action(analyzer), _kick("", priority), _kick_direction(std::string(1, direction), PRIORITY_CONTINUE_ACTION) {
+		Kick(analyzer::Analyzer* analyzer, const unsigned char& direction, const int& priority) : Action(analyzer), _kick("", priority), _kick_direction(direction, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Kick() {

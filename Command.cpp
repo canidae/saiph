@@ -2,10 +2,14 @@
 
 using namespace std;
 
-/* constructors/destructor */
+/* constructors */
 Command::Command(const std::string& command, int priority) : _command(command), _priority(priority) {
 }
 
+Command::Command(const unsigned char& key, int priority) : _command(string(1, key)), _priority(priority) {
+}
+
+/* destructor */
 Command::Command(const Command& c) : _command(c._command), _priority(c._priority) {
 }
 

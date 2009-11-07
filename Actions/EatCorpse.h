@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, const int& priority) : Action(analyzer), _eat(std::string(1, 'e'), priority), _corpse(corpse), _answer_no(std::string(1, NO), PRIORITY_CONTINUE_ACTION), _answer_yes(std::string(1, YES), PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_CONTINUE_ACTION), _escape(std::string(1, (char) 27), PRIORITY_CONTINUE_ACTION) {
+		EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, const int& priority) : Action(analyzer), _eat("e", priority), _corpse(corpse), _answer_no(NO, PRIORITY_CONTINUE_ACTION), _answer_yes(YES, PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_CONTINUE_ACTION), _escape((unsigned char) 27, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~EatCorpse() {

@@ -11,7 +11,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Move(analyzer::Analyzer* analyzer, const unsigned char& direction, const int& priority) : Action(analyzer), _move(std::string(1, direction), priority) {
+		Move(analyzer::Analyzer* analyzer, const unsigned char& direction, const int& priority) : Action(analyzer), _move(direction, priority) {
 		}
 
 		virtual ~Move() {
