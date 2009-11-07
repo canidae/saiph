@@ -163,10 +163,9 @@ const bool& Inventory::updated() {
 	return _updated;
 }
 
-const bool& Inventory::update() {
+void Inventory::update() {
 	_updated = false;
 	_extrinsics_updated = false;
-	return Inventory::updated();
 }
 
 /* private methods */

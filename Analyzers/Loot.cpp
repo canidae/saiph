@@ -29,7 +29,7 @@ Loot::Loot() : Analyzer("Loot"), _showing_pickup(false), _showing_drop(false) {
 /* methods */
 void Loot::analyze() {
 	/* check inventory if it's not updated */
-	if (!Inventory::update()) {
+	if (!Inventory::updated()) {
 		World::setAction(static_cast<action::Action*> (new action::ListInventory(this)));
 		return;
 	}

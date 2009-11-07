@@ -22,7 +22,7 @@ public:
 	static void removeItem(const unsigned char& key, const Item& item);
 	static const unsigned long long int& extrinsicsFromItems();
 	static const bool& updated();
-	static const bool& update();
+	static void update();
 
 private:
 	static bool _updated;
