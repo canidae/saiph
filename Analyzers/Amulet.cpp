@@ -58,13 +58,11 @@ bool Amulet::wantItem(const Item& item) {
 
 void Amulet::wearAmulet(const set<unsigned char>& keys) {
 	/* FIXME: need to make this smarter, so we can handle both ChangedInventoryItems and ReceivedItems events */
-	map<unsigned char, Item>::iterator worn = Inventory::items().find(Inventory::itemInSlot(SLOT_AMULET));
-	if (worn != Inventory::items().end() && worn->second.beatitude() == CURSED)
+	if (Inventory::itemInSlot(SLOT_AMULET).beatitude() == CURSED)
 		return; // wearing a cursed amulet, no point trying to wear another amulet
 
 	/* find the best amulet */
-	unsigned char best_key = (worn == Inventory::items().end()) ? '\0' : worn->first;
-	map<const string, const data::Amulet*>::const_iterator best_amulet = (worn == Inventory::items().end()) ? data::Amulet::amulets().end() : data::Amulet::amulets().find(worn->second.name());
+	unsigned char best_key = Inventory::keyForSlot(SLOT_AMULET);
 
 	for (set<unsigned char>::const_iterator k = keys.begin(); k != keys.end(); ++k) {
 		map<unsigned char, Item>::iterator i = Inventory::items().find(*k);

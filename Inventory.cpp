@@ -10,6 +10,7 @@ using namespace event;
 using namespace std;
 
 /* define static variables */
+const Item Inventory::NO_ITEM;
 bool Inventory::_updated = false;
 map<unsigned char, Item> Inventory::_items;
 unsigned char Inventory::_slots[] = {'\0'};
@@ -17,19 +18,6 @@ ChangedInventoryItems Inventory::_changed;
 set<unsigned char> Inventory::_lost;
 
 /* methods */
-std::map<unsigned char, Item>& Inventory::items() {
-	return _items;
-}
-
-const bool& Inventory::updated() {
-	return _updated;
-}
-
-const bool& Inventory::updated(const bool& updated) {
-	_updated = updated;
-	return Inventory::updated();
-}
-
 void Inventory::analyze() {
 }
 
@@ -91,14 +79,31 @@ void Inventory::parseMessages(const string& messages) {
 			/* broadcast ChangedInventoryItems */
 			EventBus::broadcast(static_cast<Event*> (&_changed));
 		}
-	} else if (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD, 0) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2, 0) != string::npos || messages.find(MESSAGE_DESTROY_RING, 0) != string::npos || messages.find(MESSAGE_DESTROY_RING2, 0) != string::npos || messages.find(MESSAGE_DESTROY_WAND, 0) != string::npos || messages.find(MESSAGE_DESTROY_WAND2, 0) != string::npos || messages.find(MESSAGE_POLYMORPH, 0) != string::npos) {
-		/* we got robbed, some of our stuff was destroyed or we polymorphed.
+	} else if (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2) != string::npos || messages.find(MESSAGE_DESTROY_RING) != string::npos || messages.find(MESSAGE_DESTROY_RING2) != string::npos || messages.find(MESSAGE_DESTROY_WAND) != string::npos || messages.find(MESSAGE_DESTROY_WAND2) != string::npos || messages.find(MESSAGE_POLYMORPH) != string::npos || messages.find(MESSAGE_FOOCUBUS_QUESTION) != string::npos || messages.find(MESSAGE_FOOCUBUS_REMOVE) != string::npos) {
+		/* we got robbed, some of our stuff was destroyed. we polymorphed or encountered a foocubi.
 		 * mark inventory as not updated */
 		_updated = false;
 	}
 }
 
-const unsigned char& Inventory::itemInSlot(const int& slot) {
+std::map<unsigned char, Item>& Inventory::items() {
+	return _items;
+}
+
+const Item& Inventory::itemAtKey(const unsigned char& key) {
+	map<unsigned char, Item>::iterator i = _items.find(key);
+	if (i != _items.end())
+		return i->second;
+	return NO_ITEM;
+}
+
+const Item& Inventory::itemInSlot(const int& slot) {
+	if (slot < 0 || slot >= SLOTS)
+		return NO_ITEM;
+	return itemAtKey(_slots[slot]);
+}
+
+const unsigned char& Inventory::keyForSlot(const int& slot) {
 	if (slot < 0 || slot >= SLOTS)
 		return _slots[INVALID_SLOT];
 	return _slots[slot];
@@ -140,6 +145,15 @@ void Inventory::removeItem(const unsigned char& key, const Item& item) {
 		}
 		_items.erase(i);
 	}
+}
+
+const bool& Inventory::updated() {
+	return _updated;
+}
+
+const bool& Inventory::updated(const bool& updated) {
+	_updated = updated;
+	return Inventory::updated();
 }
 
 /* private methods */

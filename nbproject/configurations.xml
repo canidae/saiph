@@ -31,8 +31,10 @@
         <in>Search.h</in>
         <in>Select.h</in>
         <in>SelectMultiple.h</in>
+        <in>TakeOff.h</in>
         <in>Throw.h</in>
         <in>Unlock.h</in>
+        <in>newfile.h</in>
       </df>
       <df name="Analyzers">
         <in>Amulet.cpp</in>
@@ -298,12 +300,6 @@
             <pElem>Data</pElem>
           </incDir>
         </ccTool>
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Armor.cpp"
-            ex="true"
-            tool="1">
-      </item>
-      <item path="/home/canidae/projects/saiph/Analyzers/Armor.h" ex="true" tool="3">
       </item>
       <item path="/home/canidae/projects/saiph/Analyzers/Blind.cpp"
             ex="true"

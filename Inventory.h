@@ -10,14 +10,18 @@
 
 class Inventory {
 public:
-	static std::map<unsigned char, Item>& items();
-	static const bool& updated();
-	static const bool& updated(const bool& updated);
+	static const Item NO_ITEM;
+
 	static void analyze();
 	static void parseMessages(const std::string& messages);
-	static const unsigned char& itemInSlot(const int& slot);
+	static std::map<unsigned char, Item>& items();
+	static const Item& itemAtKey(const unsigned char& key);
+	static const Item& itemInSlot(const int& slot);
+	static const unsigned char& keyForSlot(const int& slot);
 	static void addItem(const unsigned char& key, const Item& item);
 	static void removeItem(const unsigned char& key, const Item& item);
+	static const bool& updated();
+	static const bool& updated(const bool& updated);
 
 private:
 	static bool _updated;
