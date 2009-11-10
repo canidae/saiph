@@ -97,7 +97,7 @@ void Fight::analyze() {
 			continue; // don't move while blind/confused/stunned
 		/* we can neither melee nor throw at the monster, move towards it */
 		Tile& tile = World::shortestPath(m->first);
-		if (tile.direction() == ILLEGAL_DIRECTION)
+		if (tile.cost() >= UNPASSABLE)
 			continue; // can't move to monster
 		int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN;
 		priority = action::Move::calculatePriority(priority, tile.cost());
