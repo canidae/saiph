@@ -15,7 +15,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Beatitude::Beatitude() : Analyzer("Beatitude") {
+Beatitude::Beatitude() : Analyzer("Beatitude"), _max_priority(ILLEGAL_PRIORITY) {
 	EventBus::registerEvent(Beatify::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
