@@ -77,7 +77,8 @@ void Health::analyze() {
 				}
 			}
 			_resting = monster_nearby;
-		} else {
+		}
+		if (_resting) {
 			/* not enough hp and we want to rest, we should elbereth */
 			ElberethQuery eq;
 			EventBus::broadcast(static_cast<Event*> (&eq));
