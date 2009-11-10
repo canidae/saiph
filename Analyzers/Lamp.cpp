@@ -28,9 +28,7 @@ void Lamp::analyze() {
 		return; // no lamp/lantern or can't use it
 
 	map<unsigned char, Item>::iterator l = Inventory::items().find(_lamp_key);
-	if (l == Inventory::items().end())
-		Inventory::update(); // something must've happened to our inventory
-	else if (l->second.additional() == "")
+	if (l != Inventory::items().end() && l->second.additional() == "")
 		World::setAction(static_cast<action::Action*> (new action::Apply(this, _lamp_key, 100, false))); // turn on lamp
 }
 
@@ -38,16 +36,12 @@ void Lamp::parseMessages(const string& messages) {
 	if (messages.find(LAMP_TURNED_ON) != string::npos) {
 		/* lamp/lantern turned on */
 		map<unsigned char, Item>::iterator l = Inventory::items().find(_lamp_key);
-		if (l == Inventory::items().end())
-			Inventory::update(); // something must've happened to our inventory
-		else
+		if (l != Inventory::items().end())
 			l->second.additional(LAMP_LIT); // set "additional" instead of flashing inventory
 	} else if (messages.find(LAMP_TURNED_OFF) != string::npos) {
 		/* lamp/lantern turned off */
 		map<unsigned char, Item>::iterator l = Inventory::items().find(_lamp_key);
-		if (l == Inventory::items().end())
-			Inventory::update(); // something must've happened to our inventory
-		else
+		if (l != Inventory::items().end())
 			l->second.additional(""); // set "additional" instead of flashing inventory
 	}
 	if (messages.find(LAMP_LAMP_GOES_OUT) != string::npos || messages.find(LAMP_LANTERN_GOES_OUT) != string::npos) {
