@@ -8,7 +8,7 @@ using namespace std;
 
 vector<vector<Analyzer*> > EventBus::_events;
 
-void EventBus::registerEvent(const int& event_id, Analyzer * const analyzer) {
+void EventBus::registerEvent(int event_id, Analyzer * const analyzer) {
 	if (event_id < 0)
 		return;
 	if (event_id >= (int) _events.size())
@@ -17,7 +17,7 @@ void EventBus::registerEvent(const int& event_id, Analyzer * const analyzer) {
 	_events[event_id].push_back(analyzer);
 }
 
-void EventBus::unregisterEvent(const int& event_id, Analyzer * const analyzer) {
+void EventBus::unregisterEvent(int event_id, Analyzer * const analyzer) {
 	if (event_id < 0 || event_id >= (int) _events.size())
 		return;
 	vector<Analyzer*>& subscribers = _events[event_id];

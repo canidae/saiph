@@ -16,7 +16,7 @@ map<unsigned char, Item> Inventory::_items;
 unsigned char Inventory::_slots[] = {'\0'};
 ChangedInventoryItems Inventory::_changed;
 set<unsigned char> Inventory::_lost;
-unsigned long long int Inventory::_extrinsics_from_items = 0;
+unsigned long long Inventory::_extrinsics_from_items = 0;
 bool Inventory::_extrinsics_updated = false;
 
 /* methods */
@@ -94,26 +94,26 @@ std::map<unsigned char, Item>& Inventory::items() {
 	return _items;
 }
 
-const Item& Inventory::itemAtKey(const unsigned char& key) {
+const Item& Inventory::itemAtKey(unsigned char key) {
 	map<unsigned char, Item>::iterator i = _items.find(key);
 	if (i != _items.end())
 		return i->second;
 	return NO_ITEM;
 }
 
-const Item& Inventory::itemInSlot(const int& slot) {
+const Item& Inventory::itemInSlot(int slot) {
 	if (slot < 0 || slot >= SLOTS)
 		return NO_ITEM;
 	return itemAtKey(_slots[slot]);
 }
 
-const unsigned char& Inventory::keyForSlot(const int& slot) {
+unsigned char Inventory::keyForSlot(int slot) {
 	if (slot < 0 || slot >= SLOTS)
 		return _slots[INVALID_SLOT];
 	return _slots[slot];
 }
 
-void Inventory::addItem(const unsigned char& key, const Item& item) {
+void Inventory::addItem(unsigned char key, const Item& item) {
 	if (item.count() <= 0)
 		return;
 	Debug::inventory() << "Adding " << item << " to inventory slot " << key << endl;
@@ -130,7 +130,7 @@ void Inventory::addItem(const unsigned char& key, const Item& item) {
 	setSlot(key, item);
 }
 
-void Inventory::removeItem(const unsigned char& key, const Item& item) {
+void Inventory::removeItem(unsigned char key, const Item& item) {
 	if (item.count() <= 0)
 		return;
 	map<unsigned char, Item>::iterator i = _items.find(key);
@@ -153,13 +153,13 @@ void Inventory::removeItem(const unsigned char& key, const Item& item) {
 	}
 }
 
-const unsigned long long int& Inventory::extrinsicsFromItems() {
+unsigned long long Inventory::extrinsicsFromItems() {
 	if (!_extrinsics_updated)
 		updateExtrinsics();
 	return _extrinsics_from_items;
 }
 
-const bool& Inventory::updated() {
+bool Inventory::updated() {
 	return _updated;
 }
 
@@ -169,7 +169,7 @@ void Inventory::update() {
 }
 
 /* private methods */
-void Inventory::setSlot(const unsigned char& key, const Item& item) {
+void Inventory::setSlot(unsigned char key, const Item& item) {
 	if (item.additional() == "being worn") {
 		/* armor */
 		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(item.name());

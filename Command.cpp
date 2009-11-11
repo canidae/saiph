@@ -6,7 +6,7 @@ using namespace std;
 Command::Command(const std::string& command, int priority) : _command(command), _priority(priority) {
 }
 
-Command::Command(const unsigned char& key, int priority) : _command(string(1, key)), _priority(priority) {
+Command::Command(unsigned char key, int priority) : _command(string(1, key)), _priority(priority) {
 }
 
 /* destructor */
@@ -23,11 +23,11 @@ const std::string& Command::command(const std::string& command) {
 	return this->command();
 }
 
-const int& Command::priority() const {
+int Command::priority() const {
 	return _priority;
 }
 
-const int& Command::priority(const int& priority) {
+int Command::priority(int priority) {
 	_priority = priority;
 	return this->priority();
 }

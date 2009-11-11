@@ -65,7 +65,7 @@ ItemsOnGround Level::_on_ground;
 Tile Level::_outside_map;
 
 /* constructors/destructor */
-Level::Level(const int& level, const string& name, const int& branch) : _level(level), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
+Level::Level(int level, const string& name, int branch) : _level(level), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b)
 			_map[a][b] = Tile(Coordinate(_level, a, b));
@@ -74,7 +74,7 @@ Level::Level(const int& level, const string& name, const int& branch) : _level(l
 }
 
 /* public static methods */
-const bool& Level::isPassable(const unsigned char& symbol) {
+bool Level::isPassable(unsigned char symbol) {
 	return _passable[symbol];
 }
 
@@ -199,16 +199,16 @@ void Level::destroy() {
 }
 
 /* public methods */
-const int& Level::branch() const {
+int Level::branch() const {
 	return _branch;
 }
 
-const int& Level::branch(const int& branch) {
+int Level::branch(int branch) {
 	_branch = branch;
 	return this->branch();
 }
 
-const int& Level::depth() const {
+int Level::depth() const {
 	return _depth;
 }
 
@@ -236,7 +236,7 @@ map<Point, Stash>& Level::stashes() {
 	return _stashes;
 }
 
-map<Point, int>& Level::symbols(const unsigned char& symbol) {
+map<Point, int>& Level::symbols(unsigned char symbol) {
 	return _symbols[symbol];
 }
 
@@ -391,7 +391,7 @@ void Level::parseMessages(const string& messages) {
 	}
 }
 
-void Level::setDungeonSymbol(const Point& point, const unsigned char& symbol) {
+void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	/* need to update both _map and _symbols,
 	 * better keep it in a method */
 	if (!point.insideMap())
@@ -420,7 +420,7 @@ void Level::increaseAdjacentSearchCount(const Point& point) {
 }
 
 /* private methods */
-void Level::updateMapPoint(const Point& point, unsigned char symbol, const int& color) {
+void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) {
 	Tile& t = _map[point.row()][point.col()];
 	if (_branch == BRANCH_ROGUE) {
 		/* we need a special symbol remapping for rogue level */
@@ -684,7 +684,7 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 	return cost;
 }
 
-void Level::updatePathMapSetCost(const Point& to, const Point& from, const unsigned char& direction, const unsigned int& distance) {
+void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance) {
 	if (!to.insideMap())
 		return;
 	unsigned int cost = updatePathMapCalculateCost(to, from);

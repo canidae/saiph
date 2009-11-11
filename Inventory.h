@@ -15,13 +15,13 @@ public:
 	static void analyze();
 	static void parseMessages(const std::string& messages);
 	static std::map<unsigned char, Item>& items();
-	static const Item& itemAtKey(const unsigned char& key);
-	static const Item& itemInSlot(const int& slot);
-	static const unsigned char& keyForSlot(const int& slot);
-	static void addItem(const unsigned char& key, const Item& item);
-	static void removeItem(const unsigned char& key, const Item& item);
-	static const unsigned long long int& extrinsicsFromItems();
-	static const bool& updated();
+	static const Item& itemAtKey(unsigned char key);
+	static const Item& itemInSlot(int slot);
+	static unsigned char keyForSlot(int slot);
+	static void addItem(unsigned char key, const Item& item);
+	static void removeItem(unsigned char key, const Item& item);
+	static unsigned long long extrinsicsFromItems();
+	static bool updated();
 	static void update();
 
 private:
@@ -30,10 +30,10 @@ private:
 	static unsigned char _slots[SLOTS];
 	static event::ChangedInventoryItems _changed;
 	static std::set<unsigned char> _lost;
-	static unsigned long long int _extrinsics_from_items;
+	static unsigned long long _extrinsics_from_items;
 	static bool _extrinsics_updated;
 
-	static void setSlot(const unsigned char& key, const Item& item);
+	static void setSlot(unsigned char key, const Item& item);
 	static void updateExtrinsics();
 };
 #endif

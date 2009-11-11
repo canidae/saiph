@@ -10,8 +10,8 @@ namespace analyzer {
 
 class EventBus {
 public:
-	static void registerEvent(const int& event_id, analyzer::Analyzer * const analyzer);
-	static void unregisterEvent(const int& event_id, analyzer::Analyzer * const analyzer);
+	static void registerEvent(int event_id, analyzer::Analyzer * const analyzer);
+	static void unregisterEvent(int event_id, analyzer::Analyzer * const analyzer);
 	static void broadcast(event::Event * const event);
 
 private:

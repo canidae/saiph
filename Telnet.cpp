@@ -91,7 +91,7 @@ Telnet::~Telnet() {
 }
 
 /* methods */
-int Telnet::retrieve(char* buffer, const int& count) {
+int Telnet::retrieve(char* buffer, int count) {
 	/* this is borrowed from TAEB:
 	 * we can send a "ping" by transmitting [0xff, 0xfd, 0x63].
 	 * then we'll just read until last bytes equal [?, ?, ?] */
@@ -155,6 +155,6 @@ void Telnet::stop() {
 }
 
 /* private methods */
-int Telnet::transmit(const char* data, const int& length) {
+int Telnet::transmit(const char* data, int length) {
 	return send(_sock, data, length, 0);
 }

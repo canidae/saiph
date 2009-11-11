@@ -41,8 +41,8 @@ Coordinate Saiph::_position;
 /* zorkmids */
 int Saiph::_zorkmids = 0;
 /* intrinsics/extrinsics */
-unsigned long long int Saiph::_intrinsics = 0;
-unsigned long long int Saiph::_extrinsics = 0;
+unsigned long long Saiph::_intrinsics = 0;
+unsigned long long Saiph::_extrinsics = 0;
 /* last turn she prayed */
 int Saiph::_last_prayed = 0;
 /* effects */
@@ -176,117 +176,117 @@ bool Saiph::parseStatusRow(const char* statusrow, char* levelname, int* turn) {
 	return true;
 }
 
-const int& Saiph::alignment() {
+int Saiph::alignment() {
 	return _alignment;
 }
 
-const int& Saiph::charisma() {
+int Saiph::charisma() {
 	return _charisma;
 }
 
-const int& Saiph::constitution() {
+int Saiph::constitution() {
 	return _constitution;
 }
 
-const int& Saiph::dexterity() {
+int Saiph::dexterity() {
 	return _dexterity;
 }
 
-const int& Saiph::intelligence() {
+int Saiph::intelligence() {
 	return _intelligence;
 }
 
-const int& Saiph::strength() {
+int Saiph::strength() {
 	return _strength;
 }
 
-const int& Saiph::wisdom() {
+int Saiph::wisdom() {
 	return _wisdom;
 }
 
-const int& Saiph::armor() {
+int Saiph::armor() {
 	return _armor;
 }
 
-const int& Saiph::encumbrance() {
+int Saiph::encumbrance() {
 	return _encumbrance;
 }
 
-const int& Saiph::experience() {
+int Saiph::experience() {
 	return _experience;
 }
 
-const int& Saiph::hunger() {
+int Saiph::hunger() {
 	return _hunger;
 }
 
-const int& Saiph::hitpoints() {
+int Saiph::hitpoints() {
 	return _hitpoints;
 }
 
-const int& Saiph::hitpointsMax() {
+int Saiph::hitpointsMax() {
 	return _hitpoints_max;
 }
 
-const int& Saiph::power() {
+int Saiph::power() {
 	return _power;
 }
 
-const int& Saiph::powerMax() {
+int Saiph::powerMax() {
 	return _power_max;
 }
 
-const bool& Saiph::blind() {
+bool Saiph::blind() {
 	return _blind;
 }
 
-const bool& Saiph::confused() {
+bool Saiph::confused() {
 	return _confused;
 }
 
-const bool& Saiph::foodpoisoned() {
+bool Saiph::foodpoisoned() {
 	return _foodpoisoned;
 }
 
-const bool& Saiph::hallucinating() {
+bool Saiph::hallucinating() {
 	return _hallucinating;
 }
 
-const bool& Saiph::ill() {
+bool Saiph::ill() {
 	return _ill;
 }
 
-const bool& Saiph::slimed() {
+bool Saiph::slimed() {
 	return _slimed;
 }
 
-const bool& Saiph::stunned() {
+bool Saiph::stunned() {
 	return _stunned;
 }
 
-const bool& Saiph::hurtLeg() {
+bool Saiph::hurtLeg() {
 	return _hurt_leg;
 }
 
-const bool& Saiph::hurtLeg(const bool& hurt_leg) {
+bool Saiph::hurtLeg(bool hurt_leg) {
 	_hurt_leg = hurt_leg;
 	return Saiph::hurtLeg();
 }
 
-const bool& Saiph::polymorphed() {
+bool Saiph::polymorphed() {
 	return _polymorphed;
 }
 
-const bool& Saiph::polymorphed(const bool& polymorphed) {
+bool Saiph::polymorphed(bool polymorphed) {
 	_polymorphed = polymorphed;
 	return Saiph::polymorphed();
 }
 
-const bool& Saiph::engulfed() {
+bool Saiph::engulfed() {
 	return _engulfed;
 }
 
-const bool& Saiph::engulfed(const bool& engulfed) {
+bool Saiph::engulfed(bool engulfed) {
 	_engulfed = engulfed;
 	return Saiph::engulfed();
 }
@@ -300,43 +300,43 @@ const Coordinate& Saiph::position(const Coordinate& position) {
 	return Saiph::position();
 }
 
-const int& Saiph::zorkmids() {
+int Saiph::zorkmids() {
 	return _zorkmids;
 }
 
-const unsigned long long int& Saiph::intrinsics() {
+unsigned long long Saiph::intrinsics() {
 	return _intrinsics;
 }
 
-const unsigned long long int& Saiph::addIntrinsics(const unsigned long long int& intrinsics) {
+unsigned long long Saiph::addIntrinsics(unsigned long long intrinsics) {
 	_intrinsics |= intrinsics;
 	return Saiph::intrinsics();
 }
 
-const unsigned long long int& Saiph::removeIntrinsics(const unsigned long long int& intrinsics) {
+unsigned long long Saiph::removeIntrinsics(unsigned long long intrinsics) {
 	_intrinsics &= ~intrinsics;
 	return Saiph::intrinsics();
 }
 
-unsigned long long int Saiph::extrinsics() {
+unsigned long long Saiph::extrinsics() {
 	return _extrinsics | Inventory::extrinsicsFromItems();
 }
 
-unsigned long long int Saiph::addExtrinsics(const unsigned long long int& extrinsics) {
+unsigned long long Saiph::addExtrinsics(unsigned long long extrinsics) {
 	_extrinsics |= extrinsics;
 	return Saiph::extrinsics();
 }
 
-unsigned long long int Saiph::removeExtrinsics(const unsigned long long int& extrinsics) {
+unsigned long long Saiph::removeExtrinsics(unsigned long long extrinsics) {
 	_extrinsics &= ~extrinsics;
 	return Saiph::extrinsics();
 }
 
-const int& Saiph::lastPrayed() {
+int Saiph::lastPrayed() {
 	return _last_prayed;
 }
 
-const int& Saiph::lastPrayed(const int& last_prayed) {
+int Saiph::lastPrayed(int last_prayed) {
 	_last_prayed = last_prayed;
 	return Saiph::lastPrayed();
 }

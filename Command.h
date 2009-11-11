@@ -27,13 +27,13 @@ class Command {
 public:
 
 	Command(const std::string& command = "", int priority = ILLEGAL_PRIORITY);
-	Command(const unsigned char& key, int priority);
+	Command(unsigned char key, int priority);
 	Command(const Command& c);
 
 	const std::string& command() const;
 	const std::string& command(const std::string& command);
-	const int& priority() const;
-	const int& priority(const int& priority);
+	int priority() const;
+	int priority(int priority);
 
 	bool operator==(const Command& c) const;
 

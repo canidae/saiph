@@ -19,45 +19,45 @@ public:
 	static bool parseAttributeRow(const char* attributerow);
 	static bool parseStatusRow(const char* statusrow, char* levelname, int* turn);
 
-	static const int& alignment();
-	static const int& charisma();
-	static const int& constitution();
-	static const int& dexterity();
-	static const int& intelligence();
-	static const int& strength();
-	static const int& wisdom();
-	static const int& armor();
-	static const int& encumbrance();
-	static const int& experience();
-	static const int& hunger();
-	static const int& hitpoints();
-	static const int& hitpointsMax();
-	static const int& power();
-	static const int& powerMax();
-	static const bool& blind();
-	static const bool& confused();
-	static const bool& foodpoisoned();
-	static const bool& hallucinating();
-	static const bool& ill();
-	static const bool& slimed();
-	static const bool& stunned();
-	static const bool& hurtLeg();
-	static const bool& hurtLeg(const bool& hurt_leg);
-	static const bool& polymorphed();
-	static const bool& polymorphed(const bool& polymorphed);
-	static const bool& engulfed();
-	static const bool& engulfed(const bool& engulfed);
+	static int alignment();
+	static int charisma();
+	static int constitution();
+	static int dexterity();
+	static int intelligence();
+	static int strength();
+	static int wisdom();
+	static int armor();
+	static int encumbrance();
+	static int experience();
+	static int hunger();
+	static int hitpoints();
+	static int hitpointsMax();
+	static int power();
+	static int powerMax();
+	static bool blind();
+	static bool confused();
+	static bool foodpoisoned();
+	static bool hallucinating();
+	static bool ill();
+	static bool slimed();
+	static bool stunned();
+	static bool hurtLeg();
+	static bool hurtLeg(bool hurt_leg);
+	static bool polymorphed();
+	static bool polymorphed(bool polymorphed);
+	static bool engulfed();
+	static bool engulfed(bool engulfed);
 	static const Coordinate& position();
 	static const Coordinate& position(const Coordinate& position);
-	static const int& zorkmids();
-	static const unsigned long long int& intrinsics();
-	static const unsigned long long int& addIntrinsics(const unsigned long long int& intrinsics);
-	static const unsigned long long int& removeIntrinsics(const unsigned long long int& intrinsics);
-	static unsigned long long int extrinsics();
-	static unsigned long long int addExtrinsics(const unsigned long long int& extrinsics);
-	static unsigned long long int removeExtrinsics(const unsigned long long int& extrinsics);
-	static const int& lastPrayed();
-	static const int& lastPrayed(const int& last_prayed);
+	static int zorkmids();
+	static unsigned long long intrinsics();
+	static unsigned long long addIntrinsics(unsigned long long intrinsics);
+	static unsigned long long removeIntrinsics(unsigned long long intrinsics);
+	static unsigned long long extrinsics();
+	static unsigned long long addExtrinsics(unsigned long long extrinsics);
+	static unsigned long long removeExtrinsics(unsigned long long extrinsics);
+	static int lastPrayed();
+	static int lastPrayed(int last_prayed);
 
 private:
 	/* attributes */
@@ -93,8 +93,8 @@ private:
 	/* zorkmids */
 	static int _zorkmids;
 	/* intrinsics/extrinsics */
-	static unsigned long long int _intrinsics;
-	static unsigned long long int _extrinsics;
+	static unsigned long long _intrinsics;
+	static unsigned long long _extrinsics;
 	/* last turn she prayed */
 	static int _last_prayed;
 	/* for parsing effects */

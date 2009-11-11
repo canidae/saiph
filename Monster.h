@@ -9,22 +9,22 @@ namespace data {
 
 class Monster {
 public:
-	Monster(const unsigned char& symbol = ILLEGAL_MONSTER, const int& color = 0, const int& last_seen = -1);
+	Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, int last_seen = -1);
 
-	const unsigned char& symbol() const;
-	const unsigned char& symbol(const unsigned char& symbol);
-	const int& color() const;
-	const int& color(const int& color);
-	const bool& visible() const;
-	const bool& visible(const bool& visible);
-	const int& attitude() const;
-	const int& attitude(const int& attitude);
-	const int& lastSeen() const;
-	const int& lastSeen(const int& last_seen);
-	const bool& shopkeeper() const;
-	const bool& shopkeeper(const bool& shopkeeper);
-	const bool& priest() const;
-	const bool& priest(const bool& priest);
+	unsigned char symbol() const;
+	unsigned char symbol(unsigned char symbol);
+	int color() const;
+	int color(int color);
+	bool visible() const;
+	bool visible(bool visible);
+	int attitude() const;
+	int attitude(int attitude);
+	int lastSeen() const;
+	int lastSeen(int last_seen);
+	bool shopkeeper() const;
+	bool shopkeeper(bool shopkeeper);
+	bool priest() const;
+	bool priest(bool priest);
 	const data::Monster* data() const;
 	const data::Monster* data(const data::Monster* data);
 

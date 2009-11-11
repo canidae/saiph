@@ -56,7 +56,7 @@ Local::~Local() {
 }
 
 /* methods */
-int Local::retrieve(char* buffer, const int& count) {
+int Local::retrieve(char* buffer, int count) {
 	/* retrieve data */
 	ssize_t data_received = 0;
 	/* make reading blocking */

@@ -54,35 +54,35 @@ vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
 
 /* methods */
-const char& World::view(const Point& point) {
+char World::view(const Point& point) {
 	return _view[point.row()][point.col()];
 }
 
-const int& World::color(const Point& point) {
+int World::color(const Point& point) {
 	return _color[point.row()][point.col()];
 }
 
-const bool& World::menu() {
+bool World::menu() {
 	return _menu;
 }
 
-const bool& World::question() {
+bool World::question() {
 	return _question;
 }
 
-const int& World::curPage() {
+int World::curPage() {
 	return _cur_page;
 }
 
-const int& World::maxPage() {
+int World::maxPage() {
 	return _max_page;
 }
 
-const int& World::turn() {
+int World::turn() {
 	return _turn;
 }
 
-const unsigned int& World::internalTurn() {
+unsigned int World::internalTurn() {
 	return _internal_turn;
 }
 
@@ -94,22 +94,22 @@ Level& World::level() {
 	return level(Saiph::position().level());
 }
 
-Level& World::level(const int& level) {
+Level& World::level(int level) {
 	return _levels[level];
 }
 
-const int& World::currentPriority() {
+int World::currentPriority() {
 	if (_action == NULL)
 		return action::Action::NOOP.priority();
 	return _action->command().priority();
 }
 
-const int& World::lastActionID() {
+int World::lastActionID() {
 	/* return the id of the last action */
 	return _last_action_id;
 }
 
-void World::init(const int& connection_type) {
+void World::init(int connection_type) {
 	_connection = Connection::create(connection_type);
 	if (_connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
@@ -165,7 +165,7 @@ bool World::queueAction(action::Action* action) {
 	return true;
 }
 
-unsigned char World::directLine(Point point, const bool& ignore_sinks, const bool& ignore_boulders) {
+unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
 	/* is the target in a direct line from the player? */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END) {
 		/* outside map */
@@ -350,7 +350,7 @@ Tile World::shortestPath(const Coordinate& target) {
 	return Tile(); // symbol not found
 }
 
-Tile World::shortestPath(const unsigned char& symbol) {
+Tile World::shortestPath(unsigned char symbol) {
 	/* returns PathNode for shortest path from player to nearest symbol */
 	int pivot = -1;
 	int level_count = 1;
@@ -747,7 +747,7 @@ void World::detectPosition() {
 	Saiph::position(Coordinate(found, _cursor));
 }
 
-Point World::directionToPoint(const unsigned char& direction) {
+Point World::directionToPoint(unsigned char direction) {
 	/* return the position we'd be at if we do the given move */
 	Point pos = Saiph::position();
 	switch (direction) {
@@ -786,7 +786,7 @@ Point World::directionToPoint(const unsigned char& direction) {
 	return pos;
 }
 
-bool World::directLineHelper(const Point& point, const bool& ignore_sinks, const bool& ignore_boulders) {
+bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders) {
 	const Tile& t = level().tile(point);
 	if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
 		return false;
@@ -913,7 +913,7 @@ bool World::executeCommand(const string& command) {
 	return true;
 }
 
-void World::fetchMenuText(const int& stoprow, const int& startcol, const bool& addspaces) {
+void World::fetchMenuText(int stoprow, int startcol, bool addspaces) {
 	/* fetch text from a menu */
 	for (int r = 0; r <= stoprow; ++r) {
 		_msg_str = &_view[r][startcol];

@@ -15,7 +15,7 @@ public:
 	Telnet();
 	virtual ~Telnet();
 
-	virtual int retrieve(char* buffer, const int& count);
+	virtual int retrieve(char* buffer, int count);
 	virtual int transmit(const std::string& data);
 	virtual void start();
 	virtual void stop();
@@ -24,6 +24,6 @@ private:
 	int _sock;
 	char _ping[3];
 
-	int transmit(const char* data, const int& length);
+	int transmit(const char* data, int length);
 };
 #endif
