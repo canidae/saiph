@@ -10,6 +10,7 @@
 #include "../Actions/Name.h"
 #include "../Data/Lamp.h"
 #include "../Events/ChangedInventoryItems.h"
+#include "../Events/ReceivedItems.h"
 #include "../Events/WantItems.h"
 
 using namespace analyzer;
@@ -19,6 +20,7 @@ using namespace std;
 /* constructors/destructor */
 Lamp::Lamp() : Analyzer("Lamp"), _lamp_key(ILLEGAL_ITEM), _seen_oil_lamp(false), _seen_magic_lamp(false) {
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
 
@@ -69,6 +71,9 @@ void Lamp::parseMessages(const string& messages) {
 void Lamp::onEvent(event::Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, find lamp */
+		findLamp();
+	} else if (event->id() == ReceivedItems::ID) {
+		/* received items, find lamp */
 		findLamp();
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
