@@ -1,5 +1,6 @@
-#include <stack>
 #include "Door.h"
+
+#include <stack>
 #include "../Debug.h"
 #include "../EventBus.h"
 #include "../Inventory.h"
@@ -76,7 +77,7 @@ void Door::analyze() {
 			return;
 		} else if (tile.distance() < min_distance) {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.cost()))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
 			min_distance = tile.distance();
 		}
 	}

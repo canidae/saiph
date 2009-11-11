@@ -1332,7 +1332,7 @@ void World::update() {
 
 /* main */
 int main(int argc, const char* argv[]) {
-	int connection_type = CONNECTION_TELNET;
+	int connection_type = CONNECTION_LOCAL;
 	string logfile = "saiph.log";
 
 	bool showUsage = false;

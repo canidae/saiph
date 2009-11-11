@@ -17,7 +17,7 @@ namespace action {
 		virtual ~Move() {
 		}
 
-		static int calculatePriority(const int& max_priority, const int& cost) {
+		static int calculatePriority(const int& max_priority, const unsigned int& cost) {
 			return max_priority * MOVE_COST_MEDIAN / (cost + MOVE_COST_MEDIAN - 1);
 		}
 
