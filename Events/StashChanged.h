@@ -17,7 +17,7 @@ namespace event {
 		virtual ~StashChanged() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

@@ -15,15 +15,15 @@ namespace event {
 		virtual ~EatItem() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 
-		virtual const unsigned char& key() {
+		virtual unsigned char key() {
 			return _key;
 		}
 
-		virtual const int& priority() {
+		virtual int priority() {
 			return _priority;
 		}
 

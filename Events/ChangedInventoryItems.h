@@ -16,7 +16,7 @@ namespace event {
 		virtual ~ChangedInventoryItems() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 
@@ -33,7 +33,7 @@ namespace event {
 			_keys.clear();
 		}
 
-		virtual void add(const unsigned char& key) {
+		virtual void add(unsigned char key) {
 			_keys.insert(key);
 		}
 

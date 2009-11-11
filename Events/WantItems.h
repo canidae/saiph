@@ -25,7 +25,7 @@ namespace event {
 		virtual ~WantItems() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 
@@ -50,7 +50,7 @@ namespace event {
 			return _dropping;
 		}
 
-		virtual bool dropping(const bool& dropping) {
+		virtual bool dropping(bool dropping) {
 			_dropping = dropping;
 			return this->dropping();
 		}

@@ -16,7 +16,7 @@ namespace event {
 		virtual ~TakeMeThere() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 
@@ -24,7 +24,7 @@ namespace event {
 			return _coordinate;
 		}
 
-		virtual const int& max_priority() {
+		virtual int max_priority() {
 			return _max_priority;
 		}
 

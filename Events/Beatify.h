@@ -7,21 +7,21 @@ namespace event {
 	public:
 		static const int ID;
 
-		Beatify(const unsigned char& key, const int& priority) : Event("Beatify"), _key(key), _priority(priority) {
+		Beatify(unsigned char key, int priority) : Event("Beatify"), _key(key), _priority(priority) {
 		}
 
 		virtual ~Beatify() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 
-		virtual const unsigned char& key() {
+		virtual unsigned char key() {
 			return _key;
 		}
 
-		virtual const int& priority() {
+		virtual int priority() {
 			return _priority;
 		}
 
