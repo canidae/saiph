@@ -10,7 +10,7 @@ using namespace std;
 map<const string, const Tool*> Tool::_tools;
 
 /* protected constructors */
-Tool::Tool(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties) : Item(name, cost, weight, TOOL, material, properties) {
+Tool::Tool(const string& name, int cost, int weight, int material, unsigned long long properties) : Item(name, cost, weight, TOOL, material, properties) {
 }
 
 /* destructor */

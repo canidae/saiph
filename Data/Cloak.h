@@ -15,14 +15,14 @@ namespace data {
 		static const std::map<const std::string, const Cloak*> cloaks();
 
 	protected:
-		Cloak(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
+		Cloak(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 
 		static void addToMap(const std::string& name, const Cloak* cloak);
 
 	private:
 		static std::map<const std::string, const Cloak*> _cloaks;
 
-		static void create(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
+		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 	};
 }
 #endif

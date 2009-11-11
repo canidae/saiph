@@ -45,12 +45,12 @@ namespace data {
 
 		static void init();
 		static const std::map<const std::string, const Food*>& foods();
-		const int& nutrition() const;
-		const int& time() const;
-		const int& effects() const;
+		int nutrition() const;
+		int time() const;
+		int effects() const;
 
 	protected:
-		Food(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects);
+		Food(const std::string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int time, int effects);
 
 		static void addToMap(const std::string& name, const Food* food);
 
@@ -60,7 +60,7 @@ namespace data {
 		const int _time;
 		const int _effects;
 
-		static void create(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects);
+		static void create(const std::string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int time, int effects);
 	};
 }
 #endif

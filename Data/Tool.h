@@ -16,7 +16,7 @@ namespace data {
 		static const std::map<const std::string, const Tool*>& tools();
 
 	protected:
-		Tool(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties);
+		Tool(const std::string& name, int cost, int weight, int material, unsigned long long properties);
 
 		static void addToMap(const std::string& name, const Tool* tool);
 

@@ -13,10 +13,10 @@ namespace data {
 
 		static void init();
 		static const std::map<const std::string, const Amulet*>& amulets();
-		const bool& conferEffect() const;
+		bool conferEffect() const;
 
 	protected:
-		Amulet(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect);
+		Amulet(const std::string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
 
 		static void addToMap(const std::string& name, const Amulet* amulet);
 
@@ -24,7 +24,7 @@ namespace data {
 		static std::map<const std::string, const Amulet*> _amulets;
 		const bool _confer_effect;
 
-		static void create(const std::string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect);
+		static void create(const std::string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect);
 	};
 }
 #endif

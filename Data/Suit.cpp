@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Suit*> Suit::_suits;
 
 /* protected constructors */
-Suit::Suit(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_SUIT, ac, mc, properties) {
+Suit::Suit(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SUIT, ac, mc, properties) {
 }
 
 /* destructor */
@@ -69,6 +69,6 @@ void Suit::addToMap(const string& name, const Suit* suit) {
 }
 
 /* private static methods */
-void Suit::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Suit::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Suit(name, cost, weight, material, ac, mc, properties));
 }

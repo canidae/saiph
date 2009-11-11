@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Cloak*> Cloak::_cloaks;
 
 /* protected constructors */
-Cloak::Cloak(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_CLOAK, ac, mc, properties) {
+Cloak::Cloak(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_CLOAK, ac, mc, properties) {
 }
 
 /* destructor */
@@ -54,6 +54,6 @@ void Cloak::addToMap(const string& name, const Cloak* cloak) {
 }
 
 /* private static methods */
-void Cloak::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Cloak::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Cloak(name, cost, weight, material, ac, mc, properties));
 }

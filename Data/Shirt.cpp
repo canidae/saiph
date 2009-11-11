@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Shirt*> Shirt::_shirts;
 
 /* protected constructors */
-Shirt::Shirt(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_SHIRT, ac, mc, properties) {
+Shirt::Shirt(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SHIRT, ac, mc, properties) {
 }
 
 /* destructor */
@@ -34,6 +34,6 @@ void Shirt::addToMap(const string& name, const Shirt* shirt) {
 }
 
 /* private static methods */
-void Shirt::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Shirt::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Shirt(name, cost, weight, material, ac, mc, properties));
 }

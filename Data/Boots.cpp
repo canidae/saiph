@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Boots*> Boots::_boots;
 
 /* protected constructors */
-Boots::Boots(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_BOOTS, ac, mc, properties) {
+Boots::Boots(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_BOOTS, ac, mc, properties) {
 }
 
 /* destructor */
@@ -50,6 +50,6 @@ void Boots::addToMap(const string& name, const Boots* boots) {
 }
 
 /* private static methods */
-void Boots::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Boots::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Boots(name, cost, weight, material, ac, mc, properties));
 }

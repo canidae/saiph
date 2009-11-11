@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Amulet*> Amulet::_amulets;
 
 /* protected constructors */
-Amulet::Amulet(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect) : Item(name, cost, weight, AMULET, material, properties), _confer_effect(confer_effect) {
+Amulet::Amulet(const string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) : Item(name, cost, weight, AMULET, material, properties), _confer_effect(confer_effect) {
 }
 
 /* destructor */
@@ -47,7 +47,7 @@ const map<const string, const Amulet*>& Amulet::amulets() {
 }
 
 /* public methods */
-const bool& Amulet::conferEffect() const {
+bool Amulet::conferEffect() const {
 	return _confer_effect;
 }
 
@@ -58,6 +58,6 @@ void Amulet::addToMap(const string& name, const Amulet* amulet) {
 }
 
 /* private static methods */
-void Amulet::create(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const bool& confer_effect) {
+void Amulet::create(const string& name, int cost, int weight, int material, unsigned long long properties, bool confer_effect) {
 	addToMap(name, new Amulet(name, cost, weight, material, properties, confer_effect));
 }

@@ -13,12 +13,12 @@ namespace data {
 
 		static void init();
 		static const std::map<const std::string, const Armor*>& armors();
-		const int& slot() const;
-		const int& ac() const;
-		const int& mc() const;
+		int slot() const;
+		int ac() const;
+		int mc() const;
 
 	protected:
-		Armor(const std::string& name, const int& cost, const int& weight, const int& material, const int& slot, const int& ac, const int& mc, const unsigned long long& properties);
+		Armor(const std::string& name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties);
 
 		static void addToMap(const std::string& name, const Armor* armor);
 

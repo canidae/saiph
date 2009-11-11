@@ -39,14 +39,14 @@ namespace data {
 		static void destroy();
 		static const std::map<const std::string, const Item*>& items();
 		const std::string& name() const;
-		const int& cost() const;
-		const int& weight() const;
-		const char& type() const;
-		const int& material() const;
-		const unsigned long long& properties() const;
+		int cost() const;
+		int weight() const;
+		char type() const;
+		int material() const;
+		unsigned long long properties() const;
 
 	protected:
-		Item(const std::string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties);
+		Item(const std::string& name, int cost, int weight, char type, int material, unsigned long long properties);
 
 		static void addToMap(const std::string& name, const Item* item);
 

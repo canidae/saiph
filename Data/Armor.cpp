@@ -16,7 +16,7 @@ using namespace std;
 map<const string, const Armor*> Armor::_armors;
 
 /* protected constructors */
-Armor::Armor(const string& name, const int& cost, const int& weight, const int& material, const int& slot, const int& ac, const int& mc, const unsigned long long& properties) : Item(name, cost, weight, ARMOR, material, properties), _slot(slot), _ac(ac), _mc(mc) {
+Armor::Armor(const string& name, int cost, int weight, int material, int slot, int ac, int mc, unsigned long long properties) : Item(name, cost, weight, ARMOR, material, properties), _slot(slot), _ac(ac), _mc(mc) {
 }
 
 /* destructor */
@@ -39,15 +39,15 @@ const map<const string, const Armor*>& Armor::armors() {
 }
 
 /* public methods */
-const int& Armor::slot() const {
+int Armor::slot() const {
 	return _slot;
 }
 
-const int& Armor::ac() const {
+int Armor::ac() const {
 	return _ac;
 }
 
-const int& Armor::mc() const {
+int Armor::mc() const {
 	return _mc;
 }
 

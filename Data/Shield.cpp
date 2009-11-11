@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Shield*> Shield::_shields;
 
 /* protected constructors */
-Shield::Shield(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_SHIELD, ac, mc, properties) {
+Shield::Shield(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_SHIELD, ac, mc, properties) {
 }
 
 /* destructor */
@@ -44,6 +44,6 @@ void Shield::addToMap(const string& name, const Shield* shield) {
 }
 
 /* private static methods */
-void Shield::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Shield::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Shield(name, cost, weight, material, ac, mc, properties));
 }

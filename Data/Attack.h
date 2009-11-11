@@ -79,16 +79,16 @@ namespace data {
 
 	class Attack {
 	public:
-		Attack(const int& type = 0, const int& damage_type = 0, const int& dices = 0, const int& sides = 0);
+		Attack(int type = 0, int damage_type = 0, int dices = 0, int sides = 0);
 		virtual ~Attack();
 
-		const int& type() const;
-		const int& damageType() const;
-		const int& dices() const;
-		const int& sides() const;
-		const int& minDamage() const;
-		const int& avgDamage() const;
-		const int& maxDamage() const;
+		int type() const;
+		int damageType() const;
+		int dices() const;
+		int sides() const;
+		int minDamage() const;
+		int avgDamage() const;
+		int maxDamage() const;
 
 	private:
 		int _type;

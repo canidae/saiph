@@ -7,7 +7,7 @@ using namespace std;
 map<const string, const Corpse*> Corpse::_corpses;
 
 /* protected constructors */
-Corpse::Corpse(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects, const int& confer_probability) : Food(name, cost, weight, material, properties, nutrition, time, effects), _confer_probability(confer_probability) {
+Corpse::Corpse(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int time, int effects, int confer_probability) : Food(name, cost, weight, material, properties, nutrition, time, effects), _confer_probability(confer_probability) {
 }
 
 /* destructor */
@@ -309,7 +309,7 @@ const map<const string, const Corpse*>& Corpse::corpses() {
 }
 
 /* public methods */
-const int& Corpse::conferProbability() const {
+int Corpse::conferProbability() const {
 	return _confer_probability;
 }
 
@@ -320,7 +320,7 @@ void Corpse::addToMap(const string& name, const Corpse* corpse) {
 }
 
 /* private static methods */
-void Corpse::create(const string& name, const int& nutrition, const int& effects, const int& confer_probability) {
+void Corpse::create(const string& name, int nutrition, int effects, int confer_probability) {
 	const Monster* monster = Monster::monster(name);
 	if (monster == NULL || monster->name().size() <= 0)
 		return;

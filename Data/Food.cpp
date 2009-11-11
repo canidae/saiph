@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Food*> Food::_foods;
 
 /* protected constructors */
-Food::Food(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) : Item(name, cost, weight, FOOD, material, properties), _nutrition(nutrition), _time(time), _effects(effects) {
+Food::Food(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int time, int effects) : Item(name, cost, weight, FOOD, material, properties), _nutrition(nutrition), _time(time), _effects(effects) {
 }
 
 /* destructor */
@@ -57,15 +57,15 @@ const map<const string, const Food*>& Food::foods() {
 }
 
 /* public methods */
-const int& Food::nutrition() const {
+int Food::nutrition() const {
 	return _nutrition;
 }
 
-const int& Food::time() const {
+int Food::time() const {
 	return _time;
 }
 
-const int& Food::effects() const {
+int Food::effects() const {
 	return _effects;
 }
 
@@ -76,7 +76,7 @@ void Food::addToMap(const string& name, const Food* food) {
 }
 
 /* private static methods */
-void Food::create(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties, const int& nutrition, const int& time, const int& effects) {
+void Food::create(const string& name, int cost, int weight, int material, unsigned long long properties, int nutrition, int time, int effects) {
 	addToMap(name, new Food(name, cost, weight, material, properties, nutrition, time, effects | EAT_EFFECT_NEVER_ROT));
 	if (time > 1 && name != "tin" && name != "tin of spinach") {
 		string partly_eaten = "partly eaten ";

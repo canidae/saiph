@@ -7,7 +7,7 @@ using namespace std;
 map<const string, const Lamp*> Lamp::_lamps;
 
 /* protected constructors */
-Lamp::Lamp(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties) : Tool(name, cost, weight, material, properties) {
+Lamp::Lamp(const string& name, int cost, int weight, int material, unsigned long long properties) : Tool(name, cost, weight, material, properties) {
 }
 
 /* destructor */
@@ -34,6 +34,6 @@ void Lamp::addToMap(const string& name, const Lamp* lamp) {
 }
 
 /* private static methods */
-void Lamp::create(const string& name, const int& cost, const int& weight, const int& material, const unsigned long long& properties) {
+void Lamp::create(const string& name, int cost, int weight, int material, unsigned long long properties) {
 	addToMap(name, new Lamp(name, cost, weight, material, properties));
 }

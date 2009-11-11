@@ -36,7 +36,7 @@ using namespace std;
 map<const string, const Weapon*> Weapon::_weapons;
 
 /* protected constructors */
-Weapon::Weapon(const string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties, bool one_handed, const int& alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Item(name, cost, weight, type, material, properties), _one_handed(one_handed), _alignment(alignment) {
+Weapon::Weapon(const string& name, int cost, int weight, char type, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Item(name, cost, weight, type, material, properties), _one_handed(one_handed), _alignment(alignment) {
 	_attack_small.push_back(as0);
 	_attack_small.push_back(as1);
 	_attack_small.push_back(as2);
@@ -87,11 +87,11 @@ const map<const string, const Weapon*> Weapon::weapons() {
 }
 
 /* public methods */
-const bool& Weapon::oneHanded() {
+bool Weapon::oneHanded() {
 	return _one_handed;
 }
 
-const int& Weapon::alignment() {
+int Weapon::alignment() {
 	return _alignment;
 }
 

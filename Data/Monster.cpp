@@ -13,7 +13,7 @@ vector<const Monster*> Monster::_monsters;
 map<const string, int> Monster::_monster_name_mapping;
 
 /* protected constructors */
-Monster::Monster(const string& name, const unsigned char& symbol, const int& difficulty, const int& move_rate, const int& ac, const int& magic_resistance, const int& alignment, const int& geno_flags, const Attack& a0, const Attack& a1, const Attack& a2, const Attack& a3, const Attack& a4, const Attack& a5, const int& weight, const int& nutrition, const int& extension, const int& sounds, const int& size, const int& resistances, const int& resistances_conferred, const int& m1, const int& m2, const int& m3, const int& color) : _name(name), _symbol(symbol), _difficulty(difficulty), _move_rate(move_rate), _ac(ac), _magic_resistance(magic_resistance), _alignment(alignment), _geno_flags(geno_flags), _weight(weight), _nutrition(nutrition), _extension(extension), _sounds(sounds), _size(size), _resistances(resistances), _resistances_conferred(resistances_conferred), _m1(m1), _m2(m2), _m3(m3), _color(color), _ignores_elbereth((symbol == S_HUMAN || symbol == S_ANGEL || name == "minotaur" || name == "Death" || name == "Pestilence" || name == "Famine")) {
+Monster::Monster(const string& name, const unsigned char& symbol, int difficulty, int move_rate, int ac, int magic_resistance, int alignment, int geno_flags, const Attack& a0, const Attack& a1, const Attack& a2, const Attack& a3, const Attack& a4, const Attack& a5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color) : _name(name), _symbol(symbol), _difficulty(difficulty), _move_rate(move_rate), _ac(ac), _magic_resistance(magic_resistance), _alignment(alignment), _geno_flags(geno_flags), _weight(weight), _nutrition(nutrition), _extension(extension), _sounds(sounds), _size(size), _resistances(resistances), _resistances_conferred(resistances_conferred), _m1(m1), _m2(m2), _m3(m3), _color(color), _ignores_elbereth((symbol == S_HUMAN || symbol == S_ANGEL || name == "minotaur" || name == "Death" || name == "Pestilence" || name == "Famine")) {
 	_attacks.push_back(a0);
 	_attacks.push_back(a1);
 	_attacks.push_back(a2);
@@ -440,11 +440,11 @@ void Monster::destroy() {
 	_monsters.clear();
 }
 
-const int& Monster::saiphDifficultyMin() {
+int Monster::saiphDifficultyMin() {
 	return _saiph_difficulty_min;
 }
 
-const int& Monster::saiphDifficultyMax() {
+int Monster::saiphDifficultyMax() {
 	return _saiph_difficulty_max;
 }
 
@@ -452,7 +452,7 @@ const vector<const Monster*>& Monster::monsters() {
 	return _monsters;
 }
 
-const Monster* Monster::monster(const unsigned char& symbol, const int& color) {
+const Monster* Monster::monster(const unsigned char& symbol, int color) {
 	if (color < 0 || color > INVERSE_BOLD_WHITE)
 		return NULL;
 	return monster(_monster_symbol_mapping[symbol][color]);
@@ -474,75 +474,75 @@ const unsigned char& Monster::symbol() const {
 	return _symbol;
 }
 
-const int& Monster::difficulty() const {
+int Monster::difficulty() const {
 	return _difficulty;
 }
 
-const int& Monster::moveRate() const {
+int Monster::moveRate() const {
 	return _move_rate;
 }
 
-const int& Monster::ac() const {
+int Monster::ac() const {
 	return _ac;
 }
 
-const int& Monster::magicResistance() const {
+int Monster::magicResistance() const {
 	return _magic_resistance;
 }
 
-const int& Monster::alignment() const {
+int Monster::alignment() const {
 	return _alignment;
 }
 
-const int& Monster::genoFlags() const {
+int Monster::genoFlags() const {
 	return _geno_flags;
 }
 
-const int& Monster::weight() const {
+int Monster::weight() const {
 	return _weight;
 }
 
-const int& Monster::nutrition() const {
+int Monster::nutrition() const {
 	return _nutrition;
 }
 
-const int& Monster::extension() const {
+int Monster::extension() const {
 	return _extension;
 }
 
-const int& Monster::sounds() const {
+int Monster::sounds() const {
 	return _sounds;
 }
 
-const int& Monster::size() const {
+int Monster::size() const {
 	return _size;
 }
 
-const int& Monster::resistances() const {
+int Monster::resistances() const {
 	return _resistances;
 }
 
-const int& Monster::resistancesConferred() const {
+int Monster::resistancesConferred() const {
 	return _resistances_conferred;
 }
 
-const int& Monster::m1() const {
+int Monster::m1() const {
 	return _m1;
 }
 
-const int& Monster::m2() const {
+int Monster::m2() const {
 	return _m2;
 }
 
-const int& Monster::m3() const {
+int Monster::m3() const {
 	return _m3;
 }
 
-const int& Monster::color() const {
+int Monster::color() const {
 	return _color;
 }
 
-const bool& Monster::ignoresElbereth() const {
+bool Monster::ignoresElbereth() const {
 	return _ignores_elbereth;
 }
 
@@ -550,12 +550,12 @@ const vector<Attack>& Monster::attacks() const {
 	return _attacks;
 }
 
-const int& Monster::saiphDifficulty() const {
+int Monster::saiphDifficulty() const {
 	return _saiph_difficulty;
 }
 
 /* private static methods */
-const Monster* Monster::monster(const int& id) {
+const Monster* Monster::monster(int id) {
 	if (id < 0 || id > (int) _monsters.size())
 		return NULL;
 	return _monsters[id];

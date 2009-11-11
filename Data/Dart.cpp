@@ -7,7 +7,7 @@ using namespace std;
 map<const string, const Dart*> Dart::_darts;
 
 /* protected constructors */
-Dart::Dart(const string& name, const int& cost, const int& weight, const char& type, const int& material, const unsigned long long& properties, bool one_handed, const int& alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+Dart::Dart(const string& name, int cost, int weight, char type, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
 }
 
 /* destructor */
@@ -31,6 +31,6 @@ void Dart::addToMap(const string& name, const Dart* dart) {
 }
 
 /* private static methods */
-void Dart::create(const string& name, const int& cost, const int& weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, const int& material, const char& type, const unsigned long long& properties, bool one_handed, const int& alignment) {
+void Dart::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char type, unsigned long long properties, bool one_handed, int alignment) {
 	addToMap(name, new Dart(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
 }

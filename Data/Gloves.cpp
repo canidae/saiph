@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Gloves*> Gloves::_gloves;
 
 /* protected constructors */
-Gloves::Gloves(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_GLOVES, ac, mc, properties) {
+Gloves::Gloves(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_GLOVES, ac, mc, properties) {
 }
 
 /* destructor */
@@ -36,6 +36,6 @@ void Gloves::addToMap(const string& name, const Gloves* gloves) {
 }
 
 /* private static methods */
-void Gloves::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Gloves::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Gloves(name, cost, weight, material, ac, mc, properties));
 }

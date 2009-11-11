@@ -230,36 +230,36 @@ namespace data {
 
 		static void init();
 		static void destroy();
-		static const int& saiphDifficultyMin();
-		static const int& saiphDifficultyMax();
+		static int saiphDifficultyMin();
+		static int saiphDifficultyMax();
 		static const std::vector<const Monster*>& monsters();
-		static const Monster* monster(const unsigned char& symbol, const int& color);
+		static const Monster* monster(const unsigned char& symbol, int color);
 		static const Monster* monster(const std::string& name);
 		const std::string& name() const;
 		const unsigned char& symbol() const;
-		const int& difficulty() const;
-		const int& moveRate() const;
-		const int& ac() const;
-		const int& magicResistance() const;
-		const int& alignment() const;
-		const int& genoFlags() const;
-		const int& weight() const;
-		const int& nutrition() const;
-		const int& extension() const;
-		const int& sounds() const;
-		const int& size() const;
-		const int& resistances() const;
-		const int& resistancesConferred() const;
-		const int& m1() const;
-		const int& m2() const;
-		const int& m3() const;
-		const int& color() const;
-		const bool&ignoresElbereth() const;
+		int difficulty() const;
+		int moveRate() const;
+		int ac() const;
+		int magicResistance() const;
+		int alignment() const;
+		int genoFlags() const;
+		int weight() const;
+		int nutrition() const;
+		int extension() const;
+		int sounds() const;
+		int size() const;
+		int resistances() const;
+		int resistancesConferred() const;
+		int m1() const;
+		int m2() const;
+		int m3() const;
+		int color() const;
+		bool ignoresElbereth() const;
 		const std::vector<Attack>& attacks() const;
-		const int& saiphDifficulty() const;
+		int saiphDifficulty() const;
 
 	protected:
-		Monster(const std::string& name, const unsigned char& symbol, const int& difficulty, const int& move_rate, const int& ac, const int& magic_resistance, const int& alignment, const int& geno_flags, const Attack& a0, const Attack& a1, const Attack& a2, const Attack& a3, const Attack& a4, const Attack& a5, const int& weight, const int& nutrition, const int& extension, const int& sounds, const int& size, const int& resistances, const int& resistances_conferred, const int& m1, const int& m2, const int& m3, const int& color);
+		Monster(const std::string& name, const unsigned char& symbol, int difficulty, int move_rate, int ac, int magic_resistance, int alignment, int geno_flags, const Attack& a0, const Attack& a1, const Attack& a2, const Attack& a3, const Attack& a4, const Attack& a5, int weight, int nutrition, int extension, int sounds, int size, int resistances, int resistances_conferred, int m1, int m2, int m3, int color);
 
 	private:
 		static int _saiph_difficulty_min;
@@ -290,7 +290,7 @@ namespace data {
 		std::vector<Attack> _attacks;
 		int _saiph_difficulty;
 
-		static const Monster* monster(const int& id);
+		static const Monster* monster(int id);
 	};
 }
 #endif

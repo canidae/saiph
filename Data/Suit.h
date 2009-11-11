@@ -15,14 +15,14 @@ namespace data {
 		static const std::map<const std::string, const Suit*>& suits();
 
 	protected:
-		Suit(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
+		Suit(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 
 		static void addToMap(const std::string& name, const Suit* suit);
 
 	private:
 		static std::map<const std::string, const Suit*> _suits;
 
-		static void create(const std::string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties);
+		static void create(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
 	};
 }
 #endif

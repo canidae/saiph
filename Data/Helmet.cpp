@@ -9,7 +9,7 @@ using namespace std;
 map<const string, const Helmet*> Helmet::_helmets;
 
 /* protected constructors */
-Helmet::Helmet(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) : Armor(name, cost, weight, material, SLOT_HELMET, ac, mc, properties) {
+Helmet::Helmet(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) : Armor(name, cost, weight, material, SLOT_HELMET, ac, mc, properties) {
 }
 
 /* destructor */
@@ -50,6 +50,6 @@ void Helmet::addToMap(const string& name, const Helmet* helmet) {
 }
 
 /* private static methods */
-void Helmet::create(const string& name, const int& cost, const int& weight, const int& material, const int& ac, const int& mc, const unsigned long long& properties) {
+void Helmet::create(const string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties) {
 	addToMap(name, new Helmet(name, cost, weight, material, ac, mc, properties));
 }
