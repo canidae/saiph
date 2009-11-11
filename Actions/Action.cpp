@@ -1,4 +1,5 @@
 #include "Action.h"
+
 #include "Answer.h"
 #include "Apply.h"
 #include "ApplyInDirection.h"
@@ -13,6 +14,7 @@
 #include "Fight.h"
 #include "Kick.h"
 #include "ListInventory.h"
+#include "ListPlayerAttributes.h"
 #include "Look.h"
 #include "Loot.h"
 #include "Move.h"
@@ -60,6 +62,7 @@ const int FarLook::ID = 25;
 const int Enhance::ID = 26;
 const int Drop::ID = 27;
 const int DropGold::ID = 28;
+const int ListPlayerAttributes::ID = 29;
 
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {

@@ -141,10 +141,11 @@ void World::unregisterAnalyzer(Analyzer * const analyzer) {
 	}
 }
 
-bool World::setAction(action::Action* action) {
+bool World::setAction(action::Action* action, bool deleteAction) {
 	if (World::_action != NULL) {
 		if (action->command().priority() <= World::_action->command().priority()) {
-			delete action;
+			if (deleteAction)
+				delete action;
 			return false; // already got an action with higher priority
 		}
 		delete World::_action;
@@ -514,7 +515,7 @@ void World::run() {
 
 		/* check if we got some queued actions */
 		for (list<action::Action*>::iterator a = _action_queue.begin(); a != _action_queue.end(); ++a) {
-			if (setAction(*a)) {
+			if (setAction(*a, false)) {
 				/* we will execute this action, remove it from queue.
 				 * if it fails, the analyzer that queued the action needs to handle it */
 				_action_queue.erase(a);

@@ -51,7 +51,7 @@ namespace action {
 				_sequence = 3;
 			else if (_sequence == 3)
 				_sequence = 4;
-		};
+		}
 
 	private:
 		const Command _engrave;

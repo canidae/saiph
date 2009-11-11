@@ -65,7 +65,7 @@ ItemsOnGround Level::_on_ground;
 Tile Level::_outside_map;
 
 /* constructors/destructor */
-Level::Level(int level, const string& name, int branch) : _level(level), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
+Level::Level(int level, const string& name, int branch) : _level(level), _monsters(), _stashes(), _symbols(), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true) {
 	for (int a = 0; a < MAP_ROW_END + 1; ++a) {
 		for (int b = 0; b < MAP_COL_END + 1; ++b)
 			_map[a][b] = Tile(Coordinate(_level, a, b));

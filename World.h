@@ -49,7 +49,7 @@ public:
 	static void destroy();
 	static void registerAnalyzer(analyzer::Analyzer * const analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer * const analyzer);
-	static bool setAction(action::Action* action);
+	static bool setAction(action::Action* action, bool deleteAction = true);
 	static bool queueAction(action::Action* action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
 	static Tile& shortestPath(const Point& target);

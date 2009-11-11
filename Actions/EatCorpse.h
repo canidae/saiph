@@ -41,7 +41,7 @@ namespace action {
 			default:
 				return Action::NOOP;
 			}
-		};
+		}
 
 		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_WHAT_TO_EAT) != std::string::npos) {

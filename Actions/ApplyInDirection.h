@@ -47,7 +47,7 @@ namespace action {
 					Inventory::update();
 				_sequence = 3;
 			}
-		};
+		}
 
 	private:
 		const Command _do_apply;
