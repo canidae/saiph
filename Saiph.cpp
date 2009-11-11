@@ -69,7 +69,7 @@ void Saiph::parseMessages(const string& messages) {
 			/* name */
 			string::size_type pos = messages.find(':');
 			if (pos != string::npos)
-				_name = messages.substr(pos + 2, messages.find("  ", pos + 2));
+				_name = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
 			/* skip starting race/role/gender/alignment */
 			pos = messages.find(':', pos + 2);
 			pos = messages.find(':', pos + 2);
@@ -78,15 +78,15 @@ void Saiph::parseMessages(const string& messages) {
 			/* current race */
 			pos = messages.find(':', pos + 2);
 			if (pos != string::npos)
-				_race = messages.substr(pos + 2, messages.find("  ", pos + 2));
+				_race = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
 			/* current role */
 			pos = messages.find(':', pos + 2);
 			if (pos != string::npos)
-				_role = messages.substr(pos + 2, messages.find("  ", pos + 2));
+				_role = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
 			/* current gender */
 			pos = messages.find(':', pos + 2);
 			if (pos != string::npos)
-				_gender = messages.substr(pos + 2, messages.find("  ", pos + 2));
+				_gender = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
 		}
 	} else {
 		if (messages.find(MESSAGE_COLD_RES_GAIN1) != string::npos)
