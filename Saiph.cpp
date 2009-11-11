@@ -3,6 +3,7 @@
 #include <string.h>
 #include "Globals.h"
 #include "Inventory.h"
+#include "World.h"
 
 using namespace analyzer;
 using namespace std;
@@ -45,6 +46,14 @@ unsigned long long Saiph::_intrinsics = 0;
 unsigned long long Saiph::_extrinsics = 0;
 /* last turn she prayed */
 int Saiph::_last_prayed = 0;
+/* name */
+string Saiph::_name;
+/* race */
+string Saiph::_race;
+/* role */
+string Saiph::_role;
+/* gender */
+string Saiph::_gender;
 /* effects */
 char Saiph::_effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {
 	{'\0'}
@@ -55,54 +64,81 @@ void Saiph::analyze() {
 }
 
 void Saiph::parseMessages(const string& messages) {
-	if (messages.find(MESSAGE_COLD_RES_GAIN1) != string::npos)
-		_intrinsics |= PROPERTY_COLD;
-	if (messages.find(MESSAGE_COLD_RES_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_COLD;
-	if (messages.find(MESSAGE_DISINTEGRATION_RES_GAIN1) != string::npos || messages.find(MESSAGE_DISINTEGRATION_RES_GAIN2) != string::npos)
-		_intrinsics |= PROPERTY_DISINT;
-	if (messages.find(MESSAGE_FIRE_RES_GAIN1) != string::npos || messages.find(MESSAGE_FIRE_RES_GAIN2) != string::npos)
-		_intrinsics |= PROPERTY_FIRE;
-	if (messages.find(MESSAGE_FIRE_RES_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_FIRE;
-	if (messages.find(MESSAGE_POISON_RES_GAIN1) != string::npos || messages.find(MESSAGE_POISON_RES_GAIN2) != string::npos)
-		_intrinsics |= PROPERTY_POISON;
-	if (messages.find(MESSAGE_POISON_RES_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_POISON;
-	if (messages.find(MESSAGE_SHOCK_RES_GAIN1) != string::npos || messages.find(MESSAGE_SHOCK_RES_GAIN2) != string::npos)
-		_intrinsics |= PROPERTY_SHOCK;
-	if (messages.find(MESSAGE_SHOCK_RES_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_SHOCK;
-	if (messages.find(MESSAGE_SLEEP_RES_GAIN1) != string::npos)
-		_intrinsics |= PROPERTY_SLEEP;
-	if (messages.find(MESSAGE_SLEEP_RES_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_SLEEP;
-	if (messages.find(MESSAGE_TELEPATHY_GAIN1) != string::npos)
-		_intrinsics |= PROPERTY_ESP;
-	if (messages.find(MESSAGE_TELEPATHY_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_ESP;
-	if (messages.find(MESSAGE_TELEPORT_CONTROL_GAIN1) != string::npos || messages.find(MESSAGE_TELEPORT_CONTROL_GAIN2) != string::npos)
-		_intrinsics |= PROPERTY_TELEPORT_CONTROL;
-	if (messages.find(MESSAGE_TELEPORTITIS_GAIN1) != string::npos || messages.find(MESSAGE_TELEPORTITIS_GAIN2) != string::npos)
-		_intrinsics |= PROPERTY_TELEPORT;
-	if (messages.find(MESSAGE_TELEPORTITIS_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_TELEPORT;
-	if (messages.find(MESSAGE_LYCANTHROPY_GAIN1) != string::npos)
-		_intrinsics |= PROPERTY_LYCANTHROPY;
-	if (messages.find(MESSAGE_LYCANTHROPY_LOSE1) != string::npos)
-		_intrinsics &= ~PROPERTY_LYCANTHROPY;
-	if (messages.find(MESSAGE_HURT_LEFT_LEG) != string::npos || messages.find(MESSAGE_HURT_RIGHT_LEG) != string::npos)
-		_hurt_leg = true;
-	if (messages.find(MESSAGE_LEG_IS_BETTER) != string::npos)
-		_hurt_leg = false;
-	if (messages.find(MESSAGE_POLYMORPH) != string::npos)
-		_polymorphed = true;
-	if (messages.find(MESSAGE_UNPOLYMORPH) != string::npos)
-		_polymorphed = false;
-	if (messages.find(MESSAGE_LEVITATION_GAIN1) != string::npos || messages.find(MESSAGE_LEVITATION_GAIN2) != string::npos)
-		_extrinsics |= PROPERTY_LEVITATION;
-	if (messages.find(MESSAGE_LEVITATION_LOSE1) != string::npos || messages.find(MESSAGE_LEVITATION_LOSE2) != string::npos)
-		_extrinsics &= ~PROPERTY_LEVITATION;
+	if (World::menu()) {
+		if (messages.find(MESSAGE_BASE_ATTRIBUTES) != string::npos) {
+			//'  Base Attributes  Starting  name           : saiph  race           : human  role           : Valkyrie  gender         : female  alignment      : lawful  Current  race           : human  role           : Valkyrie  gender         : female  alignment      : lawful  Deities  Chaotic        : Loki  Neutral        : Odin  Lawful         : Tyr               (s,c)  '
+			/* name */
+			string::size_type pos = messages.find(':');
+			if (pos != string::npos)
+				_name = messages.substr(pos + 2, messages.find("  ", pos + 2));
+			/* skip starting race/role/gender/alignment */
+			pos = messages.find(':', pos + 2);
+			pos = messages.find(':', pos + 2);
+			pos = messages.find(':', pos + 2);
+			pos = messages.find(':', pos + 2);
+			/* current race */
+			pos = messages.find(':', pos + 2);
+			if (pos != string::npos)
+				_race = messages.substr(pos + 2, messages.find("  ", pos + 2));
+			/* current role */
+			pos = messages.find(':', pos + 2);
+			if (pos != string::npos)
+				_role = messages.substr(pos + 2, messages.find("  ", pos + 2));
+			/* current gender */
+			pos = messages.find(':', pos + 2);
+			if (pos != string::npos)
+				_gender = messages.substr(pos + 2, messages.find("  ", pos + 2));
+		}
+	} else {
+		if (messages.find(MESSAGE_COLD_RES_GAIN1) != string::npos)
+			_intrinsics |= PROPERTY_COLD;
+		if (messages.find(MESSAGE_COLD_RES_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_COLD;
+		if (messages.find(MESSAGE_DISINTEGRATION_RES_GAIN1) != string::npos || messages.find(MESSAGE_DISINTEGRATION_RES_GAIN2) != string::npos)
+			_intrinsics |= PROPERTY_DISINT;
+		if (messages.find(MESSAGE_FIRE_RES_GAIN1) != string::npos || messages.find(MESSAGE_FIRE_RES_GAIN2) != string::npos)
+			_intrinsics |= PROPERTY_FIRE;
+		if (messages.find(MESSAGE_FIRE_RES_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_FIRE;
+		if (messages.find(MESSAGE_POISON_RES_GAIN1) != string::npos || messages.find(MESSAGE_POISON_RES_GAIN2) != string::npos)
+			_intrinsics |= PROPERTY_POISON;
+		if (messages.find(MESSAGE_POISON_RES_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_POISON;
+		if (messages.find(MESSAGE_SHOCK_RES_GAIN1) != string::npos || messages.find(MESSAGE_SHOCK_RES_GAIN2) != string::npos)
+			_intrinsics |= PROPERTY_SHOCK;
+		if (messages.find(MESSAGE_SHOCK_RES_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_SHOCK;
+		if (messages.find(MESSAGE_SLEEP_RES_GAIN1) != string::npos)
+			_intrinsics |= PROPERTY_SLEEP;
+		if (messages.find(MESSAGE_SLEEP_RES_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_SLEEP;
+		if (messages.find(MESSAGE_TELEPATHY_GAIN1) != string::npos)
+			_intrinsics |= PROPERTY_ESP;
+		if (messages.find(MESSAGE_TELEPATHY_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_ESP;
+		if (messages.find(MESSAGE_TELEPORT_CONTROL_GAIN1) != string::npos || messages.find(MESSAGE_TELEPORT_CONTROL_GAIN2) != string::npos)
+			_intrinsics |= PROPERTY_TELEPORT_CONTROL;
+		if (messages.find(MESSAGE_TELEPORTITIS_GAIN1) != string::npos || messages.find(MESSAGE_TELEPORTITIS_GAIN2) != string::npos)
+			_intrinsics |= PROPERTY_TELEPORT;
+		if (messages.find(MESSAGE_TELEPORTITIS_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_TELEPORT;
+		if (messages.find(MESSAGE_LYCANTHROPY_GAIN1) != string::npos)
+			_intrinsics |= PROPERTY_LYCANTHROPY;
+		if (messages.find(MESSAGE_LYCANTHROPY_LOSE1) != string::npos)
+			_intrinsics &= ~PROPERTY_LYCANTHROPY;
+		if (messages.find(MESSAGE_HURT_LEFT_LEG) != string::npos || messages.find(MESSAGE_HURT_RIGHT_LEG) != string::npos)
+			_hurt_leg = true;
+		if (messages.find(MESSAGE_LEG_IS_BETTER) != string::npos)
+			_hurt_leg = false;
+		if (messages.find(MESSAGE_POLYMORPH) != string::npos)
+			_polymorphed = true;
+		if (messages.find(MESSAGE_UNPOLYMORPH) != string::npos)
+			_polymorphed = false;
+		if (messages.find(MESSAGE_LEVITATION_GAIN1) != string::npos || messages.find(MESSAGE_LEVITATION_GAIN2) != string::npos)
+			_extrinsics |= PROPERTY_LEVITATION;
+		if (messages.find(MESSAGE_LEVITATION_LOSE1) != string::npos || messages.find(MESSAGE_LEVITATION_LOSE2) != string::npos)
+			_extrinsics &= ~PROPERTY_LEVITATION;
+	}
 }
 
 bool Saiph::parseAttributeRow(const char* attributerow) {
@@ -339,4 +375,20 @@ int Saiph::lastPrayed() {
 int Saiph::lastPrayed(int last_prayed) {
 	_last_prayed = last_prayed;
 	return Saiph::lastPrayed();
+}
+
+const string& Saiph::name() {
+	return _name;
+}
+
+const string& Saiph::race() {
+	return _race;
+}
+
+const string& Saiph::role() {
+	return _role;
+}
+
+const string& Saiph::gender() {
+	return _gender;
 }

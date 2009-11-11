@@ -8,6 +8,9 @@
 #define MAX_EFFECTS 8
 #define MAX_TEXT_LENGTH 16
 
+/* for parsing player attributes */
+#define MESSAGE_BASE_ATTRIBUTES "  Base Attributes  "
+
 namespace analyzer {
 	class Analyzer;
 }
@@ -58,6 +61,10 @@ public:
 	static unsigned long long removeExtrinsics(unsigned long long extrinsics);
 	static int lastPrayed();
 	static int lastPrayed(int last_prayed);
+	static const std::string& name();
+	static const std::string& race();
+	static const std::string& role();
+	static const std::string& gender();
 
 private:
 	/* attributes */
@@ -97,6 +104,14 @@ private:
 	static unsigned long long _extrinsics;
 	/* last turn she prayed */
 	static int _last_prayed;
+	/* name */
+	static std::string _name;
+	/* race */
+	static std::string _race;
+	/* role */
+	static std::string _role;
+	/* gender */
+	static std::string _gender;
 	/* for parsing effects */
 	static char _effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 };
