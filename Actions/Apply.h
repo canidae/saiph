@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Apply(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority, const bool& update_inventory = true) : Action(analyzer), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
+		Apply(analyzer::Analyzer* analyzer, unsigned char key, const int& priority, bool update_inventory = true) : Action(analyzer), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
 		}
 
 		virtual ~Apply() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

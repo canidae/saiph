@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Open(analyzer::Analyzer* analyzer, const unsigned char& direction, const int& priority) : Action(analyzer), _open("o", priority), _open_direction(direction, PRIORITY_CONTINUE_ACTION) {
+		Open(analyzer::Analyzer* analyzer, unsigned char direction, int priority) : Action(analyzer), _open("o", priority), _open_direction(direction, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Open() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

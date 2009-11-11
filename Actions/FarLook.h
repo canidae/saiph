@@ -50,7 +50,7 @@ namespace action {
 			return farlook_command;
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

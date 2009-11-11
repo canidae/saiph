@@ -16,7 +16,7 @@ namespace action {
 		virtual ~ListInventory() {
 		};
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

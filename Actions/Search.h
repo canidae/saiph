@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Search(analyzer::Analyzer* analyzer, const int& priority) : Action(analyzer), _search("s", priority) {
+		Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _search("s", priority) {
 		}
 
 		virtual ~Search() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

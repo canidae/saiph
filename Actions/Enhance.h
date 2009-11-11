@@ -15,7 +15,7 @@ namespace action {
 		virtual ~Enhance() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

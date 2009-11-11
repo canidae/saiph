@@ -15,7 +15,7 @@ namespace action {
 		virtual ~Look() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

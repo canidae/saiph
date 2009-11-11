@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		Wear(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _wear("W", priority), _wear_key(key, PRIORITY_CONTINUE_ACTION) {
+		Wear(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _wear("W", priority), _wear_key(key, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Wear() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

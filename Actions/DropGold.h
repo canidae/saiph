@@ -9,13 +9,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		DropGold(analyzer::Analyzer* analyzer, const int& priority) : Action(analyzer), _drop("d", priority), _gold("$", PRIORITY_CONTINUE_ACTION) {
+		DropGold(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _drop("d", priority), _gold("$", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~DropGold() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

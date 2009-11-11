@@ -11,17 +11,17 @@ namespace action {
 	public:
 		static const int ID;
 
-		Move(analyzer::Analyzer* analyzer, const unsigned char& direction, const int& priority) : Action(analyzer), _move(direction, priority) {
+		Move(analyzer::Analyzer* analyzer, unsigned char direction, int priority) : Action(analyzer), _move(direction, priority) {
 		}
 
 		virtual ~Move() {
 		}
 
-		static int calculatePriority(const int& max_priority, const unsigned int& cost) {
+		static int calculatePriority(int max_priority, unsigned int cost) {
 			return max_priority * MOVE_COST_MEDIAN / (cost + MOVE_COST_MEDIAN - 1);
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

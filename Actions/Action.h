@@ -16,7 +16,7 @@ namespace action {
 		Action(analyzer::Analyzer* analyzer);
 		virtual ~Action();
 
-		virtual const int& id() = 0;
+		virtual int id() = 0;
 		analyzer::Analyzer* analyzer();
 		virtual const Command& command() = 0;
 		virtual void update(const std::string& messages) = 0;

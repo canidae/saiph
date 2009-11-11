@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		ApplyInDirection(analyzer::Analyzer* analyzer, const unsigned char& key, const unsigned char& direction, const int& priority, const bool& update_inventory = true) : Action(analyzer), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _apply_direction(direction, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
+		ApplyInDirection(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority, bool update_inventory = true) : Action(analyzer), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _apply_direction(direction, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
 		}
 
 		virtual ~ApplyInDirection() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 

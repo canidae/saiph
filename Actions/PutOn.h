@@ -10,13 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		PutOn(analyzer::Analyzer* analyzer, const unsigned char& key, const int& priority) : Action(analyzer), _put_on("P", priority), _put_on_key(key, PRIORITY_CONTINUE_ACTION) {
+		PutOn(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _put_on("P", priority), _put_on_key(key, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~PutOn() {
 		}
 
-		virtual const int& id() {
+		virtual int id() {
 			return ID;
 		}
 
