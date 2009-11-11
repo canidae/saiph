@@ -66,7 +66,6 @@ void Saiph::analyze() {
 void Saiph::parseMessages(const string& messages) {
 	if (World::menu()) {
 		if (messages.find(MESSAGE_BASE_ATTRIBUTES) != string::npos) {
-			//'  Base Attributes  Starting  name           : saiph  race           : human  role           : Valkyrie  gender         : female  alignment      : lawful  Current  race           : human  role           : Valkyrie  gender         : female  alignment      : lawful  Deities  Chaotic        : Loki  Neutral        : Odin  Lawful         : Tyr               (s,c)  '
 			/* name */
 			string::size_type pos = messages.find(':');
 			if (pos != string::npos)

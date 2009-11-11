@@ -5,6 +5,7 @@
 #include "../World.h"
 #include "../Actions/Apply.h"
 #include "../Actions/Engrave.h"
+#include "../Actions/ListPlayerAttributes.h"
 #include "../Actions/Look.h"
 #include "../Actions/Pray.h"
 #include "../Actions/Rest.h"
@@ -21,11 +22,12 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Health::Health() : Analyzer("Health"), _resting(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX), _unihorn_key(ILLEGAL_ITEM), _unihorn_use_turn(World::internalTurn()), _unihorn_priority(ILLEGAL_PRIORITY) {
+Health::Health() : Analyzer("Health"), _resting(false), _was_polymorphed(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX), _unihorn_key(ILLEGAL_ITEM), _unihorn_use_turn(World::internalTurn()), _unihorn_priority(ILLEGAL_PRIORITY) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
+	World::queueAction(static_cast<action::Action*> (new action::ListPlayerAttributes(this)));
 }
 
 /* methods */
@@ -106,6 +108,15 @@ void Health::analyze() {
 		/* cure polymorph */
 		if (action::Pray::isSafeToPray())
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_POLYMORPH)));
+		/* also check player attributes */
+		if (!_was_polymorphed)
+			World::queueAction(static_cast<action::Action*> (new action::ListPlayerAttributes(this)));
+		_was_polymorphed = true;
+	}
+	if (_was_polymorphed && !Saiph::polymorphed()) {
+		/* returned to normal form, check player attributes again */
+		World::queueAction(static_cast<action::Action*> (new action::ListPlayerAttributes(this)));
+		_was_polymorphed = false;
 	}
 	if (_prev_str < Saiph::strength() || _prev_dex < Saiph::dexterity() || _prev_con < Saiph::constitution() || _prev_int < Saiph::intelligence() || _prev_wis < Saiph::wisdom() || _prev_cha < Saiph::charisma()) {
 		/* we lost some stats, apply unihorn */

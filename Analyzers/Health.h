@@ -30,6 +30,7 @@ namespace analyzer {
 
 	private:
 		bool _resting;
+		bool _was_polymorphed;
 		int _prev_str;
 		int _prev_dex;
 		int _prev_con;
