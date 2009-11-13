@@ -480,6 +480,9 @@ void World::run() {
 		bool analyze_and_parse = (_action == NULL || _action->command() == action::Action::NOOP);
 		Analyzer* prev_analyzer = (_action == NULL ? NULL : _action->analyzer());
 
+		/* write messages to log */
+		Debug::custom("Messages") << "'" << _messages << "'" << endl;
+
 		/* let Saiph, Inventory and current level parse messages */
 		Saiph::parseMessages(_messages);
 		Inventory::parseMessages(_messages);
@@ -492,9 +495,6 @@ void World::run() {
 
 		/* dump maps */
 		dumpMaps();
-
-		/* and messages */
-		Debug::custom("Messages") << "'" << _messages << "'" << endl;
 
 		/* analyze and parse messages if we're not continuing an action */
 		if (analyze_and_parse) {

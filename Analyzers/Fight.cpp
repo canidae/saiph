@@ -7,7 +7,6 @@
 #include "../World.h"
 #include "../Actions/Fight.h"
 #include "../Actions/Move.h"
-#include "../Actions/Select.h"
 #include "../Actions/Throw.h"
 #include "../Data/Dagger.h"
 #include "../Data/Dart.h"

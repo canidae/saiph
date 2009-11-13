@@ -7,7 +7,6 @@
 #include "../World.h"
 #include "../Actions/PutOn.h"
 #include "../Actions/Remove.h"
-#include "../Actions/Select.h"
 #include "../Data/Amulet.h"
 #include "../Events/Beatify.h"
 #include "../Events/Event.h"

@@ -19,6 +19,7 @@
         <in>Fight.h</in>
         <in>Kick.h</in>
         <in>ListInventory.h</in>
+        <in>ListPlayerAttributes.h</in>
         <in>Look.h</in>
         <in>Loot.h</in>
         <in>Move.h</in>
@@ -29,12 +30,10 @@
         <in>Remove.h</in>
         <in>Rest.h</in>
         <in>Search.h</in>
-        <in>Select.h</in>
-        <in>SelectMultiple.h</in>
         <in>TakeOff.h</in>
         <in>Throw.h</in>
         <in>Unlock.h</in>
-        <in>newfile.h</in>
+        <in>Wear.h</in>
       </df>
       <df name="Analyzers">
         <in>Amulet.cpp</in>

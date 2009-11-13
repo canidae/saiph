@@ -25,8 +25,6 @@
 #include "Remove.h"
 #include "Rest.h"
 #include "Search.h"
-#include "Select.h"
-#include "SelectMultiple.h"
 #include "Throw.h"
 #include "Unlock.h"
 
@@ -54,15 +52,13 @@ const int PutOn::ID = 17;
 const int Remove::ID = 18;
 const int Rest::ID = 19;
 const int Search::ID = 20;
-const int Select::ID = 21;
-const int SelectMultiple::ID = 22;
-const int Throw::ID = 23;
-const int Unlock::ID = 24;
-const int FarLook::ID = 25;
-const int Enhance::ID = 26;
-const int Drop::ID = 27;
-const int DropGold::ID = 28;
-const int ListPlayerAttributes::ID = 29;
+const int Throw::ID = 21;
+const int Unlock::ID = 22;
+const int FarLook::ID = 23;
+const int Enhance::ID = 24;
+const int Drop::ID = 25;
+const int DropGold::ID = 26;
+const int ListPlayerAttributes::ID = 27;
 
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {

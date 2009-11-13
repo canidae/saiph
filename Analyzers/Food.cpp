@@ -7,7 +7,6 @@
 #include "../Actions/Eat.h"
 #include "../Actions/EatCorpse.h"
 #include "../Actions/Pray.h"
-#include "../Actions/Select.h"
 #include "../Data/Corpse.h"
 #include "../Data/Food.h"
 #include "../Events/ChangedInventoryItems.h"
