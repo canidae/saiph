@@ -15,12 +15,12 @@ namespace data {
 		virtual ~Weapon();
 
 		static void init();
-		static const std::map<const std::string, const Weapon*> weapons();
-		bool oneHanded();
-		int alignment();
-		int type();
-		const std::vector<Attack>& attackSmall();
-		const std::vector<Attack>& attackLarge();
+		static const std::map<const std::string, const Weapon*>& weapons();
+		bool oneHanded() const;
+		int alignment() const;
+		int type() const;
+		const std::vector<Attack>& attackSmall() const;
+		const std::vector<Attack>& attackLarge() const;
 
 	protected:
 		Weapon(const std::string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, int type, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);

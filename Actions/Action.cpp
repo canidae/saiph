@@ -27,6 +27,7 @@
 #include "Search.h"
 #include "Throw.h"
 #include "Unlock.h"
+#include "Wield.h"
 
 using namespace action;
 
@@ -59,6 +60,7 @@ const int Enhance::ID = 24;
 const int Drop::ID = 25;
 const int DropGold::ID = 26;
 const int ListPlayerAttributes::ID = 27;
+const int Wield::ID = 28;
 
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {

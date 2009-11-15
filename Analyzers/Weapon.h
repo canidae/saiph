@@ -4,9 +4,6 @@
 #include <string>
 #include "Analyzer.h"
 
-/* messages */
-#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
-
 class Item;
 
 namespace analyzer {
@@ -15,14 +12,13 @@ namespace analyzer {
 	public:
 		Weapon();
 
-		void parseMessages(const std::string& messages);
+		void analyze();
 		void onEvent(event::Event * const event);
 
 	private:
-		bool _wield_weapon;
+		unsigned char _wield_weapon;
 
-		void wantWeapon(const Item& item);
-		void wieldWeapon();
+		void wieldBestWeapon();
 	};
 }
 #endif

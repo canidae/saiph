@@ -43,7 +43,7 @@ void Cloak::init() {
 	// tattered cape, ornamental cope, opera cloak, piece of cloth
 }
 
-const map<const string, const Cloak*> Cloak::cloaks() {
+const map<const string, const Cloak*>& Cloak::cloaks() {
 	return _cloaks;
 }
 

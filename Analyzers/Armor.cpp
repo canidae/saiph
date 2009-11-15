@@ -66,7 +66,7 @@ void Armor::onEvent(event::Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Armor::armors().find(i->second.name()) != data::Armor::armors().end())
+			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Armor::armors().find(i->second.name()) == data::Armor::armors().end())
 				continue; // known beatitude or not armor
 			Beatify b(i->first, 100);
 			EventBus::broadcast(&b);

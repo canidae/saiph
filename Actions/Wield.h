@@ -1,19 +1,22 @@
-#ifndef ACTION_WEAR_H
-#define	ACTION_WEAR_H
+#ifndef ACTION_WIELD_H
+#define	ACTION_WIELD_H
 
 #include "Action.h"
 #include "../Inventory.h"
 
+/* messages */
+#define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
+
 namespace action {
 
-	class Wear : public Action {
+	class Wield : public Action {
 	public:
 		static const int ID;
 
-		Wear(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _wear("W", priority), _wear_key(key, PRIORITY_CONTINUE_ACTION) {
+		Wield(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _wield("w", priority), _wield_key(key, PRIORITY_CONTINUE_ACTION) {
 		}
 
-		virtual ~Wear() {
+		virtual ~Wield() {
 		}
 
 		virtual int id() {
@@ -23,10 +26,10 @@ namespace action {
 		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
-				return _wear;
+				return _wield;
 
 			case 1:
-				return _wear_key;
+				return _wield_key;
 
 			default:
 				return Action::NOOP;
@@ -34,7 +37,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			if (World::question() && messages.find(MESSAGE_WHAT_TO_wear) != std::string::npos) {
+			if (World::question() && messages.find(MESSAGE_WHAT_TO_WIELD) != std::string::npos) {
 				_sequence = 1;
 			} else if (_sequence == 1) {
 				/* also mark the inventory dirty when we do this */
@@ -44,8 +47,8 @@ namespace action {
 		}
 
 	private:
-		const Command _wear;
-		const Command _wear_key;
+		const Command _wield;
+		const Command _wield_key;
 	};
 }
 #endif

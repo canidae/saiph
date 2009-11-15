@@ -1,3 +1,5 @@
+#include "Weapon.h"
+
 #include "Axe.h"
 #include "Boomerang.h"
 #include "Bow.h"
@@ -26,7 +28,6 @@
 #include "Trident.h"
 #include "TwoHandedSword.h"
 #include "UnicornHorn.h"
-#include "Weapon.h"
 #include "Whip.h"
 
 using namespace data;
@@ -82,28 +83,28 @@ void Weapon::init() {
 	Whip::init();
 }
 
-const map<const string, const Weapon*> Weapon::weapons() {
+const map<const string, const Weapon*>& Weapon::weapons() {
 	return _weapons;
 }
 
 /* public methods */
-bool Weapon::oneHanded() {
+bool Weapon::oneHanded() const {
 	return _one_handed;
 }
 
-int Weapon::alignment() {
+int Weapon::alignment() const {
 	return _alignment;
 }
 
-int Weapon::type() {
+int Weapon::type() const {
 	return _type;
 }
 
-const vector<Attack>& Weapon::attackSmall() {
+const vector<Attack>& Weapon::attackSmall() const {
 	return _attack_small;
 }
 
-const vector<Attack>& Weapon::attackLarge() {
+const vector<Attack>& Weapon::attackLarge() const {
 	return _attack_large;
 }
 

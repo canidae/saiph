@@ -12,7 +12,7 @@ namespace data {
 		virtual ~Cloak();
 
 		static void init();
-		static const std::map<const std::string, const Cloak*> cloaks();
+		static const std::map<const std::string, const Cloak*>& cloaks();
 
 	protected:
 		Cloak(const std::string& name, int cost, int weight, int material, int ac, int mc, unsigned long long properties);
