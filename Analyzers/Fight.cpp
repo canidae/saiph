@@ -14,7 +14,6 @@
 #include "../Data/Spear.h"
 #include "../Events/ChangedInventoryItems.h"
 #include "../Events/ReceivedItems.h"
-#include "../Events/WantItems.h"
 
 using namespace analyzer;
 using namespace event;
@@ -22,23 +21,9 @@ using namespace std;
 
 /* constructors/destructor */
 Fight::Fight() : Analyzer("Fight") {
-	/* FIXME
-	 * this should be dynamic, this varies with the class we play.
-	 * this'll work for valks for the time being */
-	/* daggers */
-	for (map<const string, const data::Dagger*>::const_iterator i = data::Dagger::daggers().begin(); i != data::Dagger::daggers().end(); ++i)
-		_projectiles.insert(i->first);
-	/* spears */
-	for (map<const string, const data::Spear*>::const_iterator i = data::Spear::spears().begin(); i != data::Spear::spears().end(); ++i)
-		_projectiles.insert(i->first);
-	/* darts */
-	for (map<const string, const data::Dart*>::const_iterator i = data::Dart::darts().begin(); i != data::Dart::darts().end(); ++i)
-		_projectiles.insert(i->first);
-
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
-	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
@@ -85,9 +70,9 @@ void Fight::analyze() {
 				continue;
 			}
 		}
-		if (distance == 1 && !floating_eye) {
+		if (distance == 1) {
 			/* next to monster, and it's not a floating eye. melee */
-			int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN;
+			int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
 			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).direction(), priority)));
 			Debug::custom(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
 			continue;
@@ -98,7 +83,7 @@ void Fight::analyze() {
 		Tile& tile = World::shortestPath(m->first);
 		if (tile.cost() >= UNPASSABLE)
 			continue; // can't move to monster
-		int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN;
+		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
 		priority = action::Move::calculatePriority(priority, tile.cost());
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), priority)));
 		Debug::custom(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
@@ -117,7 +102,10 @@ void Fight::onEvent(Event * const event) {
 				/* this item is new or changed.
 				 * if we intend to throw it, add it to projectile_slots.
 				 * otherwise remove it from projectile_slots */
-				if (wantItem(i->second))
+				map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
+				if (w == data::Weapon::weapons().end())
+					continue; // not a weapon
+				if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
 					_projectile_slots.insert(*k);
 				else
 					_projectile_slots.erase(*k);
@@ -126,20 +114,11 @@ void Fight::onEvent(Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (wantItem(i->second))
+			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
+			if (w == data::Weapon::weapons().end())
+				continue; // not a weapon
+			if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
 				_projectile_slots.insert(i->first);
 		}
-	} else if (event->id() == WantItems::ID) {
-		WantItems* e = static_cast<WantItems*> (event);
-		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (wantItem(i->second))
-				i->second.want(i->second.count());
-		}
 	}
-}
-
-/* private methods */
-bool Fight::wantItem(const Item& item) {
-	/* return whether we want this item or not */
-	return _projectiles.find(item.name()) != _projectiles.end();
 }

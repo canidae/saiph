@@ -26,13 +26,10 @@ namespace analyzer {
 		Fight();
 
 		void analyze();
-		void onEvent(event::Event* const event);
+		void onEvent(event::Event * const event);
 
 	private:
-		std::set<std::string> _projectiles; // weapons we can throw
 		std::set<unsigned char> _projectile_slots; // slots where we got weapons we should throw
-
-		bool wantItem(const Item& item);
 	};
 }
 #endif

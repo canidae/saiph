@@ -58,6 +58,8 @@ void Weapon::onEvent(event::Event * const event) {
 				i->second.want(i->second.count());
 				continue;
 			}
+			if (Saiph::encumbrance() >= BURDENED)
+				continue; // only loot artifacts while burdened
 			switch (Saiph::role()) {
 			default:
 				/* pick up every weapon for now */
