@@ -22,7 +22,7 @@ namespace data {
 		const std::vector<Attack>& attackLarge();
 
 	protected:
-		Weapon(const std::string& name, int cost, int weight, char type, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
+		Weapon(const std::string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2);
 
 		static void addToMap(const std::string& name, const Weapon* weapon);
 

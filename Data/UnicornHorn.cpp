@@ -7,7 +7,7 @@ using namespace std;
 map<const string, const UnicornHorn*> UnicornHorn::_unicorn_horns;
 
 /* protected constructors */
-UnicornHorn::UnicornHorn(const string& name, int cost, int weight, char type, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+UnicornHorn::UnicornHorn(const string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, category, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
 }
 
 /* destructor */
@@ -31,6 +31,6 @@ void UnicornHorn::addToMap(const string& name, const UnicornHorn* unicorn_horn) 
 }
 
 /* private static methods */
-void UnicornHorn::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char type, unsigned long long properties, bool one_handed, int alignment) {
-	addToMap(name, new UnicornHorn(name, cost, weight, type, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
+void UnicornHorn::create(const string& name, int cost, int weight, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2, int material, char category, unsigned long long properties, bool one_handed, int alignment) {
+	addToMap(name, new UnicornHorn(name, cost, weight, category, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2));
 }

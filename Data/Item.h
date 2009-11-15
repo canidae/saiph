@@ -41,12 +41,12 @@ namespace data {
 		const std::string& name() const;
 		int cost() const;
 		int weight() const;
-		char type() const;
+		char category() const;
 		int material() const;
 		unsigned long long properties() const;
 
 	protected:
-		Item(const std::string& name, int cost, int weight, char type, int material, unsigned long long properties);
+		Item(const std::string& name, int cost, int weight, char category, int material, unsigned long long properties);
 
 		static void addToMap(const std::string& name, const Item* item);
 
@@ -55,7 +55,7 @@ namespace data {
 		const std::string _name;
 		const int _cost;
 		const int _weight;
-		const char _type;
+		const char _category;
 		const int _material;
 		const unsigned long long _properties;
 	};

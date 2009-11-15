@@ -14,7 +14,7 @@ using namespace std;
 map<const string, const Item*> Item::_items;
 
 /* protected constructors */
-Item::Item(const string& name, int cost, int weight, char type, int material, unsigned long long properties) : _name(name), _cost(cost), _weight(weight), _type(type), _material(material), _properties(properties) {
+Item::Item(const string& name, int cost, int weight, char category, int material, unsigned long long properties) : _name(name), _cost(cost), _weight(weight), _category(category), _material(material), _properties(properties) {
 }
 
 /* destructor */
@@ -58,8 +58,8 @@ int Item::weight() const {
 	return _weight;
 }
 
-char Item::type() const {
-	return _type;
+char Item::category() const {
+	return _category;
 }
 
 int Item::material() const {
