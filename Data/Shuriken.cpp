@@ -21,6 +21,8 @@ void Shuriken::init() {
 
 	/* aliases */
 	addToMap("throwing star", _shurikens["shuriken"]);
+	addToMap("poisoned throwing star", _shurikens["shuriken"]);
+	addToMap("poisoned shuriken", _shurikens["shuriken"]);
 }
 
 const map<const string, const Shuriken*>& Shuriken::shurikens() {

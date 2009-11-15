@@ -32,7 +32,7 @@ void Weapon::analyze() {
 
 void Weapon::onEvent(event::Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
-		wieldBestWeapon();
+		setBestWeapon();
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -41,7 +41,7 @@ void Weapon::onEvent(event::Event * const event) {
 			Beatify b(i->first, 100);
 			EventBus::broadcast(&b);
 		}
-		wieldBestWeapon();
+		setBestWeapon();
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -60,6 +60,11 @@ void Weapon::onEvent(event::Event * const event) {
 			}
 			if (Saiph::encumbrance() >= BURDENED)
 				continue; // only loot artifacts while burdened
+			if (i->second.beatitude() == CURSED)
+				continue; // ignore cursed weapons
+			if (Saiph::alignment() == LAWFUL && i->second.name().find("poisoned") != string::npos)
+				continue; // ignore poisoned weapons if we're lawful
+
 			switch (Saiph::role()) {
 			default:
 				/* pick up every weapon for now */
@@ -71,7 +76,7 @@ void Weapon::onEvent(event::Event * const event) {
 }
 
 /* private methods */
-void Weapon::wieldBestWeapon() {
+void Weapon::setBestWeapon() {
 	/* wield the best weapon we got */
 	int best_damage = 0;
 	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {

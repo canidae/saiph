@@ -26,6 +26,7 @@ void Shortsword::init() {
 	addToMap("crude short sword", _shortswords["orcish short sword"]);
 	addToMap("broad short sword", _shortswords["dwarvish short sword"]);
 	addToMap("runed short sword", _shortswords["elven short sword"]);
+	addToMap("wakizashi", _shortswords["short sword"]);
 }
 
 const map<const string, const Shortsword*>& Shortsword::shortswords() {

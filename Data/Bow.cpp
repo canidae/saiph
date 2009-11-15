@@ -34,6 +34,14 @@ void Bow::init() {
 	addToMap("runed arrow", _bows["elven arrow"]);
 	addToMap("long bow", _bows["yumi"]);
 	addToMap("bamboo arrow", _bows["ya"]);
+	addToMap("poisoned crude arrow", _bows["orcish arrow"]);
+	addToMap("poisoned runed arrow", _bows["elven arrow"]);
+	addToMap("poisoned bamboo arrow", _bows["ya"]);
+	addToMap("poisoned arrow", _bows["arrow"]);
+	addToMap("poisoned orcish arrow", _bows["orcish arrow"]);
+	addToMap("poisoned elven arrow", _bows["elven arrow"]);
+	addToMap("poisoned ya", _bows["ya"]);
+	addToMap("poisoned silver arrow", _bows["silver arrow"]);
 
 	/* artifact bows */
 	create("The Longbow of Diana", 4000, 30, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_WOOD, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT | PROPERTY_ESP | PROPERTY_REFLECTION, true, CHAOTIC);

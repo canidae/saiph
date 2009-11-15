@@ -18,7 +18,7 @@ namespace analyzer {
 	private:
 		unsigned char _wield_weapon;
 
-		void wieldBestWeapon();
+		void setBestWeapon();
 	};
 }
 #endif
