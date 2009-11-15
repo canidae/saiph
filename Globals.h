@@ -64,36 +64,36 @@
 #define INVERSE_BOLD_WHITE 107
 
 /* beatitude */
-#define BEATITUDE_UNKNOWN 0x1
-#define CURSED 0x2
-#define UNCURSED 0x4
-#define BLESSED 0x8
+#define BEATITUDE_UNKNOWN 0 << 0
+#define CURSED            1 << 0
+#define UNCURSED          1 << 1
+#define BLESSED           1 << 2
 
 /* alignment */
-#define CHAOTIC 0x1
-#define NEUTRAL 0x2
-#define LAWFUL 0x4
+#define CHAOTIC 1 << 0
+#define NEUTRAL 1 << 1
+#define LAWFUL  1 << 2
 
 /* attitude */
-#define ATTITUDE_UNKNOWN 0x1
-#define HOSTILE 0x2
-#define FRIENDLY 0x4
+#define ATTITUDE_UNKNOWN 0 << 0
+#define HOSTILE          1 << 0
+#define FRIENDLY         1 << 1
 
 /* encumbrance */
-#define UNENCUMBERED 0x01
-#define BURDENED 0x02
-#define STRESSED 0x04
-#define STRAINED 0x08
-#define OVERTAXED 0x10
-#define OVERLOADED 0x20
+#define UNENCUMBERED 1 << 0
+#define BURDENED     1 << 1
+#define STRESSED     1 << 2
+#define STRAINED     1 << 3
+#define OVERTAXED    1 << 4
+#define OVERLOADED   1 << 5
 
 /* hunger */
-#define FAINTING 0x01
-#define WEAK 0x02
-#define HUNGRY 0x04
-#define CONTENT 0x08
-#define SATIATED 0x10
-#define OVERSATIATED 0x20
+#define FAINTING     1 << 0
+#define WEAK         1 << 1
+#define HUNGRY       1 << 3
+#define CONTENT      1 << 4
+#define SATIATED     1 << 5
+#define OVERSATIATED 1 << 6
 
 /* slots */
 #define SLOTS 15
@@ -113,30 +113,62 @@
 #define SLOT_ALTERNATE_WEAPON 13
 #define SLOT_QUIVER 14
 
+/* weapon types */
+#define WEAPON_UNKNOWN        0 << 0
+#define WEAPON_AXE            1 << 0
+#define WEAPON_BOOMERANG      1 << 1
+#define WEAPON_BOW            1 << 2
+#define WEAPON_BROADSWORD     1 << 3
+#define WEAPON_CLUB           1 << 4
+#define WEAPON_CROSSBOW       1 << 5
+#define WEAPON_DAGGER         1 << 6
+#define WEAPON_DART           1 << 7
+#define WEAPON_FLAIL          1 << 8
+#define WEAPON_HAMMER         1 << 9
+#define WEAPON_JAVELIN        1 << 10
+#define WEAPON_KNIFE          1 << 11
+#define WEAPON_LANCE          1 << 12
+#define WEAPON_LONGSWORD      1 << 13
+#define WEAPON_MACE           1 << 14
+#define WEAPON_MORNINGSTAR    1 << 15
+#define WEAPON_PICKAXE        1 << 16
+#define WEAPON_POLEARM        1 << 17
+#define WEAPON_QUARTERSTAFF   1 << 18
+#define WEAPON_SABER          1 << 19
+#define WEAPON_SCIMITAR       1 << 20
+#define WEAPON_SHORTSWORD     1 << 21
+#define WEAPON_SHURIKEN       1 << 22
+#define WEAPON_SLING          1 << 23
+#define WEAPON_SPEAR          1 << 24
+#define WEAPON_TRIDENT        1 << 25
+#define WEAPON_TWOHANDEDSWORD 1 << 26
+#define WEAPON_UNICORNHORN    1 << 27
+#define WEAPON_WHIP           1 << 28
+
 /* genders */
-#define UNKNOWN_GENDER 0x0
-#define FEMALE 0x1
-#define MALE 0x2
-#define NEUTER 0x4
+#define UNKNOWN_GENDER 0 << 0
+#define FEMALE         1 << 0
+#define MALE           1 << 1
+#define NEUTER         1 << 2
 
 /* roles */
-#define UNKNOWN_ROLE 0x0000
-#define ARCHEOLOGIST 0x0001
-#define BARBARIAN 0x0002
-#define CAVEMAN 0x0004
-#define HEALER 0x0008
-#define KNIGHT 0x0010
-#define MONK 0x0020
-#define PRIEST 0x0040
-#define RANGER 0x0080
-#define ROGUE 0x0100
-#define SAMURAI 0x0200
-#define TOURIST 0x0400
-#define VALKYRIE 0x0800
-#define WIZARD 0x1000
+#define UNKNOWN_ROLE 0 << 0
+#define ARCHEOLOGIST 1 << 0
+#define BARBARIAN    1 << 1
+#define CAVEMAN      1 << 2
+#define HEALER       1 << 3
+#define KNIGHT       1 << 4
+#define MONK         1 << 5
+#define PRIEST       1 << 6
+#define RANGER       1 << 7
+#define ROGUE        1 << 8
+#define SAMURAI      1 << 9
+#define TOURIST      1 << 10
+#define VALKYRIE     1 << 11
+#define WIZARD       1 << 12
 
 /* directions */
-#define ILLEGAL_DIRECTION 0
+#define ILLEGAL_DIRECTION '\0'
 #define NW 'y'
 #define N 'k'
 #define NE 'u'

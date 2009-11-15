@@ -7,7 +7,7 @@ using namespace std;
 map<const string, const TwoHandedSword*> TwoHandedSword::_two_handed_swords;
 
 /* protected constructor */
-TwoHandedSword::TwoHandedSword(const string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, category, material, properties, one_handed, alignment, as0, as1, as2, al0, al1, al2) {
+TwoHandedSword::TwoHandedSword(const string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, category, material, properties, one_handed, alignment, WEAPON_TWOHANDEDSWORD, as0, as1, as2, al0, al1, al2) {
 }
 
 /* destructor */
