@@ -63,8 +63,8 @@ public:
 	static int lastPrayed(int last_prayed);
 	static const std::string& name();
 	static const std::string& race();
-	static const std::string& role();
-	static const std::string& gender();
+	static int role();
+	static int gender();
 
 private:
 	/* attributes */
@@ -109,9 +109,9 @@ private:
 	/* race */
 	static std::string _race;
 	/* role */
-	static std::string _role;
+	static int _role;
 	/* gender */
-	static std::string _gender;
+	static int _gender;
 	/* for parsing effects */
 	static char _effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
 };

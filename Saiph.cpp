@@ -51,9 +51,9 @@ string Saiph::_name;
 /* race */
 string Saiph::_race;
 /* role */
-string Saiph::_role;
+int Saiph::_role = UNKNOWN_ROLE;
 /* gender */
-string Saiph::_gender;
+int Saiph::_gender = UNKNOWN_GENDER;
 /* effects */
 char Saiph::_effects[MAX_EFFECTS][MAX_TEXT_LENGTH] = {
 	{'\0'}
@@ -81,12 +81,50 @@ void Saiph::parseMessages(const string& messages) {
 				_race = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
 			/* current role */
 			pos = messages.find(':', pos + 2);
-			if (pos != string::npos)
-				_role = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
+			if (pos != string::npos) {
+				string role = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
+				if (role == "Archeologist")
+					_role = ARCHEOLOGIST;
+				else if (role == "Barbarian")
+					_role = BARBARIAN;
+				else if (role == "Caveman")
+					_role = CAVEMAN;
+				else if (role == "Healer")
+					_role = HEALER;
+				else if (role == "Knight")
+					_role = KNIGHT;
+				else if (role == "Monk")
+					_role = MONK;
+				else if (role == "Priest")
+					_role = PRIEST;
+				else if (role == "Ranger")
+					_role = RANGER;
+				else if (role == "Rogue")
+					_role = ROGUE;
+				else if (role == "Samurai")
+					_role = SAMURAI;
+				else if (role == "Tourist")
+					_role = TOURIST;
+				else if (role == "Valkyrie")
+					_role = VALKYRIE;
+				else if (role == "Wizard")
+					_role = WIZARD;
+				else
+					_role = UNKNOWN_ROLE;
+			}
 			/* current gender */
 			pos = messages.find(':', pos + 2);
-			if (pos != string::npos)
-				_gender = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
+			if (pos != string::npos) {
+				string gender = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
+				if (gender == "female")
+					_gender = FEMALE;
+				else if (gender == "male")
+					_gender = MALE;
+				else if (gender == "neuter")
+					_gender = NEUTER;
+				else
+					_gender = UNKNOWN_GENDER;
+			}
 		}
 	} else {
 		if (messages.find(MESSAGE_COLD_RES_GAIN1) != string::npos)
@@ -384,10 +422,10 @@ const string& Saiph::race() {
 	return _race;
 }
 
-const string& Saiph::role() {
+int Saiph::role() {
 	return _role;
 }
 
-const string& Saiph::gender() {
+int Saiph::gender() {
 	return _gender;
 }

@@ -17,7 +17,7 @@ Javelin::~Javelin() {
 /* public static methods */
 void Javelin::init() {
 	/* javelins */
-	create("javelin", 3, 20, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("javelin", 3, 20, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
 	addToMap("throwing spear", _javelins["javelin"]);

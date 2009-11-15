@@ -17,11 +17,11 @@ Hammer::~Hammer() {
 /* public static methods */
 void Hammer::init() {
 	/* hammers */
-	create("war hammer", 5, 50, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("war hammer", 5, 50, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* artifact hammers */
-	create("Mjollnir", 4000, 50, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(AT_CLAW, AD_ELEC, 1, 24), Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_ELEC, 1, 24), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
-	create("Ogresmasher", 200, 50, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("Mjollnir", 4000, 50, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(AT_CLAW, AD_ELEC, 1, 24), Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_ELEC, 1, 24), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
+	create("Ogresmasher", 200, 50, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const Hammer*>& Hammer::hammers() {

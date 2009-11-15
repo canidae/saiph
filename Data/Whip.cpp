@@ -17,8 +17,8 @@ Whip::~Whip() {
 /* public static methods */
 void Whip::init() {
 	/* whips */
-	create("bullwhip", 4, 20, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(), MATERIAL_LEATHER, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("rubber hose", 3, 20, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), MATERIAL_PLASTIC, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("bullwhip", 4, 20, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(), MATERIAL_LEATHER, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("rubber hose", 3, 20, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), MATERIAL_PLASTIC, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const Whip*>& Whip::whips() {

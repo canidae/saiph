@@ -17,7 +17,7 @@ Boomerang::~Boomerang() {
 /* public static methods */
 void Boomerang::init() {
 	/* boomerangs */
-	create("boomerang", 20, 5, Attack(AT_CLAW, AD_PHYS, 1, 9), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 9), Attack(), Attack(), MATERIAL_WOOD, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("boomerang", 20, 5, Attack(AT_CLAW, AD_PHYS, 1, 9), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 9), Attack(), Attack(), MATERIAL_WOOD, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const Boomerang*>& Boomerang::boomerangs() {

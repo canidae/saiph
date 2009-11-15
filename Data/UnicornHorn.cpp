@@ -17,7 +17,7 @@ UnicornHorn::~UnicornHorn() {
 /* public static methods */
 void UnicornHorn::init() {
 	/* unicorn horns */
-	create("unicorn horn", 100, 20, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_BONE, '(', PROPERTY_MAGIC, false, CHAOTIC | NEUTRAL | LAWFUL);
+	create("unicorn horn", 100, 20, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_BONE, TOOL, PROPERTY_MAGIC, false, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const UnicornHorn*>& UnicornHorn::unicornHorns() {

@@ -17,7 +17,7 @@ Lance::~Lance() {
 /* public static methods */
 void Lance::init() {
 	/* lances */
-	create("lance", 10, 180, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("lance", 10, 180, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const Lance*>& Lance::lances() {

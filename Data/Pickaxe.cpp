@@ -17,8 +17,8 @@ Pickaxe::~Pickaxe() {
 /* public static methods */
 void Pickaxe::init() {
 	/* pick axes */
-	create("pick-axe", 50, 100, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), MATERIAL_IRON, '(', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("dwarvish mattock", 50, 120, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(), MATERIAL_IRON, ')', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
+	create("pick-axe", 50, 100, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), MATERIAL_IRON, TOOL, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("dwarvish mattock", 50, 120, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(), MATERIAL_IRON, WEAPON, 0, false, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
 	addToMap("broad pick", _pickaxes["dwarvish mattock"]);

@@ -109,7 +109,7 @@ const Item& Inventory::itemInSlot(int slot) {
 
 unsigned char Inventory::keyForSlot(int slot) {
 	if (slot < 0 || slot >= SLOTS)
-		return _slots[INVALID_SLOT];
+		return '\0';
 	return _slots[slot];
 }
 
@@ -193,6 +193,10 @@ void Inventory::setSlot(unsigned char key, const Item& item) {
 		_slots[SLOT_LEFT_RING] = key;
 	} else if (item.additional().find("on right ") == 0) {
 		_slots[SLOT_RIGHT_RING] = key;
+	} else if (item.additional() == "alternate weapon; not wielded") {
+		_slots[SLOT_ALTERNATE_WEAPON] = key;
+	} else if (item.additional() == "in quiver") {
+		_slots[SLOT_QUIVER] = key;
 	}
 }
 

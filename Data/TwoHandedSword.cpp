@@ -17,14 +17,14 @@ TwoHandedSword::~TwoHandedSword() {
 /* public static methods */
 void TwoHandedSword::init() {
 	/* two-handed swords */
-	create("two-handed sword", 50, 150, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 3, 6), Attack(), Attack(), MATERIAL_IRON, ')', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
-	create("tsurugi", 500, 60, Attack(AT_CLAW, AD_PHYS, 1, 16), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(), MATERIAL_METAL, ')', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
+	create("two-handed sword", 50, 150, Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 3, 6), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, false, CHAOTIC | NEUTRAL | LAWFUL);
+	create("tsurugi", 500, 60, Attack(AT_CLAW, AD_PHYS, 1, 16), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(), MATERIAL_METAL, WEAPON, 0, false, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
 	addToMap("long samurai sword", _two_handed_swords["tsurugi"]);
 
 	/* artifact two-handed swords */
-	create("The Tsurugi of Muramasa", 4500, 60, Attack(AT_CLAW, AD_PHYS, 1, 16), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(AT_CLAW, AD_PHYS, 1, 8), MATERIAL_METAL, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, false, LAWFUL);
+	create("The Tsurugi of Muramasa", 4500, 60, Attack(AT_CLAW, AD_PHYS, 1, 16), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 2, 6), Attack(AT_CLAW, AD_PHYS, 1, 8), MATERIAL_METAL, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, false, LAWFUL);
 }
 
 const map<const string, const TwoHandedSword*>& TwoHandedSword::twoHandedSwords() {

@@ -17,21 +17,21 @@ Longsword::~Longsword() {
 /* public static methods */
 void Longsword::init() {
 	/* long swords */
-	create("long sword", 15, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("katana", 80, 40, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("long sword", 15, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("katana", 80, 40, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
 	addToMap("samurai sword", _longswords["katana"]);
 
 	/* artifact long swords */
-	create("Demonbane", 2500, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, LAWFUL);
-	create("Excalibur", 4000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_SEARCHING | PROPERTY_ARTIFACT, true, LAWFUL);
-	create("Fire Brand", 3000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_FIRE, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_FIRE, 1, 12), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_FIRE | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("Frost Brand", 3000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_COLD, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_COLD, 1, 12), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_COLD | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("Giantslayer", 200, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("Snickersnee", 1200, 40, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
-	create("Sunsword", 1500, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
-	create("Vorpal Blade", 4000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, NEUTRAL);
+	create("Demonbane", 2500, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, LAWFUL);
+	create("Excalibur", 4000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_SEARCHING | PROPERTY_ARTIFACT, true, LAWFUL);
+	create("Fire Brand", 3000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_FIRE, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_FIRE, 1, 12), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_FIRE | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("Frost Brand", 3000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_COLD, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_COLD, 1, 12), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_COLD | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("Giantslayer", 200, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("Snickersnee", 1200, 40, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
+	create("Sunsword", 1500, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
+	create("Vorpal Blade", 4000, 40, Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 12), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, NEUTRAL);
 }
 
 const map<const string, const Longsword*>& Longsword::longswords() {

@@ -17,10 +17,10 @@ Mace::~Mace() {
 /* public static methods */
 void Mace::init() {
 	/* maces */
-	create("mace", 5, 30, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("mace", 5, 30, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* artifact maces */
-	create("The Sceptre of Might", 2500, 30, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), MATERIAL_IRON, ')', PROPERTY_MAGICRES | PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
+	create("The Sceptre of Might", 2500, 30, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), MATERIAL_IRON, WEAPON, PROPERTY_MAGICRES | PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
 }
 
 const map<const string, const Mace*>& Mace::maces() {

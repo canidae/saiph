@@ -29,7 +29,7 @@ Armor::Armor() : Analyzer("Armor"), _change_armor(false) {
 void Armor::parseMessages(const string& messages) {
 	string::size_type pos;
 	if (World::question() && (pos = messages.find(MESSAGE_FOOCUBUS_QUESTION)) != string::npos) {
-		/* A foocubus wants to remove something. Check the beatitude of that armor */
+		/* A foocubus wants to remove something. Check the beatitude of that armor (and any armor covering it) */
 		bool remove = false;
 		if (messages.find(" cloak, ", pos) == pos || messages.find(" wrapping, ", pos) == pos || messages.find(" robe, ", pos) == pos || messages.find(" apron, ", pos) == pos || messages.find(" smock, ", pos) == pos) {
 			if (Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED || Inventory::itemInSlot(SLOT_SUIT).beatitude() == CURSED || Inventory::itemInSlot(SLOT_SHIRT).beatitude() == CURSED)

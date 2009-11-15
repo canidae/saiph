@@ -17,11 +17,11 @@ Knife::~Knife() {
 /* public static methods */
 void Knife::init() {
 	/* knives */
-	create("worm tooth", 2, 20, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_BONE, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("knife", 4, 5, Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("stiletto", 4, 5, Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_IRON, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("scalpel", 4, 5, Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), MATERIAL_METAL, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("crysknife", 100, 20, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), MATERIAL_MINERAL, ')', 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("worm tooth", 2, 20, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_BONE, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("knife", 4, 5, Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("stiletto", 4, 5, Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("scalpel", 4, 5, Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 3), Attack(), Attack(), MATERIAL_METAL, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
+	create("crysknife", 100, 20, Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 10), Attack(), Attack(), MATERIAL_MINERAL, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const Knife*>& Knife::knives() {

@@ -17,13 +17,13 @@ Quarterstaff::~Quarterstaff() {
 /* public static methods */
 void Quarterstaff::init() {
 	/* quarterstaves */
-	create("quarterstaff", 5, 40, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_WOOD, ')', 0, false, CHAOTIC | NEUTRAL | LAWFUL);
+	create("quarterstaff", 5, 40, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_WOOD, WEAPON, 0, false, CHAOTIC | NEUTRAL | LAWFUL);
 
 	/* aliases */
 	addToMap("staff", _quarterstaves["quarterstaff"]);
 
 	/* artifact quarterstaves */
-	create("The Staff of Aesculapius", 5000, 40, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 8), MATERIAL_WOOD, ')', PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
+	create("The Staff of Aesculapius", 5000, 40, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 8), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 8), MATERIAL_WOOD, WEAPON, PROPERTY_MAGIC | PROPERTY_ARTIFACT, true, LAWFUL);
 }
 
 const map<const string, const Quarterstaff*>& Quarterstaff::quarterstaves() {
