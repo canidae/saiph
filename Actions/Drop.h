@@ -84,8 +84,6 @@ namespace action {
 						if (i != Inventory::items().end()) {
 							i->second.want(0);
 							wi.addItem(messages[pos - 4], i->second);
-							/* let's also pretend we don't have any examples of the item in our inventory */
-							i->second.count(0);
 						} else {
 							/* this isn't supposed to happen (inventory not updated?) */
 							wi.addItem(messages[pos - 4], Item(messages.substr(pos, length), 0));

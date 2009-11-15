@@ -5,7 +5,6 @@
 #include <string>
 #include "Analyzer.h"
 #include "../Coordinate.h"
-#include "../Events/WantItems.h"
 
 #define PRIORITY_LOOT_VISIT 200
 
@@ -24,9 +23,6 @@ namespace analyzer {
 		void onEvent(event::Event* const event);
 
 	private:
-		bool _showing_pickup;
-		bool _showing_drop;
-		event::WantItems _wi;
 		std::set<Coordinate> _visit;
 	};
 }

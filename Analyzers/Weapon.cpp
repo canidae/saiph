@@ -1,6 +1,5 @@
 #include "Weapon.h"
 
-
 #include "../EventBus.h"
 #include "../Inventory.h"
 #include "../Saiph.h"
@@ -78,9 +77,25 @@ void Weapon::onEvent(event::Event * const event) {
 
 /* private methods */
 void Weapon::wantWeapon(const Item& item) {
-	map<const string, const Weapon*>::iterator w = data::Weapon::weapons().find(item.name());
-	if (w == data::Weapon::weapons().end())
+	map<const string, const data::Weapon*>::iterator w = data::Weapon::weapons().find(item.name());
+	if (w == data::Weapon::weapons().end()) {
 		return; // not a weapon
+	} else if (w->second->properties() & PROPERTY_ARTIFACT != 0) {
+		/* ooh, artifact weapon, we'll want this */
+		item.want(item.count());
+		return;
+	}
+
+	switch (Saiph::role()) {
+	case BARBARIAN:
+		break;
+
+	case VALKYRIE:
+		break;
+
+	default:
+		break;
+	}
 }
 
 void Weapon::wieldWeapon() {

@@ -114,7 +114,6 @@
 #define SLOT_QUIVER 14
 
 /* weapon types */
-#define WEAPON_UNKNOWN        0 << 0
 #define WEAPON_AXE            1 << 0
 #define WEAPON_BOOMERANG      1 << 1
 #define WEAPON_BOW            1 << 2
