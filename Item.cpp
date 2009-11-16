@@ -1,7 +1,9 @@
+#include "Item.h"
+
+#include <cstdio>
 #include <stdlib.h>
 #include <ostream>
 #include "Globals.h"
-#include "Item.h"
 
 /* parse text */
 #define ITEM_CALLED " called "

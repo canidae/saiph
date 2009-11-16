@@ -1,5 +1,6 @@
 #include "Saiph.h"
 
+#include <cstdio>
 #include <string.h>
 #include "Globals.h"
 #include "Inventory.h"
