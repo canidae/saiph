@@ -2,7 +2,6 @@
 #define ACTION_LIST_INVENTORY_H
 
 #include "Action.h"
-#include "../World.h"
 
 namespace action {
 
@@ -34,7 +33,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string&) {
-			if (World::menu())
+			if (_sequence == 0)
 				_sequence = 1;
 			else if (_sequence == 1)
 				_sequence = 2;
