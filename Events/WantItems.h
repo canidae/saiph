@@ -19,7 +19,7 @@ namespace event {
 	public:
 		static const int ID;
 
-		WantItems() : Event("WantItems"), _items(), _dropping(false) {
+		WantItems(bool dropping, bool safe_stash) : Event("WantItems"), _dropping(dropping), _safe_stash(safe_stash), _items() {
 		}
 
 		virtual ~WantItems() {
@@ -50,14 +50,14 @@ namespace event {
 			return _dropping;
 		}
 
-		virtual bool dropping(bool dropping) {
-			_dropping = dropping;
-			return this->dropping();
+		virtual bool safeStash() {
+			return _safe_stash;
 		}
 
 	private:
+		const bool _dropping;
+		const bool _safe_stash;
 		std::map<unsigned char, Item> _items;
-		bool _dropping;
 	};
 }
 #endif

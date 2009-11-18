@@ -75,13 +75,16 @@ void Loot::onEvent(Event * const event) {
 		StashChanged* e = static_cast<StashChanged*> (event);
 		_visit.insert(e->position());
 	} else if (event->id() == ItemsOnGround::ID) {
+		/* standing on stash, ask if anyone want anything */
 		// TODO: proper shopping code
 		if (World::level().tile().symbol() != SHOP_TILE) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			int index = 0;
 			bool looting = false;
 			list<Item>::const_iterator i = e->items().begin();
-			WantItems wi;
+			/* if we're standing on STAIRS_UP we'll pretend it's a safe stash */
+			bool safe_stash = World::level().tile().symbol() == STAIRS_UP;
+			WantItems wi(false, safe_stash);
 			while (!looting) {
 				wi.addItem(index++, *i);
 				++i;
@@ -91,7 +94,7 @@ void Loot::onEvent(Event * const event) {
 						if (i->second.want() <= 0)
 							continue;
 						/* someone want an item in this stash */
-						World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_LOOT)));
+						World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_LOOT, safe_stash)));
 						looting = true;
 						break;
 					}

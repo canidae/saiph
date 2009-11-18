@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 #include "../EventBus.h"
+#include "../Globals.h"
 #include "../Inventory.h"
 #include "../Item.h"
 #include "../World.h"
@@ -19,7 +20,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Drop(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _drop("D", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _keys() {
+		Drop(analyzer::Analyzer* analyzer, int priority, bool safe_stash) : Action(analyzer), _drop("D", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _safe_stash(safe_stash), _keys() {
 		}
 
 		virtual ~Drop() {
@@ -72,7 +73,7 @@ namespace action {
 			}
 			if (_sequence == 1 && _keys.size() <= 0) {
 				/* figure out which items we would like to drop */
-				event::WantItems wi;
+				event::WantItems wi(true, _safe_stash);
 				while (pos != std::string::npos && messages.size() > pos + 6) {
 					pos += 6;
 					std::string::size_type length = messages.find("  ", pos);
@@ -91,12 +92,11 @@ namespace action {
 					}
 					pos += length;
 				}
-				wi.dropping(true);
 				/* broadcast event */
 				EventBus::broadcast(static_cast<event::Event*> (&wi));
 				/* drop stuff no analyzer wanted */
 				std::ostringstream tmp;
-				for (std::map<unsigned char, Item>::iterator i = wi.items().begin(); i != wi.items().end(); ++i) {
+				for (std::map<unsigned char, Item>::const_iterator i = wi.items().begin(); i != wi.items().end(); ++i) {
 					if (i->second.count() <= 0 || i->second.want() <= 0) {
 						/* drop for beatitude or we don't want the item */
 						_keys.push(std::string(1, i->first));
@@ -126,6 +126,7 @@ namespace action {
 	private:
 		const Command _drop;
 		const Command _close_page;
+		const bool _safe_stash;
 		Command _drop_item;
 		std::queue<std::string> _keys;
 	};

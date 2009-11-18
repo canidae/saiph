@@ -19,7 +19,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Loot(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _loot(",", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _keys() {
+		Loot(analyzer::Analyzer* analyzer, int priority, bool safe_stash) : Action(analyzer), _loot(",", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _safe_stash(safe_stash), _keys() {
 		}
 
 		virtual ~Loot() {
@@ -71,7 +71,7 @@ namespace action {
 			}
 			if (_sequence == 1 && _keys.size() <= 0) {
 				/* figure out which items we would like to loot */
-				event::WantItems wi;
+				event::WantItems wi(false, _safe_stash);
 				while (pos != std::string::npos && messages.size() > pos + 6) {
 					pos += 6;
 					std::string::size_type length = messages.find("  ", pos);
@@ -82,7 +82,6 @@ namespace action {
 						wi.addItem(messages[pos - 4], Item(messages.substr(pos, length), 0));
 					pos += length;
 				}
-				wi.dropping(false);
 				/* broadcast event */
 				EventBus::broadcast(static_cast<event::Event*> (&wi));
 				/* pick up stuff that was wanted by analyzers */
@@ -113,6 +112,7 @@ namespace action {
 	private:
 		const Command _loot;
 		const Command _close_page;
+		const bool _safe_stash;
 		Command _loot_item;
 		std::queue<std::string> _keys;
 	};

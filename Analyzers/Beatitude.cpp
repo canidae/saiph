@@ -34,7 +34,7 @@ void Beatitude::analyze() {
 	if (tile.cost() >= UNPASSABLE)
 		return; // can't path to altar
 	if (tile.direction() == NOWHERE)
-		World::setAction(static_cast<action::Action*> (new action::Drop(this, _max_priority)));
+		World::setAction(static_cast<action::Action*> (new action::Drop(this, _max_priority, false)));
 	else
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), _max_priority)));
 }
