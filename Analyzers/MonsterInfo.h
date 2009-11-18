@@ -18,7 +18,7 @@ namespace analyzer {
 		void actionCompleted();
 
 	private:
-		std::map<Point, Monster>::iterator _look_at;
+		std::map<Point, Monster>::const_iterator _look_at;
 		std::map<Point, unsigned int> _checked;
 	};
 }

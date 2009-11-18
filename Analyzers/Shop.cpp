@@ -98,7 +98,7 @@ void Shop::analyze() {
 	if (World::level().tile().symbol() != FLOOR && World::level().tile().symbol() != UNKNOWN_TILE)
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
-	for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (!m->second.shopkeeper() || !m->second.visible())
 			continue;
 

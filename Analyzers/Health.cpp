@@ -72,7 +72,7 @@ void Health::analyze() {
 		} else if (Saiph::hitpoints() > Saiph::hitpointsMax() * 4 / 7 && Saiph::hitpointsMax() > 42) {
 			/* if we don't see any monsters, then we won't rest for so long */
 			bool monster_nearby = false;
-			for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+			for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 				if (m->second.visible() || (abs(Saiph::position().row() - m->first.row()) < 5 && abs(Saiph::position().col() - m->first.col()) < 5)) {
 					monster_nearby = true;
 					break;

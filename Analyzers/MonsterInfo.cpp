@@ -37,31 +37,34 @@ void MonsterInfo::parseMessages(const string& messages) {
 	if (_look_at != World::level().monsters().end() && messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ') {
 		/* probably looked at a monster */
 		string::size_type pos = string::npos;
+		Monster monster = _look_at->second;
 		if ((pos = messages.find(" (peaceful ")) != string::npos) {
 			/* it's friendly */
-			_look_at->second.attitude(FRIENDLY);
+			monster.attitude(FRIENDLY);
 			pos += sizeof (" (peaceful ") - 1;
 		} else if ((pos = messages.find(" (")) != string::npos) {
 			/* hostile */
 			if (messages.find(" (Oracle", pos) == pos)
-				_look_at->second.attitude(FRIENDLY); // never attack oracle
+				monster.attitude(FRIENDLY); // never attack oracle
 			else
-				_look_at->second.attitude(HOSTILE);
+				monster.attitude(HOSTILE);
 			pos += sizeof (" (") - 1;
 		}
-		if (pos != string::npos && pos < messages.size() && _look_at->second.symbol() == '@' && _look_at->second.color() == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z')
-			_look_at->second.shopkeeper(true); // shopkeepers are always white @, and their names are capitalized
+		if (pos != string::npos && pos < messages.size() && monster.symbol() == '@' && monster.color() == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z')
+			monster.shopkeeper(true); // shopkeepers are always white @, and their names are capitalized
 		else
-			_look_at->second.shopkeeper(false);
+			monster.shopkeeper(false);
 		if (messages.find("priest of ", pos) != string::npos || messages.find("priestess of ", pos) != string::npos)
-			_look_at->second.priest(true);
+			monster.priest(true);
 		else
-			_look_at->second.priest(false);
+			monster.priest(false);
 		string::size_type pos2 = messages.find(" - ", pos);
 		if (pos2 == string::npos)
 			pos2 = messages.find(")", pos);
 		if (pos2 != string::npos)
-			_look_at->second.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
+			monster.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
+		/* update level */
+		World::level().setMonster(_look_at->first, monster);
 	}
 }
 

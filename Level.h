@@ -29,7 +29,7 @@ public:
 	const std::string& name() const;
 	Tile& tile();
 	Tile& tile(const Point& point);
-	std::map<Point, Monster>& monsters();
+	const std::map<Point, Monster>& monsters() const;
 	const std::map<Point, Stash>& stashes() const;
 	const std::map<Point, int>& symbols(unsigned char symbol) const;
 	void analyze();
@@ -37,6 +37,7 @@ public:
 	void setDirtyStash(const Point& point);
 	void setDungeonSymbol(const Point& point, unsigned char symbol);
 	void setDungeonSymbolValue(const Point& point, int value);
+	void setMonster(const Point& point, const Monster& monster);
 	void increaseAdjacentSearchCount(const Point& point);
 
 private:

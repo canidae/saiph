@@ -229,7 +229,7 @@ Tile& Level::tile(const Point& point) {
 	return _map[point.row()][point.col()];
 }
 
-map<Point, Monster>& Level::monsters() {
+const map<Point, Monster>& Level::monsters() const {
 	return _monsters;
 }
 
@@ -385,6 +385,12 @@ void Level::setDungeonSymbolValue(const Point& point, int value) {
 	if (!point.insideMap())
 		return;
 	_symbols[_map[point.row()][point.col()].symbol()][point] = value;
+}
+
+void Level::setMonster(const Point& point, const Monster& monster) {
+	if (!point.insideMap())
+		return;
+	_monsters[point] = monster;
 }
 
 void Level::increaseAdjacentSearchCount(const Point& point) {

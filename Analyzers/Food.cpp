@@ -55,7 +55,7 @@ Food::Food() : Analyzer("Food") {
 void Food::analyze() {
 	/* update prev_monster_loc with seen monsters (not standing on a stash) */
 	_prev_monster_loc.clear();
-	for (map<Point, Monster>::iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (m->second.visible())
 			_prev_monster_loc[m->first] = m->second.symbol();
 	}
