@@ -57,15 +57,20 @@ void Elbereth::onEvent(Event * const evt) {
 			_engraving_type = ELBERETH_MUST_CHECK;
 			_elbereth_count = 0;
 		}
-		for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-			if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
-				continue;
-			if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
-				continue;
-			/* this monster ignores elbereth and is next to us */
+		if (Saiph::blind() || Saiph::hallucinating() || Saiph::confused() || Saiph::stunned()) {
 			_engraving_type = ELBERETH_INEFFECTIVE;
 			_elbereth_count = 0;
-			break;
+		} else {
+			for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+				if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
+					continue;
+				if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
+					continue;
+				/* this monster ignores elbereth and is next to us */
+				_engraving_type = ELBERETH_INEFFECTIVE;
+				_elbereth_count = 0;
+				break;
+			}
 		}
 		q->type(_engraving_type);
 		q->count(_elbereth_count);
