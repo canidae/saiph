@@ -237,7 +237,7 @@ map<Point, Stash>& Level::stashes() {
 	return _stashes;
 }
 
-map<Point, int>& Level::symbols(unsigned char symbol) {
+const map<Point, int>& Level::symbols(unsigned char symbol) {
 	return _symbols[symbol];
 }
 
@@ -373,6 +373,12 @@ void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	_symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
 	/* update tile in _map */
 	t.symbol(symbol);
+}
+
+void Level::setDungeonSymbolValue(const Point& point, int value) {
+	if (!point.insideMap())
+		return;
+	_symbols[_map[point.row()][point.col()].symbol()][point] = value;
 }
 
 void Level::increaseAdjacentSearchCount(const Point& point) {

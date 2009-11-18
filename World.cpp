@@ -1,9 +1,11 @@
+#include "World.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include "Connection.h"
 #include "Debug.h"
 #include "Inventory.h"
-#include "World.h"
+#include "Monster.h"
 #include "Actions/Action.h"
 #include "Actions/Move.h"
 #include "Analyzers/Analyzer.h"
@@ -276,7 +278,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			return tile;
 		}
 		/* path to upstairs on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			else if (level_added[s->second])
@@ -300,7 +302,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			}
 		}
 		/* path to downstairs on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			else if (level_added[s->second])
@@ -324,7 +326,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			}
 		}
 		/* path to portals on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where this portal leads
 			else if (level_added[s->second])
@@ -367,7 +369,7 @@ Tile World::shortestPath(unsigned char symbol) {
 	Debug::pathing() << "Trying to find path to nearest '" << symbol << "'" << endl;
 	while (++pivot < level_count) {
 		/* path to symbols on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols(symbol).begin(); s != _levels[level_queue[pivot]].symbols(symbol).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols(symbol).begin(); s != _levels[level_queue[pivot]].symbols(symbol).end(); ++s) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() == UNREACHABLE)
 				continue;
@@ -384,7 +386,7 @@ Tile World::shortestPath(unsigned char symbol) {
 			Debug::pathing() << "Found '" << symbol << "' at " << Coordinate(level_queue[pivot], s->first) << ", " << tile.distance() << " tiles away" << endl;
 		}
 		/* path to upstairs on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
@@ -411,7 +413,7 @@ Tile World::shortestPath(unsigned char symbol) {
 			}
 		}
 		/* path to downstairs on level */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
@@ -438,7 +440,7 @@ Tile World::shortestPath(unsigned char symbol) {
 			}
 		}
 		/* path to levels through magic portals */
-		for (map<Point, int>::iterator s = _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
+		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
 			if (s->second == UNKNOWN_SYMBOL_VALUE)
 				continue; // we don't know where this magic portal leads
 			if (level_added[s->second])
@@ -663,7 +665,7 @@ void World::detectPosition() {
 		}
 		if (level().branch() == BRANCH_MAIN && level().depth() >= 3 && level().depth() <= 5) {
 			/* if mines are not found and depth is between 3 & 5, we should attempt to detect mines */
-			for (map<Point, int>::iterator hw = level().symbols((unsigned char) HORIZONTAL_WALL).begin(); hw != level().symbols((unsigned char) HORIZONTAL_WALL).end(); ++hw) {
+			for (map<Point, int>::const_iterator hw = level().symbols((unsigned char) HORIZONTAL_WALL).begin(); hw != level().symbols((unsigned char) HORIZONTAL_WALL).end(); ++hw) {
 				if (hw->first.row() <= MAP_ROW_BEGIN || hw->first.row() >= MAP_ROW_END || hw->first.col() <= MAP_COL_BEGIN || hw->first.col() >= MAP_COL_END)
 					continue;
 				/* if we see horizontal walls adjacent to this point (except west & east),
@@ -690,17 +692,20 @@ void World::detectPosition() {
 	unsigned char symbol = level().tile().symbol();
 	/* maybe we already know where these stairs lead? */
 	if (symbol == STAIRS_DOWN) {
-		/* we did stand on stairs down, and if we don't know where they lead then
-		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = level().symbols((unsigned char) STAIRS_DOWN)[Saiph::position()];
+		/* we did stand on stairs down, set found if we know where they lead */
+		map<Point, int>::const_iterator s = level().symbols((unsigned char) STAIRS_DOWN).find(Saiph::position());
+		if (s != level().symbols((unsigned char) STAIRS_DOWN).end())
+			found = s->second;
 	} else if (symbol == STAIRS_UP) {
-		/* we did stand on stairs up, and if we don't know where they lead then
-		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = level().symbols((unsigned char) STAIRS_UP)[Saiph::position()];
+		/* we did stand on stairs up, set found if we know where they lead */
+		map<Point, int>::const_iterator s = level().symbols((unsigned char) STAIRS_UP).find(Saiph::position());
+		if (s != level().symbols((unsigned char) STAIRS_UP).end())
+			found = s->second;
 	} else if (symbol == MAGIC_PORTAL) {
-		/* we did stand on a magic portal, and if we don't know where it leads then
-		 * the next line will still just set found to UNKNOWN_SYMBOL_VALUE */
-		found = level().symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()];
+		/* we did stand on a magic portal, set found if we know where it lead */
+		map<Point, int>::const_iterator s = level().symbols((unsigned char) MAGIC_PORTAL).find(Saiph::position());
+		if (s != level().symbols((unsigned char) MAGIC_PORTAL).end())
+			found = s->second;
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		/* we didn't know where the stairs would take us */
@@ -709,12 +714,12 @@ void World::detectPosition() {
 			 * since walls can disappear, we'll allow a 80% match */
 			int total = 0;
 			int matched = 0;
-			for (map<Point, int>::iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
+			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
 				if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
 					++matched;
 				++total;
 			}
-			for (map<Point, int>::iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
+			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
 				if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
 					++matched;
 				++total;
@@ -736,16 +741,10 @@ void World::detectPosition() {
 		_levelmap[_levelname].push_back(found);
 		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
 	}
-	/* were we on stairs on last Saiph::position()? */
-	if (symbol == STAIRS_DOWN) {
-		/* yes, we were on stairs down */
-		level().symbols((unsigned char) STAIRS_DOWN)[Saiph::position()] = found;
-	} else if (symbol == STAIRS_UP) {
-		/* yes, we were on stairs up */
-		level().symbols((unsigned char) STAIRS_UP)[Saiph::position()] = found;
-	} else if (symbol == MAGIC_PORTAL) {
-		/* yes, we were on a magic portal */
-		level().symbols((unsigned char) MAGIC_PORTAL)[Saiph::position()] = found;
+	/* were we on stairs or a magic portal on last Saiph::position()? */
+	if (symbol == STAIRS_DOWN || symbol == STAIRS_UP || symbol == MAGIC_PORTAL) {
+		/* yes, we were on stairs or a magic portal, set where it leads */
+		level().setDungeonSymbolValue(Saiph::position(), found);
 	}
 	Saiph::position(Coordinate(found, _cursor));
 }
@@ -793,9 +792,10 @@ bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_
 	const Tile& t = level().tile(point);
 	if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
 		return false;
-	else if (!ignore_sinks && t.symbol() == SINK)
+	if (!ignore_sinks && t.symbol() == SINK)
 		return false;
-	else if (t.monster() != ILLEGAL_MONSTER && _levels[Saiph::position().level()].monsters()[point].visible())
+	const map<Point, Monster>::const_iterator m = level().monsters().find(point);
+	if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible())
 		return false;
 	return true;
 }

@@ -32,7 +32,7 @@ void Explore::analyze() {
 
 	/* find stairs on rogue level */
 	if (World::currentPriority() < PRIORITY_EXPLORE_ROGUE && World::level().branch() == BRANCH_ROGUE) {
-		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::level().symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::level().symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
 			Tile& tile = World::shortestPath(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
@@ -46,7 +46,7 @@ void Explore::analyze() {
 
 	/* explore stairs up */
 	if (World::currentPriority() < PRIORITY_EXPLORE_STAIRS_UP && World::level().depth() != 1) {
-		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) STAIRS_UP).begin(); s != World::level().symbols((unsigned char) STAIRS_UP).end(); ++s) {
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_UP).begin(); s != World::level().symbols((unsigned char) STAIRS_UP).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			Tile& tile = World::shortestPath(s->first);
@@ -66,16 +66,16 @@ void Explore::analyze() {
 		unsigned int min_cost = UNREACHABLE;
 		unsigned char best_direction = '\0';
 		/* floor */
-		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w)
+		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w)
 			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* corridor */
-		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) CORRIDOR).begin(); w != World::level().symbols((unsigned char) CORRIDOR).end(); ++w)
+		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) CORRIDOR).begin(); w != World::level().symbols((unsigned char) CORRIDOR).end(); ++w)
 			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* open door */
-		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) OPEN_DOOR).begin(); w != World::level().symbols((unsigned char) OPEN_DOOR).end(); ++w)
+		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) OPEN_DOOR).begin(); w != World::level().symbols((unsigned char) OPEN_DOOR).end(); ++w)
 			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* unknown tile */
-		for (map<Point, int>::iterator w = World::level().symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::level().symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
+		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::level().symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
 			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* update value for this level in _explore_levels */
 		_explore_levels[Saiph::position().level()] = best_type;
@@ -89,7 +89,7 @@ void Explore::analyze() {
 
 	/* explore stairs down */
 	if (World::currentPriority() < PRIORITY_EXPLORE_STAIRS_DOWN) {
-		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			Tile& tile = World::shortestPath(s->first);
@@ -105,7 +105,7 @@ void Explore::analyze() {
 
 	/* explore magic portals */
 	if (World::currentPriority() < PRIORITY_EXPLORE_MAGIC_PORTAL) {
-		for (map<Point, int>::iterator s = World::level().symbols((unsigned char) MAGIC_PORTAL).begin(); s != World::level().symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) MAGIC_PORTAL).begin(); s != World::level().symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
 			Tile& tile = World::shortestPath(s->first);
@@ -129,19 +129,19 @@ void Explore::analyze() {
 			}
 			/* can we path to upstairs on this level? */
 			Tile tile;
-			for (map<Point, int>::iterator s = World::level(l->first).symbols(STAIRS_UP).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(STAIRS_UP).end(); ++s) {
+			for (map<Point, int>::const_iterator s = World::level(l->first).symbols(STAIRS_UP).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(STAIRS_UP).end(); ++s) {
 				tile = World::shortestPath(Coordinate(l->first, s->first));
 				if (tile.cost() < best_tile.cost())
 					best_tile = tile;
 			}
 			/* can we path to downstairs on this level? */
-			for (map<Point, int>::iterator s = World::level(l->first).symbols(STAIRS_DOWN).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(STAIRS_DOWN).end(); ++s) {
+			for (map<Point, int>::const_iterator s = World::level(l->first).symbols(STAIRS_DOWN).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(STAIRS_DOWN).end(); ++s) {
 				tile = World::shortestPath(Coordinate(l->first, s->first));
 				if (tile.cost() < best_tile.cost())
 					best_tile = tile;
 			}
 			/* can we path to portals on this level? */
-			for (map<Point, int>::iterator s = World::level(l->first).symbols(MAGIC_PORTAL).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(MAGIC_PORTAL).end(); ++s) {
+			for (map<Point, int>::const_iterator s = World::level(l->first).symbols(MAGIC_PORTAL).begin(); tile.distance() == UNREACHABLE && s != World::level(l->first).symbols(MAGIC_PORTAL).end(); ++s) {
 				tile = World::shortestPath(Coordinate(l->first, s->first));
 				if (tile.cost() < best_tile.cost())
 					best_tile = tile;

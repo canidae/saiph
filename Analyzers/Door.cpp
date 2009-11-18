@@ -49,7 +49,7 @@ void Door::analyze() {
 
 	/* go to nearest closed door and get it open somehow */
 	unsigned int min_distance = UNREACHABLE;
-	for (map<Point, int>::iterator d = World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).begin(); d != World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
+	for (map<Point, int>::const_iterator d = World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).begin(); d != World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR).end(); ++d) {
 		Tile& tile = World::shortestPath(d->first);
 		if (tile.cost() == UNREACHABLE)
 			continue; // can't reach this door
@@ -85,10 +85,10 @@ void Door::analyze() {
 void Door::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos || messages.find(MESSAGE_SUCCEED_PICKING) != string::npos) {
 		/* door unlocked */
-		World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR)[_position] = UNKNOWN_SYMBOL_VALUE;
+		World::level().setDungeonSymbolValue(_position, UNKNOWN_SYMBOL_VALUE);
 	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
 		/* door is locked, set the value to 1 */
-		World::level(Saiph::position().level()).symbols((unsigned char) CLOSED_DOOR)[_position] = 1;
+		World::level().setDungeonSymbolValue(_position, DOOR_LOCKED);
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, YES)));
