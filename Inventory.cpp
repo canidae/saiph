@@ -1,10 +1,13 @@
+#include "Inventory.h"
+
 #include "Debug.h"
 #include "EventBus.h"
-#include "Inventory.h"
 #include "World.h"
 #include "Actions/ListInventory.h"
 #include "Data/Armor.h"
 #include "Data/Amulet.h"
+#include "Events/ReceivedItems.h"
+#include "Events/StashChanged.h"
 
 using namespace event;
 using namespace std;
@@ -24,7 +27,7 @@ void Inventory::analyze() {
 }
 
 void Inventory::parseMessages(const string& messages) {
-	if (World::lastActionID() == action::ListInventory::ID && World::menu() && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
+	if (World::menu() && World::lastActionID() == action::ListInventory::ID && messages.find(" - ") != string::npos && messages.find(" -  ") == string::npos) {
 		/* last action was list inventory and we got a menu with " - " and it's not enhance menu (that got " -   "), probably listing inventory */
 		string::size_type pos = 0;
 		string::size_type pos2 = -1;
@@ -71,7 +74,7 @@ void Inventory::parseMessages(const string& messages) {
 			EventBus::broadcast(static_cast<Event*> (&_changed));
 			_extrinsics_updated = false;
 		}
-	} else if (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos) {
+	} else if (!World::menu() && (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos)) {
 		/* we're not carrying anything */
 		_extrinsics_updated = true;
 		_changed.clear();
@@ -83,10 +86,40 @@ void Inventory::parseMessages(const string& messages) {
 			/* broadcast ChangedInventoryItems */
 			EventBus::broadcast(static_cast<Event*> (&_changed));
 		}
-	} else if (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2) != string::npos || messages.find(MESSAGE_DESTROY_RING) != string::npos || messages.find(MESSAGE_DESTROY_RING2) != string::npos || messages.find(MESSAGE_DESTROY_WAND) != string::npos || messages.find(MESSAGE_DESTROY_WAND2) != string::npos || messages.find(MESSAGE_POLYMORPH) != string::npos || messages.find(MESSAGE_FOOCUBUS_QUESTION) != string::npos || messages.find(MESSAGE_FOOCUBUS_REMOVE) != string::npos) {
+	}
+	if (!World::menu() && (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2) != string::npos || messages.find(MESSAGE_DESTROY_RING) != string::npos || messages.find(MESSAGE_DESTROY_RING2) != string::npos || messages.find(MESSAGE_DESTROY_WAND) != string::npos || messages.find(MESSAGE_DESTROY_WAND2) != string::npos || messages.find(MESSAGE_POLYMORPH) != string::npos || messages.find(MESSAGE_FOOCUBUS_QUESTION) != string::npos || messages.find(MESSAGE_FOOCUBUS_REMOVE) != string::npos)) {
 		/* we got robbed, some of our stuff was destroyed. we polymorphed or encountered a foocubi.
 		 * mark inventory as not updated */
 		update();
+	}
+	if (!World::menu() && messages.find(" - ", 3) != string::npos) {
+		/* it's likely that we received one or more items (may also have eaten a tripe ration) */
+		string::size_type pos = 0;
+		string::size_type pos2 = -1;
+		/* reset received list */
+		ReceivedItems received;
+		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
+			/* add item to inventory */
+			Item item(messages.substr(pos + 3, pos2 - pos - 3));
+			if (item.count() <= 0) {
+				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
+				continue;
+			}
+			addItem(messages[pos - 1], item);
+			/* add item to changed.keys */
+			received.addItem(messages[pos - 1], item);
+		}
+		map<Point, Stash>::iterator s = World::level().stashes().find(Saiph::position());
+		if (received.items().size() > 0) {
+			/* broadcast "ReceivedItems" */
+			EventBus::broadcast(static_cast<Event*> (&received));
+			/* make stash dirty too */
+			if (s != World::level().stashes().end())
+				s->second.items().clear();
+			/* broadcast StashChanged */
+			StashChanged sc(Saiph::position());
+			EventBus::broadcast(static_cast<Event*> (&sc));
+		}
 	}
 }
 

@@ -1,11 +1,14 @@
+#include "Level.h"
+
 #include <stdlib.h>
 #include "Debug.h"
 #include "EventBus.h"
 #include "Inventory.h"
 #include "Item.h"
-#include "Level.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Events/ItemsOnGround.h"
+#include "Events/ReceivedItems.h"
 #include "Events/StashChanged.h"
 
 /* pathing */
@@ -60,8 +63,6 @@ int Level::_pathcost[UCHAR_MAX + 1] = {0};
 bool Level::_dungeon[UCHAR_MAX + 1] = {false};
 bool Level::_monster[UCHAR_MAX + 1] = {false};
 bool Level::_item[UCHAR_MAX + 1] = {false};
-ReceivedItems Level::_received;
-ItemsOnGround Level::_on_ground;
 Tile Level::_outside_map;
 
 /* constructors/destructor */
@@ -241,8 +242,6 @@ map<Point, int>& Level::symbols(unsigned char symbol) {
 }
 
 void Level::analyze() {
-	if (World::menu())
-		return; // menu hides map, don't update
 	if (Saiph::engulfed()) {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster she can't see */
@@ -259,6 +258,14 @@ void Level::analyze() {
 	updatePathMap();
 	/* set point we're standing on "fully searched" */
 	_map[Saiph::position().row()][Saiph::position().col()].search(TILE_FULLY_SEARCHED);
+
+	/* send event if we're standing on stash */
+	map<Point, Stash>::iterator s = _stashes.find(Saiph::position());
+	if (s != _stashes.end() && s->second.items().size() > 0) {
+		/* broadcast "ItemsOnGround" */
+		ItemsOnGround on_ground(s->second.items());
+		EventBus::broadcast(static_cast<Event*> (&on_ground));
+	}
 }
 
 void Level::parseMessages(const string& messages) {
@@ -349,45 +356,6 @@ void Level::parseMessages(const string& messages) {
 	} else if (messages.find(LEVEL_YOU_SEE_NO_OBJECTS) != string::npos || messages.find(LEVEL_YOU_FEEL_NO_OBJECTS) != string::npos || messages.find(LEVEL_THERE_IS_NOTHING_HERE) != string::npos) {
 		/* we see/feel no items on the ground */
 		_stashes.erase(Saiph::position());
-	}
-	if (!World::menu()) {
-		/* check if we received items */
-		string::size_type pos = 0;
-		string::size_type pos2 = -1;
-		/* reset received list */
-		_received.clear();
-		while ((pos = messages.find(" - ", pos2 + 4)) != string::npos && pos > 1 && messages[pos - 2] == ' ' && (pos2 = messages.find_first_of('.', pos + 3)) != string::npos && pos2 < messages.size() - 2 && messages[pos2 + 1] == ' ' && messages[pos2 + 2] == ' ') {
-			/* add item to inventory */
-			Item item(messages.substr(pos + 3, pos2 - pos - 3));
-			if (item.count() <= 0) {
-				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
-				continue;
-			}
-			Inventory::addItem(messages[pos - 1], item);
-			/* add item to changed.keys */
-			_received.addItem(messages[pos - 1], item);
-		}
-		map<Point, Stash>::iterator s = _stashes.find(Saiph::position());
-		if (_received.items().size() > 0) {
-			/* broadcast "ReceivedItems" */
-			EventBus::broadcast(static_cast<Event*> (&_received));
-			/* make stash dirty too */
-			if (s != _stashes.end())
-				s->second.items().clear();
-			/* broadcast StashChanged */
-			StashChanged sc;
-			sc.stash(Coordinate(Saiph::position().level(), Saiph::position()));
-			EventBus::broadcast(static_cast<Event*> (&sc));
-		}
-
-		if (!World::question()) {
-			/* send event if we're standing on stash (except when we got a question or menu) */
-			if (s != _stashes.end() && s->second.items().size() > 0) {
-				_on_ground.items(s->second.items());
-				/* broadcast "ItemsOnGround" */
-				EventBus::broadcast(static_cast<Event*> (&_on_ground));
-			}
-		}
 	}
 }
 
@@ -486,16 +454,14 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 				s->second.symbol(symbol);
 				s->second.color(color);
 				/* broadcast StashChanged */
-				StashChanged sc;
-				sc.stash(Coordinate(Saiph::position().level(), point));
+				StashChanged sc(Coordinate(Saiph::position().level(), point));
 				EventBus::broadcast(static_cast<Event*> (&sc));
 			}
 		} else {
 			/* new stash */
 			_stashes[point] = Stash(symbol, color);
 			/* broadcast StashChanged */
-			StashChanged sc;
-			sc.stash(Coordinate(Saiph::position().level(), point));
+			StashChanged sc(Coordinate(Saiph::position().level(), point));
 			EventBus::broadcast(static_cast<Event*> (&sc));
 		}
 	} else if (symbol == t.symbol()) {

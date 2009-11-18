@@ -137,7 +137,7 @@ void Food::onEvent(Event * const event) {
 		if (World::level().tile().symbol() != SHOP_TILE) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			map<Point, int>::iterator cl = _stashes.find(Saiph::position());
-			for (list<Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			for (list<Item>::const_iterator i = e->items().begin(); i != e->items().end(); ++i) {
 				if (cl != _stashes.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
 					/* it's safe to eat corpses here */
 					map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());

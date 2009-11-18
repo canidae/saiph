@@ -9,8 +9,6 @@
 #include "Point.h"
 #include "Stash.h"
 #include "Tile.h"
-#include "Events/ItemsOnGround.h"
-#include "Events/ReceivedItems.h"
 
 /* max amount of nodes in pathing_queue */
 #define PATHING_QUEUE_SIZE 16384
@@ -50,8 +48,6 @@ private:
 	static bool _item[UCHAR_MAX + 1];
 	static bool _got_pickup_menu;
 	static bool _got_drop_menu;
-	static event::ReceivedItems _received;
-	static event::ItemsOnGround _on_ground;
 	static Tile _outside_map;
 	int _level;
 	Tile _map[MAP_ROW_END + 1][MAP_COL_END + 1];

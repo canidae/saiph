@@ -73,14 +73,14 @@ void Loot::onEvent(Event * const event) {
 	if (event->id() == StashChanged::ID) {
 		/* stash changed, we need to visit it again */
 		StashChanged* e = static_cast<StashChanged*> (event);
-		_visit.insert(e->stash());
+		_visit.insert(e->position());
 	} else if (event->id() == ItemsOnGround::ID) {
 		// TODO: proper shopping code
 		if (World::level().tile().symbol() != SHOP_TILE) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			int index = 0;
 			bool looting = false;
-			list<Item>::iterator i = e->items().begin();
+			list<Item>::const_iterator i = e->items().begin();
 			WantItems wi;
 			while (!looting) {
 				wi.addItem(index++, *i);

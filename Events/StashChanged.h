@@ -11,7 +11,7 @@ namespace event {
 	public:
 		static const int ID;
 
-		StashChanged() : Event("StashChanged"), _stash() {
+		StashChanged(const Coordinate& position) : Event("StashChanged"), _position(position) {
 		}
 
 		virtual ~StashChanged() {
@@ -21,17 +21,12 @@ namespace event {
 			return ID;
 		}
 
-		virtual const Coordinate& stash() {
-			return _stash;
-		}
-
-		virtual const Coordinate& stash(const Coordinate& stash) {
-			_stash = stash;
-			return this->stash();
+		virtual const Coordinate& position() const {
+			return _position;
 		}
 
 	private:
-		Coordinate _stash;
+		const Coordinate _position;
 	};
 }
 #endif

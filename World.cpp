@@ -489,9 +489,11 @@ void World::run() {
 		level().parseMessages(_messages);
 
 		/* let Saiph, Inventory and current level analyze */
-		Saiph::analyze();
-		Inventory::analyze();
-		level().analyze();
+		if (!_question && !_menu) {
+			Saiph::analyze();
+			Inventory::analyze();
+			level().analyze();
+		}
 
 		/* dump maps */
 		dumpMaps();

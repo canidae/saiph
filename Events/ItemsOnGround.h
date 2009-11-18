@@ -11,7 +11,7 @@ namespace event {
 	public:
 		static const int ID;
 
-		ItemsOnGround() : Event("ItemsOnGround"), _items() {
+		ItemsOnGround(const std::list<Item> items) : Event("ItemsOnGround"), _items(items) {
 		}
 
 		virtual ~ItemsOnGround() {
@@ -21,17 +21,12 @@ namespace event {
 			return ID;
 		}
 
-		virtual std::list<Item>& items() {
+		virtual const std::list<Item>& items() const {
 			return _items;
 		}
 
-		virtual std::list<Item>& items(const std::list<Item>& items) {
-			_items = items;
-			return this->items();
-		}
-
 	private:
-		std::list<Item> _items;
+		const std::list<Item> _items;
 	};
 }
 #endif
