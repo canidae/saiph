@@ -83,6 +83,8 @@ void Weapon::setBestWeapon() {
 		map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 		if (w == data::Weapon::weapons().end())
 			continue; // not a weapon
+		if (!w->second->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
+			continue; // for now, don't try to wield two-hander when we got a shield
 		int damage = 0;
 		for (vector<data::Attack>::const_iterator a = w->second->attackSmall().begin(); a != w->second->attackSmall().end(); ++a)
 			damage += a->avgDamage();
