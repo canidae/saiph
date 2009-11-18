@@ -41,7 +41,7 @@ void Loot::analyze() {
 	/* visit new/changed stashes */
 	set<Coordinate>::iterator v = _visit.begin();
 	while (v != _visit.end()) {
-		map<Point, Stash>::iterator s = World::level().stashes().find(*v);
+		map<Point, Stash>::const_iterator s = World::level().stashes().find(*v);
 		if (s == World::level().stashes().end() || s->second.lastInspected() == World::turn()) {
 			/* stash is gone or we recently looked at it */
 			_visit.erase(v++);

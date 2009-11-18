@@ -59,9 +59,7 @@ namespace action {
 				_sequence = 2;
 			} else if (_sequence == 1 || _sequence == 2 || _sequence == 4) {
 				/* either ate a corpse or cancelled the eat request, make stash dirty and look at ground */
-				std::map<Point, Stash>::iterator stash = World::level().stashes().find(Saiph::position());
-				if (stash != World::level().stashes().end())
-					stash->second.items().clear();
+				World::level().setDirtyStash(Saiph::position());
 				_sequence = 3;
 			} else if (_sequence == 3) {
 				/* looked at ground, action is complete */

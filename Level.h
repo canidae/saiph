@@ -30,10 +30,11 @@ public:
 	Tile& tile();
 	Tile& tile(const Point& point);
 	std::map<Point, Monster>& monsters();
-	std::map<Point, Stash>& stashes();
-	const std::map<Point, int>& symbols(unsigned char symbol);
+	const std::map<Point, Stash>& stashes() const;
+	const std::map<Point, int>& symbols(unsigned char symbol) const;
 	void analyze();
 	void parseMessages(const std::string& messages);
+	void setDirtyStash(const Point& point);
 	void setDungeonSymbol(const Point& point, unsigned char symbol);
 	void setDungeonSymbolValue(const Point& point, int value);
 	void increaseAdjacentSearchCount(const Point& point);

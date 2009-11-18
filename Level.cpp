@@ -233,11 +233,11 @@ map<Point, Monster>& Level::monsters() {
 	return _monsters;
 }
 
-map<Point, Stash>& Level::stashes() {
+const map<Point, Stash>& Level::stashes() const {
 	return _stashes;
 }
 
-const map<Point, int>& Level::symbols(unsigned char symbol) {
+const map<Point, int>& Level::symbols(unsigned char symbol) const {
 	return _symbols[symbol];
 }
 
@@ -357,6 +357,12 @@ void Level::parseMessages(const string& messages) {
 		/* we see/feel no items on the ground */
 		_stashes.erase(Saiph::position());
 	}
+}
+
+void Level::setDirtyStash(const Point& point) {
+	map<Point, Stash>::iterator s = _stashes.find(point);
+	if (s != _stashes.end())
+		s->second.items().clear();
 }
 
 void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {

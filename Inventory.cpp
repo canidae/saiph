@@ -109,13 +109,11 @@ void Inventory::parseMessages(const string& messages) {
 			/* add item to changed.keys */
 			received.addItem(messages[pos - 1], item);
 		}
-		map<Point, Stash>::iterator s = World::level().stashes().find(Saiph::position());
 		if (received.items().size() > 0) {
 			/* broadcast "ReceivedItems" */
 			EventBus::broadcast(static_cast<Event*> (&received));
-			/* make stash dirty too */
-			if (s != World::level().stashes().end())
-				s->second.items().clear();
+			/* make any stash at location dirty too */
+			World::level().setDirtyStash(Saiph::position());
 			/* broadcast StashChanged */
 			StashChanged sc(Saiph::position());
 			EventBus::broadcast(static_cast<Event*> (&sc));

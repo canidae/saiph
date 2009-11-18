@@ -113,7 +113,7 @@ void Food::parseMessages(const string& messages) {
 			}
 		}
 		/* mark stashes that didn't appear after a monster died as dangerous */
-		for (map<Point, Stash>::iterator s = World::level().stashes().begin(); s != World::level().stashes().end(); ++s) {
+		for (map<Point, Stash>::const_iterator s = World::level().stashes().begin(); s != World::level().stashes().end(); ++s) {
 			map<Point, int>::iterator t = _stashes.find(s->first);
 			if (t != _stashes.end())
 				continue;
