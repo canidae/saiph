@@ -1,6 +1,7 @@
 #ifndef ANALYZER_WEAPON_H
 #define ANALYZER_WEAPON_H
 
+#include <map>
 #include <string>
 #include "Analyzer.h"
 
@@ -17,7 +18,10 @@ namespace analyzer {
 
 	private:
 		unsigned char _wield_weapon;
+		std::map<unsigned char, int> _melee_weapons;
+		std::map<unsigned char, int> _range_weapons;
 
+		int calculateWeaponScore(const Item& item);
 		void setBestWeapon();
 	};
 }

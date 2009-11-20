@@ -7,8 +7,8 @@
 #include "../Actions/Wield.h"
 #include "../Data/Weapon.h"
 #include "../Events/Beatify.h"
-#include "../Events/Event.h"
 #include "../Events/ChangedInventoryItems.h"
+#include "../Events/Event.h"
 #include "../Events/ReceivedItems.h"
 #include "../Events/WantItems.h"
 
@@ -65,36 +65,180 @@ void Weapon::onEvent(event::Event * const event) {
 			if (Saiph::alignment() == LAWFUL && i->second.name().find("poisoned") != string::npos)
 				continue; // ignore poisoned weapons if we're lawful
 
-			switch (Saiph::role()) {
-			default:
-				/* pick up every weapon for now */
-				i->second.want(i->second.count());
-				break;
+			int melee_weapons = 2;
+			int range_weapons = 5; // stacks, not count
+			int better_weapon_count = 0;
+			int weapon_score = calculateWeaponScore(i->second);
+			if (weapon_score <= 0)
+				continue; // don't want this weapon
+			if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR) {
+				for (map<unsigned char, int>::iterator m = _range_weapons.begin(); m != _range_weapons.end(); ++m) {
+					if (m->second >= weapon_score)
+						++better_weapon_count;
+				}
+				if (better_weapon_count > melee_weapons)
+					continue; // got better ranged weapons already
+			} else {
+				for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
+					if (m->second >= weapon_score)
+						++better_weapon_count;
+				}
+				if (better_weapon_count > range_weapons)
+					continue; // got better melee weapons already
 			}
+			/* pick up every weapon for now */
+			i->second.want(i->second.count());
 		}
 	}
 }
 
 /* private methods */
+int Weapon::calculateWeaponScore(const Item& item) {
+	map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(item.name());
+	if (w == data::Weapon::weapons().end())
+		return 0; // not a weapon
+	if (!w->second->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
+		return 0; // for now, don't try to wield two-hander when we got a shield
+	int score = 0;
+	for (vector<data::Attack>::const_iterator a = w->second->attackSmall().begin(); a != w->second->attackSmall().end(); ++a)
+		score += a->avgDamage();
+	for (vector<data::Attack>::const_iterator a = w->second->attackLarge().begin(); a != w->second->attackLarge().end(); ++a)
+		score += a->avgDamage();
+	score += item.enchantment() * 2;
+	score -= item.damage() * 2;
+
+	/* set role/skill specific score */
+	/* TODO: replace with data from #enhance (big task, though) */
+	int skill = 0;
+	switch (Saiph::role()) {
+	case BARBARIAN:
+		switch (w->second->type()) {
+		case WEAPON_DAGGER:
+		case WEAPON_SABER:
+		case WEAPON_FLAIL:
+		case WEAPON_QUARTERSTAFF:
+		case WEAPON_BOW:
+			/* basic */
+			skill = 1;
+			break;
+
+		case WEAPON_PICKAXE:
+		case WEAPON_BROADSWORD:
+		case WEAPON_LONGSWORD:
+		case WEAPON_SCIMITAR:
+		case WEAPON_CLUB:
+		case WEAPON_MACE:
+		case WEAPON_MORNINGSTAR:
+		case WEAPON_SPEAR:
+		case WEAPON_TRIDENT:
+			/* skilled */
+			skill = 2;
+			break;
+
+		case WEAPON_AXE:
+		case WEAPON_SHORTSWORD:
+		case WEAPON_TWOHANDEDSWORD:
+		case WEAPON_HAMMER:
+			/* expert */
+			skill = 3;
+			break;
+
+		default:
+			/* unskilled */
+			skill = 0;
+			break;
+		}
+		break;
+
+	case VALKYRIE:
+		switch (w->second->type()) {
+		case WEAPON_SCIMITAR:
+		case WEAPON_SABER:
+		case WEAPON_QUARTERSTAFF:
+		case WEAPON_JAVELIN:
+		case WEAPON_TRIDENT:
+		case WEAPON_SLING:
+			/* basic */
+			skill = 1;
+			break;
+
+		case WEAPON_PICKAXE:
+		case WEAPON_SHORTSWORD:
+		case WEAPON_BROADSWORD:
+		case WEAPON_POLEARM:
+		case WEAPON_SPEAR:
+		case WEAPON_LANCE:
+			/* skilled */
+			skill = 2;
+			break;
+
+		case WEAPON_DAGGER:
+		case WEAPON_AXE:
+		case WEAPON_LONGSWORD:
+		case WEAPON_TWOHANDEDSWORD:
+		case WEAPON_HAMMER:
+			/* expert */
+			skill = 3;
+			break;
+
+		default:
+			/* unskilled */
+			skill = 0;
+			break;
+		}
+		break;
+
+	default:
+		skill = 0;
+		break;
+	}
+	/* score += tohit + 2 * damage */
+	switch (skill) {
+	case 1:
+		/* basic */
+		/* +hit = 0, +dam = 0 */
+		break;
+
+	case 2:
+		/* skilled */
+		/* +hit = 2, +dam = 1 */
+		score += 2 + 1 * 2;
+		break;
+
+	case 3:
+		/* expert */
+		/* +hit = 3, +dam = 2 */
+		score += 3 + 2 * 2;
+		break;
+
+	default:
+		/* unskilled */
+		/* +hit = -4, +dam = -2 */
+		score += -4 + -2 * 2;
+		break;
+	}
+	return score;
+}
+
 void Weapon::setBestWeapon() {
 	/* wield the best weapon we got */
-	int best_damage = 0;
+	int best_score = 0;
+	_melee_weapons.clear();
+	_range_weapons.clear();
 	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 		if (w == data::Weapon::weapons().end())
 			continue; // not a weapon
 		if (!w->second->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
 			continue; // for now, don't try to wield two-hander when we got a shield
-		int damage = 0;
-		for (vector<data::Attack>::const_iterator a = w->second->attackSmall().begin(); a != w->second->attackSmall().end(); ++a)
-			damage += a->avgDamage();
-		for (vector<data::Attack>::const_iterator a = w->second->attackLarge().begin(); a != w->second->attackLarge().end(); ++a)
-			damage += a->avgDamage();
-		damage += i->second.enchantment() * 2;
-		damage -= i->second.damage() * 2;
-		if (damage > best_damage) {
-			best_damage = damage;
+		int score = calculateWeaponScore(i->second);
+		if (score > best_score) {
+			best_score = score;
 			_wield_weapon = i->first;
 		}
+		if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
+			_range_weapons[i->first] = score;
+		else
+			_melee_weapons[i->first] = score;
 	}
 }
