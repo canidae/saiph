@@ -145,6 +145,9 @@
 #define WEAPON_TWOHANDEDSWORD 1 << 26
 #define WEAPON_UNICORNHORN    1 << 27
 #define WEAPON_WHIP           1 << 28
+#define WEAPON_BOW_AMMO       1 << 29
+#define WEAPON_CROSSBOW_AMMO  1 << 30
+#define WEAPON_SLING_AMMO     1 << 31
 
 /* genders */
 #define UNKNOWN_GENDER 0 << 0

@@ -7,7 +7,7 @@ using namespace std;
 map<const string, const CrossbowAmmo*> CrossbowAmmo::_crossbows;
 
 /* protected constructors */
-CrossbowAmmo::CrossbowAmmo(const string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, category, material, properties, one_handed, alignment, WEAPON_CROSSBOW, as0, as1, as2, al0, al1, al2) {
+CrossbowAmmo::CrossbowAmmo(const string& name, int cost, int weight, char category, int material, unsigned long long properties, bool one_handed, int alignment, const Attack& as0, const Attack& as1, const Attack& as2, const Attack& al0, const Attack& al1, const Attack& al2) : Weapon(name, cost, weight, category, material, properties, one_handed, alignment, WEAPON_CROSSBOW_AMMO, as0, as1, as2, al0, al1, al2) {
 }
 
 /* destructor */
