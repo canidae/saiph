@@ -65,7 +65,6 @@ namespace action {
 					pos = 0;
 				} else {
 					/* all pages shown */
-					Inventory::update();
 					_sequence = 3;
 				}
 			}
