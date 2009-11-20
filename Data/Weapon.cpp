@@ -3,9 +3,11 @@
 #include "Axe.h"
 #include "Boomerang.h"
 #include "Bow.h"
+#include "BowAmmo.h"
 #include "Broadsword.h"
 #include "Club.h"
 #include "Crossbow.h"
+#include "CrossbowAmmo.h"
 #include "Dagger.h"
 #include "Dart.h"
 #include "Flail.h"
@@ -24,6 +26,7 @@
 #include "Shortsword.h"
 #include "Shuriken.h"
 #include "Sling.h"
+#include "SlingAmmo.h"
 #include "Spear.h"
 #include "Trident.h"
 #include "TwoHandedSword.h"
@@ -55,9 +58,11 @@ void Weapon::init() {
 	Axe::init();
 	Boomerang::init();
 	Bow::init();
+	BowAmmo::init();
 	Broadsword::init();
 	Club::init();
 	Crossbow::init();
+	CrossbowAmmo::init();
 	Dagger::init();
 	Dart::init();
 	Flail::init();
@@ -76,6 +81,7 @@ void Weapon::init() {
 	Shortsword::init();
 	Shuriken::init();
 	Sling::init();
+	SlingAmmo::init();
 	Spear::init();
 	Trident::init();
 	TwoHandedSword::init();

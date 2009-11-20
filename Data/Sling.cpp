@@ -18,7 +18,6 @@ Sling::~Sling() {
 void Sling::init() {
 	/* slings */
 	create("sling", 20, 3, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_LEATHER, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("flintstone", 1, 10, Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(), Attack(), MATERIAL_MINERAL, GEM, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
 }
 
 const map<const string, const Sling*>& Sling::slings() {

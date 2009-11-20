@@ -1,7 +1,7 @@
 CXX = g++
 RM = rm -f
 CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
-OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o Broadsword.o Cloak.o Club.o Corpse.o Crossbow.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lamp.o Lance.o Longsword.o Mace.o Monster.o MorningStar.o Pickaxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o Shortsword.o Shuriken.o Sling.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
+OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o BowAmmo.o Broadsword.o Cloak.o Club.o Corpse.o Crossbow.o CrossbowAmmo.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lamp.o Lance.o Longsword.o Mace.o Monster.o MorningStar.o Pickaxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o Shortsword.o Shuriken.o Sling.o SlingAmmo.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
 
 analyzers: $(OBJECTS)
 
@@ -12,11 +12,13 @@ Axe.o: Axe.h Axe.cpp
 Boomerang.o: Boomerang.h Boomerang.cpp
 Boots.o: Boots.h Boots.cpp
 Bow.o: Bow.h Bow.cpp
+BowAmmo.o: BowAmmo.h BowAmmo.cpp
 Broadsword.o: Broadsword.h Broadsword.cpp
 Cloak.o: Cloak.h Cloak.cpp
 Club.o: Club.h Club.cpp
 Corpse.o: Corpse.h Corpse.cpp
 Crossbow.o: Crossbow.h Crossbow.cpp
+CrossbowAmmo.o: CrossbowAmmo.h CrossbowAmmo.cpp
 Dagger.o: Dagger.h Dagger.cpp
 Dart.o: Dart.h Dart.cpp
 Food.o: Food.h Food.cpp
@@ -44,6 +46,7 @@ Shirt.o: Shirt.h Shirt.cpp
 Shortsword.o: Shortsword.h Shortsword.cpp
 Shuriken.o: Shuriken.h Shuriken.cpp
 Sling.o: Sling.h Sling.cpp
+SlingAmmo.o: SlingAmmo.h SlingAmmo.cpp
 Spear.o: Spear.h Spear.cpp
 Suit.o: Suit.h Suit.cpp
 Tool.o: Tool.h Tool.cpp

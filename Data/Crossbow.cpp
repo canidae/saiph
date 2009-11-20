@@ -18,10 +18,6 @@ Crossbow::~Crossbow() {
 void Crossbow::init() {
 	/* crossbows */
 	create("crossbow", 40, 50, Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 2), Attack(), Attack(), MATERIAL_WOOD, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-	create("crossbow bolt", 2, 1, Attack(AT_CLAW, AD_PHYS, 1, 4), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), Attack(AT_CLAW, AD_PHYS, 1, 6), Attack(AT_CLAW, AD_PHYS, 1, 1), Attack(), MATERIAL_IRON, WEAPON, 0, true, CHAOTIC | NEUTRAL | LAWFUL);
-
-	/* aliases */
-	addToMap("poisoned crossbow bolt", _crossbows["crossbow bolt"]);
 }
 
 const map<const string, const Crossbow*>& Crossbow::crossbows() {
