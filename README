@@ -42,12 +42,22 @@ into the main repos, then you can get that patch with the following commands:
 
 Building & running:
 -------------------
-Depending on whether you wish to run remotely or locally, edit Saiph.cpp and
-change between CONNECTION_TELNET and CONNECTION_LOCAL in
-"Saiph *saiph = new Saiph(CONNECTION_TELNET);" (near the bottom of the file).
-
 If you're running locally you'll have to do this once before executing saiph:
  export NETHACKOPTIONS=@<path to nethackrc>
+
+If you are running on a public server, you will need to create a file named
+".account" in the directory where you run saiph; it must have three lines,
+consisting of the host name, the dgamelaunch user name, and the password,
+like so:
+
+nethack.alt.org
+saiph
+<omitted>
+
+Furthermore, you will need to pass the -t option to saiph when running.
+
+Connecting to non-dgamelaunch-based servers, such as the ones that run the
+/dev/null tournament, will not work.  Patches welcome.
 
 You'll also need a terminal that's capable of displaying at least 160x50
 characters.
