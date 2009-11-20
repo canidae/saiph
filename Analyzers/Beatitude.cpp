@@ -51,32 +51,17 @@ void Beatitude::onEvent(event::Event * const event) {
 		WantItems* e = static_cast<WantItems*> (event);
 		if (e->dropping()) {
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (dropItem(i->second))
-					i->second.count(0); // setting count to 0 to force dropping the item
+				if (i->second.beatitude() != BEATITUDE_UNKNOWN)
+					continue; // know beatitude already
+				if (Inventory::slotForKey(i->first) != ILLEGAL_SLOT)
+					continue; // item is in a slot, don't drop it
+				if (i->second.name() == "gold piece")
+					continue; // don't drop money
+				/* should drop this item, force it by setting count to 0 */
+				i->second.count(0);
 			}
 			_beatify.clear();
 			_max_priority = ILLEGAL_PRIORITY;
 		}
 	}
-}
-
-/* private methods */
-bool Beatitude::dropItem(const Item& item) {
-	if (item.beatitude() != BEATITUDE_UNKNOWN)
-		return false;
-	if (item.name() == "gold piece")
-		return false;
-	if (item.additional() == "being worn")
-		return false;
-	if (item.additional() == "embedded in your skin")
-		return false;
-	if (item.additional() == "in use")
-		return false;
-	if (item.additional() == "wielded")
-		return false;
-	if (item.additional().find("weapon in ", 0) == 0 || item.additional().find("wielded in other ", 0) == 0)
-		return false;
-	if (item.additional().find("on left ", 0) == 0 || item.additional().find("on right ", 0) == 0)
-		return false;
-	return true;
 }

@@ -97,6 +97,7 @@
 #define OVERSATIATED 1 << 6
 
 /* slots */
+#define ILLEGAL_SLOT -1
 #define SLOTS 15
 #define SLOT_SHIRT 0
 #define SLOT_SUIT 1

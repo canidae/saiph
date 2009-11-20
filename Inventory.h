@@ -18,6 +18,7 @@ public:
 	static const Item& itemAtKey(unsigned char key);
 	static const Item& itemInSlot(int slot);
 	static unsigned char keyForSlot(int slot);
+	static int slotForKey(unsigned char key);
 	static void addItem(unsigned char key, const Item& item);
 	static void removeItem(unsigned char key, const Item& item);
 	static unsigned long long extrinsicsFromItems();

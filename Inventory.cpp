@@ -144,6 +144,16 @@ unsigned char Inventory::keyForSlot(int slot) {
 	return _slots[slot];
 }
 
+int Inventory::slotForKey(unsigned char key) {
+	if (key == ILLEGAL_ITEM)
+		return ILLEGAL_SLOT;
+	for (int s = 0; s < SLOTS; ++s) {
+		if (_slots[s] == key)
+			return _slots[s];
+	}
+	return ILLEGAL_SLOT;
+}
+
 void Inventory::addItem(unsigned char key, const Item& item) {
 	if (item.count() <= 0)
 		return;

@@ -18,8 +18,6 @@ namespace analyzer {
 	private:
 		std::set<unsigned char> _beatify;
 		int _max_priority;
-
-		bool dropItem(const Item& item);
 	};
 }
 #endif
