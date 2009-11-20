@@ -70,9 +70,10 @@
 #define BLESSED           1 << 2
 
 /* alignment */
-#define CHAOTIC 1 << 0
-#define NEUTRAL 1 << 1
-#define LAWFUL  1 << 2
+#define CHAOTIC   1 << 0
+#define NEUTRAL   1 << 1
+#define LAWFUL    1 << 2
+#define UNALIGNED 1 << 3
 
 /* attitude */
 #define ATTITUDE_UNKNOWN 0 << 0

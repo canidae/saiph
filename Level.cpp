@@ -288,12 +288,14 @@ void Level::parseMessages(const string& messages) {
 	} else if ((pos = messages.find(LEVEL_ALTAR_HERE)) != string::npos) {
 		setDungeonSymbol(Saiph::position(), ALTAR);
 		/* set symbol value too */
-		if (messages.find(" (unaligned) ", pos) != string::npos)
+		if (messages.find(" (lawful) ", pos) != string::npos)
+			_symbols[(unsigned char) ALTAR][Saiph::position()] = LAWFUL;
+		else if (messages.find(" (neutral) ", pos) != string::npos)
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = NEUTRAL;
 		else if (messages.find(" (chaotic) ", pos) != string::npos)
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = CHAOTIC;
 		else
-			_symbols[(unsigned char) ALTAR][Saiph::position()] = LAWFUL;
+			_symbols[(unsigned char) ALTAR][Saiph::position()] = UNALIGNED;
 	} else if (messages.find(LEVEL_WALL_UNDIGGABLE) != string::npos) {
 		_walls_diggable = false;
 	} else if (messages.find(LEVEL_FLOOR_OR_GROUND_UNDIGGABLE) != string::npos) {
