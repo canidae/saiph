@@ -62,6 +62,8 @@ void Elbereth::onEvent(Event * const evt) {
 			_elbereth_count = 0;
 		} else {
 			for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+				if (m->second.attitude() == FRIENDLY)
+					continue;
 				if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
 					continue;
 				if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
