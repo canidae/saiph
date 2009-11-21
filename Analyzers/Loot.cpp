@@ -7,10 +7,13 @@
 #include "../Inventory.h"
 #include "../Saiph.h"
 #include "../World.h"
+#include "../Actions/Drop.h"
+#include "../Actions/Engrave.h"
 #include "../Actions/ListInventory.h"
 #include "../Actions/Look.h"
 #include "../Actions/Loot.h"
 #include "../Actions/Move.h"
+#include "../Events/ElberethQuery.h"
 #include "../Events/StashChanged.h"
 #include "../Events/ItemsOnGround.h"
 #include "../Events/WantItems.h"
@@ -20,7 +23,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Loot::Loot() : Analyzer("Loot") {
+Loot::Loot() : Analyzer("Loot"), _visit() {
 	/* register events */
 	EventBus::registerEvent(StashChanged::ID, this);
 	EventBus::registerEvent(ItemsOnGround::ID, this);
@@ -59,6 +62,41 @@ void Loot::analyze() {
 			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
 		}
 		++v;
+	}
+
+	if (World::level().tile().symbol() == STAIRS_DOWN) {
+		/* TODO: iterate through stashes and ask if anyone wants anything */
+	} else if (World::level().tile().symbol() == STAIRS_UP) {
+		/* stairs up, ask if anyone wants to drop anything and if they do, get down 3 E's and drop stuff */
+		WantItems wi(true, true);
+		for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+			/* only add items not in a slot */
+			if (Inventory::slotForKey(i->first) == ILLEGAL_SLOT)
+				wi.addItem(i->first, i->second);
+		}
+		bool _drop_on_stairs = false;
+		EventBus::broadcast(static_cast<Event*> (&wi));
+		for (map<unsigned char, Item>::iterator i = wi.items().begin(); !_drop_on_stairs && i != wi.items().end(); ++i) {
+			if (i->second.want() <= 0 || i->second.want() < i->second.count())
+				_drop_on_stairs = true;
+		}
+		if (_drop_on_stairs) {
+			ElberethQuery eq;
+			EventBus::broadcast(static_cast<Event*> (&eq));
+			if (eq.type() == ELBERETH_MUST_CHECK) {
+				/* we don't know, we must look */
+				World::setAction(static_cast<action::Action*> (new action::Look(this)));
+			} else if (eq.type() == ELBERETH_DUSTED || eq.type() == ELBERETH_NONE) {
+				/* no elbereth or dusted elbereth */
+				if (eq.count() < 3) {
+					/* less than 3 elbereths, engrave */
+					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_VISIT, (eq.count() > 0))));
+				} else {
+					/* 3 or more elbereths, drop stuff we don't want */
+					World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_LOOT_VISIT, true)));
+				}
+			}
+		}
 	}
 }
 
