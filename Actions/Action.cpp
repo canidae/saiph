@@ -25,8 +25,10 @@
 #include "Remove.h"
 #include "Rest.h"
 #include "Search.h"
+#include "TakeOff.h"
 #include "Throw.h"
 #include "Unlock.h"
+#include "Wear.h"
 #include "Wield.h"
 
 using namespace action;
@@ -61,6 +63,8 @@ const int Drop::ID = 25;
 const int DropGold::ID = 26;
 const int ListPlayerAttributes::ID = 27;
 const int Wield::ID = 28;
+const int TakeOff::ID = 29;
+const int Wear::ID = 30;
 
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {
