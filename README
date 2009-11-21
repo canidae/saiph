@@ -77,3 +77,15 @@ Stefan O'Rear <stefanor@cox.net>, aka. sorear
 Adrien Panhaleux <adrien.panhaleux@ens-lyon.fr>, aka. DainDwarf
 Kenny Root <kenny@the-b.org>, aka. kRutOn
 Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
+
+
+TODO (stuff with high priority):
+--------------------------------
+* a macro for debugging or #ifdef DEBUG\n Debug::foo() << bar << endl;\n #endif
+* use travel ('_') when ie. moving to downstairs after done exploring level
+* search walls using "16s" instead of just "s" 16 times
+* dip for exalibur (analyzer should be removed when excalibur is found)
+* engrave-testing wands (and keep the dangerous ones)
+* detect traps by message (currently won't detect traps beneath item(s))
+* don't attempt to loot items from pit we didn't fall into
+* don't kick down doors from corridors without standing in front of it
