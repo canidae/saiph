@@ -38,6 +38,8 @@ void Weapon::onEvent(event::Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Weapon::weapons().find(i->second.name()) == data::Weapon::weapons().end())
 				continue; // known beatitude or not a weapon
+			if (_melee_weapons.find(i->first) == _melee_weapons.end())
+				continue; // it's not in our _melee_weapons list, not gonna wield it
 			Beatify b(i->first, 100);
 			EventBus::broadcast(&b);
 		}
