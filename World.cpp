@@ -495,10 +495,10 @@ void World::run() {
 			Saiph::analyze();
 			Inventory::analyze();
 			level().analyze();
-		}
 
-		/* dump maps */
-		dumpMaps();
+			/* dump maps */
+			dumpMaps();
+		}
 
 		/* analyze and parse messages if we're not continuing an action */
 		if (analyze_and_parse) {

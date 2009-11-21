@@ -30,13 +30,19 @@ void Boots::init() {
 	create("speed boots", 50, 20, MATERIAL_LEATHER, 1, 0, PROPERTY_VERYFAST | PROPERTY_MAGIC);
 	create("water walking boots", 50, 20, MATERIAL_LEATHER, 1, 0, PROPERTY_WATERWALKING | PROPERTY_MAGIC);
 
+	/* random appearances */
+	create("mud boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("snow boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("riding boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("buckled boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("hiking boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("combat boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("jungle boots", 50, 20, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+
 	/* aliases */
 	addToMap("walking shoes", _boots["low boots"]);
 	addToMap("jackboots", _boots["high boots"]);
 	addToMap("hard shoes", _boots["iron shoes"]);
-
-	/* TODO: random appearances: */
-	// buckled, combat, hiking, jungle, riding, snow, mud
 }
 
 const map<const string, const Boots*>& Boots::boots() {

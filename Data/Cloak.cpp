@@ -32,15 +32,18 @@ void Cloak::init() {
 	create("cloak of invisibility", 60, 10, MATERIAL_CLOTH, 1, 2, PROPERTY_INVISIBLE | PROPERTY_MAGIC);
 	create("cloak of protection", 50, 10, MATERIAL_CLOTH, 3, 3, PROPERTY_MAGIC);
 
+	/* random appearances */
+	create("tattered cape", 60, 10, MATERIAL_CLOTH, 1, 2, PROPERTY_RANDOM_APPEARANCE);
+	create("ornamental cope", 60, 10, MATERIAL_CLOTH, 1, 2, PROPERTY_RANDOM_APPEARANCE);
+	create("opera cloak", 60, 10, MATERIAL_CLOTH, 1, 2, PROPERTY_RANDOM_APPEARANCE);
+	create("piece of cloth", 60, 10, MATERIAL_CLOTH, 1, 2, PROPERTY_RANDOM_APPEARANCE);
+
 	/* aliases */
 	addToMap("coarse mantelet", _cloaks["orcish cloak"]);
 	addToMap("hooded cloak", _cloaks["dwarvish cloak"]);
 	addToMap("slippery cloak", _cloaks["oilskin cloak"]);
 	addToMap("apron", _cloaks["alchemy smock"]);
 	addToMap("faded pall", _cloaks["elven cloak"]);
-
-	/* TODO: randomized appearance */
-	// tattered cape, ornamental cope, opera cloak, piece of cloth
 }
 
 const map<const string, const Cloak*>& Cloak::cloaks() {

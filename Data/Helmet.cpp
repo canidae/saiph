@@ -32,6 +32,12 @@ void Helmet::init() {
 	create("fedora", 1, 3, MATERIAL_CLOTH, 0, 0, 0);
 	create("orcish helm", 10, 30, MATERIAL_IRON, 1, 0, 0);
 
+	/* random appearances */
+	create("plumed helmet", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("etched helmet", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("crested helmet", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("visored helmet", 50, 50, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+
 	/* aliases */
 	addToMap("iron skull cap", _helmets["orcish helm"]);
 	addToMap("conical hat", _helmets["cornuthaum"]);

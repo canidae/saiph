@@ -357,7 +357,7 @@ ostream & operator<<(ostream& out, const Item& item) {
 			out << ((item.enchantment() >= 0) ? "+" : "") << item.enchantment() << " ";
 		out << item.name();
 		if (item.additional() != "")
-			out << " " << item.additional();
+			out << " (" << item.additional() << ")";
 	}
 	return out;
 }

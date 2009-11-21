@@ -23,6 +23,12 @@ void Gloves::init() {
 	create("gauntlets of dexterity", 50, 10, MATERIAL_LEATHER, 1, 0, PROPERTY_DEXTERITY);
 	create("gauntlets of power", 50, 30, MATERIAL_IRON, 1, 0, PROPERTY_STRENGTH);
 	create("gauntlets of fumbling", 50, 10, MATERIAL_LEATHER, 1, 0, PROPERTY_FUMBLING);
+
+	/* random appearances */
+	create("old gloves", 50, 30, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("padded gloves", 50, 30, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("riding gloves", 50, 30, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
+	create("fencing gloves", 50, 30, MATERIAL_IRON, 1, 0, PROPERTY_RANDOM_APPEARANCE);
 }
 
 const map<const string, const Gloves*>& Gloves::gloves() {

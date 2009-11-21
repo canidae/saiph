@@ -65,12 +65,13 @@ void Weapon::onEvent(event::Event * const event) {
 			if (Saiph::alignment() == LAWFUL && i->second.name().find("poisoned") != string::npos)
 				continue; // ignore poisoned weapons if we're lawful
 
-			int melee_weapons = 2;
-			int range_weapons = 5; // stacks, not count
-			int better_weapon_count = 0;
 			int weapon_score = calculateWeaponScore(i->second);
 			if (weapon_score <= 0)
 				continue; // don't want this weapon
+
+			int melee_weapons = 2;
+			int range_weapons = 5; // stacks, not count
+			int better_weapon_count = 0;
 			if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR) {
 				for (map<unsigned char, int>::iterator m = _range_weapons.begin(); m != _range_weapons.end(); ++m) {
 					if (m->second >= weapon_score)
