@@ -89,11 +89,19 @@ namespace action {
 					if (messages[pos - 2] == '-') {
 						std::map<unsigned char, Item>::iterator i = Inventory::items().find(messages[pos - 4]);
 						if (i != Inventory::items().end()) {
-							i->second.want(0);
-							wi.addItem(messages[pos - 4], i->second);
+							if (Inventory::slotForKey(i->first) != ILLEGAL_SLOT) {
+								/* don't drop items in slots */
+							} else if (i->second.name() == "gold piece") {
+								/* don't drop money */
+							} else {
+								i->second.want(0);
+								wi.addItem(messages[pos - 4], i->second);
+							}
 						} else {
 							/* this isn't supposed to happen (inventory not updated?) */
-							wi.addItem(messages[pos - 4], Item(messages.substr(pos, length), 0));
+							/* it will happen for gold, though, but we won't allow dropping gold like this */
+							if (messages.substr(pos, length).find("gold piece") == std::string::npos)
+								wi.addItem(messages[pos - 4], Item(messages.substr(pos, length), 0));
 						}
 					}
 					pos += length;
