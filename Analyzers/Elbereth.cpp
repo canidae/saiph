@@ -63,11 +63,13 @@ void Elbereth::onEvent(Event * const evt) {
 		} else {
 			for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 				if (m->second.attitude() == FRIENDLY)
-					continue;
+					continue; // friendly monsters won't attack us
 				if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
-					continue;
+					continue; // monster won't ignore Elbereth
 				if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
-					continue;
+					continue; // not next to us
+				if (m->second.symbol() != '@' && m->second.data() != NULL && m->second.data()->name().find("were") == 0)
+					continue; // werefoo in animal form respects Elbereth
 				/* this monster ignores elbereth and is next to us */
 				_engraving_type = ELBERETH_INEFFECTIVE;
 				_elbereth_count = 0;
