@@ -20,7 +20,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Drop(analyzer::Analyzer* analyzer, int priority, bool safe_stash) : Action(analyzer), _drop("D", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _safe_stash(safe_stash), _keys() {
+		Drop(analyzer::Analyzer* analyzer, int priority, bool safe_stash) : Action(analyzer), _drop("D", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_LOOK), _safe_stash(safe_stash), _keys() {
 		}
 
 		virtual ~Drop() {
@@ -41,6 +41,9 @@ namespace action {
 			case 2:
 				return _close_page;
 
+			case 3:
+				return _look;
+
 			default:
 				return Action::NOOP;
 			}
@@ -55,7 +58,7 @@ namespace action {
 				} else {
 					/* shouldn't really happen, maybe we don't have anything to drop? */
 					Inventory::update();
-					_sequence = 3;
+					_sequence = 4;
 				}
 			} else if (_sequence == 1 && _keys.size() <= 0) {
 				/* all the items we don't want on this page has been selected for dropping, close page */
@@ -70,6 +73,9 @@ namespace action {
 					Inventory::update();
 					_sequence = 3;
 				}
+			} else if (_sequence == 3) {
+				/* looked at ground */
+				_sequence = 4;
 			}
 			if (_sequence == 1 && _keys.size() <= 0) {
 				/* figure out which items we would like to drop */
@@ -126,6 +132,7 @@ namespace action {
 	private:
 		const Command _drop;
 		const Command _close_page;
+		const Command _look;
 		const bool _safe_stash;
 		Command _drop_item;
 		std::queue<std::string> _keys;
