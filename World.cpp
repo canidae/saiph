@@ -514,15 +514,15 @@ void World::run() {
 				for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 					(*a)->analyze();
 			}
-		}
 
-		/* check if we got some queued actions */
-		for (list<action::Action*>::iterator a = _action_queue.begin(); a != _action_queue.end(); ++a) {
-			if (setAction(*a, false)) {
-				/* we will execute this action, remove it from queue.
-				 * if it fails, the analyzer that queued the action needs to handle it */
-				_action_queue.erase(a);
-				break;
+			/* check if we got some queued actions */
+			for (list<action::Action*>::iterator a = _action_queue.begin(); a != _action_queue.end(); ++a) {
+				if (setAction(*a, false)) {
+					/* we will execute this action, remove it from queue.
+					 * if it fails, the analyzer that queued the action needs to handle it */
+					_action_queue.erase(a);
+					break;
+				}
 			}
 		}
 
