@@ -67,8 +67,8 @@ void Weapon::onEvent(event::Event * const event) {
 			if (Saiph::alignment() == LAWFUL && i->second.name().find("poisoned") != string::npos)
 				continue; // ignore poisoned weapons if we're lawful
 
-			int weapon_score = calculateWeaponScore(i->second);
-			if (weapon_score <= 0)
+			int score = calculateWeaponScore(i->second);
+			if (score <= 0)
 				continue; // don't want this weapon
 
 			int melee_weapons = 2;
@@ -76,18 +76,20 @@ void Weapon::onEvent(event::Event * const event) {
 			int better_weapon_count = 0;
 			if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR) {
 				for (map<unsigned char, int>::iterator m = _range_weapons.begin(); m != _range_weapons.end(); ++m) {
-					if (m->second >= weapon_score)
+					if (m->second >= score)
 						++better_weapon_count;
 				}
 				if (better_weapon_count > melee_weapons)
 					continue; // got better ranged weapons already
+				_range_weapons[i->first] = score;
 			} else {
 				for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
-					if (m->second >= weapon_score)
+					if (m->second >= score)
 						++better_weapon_count;
 				}
 				if (better_weapon_count > range_weapons)
 					continue; // got better melee weapons already
+				_melee_weapons[i->first] = score;
 			}
 			/* pick up every weapon for now */
 			i->second.want(i->second.count());
