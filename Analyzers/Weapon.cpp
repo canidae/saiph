@@ -67,7 +67,7 @@ void Weapon::onEvent(event::Event * const event) {
 			if (Saiph::alignment() == LAWFUL && i->second.name().find("poisoned") != string::npos)
 				continue; // ignore poisoned weapons if we're lawful
 
-			int score = calculateWeaponScore(i->second);
+			int score = calculateWeaponScore(i->second, w->second);
 			if (score <= 0)
 				continue; // don't want this weapon
 
@@ -98,18 +98,15 @@ void Weapon::onEvent(event::Event * const event) {
 }
 
 /* private methods */
-int Weapon::calculateWeaponScore(const Item& item) {
-	map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(item.name());
-	if (w == data::Weapon::weapons().end())
-		return 0; // not a weapon
-	if (!w->second->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
+int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
+	if (!weapon->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
 		return 0; // for now, don't try to wield two-hander when we got a shield
 	int score = 0;
-	for (vector<data::Attack>::const_iterator a = w->second->attackSmall().begin(); a != w->second->attackSmall().end(); ++a)
+	for (vector<data::Attack>::const_iterator a = weapon->attackSmall().begin(); a != weapon->attackSmall().end(); ++a)
 		score += a->avgDamage();
-	for (vector<data::Attack>::const_iterator a = w->second->attackLarge().begin(); a != w->second->attackLarge().end(); ++a)
+	for (vector<data::Attack>::const_iterator a = weapon->attackLarge().begin(); a != weapon->attackLarge().end(); ++a)
 		score += a->avgDamage();
-	if (!w->second->oneHanded())
+	if (!weapon->oneHanded())
 		score /= 2;
 	score += item.enchantment() * 2;
 	score -= item.damage() * 2;
@@ -118,7 +115,7 @@ int Weapon::calculateWeaponScore(const Item& item) {
 	int skill = 0;
 	switch (Saiph::role()) {
 	case BARBARIAN:
-		switch (w->second->type()) {
+		switch (weapon->type()) {
 		case WEAPON_DAGGER:
 		case WEAPON_SABER:
 		case WEAPON_FLAIL:
@@ -157,7 +154,7 @@ int Weapon::calculateWeaponScore(const Item& item) {
 		break;
 
 	case VALKYRIE:
-		switch (w->second->type()) {
+		switch (weapon->type()) {
 		case WEAPON_SCIMITAR:
 		case WEAPON_SABER:
 		case WEAPON_QUARTERSTAFF:
@@ -241,7 +238,7 @@ void Weapon::setBestWeapon() {
 			continue; // not a weapon
 		if (!w->second->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
 			continue; // for now, don't try to wield two-hander when we got a shield
-		int score = calculateWeaponScore(i->second);
+		int score = calculateWeaponScore(i->second, w->second);
 		if (score > best_score) {
 			best_score = score;
 			_wield_weapon = i->first;

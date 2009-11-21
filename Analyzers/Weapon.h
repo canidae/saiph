@@ -5,6 +5,10 @@
 #include <string>
 #include "Analyzer.h"
 
+namespace data {
+	class Weapon;
+}
+
 class Item;
 
 namespace analyzer {
@@ -21,7 +25,7 @@ namespace analyzer {
 		std::map<unsigned char, int> _melee_weapons;
 		std::map<unsigned char, int> _range_weapons;
 
-		int calculateWeaponScore(const Item& item);
+		int calculateWeaponScore(const Item& item, const data::Weapon* weapon);
 		void setBestWeapon();
 	};
 }
