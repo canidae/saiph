@@ -53,13 +53,15 @@ void Weapon::onEvent(event::Event * const event) {
 			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 			if (w == data::Weapon::weapons().end())
 				continue; // not a weapon
+			if (w->second->type() == WEAPON_PICKAXE)
+				continue; // causing issues with shop, ignore them for now
 			if ((w->second->properties() & PROPERTY_ARTIFACT) != 0) {
 				/* ooh, artifact weapon, we'll want this */
 				i->second.want(i->second.count());
 				continue;
 			}
-			if (Saiph::encumbrance() >= BURDENED)
-				continue; // only loot artifacts while burdened
+			if (!e->dropping() && Saiph::encumbrance() >= BURDENED)
+				continue; // don't loot weapons while burdened, but don't drop them either (unless we later figure out we don't want them)
 			if (i->second.beatitude() == CURSED)
 				continue; // ignore cursed weapons
 			if (Saiph::alignment() == LAWFUL && i->second.name().find("poisoned") != string::npos)
@@ -105,11 +107,12 @@ int Weapon::calculateWeaponScore(const Item& item) {
 		score += a->avgDamage();
 	for (vector<data::Attack>::const_iterator a = w->second->attackLarge().begin(); a != w->second->attackLarge().end(); ++a)
 		score += a->avgDamage();
+	if (!w->second->oneHanded())
+		score /= 2;
 	score += item.enchantment() * 2;
 	score -= item.damage() * 2;
 
 	/* set role/skill specific score */
-	/* TODO: replace with data from #enhance (big task, though) */
 	int skill = 0;
 	switch (Saiph::role()) {
 	case BARBARIAN:
@@ -218,6 +221,10 @@ int Weapon::calculateWeaponScore(const Item& item) {
 		score += -4 + -2 * 2;
 		break;
 	}
+	if (item.beatitude() == CURSED)
+		score /= 4;
+	else if (item.beatitude() == BEATITUDE_UNKNOWN)
+		score /= 2;
 	return score;
 }
 
