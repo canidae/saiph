@@ -55,8 +55,11 @@ void Beatitude::onEvent(event::Event * const event) {
 					continue; // know beatitude already
 				if (Inventory::slotForKey(i->first) != ILLEGAL_SLOT)
 					continue; // item is in a slot, don't drop it
-				if (i->second.name() == "gold piece")
-					continue; // don't drop money
+				if (i->second.name() == "gold piece") {
+					/* don't drop money */
+					i->second.want(i->second.count());
+					continue;
+				}
 				/* should drop this item, force it by setting count to 0 */
 				i->second.count(0);
 			}
