@@ -77,7 +77,6 @@ private:
 	static std::map<std::string, std::vector<int> > _levelmap; // used for faster map recognition
 	static char _levelname[MAX_LEVELNAME_LENGTH];
 	static time_t _start_time;
-	static int _command_count;
 	static int _frame_count;
 	static bool _menu;
 	static bool _question;

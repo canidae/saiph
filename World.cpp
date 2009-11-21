@@ -27,7 +27,6 @@ int World::_color[ROWS][COLS] = {
 Point World::_cursor;
 int World::_cur_page = -1;
 int World::_max_page = -1;
-int World::_command_count = 0;
 int World::_frame_count = 0;
 bool World::_menu = false;
 bool World::_question = false;
@@ -806,12 +805,10 @@ void World::dumpMaps() {
 	int seconds = (int) difftime(time(NULL), _start_time);
 	if (seconds == 0)
 		++seconds;
-	int cps = _command_count / seconds;
 	int fps = _frame_count / seconds;
 	int tps = _turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
-	cout << "CPS/FPS/TPS: ";
-	cout << (unsigned char) 27 << "[34m" << cps << (unsigned char) 27 << "[0m/";
+	cout << "FPS/TPS: ";
 	cout << (unsigned char) 27 << "[35m" << fps << (unsigned char) 27 << "[0m/";
 	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m      ";
 
@@ -911,7 +908,6 @@ bool World::executeCommand(const string& command) {
 		return false;
 	}
 	_connection->transmit(command);
-	++_command_count;
 	update();
 	return true;
 }
@@ -970,7 +966,6 @@ void World::fetchMessages() {
 		}
 		/* request the remaining messages */
 		_connection->transmit(" ");
-		++_command_count;
 		update();
 		return;
 	} else if (_cursor.row() == 0) {
