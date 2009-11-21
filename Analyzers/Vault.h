@@ -20,9 +20,10 @@ namespace analyzer {
 		void actionCompleted();
 
 	private:
-		bool _drop_gold;
-		bool _look_at_ground;
-		bool _follow_guard;
+		bool _answering_guard;
+		bool _dropping_gold;
+		bool _looking_at_ground;
+		bool _following_guard;
 	};
 }
 #endif

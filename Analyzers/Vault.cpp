@@ -14,7 +14,7 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Vault::Vault() : Analyzer("Vault"), _drop_gold(false), _look_at_ground(false), _follow_guard(false) {
+Vault::Vault() : Analyzer("Vault"), _answering_guard(false), _dropping_gold(false), _looking_at_ground(false), _following_guard(false) {
 }
 
 /* methods */
@@ -29,17 +29,17 @@ void Vault::parseMessages(const string& messages) {
 		}
 		/* otherwise, tell our real name */
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, "saiph\n")));
-		_drop_gold = true;
-	} else if (_drop_gold) {
+		_answering_guard = true;
+	} else if (_dropping_gold) {
 		/* drop gold */
 		World::setAction(static_cast<action::Action*> (new action::DropGold(this, 999)));
-	} else if (_look_at_ground) {
+	} else if (_looking_at_ground) {
 		/* XXX: look at ground to prevent us from picking up the gold again */
 		World::setAction(static_cast<action::Action*> (new action::Look(this)));
 	} else if (messages.find(VAULT_MESSAGE_DISAPPEAR) != string::npos) {
 		/* guard is gone, stop following */
-		_follow_guard = false;
-	} else if (_follow_guard) {
+		_following_guard = false;
+	} else if (_following_guard) {
 		/* follow the guard out */
 		/* this is fairly tricky.
 		 * general idea:
@@ -62,11 +62,14 @@ void Vault::parseMessages(const string& messages) {
 }
 
 void Vault::actionCompleted() {
-	if (_drop_gold) {
-		_drop_gold = false;
-		_look_at_ground = true;
-	} else if (_look_at_ground) {
-		_look_at_ground = false;
-		_follow_guard = true;
+	if (_answering_guard) {
+		_answering_guard = false;
+		_dropping_gold = true;
+	} else if (_dropping_gold) {
+		_dropping_gold = false;
+		_looking_at_ground = true;
+	} else if (_looking_at_ground) {
+		_looking_at_ground = false;
+		_following_guard = true;
 	}
 }
