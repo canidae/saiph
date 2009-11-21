@@ -17,7 +17,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Weapon::Weapon() : Analyzer("Weapon"), _wield_weapon(ILLEGAL_ITEM) {
+Weapon::Weapon() : Analyzer("Weapon"), _wield_weapon(ILLEGAL_ITEM), _melee_weapons(), _range_weapons() {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
