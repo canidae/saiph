@@ -5,6 +5,8 @@
 #include <string>
 #include "Analyzer.h"
 
+#define WEAPON_WIELD_PRIORITY 200
+
 namespace data {
 	class Weapon;
 }
