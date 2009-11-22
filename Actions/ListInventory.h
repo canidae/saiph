@@ -11,7 +11,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer), _list_inventory("i", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+		ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_inventory("i", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListInventory() {

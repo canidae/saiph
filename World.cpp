@@ -547,7 +547,7 @@ void World::run() {
 				/* return cursor back to where it was */
 				cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 				cout.flush();
-				++World::_internal_turn; // command than may increase turn counter
+				++World::_internal_turn; // will cost a turn
 				_last_action_id = NO_ACTION;
 				executeCommand("s");
 				continue;
@@ -565,8 +565,6 @@ void World::run() {
 		Debug::command() << "Analyzer " << _action->analyzer()->name() << " " << _action->command() << endl;
 
 		/* execute the command */
-		if (_action->command().priority() <= PRIORITY_TURN_MAX)
-			++World::_internal_turn; // command that may increase turn counter
 		_last_action_id = _action->id();
 		executeCommand(_action->command().command());
 
@@ -621,8 +619,14 @@ void World::run() {
 			stuck_counter = 0;
 		last_turn = _turn;
 
-		/* and finally update current action */
+		/* update current action */
 		_action->update(_messages);
+
+		/* and increase _internal_turn if the action actually cost a turn.
+		 * the turn counter in game may not increase if we're [very] fast,
+		 * but we still need to know if a turn lapsed, hence _internal_turn */
+		if (_action->command() == action::Action::NOOP && _action->increaseTurnCounter())
+			++World::_internal_turn;
 	}
 }
 

@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Look(analyzer::Analyzer* analyzer) : Action(analyzer), _look(":", PRIORITY_LOOK) {
+		Look(analyzer::Analyzer* analyzer) : Action(analyzer, false), _look(":", PRIORITY_LOOK) {
 		}
 
 		virtual ~Look() {

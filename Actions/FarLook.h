@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		FarLook(analyzer::Analyzer* analyzer, const Point& location) : Action(analyzer), _far_look(FarLook::farLook(location), PRIORITY_LOOK) {
+		FarLook(analyzer::Analyzer* analyzer, const Point& location) : Action(analyzer, false), _far_look(FarLook::farLook(location), PRIORITY_LOOK) {
 		}
 
 		virtual ~FarLook() {

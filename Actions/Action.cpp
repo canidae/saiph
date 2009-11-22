@@ -67,7 +67,7 @@ const int TakeOff::ID = 29;
 const int Wear::ID = 30;
 
 /* constructors/destructor */
-Action::Action(analyzer::Analyzer* analyzer) : _sequence(0), _analyzer(analyzer) {
+Action::Action(analyzer::Analyzer* analyzer, bool increase_turn_counter) : _sequence(0), _analyzer(analyzer), _increase_turn_counter(increase_turn_counter) {
 }
 
 Action::~Action() {
@@ -76,4 +76,8 @@ Action::~Action() {
 /* methods */
 analyzer::Analyzer* Action::analyzer() {
 	return _analyzer;
+}
+
+bool Action::increaseTurnCounter() {
+	return _increase_turn_counter;
 }

@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Enhance(analyzer::Analyzer* analyzer) : Action(analyzer), _do_enhance("#enhance\n", PRIORITY_CONTINUE_ACTION), _enhance_a("a", PRIORITY_CONTINUE_ACTION) {
+		Enhance(analyzer::Analyzer* analyzer) : Action(analyzer, false), _do_enhance("#enhance\n", PRIORITY_CONTINUE_ACTION), _enhance_a("a", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Enhance() {

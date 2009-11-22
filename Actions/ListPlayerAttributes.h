@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer), _list_attributes("", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+		ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_attributes("", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListPlayerAttributes() {

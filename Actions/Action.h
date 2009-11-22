@@ -13,11 +13,12 @@ namespace action {
 	public:
 		static const Command NOOP;
 
-		Action(analyzer::Analyzer* analyzer);
+		Action(analyzer::Analyzer* analyzer, bool increase_turn_counter = true);
 		virtual ~Action();
 
 		virtual int id() = 0;
 		analyzer::Analyzer* analyzer();
+		bool increaseTurnCounter();
 		virtual const Command& command() = 0;
 		virtual void update(const std::string& messages) = 0;
 
@@ -26,6 +27,7 @@ namespace action {
 
 	private:
 		analyzer::Analyzer* _analyzer;
+		bool _increase_turn_counter;
 	};
 }
 #endif

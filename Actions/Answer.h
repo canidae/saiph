@@ -9,10 +9,10 @@ namespace action {
 	public:
 		static const int ID;
 
-		Answer(analyzer::Analyzer* analyzer, const std::string& answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
+		Answer(analyzer::Analyzer* analyzer, const std::string& answer) : Action(analyzer, false), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 		}
 
-		Answer(analyzer::Analyzer* analyzer, unsigned char answer) : Action(analyzer), _answer(answer, PRIORITY_CONTINUE_ACTION) {
+		Answer(analyzer::Analyzer* analyzer, unsigned char answer) : Action(analyzer, false), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Answer() {
