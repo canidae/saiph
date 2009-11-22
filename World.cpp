@@ -571,7 +571,7 @@ void World::run() {
 		executeCommand(_action->command().command());
 
 		/* check if we're stuck */
-		if (_action != NULL && stuck_counter % 42 == 41 && _action->command().command().size() == 1) {
+		if (stuck_counter % 42 == 41 && _action->command().command().size() == 1) {
 			bool was_move = false;
 			/* we'll assume we're moving if the command that's stuck is a direction.
 			 * if not, it's probably not a big deal */
@@ -622,8 +622,7 @@ void World::run() {
 		last_turn = _turn;
 
 		/* and finally update current action */
-		if (_action != NULL)
-			_action->update(_messages);
+		_action->update(_messages);
 	}
 }
 
