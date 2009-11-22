@@ -153,7 +153,7 @@ int Inventory::slotForKey(unsigned char key) {
 		return ILLEGAL_SLOT;
 	for (int s = 0; s < SLOTS; ++s) {
 		if (_slots[s] == key)
-			return _slots[s];
+			return s;
 	}
 	return ILLEGAL_SLOT;
 }
@@ -208,7 +208,8 @@ void Inventory::setSlot(unsigned char key, const Item& item) {
 		/* armor */
 		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(item.name());
 		if (a != data::Armor::armors().end()) {
-			_slots[a->second->slot()] = key;
+			if (a->second->slot() >= 0 && a->second->slot() < SLOTS)
+				_slots[a->second->slot()] = key;
 			return;
 		}
 		/* amulet */
