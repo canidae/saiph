@@ -64,7 +64,7 @@ void Explore::analyze() {
 	int best_type = INT_MAX - 1;
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		unsigned int min_cost = UNREACHABLE;
-		unsigned char best_direction = '\0';
+		unsigned char best_direction = ILLEGAL_DIRECTION;
 		/* floor */
 		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w)
 			explorePoint(w->first, &min_cost, &best_type, &best_direction);
@@ -79,7 +79,7 @@ void Explore::analyze() {
 			explorePoint(w->first, &min_cost, &best_type, &best_direction);
 		/* update value for this level in _explore_levels */
 		_explore_levels[Saiph::position().level()] = best_type;
-		if (best_direction != '\0') {
+		if (best_direction != ILLEGAL_DIRECTION) {
 			if (best_direction == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
 			else

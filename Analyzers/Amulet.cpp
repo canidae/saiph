@@ -75,7 +75,7 @@ void Amulet::wearAmulet(const set<unsigned char>& keys) {
 		/* TODO: if we find a better amulet, take off current amulet and return */
 	}
 
-	if (best_key == '\0')
+	if (best_key == ILLEGAL_ITEM)
 		return; // no new amulet to put on or wearing best amulet
 
 	/* put on this amulet */
