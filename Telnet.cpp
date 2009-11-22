@@ -77,8 +77,9 @@ Telnet::Telnet() {
 	 * giving us one more menu.
 	 * send "1" for nethack and hope it'll still work
 	 * on other servers */
-	transmit("1");
-	size = retrieve(discard, TELNET_BUFFER_SIZE);
+	/* and about a year later it was changed so no need to send "1" anymore */
+	//transmit("1");
+	//size = retrieve(discard, TELNET_BUFFER_SIZE);
 
 	/* and start a game */
 	start();
