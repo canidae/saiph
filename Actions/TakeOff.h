@@ -4,6 +4,8 @@
 #include "Action.h"
 #include "../Inventory.h"
 
+#define TAKE_OFF_ARMOR_CURSED "  You can't. "
+
 namespace action {
 
 	class TakeOff : public Action {
@@ -36,7 +38,7 @@ namespace action {
 		virtual void update(const std::string& messages) {
 			if (World::question() && messages.find(MESSAGE_WHAT_TO_TAKE_OFF) != std::string::npos) {
 				_sequence = 1;
-			} else if (_sequence == 1 || messages.find(MESSAGE_YOU_FINISH_TAKING_OFF) != std::string::npos) {
+			} else if (_sequence == 1 || messages.find(MESSAGE_YOU_FINISH_TAKING_OFF) != std::string::npos || messages.find(TAKE_OFF_ARMOR_CURSED) != std::string::npos) {
 				/* also mark the inventory dirty when we do this */
 				Inventory::update();
 				_sequence = 2;
