@@ -98,11 +98,13 @@ int Telnet::retrieve(char* buffer, int count) {
 	transmit(_ping, 3);
 	/* sleep a bit in case of very low latency */
 	usleep(50000);
+	int returned = -1;
 	int retrieved = 0;
 	int more_data = true;
 	int tries = 5;
-	while (more_data && tries >= 0) {
-		retrieved += recv(_sock, &buffer[retrieved], count, 0);
+	while (more_data && tries >= 0 && returned != 0) {
+		returned = recv(_sock, &buffer[retrieved], count, 0);
+		retrieved += returned;
 		for (int a = retrieved - 3; a >= 0; --a) {
 			/* search for pong backwards (we're expecting pong to be last).
 			 * we do it like this because if we find it somewhere else than
