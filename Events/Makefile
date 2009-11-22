@@ -1,6 +1,6 @@
 CXX = g++
 RM = rm -f
-CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
+CXXFLAGS = -O0 -Wall -Wextra -g
 OBJECTS = Event.o
 
 events: $(OBJECTS)

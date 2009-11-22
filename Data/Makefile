@@ -1,6 +1,6 @@
 CXX = g++
 RM = rm -f
-CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
+CXXFLAGS = -O0 -Wall -Wextra -g
 OBJECTS = Amulet.o Armor.o Attack.o Axe.o Boomerang.o Boots.o Bow.o BowAmmo.o Broadsword.o Cloak.o Club.o Corpse.o Crossbow.o CrossbowAmmo.o Dagger.o Dart.o Flail.o Food.o Gloves.o Hammer.o Helmet.o Item.o Javelin.o Key.o Knife.o Lamp.o Lance.o Longsword.o Mace.o Monster.o MorningStar.o Pickaxe.o Polearm.o Quarterstaff.o Saber.o Scimitar.o Shield.o Shirt.o Shortsword.o Shuriken.o Sling.o SlingAmmo.o Spear.o Suit.o Tool.o Trident.o TwoHandedSword.o UnicornHorn.o Weapon.o Whip.o
 
 analyzers: $(OBJECTS)

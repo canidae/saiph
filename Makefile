@@ -1,6 +1,6 @@
 CXX = g++
 RM = rm -f
-CXXFLAGS = -O0 -Wall -Wextra -g3 -gdwarf-2
+CXXFLAGS = -O0 -Wall -Wextra -g
 LDFLAGS = -lutil -g3 -gdwarf-2
 OBJECTS = Command.o Connection.o Coordinate.o Debug.o EventBus.o Inventory.o Item.o Level.o Local.o Monster.o Point.o Saiph.o Stash.o Telnet.o Tile.o World.o
 
