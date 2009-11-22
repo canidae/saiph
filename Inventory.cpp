@@ -16,7 +16,7 @@ using namespace std;
 const Item Inventory::NO_ITEM;
 bool Inventory::_updated = false;
 map<unsigned char, Item> Inventory::_items;
-unsigned char Inventory::_slots[] = {ILLEGAL_ITEM};
+unsigned char Inventory::_slots[SLOTS] = {ILLEGAL_ITEM};
 ChangedInventoryItems Inventory::_changed;
 set<unsigned char> Inventory::_lost;
 unsigned long long Inventory::_extrinsics_from_items = 0;
