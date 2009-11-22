@@ -6,6 +6,8 @@
 #include "../Saiph.h"
 #include "../World.h"
 #include "../Actions/Answer.h"
+#include "../Actions/TakeOff.h"
+#include "../Actions/Wear.h"
 #include "../Data/Armor.h"
 #include "../Events/Beatify.h"
 #include "../Events/Event.h"
@@ -18,7 +20,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Armor::Armor() : Analyzer("Armor"), _change_armor(false) {
+Armor::Armor() : Analyzer("Armor"), _put_on() {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -26,6 +28,39 @@ Armor::Armor() : Analyzer("Armor"), _change_armor(false) {
 }
 
 /* methods */
+void Armor::analyze() {
+	if (_put_on.size() > 0) {
+		/* put on highest scoring armor */
+		unsigned char key = ILLEGAL_ITEM;
+		int best_score = 0;
+		for (set<unsigned char>::iterator k = _put_on.begin(); k != _put_on.end(); ++k) {
+			const Item& to_wear = Inventory::itemAtKey(*k);
+			map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(to_wear.name());
+			if (a == data::Armor::armors().end())
+				continue;
+			int score = calculateArmorScore(to_wear, a->second);
+			if (score > best_score) {
+				key = *k;
+				best_score = score;
+			}
+		}
+		const Item& to_wear = Inventory::itemAtKey(key);
+		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(to_wear.name());
+		if (a != data::Armor::armors().end() && betterThanCurrent(to_wear)) {
+			if (((a->second->slot() == SLOT_SHIRT || a->second->slot() == SLOT_SUIT) && Inventory::keyForSlot(SLOT_CLOAK) != ILLEGAL_ITEM))
+				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(SLOT_CLOAK), ARMOR_WEAR_PRIORITY)));
+			else if (a->second->slot() == SLOT_SHIRT && Inventory::keyForSlot(SLOT_SUIT) != ILLEGAL_ITEM)
+				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(SLOT_SUIT), ARMOR_WEAR_PRIORITY)));
+			else if (Inventory::keyForSlot(a->second->slot()) != ILLEGAL_ITEM)
+				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(a->second->slot()), ARMOR_WEAR_PRIORITY)));
+			else
+				World::setAction(static_cast<action::Action*> (new action::Wear(this, key, ARMOR_WEAR_PRIORITY)));
+		} else {
+			_put_on.erase(key);
+		}
+	}
+}
+
 void Armor::parseMessages(const string& messages) {
 	string::size_type pos;
 	if (World::question() && (pos = messages.find(MESSAGE_FOOCUBUS_QUESTION)) != string::npos) {
@@ -54,34 +89,75 @@ void Armor::parseMessages(const string& messages) {
 				remove = true;
 		}
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, (remove ? YES : NO))));
-	} else if (_change_armor) {
-		//wearArmor();
 	}
 }
 
 void Armor::onEvent(event::Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
-		// TODO: check if we should change armor
+		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
+			if (betterThanCurrent(Inventory::itemAtKey(*k)))
+				_put_on.insert(*k);
+			else
+				_put_on.erase(*k);
+		}
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Armor::armors().find(i->second.name()) == data::Armor::armors().end())
-				continue; // known beatitude or not armor
+			if (data::Armor::armors().find(i->second.name()) == data::Armor::armors().end())
+				continue; // not armor
+			if (i->second.beatitude() != BEATITUDE_UNKNOWN) {
+				/* known beatitude, should we wear it? */
+				if (i->second.beatitude() != CURSED && betterThanCurrent(i->second))
+					_put_on.insert(i->first); // it's not cursed and (possibly) better than what we're wearing
+				else
+					_put_on.erase(i->first);
+				continue;
+			}
 			Beatify b(i->first, 100);
 			EventBus::broadcast(&b);
 		}
-		// TODO: check if we should change armor
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (wantItem(i->second))
-				i->second.want(i->second.count());
+		if (Saiph::encumbrance() < BURDENED && (!e->safeStash() || World::shortestPath(ALTAR).cost() < UNPASSABLE)) {
+			/* we're not burdened and not on a safe stash or we can't reach an altar, loot armor */
+			/* if we are on a safe stash and can't reach an altar then we will drop armor */
+			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+				if (betterThanCurrent(i->second))
+					i->second.want(i->second.count());
+			}
 		}
 	}
 }
 
 /* private methods */
-bool Armor::wantItem(const Item& item) {
-	return Saiph::encumbrance() < BURDENED && item.beatitude() != CURSED && data::Armor::armors().find(item.name()) != data::Armor::armors().end();
+bool Armor::betterThanCurrent(const Item& item) {
+	if (item.beatitude() == CURSED)
+		return false;
+	map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(item.name());
+	if (a == data::Armor::armors().end())
+		return false; // not armor
+
+	int score = calculateArmorScore(item, a->second);
+	if (score <= 0)
+		return false;
+	const Item & cur_armor = Inventory::itemInSlot(a->second->slot());
+	map<const string, const data::Armor*>::const_iterator a2 = data::Armor::armors().find(cur_armor.name());
+	if (a2 != data::Armor::armors().end()) {
+		int score2 = calculateArmorScore(cur_armor, a2->second);
+		if (score <= score2)
+			return false; // armor is worse than what we currently got
+	}
+	return true;
+}
+
+int Armor::calculateArmorScore(const Item& item, const data::Armor* armor) {
+	int score = 0;
+	score += armor->ac();
+	score += armor->mc();
+	score += item.unknownEnchantment() ? ARMOR_UNKNOWN_ENCHANTMENT_BONUS : item.enchantment();
+	if (item.beatitude() == BLESSED)
+		++score;
+	score -= item.damage();
+	return score;
 }
