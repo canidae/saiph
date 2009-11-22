@@ -64,6 +64,8 @@ void Elbereth::onEvent(Event * const evt) {
 			for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 				if (m->second.attitude() == FRIENDLY)
 					continue; // friendly monsters won't attack us
+				if (m->second.symbol() == 'X')
+					continue; // ghosts respect elbereth (won't get any monster data from ghosts)
 				if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
 					continue; // monster won't ignore Elbereth
 				if (abs(m->first.row() - Saiph::position().row()) > 1 || abs(m->first.col() - Saiph::position().col() > 1))
