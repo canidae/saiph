@@ -47,7 +47,7 @@ void Vault::parseMessages(const string& messages) {
 		 * if we can see guard, move towards guard.
 		 * XXX: otherwise, hope the explore analyzer lead us out */
 		for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-			if (m->second.data()->name() != "guard")
+			if (m->second.data() == NULL || m->second.data()->name() != "guard")
 				continue;
 			Tile& tile = World::shortestPath(m->first);
 			if (tile.cost() == UNREACHABLE)
