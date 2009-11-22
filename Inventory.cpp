@@ -45,34 +45,33 @@ void Inventory::parseMessages(const string& messages) {
 				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
 				continue;
 			}
-			map<unsigned char, Item>::iterator i = _items.find(messages[pos - 1]);
+			unsigned char key = messages[pos - 1];
+			map<unsigned char, Item>::iterator i = _items.find(key);
 			if (i == _items.end()) {
 				/* item is not in our inventory */
-				addItem(messages[pos - 1], item);
-				_changed.add(messages[pos - 1]);
+				addItem(key, item);
+				_changed.add(key);
 			} else if (item != i->second) {
 				/* item does not match item in inventory */
-				removeItem(i->first, i->second);
-				addItem(i->first, item);
-				_changed.add(i->first);
+				removeItem(key);
+				addItem(key, item);
+				_changed.add(key);
 			}
 			/* we (still) got this item, so it's not lost. remove it from lost */
-			_lost.erase(messages[pos - 1]);
+			_lost.erase(key);
 		}
 		if (World::curPage() == World::maxPage()) {
 			/* listing last page, add lost items to changed and remove them from inventory */
 			for (set<unsigned char>::iterator l = _lost.begin(); l != _lost.end(); ++l) {
 				_changed.add(*l);
-				removeItem(*l, itemAtKey(*l));
+				removeItem(*l);
 			}
 			/* mark inventory as updated */
 			_updated = true;
 		}
-		if (_changed.keys().size() > 0) {
-			/* broadcast ChangedInventoryItems */
+		/* broadcast ChangedInventoryItems */
+		if (_changed.keys().size() > 0)
 			EventBus::broadcast(static_cast<Event*> (&_changed));
-			_extrinsics_updated = false;
-		}
 	} else if (!World::menu() && (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos)) {
 		/* we're not carrying anything */
 		_extrinsics_updated = true;
@@ -106,9 +105,13 @@ void Inventory::parseMessages(const string& messages) {
 				Debug::inventory() << "Failed parsing \"" << messages.substr(pos - 2, pos2 - pos + 2) << "\" as an item" << endl;
 				continue;
 			}
-			addItem(messages[pos - 1], item);
+			unsigned char key = messages[pos - 1];
+			map<unsigned char, Item>::iterator i = _items.find(key);
+			if (item != i->second)
+				removeItem(key); // item was changed somehow
+			addItem(key, item);
 			/* add item to changed.keys */
-			received.addItem(messages[pos - 1], item);
+			received.addItem(key, item);
 		}
 		if (received.items().size() > 0) {
 			/* broadcast "ReceivedItems" */
@@ -188,27 +191,16 @@ void Inventory::addItem(unsigned char key, const Item& item) {
 	setSlot(key, item);
 }
 
-void Inventory::removeItem(unsigned char key, const Item& item) {
-	if (item.count() <= 0)
-		return;
+void Inventory::removeItem(unsigned char key) {
 	map<unsigned char, Item>::iterator i = _items.find(key);
 	if (i == _items.end())
 		return;
-	Debug::inventory() << "Removing " << item << " from inventory slot " << key << endl;
+	Debug::inventory() << "Removing " << i->second << " from inventory slot " << key << endl;
+	int slot = slotForKey(key);
+	if (slot != ILLEGAL_SLOT)
+		_slots[slot] = ILLEGAL_ITEM;
+	_items.erase(i);
 	_extrinsics_updated = false;
-	if (i->second.count() > item.count()) {
-		/* reduce stack */
-		i->second.count(i->second.count() - item.count());
-	} else {
-		/* remove stack entirely */
-		for (int a = 0; a < SLOTS; ++a) {
-			if (_slots[a] == key) {
-				_slots[a] = ILLEGAL_ITEM;
-				break;
-			}
-		}
-		_items.erase(i);
-	}
 }
 
 void Inventory::setSlot(unsigned char key, const Item& item) {

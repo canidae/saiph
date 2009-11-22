@@ -33,7 +33,7 @@ private:
 	static bool _extrinsics_updated;
 
 	static void addItem(unsigned char key, const Item& item);
-	static void removeItem(unsigned char key, const Item& item);
+	static void removeItem(unsigned char key);
 	static void setSlot(unsigned char key, const Item& item);
 	static void updateExtrinsics();
 };
