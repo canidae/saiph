@@ -19,8 +19,6 @@ public:
 	static const Item& itemInSlot(int slot);
 	static unsigned char keyForSlot(int slot);
 	static int slotForKey(unsigned char key);
-	static void addItem(unsigned char key, const Item& item);
-	static void removeItem(unsigned char key, const Item& item);
 	static unsigned long long extrinsicsFromItems();
 	static bool updated();
 	static void update();
@@ -34,6 +32,8 @@ private:
 	static unsigned long long _extrinsics_from_items;
 	static bool _extrinsics_updated;
 
+	static void addItem(unsigned char key, const Item& item);
+	static void removeItem(unsigned char key, const Item& item);
 	static void setSlot(unsigned char key, const Item& item);
 	static void updateExtrinsics();
 };

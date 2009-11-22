@@ -16,7 +16,7 @@ using namespace std;
 const Item Inventory::NO_ITEM;
 bool Inventory::_updated = false;
 map<unsigned char, Item> Inventory::_items;
-unsigned char Inventory::_slots[] = {'\0'};
+unsigned char Inventory::_slots[] = {ILLEGAL_ITEM};
 ChangedInventoryItems Inventory::_changed;
 set<unsigned char> Inventory::_lost;
 unsigned long long Inventory::_extrinsics_from_items = 0;
@@ -52,10 +52,9 @@ void Inventory::parseMessages(const string& messages) {
 				_changed.add(messages[pos - 1]);
 			} else if (item != i->second) {
 				/* item does not match item in inventory */
-				unsigned char key = i->first;
-				removeItem(key, i->second);
-				addItem(key, item);
-				_changed.add(key);
+				removeItem(i->first, i->second);
+				addItem(i->first, item);
+				_changed.add(i->first);
 			}
 			/* we (still) got this item, so it's not lost. remove it from lost */
 			_lost.erase(messages[pos - 1]);
@@ -64,7 +63,7 @@ void Inventory::parseMessages(const string& messages) {
 			/* listing last page, add lost items to changed and remove them from inventory */
 			for (set<unsigned char>::iterator l = _lost.begin(); l != _lost.end(); ++l) {
 				_changed.add(*l);
-				_items.erase(*l);
+				removeItem(*l, itemAtKey(*l));
 			}
 			/* mark inventory as updated */
 			_updated = true;
@@ -81,6 +80,8 @@ void Inventory::parseMessages(const string& messages) {
 		for (map<unsigned char, Item>::iterator i = _items.begin(); i != _items.end(); ++i)
 			_changed.add(i->first);
 		_items.clear();
+		for (int s = 0; s < SLOTS; ++s)
+			_slots[s] = ILLEGAL_ITEM;
 		_updated = true;
 		if (_changed.keys().size() > 0) {
 			/* broadcast ChangedInventoryItems */
@@ -140,7 +141,7 @@ const Item& Inventory::itemInSlot(int slot) {
 
 unsigned char Inventory::keyForSlot(int slot) {
 	if (slot < 0 || slot >= SLOTS)
-		return '\0';
+		return ILLEGAL_ITEM;
 	return _slots[slot];
 }
 
@@ -154,6 +155,22 @@ int Inventory::slotForKey(unsigned char key) {
 	return ILLEGAL_SLOT;
 }
 
+unsigned long long Inventory::extrinsicsFromItems() {
+	if (!_extrinsics_updated)
+		updateExtrinsics();
+	return _extrinsics_from_items;
+}
+
+bool Inventory::updated() {
+	return _updated;
+}
+
+void Inventory::update() {
+	_updated = false;
+	_extrinsics_updated = false;
+}
+
+/* private methods */
 void Inventory::addItem(unsigned char key, const Item& item) {
 	if (item.count() <= 0)
 		return;
@@ -186,7 +203,7 @@ void Inventory::removeItem(unsigned char key, const Item& item) {
 		/* remove stack entirely */
 		for (int a = 0; a < SLOTS; ++a) {
 			if (_slots[a] == key) {
-				_slots[a] = '\0';
+				_slots[a] = ILLEGAL_ITEM;
 				break;
 			}
 		}
@@ -194,22 +211,6 @@ void Inventory::removeItem(unsigned char key, const Item& item) {
 	}
 }
 
-unsigned long long Inventory::extrinsicsFromItems() {
-	if (!_extrinsics_updated)
-		updateExtrinsics();
-	return _extrinsics_from_items;
-}
-
-bool Inventory::updated() {
-	return _updated;
-}
-
-void Inventory::update() {
-	_updated = false;
-	_extrinsics_updated = false;
-}
-
-/* private methods */
 void Inventory::setSlot(unsigned char key, const Item& item) {
 	if (item.additional() == "being worn") {
 		/* armor */
