@@ -6,6 +6,7 @@
 
 /* messages */
 #define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "
+#define WIELD_WEAPON_CURSED " is welded to your "
 
 namespace action {
 
@@ -39,7 +40,7 @@ namespace action {
 		virtual void update(const std::string& messages) {
 			if (World::question() && messages.find(MESSAGE_WHAT_TO_WIELD) != std::string::npos) {
 				_sequence = 1;
-			} else if (_sequence == 1) {
+			} else if (_sequence == 1 || messages.find(WIELD_WEAPON_CURSED) != std::string::npos) {
 				/* also mark the inventory dirty when we do this */
 				Inventory::update();
 				_sequence = 2;

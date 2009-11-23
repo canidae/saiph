@@ -263,7 +263,6 @@ bool Weapon::isRangedWeapon(const data::Weapon * weapon) {
 void Weapon::setBestWeapons() {
 	/* set the best weapon we got for wielding.
 	 * also clean up _melee_weapons and _range_weapons */
-
 	while ((int) _range_weapons.size() > WEAPON_COUNT_RANGE) {
 		map<unsigned char, int>::iterator remove = _range_weapons.begin();
 		for (map<unsigned char, int>::iterator m = (_range_weapons.begin())++; m != _range_weapons.end(); ++m) {
@@ -279,6 +278,15 @@ void Weapon::setBestWeapons() {
 				remove = m;
 		}
 		_melee_weapons.erase(remove);
+	}
+
+	unsigned char cur_key = Inventory::keyForSlot(SLOT_WEAPON);
+	if (cur_key != ILLEGAL_ITEM) {
+		const Item& item = Inventory::itemAtKey(cur_key);
+		if (item.beatitude() == CURSED) {
+			_wield_weapon = cur_key;
+			return;
+		}
 	}
 
 	map<unsigned char, int>::iterator best_weapon = _melee_weapons.begin();
