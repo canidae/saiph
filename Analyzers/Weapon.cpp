@@ -280,6 +280,7 @@ void Weapon::setBestWeapons() {
 		_melee_weapons.erase(remove);
 	}
 
+	/* check if the weapon we're wielding is cursed */
 	unsigned char cur_key = Inventory::keyForSlot(SLOT_WEAPON);
 	if (cur_key != ILLEGAL_ITEM) {
 		const Item& item = Inventory::itemAtKey(cur_key);
@@ -289,13 +290,16 @@ void Weapon::setBestWeapons() {
 		}
 	}
 
-	map<unsigned char, int>::iterator best_weapon = _melee_weapons.begin();
-	if (best_weapon != _melee_weapons.end()) {
-		for (map<unsigned char, int>::iterator m = (_melee_weapons.begin())++; m != _melee_weapons.end(); ++m) {
-			if (m->second > best_weapon->second)
-				best_weapon = m;
+	/* find best weapon, weapons we don't know beatitude of are penalized */
+	int best_score = INT_MIN;
+	int best_key = ILLEGAL_ITEM;
+	for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
+		int score = Inventory::itemAtKey(m->first).beatitude() == BEATITUDE_UNKNOWN ? m->second / 2 : m->second;
+		if (score > best_score) {
+			best_score = score;
+			best_key = m->first;
 		}
 	}
-	if (best_weapon != _melee_weapons.end())
-		_wield_weapon = best_weapon->first;
+	if (best_key != ILLEGAL_ITEM)
+		_wield_weapon = best_key;
 }
