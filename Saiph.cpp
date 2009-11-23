@@ -195,6 +195,9 @@ bool Saiph::parseAttributeRow(const char* attributerow) {
 
 bool Saiph::parseStatusRow(const char* statusrow, char* levelname, int* turn) {
 	/* fetch status */
+	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", levelname, &_zorkmids, &_hitpoints, &_hitpoints_max, &_power, &_power_max, &_armor, &_experience, turn, _effects[0], _effects[1], _effects[2], _effects[3], _effects[4]);
+	if (matched < 9)
+		return false;
 	_encumbrance = UNENCUMBERED;
 	_hunger = CONTENT;
 	_blind = false;
@@ -204,9 +207,6 @@ bool Saiph::parseStatusRow(const char* statusrow, char* levelname, int* turn) {
 	_ill = false;
 	_slimed = false;
 	_stunned = false;
-	int matched = sscanf(statusrow, "%16[^$*]%*[^:]:%d%*[^:]:%d(%d%*[^:]:%d(%d%*[^:]:%d%*[^:]:%d%*[^:]:%d%s%s%s%s%s", levelname, &_zorkmids, &_hitpoints, &_hitpoints_max, &_power, &_power_max, &_armor, &_experience, turn, _effects[0], _effects[1], _effects[2], _effects[3], _effects[4]);
-	if (matched < 9)
-		return false;
 	int effects_found = matched - 9;
 	for (int e = 0; e < effects_found; ++e) {
 		if (strcmp(_effects[e], "Burdened") == 0) {
