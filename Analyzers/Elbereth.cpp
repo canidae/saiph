@@ -57,7 +57,7 @@ void Elbereth::onEvent(Event * const evt) {
 			_engraving_type = ELBERETH_MUST_CHECK;
 			_elbereth_count = 0;
 		}
-		if (Saiph::blind() || Saiph::hallucinating() || Saiph::confused() || Saiph::stunned() || (Saiph::extrinsics() & PROPERTY_LEVITATION) != 0 || World::level().tile().symbol() == GRAVE || World::level().tile().symbol() == ALTAR || World::level().tile().symbol() == FOUNTAIN || World::level().tile().symbol() == WATER || World::level().tile().symbol() == LAVA) {
+		if (Saiph::engulfed() || Saiph::blind() || Saiph::hallucinating() || Saiph::confused() || Saiph::stunned() || (Saiph::extrinsics() & PROPERTY_LEVITATION) != 0 || World::level().tile().symbol() == GRAVE || World::level().tile().symbol() == ALTAR || World::level().tile().symbol() == FOUNTAIN || World::level().tile().symbol() == WATER || World::level().tile().symbol() == LAVA) {
 			_engraving_type = ELBERETH_INEFFECTIVE;
 			_elbereth_count = 0;
 		} else {
