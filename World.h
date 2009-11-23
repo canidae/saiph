@@ -43,6 +43,7 @@ public:
 	static const std::vector<Point>& changes();
 	static Level& level();
 	static Level& level(int level);
+	static const std::vector<Level>& levels();
 	static int currentPriority();
 	static int lastActionID();
 	static void init(int connection_type);

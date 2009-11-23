@@ -99,6 +99,10 @@ Level& World::level(int level) {
 	return _levels[level];
 }
 
+const vector<Level>& World::levels() {
+	return _levels;
+}
+
 int World::currentPriority() {
 	if (_action == NULL)
 		return action::Action::NOOP.priority();
