@@ -64,9 +64,7 @@ void Loot::analyze() {
 		++v;
 	}
 
-	if (World::level().tile().symbol() == STAIRS_DOWN) {
-		/* TODO: iterate through stashes and ask if anyone wants anything */
-	} else if (World::level().tile().symbol() == STAIRS_UP) {
+	if (World::level().tile().symbol() == STAIRS_UP) {
 		/* stairs up, ask if anyone wants to drop anything and if they do, get down 3 E's and drop stuff */
 		WantItems wi(true, true);
 		for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
@@ -74,13 +72,13 @@ void Loot::analyze() {
 			if (Inventory::slotForKey(i->first) == ILLEGAL_SLOT)
 				wi.addItem(i->first, i->second);
 		}
-		bool _drop_on_stairs = false;
+		bool drop_on_stairs = false;
 		EventBus::broadcast(static_cast<Event*> (&wi));
-		for (map<unsigned char, Item>::iterator i = wi.items().begin(); !_drop_on_stairs && i != wi.items().end(); ++i) {
+		for (map<unsigned char, Item>::iterator i = wi.items().begin(); !drop_on_stairs && i != wi.items().end(); ++i) {
 			if (i->second.want() <= 0 || i->second.want() < i->second.count())
-				_drop_on_stairs = true;
+				drop_on_stairs = true;
 		}
-		if (_drop_on_stairs) {
+		if (drop_on_stairs) {
 			ElberethQuery eq;
 			EventBus::broadcast(static_cast<Event*> (&eq));
 			if (eq.type() == ELBERETH_MUST_CHECK) {
