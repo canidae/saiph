@@ -38,6 +38,12 @@ void Armor::analyze() {
 			map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(to_wear.name());
 			if (a == data::Armor::armors().end())
 				continue;
+			if (Inventory::itemInSlot(a->second->slot()).beatitude() == CURSED)
+				continue; // can't take off existing armor in this slot
+			else if (a->second->slot() == SLOT_SHIRT && (Inventory::itemInSlot(SLOT_SUIT).beatitude() == CURSED || Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED))
+				continue; // can't take off armor covering this slot
+			else if (a->second->slot() == SLOT_SUIT && Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED)
+				continue; // can't take off armor covering this slot
 			int score = calculateArmorScore(to_wear, a->second);
 			if (score > best_score) {
 				key = *k;
