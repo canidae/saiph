@@ -1,3 +1,5 @@
+#include "Local.h"
+
 #include <stdlib.h>
 #include <fcntl.h>
 
@@ -9,7 +11,6 @@
 
 #include "Debug.h"
 #include "Globals.h"
-#include "Local.h"
 
 using namespace std;
 
@@ -66,13 +67,14 @@ int Local::retrieve(char* buffer, int count) {
 	/* make reading non-blocking */
 	fcntl(_link[0], F_SETFL, fcntl(_link[0], F_GETFL) | O_NONBLOCK);
 	ssize_t amount;
+	/* usleep some ms here (after the blocked reading) both to
+	 * make sure that we've received all the data and to make the
+	 * game watchable  */
+	usleep(50000);
 	do {
-		/* usleep some ms here (after the blocked reading) both to
-		 * make sure that we've received all the data and to make the
-		 * game watchable  */
-		usleep(50000);
 		amount = read(_link[0], &buffer[data_received], count - data_received - 2);
-		data_received += amount;
+		if (amount > 0)
+			data_received += amount;
 	} while (amount > 1000 && !(amount & (amount + 1))); // power of 2 test
 	if (data_received < (ssize_t) count)
 		buffer[data_received] = '\0';
