@@ -112,7 +112,7 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 		if ((int) _range_weapons.size() < WEAPON_COUNT_RANGE)
 			return true; // ranged weapon we got room for
 		/* check if this weapon is better than any of the ranged weapons we already got */
-		for (map<unsigned char, int>::iterator m = (_range_weapons.begin())++; m != _range_weapons.end(); ++m) {
+		for (map<unsigned char, int>::iterator m = _range_weapons.begin(); m != _range_weapons.end(); ++m) {
 			if (m->second < min_score)
 				min_score = m->second;
 		}
@@ -120,7 +120,7 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 		if ((int) _range_weapons.size() < WEAPON_COUNT_MELEE)
 			return true; // melee weapon we got room for
 		/* check if this weapon is better than any of the melee weapons we already got */
-		for (map<unsigned char, int>::iterator m = (_melee_weapons.begin())++; m != _melee_weapons.end(); ++m) {
+		for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
 			if (m->second < min_score)
 				min_score = m->second;
 		}
