@@ -3,41 +3,24 @@ About:
 saiph - [Stupid|Silly|Smart|Superior]* AI Playing netHack.
 * use a descriptive word beginning with "S".
 
-The project is GPLv2 licensed.
+The project is MIT licensed.
 
 
 Fetch code:
 -----------
 Given that you're reading this document there's a fair chance you've already
 downloaded the code, but nevertheless, fetch it with Git here:
+git clone git://github.com/canidae/saiph.git
+
+Alternative mirror:
 git clone http://projects.exent.net/saiph.git
-
-Also, there are several people working on saiph, you might want to add their
-repositories too:
-  Vidar Wahlberg: git://github.com/canidae/saiph.git
-Adrien Panhaleux: git://github.com/DainDwarf/saiph.git
-      Kenny Root: git://github.com/kruton/saiph.git
- Jeffrey Bosboom: git://github.com/DrSunglasses/saiph.git
-
-You should add these to git using the following command:
- git remote add -f <nick> <url>
-Example:
- git remote add -f canidae git://github.com/canidae/saiph.git
 
 
 Keeping your repo updated:
 --------------------------
-You should pull regularly from http://projects.exent.net/saiph.git or
-git://github.com/canidae/saiph.git with this command:
+You should pull regularly with this command:
  git pull canidae master
 Replace "canidae" if you used another name for that repo.
-
-If some of the other repos got a patch you really want that hasn't been merged
-into the main repos, then you can get that patch with the following commands:
- git fetch <nick>
- git log HEAD..FETCH_HEAD
- git show <commit>
- git cherry-pick <commit>
 
 
 Building & running:
@@ -49,25 +32,25 @@ If you are running on a public server, you will need to create a file named
 ".account" in the directory where you run saiph; it must have three lines,
 consisting of the host name, the dgamelaunch user name, and the password,
 like so:
-
 nethack.alt.org
 saiph
-<omitted>
+<password>
 
-Furthermore, you will need to pass the -t option to saiph when running.
+Furthermore, you will need to pass the -t option to saiph to run on a public
+server.
 
 Connecting to non-dgamelaunch-based servers, such as the ones that run the
-/dev/null tournament, will not work.  Patches welcome.
+/dev/null tournament, will not work. Patches welcome.
 
 You'll also need a terminal that's capable of displaying at least 160x50
 characters.
 
 Then build & start the bot:
- make clean && make
+ mkdir build
+ cd build
+ cmake ..
+ make
  ./saiph
-
-Optionally start the game this way:
- make game
 
 
 People who are working on or have contributed to saiph (ordered by activity):
