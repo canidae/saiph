@@ -62,6 +62,7 @@ set(HEADER_FILES
 	include/Actions/Search.h
 	include/Actions/TakeOff.h
 	include/Actions/Throw.h
+	include/Actions/Travel.h
 	include/Actions/Unlock.h
 	include/Actions/Wear.h
 	include/Actions/Wield.h
