@@ -13,6 +13,7 @@
 #include "Actions/Look.h"
 #include "Actions/Loot.h"
 #include "Actions/Move.h"
+#include "Actions/Travel.h"
 #include "Events/ElberethQuery.h"
 #include "Events/StashChanged.h"
 #include "Events/ItemsOnGround.h"
@@ -59,7 +60,7 @@ void Loot::analyze() {
 			}
 		} else if (tile.cost() < UNPASSABLE) {
 			/* move to stash */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
+			World::setAction(static_cast<action::Action*> (new action::Travel(this, tile.coordinate(), action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
 		}
 		++v;
 	}
