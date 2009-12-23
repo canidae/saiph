@@ -54,6 +54,7 @@ public:
 	static bool setAction(action::Action* action, bool deleteAction = true);
 	static bool queueAction(action::Action* action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
+	static std::string cursorMoves(Point source, const Point& target);
 	static Tile& shortestPath(const Point& target);
 	static Tile shortestPath(const Coordinate& target);
 	static Tile shortestPath(unsigned char symbol);

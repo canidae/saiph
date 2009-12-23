@@ -248,6 +248,38 @@ unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boul
 	return ILLEGAL_DIRECTION;
 }
 
+std::string World::cursorMoves(Point source, const Point& target) {
+	std::string cursor_moves = "";
+	while (source != target) {
+		if (source.row() < target.row() && source.col() < target.col()) {
+			source.moveSoutheast();
+			cursor_moves.push_back(SE);
+		} else if (source.row() < target.row() && source.col() > target.col()) {
+			source.moveSouthwest();
+			cursor_moves.push_back(SW);
+		} else if (source.row() > target.row() && source.col() < target.col()) {
+			source.moveNortheast();
+			cursor_moves.push_back(NE);
+		} else if (source.row() > target.row() && source.col() > target.col()) {
+			source.moveNorthwest();
+			cursor_moves.push_back(NW);
+		} else if (source.row() < target.row()) {
+			source.moveSouth();
+			cursor_moves.push_back(S);
+		} else if (source.row() > target.row()) {
+			source.moveNorth();
+			cursor_moves.push_back(N);
+		} else if (source.col() < target.col()) {
+			source.moveEast();
+			cursor_moves.push_back(E);
+		} else {
+			source.moveWest();
+			cursor_moves.push_back(W);
+		}
+	}
+	return cursor_moves;
+}
+
 Tile& World::shortestPath(const Point& point) {
 	/* returns PathNode for shortest path from player to target */
 	return level().tile(point);
