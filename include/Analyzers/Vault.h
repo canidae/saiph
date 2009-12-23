@@ -2,7 +2,7 @@
 #define ANALYZER_VAULT_H
 
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 /* Croesus */
 #define VAULT_CROESUS "Croesus\n"

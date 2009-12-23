@@ -1,8 +1,8 @@
 #ifndef ACTION_EAT_CORPSE_H
 #define ACTION_EAT_CORPSE_H
 
-#include "Action.h"
-#include "../World.h"
+#include "World.h"
+#include "Actions/Action.h"
 
 namespace action {
 

@@ -3,10 +3,10 @@
 
 #include <vector>
 #include <map>
-#include "Analyzer.h"
-#include "../Point.h"
-#include "../Coordinate.h"
-#include "../Level.h"
+#include "Coordinate.h"
+#include "Level.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
 
 #define SOKOBAN_DEBUG_NAME "Sokoban] "
 #define SOKOBAN_MAX_PUSH_FAILURES 15

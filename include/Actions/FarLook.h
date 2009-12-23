@@ -1,8 +1,8 @@
 #ifndef ACTION_FAR_LOOK_H
 #define	ACTION_FAR_LOOK_H
 
-#include "Action.h"
-#include "../Globals.h"
+#include "Globals.h"
+#include "Actions/Action.h"
 
 namespace action {
 
@@ -46,7 +46,7 @@ namespace action {
 					farlook_command.push_back(W);
 				}
 			}
-			farlook_command.push_back(',');
+			farlook_command.push_back('.');
 			return farlook_command;
 		}
 

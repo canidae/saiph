@@ -2,8 +2,8 @@
 #define ACTION_ACTION_H
 
 #include <string>
-#include "../Command.h"
-#include "../Analyzers/Analyzer.h"
+#include "Command.h"
+#include "Analyzers/Analyzer.h"
 
 #define NO_ACTION 0
 

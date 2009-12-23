@@ -1,17 +1,16 @@
 #ifndef ACTION_LOOT_H
 #define ACTION_LOOT_H
 
-#include "Action.h"
-
 #include <map>
 #include <queue>
 #include <sstream>
 #include <vector>
-#include "../EventBus.h"
-#include "../Inventory.h"
-#include "../Item.h"
-#include "../World.h"
-#include "../Events/WantItems.h"
+#include "EventBus.h"
+#include "Inventory.h"
+#include "Item.h"
+#include "World.h"
+#include "Actions/Action.h"
+#include "Events/WantItems.h"
 
 namespace action {
 

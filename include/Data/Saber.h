@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "Weapon.h"
+#include "Data/Weapon.h"
 
 namespace data {
 

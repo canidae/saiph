@@ -4,9 +4,9 @@
 #include <map>
 #include <set>
 #include <string>
-#include "Analyzer.h"
-#include "../Point.h"
-#include "../Data/Corpse.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
+#include "Data/Corpse.h"
 
 /* how old corpses may be */
 #define FOOD_CORPSE_EAT_TIME 30

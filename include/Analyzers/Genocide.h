@@ -3,8 +3,8 @@
 
 #include <list>
 #include <string>
-#include "Analyzer.h"
-#include "../Saiph.h"
+#include "Saiph.h"
+#include "Analyzers/Analyzer.h"
 
 namespace analyzer {
 	class Genocide : public Analyzer {

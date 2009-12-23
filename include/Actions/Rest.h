@@ -1,7 +1,7 @@
 #ifndef ACTION_REST_H
 #define ACTION_REST_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 namespace action {
 

@@ -2,8 +2,8 @@
 #define EVENT_RECEIVED_ITEMS_H
 
 #include <map>
-#include "Event.h"
-#include "../Item.h"
+#include "Item.h"
+#include "Events/Event.h"
 
 namespace event {
 

@@ -1,7 +1,7 @@
 #ifndef ACTION_LOOK_H
 #define ACTION_LOOK_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 namespace action {
 

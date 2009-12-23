@@ -3,9 +3,9 @@
 
 #include <list>
 #include <string>
-#include "Analyzer.h"
-#include "../Point.h"
-#include "../Request.h"
+#include "Point.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 /* Dig messages */
 #define DIG_NOT_ENOUGH_ROOM "  There isn't enough room to "

@@ -34,6 +34,7 @@ class World {
 public:
 	static char view(const Point& point);
 	static int color(const Point& point);
+	static const Point& cursor();
 	static bool menu();
 	static bool question();
 	static int curPage();

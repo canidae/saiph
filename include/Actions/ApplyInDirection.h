@@ -1,8 +1,8 @@
 #ifndef ACTION_APPLY_IN_DIRECTION_H
 #define ACTION_APPLY_IN_DIRECTION_H
 
-#include "Action.h"
-#include "../Inventory.h"
+#include "Inventory.h"
+#include "Actions/Action.h"
 
 namespace action {
 

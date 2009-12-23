@@ -2,8 +2,8 @@
 #define ANALYZER_RUB_H
 
 #include <string>
-#include "Analyzer.h"
-#include "../Request.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 class Item;
 class Saiph;

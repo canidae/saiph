@@ -3,9 +3,9 @@
 
 #include <map>
 #include <string>
-#include "Analyzer.h"
-#include "../Coordinate.h"
-#include "../Point.h"
+#include "Coordinate.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
 
 /* search interval */
 #define EXPLORE_SEARCH_INTERVAL 16

@@ -1,7 +1,7 @@
 #ifndef ACTION_DROPGOLD_H
 #define	ACTION_DROPGOLD_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 namespace action {
 

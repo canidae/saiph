@@ -3,9 +3,9 @@
 
 #include <string>
 #include <vector>
-#include "Analyzer.h"
-#include "../Globals.h"
-#include "../Request.h"
+#include "Globals.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 /* struct for wearing ring */
 struct WearRing {

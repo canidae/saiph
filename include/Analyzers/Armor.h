@@ -3,7 +3,7 @@
 
 #include <set>
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 #define ARMOR_WEAR_PRIORITY 200
 #define ARMOR_UNKNOWN_ENCHANTMENT_BONUS 3

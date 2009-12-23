@@ -63,6 +63,10 @@ int World::color(const Point& point) {
 	return _color[point.row()][point.col()];
 }
 
+const Point& World::cursor() {
+	return _cursor;
+}
+
 bool World::menu() {
 	return _menu;
 }

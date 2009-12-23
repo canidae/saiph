@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "Analyzer.h"
-#include "../Saiph.h"
+#include "Saiph.h"
+#include "Analyzers/Analyzer.h"
 
 #define PASSTUNE_DEBUG_NAME "Passtune] "
 

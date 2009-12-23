@@ -2,8 +2,8 @@
 #define ANALYZER_EXCALIBUR_H
 
 #include <string>
-#include "Analyzer.h"
-#include "../Request.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 /* long sword */
 #define EXCALIBUR_LONG_SWORD "long sword"

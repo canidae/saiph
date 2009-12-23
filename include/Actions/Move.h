@@ -1,7 +1,7 @@
 #ifndef ACTION_MOVE_H
 #define ACTION_MOVE_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 #define MOVE_COST_MEDIAN 200
 

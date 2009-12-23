@@ -5,8 +5,8 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Attack.h"
-#include "../Globals.h"
+#include "Globals.h"
+#include "Data/Attack.h"
 
 #define A_NONE	        -128     /* the value range of type */
 

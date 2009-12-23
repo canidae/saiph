@@ -1,7 +1,7 @@
 #ifndef EVENT_EAT_ITEM_H
 #define EVENT_EAT_ITEM_H
 
-#include "Event.h"
+#include "Events/Event.h"
 
 namespace event {
 

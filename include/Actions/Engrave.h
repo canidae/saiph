@@ -1,7 +1,7 @@
 #ifndef ACTION_ENGRAVE_H
 #define ACTION_ENGRAVE_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 // TODO: (can't engrave)
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "

@@ -2,7 +2,7 @@
 #define ANALYZER_LAMP_H
 
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 /* messages */
 // This lamp has no oil.

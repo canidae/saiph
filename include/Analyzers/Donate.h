@@ -1,8 +1,8 @@
 #ifndef ANALYZER_DONATE_H
 #define ANALYZER_DONATE_H
 
-#include "Analyzer.h"
-#include "../Coordinate.h"
+#include "Coordinate.h"
+#include "Analyzers/Analyzer.h"
 
 #define DONATE_HOW_MUCH_OFFER "  How much will you offer?  "
 #define DONATE_TALK_TO_WHOM "  Talk to whom? "

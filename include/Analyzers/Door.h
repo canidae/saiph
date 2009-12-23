@@ -2,8 +2,8 @@
 #define ANALYZER_DOOR_H
 
 #include <string>
-#include "Analyzer.h"
-#include "../Point.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
 
 /* priorities */
 #define PRIORITY_DOOR_LOOT 200

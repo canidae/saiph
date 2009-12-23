@@ -1,8 +1,8 @@
 #ifndef TAKEOFF_H
 #define	TAKEOFF_H
 
-#include "Action.h"
-#include "../Inventory.h"
+#include "Inventory.h"
+#include "Actions/Action.h"
 
 #define TAKE_OFF_ARMOR_CURSED "  You can't. "
 
