@@ -16,6 +16,8 @@
 #define PRIORITY_EXPLORE_STAIRS_DOWN 90
 #define PRIORITY_EXPLORE_MAGIC_PORTAL 90
 
+class Tile;
+
 namespace analyzer {
 
 	class Explore : public Analyzer {
@@ -30,7 +32,7 @@ namespace analyzer {
 		std::map<Coordinate, int> _visit;
 		std::map<int, int> _explore_levels;
 
-		void explorePoint(Point p, unsigned int* min_cost, int* best_type, unsigned char* best_direction);
+		void explorePoint(Point p, Tile* best_tile, int* best_type);
 	};
 }
 #endif

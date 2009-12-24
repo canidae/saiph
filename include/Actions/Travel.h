@@ -16,6 +16,7 @@ namespace action {
 			if (_target.distance() <= 1) {
 				travel = false;
 			} else {
+				/* TODO: she refuse to travel over traps */
 				for (std::map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 					if (m->second.visible()) {
 						travel = false;

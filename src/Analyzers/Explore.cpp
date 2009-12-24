@@ -64,27 +64,26 @@ void Explore::analyze() {
 	/* explore level */
 	int best_type = INT_MAX - 1;
 	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
-		unsigned int min_cost = UNREACHABLE;
-		unsigned char best_direction = ILLEGAL_DIRECTION;
+		Tile best_tile;
 		/* floor */
 		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type, &best_direction);
+			explorePoint(w->first, &best_tile, &best_type);
 		/* corridor */
 		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) CORRIDOR).begin(); w != World::level().symbols((unsigned char) CORRIDOR).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type, &best_direction);
+			explorePoint(w->first, &best_tile, &best_type);
 		/* open door */
 		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) OPEN_DOOR).begin(); w != World::level().symbols((unsigned char) OPEN_DOOR).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type, &best_direction);
+			explorePoint(w->first, &best_tile, &best_type);
 		/* unknown tile */
 		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) UNKNOWN_TILE).begin(); w != World::level().symbols((unsigned char) UNKNOWN_TILE).end(); ++w)
-			explorePoint(w->first, &min_cost, &best_type, &best_direction);
+			explorePoint(w->first, &best_tile, &best_type);
 		/* update value for this level in _explore_levels */
 		_explore_levels[Saiph::position().level()] = best_type;
-		if (best_direction != ILLEGAL_DIRECTION) {
-			if (best_direction == NOWHERE)
+		if (best_tile.cost() < UNPASSABLE) {
+			if (best_tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, best_direction, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1), min_cost))));
+				World::setAction(static_cast<action::Action*> (new action::Travel(this, best_tile, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1),best_tile.cost()))));
 		}
 	}
 
@@ -182,7 +181,7 @@ void Explore::onEvent(Event * const event) {
 }
 
 /* private methods */
-void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type, unsigned char* best_direction) {
+void Explore::explorePoint(Point p, Tile* best_tile, int* best_type) {
 	/* get the symbol, wall/solid rock/search count and unpassable directions to the east, north, south and west */
 	int search_count = 0;
 	int solid_rock_count = 0;
@@ -311,9 +310,8 @@ void Explore::explorePoint(Point p, unsigned int* min_cost, int* best_type, unsi
 	Tile& tile = World::shortestPath(p);
 	if (tile.cost() >= UNPASSABLE)
 		return;
-	else if (type == *best_type && tile.cost() > *min_cost)
+	else if (type == *best_type && tile.cost() > best_tile->cost())
 		return; // found a shorter path already
-	*min_cost = tile.cost();
+	*best_tile = tile;
 	*best_type = type;
-	*best_direction = tile.direction();
 }
