@@ -9,7 +9,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _search("s", priority) {
+		Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _turn_before_search(World::turn()), _search("16s", priority) {
 		}
 
 		virtual ~Search() {
@@ -32,12 +32,13 @@ namespace action {
 		virtual void update(const std::string&) {
 			if (_sequence == 0) {
 				/* increase search counter on level */
-				World::level().increaseAdjacentSearchCount(Saiph::position());
+				World::level().increaseAdjacentSearchCount(Saiph::position(), World::turn() - _turn_before_search);
 				_sequence = 1;
 			}
 		}
 
 	private:
+		const int _turn_before_search;
 		const Command _search;
 	};
 }

@@ -395,14 +395,14 @@ void Level::setMonster(const Point& point, const Monster& monster) {
 	_monsters[point] = monster;
 }
 
-void Level::increaseAdjacentSearchCount(const Point& point) {
+void Level::increaseAdjacentSearchCount(const Point& point, int count) {
 	/* increase search count for adjacent points to given point */
 	Point p = point;
 	for (p.row(point.row() - 1); p.row() <= point.row() + 1; p.moveSouth()) {
 		for (p.col(point.col() - 1); p.col() <= point.col() + 1; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
-			_map[p.row()][p.col()].searchInc();
+			_map[p.row()][p.col()].searchInc(count);
 		}
 	}
 }

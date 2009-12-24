@@ -38,7 +38,7 @@ public:
 	void setDungeonSymbol(const Point& point, unsigned char symbol);
 	void setDungeonSymbolValue(const Point& point, int value);
 	void setMonster(const Point& point, const Monster& monster);
-	void increaseAdjacentSearchCount(const Point& point);
+	void increaseAdjacentSearchCount(const Point& point, int count = 1);
 
 private:
 	static Point _pathing_queue[PATHING_QUEUE_SIZE];
