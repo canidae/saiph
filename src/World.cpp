@@ -782,6 +782,9 @@ void World::detectPosition() {
 		_levels.push_back(Level(_levels.size(), _levelname, (level().branch() != BRANCH_ROGUE) ? level().branch() : BRANCH_MAIN));
 		_levelmap[_levelname].push_back(found);
 		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
+		/* pretend we're standing on STAIRS_UP or STAIRS_DOWN when we discover new levels.
+		 * if we're wrong, it'll fix itself */
+		level(found).setDungeonSymbol(_cursor, (level(found).depth() > level(Saiph::position().level()).depth() ? STAIRS_UP : STAIRS_DOWN));
 	}
 	/* were we on stairs or a magic portal on last Saiph::position()? */
 	if (symbol == STAIRS_DOWN || symbol == STAIRS_UP || symbol == MAGIC_PORTAL) {
