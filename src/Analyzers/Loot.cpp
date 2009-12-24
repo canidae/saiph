@@ -60,7 +60,7 @@ void Loot::analyze() {
 			}
 		} else if (tile.cost() < UNPASSABLE) {
 			/* move to stash */
-			World::setAction(static_cast<action::Action*> (new action::Travel(this, tile.coordinate(), action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
+			World::setAction(static_cast<action::Action*> (new action::Travel(this, tile, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
 		}
 		++v;
 	}

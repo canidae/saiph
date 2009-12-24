@@ -11,18 +11,22 @@ namespace action {
 	public:
 		static const int ID;
 
-		Travel(analyzer::Analyzer* analyzer, const Point &location, int priority) : Action(analyzer), _location(location), _travel_target(Action::NOOP) {
+		Travel(analyzer::Analyzer* analyzer, const Tile& target, int priority) : Action(analyzer), _target(target), _travel_target(Action::NOOP) {
 			bool travel = true;
-			for (std::map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-				if (m->second.visible()) {
-					travel = false;
-					break;
+			if (_target.distance() <= 1) {
+				travel = false;
+			} else {
+				for (std::map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+					if (m->second.visible()) {
+						travel = false;
+						break;
+					}
 				}
 			}
 			if (travel)
 				_do_travel = Command("_", priority);
 			else
-				_do_travel = Command(World::shortestPath(location).direction(), priority);
+				_do_travel = Command(_target.direction(), priority);
 		}
 
 		virtual ~Travel() {
@@ -47,7 +51,7 @@ namespace action {
 
 		virtual void update(const std::string& messages) {
 			if (messages.find(TRAVEL_WHERE_TO_GO) != std::string::npos) {
-				_travel_target = Command(World::cursorMoves(World::cursor(), _location) + ".", PRIORITY_CONTINUE_ACTION);
+				_travel_target = Command(World::cursorMoves(World::cursor(), _target.coordinate()) + ".", PRIORITY_CONTINUE_ACTION);
 				_sequence = 1;
 			} else {
 				_sequence = 2;
@@ -55,7 +59,7 @@ namespace action {
 		}
 
 	private:
-		const Point _location;
+		Tile _target;
 		Command _do_travel;
 		Command _travel_target;
 	};
