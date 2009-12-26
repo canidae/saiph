@@ -580,7 +580,7 @@ void Level::updatePathMap() {
 	_pathing_queue_size = 0;
 
 	/* set node we're standing on */
-	_map[from.row()][from.col()].updatePath(Point(), NOWHERE, 0, 0);
+	_map[from.row()][from.col()].updatePath(NOWHERE, 0, 0);
 
 	/* check first northwest node */
 	updatePathMapSetCost(to.moveNorthwest(), from, NW, 0);
@@ -677,8 +677,8 @@ void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned ch
 	Tile& next = _map[to.row()][to.col()];
 	if (cost < next.cost()) {
 		_pathing_queue[_pathing_queue_size++] = to;
-		next.updatePath(from, direction, distance + 1, cost);
+		next.updatePath(direction, distance + 1, cost);
 	} else if (cost == next.cost() && cost == UNREACHABLE) {
-		next.updatePath(from, direction, distance + 1, UNPASSABLE);
+		next.updatePath(direction, distance + 1, UNPASSABLE);
 	}
 }

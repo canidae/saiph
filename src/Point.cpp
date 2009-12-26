@@ -1,4 +1,5 @@
 #include "Point.h"
+
 #include "Globals.h"
 
 using namespace std;

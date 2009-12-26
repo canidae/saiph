@@ -306,15 +306,15 @@ Tile World::shortestPath(const Coordinate& target) {
 	while (++pivot < level_count) {
 		/* check if target is on level */
 		if (level_queue[pivot] == target.level()) {
-			Tile tile = _levels[level_queue[pivot]].tile(target);
+			Tile& tile = _levels[level_queue[pivot]].tile(target);
 			if (tile.cost() == UNREACHABLE)
 				continue;
 			else if (tile.cost() == UNPASSABLE && tile.distance() > 1)
 				continue;
 			/* gotta modify this tile a bit since it's on another level */
-			tile.updatePath(target, level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
-			Debug::pathing() << "Found " << target << " " << tile.distance() << " tiles away" << endl;
-			return tile;
+			level_tile[level_queue[pivot]].updatePath(level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
+			Debug::pathing() << "Found " << target << " " << level_tile[level_queue[pivot]].distance() << " tiles away, first checkpoint is " << level_tile[level_queue[pivot]].coordinate() << endl;
+			return level_tile[level_queue[pivot]];
 		}
 		/* path to upstairs on level */
 		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
@@ -325,7 +325,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::pathing() << "Following upstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			Debug::pathing() << "Following upstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where these stairs lead, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -337,7 +337,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			} else {
 				/* pathing to upstairs on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+				level_tile[s->second].updatePath(level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
 			}
 		}
 		/* path to downstairs on level */
@@ -349,7 +349,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::pathing() << "Following downstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			Debug::pathing() << "Following downstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where these stairs lead, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -361,7 +361,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			} else {
 				/* pathing to downstairs on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+				level_tile[s->second].updatePath(level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
 			}
 		}
 		/* path to portals on level */
@@ -373,7 +373,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::info() << "Following magic portal on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			Debug::info() << "Following magic portal on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where this portal leads, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -385,7 +385,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			} else {
 				/* pathing to portal on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+				level_tile[s->second].updatePath(level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
 			}
 		}
 	}
@@ -420,9 +420,9 @@ Tile World::shortestPath(unsigned char symbol) {
 			best_tile = tile;
 			if (pivot != 0) {
 				/* symbol is on another level, gotta modify this pathnode a bit */
-				best_tile.updatePath(s->first, level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
+				best_tile.updatePath(level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
 			}
-			Debug::pathing() << "Found '" << symbol << "' at " << Coordinate(level_queue[pivot], s->first) << ", " << tile.distance() << " tiles away" << endl;
+			Debug::pathing() << "Found '" << symbol << "' at " << Coordinate(level_queue[pivot], s->first) << ", " << tile.distance() << " tiles away, first checkpoint is " << tile.coordinate() << endl;
 		}
 		/* path to upstairs on level */
 		for (map<Point, int>::const_iterator s = _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).begin(); s != _levels[level_queue[pivot]].symbols((unsigned char) STAIRS_UP).end(); ++s) {
@@ -435,7 +435,7 @@ Tile World::shortestPath(unsigned char symbol) {
 				continue;
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() + 1 >= best_tile.cost())
 				continue;
-			Debug::pathing() << "Following upstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			Debug::pathing() << "Following upstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
 			level_added[s->second] = true;
@@ -448,7 +448,7 @@ Tile World::shortestPath(unsigned char symbol) {
 			} else {
 				/* pathing to upstairs on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+				level_tile[s->second].updatePath(level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
 			}
 		}
 		/* path to downstairs on level */
@@ -462,7 +462,7 @@ Tile World::shortestPath(unsigned char symbol) {
 				continue;
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() + 1 >= best_tile.cost())
 				continue;
-			Debug::pathing() << "Following downstairs on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			Debug::pathing() << "Following downstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* distance to these stairs is shorter than shortest path found so far.
 			 * we should check the level these stairs lead to as well */
 			level_added[s->second] = true;
@@ -475,7 +475,7 @@ Tile World::shortestPath(unsigned char symbol) {
 			} else {
 				/* pathing to downstairs on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+				level_tile[s->second].updatePath(level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
 			}
 		}
 		/* path to levels through magic portals */
@@ -489,7 +489,7 @@ Tile World::shortestPath(unsigned char symbol) {
 				continue;
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() >= best_tile.cost())
 				continue;
-			Debug::info() << "Following magic portal on level " << level_queue[pivot] << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			Debug::info() << "Following magic portal on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* distance to this portal is shorter than shortest path found so far.
 			 * we should check the level this portal leads to as well */
 			level_added[s->second] = true;
@@ -502,7 +502,7 @@ Tile World::shortestPath(unsigned char symbol) {
 			} else {
 				/* pathing to downstairs on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
-				level_tile[s->second].updatePath(s->first, level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
+				level_tile[s->second].updatePath(level_tile[s->second].direction(), level_tile[s->second].distance() + tile.distance() + 1, level_tile[s->second].cost() + tile.cost() + 1);
 			}
 		}
 	}
@@ -894,7 +894,7 @@ void World::dumpMaps() {
 	 */
 
 	/* status & inventory */
-	cout << (unsigned char) 27 << "[2;82H";
+	cout << (unsigned char) 27 << "[2;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[2;82H";
 	if (Saiph::intrinsics() & PROPERTY_COLD)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
 	if (Saiph::intrinsics() & PROPERTY_DISINT)
@@ -908,7 +908,7 @@ void World::dumpMaps() {
 	if (Saiph::intrinsics() & PROPERTY_SLEEP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
 
-	cout << (unsigned char) 27 << "[3;82H";
+	cout << (unsigned char) 27 << "[3;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[3;82H";
 	if (Saiph::intrinsics() & PROPERTY_ESP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
 	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL)
