@@ -21,6 +21,7 @@ namespace action {
 		bool increaseTurnCounter();
 		virtual const Command& command() = 0;
 		virtual void update(const std::string& messages) = 0;
+		virtual void failed();
 
 	protected:
 		int _sequence;

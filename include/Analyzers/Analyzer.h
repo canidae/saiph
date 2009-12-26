@@ -23,6 +23,7 @@ namespace analyzer {
 		virtual void analyze();
 		virtual void onEvent(event::Event * const);
 		virtual void actionCompleted();
+		virtual void actionFailed();
 
 	private:
 		std::string _name;

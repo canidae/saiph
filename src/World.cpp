@@ -610,7 +610,6 @@ void World::run() {
 
 		/* check if we're stuck */
 		if (stuck_counter % 42 == 41 && _action->command().command().size() == 1) {
-			bool was_move = false;
 			/* we'll assume we're moving if the command that's stuck is a direction.
 			 * if not, it's probably not a big deal */
 			switch (_action->command().command()[0]) {
@@ -623,7 +622,6 @@ void World::run() {
 				 * unaware of because of an item blocking the door symbol.
 				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
 				level().setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
-				was_move = true;
 				break;
 
 			case N:
@@ -633,16 +631,12 @@ void World::run() {
 				/* moving cardinally failed, possibly item in wall.
 				 * make the tile UNKNOWN_TILE_UNPASSABLE */
 				level().setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
-				was_move = true;
 				break;
 
 			default:
-				/* certainly not moving */
-				break;
-			}
-			if (!was_move) {
 				/* not good. we're not moving and we're stuck */
 				Debug::warning() << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
+				break;
 			}
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
