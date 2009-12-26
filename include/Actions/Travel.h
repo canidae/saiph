@@ -3,7 +3,7 @@
 
 #include "Actions/Action.h"
 
-#define TRAVEL_WHERE_TO_GO "Where do you want to travel to?"
+#define TRAVEL_WHERE_TO_GO "  Where do you want to travel to?  "
 
 namespace action {
 
