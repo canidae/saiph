@@ -125,7 +125,9 @@ void Armor::onEvent(event::Event * const event) {
 		}
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		if (Saiph::encumbrance() < BURDENED && (!e->safeStash() || World::shortestPath(ALTAR).cost() < UNPASSABLE)) {
+		if (e->safeStash() && World::shortestPath(ALTAR).cost() >= UNPASSABLE) {
+			/* on safe stash and can't path to altar, drop */
+		} else if (Saiph::encumbrance() < BURDENED && (!e->safeStash() || World::shortestPath(ALTAR).cost() < UNPASSABLE)) {
 			/* we're not burdened and not on a safe stash or we can't reach an altar, loot armor */
 			/* if we are on a safe stash and can't reach an altar then we will drop armor */
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
