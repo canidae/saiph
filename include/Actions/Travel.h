@@ -13,8 +13,7 @@ namespace action {
 
 		Travel(analyzer::Analyzer* analyzer, const Tile& target, int priority) : Action(analyzer), _target(target), _travel_target(Action::NOOP) {
 			bool travel = true;
-			if (_target.distance() <= 1 || _travel_ban > 0) {
-				--_travel_ban;
+			if (_target.distance() < 3 || _travel_ban > 0) {
 				travel = false;
 			} else {
 				for (std::map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
@@ -51,6 +50,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
+			--_travel_ban;
 			if (messages.find(TRAVEL_WHERE_TO_GO) != std::string::npos) {
 				_travel_target = Command(World::cursorMoves(World::cursor(), _target.coordinate()) + ".", PRIORITY_CONTINUE_ACTION);
 				_sequence = 1;
@@ -61,7 +61,7 @@ namespace action {
 
 		virtual void failed() {
 			/* probably can't use travel to get somewhere for some reason */
-			_travel_ban = 8;
+			_travel_ban = 64;
 		}
 
 	private:

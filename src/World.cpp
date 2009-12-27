@@ -636,6 +636,7 @@ void World::run() {
 			default:
 				/* not good. we're not moving and we're stuck */
 				Debug::warning() << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
+				_action->failed();
 				break;
 			}
 		} else if (stuck_counter > 1680) {
