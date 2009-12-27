@@ -83,7 +83,6 @@ void Weapon::onEvent(event::Event * const event) {
 					/* looting, is this better than what we got? */
 					if (betterThanWhatWeGot(i->second))
 						i->second.want(i->second.count());
-
 				}
 			}
 		}
@@ -125,7 +124,7 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 				min_score = m->second;
 		}
 	}
-	return score > min_score; // returns true if this weapon is better than any melee weapon we got
+	return score > min_score; // returns true if this weapon is better than any weapon we got
 }
 
 int Weapon::calculateWeaponScore(const Item& item, const data::Weapon * weapon) {
