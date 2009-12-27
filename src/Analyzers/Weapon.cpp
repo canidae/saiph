@@ -71,7 +71,7 @@ void Weapon::onEvent(event::Event * const event) {
 		setBestWeapons();
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		if (e->dropping() || Saiph::encumbrance() < BURDENED) {
+//		if (e->dropping() || Saiph::encumbrance() < BURDENED) {
 			/* dropping items or we're burdened (which means don't loot weapons) */
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 				if (e->dropping()) {
@@ -85,7 +85,7 @@ void Weapon::onEvent(event::Event * const event) {
 						i->second.want(i->second.count());
 				}
 			}
-		}
+//		}
 	}
 }
 
@@ -299,6 +299,5 @@ void Weapon::setBestWeapons() {
 			best_key = m->first;
 		}
 	}
-	if (best_key != ILLEGAL_ITEM)
-		_wield_weapon = best_key;
+	_wield_weapon = best_key;
 }

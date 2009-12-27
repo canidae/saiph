@@ -13,7 +13,7 @@ namespace action {
 
 		Travel(analyzer::Analyzer* analyzer, const Tile& target, int priority) : Action(analyzer), _target(target), _travel_target(Action::NOOP) {
 			bool travel = true;
-			if (_target.distance() < 3 || _travel_ban > 0) {
+			if (_target.distance() < 3) {
 				travel = false;
 			} else {
 				for (std::map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
@@ -50,22 +50,21 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			--_travel_ban;
 			if (messages.find(TRAVEL_WHERE_TO_GO) != std::string::npos) {
-				_travel_target = Command(World::cursorMoves(World::cursor(), _target.coordinate()) + ".", PRIORITY_CONTINUE_ACTION);
+				if (World::cursor() == _target.coordinate()) {
+					/* something may be wrong, trying to travel to the same place twice.
+					 * cancel travel command and do a normal move instead */
+					_travel_target = Command(std::string(1, (unsigned char) 27).append(1, _target.direction()), PRIORITY_CONTINUE_ACTION);
+				} else {
+					_travel_target = Command(World::cursorMoves(World::cursor(), _target.coordinate()) + ".", PRIORITY_CONTINUE_ACTION);
+				}
 				_sequence = 1;
 			} else {
 				_sequence = 2;
 			}
 		}
 
-		virtual void failed() {
-			/* probably can't use travel to get somewhere for some reason */
-			_travel_ban = 64;
-		}
-
 	private:
-		static int _travel_ban;
 		Tile _target;
 		Command _do_travel;
 		Command _travel_target;

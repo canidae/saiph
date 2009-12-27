@@ -281,7 +281,7 @@ std::string World::cursorMoves(Point source, const Point& target) {
 }
 
 Tile& World::shortestPath(const Point& point) {
-	/* returns PathNode for shortest path from player to target */
+	/* returns Tile for shortest path from player to target */
 	return level().tile(point);
 }
 
@@ -393,7 +393,7 @@ Tile World::shortestPath(const Coordinate& target) {
 }
 
 Tile World::shortestPath(unsigned char symbol) {
-	/* returns PathNode for shortest path from player to nearest symbol */
+	/* returns Tile for shortest path from player to nearest symbol */
 	int pivot = -1;
 	int level_count = 1;
 	Tile best_tile;
@@ -417,10 +417,12 @@ Tile World::shortestPath(unsigned char symbol) {
 			else if (tile.cost() + level_tile[level_queue[pivot]].cost() + 1 >= best_tile.cost())
 				continue;
 			/* this symbol is closer than the previously found one */
-			best_tile = tile;
 			if (pivot != 0) {
-				/* symbol is on another level, gotta modify this pathnode a bit */
-				best_tile.updatePath(level_tile[level_queue[pivot]].direction(), tile.distance() + level_tile[level_queue[pivot]].distance() + 1, tile.cost() + level_tile[level_queue[pivot]].cost() + 1);
+				/* symbol is on another level, gotta modify this tile a bit */
+				best_tile = level_tile[level_queue[pivot]];
+				best_tile.updatePath(best_tile.direction(), tile.distance() + best_tile.distance() + 1, tile.cost() + best_tile.cost() + 1);
+			} else {
+				best_tile = tile;
 			}
 			Debug::pathing() << "Found '" << symbol << "' at " << Coordinate(level_queue[pivot], s->first) << ", " << tile.distance() << " tiles away, first checkpoint is " << tile.coordinate() << endl;
 		}
