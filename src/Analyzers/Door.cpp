@@ -11,7 +11,6 @@
 #include "Actions/Kick.h"
 #include "Actions/Move.h"
 #include "Actions/Open.h"
-#include "Actions/Travel.h"
 #include "Actions/Unlock.h"
 #include "Data/Key.h"
 #include "Events/Event.h"
@@ -77,7 +76,7 @@ void Door::analyze() {
 			return;
 		} else if (tile.distance() < min_distance) {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Travel(this, tile, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
 			min_distance = tile.distance();
 		}
 	}

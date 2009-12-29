@@ -7,7 +7,6 @@
 #include "World.h"
 #include "Actions/Drop.h"
 #include "Actions/Move.h"
-#include "Actions/Travel.h"
 #include "Events/Beatify.h"
 #include "Events/WantItems.h"
 
@@ -37,7 +36,7 @@ void Beatitude::analyze() {
 	if (tile.direction() == NOWHERE)
 		World::setAction(static_cast<action::Action*> (new action::Drop(this, _max_priority, false)));
 	else
-		World::setAction(static_cast<action::Action*> (new action::Travel(this, tile, _max_priority)));
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, _max_priority)));
 }
 
 void Beatitude::onEvent(event::Event * const event) {
