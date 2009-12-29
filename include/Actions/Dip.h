@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Dip(analyzer::Analyzer* analyzer, unsigned char key, unsigned char dip_into, const int& priority, bool update_inventory = true) : Action(analyzer), _do_dip("#dip", priority), _dip_item(key, PRIORITY_CONTINUE_ACTION), _dip_in_water(dip_into == ILLEGAL_ITEM ? 'y' : 'n', PRIORITY_CONTINUE_ACTION), _dip_in_item(dip_into, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
+		Dip(analyzer::Analyzer* analyzer, unsigned char key, unsigned char dip_into, const int& priority, bool update_inventory = true) : Action(analyzer), _do_dip("#dip\n", priority), _dip_item(key, PRIORITY_CONTINUE_ACTION), _dip_in_water(dip_into == ILLEGAL_ITEM ? 'y' : 'n', PRIORITY_CONTINUE_ACTION), _dip_in_item(dip_into, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
 		}
 
 		virtual ~Dip() {

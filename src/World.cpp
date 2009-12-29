@@ -131,8 +131,6 @@ void World::init(int connection_type) {
 void World::destroy() {
 	delete _action;
 	delete _connection;
-	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
-		delete *a;
 }
 
 void World::registerAnalyzer(Analyzer * const analyzer) {
@@ -145,7 +143,6 @@ void World::unregisterAnalyzer(Analyzer * const analyzer) {
 	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
 			_analyzers.erase(a);
-			delete *a;
 			return;
 		}
 	}

@@ -2,6 +2,7 @@
 #define ANALYZER_ANALYZER_H
 
 #include <string>
+#include <vector>
 
 #define ILLEGAL_ANALYZER_ID -1
 
@@ -26,6 +27,7 @@ namespace analyzer {
 		virtual void actionFailed();
 
 	private:
+		static std::vector<Analyzer*> _analyzers;
 		std::string _name;
 	};
 }
