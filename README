@@ -63,8 +63,8 @@ Kenny Root <kenny@the-b.org>, aka. kRutOn
 Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
 
 
-TODO (stuff with high priority):
---------------------------------
+TODO:
+-----
 * a macro for debugging or #ifdef DEBUG\n Debug::foo() << bar << endl;\n #endif
 * dip for excalibur (analyzer should be removed when excalibur is found)
 * engrave-testing wands (and keep the dangerous ones)

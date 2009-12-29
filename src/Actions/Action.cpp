@@ -66,6 +66,9 @@ const int Wield::ID = 28;
 const int TakeOff::ID = 29;
 const int Wear::ID = 30;
 
+/* used for the travel command "_" */
+Point Move::_last_target;
+
 /* constructors/destructor */
 Action::Action(analyzer::Analyzer* analyzer, bool increase_turn_counter) : _sequence(0), _analyzer(analyzer), _increase_turn_counter(increase_turn_counter) {
 }
