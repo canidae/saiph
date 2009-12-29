@@ -116,8 +116,6 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 				min_score = m->second;
 		}
 	} else {
-		if ((int) _range_weapons.size() < WEAPON_COUNT_MELEE)
-			return true; // melee weapon we got room for
 		/* check if this weapon is better than any of the melee weapons we already got */
 		for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
 			if (m->second < min_score)
@@ -254,7 +252,7 @@ int Weapon::calculateWeaponScore(const Item& item, const data::Weapon * weapon) 
 	return score;
 }
 
-bool Weapon::isRangedWeapon(const data::Weapon * weapon) {
+bool Weapon::isRangedWeapon(const data::Weapon* weapon) {
 	/* TODO: roles may have different preferences of which weapons to throw */
 	return (weapon->type() == WEAPON_DAGGER || weapon->type() == WEAPON_DART || weapon->type() == WEAPON_JAVELIN || weapon->type() == WEAPON_KNIFE || weapon->type() == WEAPON_SHURIKEN || weapon->type() == WEAPON_SPEAR);
 }
@@ -264,7 +262,7 @@ void Weapon::setBestWeapons() {
 	 * also clean up _melee_weapons and _range_weapons */
 	while ((int) _range_weapons.size() > WEAPON_COUNT_RANGE) {
 		map<unsigned char, int>::iterator remove = _range_weapons.begin();
-		for (map<unsigned char, int>::iterator m = (_range_weapons.begin())++; m != _range_weapons.end(); ++m) {
+		for (map<unsigned char, int>::iterator m = ++(_range_weapons.begin()); m != _range_weapons.end(); ++m) {
 			if (m->second < remove->second)
 				remove = m;
 		}
@@ -272,7 +270,7 @@ void Weapon::setBestWeapons() {
 	}
 	while ((int) _melee_weapons.size() > WEAPON_COUNT_MELEE) {
 		map<unsigned char, int>::iterator remove = _melee_weapons.begin();
-		for (map<unsigned char, int>::iterator m = (_melee_weapons.begin())++; m != _melee_weapons.end(); ++m) {
+		for (map<unsigned char, int>::iterator m = ++(_melee_weapons.begin()); m != _melee_weapons.end(); ++m) {
 			if (m->second < remove->second)
 				remove = m;
 		}
