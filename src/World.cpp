@@ -612,35 +612,8 @@ void World::run() {
 
 		/* check if we're stuck */
 		if (stuck_counter % 42 == 41 && _action->command().command().size() == 1) {
-			/* we'll assume we're moving if the command that's stuck is a direction.
-			 * if not, it's probably not a big deal */
-			switch (_action->command().command()[0]) {
-			case NW:
-			case NE:
-			case SW:
-			case SE:
-				/* moving diagonally failed.
-				 * we could be trying to move diagonally into a door we're
-				 * unaware of because of an item blocking the door symbol.
-				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
-				level().setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
-				break;
-
-			case N:
-			case E:
-			case S:
-			case W:
-				/* moving cardinally failed, possibly item in wall.
-				 * make the tile UNKNOWN_TILE_UNPASSABLE */
-				level().setDungeonSymbol(directionToPoint((unsigned char) _action->command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
-				break;
-
-			default:
-				/* not good. we're not moving and we're stuck */
-				Debug::warning() << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
-				_action->failed();
-				break;
-			}
+			Debug::warning() << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
+			_action->failed();
 		} else if (stuck_counter > 1680) {
 			/* failed too many times, #quit */
 			Debug::error() << "Appear to be stuck, quitting game" << endl;
@@ -789,45 +762,6 @@ void World::detectPosition() {
 		level().setDungeonSymbolValue(Saiph::position(), found);
 	}
 	Saiph::position(Coordinate(found, _cursor));
-}
-
-Point World::directionToPoint(unsigned char direction) {
-	/* return the position we'd be at if we do the given move */
-	Point pos = Saiph::position();
-	switch (direction) {
-	case NW:
-		pos.moveNorthwest();
-		break;
-
-	case N:
-		pos.moveNorth();
-		break;
-
-	case NE:
-		pos.moveNortheast();
-		break;
-
-	case E:
-		pos.moveEast();
-		break;
-
-	case SE:
-		pos.moveSoutheast();
-		break;
-
-	case S:
-		pos.moveSouth();
-		break;
-
-	case SW:
-		pos.moveSouthwest();
-		break;
-
-	case W:
-		pos.moveWest();
-		break;
-	}
-	return pos;
 }
 
 bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders) {

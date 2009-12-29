@@ -93,7 +93,6 @@ private:
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
-	static Point directionToPoint(unsigned char direction);
 	static bool directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders);
 	static void dumpMaps();
 	static bool executeCommand(const std::string& command);

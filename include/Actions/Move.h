@@ -68,10 +68,80 @@ namespace action {
 			}
 		}
 
+		virtual void failed() {
+			/* we'll assume we're moving if the command that's stuck is a direction.
+			 * if not, it's probably not a big deal */
+			switch (command().command()[0]) {
+			case NW:
+			case NE:
+			case SW:
+			case SE:
+				/* moving diagonally failed.
+				 * we could be trying to move diagonally into a door we're
+				 * unaware of because of an item blocking the door symbol.
+				 * make the tile UNKNOWN_TILE_DIAGONALLY_UNPASSABLE */
+				World::level().setDungeonSymbol(directionToPoint((unsigned char) command().command()[0]), UNKNOWN_TILE_DIAGONALLY_UNPASSABLE);
+				break;
+
+			case N:
+			case E:
+			case S:
+			case W:
+				/* moving cardinally failed, possibly item in wall.
+				 * make the tile UNKNOWN_TILE_UNPASSABLE */
+				World::level().setDungeonSymbol(directionToPoint((unsigned char) command().command()[0]), UNKNOWN_TILE_UNPASSABLE);
+				break;
+
+			default:
+				/* not good. we're not moving and we're stuck */
+				analyzer()->actionFailed();
+				break;
+			}
+		}
+
 	private:
 		Tile _target;
 		Command _do_travel;
 		Command _travel_target;
+
+		Point directionToPoint(unsigned char direction) {
+			/* return the position we'd be at if we do the given move */
+			Point pos = Saiph::position();
+			switch (direction) {
+			case NW:
+				pos.moveNorthwest();
+				break;
+
+			case N:
+				pos.moveNorth();
+				break;
+
+			case NE:
+				pos.moveNortheast();
+				break;
+
+			case E:
+				pos.moveEast();
+				break;
+
+			case SE:
+				pos.moveSoutheast();
+				break;
+
+			case S:
+				pos.moveSouth();
+				break;
+
+			case SW:
+				pos.moveSouthwest();
+				break;
+
+			case W:
+				pos.moveWest();
+				break;
+			}
+			return pos;
+		}
 	};
 }
 #endif
