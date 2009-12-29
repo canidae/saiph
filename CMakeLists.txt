@@ -93,7 +93,6 @@ set(HEADER_FILES
 	include/Analyzers/Shop.h
 #	include/Analyzers/Sokoban.h
 #	include/Analyzers/Throne.h
-#	include/Analyzers/Valkyrie.h
 	include/Analyzers/Vault.h
 #	include/Analyzers/Wand.h
 	include/Analyzers/Weapon.h
@@ -211,7 +210,6 @@ set(SOURCE_FILES
 	src/Analyzers/Shop.cpp
 #	src/Analyzers/Sokoban.cpp
 #	src/Analyzers/Throne.cpp
-#	src/Analyzers/Valkyrie.cpp
 	src/Analyzers/Vault.cpp
 #	src/Analyzers/Wand.cpp
 	src/Analyzers/Weapon.cpp
