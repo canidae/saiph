@@ -62,7 +62,6 @@ set(HEADER_FILES
 	include/Actions/Search.h
 	include/Actions/TakeOff.h
 	include/Actions/Throw.h
-	include/Actions/Travel.h
 	include/Actions/Unlock.h
 	include/Actions/Wear.h
 	include/Actions/Wield.h
@@ -77,7 +76,7 @@ set(HEADER_FILES
 	include/Analyzers/Door.h
 	include/Analyzers/Elbereth.h
 	include/Analyzers/Enhance.h
-#	include/Analyzers/Excalibur.h
+	include/Analyzers/Excalibur.h
 	include/Analyzers/Explore.h
 	include/Analyzers/Fight.h
 	include/Analyzers/Food.h
@@ -195,7 +194,7 @@ set(SOURCE_FILES
 	src/Analyzers/Door.cpp
 	src/Analyzers/Elbereth.cpp
 	src/Analyzers/Enhance.cpp
-#	src/Analyzers/Excalibur.cpp
+	src/Analyzers/Excalibur.cpp
 	src/Analyzers/Explore.cpp
 	src/Analyzers/Fight.cpp
 	src/Analyzers/Food.cpp

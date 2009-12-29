@@ -145,6 +145,7 @@ void World::unregisterAnalyzer(Analyzer * const analyzer) {
 	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
 			_analyzers.erase(a);
+			delete *a;
 			return;
 		}
 	}

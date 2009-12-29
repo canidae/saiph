@@ -5,6 +5,7 @@
 #include "Analyzers/Beatitude.h"
 #include "Analyzers/Elbereth.h"
 #include "Analyzers/Enhance.h"
+#include "Analyzers/Excalibur.h"
 #include "Analyzers/Explore.h"
 #include "Analyzers/Door.h"
 #include "Analyzers/Fight.h"
@@ -36,6 +37,7 @@ void Analyzer::init() {
 	World::registerAnalyzer(new Door());
 	World::registerAnalyzer(new Elbereth());
 	World::registerAnalyzer(new Enhance());
+	World::registerAnalyzer(new Excalibur());
 	World::registerAnalyzer(new Explore());
 	World::registerAnalyzer(new Fight());
 	World::registerAnalyzer(new Food());
