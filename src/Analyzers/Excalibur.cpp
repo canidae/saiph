@@ -1,26 +1,28 @@
 #include "Analyzers/Excalibur.h"
 
+#include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Actions/Move.h"
 
 using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Excalibur::Excalibur(Saiph* saiph) : Analyzer("Excalibur"), saiph(saiph), command2("") {
+Excalibur::Excalibur() : Analyzer("Excalibur") {
 }
 
 /* methods */
 void Excalibur::analyze() {
-	if (saiph->world->player.experience < 5)
+	if (Saiph::experience() < 8)
 		return;
-	else if (saiph->world->player.alignment != LAWFUL)
+	else if (Saiph::alignment() != LAWFUL)
 		return;
-	else if (saiph->world->player.blind)
-		return; // don't move when blind
+	else if (Saiph::blind() || Saiph::confused() || Saiph::stunned() || Saiph::hallucinating())
+		return; // don't move when blind/confused/stunned/hallucinating
 	/* do we have a long sword? */
 	unsigned char got_long_sword = ILLEGAL_ITEM;
-	for(map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
+	for(map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		if (i->second.name == EXCALIBUR_LONG_SWORD) {
 			got_long_sword = i->first;
 			break;
@@ -29,19 +31,17 @@ void Excalibur::analyze() {
 	if (got_long_sword == ILLEGAL_ITEM)
 		return;
 	/* path to nearest fountain */
-	const PathNode& node = saiph->shortestPath(FOUNTAIN);
-	if (node.cost >= UNPASSABLE)
+	const Tile& tile = World::shortestPath(FOUNTAIN);
+	if (tile.cost() >= UNPASSABLE)
 		return; // can't get to any fountains
-	if (node.dir == NOWHERE) {
+	if (tile.direction() == NOWHERE) {
 		/* standing on (in?) fountain, dip */
 		command = DIP;
 		command2 = got_long_sword;
 		priority = PRIORITY_EXCALIBUR_DIP;
 	} else {
 		/* move towards fountain */
-		command = node.dir;
-		command2.clear();
-		priority = PRIORITY_EXCALIBUR_DIP;
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, PRIORITY_EXCALIBUR_DIP)));
 	}
 }
 

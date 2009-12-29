@@ -65,10 +65,12 @@ Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
 
 TODO:
 -----
+* loot-loop, dropping & picking up stuff when she is burdened
 * a macro for debugging or #ifdef DEBUG\n Debug::foo() << bar << endl;\n #endif
 * dip for excalibur (analyzer should be removed when excalibur is found)
 * engrave-testing wands (and keep the dangerous ones)
 * detect traps by message (currently won't detect traps beneath item(s))
 * don't attempt to loot items from pit we didn't fall into
+* don't attempt to open door next to a pit she fell into
 * don't kick down doors from corridors without standing in front of it
 * don't kick down doors when she got a hurt leg
