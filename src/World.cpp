@@ -582,16 +582,16 @@ void World::run() {
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else {
-				Debug::warning() << "I have no idea what to do... Searching" << endl;
+				Debug::warning() << "I have no idea what to do... Searching 16 times" << endl;
 				cout << (unsigned char) 27 << "[1;82H";
 				cout << (unsigned char) 27 << "[K"; // erase everything to the right
-				cout << "No idea what to do: s";
+				cout << "No idea what to do: 16s";
 				/* return cursor back to where it was */
 				cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 				cout.flush();
 				++World::_internal_turn; // will cost a turn
 				_last_action_id = NO_ACTION;
-				executeCommand("s");
+				executeCommand("16s");
 				continue;
 			}
 		}
