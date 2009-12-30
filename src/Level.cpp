@@ -311,6 +311,7 @@ void Level::parseMessages(const string& messages) {
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn());
+		s->second.symbol(ILLEGAL_ITEM);
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -327,6 +328,7 @@ void Level::parseMessages(const string& messages) {
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn());
+		s->second.symbol(ILLEGAL_ITEM);
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -343,6 +345,7 @@ void Level::parseMessages(const string& messages) {
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn());
+		s->second.symbol(ILLEGAL_ITEM);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -470,12 +473,15 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		map<Point, Stash>::iterator s = _stashes.find(point);
 		if (s != _stashes.end()) {
 			if ((s->second.symbol() != symbol || s->second.color() != color)) {
+				bool broadcast = s->second.symbol() != ILLEGAL_ITEM;
 				/* top symbol/color changed, update */
 				s->second.symbol(symbol);
 				s->second.color(color);
-				/* broadcast StashChanged */
-				StashChanged sc(Coordinate(Saiph::position().level(), point));
-				EventBus::broadcast(static_cast<Event*> (&sc));
+				/* broadcast StashChanged unless we looked at the stash last turn */
+				if (broadcast) {
+					StashChanged sc(Coordinate(Saiph::position().level(), point));
+					EventBus::broadcast(static_cast<Event*> (&sc));
+				}
 			}
 		} else {
 			/* new stash */
