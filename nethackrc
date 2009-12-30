@@ -33,13 +33,13 @@
 # * traps
 # - web is represented by '^', not '"'
 OPTIONS=align:lawful
-OPTIONS=autopickup
+OPTIONS=!autopickup
 OPTIONS=boulder:0
-OPTIONS=catname:Sebbe
+OPTIONS=catname:Sartak
 OPTIONS=!cmdassist
 OPTIONS=color
 OPTIONS=disclose:-i -a -v -g -c
-OPTIONS=dogname:Eidolos
+OPTIONS=dogname:doy
 OPTIONS=dungeon: |--------||.-|77##.##<><>_\\\\{{}.}..88 #}
 OPTIONS=fruit:byte
 OPTIONS=gender:random
@@ -65,3 +65,4 @@ OPTIONS=!sparkle
 OPTIONS=!splash_screen
 OPTIONS=time
 OPTIONS=!timed_delay
+OPTIONS=traps:\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^
