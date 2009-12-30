@@ -332,6 +332,7 @@
 #define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here? "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
 #define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
+#define MESSAGE_FALL_INTO_PIT "  You fall into a pit!  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
 #define MESSAGE_FIRE_RES_GAIN1 "  You feel a momentary chill.  "
 #define MESSAGE_FIRE_RES_GAIN2 "  You be chillin'.  "
@@ -390,6 +391,7 @@
 #define MESSAGE_SLEEP_RES_LOSE1 "  You feel tired!  "
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_STEALS " steals "
+#define MESSAGE_STILL_IN_PIT "  You are still in a pit.  "
 #define MESSAGE_STOLE " stole "
 #define MESSAGE_STOP_EATING "  Stop eating? [yn] (y)  "
 #define MESSAGE_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
@@ -425,9 +427,11 @@
 #define MESSAGE_WHAT_TUNE "  What tune are you playing? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
 #define MESSAGE_YOU_DESTROY "  You destroy the "
+#define MESSAGE_YOU_DIG_A_PIT "  You dig a pit in the floor.  "
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_FINISH_YOUR_PRAYER "  You finish your prayer.  "
+#define MESSAGE_YOU_FLOAT_OUT_OF_PIT "  You float up, out of the pit!  "
 #define MESSAGE_YOU_KILL "  You kill the "
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off

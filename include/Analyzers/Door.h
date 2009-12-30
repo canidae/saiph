@@ -28,7 +28,6 @@ namespace analyzer {
 	private:
 		Point _position;
 		unsigned char _unlock_tool_key;
-		bool _in_a_pit;
 
 		bool wantItem(const Item& item);
 	};
