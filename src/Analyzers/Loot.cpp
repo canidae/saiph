@@ -37,8 +37,8 @@ void Loot::analyze() {
 		return;
 	}
 
-	/* don't move around when blind/confused/stunned */
-	if (Saiph::blind() || Saiph::confused() || Saiph::stunned())
+	/* don't move around when blind/confused/stunned/hallucinating */
+	if (Saiph::blind() || Saiph::confused() || Saiph::stunned() || Saiph::hallucinating())
 		return;
 
 	/* visit new/changed stashes */

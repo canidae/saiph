@@ -179,7 +179,7 @@ void Saiph::parseMessages(const string& messages) {
 			_extrinsics &= ~PROPERTY_LEVITATION;
 		if (messages.find(MESSAGE_CANT_REACH_OVER_PIT) != string::npos || messages.find(MESSAGE_STILL_IN_PIT) != string::npos || messages.find(MESSAGE_FALL_INTO_PIT) != string::npos || messages.find(MESSAGE_YOU_DIG_A_PIT) != string::npos)
 			_in_a_pit = true;
-		if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT) != string::npos || messages.find(MESSAGE_YOU_FLOAT_OUT_OF_PIT) != string::npos)
+		if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT) != string::npos || messages.find(MESSAGE_YOU_FLOAT_OUT_OF_PIT) != string::npos || messages.find(MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT) != string::npos)
 			_in_a_pit = false;
 	}
 }

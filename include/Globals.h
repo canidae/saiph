@@ -293,6 +293,7 @@
 /* list duplicate lines: grep "MESSAGE_" Globals.h | cut -d" " -f3- | sort | uniq -d */
 #define MESSAGE_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
+#define MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT "  You cannot reach the bottom of the pit.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
 #define MESSAGE_COLD_RES_GAIN1 "  You feel full of hot air.  "
