@@ -10,7 +10,13 @@ namespace action {
 	public:
 		static const int ID;
 
-		ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_attributes("", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+		/* this is done at the start of each game.
+		 * XXX:
+		 * since Weapon analyzer calculate score of weapons when we list inventory
+		 * and because players role determines the weapon score we need to determine
+		 * the role of the player before we list inventory, thus priority is set to
+		 * PRIORITY_CONTINUE_ACTION instead of PRIORITY_LOOK as it should be */
+		ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_attributes("", PRIORITY_CONTINUE_ACTION), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListPlayerAttributes() {

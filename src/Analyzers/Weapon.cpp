@@ -125,7 +125,7 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 	return score > min_score; // returns true if this weapon is better than any weapon we got
 }
 
-int Weapon::calculateWeaponScore(const Item& item, const data::Weapon * weapon) {
+int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
 	if (!weapon->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
 		return 0; // for now, don't try to wield two-hander when we got a shield
 	int score = 0;
