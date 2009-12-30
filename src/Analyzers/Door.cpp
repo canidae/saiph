@@ -46,7 +46,9 @@ void Door::analyze() {
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
-		if (tile.distance() == 1 && !Saiph::inAPit()) {
+		if (Saiph::inAPit() && tile.distance() == 1)
+			continue; // in a pit next to the door, prevent her from trying to open it (and fail)
+		if (tile.distance() == 1) {
 			/* open/pick/kick door */
 			if (d->second != DOOR_LOCKED) {
 				World::setAction(static_cast<action::Action*> (new action::Open(this, tile.direction(), PRIORITY_DOOR_OPEN)));
