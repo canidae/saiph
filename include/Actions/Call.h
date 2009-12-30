@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Call(analyzer::Analyzer* analyzer, unsigned char item, const std::string& call) : Action(analyzer, false), _do_call("#name\n", PRIORITY_LOOK), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(item, PRIORITY_CONTINUE_ACTION), _set_call(call + "\n", PRIORITY_CONTINUE_ACTION) {
+		Call(analyzer::Analyzer* analyzer, unsigned char item, const std::string& call) : Action(analyzer, false), _do_call("#name\n", PRIORITY_NAME_ITEM), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(item, PRIORITY_CONTINUE_ACTION), _set_call(call + "\n", PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~Call() {
