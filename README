@@ -65,7 +65,7 @@ Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
 
 TODO:
 -----
-* don't rely on autopickup for gold
+* loot gold, except in shops
 * loot-loop, dropping & picking up stuff when she is burdened
 * a macro for debugging or #ifdef DEBUG\n Debug::foo() << bar << endl;\n #endif
 * dip for excalibur (analyzer should be removed when excalibur is found)
