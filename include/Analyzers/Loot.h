@@ -7,6 +7,7 @@
 #include "Analyzers/Analyzer.h"
 
 #define PRIORITY_LOOT_VISIT 200
+#define PRIORITY_LOOT_DROP 150
 
 namespace event {
 	class Event;

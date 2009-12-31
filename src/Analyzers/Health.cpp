@@ -173,7 +173,7 @@ void Health::onEvent(event::Event * const event) {
 			if (data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
 				continue; // not an unihorn
 			if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-				Beatify b(i->first, 100);
+				Beatify b(i->first, 175);
 				EventBus::broadcast(&b);
 			} else if (i->second.beatitude() != CURSED) {
 				map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);

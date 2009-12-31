@@ -123,7 +123,7 @@ void Armor::onEvent(event::Event * const event) {
 					_put_on.erase(i->first);
 				continue;
 			}
-			Beatify b(i->first, 100);
+			Beatify b(i->first, 175);
 			EventBus::broadcast(&b);
 		}
 	} else if (event->id() == WantItems::ID) {

@@ -46,6 +46,7 @@
 #define LEVEL_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 #define LEVEL_WALL_UNDIGGABLE "wall is too hard to dig into."
 #define LEVEL_FLOOR_OR_GROUND_UNDIGGABLE "here is too hard to dig in."
+#define LEVEL_SHOP_WALL_UNDIGGABLE "  This wall seems too hard to dig into.  "
 
 using namespace event;
 using namespace std;

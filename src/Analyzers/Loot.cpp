@@ -88,10 +88,10 @@ void Loot::analyze() {
 				/* no elbereth or dusted elbereth */
 				if (eq.count() < 3) {
 					/* less than 3 elbereths, engrave */
-					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_VISIT, (eq.count() > 0))));
+					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_DROP, (eq.count() > 0))));
 				} else {
 					/* 3 or more elbereths, drop stuff we don't want */
-					World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_LOOT_VISIT, true)));
+					World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_LOOT_DROP, true)));
 				}
 			}
 		}

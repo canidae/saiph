@@ -64,7 +64,7 @@ void Weapon::onEvent(event::Event * const event) {
 			else
 				_melee_weapons[i->first] = score;
 			if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-				Beatify b(i->first, 100);
+				Beatify b(i->first, 175);
 				EventBus::broadcast(&b);
 			}
 		}
