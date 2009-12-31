@@ -1,6 +1,7 @@
 #ifndef ACTION_DONATE_H
 #define	ACTION_DONATE_H
 
+#include <sstream>
 #include "Globals.h"
 #include "Actions/Action.h"
 
@@ -10,7 +11,10 @@ namespace action {
 	public:
 		static const int ID;
 
-		Donate(analyzer::Analyzer* analyzer, unsigned char direction, int amount, int priority) : Action(analyzer), _do_donate("#chat\n", priority), _donate_direction(direction, PRIORITY_CONTINUE_ACTION), _donate_amount(amount, PRIORITY_CONTINUE_ACTION) {
+		Donate(analyzer::Analyzer* analyzer, unsigned char direction, int amount, int priority) : Action(analyzer), _do_donate("#chat\n", priority), _donate_direction(direction, PRIORITY_CONTINUE_ACTION) {
+			std::ostringstream a;
+			a << amount << std::endl;
+			_donate_amount = Command(a.str(), PRIORITY_CONTINUE_ACTION);
 		}
 
 		virtual ~Donate() {
@@ -49,7 +53,7 @@ namespace action {
 	private:
 		const Command _do_donate;
 		const Command _donate_direction;
-		const Command _donate_amount;
+		Command _donate_amount;
 	};
 }
 #endif
