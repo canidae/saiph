@@ -9,10 +9,6 @@ Command::Command(const std::string& command, int priority) : _command(command), 
 Command::Command(unsigned char key, int priority) : _command(string(1, key)), _priority(priority) {
 }
 
-/* destructor */
-Command::Command(const Command& c) : _command(c._command), _priority(c._priority) {
-}
-
 /* methods */
 const std::string& Command::command() const {
 	return _command;

@@ -31,7 +31,6 @@ public:
 
 	Command(const std::string& command = "", int priority = ILLEGAL_PRIORITY);
 	Command(unsigned char key, int priority);
-	Command(const Command& c);
 
 	const std::string& command() const;
 	const std::string& command(const std::string& command);

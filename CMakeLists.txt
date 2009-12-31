@@ -39,6 +39,7 @@ set(HEADER_FILES
 	include/Actions/Apply.h
 	include/Actions/ApplyInDirection.h
 	include/Actions/Call.h
+	include/Actions/Donate.h
 	include/Actions/DropGold.h
 	include/Actions/Drop.h
 	include/Actions/EatCorpse.h
@@ -72,7 +73,7 @@ set(HEADER_FILES
 	include/Analyzers/Beatitude.h
 #	include/Analyzers/Blind.h
 #	include/Analyzers/Dig.h
-#	include/Analyzers/Donate.h
+	include/Analyzers/Donate.h
 	include/Analyzers/Door.h
 	include/Analyzers/Elbereth.h
 	include/Analyzers/Enhance.h
@@ -189,7 +190,7 @@ set(SOURCE_FILES
 	src/Analyzers/Beatitude.cpp
 #	src/Analyzers/Blind.cpp
 #	src/Analyzers/Dig.cpp
-#	src/Analyzers/Donate.cpp
+	src/Analyzers/Donate.cpp
 	src/Analyzers/Door.cpp
 	src/Analyzers/Elbereth.cpp
 	src/Analyzers/Enhance.cpp

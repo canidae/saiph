@@ -3,11 +3,12 @@
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
+#include "Analyzers/Donate.h"
+#include "Analyzers/Door.h"
 #include "Analyzers/Elbereth.h"
 #include "Analyzers/Enhance.h"
 #include "Analyzers/Excalibur.h"
 #include "Analyzers/Explore.h"
-#include "Analyzers/Door.h"
 #include "Analyzers/Fight.h"
 #include "Analyzers/Food.h"
 #include "Analyzers/Health.h"
@@ -37,6 +38,7 @@ void Analyzer::init() {
 	_analyzers.push_back(new Amulet());
 	_analyzers.push_back(new Armor());
 	_analyzers.push_back(new Beatitude());
+	_analyzers.push_back(new Donate());
 	_analyzers.push_back(new Door());
 	_analyzers.push_back(new Elbereth());
 	_analyzers.push_back(new Enhance());
