@@ -379,6 +379,8 @@ const Coordinate& Saiph::position() {
 }
 
 const Coordinate& Saiph::position(const Coordinate& position) {
+	if (position != _position)
+		_in_a_pit = false; // sometimes she gets out of a pit without any message about it (teleportitis?)
 	_position = position;
 	return Saiph::position();
 }
