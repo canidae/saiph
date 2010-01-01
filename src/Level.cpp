@@ -376,7 +376,7 @@ void Level::parseMessages(const string& messages) {
 void Level::setDirtyStash(const Point& point) {
 	map<Point, Stash>::iterator s = _stashes.find(point);
 	if (s != _stashes.end()) {
-		s->second.lastInspected(-1);
+		s->second.items().clear();
 		StashChanged sc(Coordinate(Saiph::position().level(), point));
 		EventBus::broadcast(static_cast<Event*> (&sc));
 	}
