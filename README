@@ -65,11 +65,12 @@ Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
 
 TODO:
 -----
+* set starting resistances (cold for valk, poison for barb, etc)
+* goes up & down a stairs repeatedly when all levels got type >= 2(?)
 * eat elves when she's human now that we know her race
 * sometimes she loots weird things, like gems & corpses. seems to be random
 * tiles in shops shouldn't be set SHOP_TILE, rather set a SHOP value for tile
 * a macro for debugging or #ifdef DEBUG\n Debug::foo() << bar << endl;\n #endif
 * engrave-testing wands (and keep the dangerous ones)
-* detect traps by message (currently won't detect traps beneath item(s))
-* don't attempt to loot items from pit we didn't fall into
+* detect traps by message (currently only detect pits)
 * don't kick down doors from corridors without standing in front of it
