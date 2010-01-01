@@ -212,10 +212,14 @@
 #define UNKNOWN_TILE_DIAGONALLY_UNPASSABLE 137
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
-#define MINES_FOUNTAIN 140
-#define SHOP_TILE 141
+#define MINES_FOUNTAIN 140 // TODO: get rid of
+#define SHOP_TILE 141 // TODO: get rid of
 #define MAGIC_PORTAL 142
 #define OUTSIDE_MAP 254
+
+/* trap values */
+#define TRAP_PIT 1
+#define TRAP_SPIKED_PIT 2
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0

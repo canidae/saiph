@@ -24,6 +24,11 @@ namespace action {
 		virtual ~Loot() {
 		}
 
+		static bool canLoot() {
+			std::map<Point, int>::const_iterator s = World::level().symbols(TRAP).find(Saiph::position());
+			return s == World::level().symbols(TRAP).end() || (s->second != TRAP_PIT && s->second != TRAP_SPIKED_PIT);
+		}
+
 		virtual int id() {
 			return ID;
 		}

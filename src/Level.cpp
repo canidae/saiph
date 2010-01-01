@@ -37,6 +37,8 @@
 #define LEVEL_OPEN_DOOR_HERE "  There is an open door here.  "
 #define LEVEL_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
 #define LEVEL_STAIRCASE_UP_HERE "  There is a staircase up here.  "
+#define LEVEL_PIT_HERE "  There is a pit here.  "
+#define LEVEL_SPIKED_PIT_HERE "  There is a spiked pit here.  "
 #define LEVEL_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define LEVEL_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define LEVEL_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
@@ -297,6 +299,12 @@ void Level::parseMessages(const string& messages) {
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = CHAOTIC;
 		else
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = UNALIGNED;
+	} else if (messages.find(LEVEL_PIT_HERE) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_PIT);
+	} else if (messages.find(LEVEL_SPIKED_PIT_HERE) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_SPIKED_PIT);
 	} else if (messages.find(LEVEL_WALL_UNDIGGABLE) != string::npos) {
 		_walls_diggable = false;
 	} else if (messages.find(LEVEL_FLOOR_OR_GROUND_UNDIGGABLE) != string::npos) {
