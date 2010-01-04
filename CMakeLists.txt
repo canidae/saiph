@@ -148,6 +148,7 @@ set(HEADER_FILES
 	include/Data/Trident.h
 	include/Data/TwoHandedSword.h
 	include/Data/UnicornHorn.h
+	include/Data/Wand.h
 	include/Data/Weapon.h
 	include/Data/Whip.h
 	# Events
@@ -265,6 +266,7 @@ set(SOURCE_FILES
 	src/Data/Trident.cpp
 	src/Data/TwoHandedSword.cpp
 	src/Data/UnicornHorn.cpp
+	src/Data/Wand.cpp
 	src/Data/Weapon.cpp
 	src/Data/Whip.cpp
 	# Events

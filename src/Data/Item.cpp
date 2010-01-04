@@ -5,6 +5,7 @@
 #include "Data/Armor.h"
 #include "Data/Food.h"
 #include "Data/Tool.h"
+#include "Data/Wand.h"
 #include "Data/Weapon.h"
 
 using namespace data;
@@ -27,6 +28,7 @@ void Item::init() {
 	Armor::init();
 	Food::init();
 	Tool::init();
+	Wand::init();
 	Weapon::init();
 }
 
