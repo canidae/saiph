@@ -1,7 +1,7 @@
 #ifndef ACTION_KICK_H
 #define ACTION_KICK_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 namespace action {
 

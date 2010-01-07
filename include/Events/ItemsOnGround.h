@@ -2,8 +2,8 @@
 #define EVENT_ITEMS_ON_GROUND_H
 
 #include <list>
-#include "Event.h"
-#include "../Item.h"
+#include "Item.h"
+#include "Events/Event.h"
 
 namespace event {
 

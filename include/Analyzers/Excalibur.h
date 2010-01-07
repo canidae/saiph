@@ -2,26 +2,23 @@
 #define ANALYZER_EXCALIBUR_H
 
 #include <string>
-#include "Analyzer.h"
-#include "../Request.h"
+#include "Analyzers/Analyzer.h"
 
-/* long sword */
+#define PRIORITY_EXCALIBUR_DIP 200
 #define EXCALIBUR_LONG_SWORD "long sword"
 
-class Saiph;
-
 namespace analyzer {
+
 	class Excalibur : public Analyzer {
 	public:
-		Excalibur(Saiph* saiph);
+		Excalibur();
 
 		void analyze();
 		void parseMessages(const std::string& messages);
+		void onEvent(event::Event * const event);
 
 	private:
-		Saiph* saiph;
-		Request req;
-		std::string command2;
+		unsigned char _long_sword_key;
 	};
 }
 #endif

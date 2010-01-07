@@ -36,7 +36,7 @@ void Amulet::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
 				continue; // known beatitude or not an amulet
-			Beatify b(i->first, 100);
+			Beatify b(i->first, 175);
 			EventBus::broadcast(&b);
 		}
 		// FIXME

@@ -3,9 +3,9 @@
 
 #include <map>
 #include <string>
-#include "Analyzer.h"
-#include "../Point.h"
-#include "../Monster.h"
+#include "Monster.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
 
 namespace analyzer {
 

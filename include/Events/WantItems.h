@@ -2,8 +2,8 @@
 #define EVENT_WANT_ITEMS_H
 
 #include <map>
-#include "Event.h"
-#include "../Item.h"
+#include "Item.h"
+#include "Events/Event.h"
 
 /* problems:
  *  - it's clumsy having a "pickup" event and a "drop" event, analyzers need to handle more events

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 #define SCROLL_DEBUG_NAME "Scroll] "
 /* messages */

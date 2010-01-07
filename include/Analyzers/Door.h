@@ -2,8 +2,8 @@
 #define ANALYZER_DOOR_H
 
 #include <string>
-#include "Analyzer.h"
-#include "../Point.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
 
 /* priorities */
 #define PRIORITY_DOOR_LOOT 200
@@ -28,7 +28,6 @@ namespace analyzer {
 	private:
 		Point _position;
 		unsigned char _unlock_tool_key;
-		bool _in_a_pit;
 
 		bool wantItem(const Item& item);
 	};

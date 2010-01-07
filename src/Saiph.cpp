@@ -38,6 +38,7 @@ bool Saiph::_stunned = false;
 bool Saiph::_hurt_leg = false;
 bool Saiph::_polymorphed = false;
 bool Saiph::_engulfed = false;
+bool Saiph::_in_a_pit = false;
 /* position */
 Coordinate Saiph::_position;
 /* zorkmids */
@@ -176,6 +177,10 @@ void Saiph::parseMessages(const string& messages) {
 			_extrinsics |= PROPERTY_LEVITATION;
 		if (messages.find(MESSAGE_LEVITATION_LOSE1) != string::npos || messages.find(MESSAGE_LEVITATION_LOSE2) != string::npos)
 			_extrinsics &= ~PROPERTY_LEVITATION;
+		if (messages.find(MESSAGE_CANT_REACH_OVER_PIT) != string::npos || messages.find(MESSAGE_STILL_IN_PIT) != string::npos || messages.find(MESSAGE_FALL_INTO_PIT) != string::npos || messages.find(MESSAGE_YOU_DIG_A_PIT) != string::npos)
+			_in_a_pit = true;
+		if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT) != string::npos || messages.find(MESSAGE_YOU_FLOAT_OUT_OF_PIT) != string::npos || messages.find(MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT) != string::npos)
+			_in_a_pit = false;
 	}
 }
 
@@ -365,11 +370,17 @@ bool Saiph::engulfed(bool engulfed) {
 	return Saiph::engulfed();
 }
 
+bool Saiph::inAPit() {
+	return _in_a_pit;
+}
+
 const Coordinate& Saiph::position() {
 	return _position;
 }
 
 const Coordinate& Saiph::position(const Coordinate& position) {
+	if (position != _position)
+		_in_a_pit = false; // sometimes she gets out of a pit without any message about it (teleportitis?)
 	_position = position;
 	return Saiph::position();
 }

@@ -2,7 +2,7 @@
 #define ANALYZER_ENHANCE_H
 
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 /* messages */
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "

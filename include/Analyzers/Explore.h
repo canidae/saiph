@@ -3,9 +3,9 @@
 
 #include <map>
 #include <string>
-#include "Analyzer.h"
-#include "../Coordinate.h"
-#include "../Point.h"
+#include "Coordinate.h"
+#include "Point.h"
+#include "Analyzers/Analyzer.h"
 
 /* search interval */
 #define EXPLORE_SEARCH_INTERVAL 16
@@ -13,8 +13,10 @@
 #define PRIORITY_EXPLORE_ROGUE 100
 #define PRIORITY_EXPLORE_STAIRS_UP 90
 #define PRIORITY_EXPLORE_LEVEL 80
-#define PRIORITY_EXPLORE_STAIRS_DOWN 90
-#define PRIORITY_EXPLORE_MAGIC_PORTAL 90
+#define PRIORITY_EXPLORE_STAIRS_DOWN 70
+#define PRIORITY_EXPLORE_MAGIC_PORTAL 70
+
+class Tile;
 
 namespace analyzer {
 
@@ -30,7 +32,7 @@ namespace analyzer {
 		std::map<Coordinate, int> _visit;
 		std::map<int, int> _explore_levels;
 
-		void explorePoint(Point p, unsigned int* min_cost, int* best_type, unsigned char* best_direction);
+		void explorePoint(Point p, Tile* best_tile, int* best_type);
 	};
 }
 #endif

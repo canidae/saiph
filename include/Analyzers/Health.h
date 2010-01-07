@@ -1,7 +1,7 @@
 #ifndef ANALYZER_HEALTH_H
 #define ANALYZER_HEALTH_H
 
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 /* TODO: clean this up */
 #define PRIORITY_HEALTH_CURE_POLYMORPH 925

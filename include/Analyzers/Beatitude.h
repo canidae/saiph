@@ -2,7 +2,7 @@
 #define ANALYZER_BEATITUDE_H
 
 #include <set>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 class Item;
 

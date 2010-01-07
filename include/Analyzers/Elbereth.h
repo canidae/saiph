@@ -2,7 +2,7 @@
 #define ANALYZER_ELBERETH_H
 
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 namespace analyzer {
 

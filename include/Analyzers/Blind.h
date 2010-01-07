@@ -1,8 +1,8 @@
 #ifndef ANALYZER_BLIND_H
 #define ANALYZER_BLIND_H
 
-#include "Analyzer.h"
-#include "../Request.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 class Item;
 class Saiph;

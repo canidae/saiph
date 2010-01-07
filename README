@@ -59,18 +59,18 @@ Vidar Wahlberg <canidae@exent.net>, aka. canidae
 Stefan O'Rear <stefanor@cox.net>, aka. sorear
 Patric Mueller <bhaak@gmx.net>, aka. bhaak
 Adrien Panhaleux <adrien.panhaleux@ens-lyon.fr>, aka. DainDwarf
-Kenny Root <kenny@the-b.org>, aka. kRutOn
+Kenny Root <kenny@the-b.org>, aka. kroot
 Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
 
 
-TODO (stuff with high priority):
---------------------------------
+TODO:
+-----
+* set starting resistances (cold for valk, poison for barb, etc)
+* goes up & down a stairs repeatedly when all levels got type >= 2(?)
+* eat elves when she's human now that we know her race
+* sometimes she loots weird things, like gems & corpses. seems to be random
+* tiles in shops shouldn't be set SHOP_TILE, rather set a SHOP value for tile
 * a macro for debugging or #ifdef DEBUG\n Debug::foo() << bar << endl;\n #endif
-* use travel ('_') when ie. moving to downstairs after done exploring level
-* search walls using "16s" instead of just "s" 16 times
-* dip for excalibur (analyzer should be removed when excalibur is found)
 * engrave-testing wands (and keep the dangerous ones)
-* detect traps by message (currently won't detect traps beneath item(s))
-* don't attempt to loot items from pit we didn't fall into
+* detect traps by message (currently only detect pits)
 * don't kick down doors from corridors without standing in front of it
-* don't kick down doors when she got a hurt leg

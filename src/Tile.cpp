@@ -4,7 +4,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Tile::Tile(const Coordinate& coordinate) : _coordinate(coordinate), _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _next(Point()) {
+Tile::Tile(const Coordinate& coordinate) : _coordinate(coordinate), _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0) {
 }
 
 Tile::~Tile() {
@@ -56,9 +56,9 @@ unsigned int Tile::search(unsigned int search) {
 	return this->search();
 }
 
-unsigned int Tile::searchInc() {
+unsigned int Tile::searchInc(int count) {
 	if (_search < TILE_FULLY_SEARCHED)
-		return ++_search;
+		_search += count;
 	return _search;
 }
 
@@ -71,8 +71,7 @@ unsigned char Tile::symbol(unsigned char symbol) {
 	return this->symbol();
 }
 
-void Tile::updatePath(const Point& next, unsigned char direction, unsigned int distance, unsigned int cost) {
-	_next = next;
+void Tile::updatePath(unsigned char direction, unsigned int distance, unsigned int cost) {
 	_direction = direction;
 	_distance = distance;
 	_cost = cost;

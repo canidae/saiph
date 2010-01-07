@@ -4,9 +4,9 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Item.h"
-#include "Attack.h"
-#include "../Globals.h"
+#include "Globals.h"
+#include "Data/Attack.h"
+#include "Data/Item.h"
 
 namespace data {
 

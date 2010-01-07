@@ -50,6 +50,7 @@ public:
 	static bool polymorphed(bool polymorphed);
 	static bool engulfed();
 	static bool engulfed(bool engulfed);
+	static bool inAPit();
 	static const Coordinate& position();
 	static const Coordinate& position(const Coordinate& position);
 	static int zorkmids();
@@ -95,6 +96,7 @@ private:
 	static bool _hurt_leg;
 	static bool _polymorphed;
 	static bool _engulfed;
+	static bool _in_a_pit;
 	/* position */
 	static Coordinate _position;
 	/* zorkmids */

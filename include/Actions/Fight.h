@@ -1,7 +1,7 @@
 #ifndef ACTION_FIGHT_H
 #define ACTION_FIGHT_H
 
-#include "Action.h"
+#include "Actions/Action.h"
 
 namespace action {
 

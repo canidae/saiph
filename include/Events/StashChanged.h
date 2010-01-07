@@ -2,8 +2,8 @@
 #define EVENT_STASH_CHANGED_H
 
 #include <list>
-#include "Event.h"
-#include "../Coordinate.h"
+#include "Coordinate.h"
+#include "Events/Event.h"
 
 namespace event {
 

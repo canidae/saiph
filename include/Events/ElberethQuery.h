@@ -1,7 +1,7 @@
 #ifndef EVENT_ELBERETH_QUERY_H
 #define EVENT_ELBERETH_QUERY_H
 
-#include "Event.h"
+#include "Events/Event.h"
 
 #define ELBERETH_NOT_HANDLED -1
 #define ELBERETH_MUST_CHECK 0

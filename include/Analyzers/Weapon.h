@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 #define WEAPON_WIELD_PRIORITY 200
 /* how many melee and ranged weapon stacks we want */

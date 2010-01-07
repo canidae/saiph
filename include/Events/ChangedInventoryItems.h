@@ -2,7 +2,7 @@
 #define EVENT_CHANGED_INVENTORY_ITEMS_H
 
 #include <set>
-#include "Event.h"
+#include "Events/Event.h"
 
 namespace event {
 

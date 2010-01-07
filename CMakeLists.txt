@@ -39,6 +39,7 @@ set(HEADER_FILES
 	include/Actions/Apply.h
 	include/Actions/ApplyInDirection.h
 	include/Actions/Call.h
+	include/Actions/Donate.h
 	include/Actions/DropGold.h
 	include/Actions/Drop.h
 	include/Actions/EatCorpse.h
@@ -72,11 +73,11 @@ set(HEADER_FILES
 	include/Analyzers/Beatitude.h
 #	include/Analyzers/Blind.h
 #	include/Analyzers/Dig.h
-#	include/Analyzers/Donate.h
+	include/Analyzers/Donate.h
 	include/Analyzers/Door.h
 	include/Analyzers/Elbereth.h
 	include/Analyzers/Enhance.h
-#	include/Analyzers/Excalibur.h
+	include/Analyzers/Excalibur.h
 	include/Analyzers/Explore.h
 	include/Analyzers/Fight.h
 	include/Analyzers/Food.h
@@ -93,7 +94,6 @@ set(HEADER_FILES
 	include/Analyzers/Shop.h
 #	include/Analyzers/Sokoban.h
 #	include/Analyzers/Throne.h
-#	include/Analyzers/Valkyrie.h
 	include/Analyzers/Vault.h
 #	include/Analyzers/Wand.h
 	include/Analyzers/Weapon.h
@@ -190,11 +190,11 @@ set(SOURCE_FILES
 	src/Analyzers/Beatitude.cpp
 #	src/Analyzers/Blind.cpp
 #	src/Analyzers/Dig.cpp
-#	src/Analyzers/Donate.cpp
+	src/Analyzers/Donate.cpp
 	src/Analyzers/Door.cpp
 	src/Analyzers/Elbereth.cpp
 	src/Analyzers/Enhance.cpp
-#	src/Analyzers/Excalibur.cpp
+	src/Analyzers/Excalibur.cpp
 	src/Analyzers/Explore.cpp
 	src/Analyzers/Fight.cpp
 	src/Analyzers/Food.cpp
@@ -211,7 +211,6 @@ set(SOURCE_FILES
 	src/Analyzers/Shop.cpp
 #	src/Analyzers/Sokoban.cpp
 #	src/Analyzers/Throne.cpp
-#	src/Analyzers/Valkyrie.cpp
 	src/Analyzers/Vault.cpp
 #	src/Analyzers/Wand.cpp
 	src/Analyzers/Weapon.cpp

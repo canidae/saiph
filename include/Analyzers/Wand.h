@@ -3,9 +3,9 @@
 
 #include <string>
 #include <vector>
-#include "Analyzer.h"
-#include "../Request.h"
-#include "../Item.h"
+#include "Item.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 #define WAND_DEBUG_NAME "Wand] "
 

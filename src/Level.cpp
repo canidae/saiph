@@ -37,6 +37,8 @@
 #define LEVEL_OPEN_DOOR_HERE "  There is an open door here.  "
 #define LEVEL_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
 #define LEVEL_STAIRCASE_UP_HERE "  There is a staircase up here.  "
+#define LEVEL_PIT_HERE "  There is a pit here.  "
+#define LEVEL_SPIKED_PIT_HERE "  There is a spiked pit here.  "
 #define LEVEL_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define LEVEL_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define LEVEL_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
@@ -46,6 +48,7 @@
 #define LEVEL_YOU_SEE_NO_OBJECTS "  You see no objects here.  "
 #define LEVEL_WALL_UNDIGGABLE "wall is too hard to dig into."
 #define LEVEL_FLOOR_OR_GROUND_UNDIGGABLE "here is too hard to dig in."
+#define LEVEL_SHOP_WALL_UNDIGGABLE "  This wall seems too hard to dig into.  "
 
 using namespace event;
 using namespace std;
@@ -296,6 +299,12 @@ void Level::parseMessages(const string& messages) {
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = CHAOTIC;
 		else
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = UNALIGNED;
+	} else if (messages.find(LEVEL_PIT_HERE) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_PIT);
+	} else if (messages.find(LEVEL_SPIKED_PIT_HERE) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_SPIKED_PIT);
 	} else if (messages.find(LEVEL_WALL_UNDIGGABLE) != string::npos) {
 		_walls_diggable = false;
 	} else if (messages.find(LEVEL_FLOOR_OR_GROUND_UNDIGGABLE) != string::npos) {
@@ -311,6 +320,7 @@ void Level::parseMessages(const string& messages) {
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn());
+		s->second.symbol(ILLEGAL_ITEM);
 		pos += sizeof (LEVEL_YOU_SEE_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -327,6 +337,7 @@ void Level::parseMessages(const string& messages) {
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn());
+		s->second.symbol(ILLEGAL_ITEM);
 		pos += sizeof (LEVEL_YOU_FEEL_HERE) - 1;
 		string::size_type length = messages.find(".  ", pos);
 		if (length != string::npos) {
@@ -343,6 +354,7 @@ void Level::parseMessages(const string& messages) {
 		else
 			s = _stashes.insert(s, make_pair(Saiph::position(), Stash())); // no stash at location, create one
 		s->second.lastInspected(World::turn());
+		s->second.symbol(ILLEGAL_ITEM);
 		pos = messages.find("  ", pos + 1);
 		while (pos != string::npos && messages.size() > pos + 2) {
 			pos += 2;
@@ -363,8 +375,11 @@ void Level::parseMessages(const string& messages) {
 
 void Level::setDirtyStash(const Point& point) {
 	map<Point, Stash>::iterator s = _stashes.find(point);
-	if (s != _stashes.end())
+	if (s != _stashes.end()) {
 		s->second.items().clear();
+		StashChanged sc(Coordinate(Saiph::position().level(), point));
+		EventBus::broadcast(static_cast<Event*> (&sc));
+	}
 }
 
 void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
@@ -395,14 +410,14 @@ void Level::setMonster(const Point& point, const Monster& monster) {
 	_monsters[point] = monster;
 }
 
-void Level::increaseAdjacentSearchCount(const Point& point) {
+void Level::increaseAdjacentSearchCount(const Point& point, int count) {
 	/* increase search count for adjacent points to given point */
 	Point p = point;
 	for (p.row(point.row() - 1); p.row() <= point.row() + 1; p.moveSouth()) {
 		for (p.col(point.col() - 1); p.col() <= point.col() + 1; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
-			_map[p.row()][p.col()].searchInc();
+			_map[p.row()][p.col()].searchInc(count);
 		}
 	}
 }
@@ -470,12 +485,15 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		map<Point, Stash>::iterator s = _stashes.find(point);
 		if (s != _stashes.end()) {
 			if ((s->second.symbol() != symbol || s->second.color() != color)) {
+				bool broadcast = s->second.symbol() != ILLEGAL_ITEM;
 				/* top symbol/color changed, update */
 				s->second.symbol(symbol);
 				s->second.color(color);
-				/* broadcast StashChanged */
-				StashChanged sc(Coordinate(Saiph::position().level(), point));
-				EventBus::broadcast(static_cast<Event*> (&sc));
+				/* broadcast StashChanged unless we looked at the stash last turn */
+				if (broadcast) {
+					StashChanged sc(Coordinate(Saiph::position().level(), point));
+					EventBus::broadcast(static_cast<Event*> (&sc));
+				}
 			}
 		} else {
 			/* new stash */
@@ -580,7 +598,7 @@ void Level::updatePathMap() {
 	_pathing_queue_size = 0;
 
 	/* set node we're standing on */
-	_map[from.row()][from.col()].updatePath(Point(), NOWHERE, 0, 0);
+	_map[from.row()][from.col()].updatePath(NOWHERE, 0, 0);
 
 	/* check first northwest node */
 	updatePathMapSetCost(to.moveNorthwest(), from, NW, 0);
@@ -677,8 +695,8 @@ void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned ch
 	Tile& next = _map[to.row()][to.col()];
 	if (cost < next.cost()) {
 		_pathing_queue[_pathing_queue_size++] = to;
-		next.updatePath(from, direction, distance + 1, cost);
+		next.updatePath(direction, distance + 1, cost);
 	} else if (cost == next.cost() && cost == UNREACHABLE) {
-		next.updatePath(from, direction, distance + 1, UNPASSABLE);
+		next.updatePath(direction, distance + 1, UNPASSABLE);
 	}
 }

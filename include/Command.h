@@ -6,9 +6,12 @@
 
 /* unique priorities */
 #define ILLEGAL_PRIORITY -1
-#define PRIORITY_CONTINUE_ACTION 1003
-#define PRIORITY_SELECT_ITEM 1002
-#define PRIORITY_CLOSE_SELECT_PAGE 1001
+#define PRIORITY_CONTINUE_ACTION 1006
+#define PRIORITY_SELECT_ITEM 1005
+#define PRIORITY_CLOSE_SELECT_PAGE 1004
+#define PRIORITY_LIST_PLAYER_ATTRIBUTES 1003
+#define PRIORITY_NAME_ITEM 1002
+#define PRIORITY_LIST_INVENTORY 1001
 #define PRIORITY_LOOK 1000
 #define PRIORITY_TURN_MAX 999
 /* loot priority (when picking up, not moving to), due to centralized handling of looting */
@@ -28,7 +31,6 @@ public:
 
 	Command(const std::string& command = "", int priority = ILLEGAL_PRIORITY);
 	Command(unsigned char key, int priority);
-	Command(const Command& c);
 
 	const std::string& command() const;
 	const std::string& command(const std::string& command);

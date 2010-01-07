@@ -2,8 +2,8 @@
 #define ACTION_ACTION_H
 
 #include <string>
-#include "../Command.h"
-#include "../Analyzers/Analyzer.h"
+#include "Command.h"
+#include "Analyzers/Analyzer.h"
 
 #define NO_ACTION 0
 
@@ -21,6 +21,7 @@ namespace action {
 		bool increaseTurnCounter();
 		virtual const Command& command() = 0;
 		virtual void update(const std::string& messages) = 0;
+		virtual void failed();
 
 	protected:
 		int _sequence;

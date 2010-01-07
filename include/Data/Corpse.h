@@ -3,8 +3,8 @@
 
 #include <map>
 #include <string>
-#include "Food.h"
-#include "Monster.h"
+#include "Data/Food.h"
+#include "Data/Monster.h"
 
 namespace data {
 

@@ -5,9 +5,10 @@
 gmon.out
 saiph
 nbproject/private
+build
 CMakeCache.txt
-CMakeFiles/
+CMakeFiles
 Makefile
 Makefile-saiph.mk
 cmake_install.cmake
-nbproject/
+nbproject

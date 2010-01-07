@@ -2,7 +2,7 @@
 #define ANALYZER_AMULET_H
 
 #include <set>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 /* priorities */
 #define PRIORITY_AMULET_LOOT 200

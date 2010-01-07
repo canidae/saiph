@@ -3,7 +3,7 @@
 
 #include <set>
 #include <string>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 #define PRIORITY_FIGHT_MELEE_MAX 400
 #define PRIORITY_FIGHT_MELEE_MIN 250

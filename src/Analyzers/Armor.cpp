@@ -31,8 +31,9 @@ Armor::Armor() : Analyzer("Armor"), _put_on() {
 void Armor::analyze() {
 	if (_put_on.size() > 0) {
 		/* put on highest scoring armor */
-		unsigned char key = ILLEGAL_ITEM;
+		unsigned char best_key = ILLEGAL_ITEM;
 		int best_score = 0;
+		int best_slot = ILLEGAL_SLOT;
 		for (set<unsigned char>::iterator k = _put_on.begin(); k != _put_on.end(); ++k) {
 			const Item& to_wear = Inventory::itemAtKey(*k);
 			map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(to_wear.name());
@@ -40,19 +41,21 @@ void Armor::analyze() {
 				continue;
 			if (Inventory::itemInSlot(a->second->slot()).beatitude() == CURSED)
 				continue; // can't take off existing armor in this slot
-			else if (a->second->slot() == SLOT_SHIRT && (Inventory::itemInSlot(SLOT_SUIT).beatitude() == CURSED || Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED))
+			if (a->second->slot() == SLOT_SHIRT && (Inventory::itemInSlot(SLOT_SUIT).beatitude() == CURSED || Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED))
 				continue; // can't take off armor covering this slot
-			else if (a->second->slot() == SLOT_SUIT && Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED)
+			if (a->second->slot() == SLOT_SUIT && Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED)
 				continue; // can't take off armor covering this slot
 			int score = calculateArmorScore(to_wear, a->second);
-			if (score > best_score) {
-				key = *k;
+			if (score > best_score || (a->second->slot() == SLOT_SHIRT && (best_slot == SLOT_SUIT || best_slot == SLOT_CLOAK)) || (a->second->slot() == SLOT_SUIT && best_slot == SLOT_CLOAK)) {
+				/* score is better or the piece of armor goes on the inside of the currently best armor */
+				best_key = *k;
 				best_score = score;
+				best_slot = a->second->slot();
 			}
 		}
-		const Item& to_wear = Inventory::itemAtKey(key);
-		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(to_wear.name());
-		if (a != data::Armor::armors().end() && betterThanCurrent(to_wear)) {
+		const Item& best_wear = Inventory::itemAtKey(best_key);
+		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(best_wear.name());
+		if (a != data::Armor::armors().end() && betterThanCurrent(best_wear)) {
 			if (((a->second->slot() == SLOT_SHIRT || a->second->slot() == SLOT_SUIT) && Inventory::keyForSlot(SLOT_CLOAK) != ILLEGAL_ITEM))
 				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(SLOT_CLOAK), ARMOR_WEAR_PRIORITY)));
 			else if (a->second->slot() == SLOT_SHIRT && Inventory::keyForSlot(SLOT_SUIT) != ILLEGAL_ITEM)
@@ -60,9 +63,9 @@ void Armor::analyze() {
 			else if (Inventory::keyForSlot(a->second->slot()) != ILLEGAL_ITEM)
 				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(a->second->slot()), ARMOR_WEAR_PRIORITY)));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Wear(this, key, ARMOR_WEAR_PRIORITY)));
+				World::setAction(static_cast<action::Action*> (new action::Wear(this, best_key, ARMOR_WEAR_PRIORITY)));
 		} else {
-			_put_on.erase(key);
+			_put_on.erase(best_key);
 		}
 	}
 }
@@ -120,12 +123,14 @@ void Armor::onEvent(event::Event * const event) {
 					_put_on.erase(i->first);
 				continue;
 			}
-			Beatify b(i->first, 100);
+			Beatify b(i->first, 175);
 			EventBus::broadcast(&b);
 		}
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		if (Saiph::encumbrance() < BURDENED && (!e->safeStash() || World::shortestPath(ALTAR).cost() < UNPASSABLE)) {
+		if (e->safeStash() && World::shortestPath(ALTAR).cost() >= UNPASSABLE) {
+			/* on safe stash and can't path to altar, drop */
+		} else if (Saiph::encumbrance() < BURDENED && (!e->safeStash() || World::shortestPath(ALTAR).cost() < UNPASSABLE)) {
 			/* we're not burdened and not on a safe stash or we can't reach an altar, loot armor */
 			/* if we are on a safe stash and can't reach an altar then we will drop armor */
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {

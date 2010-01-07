@@ -1,8 +1,8 @@
 #ifndef ACTION_LIST_PLAYER_ATTRIBUTES_H
 #define	ACTION_LIST_PLAYER_ATTRIBUTES_H
 
-#include "Action.h"
-#include "../World.h"
+#include "World.h"
+#include "Actions/Action.h"
 
 namespace action {
 
@@ -10,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_attributes("", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+		ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_attributes("", PRIORITY_LIST_PLAYER_ATTRIBUTES), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListPlayerAttributes() {

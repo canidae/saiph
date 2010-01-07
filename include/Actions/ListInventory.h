@@ -1,9 +1,8 @@
 #ifndef ACTION_LIST_INVENTORY_H
 #define ACTION_LIST_INVENTORY_H
 
-#include "Action.h"
-
-#include "../World.h"
+#include "World.h"
+#include "Actions/Action.h"
 
 namespace action {
 
@@ -11,7 +10,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_inventory("i", PRIORITY_LOOK), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+		ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_inventory("i", PRIORITY_LIST_INVENTORY), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 		}
 
 		virtual ~ListInventory() {

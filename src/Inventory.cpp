@@ -118,9 +118,6 @@ void Inventory::parseMessages(const string& messages) {
 			EventBus::broadcast(static_cast<Event*> (&received));
 			/* make any stash at location dirty too */
 			World::level().setDirtyStash(Saiph::position());
-			/* broadcast StashChanged */
-			StashChanged sc(Saiph::position());
-			EventBus::broadcast(static_cast<Event*> (&sc));
 		}
 	}
 }

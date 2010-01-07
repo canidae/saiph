@@ -212,10 +212,14 @@
 #define UNKNOWN_TILE_DIAGONALLY_UNPASSABLE 137
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
-#define MINES_FOUNTAIN 140
-#define SHOP_TILE 141
+#define MINES_FOUNTAIN 140 // TODO: get rid of
+#define SHOP_TILE 141 // TODO: get rid of
 #define MAGIC_PORTAL 142
 #define OUTSIDE_MAP 254
+
+/* trap values */
+#define TRAP_PIT 1
+#define TRAP_SPIKED_PIT 2
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
@@ -293,6 +297,7 @@
 /* list duplicate lines: grep "MESSAGE_" Globals.h | cut -d" " -f3- | sort | uniq -d */
 #define MESSAGE_BREAK_SHOP_DOOR "  \"Cad!  You did 400 zorkmids worth of damage!\"  Pay?  [yn] (n)  "
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
+#define MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT "  You cannot reach the bottom of the pit.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
 #define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
 #define MESSAGE_COLD_RES_GAIN1 "  You feel full of hot air.  "
@@ -310,6 +315,7 @@
 #define MESSAGE_DIG_DIRECTION "  In what direction do you want to dig? "
 #define MESSAGE_DIGGED_TEXT "  Something is engraved here on the floor.  "
 #define MESSAGE_DIP_IN_FOUNTAIN " into the fountain? [yn] (n)  " // begins with "  Dip the %s ..."
+#define MESSAGE_DIP_IN_WATER " into the pool of water? [yn] (n)  " // begins with "  Dip the %s ..."
 #define MESSAGE_DISINTEGRATION_RES_GAIN1 "  You feel very firm.  "
 #define MESSAGE_DISINTEGRATION_RES_GAIN2 "  You feel totally together, man.  "
 #define MESSAGE_DONT_BE_RIDICULOUS "  Don't be ridiculous!  "
@@ -331,6 +337,7 @@
 #define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here? "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
 #define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
+#define MESSAGE_FALL_INTO_PIT "  You fall into a pit!  "
 #define MESSAGE_FEEL_MORE_CONFIDENT "  You feel more confident in your "
 #define MESSAGE_FIRE_RES_GAIN1 "  You feel a momentary chill.  "
 #define MESSAGE_FIRE_RES_GAIN2 "  You be chillin'.  "
@@ -346,6 +353,7 @@
 #define MESSAGE_GOT_STRESSED "  You rebalance your load.  Movement is difficult.  "
 #define MESSAGE_GUARD_DISAPPEARS "  Suddenly, the guard disappears.  "
 #define MESSAGE_HELLO_STRANGER "  \"Hello stranger, who are you?\" -  "
+#define MESSAGE_HOW_MUCH_OFFER "  How much will you offer?  "
 #define MESSAGE_HURT_LEFT_LEG "  Your left leg is in no shape for kicking.  "
 #define MESSAGE_HURT_RIGHT_LEG "  Your right leg is in no shape for kicking.  "
 #define MESSAGE_IMPROVISE "  Improvise? [yn] (n)  "
@@ -389,10 +397,12 @@
 #define MESSAGE_SLEEP_RES_LOSE1 "  You feel tired!  "
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_STEALS " steals "
+#define MESSAGE_STILL_IN_PIT "  You are still in a pit.  "
 #define MESSAGE_STOLE " stole "
 #define MESSAGE_STOP_EATING "  Stop eating? [yn] (y)  "
 #define MESSAGE_SUCCEED_UNLOCKING "  You succeed in unlocking the door.  "
 #define MESSAGE_SUCCEED_PICKING "  You succeed in picking the lock.  "
+#define MESSAGE_TALK_TO_WHOM "  Talk to whom? "
 #define MESSAGE_TELEPATHY_GAIN1 "  You feel a strange mental acuity.  "
 #define MESSAGE_TELEPATHY_LOSE1 "  Your senses fail!  "
 #define MESSAGE_TELEPORT_CONTROL_GAIN1 "  You feel in control of yourself.  "
@@ -406,6 +416,7 @@
 #define MESSAGE_WHAT_TO_APPLY "  What do you want to use or apply? "
 #define MESSAGE_WHAT_TO_CALL_ITEM "  Call "
 #define MESSAGE_WHAT_TO_DIP "  What do you want to dip? "
+#define MESSAGE_WHAT_TO_DIP_INTO "  What do you want to dip into? "
 #define MESSAGE_WHAT_TO_DRINK "  What do you want to drink? "
 #define MESSAGE_WHAT_TO_DROP "  What do you want to drop? "
 #define MESSAGE_WHAT_TO_EAT "  What do you want to eat? "
@@ -423,9 +434,11 @@
 #define MESSAGE_WHAT_TUNE "  What tune are you playing? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
 #define MESSAGE_YOU_DESTROY "  You destroy the "
+#define MESSAGE_YOU_DIG_A_PIT "  You dig a pit in the floor.  "
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_FINISH_YOUR_PRAYER "  You finish your prayer.  "
+#define MESSAGE_YOU_FLOAT_OUT_OF_PIT "  You float up, out of the pit!  "
 #define MESSAGE_YOU_KILL "  You kill the "
 #define MESSAGE_YOU_READ "  You read:"
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // followed by what we took off

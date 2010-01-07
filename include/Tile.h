@@ -2,7 +2,6 @@
 #define	TILE_H
 
 #include "Coordinate.h"
-#include "Point.h"
 
 /* max searching on a point */
 #define TILE_FULLY_SEARCHED 256
@@ -21,10 +20,10 @@ public:
 	unsigned char monster(unsigned char monster);
 	unsigned int search() const;
 	unsigned int search(unsigned int search);
-	unsigned int searchInc();
+	unsigned int searchInc(int count = 1);
 	unsigned char symbol() const;
 	unsigned char symbol(unsigned char symbol);
-	void updatePath(const Point& next, unsigned char direction, unsigned int distance, unsigned int cost);
+	void updatePath(unsigned char direction, unsigned int distance, unsigned int cost);
 
 private:
 	static unsigned int _unreachable;
@@ -37,7 +36,6 @@ private:
 	unsigned int _distance; // distance to this tile when on same level
 	unsigned int _cost; // cost to this tile when on same level
 	unsigned int _updated; // last internal turn this node was updated, used for pathing
-	Point _next; // the location of the next tile in the path towards the player
 };
 
 std::ostream & operator<<(std::ostream& os, Tile& t);

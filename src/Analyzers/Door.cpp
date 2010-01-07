@@ -23,7 +23,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Door::Door() : Analyzer("Door"), _unlock_tool_key(0), _in_a_pit(false) {
+Door::Door() : Analyzer("Door"), _unlock_tool_key(0) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -33,19 +33,8 @@ Door::Door() : Analyzer("Door"), _unlock_tool_key(0), _in_a_pit(false) {
 /* methods */
 void Door::analyze() {
 	/* open closed doors */
-	if (Saiph::blind())
-		return; // don't move when blind
-	if (_in_a_pit) {
-		/* we're possibly in a pit.
-		 * most common way to get out of pits is to crawl out,
-		 * but she might get teleported out or levitate out.
-		 * so we'll check if her position has changed, if it has
-		 * then she's probably no longer in a pit */
-		if (_position != Saiph::position())
-			_in_a_pit = false; // no longer in the pit
-		else
-			return; // still in the pit
-	}
+	if (Saiph::blind() || Saiph::confused() || Saiph::stunned() || Saiph::hallucinating())
+		return; // don't move to, or open doors when blind/confused/stunned/hallucinating
 
 	/* go to nearest closed door and get it open somehow */
 	unsigned int min_distance = UNREACHABLE;
@@ -57,6 +46,8 @@ void Door::analyze() {
 			continue; // don't kick/pick doors when we're in the mines
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
+		if (Saiph::inAPit() && tile.distance() == 1)
+			continue; // in a pit next to the door, prevent her from trying to open it (and fail)
 		if (tile.distance() == 1) {
 			/* open/pick/kick door */
 			if (d->second != DOOR_LOCKED) {
@@ -64,9 +55,7 @@ void Door::analyze() {
 			} else {
 				/* we can't apply when we're overtaxed, but logically we can kick... */
 				if (_unlock_tool_key == 0 || Saiph::encumbrance() >= OVERTAXED) {
-					if (Saiph::hurtLeg())
-						continue; // can't kick, hurt leg
-					else
+					if (!Saiph::hurtLeg())
 						World::setAction(static_cast<action::Action*> (new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN)));
 				} else {
 					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN)));
@@ -76,7 +65,7 @@ void Door::analyze() {
 			return;
 		} else if (tile.distance() < min_distance) {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
 			min_distance = tile.distance();
 		}
 	}
@@ -86,20 +75,13 @@ void Door::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos || messages.find(MESSAGE_SUCCEED_PICKING) != string::npos) {
 		/* door unlocked */
 		World::level().setDungeonSymbolValue(_position, UNKNOWN_SYMBOL_VALUE);
-	} else if (messages.find(MESSAGE_DOOR_LOCKED, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_DOOR_LOCKED) != string::npos) {
 		/* door is locked, set the value to 1 */
 		World::level().setDungeonSymbolValue(_position, DOOR_LOCKED);
-	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, YES)));
-	} else if (messages.find(MESSAGE_CANT_REACH_OVER_PIT, 0) != string::npos) {
-		/* we're in a pit, can't reach door from here */
-		_in_a_pit = true;
-		_position = Saiph::position();
-	} else if (messages.find(MESSAGE_CRAWL_OUT_OF_PIT, 0) != string::npos) {
-		/* crawled out of pit */
-		_in_a_pit = false;
-	} else if (messages.find(MESSAGE_CLOSED_FOR_INVENTORY, 0) != string::npos) {
+	} else if (messages.find(MESSAGE_CLOSED_FOR_INVENTORY) != string::npos) {
 		/* a shop that is closed for inventory */
 		stack<Point> door;
 

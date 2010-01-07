@@ -3,8 +3,8 @@
 
 #include <map>
 #include <string>
-#include "Item.h"
-#include "../Globals.h"
+#include "Globals.h"
+#include "Data/Item.h"
 
 namespace data {
 

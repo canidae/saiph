@@ -1,8 +1,8 @@
 #ifndef ACTION_WIELD_H
 #define	ACTION_WIELD_H
 
-#include "Action.h"
-#include "../Inventory.h"
+#include "Inventory.h"
+#include "Actions/Action.h"
 
 /* messages */
 #define WEAPON_WHAT_TO_WIELD "  What do you want to wield? "

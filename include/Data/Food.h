@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "Item.h"
+#include "Data/Item.h"
 
 #define EAT_EFFECT_ACIDIC           (1 << 0)
 #define EAT_EFFECT_AGGRAVATE        (1 << 1)

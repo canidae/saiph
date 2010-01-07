@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "Analyzer.h"
+#include "Analyzers/Analyzer.h"
 
 #define WISH_DEBUG_NAME "Wish] "
 

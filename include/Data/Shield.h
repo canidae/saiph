@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "Armor.h"
+#include "Data/Armor.h"
 
 namespace data {
 

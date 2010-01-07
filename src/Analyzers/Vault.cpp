@@ -55,7 +55,7 @@ void Vault::parseMessages(const string& messages) {
 			if (tile.distance() == 1)
 				World::setAction(static_cast<action::Action*> (new action::Rest(this, 999)));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), 999)));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, 999, false)));
 			return;
 		}
 	}

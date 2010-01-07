@@ -1,8 +1,8 @@
 #ifndef EVENT_TAKE_ME_THERE_H
 #define EVENT_TAKE_ME_THERE_H
 
-#include "Event.h"
-#include "../Coordinate.h"
+#include "Coordinate.h"
+#include "Events/Event.h"
 
 namespace event {
 

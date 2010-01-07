@@ -1,64 +1,75 @@
 #include "Analyzers/Donate.h"
 
-#include <stdlib.h>
+#include "EventBus.h"
 #include "Monster.h"
-#include "Player.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Actions/Donate.h"
+#include "Actions/Move.h"
+#include "Events/Event.h"
+#include "Events/WantItems.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
-Donate::Donate(Saiph* saiph) : Analyzer("Donate"), saiph(saiph), priest_dir(ILLEGAL_DIRECTION), priest_loc() {
-}
-
-void Donate::parseMessages(const std::string& messages) {
-	if (priest_dir == ILLEGAL_DIRECTION)
-		return;
-	if (messages.find(DONATE_TALK_TO_WHOM) != string::npos) {
-		command = priest_dir;
-		priority = PRIORITY_CONTINUE_ACTION;
-	} else if (messages.find(DONATE_HOW_MUCH_OFFER) != string::npos) {
-		command = 400 * saiph->world->player.experience;
-		command.append("\n");
-		priority = PRIORITY_CONTINUE_ACTION;
-	}
+Donate::Donate() : Analyzer("Donate"), _priest_loc() {
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 void Donate::analyze() {
-	if (priority >= PRIORITY_DONATE_CHAT_TO_PRIEST)
-		return;
-	if (saiph->world->player.zorkmids < 400 * saiph->world->player.experience)
-		return;
-	if (saiph->getDungeonSymbol() == STAIRS_DOWN) {
-		/* got enough money, standing on stairs down, find priest */
-		priest_loc.level = -1;
-		unsigned int least_moves = UNREACHABLE;
-		for (int lev = 0; lev < (int) saiph->levels.size(); lev++) {
-			for (map<Point, Monster>::iterator i = saiph->levels[lev].monsters.begin(); i != saiph->levels[lev].monsters.end(); ++i) {
-				if (!i->second.priest)
+	if (Saiph::zorkmids() < 400 * Saiph::experience())
+		return; // not enough gold
+	if (World::level().tile().symbol() == STAIRS_DOWN) {
+		/* standing on stairs down or at same level as priest, find priest */
+		_priest_loc.level(-1);
+		unsigned int nearest = UNREACHABLE;
+		for (int lev = 0; lev < (int) World::levels().size(); lev++) {
+			for (map<Point, Monster>::const_iterator i = World::level(lev).monsters().begin(); i != World::level(lev).monsters().end(); ++i) {
+				if (!i->second.priest())
 					continue;
-				const PathNode& node = saiph->shortestPath(priest_loc);
-				if (node.cost == UNREACHABLE)
+				Tile tile = World::shortestPath(Coordinate(lev, i->first));
+				if (tile.cost() == UNREACHABLE)
 					continue; // can't path to this priest
-				if (node.moves < least_moves) {
+				if (tile.cost() < nearest) {
 					/* this priest is closer than the previous priest */
-					priest_loc = Coordinate(lev, i->first);
-					least_moves = node.moves;
+					_priest_loc = tile.coordinate();
+					nearest = tile.cost();
 				}
 			}
 		}
 	}
-	if (priest_loc.level != -1) {
-		int moves = 0;
-		const PathNode& node = saiph->shortestPath(priest_loc);
-		priest_dir = node.dir;
-		if (priest_dir == ILLEGAL_DIRECTION)
-			return;
-		if (moves == 1)
-			command = CHAT;
-		else
-			command = priest_dir;
-		priority = PRIORITY_DONATE_CHAT_TO_PRIEST;
+	if (_priest_loc.level() != -1) {
+		if (_priest_loc.level() == Saiph::position().level()) {
+			/* on same level as priest, update coordinate */
+			_priest_loc.level(-1);
+			for (map<Point, Monster>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
+				if (!i->second.priest())
+					continue;
+				Tile tile = World::shortestPath(Coordinate(Saiph::position().level(), i->first));
+				if (tile.cost() == UNREACHABLE)
+					continue; // can't path to this priest
+				_priest_loc = tile.coordinate();
+				break;
+			}
+		}
+		if (_priest_loc.level() != -1) {
+			Tile tile = World::shortestPath(_priest_loc);
+			if (tile.distance() == 1)
+				World::setAction(static_cast<action::Action*> (new action::Donate(this, tile.direction(), Saiph::experience() * 400, DONATE_PRIORITY)));
+			else
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, DONATE_PRIORITY)));
+		}
+	}
+}
+
+void Donate::onEvent(Event * const event) {
+	if (event->id() == WantItems::ID) {
+		/* we want gold to donate to priests */
+		WantItems* e = static_cast<WantItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (i->second.name() == "gold piece")
+				i->second.want(i->second.count());
+		}
 	}
 }

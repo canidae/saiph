@@ -37,8 +37,8 @@ void Loot::analyze() {
 		return;
 	}
 
-	/* don't move around when blind/confused/stunned */
-	if (Saiph::blind() || Saiph::confused() || Saiph::stunned())
+	/* don't move around when blind/confused/stunned/hallucinating */
+	if (Saiph::blind() || Saiph::confused() || Saiph::stunned() || Saiph::hallucinating())
 		return;
 
 	/* visit new/changed stashes */
@@ -59,7 +59,7 @@ void Loot::analyze() {
 			}
 		} else if (tile.cost() < UNPASSABLE) {
 			/* move to stash */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile.direction(), action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
 		}
 		++v;
 	}
@@ -88,10 +88,10 @@ void Loot::analyze() {
 				/* no elbereth or dusted elbereth */
 				if (eq.count() < 3) {
 					/* less than 3 elbereths, engrave */
-					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_VISIT, (eq.count() > 0))));
+					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_DROP, (eq.count() > 0))));
 				} else {
 					/* 3 or more elbereths, drop stuff we don't want */
-					World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_LOOT_VISIT, true)));
+					World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_LOOT_DROP, true)));
 				}
 			}
 		}
@@ -113,7 +113,7 @@ void Loot::onEvent(Event * const event) {
 	} else if (event->id() == ItemsOnGround::ID) {
 		/* standing on stash, ask if anyone want anything */
 		// TODO: proper shopping code
-		if (World::level().tile().symbol() != SHOP_TILE) {
+		if (World::level().tile().symbol() != SHOP_TILE && action::Loot::canLoot()) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			int index = 0;
 			bool looting = false;

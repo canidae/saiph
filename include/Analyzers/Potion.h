@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "Analyzer.h"
-#include "../Request.h"
+#include "Request.h"
+#include "Analyzers/Analyzer.h"
 
 #define POTION_DEBUG_NAME "Potion] "
 /* messages */

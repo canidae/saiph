@@ -64,14 +64,14 @@ void Weapon::onEvent(event::Event * const event) {
 			else
 				_melee_weapons[i->first] = score;
 			if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-				Beatify b(i->first, 100);
+				Beatify b(i->first, 175);
 				EventBus::broadcast(&b);
 			}
 		}
 		setBestWeapons();
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		if (e->dropping() || Saiph::encumbrance() < BURDENED) {
+//		if (e->dropping() || Saiph::encumbrance() < BURDENED) {
 			/* dropping items or we're burdened (which means don't loot weapons) */
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 				if (e->dropping()) {
@@ -83,10 +83,9 @@ void Weapon::onEvent(event::Event * const event) {
 					/* looting, is this better than what we got? */
 					if (betterThanWhatWeGot(i->second))
 						i->second.want(i->second.count());
-
 				}
 			}
-		}
+//		}
 	}
 }
 
@@ -117,18 +116,16 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 				min_score = m->second;
 		}
 	} else {
-		if ((int) _range_weapons.size() < WEAPON_COUNT_MELEE)
-			return true; // melee weapon we got room for
 		/* check if this weapon is better than any of the melee weapons we already got */
 		for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
 			if (m->second < min_score)
 				min_score = m->second;
 		}
 	}
-	return score > min_score; // returns true if this weapon is better than any melee weapon we got
+	return score > min_score; // returns true if this weapon is better than any weapon we got
 }
 
-int Weapon::calculateWeaponScore(const Item& item, const data::Weapon * weapon) {
+int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
 	if (!weapon->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
 		return 0; // for now, don't try to wield two-hander when we got a shield
 	int score = 0;
@@ -255,7 +252,7 @@ int Weapon::calculateWeaponScore(const Item& item, const data::Weapon * weapon) 
 	return score;
 }
 
-bool Weapon::isRangedWeapon(const data::Weapon * weapon) {
+bool Weapon::isRangedWeapon(const data::Weapon* weapon) {
 	/* TODO: roles may have different preferences of which weapons to throw */
 	return (weapon->type() == WEAPON_DAGGER || weapon->type() == WEAPON_DART || weapon->type() == WEAPON_JAVELIN || weapon->type() == WEAPON_KNIFE || weapon->type() == WEAPON_SHURIKEN || weapon->type() == WEAPON_SPEAR);
 }
@@ -265,7 +262,7 @@ void Weapon::setBestWeapons() {
 	 * also clean up _melee_weapons and _range_weapons */
 	while ((int) _range_weapons.size() > WEAPON_COUNT_RANGE) {
 		map<unsigned char, int>::iterator remove = _range_weapons.begin();
-		for (map<unsigned char, int>::iterator m = (_range_weapons.begin())++; m != _range_weapons.end(); ++m) {
+		for (map<unsigned char, int>::iterator m = ++(_range_weapons.begin()); m != _range_weapons.end(); ++m) {
 			if (m->second < remove->second)
 				remove = m;
 		}
@@ -273,7 +270,7 @@ void Weapon::setBestWeapons() {
 	}
 	while ((int) _melee_weapons.size() > WEAPON_COUNT_MELEE) {
 		map<unsigned char, int>::iterator remove = _melee_weapons.begin();
-		for (map<unsigned char, int>::iterator m = (_melee_weapons.begin())++; m != _melee_weapons.end(); ++m) {
+		for (map<unsigned char, int>::iterator m = ++(_melee_weapons.begin()); m != _melee_weapons.end(); ++m) {
 			if (m->second < remove->second)
 				remove = m;
 		}
@@ -300,6 +297,5 @@ void Weapon::setBestWeapons() {
 			best_key = m->first;
 		}
 	}
-	if (best_key != ILLEGAL_ITEM)
-		_wield_weapon = best_key;
+	_wield_weapon = best_key;
 }
