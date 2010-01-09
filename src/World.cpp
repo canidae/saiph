@@ -807,7 +807,7 @@ void World::dumpMaps() {
 	/* monsters and map as saiph sees it */
 	Point p;
 	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
-		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";2H";
+		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";1H";
 		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
@@ -826,7 +826,7 @@ void World::dumpMaps() {
 	/* path map */
 	/*
 	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
-		cout << (unsigned char) 27 << "[" << p.row + 26 << ";2H";
+		cout << (unsigned char) 27 << "[" << p.row + 26 << ";1H";
 		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
 			if (p.row == postion.row && p.col == Saiph::position().col)
 				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
