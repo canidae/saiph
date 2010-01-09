@@ -18,6 +18,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <sys/time.h>
 #include "Command.h"
 #include "Globals.h"
 #include "Level.h"
@@ -79,7 +80,7 @@ private:
 	static Point _last_menu; // needed to help detect menus that persist over turns
 	static std::map<std::string, std::vector<int> > _levelmap; // used for faster map recognition
 	static char _levelname[MAX_LEVELNAME_LENGTH];
-	static time_t _start_time;
+	static timeval _start_time;
 	static int _frame_count;
 	static bool _menu;
 	static bool _question;

@@ -50,7 +50,7 @@ int World::_data_size = -1;
 string World::_msg_str;
 Point World::_last_menu;
 map<string, vector<int> > World::_levelmap;
-time_t World::_start_time = time(NULL);
+timeval World::_start_time;
 vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
 
@@ -124,6 +124,10 @@ void World::init(int connection_type) {
 		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
 		exit(1);
 	}
+
+	/* set start time */
+	gettimeofday(&World::_start_time, NULL);
+
 	/* fetch the first "frame" */
 	update();
 }
@@ -779,16 +783,26 @@ bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_
 
 void World::dumpMaps() {
 	/* XXX: World echoes output from the game in the top left corner */
-	/* commands/frames/turns per second */
-	int seconds = (int) difftime(time(NULL), _start_time);
-	if (seconds == 0)
-		++seconds;
-	int fps = _frame_count / seconds;
-	int tps = _turn / seconds;
+	/* frames/turns per second */
+	timeval cur_time;
+	gettimeofday(&cur_time, NULL);
+	double seconds = (cur_time.tv_sec + cur_time.tv_usec / 1000000.0) - (_start_time.tv_sec + _start_time.tv_usec / 1000000.0);
+	if (seconds == 0.0)
+		seconds = 0.001;
+	double fps = (double) _frame_count / seconds;
+	double tps = (double) _turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
-	cout << "FPS/TPS: ";
-	cout << (unsigned char) 27 << "[35m" << fps << (unsigned char) 27 << "[0m/";
-	cout << (unsigned char) 27 << "[36m" << tps << (unsigned char) 27 << "[0m      ";
+	cout << "Frames/second: " << (unsigned char) 27 << "[32m";
+	cout << (int) fps << "." << (int) (fps * 10) % 10;
+	cout << (unsigned char) 27 << "[0m     ";
+	cout << (unsigned char) 27 << "[25;26H";
+	cout << "Turns/second: " << (unsigned char) 27 << "[32m";
+	cout << (int) tps << "." << (int) (tps * 10) % 10;
+	cout << (unsigned char) 27 << "[0m     ";
+	cout << (unsigned char) 27 << "[25;51H";
+	cout << "Run time: " << (unsigned char) 27 << "[32m";
+	cout << (int) seconds << "." << (int) (seconds * 10) % 10;
+	cout << (unsigned char) 27 << "[0m     ";
 
 	/* monsters and map as saiph sees it */
 	Point p;
