@@ -3,14 +3,16 @@
 # for more information about this and other bots, see:
 # http://sartak.org/nh/bots.html
 #
-# saiph is GPLv2 licenced and can be fetched here:
-# git clone http://exent.net/~canidae/saiph/.git
+# saiph is MIT licenced and can be fetched here:
+# git clone git://github.com/canidae/saiph.git
 #
 # people who are working on or have contributed to saiph:
 # Vidar Wahlberg <canidae@exent.net>, aka. canidae
 # Adrien Panhaleux <adrien.panhaleux@ens-lyon.fr>, aka. DainDwarf
-# Kenny Root <kenny@the-b.org>, aka. kRutOn
 # Jeffrey Bosboom <doctorsunglasses@dslextreme.com>, aka. DrSunglasses
+# Kenny Root <kenny@the-b.org>, aka. kroot
+# Stefan O'Rear <stefanor@cox.net>, aka. sorear
+# Patric Mueller <bhaak@gmx.net>, aka. bhaak
 #
 # thanks to the people at #interhack@freenode.net
 ##########################################
