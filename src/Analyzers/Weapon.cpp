@@ -59,13 +59,14 @@ void Weapon::onEvent(event::Event * const event) {
 			if (w == data::Weapon::weapons().end())
 				continue; // not a weapon
 			int score = calculateWeaponScore(i->second, w->second);
-			if (isRangedWeapon(w->second))
+			if (isRangedWeapon(w->second)) {
 				_range_weapons[i->first] = score;
-			else
+			} else {
 				_melee_weapons[i->first] = score;
-			if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-				Beatify b(i->first, 175);
-				EventBus::broadcast(&b);
+				if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
+					Beatify b(i->first, 175);
+					EventBus::broadcast(&b);
+				}
 			}
 		}
 		setBestWeapons();
