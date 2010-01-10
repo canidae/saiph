@@ -54,7 +54,7 @@ void Health::analyze() {
 			_resting = true;
 		}
 	}
-	if (Saiph::confused() || Saiph::hallucinating() || Saiph::foodpoisoned() || Saiph::ill() || Saiph::stunned()) {
+	if (Saiph::blind() || Saiph::confused() || Saiph::hallucinating() || Saiph::foodpoisoned() || Saiph::ill() || Saiph::stunned()) {
 		if (canApplyUnihorn()) {
 			/* apply unihorn */
 			_unihorn_priority = (Saiph::foodpoisoned() || Saiph::ill()) ? PRIORITY_HEALTH_CURE_DEADLY : PRIORITY_HEALTH_CURE_NON_DEADLY;
