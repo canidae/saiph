@@ -10,13 +10,14 @@
 #define MAP_ROW_END 21 // where the actual map height end
 #define BRANCH_MAIN 0
 #define BRANCH_MINES 1
-#define BRANCH_SOKOBAN 2
-#define BRANCH_ROGUE 3
-#define BRANCH_VLAD 4
-#define BRANCH_WIZARD 5
-#define BRANCH_ASTRAL 6
-#define BRANCH_QUEST 7
-#define BRANCHES 8 // remember to update this when branches are added
+#define BRANCH_MINETOWN 2
+#define BRANCH_SOKOBAN 3
+#define BRANCH_ROGUE 4
+#define BRANCH_VLAD 5
+#define BRANCH_WIZARD 6
+#define BRANCH_ASTRAL 7
+#define BRANCH_QUEST 8
+#define BRANCHES 9 // remember to update this when branches are added
 #define KNAPSACK_LIMIT 52
 #define UNREACHABLE UINT_MAX
 #define UNPASSABLE UNREACHABLE - 1

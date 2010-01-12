@@ -74,7 +74,9 @@ void Explore::analyze() {
 			explorePoint(w->first, &best_tile, &best_type);
 		/* update value for this level in _explore_levels */
 		_explore_levels[Saiph::position().level()] = best_type;
-		if (best_tile.cost() < UNPASSABLE) {
+		if (World::level().branch() == BRANCH_MINES && best_type > 1) {
+			/* don't bother searching the mines */
+		} else if (best_tile.cost() < UNPASSABLE) {
 			if (best_tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
 			else
@@ -83,7 +85,7 @@ void Explore::analyze() {
 	}
 
 	/* explore stairs down */
-	if (World::currentPriority() < PRIORITY_EXPLORE_STAIRS_DOWN) {
+	if (best_type > 1 && World::currentPriority() < PRIORITY_EXPLORE_STAIRS_DOWN) {
 		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
 				continue; // we know where these stairs lead
@@ -98,10 +100,10 @@ void Explore::analyze() {
 	}
 
 	/* explore magic portals */
-	if (World::currentPriority() < PRIORITY_EXPLORE_MAGIC_PORTAL) {
+	if (best_type > 1 && World::currentPriority() < PRIORITY_EXPLORE_MAGIC_PORTAL) {
 		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) MAGIC_PORTAL).begin(); s != World::level().symbols((unsigned char) MAGIC_PORTAL).end(); ++s) {
 			if (s->second != UNKNOWN_SYMBOL_VALUE)
-				continue; // we know where these stairs lead
+				continue; // we know where this portal lead
 			Tile tile = World::shortestPath(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
@@ -113,11 +115,15 @@ void Explore::analyze() {
 	}
 
 	/* go to a level we've explored less than this level */
-	if (World::currentPriority() < PRIORITY_EXPLORE_LEVEL && best_type > 1) {
+	if (best_type > 1 && World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
 			if (l->second >= best_type) {
 				Debug::custom(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
+				continue;
+			}
+			if (World::level(l->first).branch() == BRANCH_MINES) {
+				Debug::custom(name()) << "Not travelling to level " << l->first << ", it's in the mines" << endl;
 				continue;
 			}
 			/* can we path to upstairs on this level? */
@@ -144,32 +150,6 @@ void Explore::analyze() {
 			Debug::custom(name()) << "Heading towards " << best_tile.coordinate() << " to explore that level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
 		}
-	}
-
-	/* travel */
-	map<Coordinate, int>::iterator v = _visit.begin();
-	while (v != _visit.end()) {
-		Tile tile = World::shortestPath(v->first);
-		if (tile.direction() == NOWHERE) {
-			_visit.erase(v++);
-			Debug::custom(name()) << "Reached destination at " << v->first << ", removing location from list of places to visit" << endl;
-			continue;
-		} else if (tile.cost() < UNPASSABLE) {
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(v->second, tile.cost()))));
-			Debug::custom(name()) << "Travelling to " << v->first << endl;
-		} else {
-			Debug::custom(name()) << "Unable to travel from " << Saiph::position() << " to tile " << tile << endl;
-		}
-		++v;
-	}
-}
-
-void Explore::onEvent(Event * const event) {
-	if (event->id() == TakeMeThere::ID) {
-		TakeMeThere* e = static_cast<TakeMeThere*> (event);
-		map<Coordinate, int>::iterator v = _visit.find(e->coordinate());
-		if (v == _visit.end() || v->second < e->max_priority())
-			_visit[e->coordinate()] = e->max_priority();
 	}
 }
 
@@ -264,8 +244,8 @@ void Explore::explorePoint(Point p, Tile* best_tile, int* best_type) {
 			type = 1;
 		} else {
 			/* visited, search? */
-			if (wall_count + solid_rock_count == 3) {
-				/* dead end */
+			if (wall_count + solid_rock_count == 3 && wall_count <= 1) {
+				/* dead end with at most 1 wall */
 				if (intervals < 2)
 					type = 1; // search EXPLORE_SEARCH_INTERVAL * 2 the first time
 				else

@@ -25,10 +25,8 @@ namespace analyzer {
 		Explore();
 
 		void analyze();
-		void onEvent(event::Event * const event);
 
 	private:
-		std::map<Coordinate, int> _visit;
 		std::map<int, int> _explore_levels;
 
 		void explorePoint(Point p, Tile* best_tile, int* best_type);

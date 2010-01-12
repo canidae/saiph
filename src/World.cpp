@@ -733,8 +733,17 @@ void World::detectPosition() {
 		found = _levels.size();
 		/* when we discover a new level it's highly likely it's in the
 		 * same branch as the previous level.
-		 * exception is rogue level, which really isn't a branch */
-		_levels.push_back(Level(_levels.size(), _levelname, (level().branch() != BRANCH_ROGUE) ? level().branch() : BRANCH_MAIN));
+		 * exceptions:
+		 * rogue level, next level most likely is in the main branch
+		 * minetown, next level most likely is in the mines */
+		int branch;
+		if (level().branch() == BRANCH_ROGUE)
+			branch = BRANCH_MAIN;
+		else if (level().branch() == BRANCH_MINETOWN)
+			branch = BRANCH_MINES;
+		else
+			branch = level().branch();
+		_levels.push_back(Level(_levels.size(), _levelname, branch));
 		_levelmap[_levelname].push_back(found);
 		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
 	}

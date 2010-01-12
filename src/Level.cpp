@@ -49,6 +49,9 @@
 #define LEVEL_WALL_UNDIGGABLE "wall is too hard to dig into."
 #define LEVEL_FLOOR_OR_GROUND_UNDIGGABLE "here is too hard to dig in."
 #define LEVEL_SHOP_WALL_UNDIGGABLE "  This wall seems too hard to dig into.  "
+#define LEVEL_SHOP_ON_LEVEL1 "  You hear someone cursing shoplifters.  "
+#define LEVEL_SHOP_ON_LEVEL2 "  You hear the chime of a cash register.  "
+#define LEVEL_SHOP_ON_LEVEL3 "  You hear Neiman and Marcus arguing!  "
 
 using namespace event;
 using namespace std;
@@ -311,6 +314,12 @@ void Level::parseMessages(const string& messages) {
 		_floor_diggable = false;
 	}
 
+	/* attempt to detect minetown */
+	if (branch() == BRANCH_MINES && depth() >= 5 && depth() <= 8 && (messages.find(LEVEL_SHOP_ON_LEVEL1) != string::npos || messages.find(LEVEL_SHOP_ON_LEVEL2) != string::npos || messages.find(LEVEL_SHOP_ON_LEVEL3) != string::npos)) {
+		/* only place in the mine where we get messages about shops is in minetown */
+		branch(BRANCH_MINETOWN);
+	}
+
 	/* figure out if there's something on the ground */
 	if ((pos = messages.find(LEVEL_YOU_SEE_HERE)) != string::npos) {
 		/* we see a single item on ground */
@@ -396,6 +405,11 @@ void Level::setDungeonSymbol(const Point& point, unsigned char symbol) {
 	_symbols[symbol][point] = UNKNOWN_SYMBOL_VALUE;
 	/* update tile in _map */
 	t.symbol(symbol);
+
+	/* if we're in the mines, at the right depth and drawing an open/closed door,
+	 * then we're probably in minetown */
+	if (branch() == BRANCH_MINES && depth() >= 5 && depth() <= 8 && (symbol == OPEN_DOOR || symbol == CLOSED_DOOR))
+		branch(BRANCH_MINETOWN);
 }
 
 void Level::setDungeonSymbolValue(const Point& point, int value) {
