@@ -24,7 +24,6 @@ namespace analyzer {
 	public:
 		Explore();
 
-		void parseMessages(const std::string& messages);
 		void analyze();
 		void onEvent(event::Event * const event);
 

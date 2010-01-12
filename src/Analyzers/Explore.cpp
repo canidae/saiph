@@ -20,9 +20,6 @@ Explore::Explore() : Analyzer("Explore") {
 }
 
 /* methods */
-void Explore::parseMessages(const string& messages) {
-}
-
 void Explore::analyze() {
 	if (Saiph::blind() || Saiph::confused() || Saiph::hallucinating() || Saiph::stunned())
 		return; // don't explore when we're blind/confused/hallucinating/stunned

@@ -53,7 +53,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			std::string::size_type pos;
+			std::string::size_type pos = std::string::npos;
 			if (_sequence == 0) {
 				if ((pos = messages.find(MESSAGE_PICK_UP_WHAT)) != std::string::npos) {
 					/* looting multiple items */

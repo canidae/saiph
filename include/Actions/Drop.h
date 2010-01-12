@@ -49,7 +49,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			std::string::size_type pos;
+			std::string::size_type pos = std::string::npos;
 			if (_sequence == 0) {
 				if ((pos = messages.find(MESSAGE_DROP_WHICH_ITEMS)) != std::string::npos) {
 					/* should always happen, which items do we want to drop? */
