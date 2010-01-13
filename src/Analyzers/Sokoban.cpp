@@ -10,6 +10,9 @@ using namespace analyzer;
 using namespace std;
 
 Sokoban::Sokoban() : Analyzer("Sokoban") {
+	/* 8 sokoban levels */
+	_moves.resize(8);
+
 	/* Level 1A */
 	addMoves(0, Point(8, 37), "j");
 	addMoves(0, Point(8, 38), "llll");
