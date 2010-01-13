@@ -182,11 +182,13 @@ void Health::onEvent(event::Event * const event) {
 			}
 		}
 	} else if (event->id() == WantItems::ID) {
-		WantItems* e = static_cast<WantItems*> (event);
-		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
-				continue; // cursed or not an unihorn
-			i->second.want(i->second.count());
+		if (_unihorn_key != ILLEGAL_ITEM) {
+			WantItems* e = static_cast<WantItems*> (event);
+			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+				if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
+					continue; // cursed or not an unihorn
+				i->second.want(i->second.count());
+			}
 		}
 	}
 }
