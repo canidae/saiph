@@ -12,6 +12,7 @@ public:
 	int row() const;
 	int row(int row);
 	bool insideMap() const;
+	Point& moveDirection(unsigned char direction);
 	Point& moveNorthwest();
 	Point& moveNorth();
 	Point& moveNortheast();

@@ -31,6 +31,37 @@ bool Point::insideMap() const {
 	return row() >= MAP_ROW_BEGIN && row() <= MAP_ROW_END && col() >= MAP_COL_BEGIN && col() <= MAP_COL_END;
 }
 
+Point& Point::moveDirection(unsigned char direction) {
+	switch (direction) {
+	case NW:
+		return moveNorthwest();
+
+	case N:
+		return moveNorth();
+
+	case NE:
+		return moveNortheast();
+
+	case E:
+		return moveEast();
+
+	case SE:
+		return moveSoutheast();
+
+	case S:
+		return moveSouth();
+
+	case SW:
+		return moveSouthwest();
+
+	case W:
+		return moveWest();
+
+	default:
+		return *this;
+	}
+}
+
 Point& Point::moveNorthwest() {
 	--_row;
 	--_col;

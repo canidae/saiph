@@ -70,7 +70,7 @@ int Local::retrieve(char* buffer, int count) {
 	/* usleep some ms here (after the blocked reading) both to
 	 * make sure that we've received all the data and to make the
 	 * game watchable  */
-	usleep(100000);
+	usleep(50000);
 	do {
 		amount = read(_link[0], &buffer[data_received], count - data_received - 2);
 		if (amount > 0)

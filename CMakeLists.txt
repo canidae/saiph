@@ -92,7 +92,7 @@ set(HEADER_FILES
 #	include/Analyzers/Rub.h
 #	include/Analyzers/Scroll.h
 	include/Analyzers/Shop.h
-#	include/Analyzers/Sokoban.h
+	include/Analyzers/Sokoban.h
 #	include/Analyzers/Throne.h
 	include/Analyzers/Vault.h
 #	include/Analyzers/Wand.h
@@ -209,7 +209,7 @@ set(SOURCE_FILES
 #	src/Analyzers/Rub.cpp
 #	src/Analyzers/Scroll.cpp
 	src/Analyzers/Shop.cpp
-#	src/Analyzers/Sokoban.cpp
+	src/Analyzers/Sokoban.cpp
 #	src/Analyzers/Throne.cpp
 	src/Analyzers/Vault.cpp
 #	src/Analyzers/Wand.cpp
