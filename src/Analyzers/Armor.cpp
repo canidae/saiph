@@ -45,8 +45,12 @@ void Armor::analyze() {
 				continue; // can't take off armor covering this slot
 			if (a->second->slot() == SLOT_SUIT && Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED)
 				continue; // can't take off armor covering this slot
+			if (a->second->slot() == SLOT_CLOAK && (best_slot == SLOT_SUIT || best_slot == SLOT_SHIRT))
+				continue; // already want to put on suit or shirt, can't put on cloak first then
+			if (a->second->slot() == SLOT_SUIT && best_slot == SLOT_SHIRT)
+				continue; // already want to put on shirt, can't put on suit first then
 			int score = calculateArmorScore(to_wear, a->second);
-			if (score > best_score || (a->second->slot() == SLOT_SHIRT && (best_slot == SLOT_SUIT || best_slot == SLOT_CLOAK)) || (a->second->slot() == SLOT_SUIT && best_slot == SLOT_CLOAK)) {
+			if (score > best_score) {
 				/* score is better or the piece of armor goes on the inside of the currently best armor */
 				best_key = *k;
 				best_score = score;
