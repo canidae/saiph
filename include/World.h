@@ -90,7 +90,6 @@ private:
 	static std::vector<analyzer::Analyzer*> _analyzers;
 	static int _last_action_id;
 	static unsigned int _internal_turn;
-	static Coordinate _branch[BRANCHES];
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
