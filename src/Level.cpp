@@ -478,7 +478,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		/* remap ambigous symbols */
 		symbol = _uniquemap[symbol][color];
 		/* some special cases */
-		if (symbol == FOUNTAIN && _branch == BRANCH_MINES)
+		if (symbol == FOUNTAIN && _branch == BRANCH_MINETOWN)
 			symbol = MINES_FOUNTAIN; // to avoid dipping & such
 		else if (symbol == FLOOR && t.symbol() == SHOP_TILE)
 			symbol = SHOP_TILE;
