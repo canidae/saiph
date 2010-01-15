@@ -80,7 +80,7 @@ void Explore::analyze() {
 			if (best_tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1),best_tile.cost()))));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1), best_tile.cost()))));
 		}
 	}
 
@@ -118,12 +118,32 @@ void Explore::analyze() {
 	if (best_type > 1 && World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
-			if (l->second >= best_type) {
-				Debug::custom(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
+			if (World::level(l->first).branch() == BRANCH_SOKOBAN)
+				continue; // no point exploring sokoban
+			if (World::level(l->first).symbols(STAIRS_DOWN).size() <= 0 || World::level(l->first).symbols(STAIRS_UP).size() <= 0) {
+				/* stairs up or down not found on level, should explore this level more unless: */
+				if (World::level(l->first).branch() == BRANCH_MINES && World::level(l->first).depth() >= 10)
+					continue; // may be mine's end
+				Debug::custom(name()) << "Looking for stairs up/down on level" << endl;
+			} else {
+				/* got both stairs up & down, we should explore unless: */
+				if (World::branchCoordinate(BRANCH_MINES).level() == -1 && World::level(l->first).depth() >= 2 && World::level(l->first).depth() <= 4) {
+					/* haven't found mines, level 2-4 got entrance to it */
+					Debug::custom(name()) << "Looking for entrance to the mines" << endl;
+				} else if (World::branchCoordinate(BRANCH_SOKOBAN).level() == -1 && World::level(l->first).depth() >= 6 && World::level(l->first).depth() <= 10) {
+					/* haven't found sokoban, entrance is between level 6 and 10 */
+					Debug::custom(name()) << "Looking for entrance to sokoban" << endl;
+				} else {
+					/* otherwise, don't explore */
+					continue;
+				}
+			}
+			if (l->second > 1 && World::level(l->first).branch() == BRANCH_MINES) {
+				Debug::custom(name()) << "Not travelling to level " << l->first << ", it's in the mines and we've already explored it enough" << endl;
 				continue;
 			}
-			if (World::level(l->first).branch() == BRANCH_MINES) {
-				Debug::custom(name()) << "Not travelling to level " << l->first << ", it's in the mines" << endl;
+			if (l->second >= best_type) {
+				Debug::custom(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
 				continue;
 			}
 			/* can we path to upstairs on this level? */
