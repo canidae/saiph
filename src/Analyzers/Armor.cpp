@@ -156,7 +156,9 @@ bool Armor::betterThanCurrent(const Item& item) {
 	int score = calculateArmorScore(item, a->second);
 	if (score <= 0)
 		return false;
-	const Item & cur_armor = Inventory::itemInSlot(a->second->slot());
+	const Item& cur_armor = Inventory::itemInSlot(a->second->slot());
+	if (cur_armor.beatitude() == CURSED)
+		return false; // current armor is cursed, can't replace it
 	map<const string, const data::Armor*>::const_iterator a2 = data::Armor::armors().find(cur_armor.name());
 	if (a2 != data::Armor::armors().end()) {
 		int score2 = calculateArmorScore(cur_armor, a2->second);
