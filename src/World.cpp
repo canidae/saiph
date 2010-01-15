@@ -621,10 +621,10 @@ void World::run() {
 		executeCommand(_action->command().command());
 
 		/* check if we're stuck */
-		if (stuck_counter % 42 == 41 && _action->command().command().size() == 1) {
+		if (stuck_counter % 9 == 8 && _action->command().command().size() == 1) {
 			Debug::warning() << "Command failed for analyzer " << _action->analyzer()->name() << ": " << _action->command() << endl;
 			_action->failed();
-		} else if (stuck_counter > 1680) {
+		} else if (stuck_counter > 360) {
 			/* failed too many times, #quit */
 			Debug::error() << "Appear to be stuck, quitting game" << endl;
 			_last_action_id = NO_ACTION;
