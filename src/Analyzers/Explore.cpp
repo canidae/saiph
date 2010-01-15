@@ -118,6 +118,8 @@ void Explore::analyze() {
 	if (best_type > 1 && World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
+			if (Saiph::position().level() == l->first)
+				continue; // same level as we're currently on
 			if (World::level(l->first).branch() == BRANCH_SOKOBAN)
 				continue; // no point exploring sokoban
 			if (World::level(l->first).symbols(STAIRS_DOWN).size() <= 0 || World::level(l->first).symbols(STAIRS_UP).size() <= 0) {
