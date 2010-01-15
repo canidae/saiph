@@ -43,6 +43,7 @@ public:
 	static int turn();
 	static unsigned int internalTurn();
 	static const std::vector<Point>& changes();
+	static const Coordinate& branchCoordinate(int branch);
 	static Level& level();
 	static Level& level(int level);
 	static const std::vector<Level>& levels();
@@ -90,6 +91,7 @@ private:
 	static std::vector<analyzer::Analyzer*> _analyzers;
 	static int _last_action_id;
 	static unsigned int _internal_turn;
+	static Coordinate _branches[BRANCHES];
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();

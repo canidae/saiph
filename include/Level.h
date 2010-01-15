@@ -62,6 +62,7 @@ private:
 	int _branch;
 	bool _walls_diggable;
 	bool _floor_diggable;
+	bool _new_level;
 
 	void updateMapPoint(const Point& point, unsigned char symbol, int color);
 	void updateMonsters();

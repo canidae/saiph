@@ -52,6 +52,7 @@ map<string, vector<int> > World::_levelmap;
 timeval World::_start_time;
 vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
+Coordinate World::_branches[BRANCHES] = {Coordinate()};
 
 /* methods */
 char World::view(const Point& point) {
@@ -92,6 +93,10 @@ unsigned int World::internalTurn() {
 
 const vector<Point>& World::changes() {
 	return _changes;
+}
+
+const Coordinate& World::branchCoordinate(int branch) {
+	return _branches[branch];
 }
 
 Level& World::level() {
@@ -537,6 +542,10 @@ void World::run() {
 			Saiph::analyze();
 			Inventory::analyze();
 			level().analyze();
+
+			/* set branch coordinate if we've discovered a new branch */
+			if (_branches[level().branch()].level() == -1)
+				_branches[level().branch()] = Saiph::position();
 
 			/* dump maps */
 			dumpMaps();
