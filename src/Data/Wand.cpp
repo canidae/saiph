@@ -12,6 +12,10 @@
 #define WAND_DIGGING_MESSAGE " is a wand of digging!  "
 #define WAND_LIGHTNING_MESSAGE " is a wand of lightning!  "
 #define WAND_FIRE_MESSAGE " is a wand of fire!  "
+#define WAND_CREATE_MONSTER_MESSAGE "  You write in the dust with a wand of create monster.  "
+#define WAND_ENLIGHTENMENT_MESSAGE "  You feel self-knowledgeable...  "
+#define WAND_LIGHT_MESSAGE "  A lit field surrounds you!  "
+#define WAND_WISHING_MESSAGE "  You may wish for an object.  "
 
 using namespace data;
 
