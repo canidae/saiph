@@ -42,8 +42,8 @@ void Door::analyze() {
 		Tile& tile = World::shortestPath(d->first);
 		if (tile.cost() == UNREACHABLE)
 			continue; // can't reach this door
-		if (World::level().branch() == BRANCH_MINES && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
-			continue; // don't kick/pick doors when we're in the mines
+		if (World::level().branch() == BRANCH_MINETOWN && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
+			continue; // don't kick/pick doors when we're in minetown
 		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
 		if (Saiph::inAPit() && tile.distance() == 1)
