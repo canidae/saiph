@@ -134,8 +134,18 @@ void Explore::analyze() {
 					/* haven't found sokoban, entrance is between level 6 and 10 */
 					Debug::custom(name()) << "Looking for entrance to sokoban" << endl;
 				} else {
-					/* otherwise, don't explore */
-					continue;
+					/* otherwise, don't explore unless we don't know where any of the stairs lead */
+					bool explore = false;
+					for (map<Point, int>::const_iterator s = World::level(l->first).symbols(STAIRS_UP).begin(); !explore && s != World::level(l->first).symbols(STAIRS_UP).end(); ++s) {
+						if (s->second == UNKNOWN_SYMBOL_VALUE)
+							explore = true;
+					}
+					for (map<Point, int>::const_iterator s = World::level(l->first).symbols(STAIRS_DOWN).begin(); !explore && s != World::level(l->first).symbols(STAIRS_DOWN).end(); ++s) {
+						if (s->second == UNKNOWN_SYMBOL_VALUE)
+							explore = true;
+					}
+					if (!explore)
+						continue;
 				}
 			}
 			if (l->second > 1 && World::level(l->first).branch() == BRANCH_MINES) {
