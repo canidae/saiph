@@ -182,8 +182,8 @@ void Health::onEvent(event::Event * const event) {
 			}
 		}
 	} else if (event->id() == WantItems::ID) {
-		if (_unihorn_key == ILLEGAL_ITEM) {
-			WantItems* e = static_cast<WantItems*> (event);
+		WantItems* e = static_cast<WantItems*> (event);
+		if (_unihorn_key == ILLEGAL_ITEM && !e->dropping()) {
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 				if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
 					continue; // cursed or not an unihorn
