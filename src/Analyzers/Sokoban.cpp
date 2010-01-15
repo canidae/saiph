@@ -31,7 +31,7 @@ Sokoban::Sokoban() : Analyzer("Sokoban") {
 	addMoves(0, Point(8, 43), "jjhhjjjjhhhhhhhhkkkkk");
 	addMoves(0, Point(9, 39), "klll");
 	addMoves(0, Point(9, 38), "k");
-	addMoves(0, Point(10, 42), "jjhjjjjhhhhhhhhkkkkkk");
+	addMoves(0, Point(8, 42), "jjhjjjjhhhhhhhhkkkkkk");
 
 	/* Level 1B */
 	addMoves(1, Point(8, 34), "l");
