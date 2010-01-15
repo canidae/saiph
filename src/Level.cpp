@@ -276,7 +276,7 @@ void Level::analyze() {
 
 	/* branches we will recognize immediately */
 	if (_new_level) {
-		if (World::branchCoordinate(BRANCH_SOKOBAN).level() == -1 && depth() >= 5 && depth() <= 9) {
+		if (branch() == BRANCH_MAIN && World::branchCoordinate(BRANCH_SOKOBAN).level() == -1 && depth() >= 5 && depth() <= 9) {
 			/* look for sokoban */
 			if (tile(Point(8, 37)).symbol() == BOULDER && tile(Point(8, 38)).symbol() == BOULDER && tile(Point(8, 43)).symbol() == BOULDER) {
 				/* sokoban 1a */
@@ -289,7 +289,7 @@ void Level::analyze() {
 			}
 
 		}
-		if (World::branchCoordinate(BRANCH_ROGUE).level() == -1 && World::view(Point(STATUS_ROW, 8)) == '*') {
+		if (branch() == BRANCH_MAIN && World::branchCoordinate(BRANCH_ROGUE).level() == -1 && World::view(Point(STATUS_ROW, 8)) == '*') {
 			/* rogue level, set branch */
 			Debug::notice() << "Found the rogue level: " << Saiph::position() << endl;
 			branch(BRANCH_ROGUE);
@@ -297,7 +297,7 @@ void Level::analyze() {
 		_new_level = false;
 	}
 	/* branches we won't immediately recognize */
-	if (World::branchCoordinate(BRANCH_MINES).level() == -1 && depth() >= 3 && depth() <= 5) {
+	if (branch() == BRANCH_MAIN && World::branchCoordinate(BRANCH_MINES).level() == -1 && depth() >= 3 && depth() <= 5) {
 		/* if mines are not found and depth is between 3 & 5, we should check if we're in the mines */
 		for (map<Point, int>::const_iterator hw = symbols((unsigned char) HORIZONTAL_WALL).begin(); hw != symbols((unsigned char) HORIZONTAL_WALL).end(); ++hw) {
 			if (hw->first.row() <= MAP_ROW_BEGIN || hw->first.row() >= MAP_ROW_END || hw->first.col() <= MAP_COL_BEGIN || hw->first.col() >= MAP_COL_END)
