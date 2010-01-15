@@ -60,7 +60,7 @@ Sokoban::Sokoban() : Analyzer("Sokoban") {
 	addMoves(2, Point(11, 34), "hh");
 	addMoves(2, Point(14, 33), "j");
 	addMoves(2, Point(15, 35), "ljlll");
-	addMoves(2, Point(16, 33), "lllllllkkljllll");
+	addMoves(2, Point(17, 28), "lllllllkkljllll");
 	addMoves(2, Point(15, 33), "jjhhhhhlllllllkkljlllll");
 	addMoves(2, Point(12, 31), "jjhhhlllllllkkljllllll");
 	addMoves(2, Point(16, 26), "hjhhhlllllllkkljlllllll");
@@ -281,6 +281,7 @@ void Sokoban::analyze() {
 			/* this must be it */
 			_levelmap[Saiph::position().level()] = s;
 			level = s;
+			Debug::custom(name()) << "Recognized sokoban level " << s << endl;
 			break;
 		}
 	} else {

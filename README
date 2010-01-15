@@ -74,3 +74,4 @@ TODO:
 * engrave-testing wands (and keep the dangerous ones)
 * detect traps by message (currently only detect pits)
 * don't kick down doors from corridors without standing in front of it
+* sokoban should be disabled [for some time] when we see monsters or pushing failed
