@@ -78,6 +78,7 @@ private:
 	static int _data_size;
 	static Point _cursor; // cursor position
 	static std::string _msg_str; // helps fetching messages
+	static std::string _msg_buffer; // buffers messages while executing actions
 	static Point _last_menu; // needed to help detect menus that persist over turns
 	static std::map<std::string, std::vector<int> > _levelmap; // used for faster map recognition
 	static char _levelname[MAX_LEVELNAME_LENGTH];
