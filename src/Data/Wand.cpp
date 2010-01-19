@@ -1,7 +1,7 @@
 #include "Data/Wand.h"
 #include "Globals.h"
 
-#define WAND_VANISHER_MESSAGE "  The engraving on the floor vanishes!  "
+#define WAND_VANISHER_MESSAGE " vanishes!  " //The engraving on the <floor/ground/etc> vanishes!
 #define WAND_COLD_MESSAGE "  A few ice cubes drop from the wand.  "
 #define WAND_SLEEP_DEATH_MESSAGE "  The bugs on the floor stop moving!  "
 #define WAND_MAGIC_MISSILE_MESSAGE "  The floor is riddled by bullet holes!  "
