@@ -1,10 +1,6 @@
 *.log
 *.err
 .*
-Actions
-Analyzers
-Data
-Events
 gmon.out
 saiph
 nbproject/private
