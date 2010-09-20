@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(SAIPH)
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
-        set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None, Debug or Release." FORCE)
+        set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build, options are: None, Debug or Release." FORCE)
 endif ()
 set(CMAKE_CXX_FLAGS "-Wall -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
