@@ -107,8 +107,10 @@ void Saiph::parseMessages(const string& messages) {
 					_role = SAMURAI;
 				else if (role == "Tourist")
 					_role = TOURIST;
-				else if (role == "Valkyrie")
+				else if (role == "Valkyrie") {
 					_role = VALKYRIE;
+					_intrinsics |= PROPERTY_COLD;
+				}
 				else if (role == "Wizard")
 					_role = WIZARD;
 				else

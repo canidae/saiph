@@ -1,5 +1,8 @@
 #include "Analyzers/Amulet.h"
 
+#include "Debug.h"
+#include <stdlib.h>
+#include <string.h>
 #include "EventBus.h"
 #include "Globals.h"
 #include "Inventory.h"
@@ -29,19 +32,30 @@ Amulet::Amulet() : Analyzer("Amulet") {
 /* methods */
 void Amulet::onEvent(Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
+		Debug::info() << "ChangedInventoryItems appeared, wearing?" << endl;
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		wearAmulet(e->keys());
 	} else if (event->id() == ReceivedItems::ID) {
+		Debug::info() << "RecievedItems appeared, wearing?" << endl;
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
 				continue; // known beatitude or not an amulet
+			else if (i->second.beatitude() != CURSED) {
+				World::setAction(static_cast<action::Action*> (new action::PutOn(this, i->first, PRIORITY_AMULET_WEAR)));
+				set<unsigned char> k (&i->first, &i->first);
+				k.insert(i->first);
+				Debug::info() << "I should be wearing!" << endl;
+				wearAmulet(k); //for testing
+				//TODO: detect if we want to actually wear it
+			}
 			Beatify b(i->first, 175);
 			EventBus::broadcast(&b);
 		}
 		// FIXME
 		//wearAmulet(e->items);
 	} else if (event->id() == WantItems::ID) {
+		Debug::info() << "WantItems appeared, wearing?" << endl;
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))

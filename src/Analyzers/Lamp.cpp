@@ -58,7 +58,9 @@ void Lamp::parseMessages(const string& messages) {
 		if (i != Inventory::items().end()) {
 			i->second.additional(""); // reset "additional" instead of flashing inventory
 			/* if the name is "lamp" then it's an oil lamp */
-			if (i->second.name() == "lamp") {
+			if (i->second.name() == "oil lamp") {
+				_seen_oil_lamp = true;
+			} else if (i->second.name() == "lamp") {
 				World::queueAction(static_cast<action::Action*> (new action::Call(this, i->first, "oil lamp")));
 				_seen_oil_lamp = true;
 			}
