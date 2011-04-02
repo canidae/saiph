@@ -43,6 +43,7 @@ public:
 	static bool hallucinating();
 	static bool ill();
 	static bool slimed();
+	static bool stoned();
 	static bool stunned();
 	static bool hurtLeg();
 	static bool hurtLeg(bool hurt_leg);
@@ -92,6 +93,7 @@ private:
 	static bool _hallucinating;
 	static bool _ill;
 	static bool _slimed;
+	static bool _stoned;
 	static bool _stunned;
 	static bool _hurt_leg;
 	static bool _polymorphed;

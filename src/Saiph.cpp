@@ -34,6 +34,7 @@ bool Saiph::_foodpoisoned = false;
 bool Saiph::_hallucinating = false;
 bool Saiph::_ill = false;
 bool Saiph::_slimed = false;
+bool Saiph::_stoned = false;
 bool Saiph::_stunned = false;
 bool Saiph::_hurt_leg = false;
 bool Saiph::_polymorphed = false;
@@ -167,6 +168,8 @@ void Saiph::parseMessages(const string& messages) {
 			_intrinsics |= PROPERTY_LYCANTHROPY;
 		if (messages.find(MESSAGE_LYCANTHROPY_LOSE1) != string::npos)
 			_intrinsics &= ~PROPERTY_LYCANTHROPY;
+		if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos)
+			_stoned = true; //not checking for limbs turned to stone because we're dead then
 		if (messages.find(MESSAGE_HURT_LEFT_LEG) != string::npos || messages.find(MESSAGE_HURT_RIGHT_LEG) != string::npos)
 			_hurt_leg = true;
 		if (messages.find(MESSAGE_LEG_IS_BETTER) != string::npos)
@@ -339,6 +342,10 @@ bool Saiph::ill() {
 
 bool Saiph::slimed() {
 	return _slimed;
+}
+
+bool Saiph::stoned() {
+	return _stoned;
 }
 
 bool Saiph::stunned() {

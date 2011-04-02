@@ -104,6 +104,12 @@ void Health::analyze() {
 		if (action::Pray::isSafeToPray())
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_LYCANTHROPY)));
 	}
+	if (Saiph::stoned()) {
+		//cure stoning
+		//TODO: check for lizard corpse
+		//we'll  die if we don't pray, so let's pray
+		World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_STONING)));
+	}
 	if (Saiph::polymorphed()) {
 		/* cure polymorph */
 		if (action::Pray::isSafeToPray())
@@ -141,12 +147,14 @@ void Health::analyze() {
 }
 
 void Health::parseMessages(const string& messages) {
+	#if 0
 	if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE) != string::npos) {
 		/* bloody *trice, this is bad */
 		/* TODO: eat [partly eaten] lizard corpse */
 		/* pray if all else fails, don't even bother checking if it's safe to pray, we're dead anyways */
 		World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
 	}
+	#endif
 	if (messages.find(UNIHORN_NOTHING_HAPPENS) != string::npos) {
 		_unihorn_priority = -1;
 		_unihorn_use_turn = World::internalTurn() + UNIHORN_UNIHORN_TIMEOUT;

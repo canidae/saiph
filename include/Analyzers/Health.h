@@ -4,6 +4,7 @@
 #include "Analyzers/Analyzer.h"
 
 /* TODO: clean this up */
+#define PRIORITY_HEALTH_CURE_STONING 950
 #define PRIORITY_HEALTH_CURE_POLYMORPH 925
 #define PRIORITY_HEALTH_CURE_DEADLY 900
 #define PRIORITY_HEALTH_PRAY_FOR_HP 900
@@ -37,6 +38,7 @@ namespace analyzer {
 		int _prev_int;
 		int _prev_wis;
 		int _prev_cha;
+		//unsigned char _lizard_key;
 		unsigned char _unihorn_key;
 		unsigned int _unihorn_use_turn;
 		int _unihorn_priority;
