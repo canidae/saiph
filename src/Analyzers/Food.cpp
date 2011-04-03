@@ -20,7 +20,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Food::Food() : Analyzer("Food") {
+Food::Food() : Analyzer("Food"), _lizard_corpses(0) {
 	/* try to eat the food with lowest nutrition/weight first, and avoid food that cures bad effects */
 	for (map<const string, const data::Food*>::const_iterator f = data::Food::foods().begin(); f != data::Food::foods().end(); ++f) {
 		if (!(f->second->effects() & EAT_EFFECT_NEVER_ROT))
@@ -64,7 +64,7 @@ void Food::analyze() {
 		return; // we can't eat while carrying too much
 
 	/* are we hungry? */
-	if (Saiph::hunger() <= WEAK) {
+	if (Saiph::hunger() <= HUNGRY) {
 		/* yes, we are, eat the food item in our inventory with lowest priority */
 		if (_food_items.size() > 0) {
 			map<unsigned char, Item>::iterator eat = Inventory::items().end();
@@ -154,6 +154,13 @@ void Food::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (_eat_priority.find(i->second.name()) == _eat_priority.end())
 				continue; // don't want this food item
+			if (i->second.name().find("lizard") && _lizard_corpses >= 1)
+				continue; // how many lizard corpses do we _need_?
+			else {
+				i->second.want(i->second.count());
+				_lizard_corpses++;
+				continue;
+			}
 			i->second.want(i->second.count());
 		}
 	} else if (event->id() == ChangedInventoryItems::ID) {

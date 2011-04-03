@@ -61,6 +61,10 @@ void Excalibur::onEvent(event::Event * const event) {
 			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
 			if (*k == _long_sword_key && i == Inventory::items().end())
 				_long_sword_key = ILLEGAL_ITEM;
+			else if (i != Inventory::items().end() && i->second.name() == EXCALIBUR_NAME) {
+				World::unregisterAnalyzer(this); 
+				break; // we already have Excalibur
+			}
 			else if (i != Inventory::items().end() && i->second.name() == EXCALIBUR_LONG_SWORD)
 				_long_sword_key = *k;
 		}

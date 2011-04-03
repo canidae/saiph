@@ -6,6 +6,7 @@
 
 #define PRIORITY_EXCALIBUR_DIP 200
 #define EXCALIBUR_LONG_SWORD "long sword"
+#define EXCALIBUR_NAME "Excalibur"
 
 namespace analyzer {
 

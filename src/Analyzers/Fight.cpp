@@ -39,8 +39,8 @@ void Fight::analyze() {
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (m->second.symbol() == PET)
 			continue; // we're not fighting pets :)
-		else if (m->second.attitude() == FRIENDLY)
-			continue; // don't attack friendlies
+		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
+			continue; // don't attack friendlies except dwarfs
 		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment() == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data() == NULL) {

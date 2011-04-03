@@ -469,7 +469,6 @@ const Monster* Monster::monster(const string& name) {
 const string& Monster::name() const {
 	return _name;
 }
-
 const unsigned char& Monster::symbol() const {
 	return _symbol;
 }
