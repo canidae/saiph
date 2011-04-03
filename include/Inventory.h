@@ -11,7 +11,7 @@
 class Inventory {
 public:
 	static const Item NO_ITEM;
-
+	
 	static void analyze();
 	static void parseMessages(const std::string& messages);
 	static std::map<unsigned char, Item>& items();

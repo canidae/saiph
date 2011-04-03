@@ -42,8 +42,10 @@ void Amulet::onEvent(Event * const event) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator i = e->keys().begin(); i != e->keys().end(); ++i) {
 			Item item = Inventory::itemAtKey(*i);
-			if (item.beatitude() != CURSED && item.beatitude() != BEATITUDE_UNKNOWN && data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end())
+			if (item.beatitude() != CURSED && item.beatitude() != BEATITUDE_UNKNOWN && data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end()) {
 				_amulet_key = *i;
+				break;
+			}
 		}
 		//todo: determine best amulet
 	} else if (event->id() == ReceivedItems::ID) {
