@@ -97,7 +97,7 @@ set(HEADER_FILES
 	include/Analyzers/Vault.h
 #	include/Analyzers/Wand.h
 	include/Analyzers/Weapon.h
-#	include/Analyzers/Wish.h
+	include/Analyzers/Wish.h
 	# Data
 	include/Data/Amulet.h
 	include/Data/Armor.h
@@ -215,7 +215,7 @@ set(SOURCE_FILES
 	src/Analyzers/Vault.cpp
 #	src/Analyzers/Wand.cpp
 	src/Analyzers/Weapon.cpp
-#	src/Analyzers/Wish.cpp
+	src/Analyzers/Wish.cpp
 	# Data
 	src/Data/Amulet.cpp
 	src/Data/Armor.cpp
