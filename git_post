@@ -1,0 +1,5 @@
+#!/bin/sh
+# script I use to post to git from my IDE
+git add .
+git commit
+git push

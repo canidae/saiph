@@ -22,35 +22,43 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Amulet::Amulet() : Analyzer("Amulet") {
+Amulet::Amulet() : Analyzer("Amulet"), _amulet_key(ILLEGAL_ITEM) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
 
+void Amulet::analyze() {
+	if (!Saiph::polymorphed() && _amulet_key != ILLEGAL_ITEM && _amulet_key != Inventory::keyForSlot(SLOT_AMULET)) {
+		Debug::info() << "hello" << endl;
+		World::setAction(static_cast<action::Action*> (new action::PutOn(this, _amulet_key, PRIORITY_AMULET_WEAR)));
+	}
+}
+
 /* methods */
 void Amulet::onEvent(Event * const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
-		Debug::info() << "ChangedInventoryItems appeared, wearing?" << endl;
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
-		wearAmulet(e->keys());
+		for (set<unsigned char>::iterator i = e->keys().begin(); i != e->keys().end(); ++i) {
+			Item item = Inventory::itemAtKey(*i);
+			if (item.beatitude() != CURSED && item.beatitude() != BEATITUDE_UNKNOWN && data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end())
+				_amulet_key = *i;
+		}
+		//todo: determine best amulet
 	} else if (event->id() == ReceivedItems::ID) {
-		Debug::info() << "RecievedItems appeared, wearing?" << endl;
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
 				continue; // known beatitude or not an amulet
-			else if (i->second.beatitude() != CURSED) {
-				World::setAction(static_cast<action::Action*> (new action::PutOn(this, i->first, PRIORITY_AMULET_WEAR)));
-				set<unsigned char> k (&i->first, &i->first);
-				k.insert(i->first);
-				Debug::info() << "I should be wearing!" << endl;
-				wearAmulet(k); //for testing
+			else if (i->second.beatitude() == BEATITUDE_UNKNOWN && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+				Beatify b(i->first, 175);
+				EventBus::broadcast(&b);
+			}
+			else if (i->second.beatitude() != CURSED && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+				_amulet_key = i->first;
 				//TODO: detect if we want to actually wear it
 			}
-			Beatify b(i->first, 175);
-			EventBus::broadcast(&b);
 		}
 		// FIXME
 		//wearAmulet(e->items);
@@ -93,5 +101,5 @@ void Amulet::wearAmulet(const set<unsigned char>& keys) {
 		return; // no new amulet to put on or wearing best amulet
 
 	/* put on this amulet */
-	World::setAction(static_cast<action::Action*> (new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
+	//World::setAction(static_cast<action::Action*> (new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
 }

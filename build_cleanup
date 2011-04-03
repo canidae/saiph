@@ -1,0 +1,8 @@
+#!/bin/sh
+echo "Making Clean"
+cd build
+make clean
+cd ..
+echo "Removing Build Directory"
+rm -r build
+echo "Done"

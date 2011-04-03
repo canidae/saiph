@@ -15,11 +15,13 @@ namespace analyzer {
 	class Amulet : public Analyzer {
 	public:
 		Amulet();
-
+		
+		void analyze();
 		void onEvent(event::Event* const event);
 
 	private:
 		bool wantItem(const Item& item);
+		unsigned char _amulet_key;
 		void wearAmulet(const std::set<unsigned char>& keys);
 	};
 }
