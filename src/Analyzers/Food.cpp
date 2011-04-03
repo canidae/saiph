@@ -94,7 +94,7 @@ void Food::analyze() {
 		if (Saiph::hunger() <= WEAK) {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
-			if (action::Pray::isSafeToPray())
+			if (action::Pray::isSafeToPrayMajorTrouble())
 				World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD)));
 		}
 	}

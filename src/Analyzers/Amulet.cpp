@@ -2,7 +2,7 @@
 
 #include "Debug.h"
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include "EventBus.h"
 #include "Globals.h"
 #include "Inventory.h"
@@ -31,9 +31,14 @@ Amulet::Amulet() : Analyzer("Amulet"), _amulet_key(ILLEGAL_ITEM) {
 
 void Amulet::analyze() {
 	if (!Saiph::polymorphed() && _amulet_key != ILLEGAL_ITEM && _amulet_key != Inventory::keyForSlot(SLOT_AMULET)) {
-		Debug::info() << "hello" << endl;
 		World::setAction(static_cast<action::Action*> (new action::PutOn(this, _amulet_key, PRIORITY_AMULET_WEAR)));
 	}
+}
+
+void Amulet::parseMessages(const string& messages) {
+	if (messages.find(STRANGULATION_5TTL) != string::npos) {
+		 World::setAction(static_cast<action::Action*> (new action::Remove(this, _amulet_key, PRIORITY_AMULET_REMOVE_HARM)));
+	 } // TODO: ID restful sleep too
 }
 
 /* methods */
@@ -43,7 +48,8 @@ void Amulet::onEvent(Event * const event) {
 		for (set<unsigned char>::iterator i = e->keys().begin(); i != e->keys().end(); ++i) {
 			Item item = Inventory::itemAtKey(*i);
 			if (item.beatitude() != CURSED && item.beatitude() != BEATITUDE_UNKNOWN && data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end()) {
-				_amulet_key = *i;
+				if (item.name().find("strangulation") != string::npos && item.name().find("restful") != string::npos)
+					_amulet_key = *i;
 				break;
 			}
 		}
@@ -58,12 +64,10 @@ void Amulet::onEvent(Event * const event) {
 				EventBus::broadcast(&b);
 			}
 			else if (i->second.beatitude() != CURSED && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+				if (i->second.name().find("strangulation") != string::npos && i->second.name().find("restful") != string::npos)
 				_amulet_key = i->first;
-				//TODO: detect if we want to actually wear it
 			}
 		}
-		// FIXME
-		//wearAmulet(e->items);
 	} else if (event->id() == WantItems::ID) {
 		Debug::info() << "WantItems appeared, wearing?" << endl;
 		WantItems* e = static_cast<WantItems*> (event);
@@ -76,6 +80,8 @@ void Amulet::onEvent(Event * const event) {
 
 /* private methods */
 bool Amulet::wantItem(const Item& item) {
+	if (item.name().find("strangulation") != string::npos && item.name().find("restful") != string::npos)
+		return false;
 	return data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end();
 }
 

@@ -6,6 +6,7 @@
 #include "Actions/Action.h"
 
 #define PRAY_PRAYER_TIMEOUT 1000
+#define PRAY_MAJOR_TROUBLE 800
 
 namespace action {
 
@@ -21,6 +22,10 @@ namespace action {
 
 		static bool isSafeToPray() {
 			return World::turn() - PRAY_PRAYER_TIMEOUT > Saiph::lastPrayed();
+		}
+		
+		static bool isSafeToPrayMajorTrouble() {
+			return World::turn() - PRAY_MAJOR_TROUBLE > Saiph::lastPrayed();
 		}
 
 		virtual int id() {
