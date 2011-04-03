@@ -27,6 +27,8 @@ Food::Food() : Analyzer("Food"), _lizard_corpses(0) {
 			continue; // we're not gonna carry food that rot
 		if (f->second->name() == "tin" || f->second->name() == "egg")
 			continue; // screw eggs & tins
+		if (f->second->name().find("tripe") != string::npos)
+			continue; // don't eat that!
 		int priority = 1000;
 		if (f->second->weight() <= 0)
 			priority -= f->second->nutrition() / 1; // prevent divide-by-zero (or negative values)
