@@ -44,6 +44,8 @@ bool Saiph::_in_a_pit = false;
 Coordinate Saiph::_position;
 /* zorkmids */
 int Saiph::_zorkmids = 0;
+/* conducts */
+unsigned long long Saiph::_conducts = 0;
 /* intrinsics/extrinsics */
 unsigned long long Saiph::_intrinsics = 0;
 unsigned long long Saiph::_extrinsics = 0;
@@ -86,31 +88,47 @@ void Saiph::parseMessages(const string& messages) {
 			pos = messages.find(':', pos + 2);
 			if (pos != string::npos) {
 				string role = messages.substr(pos + 2, messages.find("  ", pos + 2) - pos - 2);
-				if (role == "Archeologist")
+				if (role == "Archeologist") {
 					_role = ARCHEOLOGIST;
-				else if (role == "Barbarian")
+					_intrinsics |= PROPERTY_SPEED;
+					_intrinsics |= PROPERTY_STEALTH;
+				}
+				else if (role == "Barbarian") {
 					_role = BARBARIAN;
+					_intrinsics |= PROPERTY_POISON;
+				}
 				else if (role == "Caveman")
 					_role = CAVEMAN;
-				else if (role == "Healer")
+				else if (role == "Healer") {
 					_role = HEALER;
+					_intrinsics |= PROPERTY_POISON;
+				}
 				else if (role == "Knight")
 					_role = KNIGHT;
-				else if (role == "Monk")
+				else if (role == "Monk") {
 					_role = MONK;
+					_intrinsics |= PROPERTY_SLEEP;
+					_intrinsics |= PROPERTY_SPEED;
+					_conducts |= CONDUCT_VEGETARIAN;
+				}
 				else if (role == "Priest")
 					_role = PRIEST;
 				else if (role == "Ranger")
 					_role = RANGER;
-				else if (role == "Rogue")
+				else if (role == "Rogue") {
 					_role = ROGUE;
-				else if (role == "Samurai")
+					_intrinsics |= PROPERTY_STEALTH;
+				}
+				else if (role == "Samurai") {
 					_role = SAMURAI;
+					_intrinsics |= PROPERTY_SPEED;
+				}
 				else if (role == "Tourist")
 					_role = TOURIST;
 				else if (role == "Valkyrie") {
 					_role = VALKYRIE;
 					_intrinsics |= PROPERTY_COLD;
+					_intrinsics |= PROPERTY_STEALTH;
 				}
 				else if (role == "Wizard")
 					_role = WIZARD;
@@ -396,6 +414,20 @@ const Coordinate& Saiph::position(const Coordinate& position) {
 
 int Saiph::zorkmids() {
 	return _zorkmids;
+}
+
+unsigned long long Saiph::conducts() {
+	return _conducts;
+}
+
+unsigned long long Saiph::addConducts(unsigned long long conducts) {
+	_conducts |= conducts;
+	return Saiph::conducts();
+}
+
+unsigned long long Saiph::removeConducts(unsigned long long conducts) {
+	_conducts &= ~conducts;
+	return Saiph::conducts();
 }
 
 unsigned long long Saiph::intrinsics() {

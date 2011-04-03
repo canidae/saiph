@@ -853,6 +853,10 @@ void World::dumpMaps() {
 	cout << (unsigned char) 27 << "[3;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[3;82H";
 	if (Saiph::intrinsics() & PROPERTY_ESP)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics() & PROPERTY_SPEED)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Speed " << (unsigned char) 27 << "[m";
+	if (Saiph::intrinsics() & PROPERTY_STEALTH)
+		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Stealth " << (unsigned char) 27 << "[m";
 	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL)
 		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
 	if (Saiph::intrinsics() & PROPERTY_TELEPORT)

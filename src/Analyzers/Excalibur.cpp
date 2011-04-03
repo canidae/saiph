@@ -24,6 +24,8 @@ void Excalibur::analyze() {
 		return;
 	else if (Saiph::blind() || Saiph::confused() || Saiph::stunned() || Saiph::hallucinating())
 		return; // don't move when blind/confused/stunned/hallucinating
+	else if (World::level().branch() == BRANCH_MINES || World::level().branch() == BRANCH_MINETOWN)
+		return; // don't ever dip in minetown...
 	/* do we have a long sword? */
 	unsigned char got_long_sword = ILLEGAL_ITEM;
 	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {

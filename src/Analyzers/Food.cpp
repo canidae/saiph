@@ -154,7 +154,7 @@ void Food::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (_eat_priority.find(i->second.name()) == _eat_priority.end())
 				continue; // don't want this food item
-			if (i->second.name().find("lizard") && _lizard_corpses >= 1)
+			if (i->second.name().find("lizard") != string::npos && _lizard_corpses >= 1)
 				continue; // how many lizard corpses do we _need_?
 			else {
 				i->second.want(i->second.count());
@@ -241,17 +241,14 @@ bool Food::safeToEat(const map<const string, const data::Corpse*>::const_iterato
 	else if ((c->second->effects() & EAT_EFFECT_STUN) != 0)
 		return false;
 		/* teleportitis might be fun for a bot
+		 * actually, it's a survival trait :P
 		else if ((c->second->eat_effects & EAT_EFFECT_TELEPORTITIS) != 0)
 			return false;
 		 */
-		/* we're not vegan
-		else if ((c->second->eat_effects & EAT_EFFECT_VEGAN) != 0)
-			return false;
-		 */
-		/* nor vegetarian
-		else if ((c->second->eat_effects & EAT_EFFECT_VEGETARIAN) != 0)
-			return false;
-		 */
+	else if (!(c->second->effects() & EAT_EFFECT_VEGAN) && (Saiph::conducts() & CONDUCT_VEGAN))
+		return false; // we could be vegan conduct
+	else if (!(c->second->effects() & EAT_EFFECT_VEGETARIAN) && (Saiph::conducts() & CONDUCT_VEGETARIAN))
+		return false; // we could be vegetarian conduct
 		/* let's eat stuff that makes us strong
 		else if ((c->second->eat_effects & EAT_EFFECT_STRENGTH) != 0)
 			return false;

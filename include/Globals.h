@@ -246,6 +246,20 @@
 #define CHAINS '`'
 #define VENOM '`'
 
+/* conducts */
+#define CONDUCT_FOODLESS           ((unsigned long long) (1LL << 0))
+#define CONDUCT_VEGAN              ((unsigned long long) (1LL << 1))
+#define CONDUCT_VEGETARIAN         ((unsigned long long) (1LL << 2))
+#define CONDUCT_ATHEIST            ((unsigned long long) (1LL << 3))
+#define CONDUCT_PACIFIST           ((unsigned long long) (1LL << 4))
+#define CONDUCT_WEAPONLESS         ((unsigned long long) (1LL << 5))
+#define CONDUCT_ILLITERATE         ((unsigned long long) (1LL << 6))
+#define CONDUCT_POLYPILELESS       ((unsigned long long) (1LL << 7))
+#define CONDUCT_POLYSELFLESS       ((unsigned long long) (1LL << 8))
+#define CONDUCT_GENOLESS           ((unsigned long long) (1LL << 9))
+#define CONDUCT_WISHLESS           ((unsigned long long) (1LL << 10))
+#define CONDUCT_ARTIWISHLESS       ((unsigned long long) (1LL << 11))
+
 /* properties */
 #define PROPERTY_FIRE              ((unsigned long long) (1LL << 0)) // match MR_FIRE
 #define PROPERTY_COLD              ((unsigned long long) (1LL << 1)) // match MR_COLD
@@ -288,6 +302,7 @@
 #define PROPERTY_LYCANTHROPY       ((unsigned long long) (1LL << 38))
 #define PROPERTY_SEARCHING         ((unsigned long long) (1LL << 39))
 #define PROPERTY_ARTIFACT          ((unsigned long long) (1LL << 40))
+#define PROPERTY_SPEED             ((unsigned long long) (1LL << 41))
 
 /* discard item */
 #define DISCARD "DISCARD"

@@ -55,6 +55,9 @@ public:
 	static const Coordinate& position();
 	static const Coordinate& position(const Coordinate& position);
 	static int zorkmids();
+	static unsigned long long conducts();
+	static unsigned long long addConducts(unsigned long long conducts);
+	static unsigned long long removeConducts(unsigned long long conducts);
 	static unsigned long long intrinsics();
 	static unsigned long long addIntrinsics(unsigned long long intrinsics);
 	static unsigned long long removeIntrinsics(unsigned long long intrinsics);
@@ -103,6 +106,8 @@ private:
 	static Coordinate _position;
 	/* zorkmids */
 	static int _zorkmids;
+	/* conducts */
+	static unsigned long long _conducts;
 	/* intrinsics/extrinsics */
 	static unsigned long long _intrinsics;
 	static unsigned long long _extrinsics;
