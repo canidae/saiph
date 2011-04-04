@@ -207,9 +207,10 @@ void Health::onEvent(event::Event * const event) {
 				continue; // cursed or not an unihorn
 			if (_unihorn_no >= 1) {
 				_unihorn_no--;
-				break;
+			} else { 
+				i->second.want(i->second.count());
+				_unihorn_no++;
 			}
-			i->second.want(i->second.count());
 		}
 	}
 }
