@@ -195,6 +195,7 @@ void Health::onEvent(event::Event * const event) {
 				map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
 				if (u == Inventory::items().end() || u->second.beatitude() == UNCURSED)
 					_unihorn_key = i->first;
+					_unihorn_no++;
 			}
 		}
 	} else if (event->id() == WantItems::ID) {
@@ -205,7 +206,6 @@ void Health::onEvent(event::Event * const event) {
 			if (_unihorn_no >= 1)
 				break;
 			i->second.want(i->second.count());
-			_unihorn_no++;
 		}
 	}
 }
