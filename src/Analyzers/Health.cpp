@@ -176,8 +176,10 @@ void Health::onEvent(event::Event * const event) {
 				continue;
 			}
 			map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
-			if (u == Inventory::items().end() || u->second.beatitude() == UNCURSED)
+			if (u == Inventory::items().end() || u->second.beatitude() != CURSED) {
 				_unihorn_key = i->first;
+				_unihorn_no++;
+			}
 		}
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
@@ -203,8 +205,10 @@ void Health::onEvent(event::Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
 				continue; // cursed or not an unihorn
-			if (_unihorn_no >= 1)
+			if (_unihorn_no >= 1) {
+				_unihorn_no--;
 				break;
+			}
 			i->second.want(i->second.count());
 		}
 	}
