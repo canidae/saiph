@@ -23,7 +23,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Health::Health() : Analyzer("Health"), _resting(false), _was_polymorphed(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX), _lizard_key(ILLEGAL_ITEM), _unihorn_no(0), _unihorn_key(ILLEGAL_ITEM), _unihorn_use_turn(World::internalTurn()), _unihorn_priority(ILLEGAL_PRIORITY) {
+Health::Health() : Analyzer("Health"), _resting(false), _was_polymorphed(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX), _lizard_no(0), _lizard_key(ILLEGAL_ITEM), _unihorn_no(0), _unihorn_key(ILLEGAL_ITEM), _unihorn_use_turn(World::internalTurn()), _unihorn_priority(ILLEGAL_PRIORITY) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -102,17 +102,20 @@ void Health::analyze() {
 		/* cure lycanthropy */
 		/* TODO: eat sprig of wolfsbane */
 		/* no? try praying instead */
-		if (action::Pray::isSafeToPray())
+		if (action::Pray::isSafeToPrayMajorTrouble())
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_LYCANTHROPY)));
 	}
 	if (Saiph::stoned()) {
 		//cure stoning
 		if (_lizard_key != ILLEGAL_ITEM) { // use lizard corpse if we have it
 			World::setAction(static_cast<action::Action*> (new action::Eat(this, _lizard_key, PRIORITY_HEALTH_CURE_STONING)));
-			_lizard_key = ILLEGAL_ITEM; //assuming we have one
+			_lizard_no--;
+			if (_lizard_no == 0)
+				_lizard_key = ILLEGAL_ITEM;
+		} else {
+			//we'll die if we don't pray, so let's pray
+			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_STONING)));
 		}
-		//we'll  die if we don't pray, so let's pray
-		World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_STONING)));
 	}
 	if (Saiph::polymorphed()) {
 		/* cure polymorph */
@@ -205,6 +208,13 @@ void Health::onEvent(event::Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
 				continue; // cursed or not an unihorn
+			if (i->second.name().find("lizard") != string::npos && _lizard_no > 1)
+				continue; // how many lizard corpses do we _need_?
+			else {
+				i->second.want(i->second.count());
+				_lizard_no++;
+				continue;
+			}
 			if (_unihorn_no >= 1) {
 				_unihorn_no--;
 			} else { 

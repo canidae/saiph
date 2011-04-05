@@ -20,7 +20,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Food::Food() : Analyzer("Food"), _lizard_corpses(0) {
+Food::Food() : Analyzer("Food") {
 	/* try to eat the food with lowest nutrition/weight first, and avoid food that cures bad effects */
 	for (map<const string, const data::Food*>::const_iterator f = data::Food::foods().begin(); f != data::Food::foods().end(); ++f) {
 		if (!(f->second->effects() & EAT_EFFECT_NEVER_ROT))
@@ -156,13 +156,8 @@ void Food::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (_eat_priority.find(i->second.name()) == _eat_priority.end())
 				continue; // don't want this food item
-			if (i->second.name().find("lizard") != string::npos && _lizard_corpses >= 1)
-				continue; // how many lizard corpses do we _need_?
-			else {
-				i->second.want(i->second.count());
-				_lizard_corpses++;
-				continue;
-			}
+			if (i->second.name().find("lizard") != string::npos)
+				continue; // lizard corpses are handled by Health analyzer
 			i->second.want(i->second.count());
 		}
 	} else if (event->id() == ChangedInventoryItems::ID) {

@@ -38,6 +38,7 @@ namespace analyzer {
 		int _prev_int;
 		int _prev_wis;
 		int _prev_cha;
+		int _lizard_no;
 		unsigned char _lizard_key;
 		int _unihorn_no;
 		unsigned char _unihorn_key;
