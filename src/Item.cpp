@@ -203,10 +203,10 @@ Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEAT
 	 * we'll only singularize stuff we care about for now */
 	if (_name.find("pair of ") == 0) {
 		if (_name.find("pair of lenses") == string::npos) {
-			//boots or gloves; remove "pair of"
+			// boots or gloves; remove "pair of"
 			_name = _name.erase(_name.find("pair of "), string("pair of ").length());
 		}
-		return; //don't de-pluluralize "boots", "gloves", or "lenses"
+		return; // don't de-pluralize "boots", "gloves" or "lenses"
 	}
 	string::size_type stop = string::npos;
 	if ((stop = _name.find(" of ", 0)) != string::npos || (stop = _name.find(" labeled ", 0)) != string::npos || (stop = _name.find(" called ", 0)) != string::npos || (stop = _name.find(" named ", 0)) != string::npos || (stop = _name.find(" from ", 0)) != string::npos) {
@@ -323,11 +323,11 @@ int Item::want(int want) {
 }
 
 /* operator overloading */
-bool Item::operator==(const Item& i) {
-	return _is_item && _count == i._count && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
+bool Item::operator==(const Item& i) const {
+	return _is_item == i._is_item && _count == i._count && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
 }
 
-bool Item::operator!=(const Item& i) {
+bool Item::operator!=(const Item& i) const {
 	return !(*this == i);
 }
 

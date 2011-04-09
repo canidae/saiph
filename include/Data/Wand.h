@@ -40,7 +40,7 @@ namespace data {
 		static const std::map<const std::string, const Wand*>& wands();
 		int maximumCharges() const;
 		int zapType() const;
-		const std::string& engraveMessage() const; //returns "" if no message
+		const std::string& engraveMessage() const; // returns "" if no message
 
 	protected:
 		Wand(const std::string& name, int cost, int material, int maximum_charges, int zap_type, const std::string& engrave_message, unsigned long long properties);

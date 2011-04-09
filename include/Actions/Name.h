@@ -1,8 +1,9 @@
 #ifndef ACTION_NAME_H
 #define ACTION_NAME_H
 
-#include "Actions/Action.h"
 #include "Inventory.h"
+#include "World.h"
+#include "Actions/Action.h"
 
 namespace action {
 
@@ -41,7 +42,7 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos) {
+			if (messages.find(MESSAGE_NAME_INDIVIDUAL_OBECT) != std::string::npos || (World::menu() && messages.find(MESSAGE_WHAT_TO_NAME_TYPE) != std::string::npos)) {
 				_sequence = 1;
 			} else if (messages.find(MESSAGE_ITEM_TO_NAME) != std::string::npos) {
 				_sequence = 2;

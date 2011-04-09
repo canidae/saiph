@@ -29,8 +29,8 @@ public:
 	int want() const;
 	int want(int want);
 
-	bool operator==(const Item& i);
-	bool operator!=(const Item& i);
+	bool operator==(const Item& i) const;
+	bool operator!=(const Item& i) const;
 
 private:
 	std::string _name;

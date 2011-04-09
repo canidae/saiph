@@ -439,6 +439,7 @@
 #define MESSAGE_WHAT_TO_GENOCIDE_BLESSED  "  What class of monsters do you wish to genocide?  "
 #define MESSAGE_WHAT_TO_GENOCIDE_UNCURSED "  What monster do you want to genocide? [type the name]  "
 #define MESSAGE_WHAT_TO_NAME_ITEM "  What do you want to name this "
+#define MESSAGE_WHAT_TO_NAME_TYPE "  What do you wish to name?  " // NAO got a patch that gives us a menu on #name
 #define MESSAGE_WHAT_TO_PUT_ON "  What do you want to put on? "
 #define MESSAGE_WHAT_TO_REMOVE "  What do you want to remove? "
 #define MESSAGE_WHAT_TO_RUB "  What do you want to rub? "
