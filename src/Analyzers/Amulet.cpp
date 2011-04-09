@@ -1,8 +1,7 @@
 #include "Analyzers/Amulet.h"
 
-#include "Debug.h"
 #include <stdlib.h>
-#include <string>
+#include "Debug.h"
 #include "EventBus.h"
 #include "Globals.h"
 #include "Inventory.h"
@@ -37,8 +36,8 @@ void Amulet::analyze() {
 
 void Amulet::parseMessages(const string& messages) {
 	if (messages.find(STRANGULATION_5TTL) != string::npos) {
-		 World::setAction(static_cast<action::Action*> (new action::Remove(this, _amulet_key, PRIORITY_AMULET_REMOVE_HARM)));
-	 } // TODO: ID restful sleep too
+		World::setAction(static_cast<action::Action*> (new action::Remove(this, _amulet_key, PRIORITY_AMULET_REMOVE_HARM)));
+	} // TODO: ID restful sleep too
 }
 
 /* methods */
@@ -62,10 +61,9 @@ void Amulet::onEvent(Event * const event) {
 			else if (i->second.beatitude() == BEATITUDE_UNKNOWN && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
 				Beatify b(i->first, 175);
 				EventBus::broadcast(&b);
-			}
-			else if (i->second.beatitude() != CURSED && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+			} else if (i->second.beatitude() != CURSED && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
 				if (i->second.name().find("strangulation") != string::npos && i->second.name().find("restful") != string::npos)
-				_amulet_key = i->first;
+					_amulet_key = i->first;
 			}
 		}
 	} else if (event->id() == WantItems::ID) {

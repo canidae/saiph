@@ -2,6 +2,7 @@
 #define ANALYZER_AMULET_H
 
 #include <set>
+#include <string>
 #include "Analyzers/Analyzer.h"
 
 /* priorities */
@@ -30,8 +31,9 @@ namespace analyzer {
 		void onEvent(event::Event* const event);
 
 	private:
-		bool wantItem(const Item& item);
 		unsigned char _amulet_key;
+
+		bool wantItem(const Item& item);
 		void wearAmulet(const std::set<unsigned char>& keys);
 	};
 }

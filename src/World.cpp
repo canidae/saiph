@@ -47,7 +47,7 @@ bool World::_bold = false;
 char World::_data[BUFFER_SIZE * 2] = {'\0'};
 int World::_data_size = -1;
 string World::_msg_str;
-string World::_msg_buffer;
+string World::_msg_buffer = "";
 Point World::_last_menu;
 map<string, vector<int> > World::_levelmap;
 timeval World::_start_time;
@@ -552,15 +552,8 @@ void World::run() {
 			dumpMaps();
 		}
 
-		/* Append this turn's messages to the buffer.  If we're in a multi-message
-		 * action, the messages will be queued for actionCompleted,
-		 * otherwise they'll be sent to parseMessages per usual and the buffer
-		 * will be cleared again.  (Single-message actions will get the messages in
-		 * both places.)
-		 * 
-		 * Note that analyzers other than prev_analyzer only get this turn's
-		 * messages in parseMessages, as usual.
-		 */
+		/* append this turn's messages to the buffer.
+		 * if we're in a multi-message action, the messages will be queued for actionCompleted */
 		_msg_buffer += _messages;
 
 		/* analyze and parse messages if we're not continuing an action */

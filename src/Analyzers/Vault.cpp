@@ -61,7 +61,7 @@ void Vault::parseMessages(const string& messages) {
 	}
 }
 
-void Vault::actionCompleted() {
+void Vault::actionCompleted(const string& messages) {
 	if (_answering_guard) {
 		_answering_guard = false;
 		_dropping_gold = true;

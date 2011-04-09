@@ -23,10 +23,8 @@ namespace analyzer {
 		virtual void parseMessages(const std::string&);
 		virtual void analyze();
 		virtual void onEvent(event::Event * const);
-		virtual void actionCompleted();
-		virtual void actionFailed();
-		// this overload defaults to calling the parameter-less version
 		virtual void actionCompleted(const std::string& messages);
+		virtual void actionFailed();
 
 	private:
 		static std::vector<Analyzer*> _analyzers;

@@ -17,7 +17,7 @@ namespace analyzer {
 		Vault();
 
 		void parseMessages(const std::string& messages);
-		void actionCompleted();
+		void actionCompleted(const std::string& messages);
 
 	private:
 		bool _answering_guard;
