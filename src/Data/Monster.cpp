@@ -29,6 +29,11 @@ Monster::Monster(const string& name, const unsigned char& symbol, int difficulty
 	_saiph_difficulty -= _ac * 2; // the lower ac the monster got, the more dangerous it is
 	_saiph_difficulty += _magic_resistance; // higher magic resistance is bad
 	_saiph_difficulty += (a0.maxDamage() + a1.maxDamage() + a2.maxDamage() + a3.maxDamage() + a4.maxDamage() + a5.maxDamage()) * 3; // hard-hitting monsters are mean
+	if (m2 & M2_MAGIC)
+		_saiph_difficulty += 25; // magic users can be dangerous
+	if (m3 & M3_COVETOUS)
+		_saiph_difficulty += 50; // covetous!
+	/* should look at elemental attacks, resistances, etc */
 	if (_saiph_difficulty < _saiph_difficulty_min)
 		_saiph_difficulty_min = _saiph_difficulty;
 	if (_saiph_difficulty > _saiph_difficulty_max)
