@@ -31,7 +31,7 @@ void Wand::analyze() {
 		return;
 	if (Saiph::engulfed() || Saiph::blind() || Saiph::hallucinating() || Saiph::confused() || Saiph::stunned() || (Saiph::extrinsics() & PROPERTY_LEVITATION) != 0 || World::level().tile().symbol() == GRAVE || World::level().tile().symbol() == ALTAR || World::level().tile().symbol() == FOUNTAIN || World::level().tile().symbol() == WATER || World::level().tile().symbol() == LAVA)
 		return;
-	World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH, _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST)));
+	World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST)));
 }
 
 void Wand::onEvent(Event * const event) {
