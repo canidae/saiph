@@ -20,7 +20,6 @@
 #define UNIHORN_NOTHING_SEEMS_TO_HAPPEN "  Nothing seems to happen.  " // something can be fixed, but it wasn't
 
 namespace analyzer {
-
 	class Health : public Analyzer {
 	public:
 		Health();
@@ -38,9 +37,7 @@ namespace analyzer {
 		int _prev_int;
 		int _prev_wis;
 		int _prev_cha;
-		int _lizard_no;
 		unsigned char _lizard_key;
-		int _unihorn_no;
 		unsigned char _unihorn_key;
 		unsigned int _unihorn_use_turn;
 		int _unihorn_priority;

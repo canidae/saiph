@@ -17,13 +17,14 @@
 #include "Events/ElberethQuery.h"
 #include "Events/ReceivedItems.h"
 #include "Events/WantItems.h"
+#include "Data/Corpse.h"
 
 using namespace analyzer;
 using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Health::Health() : Analyzer("Health"), _resting(false), _was_polymorphed(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX), _lizard_no(0), _lizard_key(ILLEGAL_ITEM), _unihorn_no(0), _unihorn_key(ILLEGAL_ITEM), _unihorn_use_turn(World::internalTurn()), _unihorn_priority(ILLEGAL_PRIORITY) {
+Health::Health() : Analyzer("Health"), _resting(false), _was_polymorphed(false), _prev_str(INT_MAX), _prev_dex(INT_MAX), _prev_con(INT_MAX), _prev_int(INT_MAX), _prev_wis(INT_MAX), _prev_cha(INT_MAX), _lizard_key(ILLEGAL_ITEM), _unihorn_key(ILLEGAL_ITEM), _unihorn_use_turn(World::internalTurn()), _unihorn_priority(ILLEGAL_PRIORITY) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -106,12 +107,9 @@ void Health::analyze() {
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_LYCANTHROPY)));
 	}
 	if (Saiph::stoned()) {
-		//cure stoning
+		// cure stoning
 		if (_lizard_key != ILLEGAL_ITEM) { // use lizard corpse if we have it
 			World::setAction(static_cast<action::Action*> (new action::Eat(this, _lizard_key, PRIORITY_HEALTH_CURE_STONING)));
-			_lizard_no--;
-			if (_lizard_no == 0)
-				_lizard_key = ILLEGAL_ITEM;
 		} else {
 			//we'll die if we don't pray, so let's pray
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_STONING)));
@@ -143,7 +141,6 @@ void Health::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::Apply(this, _unihorn_key, _unihorn_priority, false)));
 	}
 
-
 	/* set previous stat values */
 	_prev_str = Saiph::strength();
 	_prev_dex = Saiph::dexterity();
@@ -154,14 +151,6 @@ void Health::analyze() {
 }
 
 void Health::parseMessages(const string& messages) {
-	#if 0
-	if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos || messages.find(MESSAGE_LIMBS_TURNED_TO_STONE) != string::npos) {
-		/* bloody *trice, this is bad */
-		/* TODO: eat [partly eaten] lizard corpse */
-		/* pray if all else fails, don't even bother checking if it's safe to pray, we're dead anyways */
-		World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
-	}
-	#endif
 	if (messages.find(UNIHORN_NOTHING_HAPPENS) != string::npos) {
 		_unihorn_priority = -1;
 		_unihorn_use_turn = World::internalTurn() + UNIHORN_UNIHORN_TIMEOUT;
@@ -173,53 +162,54 @@ void Health::onEvent(event::Event * const event) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
-			if (i == Inventory::items().end() || i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end()) {
-				if (*k == _unihorn_key)
+			if (*k == _unihorn_key) {
+				if (i == Inventory::items().end() || i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end()) {
 					_unihorn_key = ILLEGAL_ITEM;
-				continue;
-			}
-			map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
-			if (u == Inventory::items().end() || u->second.beatitude() != CURSED) {
-				_unihorn_key = i->first;
-				_unihorn_no++;
+					continue;
+				}
+			} else if (*k == _lizard_key) {
+				map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
+				if (i == Inventory::items().end() || c == data::Corpse::corpses().end() || !(c->second->effects() & EAT_EFFECT_CURE_STONING)) {
+					_lizard_key = ILLEGAL_ITEM;
+					continue;
+				}
 			}
 		}
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.name().find("lizard") && _lizard_key == ILLEGAL_ITEM) {
-				_lizard_key = i->first;
+			if (data::UnicornHorn::unicornHorns().find(i->second.name()) != data::UnicornHorn::unicornHorns().end()) {
+				if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
+					Beatify b(i->first, 175);
+					EventBus::broadcast(&b);
+				} else if (i->second.beatitude() != CURSED) {
+					map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
+					if (u == Inventory::items().end() || u->second.beatitude() == UNCURSED)
+						_unihorn_key = i->first;
+				}
 				continue;
 			}
-			if (data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
-				continue; // not an unihorn
-			if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-				Beatify b(i->first, 175);
-				EventBus::broadcast(&b);
-			} else if (i->second.beatitude() != CURSED) {
-				map<unsigned char, Item>::iterator u = Inventory::items().find(_unihorn_key);
-				if (u == Inventory::items().end() || u->second.beatitude() == UNCURSED)
-					_unihorn_key = i->first;
-					_unihorn_no++;
+			map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
+			if (c != data::Corpse::corpses().end() && c->second->effects() & EAT_EFFECT_CURE_STONING) {
+				_lizard_key = i->first;
+				continue;
 			}
 		}
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.beatitude() == CURSED || data::UnicornHorn::unicornHorns().find(i->second.name()) == data::UnicornHorn::unicornHorns().end())
-				continue; // cursed or not an unihorn
-			if (i->second.name().find("lizard") != string::npos && _lizard_no > 1)
-				continue; // how many lizard corpses do we _need_?
-			else {
+			if (i->second.beatitude() != CURSED && data::UnicornHorn::unicornHorns().find(i->second.name()) != data::UnicornHorn::unicornHorns().end()) {
+				/* non-cursed unihorn */
+				/* if we want to limit amount of unihorns, do it here, check inventory how many we got */
 				i->second.want(i->second.count());
-				_lizard_no++;
 				continue;
 			}
-			if (_unihorn_no >= 1) {
-				_unihorn_no--;
-			} else { 
+			map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
+			if (c != data::Corpse::corpses().end() && c->second->effects() & EAT_EFFECT_CURE_STONING) {
+				/* lizard corpse */
+				/* if we want to limit amount of lizard corpses, do it here, check inventory how many we got */
 				i->second.want(i->second.count());
-				_unihorn_no++;
+				continue;
 			}
 		}
 	}

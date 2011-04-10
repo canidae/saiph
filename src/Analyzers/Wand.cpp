@@ -19,7 +19,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Wand::Wand() : Analyzer("Wand"), _engrave_test_wand_key(0) {
+Wand::Wand() : Analyzer("Wand"), _engrave_test_wand_key(ILLEGAL_ITEM) {
 	/* register events */
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
@@ -74,11 +74,11 @@ void Wand::actionCompleted(const std::string& messages) {
 					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of vanish")));
 				else
 					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, w->first)));
-				_engrave_test_wand_key = 0;
+				_engrave_test_wand_key = ILLEGAL_ITEM;
 				return;
 			}
 		}
 		World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of unknown")));
-		_engrave_test_wand_key = 0;
+		_engrave_test_wand_key = ILLEGAL_ITEM;
 	}
 }
