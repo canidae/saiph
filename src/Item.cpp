@@ -324,7 +324,7 @@ int Item::want(int want) {
 
 /* operator overloading */
 bool Item::operator==(const Item& i) const {
-	return _is_item == i._is_item && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
+	return _is_item == i._is_item && _count == i._count && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
 }
 
 bool Item::operator!=(const Item& i) const {
