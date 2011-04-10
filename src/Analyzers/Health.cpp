@@ -190,7 +190,7 @@ void Health::onEvent(event::Event * const event) {
 				continue;
 			}
 			map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
-			if (c != data::Corpse::corpses().end() && c->second->effects() & EAT_EFFECT_CURE_STONING) {
+			if (c != data::Corpse::corpses().end() && (c->second->effects() & EAT_EFFECT_CURE_STONING)) {
 				_lizard_key = i->first;
 				continue;
 			}
@@ -205,7 +205,7 @@ void Health::onEvent(event::Event * const event) {
 				continue;
 			}
 			map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
-			if (c != data::Corpse::corpses().end() && c->second->effects() & EAT_EFFECT_CURE_STONING) {
+			if (c != data::Corpse::corpses().end() && (c->second->effects() & EAT_EFFECT_CURE_STONING)) {
 				/* lizard corpse */
 				/* if we want to limit amount of lizard corpses, do it here, check inventory how many we got */
 				i->second.want(i->second.count());
