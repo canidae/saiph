@@ -29,7 +29,7 @@ Wand::Wand() : Analyzer("Wand"), _engrave_test_wand_key(0) {
 void Wand::analyze() {
 	if (Inventory::itemAtKey(_engrave_test_wand_key) == Inventory::NO_ITEM)
 		return;
-	if (Saiph::engulfed() || Saiph::blind() || Saiph::hallucinating() || Saiph::confused() || Saiph::stunned() || (Saiph::extrinsics() & PROPERTY_LEVITATION) != 0 || World::level().tile().symbol() == GRAVE || World::level().tile().symbol() == ALTAR || World::level().tile().symbol() == FOUNTAIN || World::level().tile().symbol() == WATER || World::level().tile().symbol() == LAVA)
+	if (!action::Engrave::canEngrave())
 		return;
 	World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST)));
 }

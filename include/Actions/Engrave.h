@@ -1,6 +1,8 @@
 #ifndef ACTION_ENGRAVE_H
 #define ACTION_ENGRAVE_H
 
+#include "Saiph.h"
+#include "World.h"
 #include "Actions/Action.h"
 
 // TODO: (can't engrave)
@@ -16,6 +18,10 @@ namespace action {
 		}
 
 		virtual ~Engrave() {
+		}
+
+		static bool canEngrave() {
+			return !(Saiph::engulfed() || Saiph::blind() || Saiph::hallucinating() || Saiph::confused() || Saiph::stunned() || (Saiph::extrinsics() & PROPERTY_LEVITATION) != 0 || World::level().tile().symbol() == GRAVE || World::level().tile().symbol() == ALTAR || World::level().tile().symbol() == FOUNTAIN || World::level().tile().symbol() == WATER || World::level().tile().symbol() == LAVA);
 		}
 
 		virtual int id() {
