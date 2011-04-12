@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+
+my @lines;
+while (<>) {
+    next unless /Points/../^<T/;
+
+    if (/^<T/) {
+	my $a = join "", @lines;#  $lines[-2] . $lines[-1];
+	$a =~ s/[\r\n]//g;
+	$a =~ s/\x1B\[.m//g;
+	$a =~ s/...//;
+	$a =~ s/  +/ /g;
+	print "$a\n";
+	@lines = ();
+    } else {
+	@lines = () if /^\x1B/ && /saiph-/;
+	push @lines, $_ if /^\x1B/;
+    }
+}
