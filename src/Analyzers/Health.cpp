@@ -168,8 +168,12 @@ void Health::onEvent(event::Event * const event) {
 					continue;
 				}
 			} else if (*k == _lizard_key) {
+				if (i == Inventory::items().end()) {
+					_lizard_key = ILLEGAL_ITEM;
+					continue;
+				}
 				map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
-				if (i == Inventory::items().end() || c == data::Corpse::corpses().end() || !(c->second->effects() & EAT_EFFECT_CURE_STONING)) {
+				if (c == data::Corpse::corpses().end() || !(c->second->effects() & EAT_EFFECT_CURE_STONING)) {
 					_lizard_key = ILLEGAL_ITEM;
 					continue;
 				}

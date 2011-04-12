@@ -15,7 +15,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Local::Local() {
+Local::Local() : _unanswered_chars(1), _synchronous(0) {
 	/* set up pipes */
 	if (pipe(_link) < 0) {
 		Debug::error() << LOCAL_DEBUG_NAME << "Plumbing failed" << endl;
@@ -43,7 +43,8 @@ Local::Local() {
 		/* this is our pty, start nethack here */
 		int result;
 		setenv("TERM", "xterm", 1);
-		result = execl(LOCAL_NETHACK, LOCAL_NETHACK, "TERM=xterm", NULL);
+		setenv("SAIPH_INLINE_SYNC", "1", 1);
+		result = execl(LOCAL_NETHACK, LOCAL_NETHACK, NULL);
 		if (result < 0) {
 			Debug::error() << LOCAL_DEBUG_NAME << "Unable to enter the dungeon" << endl;
 			exit(3);
@@ -57,25 +58,63 @@ Local::~Local() {
 }
 
 /* methods */
+int Local::removeThorns(char *buffer, int count) {
+	int writep = 0;
+	int readp = 0;
+	int removed = 0;
+
+	while (readp != count) {
+		char ch = buffer[readp++];
+		if (ch == (char)0xFE)
+			removed++;
+		else
+			buffer[writep++] = ch;
+	}
+
+	return removed;
+}
+
 int Local::retrieve(char* buffer, int count) {
 	/* retrieve data */
 	ssize_t data_received = 0;
-	/* make reading blocking */
-	//fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
-	/* read 8 bytes, this will block until there's data available */
-	//data_received += read(link[0], buffer, 8);
-	/* make reading non-blocking */
-	fcntl(_link[0], F_SETFL, fcntl(_link[0], F_GETFL) | O_NONBLOCK);
 	ssize_t amount;
-	/* usleep some ms here (after the blocked reading) both to
-	 * make sure that we've received all the data and to make the
-	 * game watchable  */
-	usleep(20000);
-	do {
-		amount = read(_link[0], &buffer[data_received], count - data_received - 2);
-		if (amount > 0)
-			data_received += amount;
-	} while (amount > 1000 && !(amount & (amount + 1))); // power of 2 test
+	if (_synchronous > 0) {
+		do {
+			amount = read(_link[0], &buffer[data_received], count - data_received - 2);
+			if (amount > 0) {
+				int th = removeThorns(&buffer[data_received], amount);
+				data_received -= th;
+				_unanswered_chars -= th;
+				data_received += amount;
+			}
+		} while (amount >= 0 && _unanswered_chars);
+	} else {
+		/* make reading blocking */
+		//fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
+		/* read 8 bytes, this will block until there's data available */
+		//data_received += read(link[0], buffer, 8);
+		/* make reading non-blocking */
+		fcntl(_link[0], F_SETFL, fcntl(_link[0], F_GETFL) | O_NONBLOCK);
+		/* usleep some ms here (after the blocked reading) both to
+		 * make sure that we've received all the data and to make the
+		 * game watchable  */
+		usleep(20000);
+		do {
+			amount = read(_link[0], &buffer[data_received], count - data_received - 2);
+			if (amount > 0)
+				data_received += amount;
+		} while (amount > 1000 && !(amount & (amount + 1))); // power of 2 test
+		if (data_received > 0) {
+			int th = removeThorns(buffer, data_received);
+			if (th > 0) {
+				data_received -= th;
+				_unanswered_chars = 0;
+				_synchronous = 1;
+				Debug::info() << LOCAL_DEBUG_NAME << "Using inband syncronization" << endl;
+				fcntl(_link[0], F_SETFL, fcntl(_link[0], F_GETFL) & ~O_NONBLOCK);
+			}
+		}
+	}
 	if (data_received < (ssize_t) count)
 		buffer[data_received] = '\0';
 	return (int) data_received;
@@ -83,6 +122,7 @@ int Local::retrieve(char* buffer, int count) {
 
 int Local::transmit(const string& data) {
 	/* send data */
+	_unanswered_chars += data.size();
 	return (int) write(_link[1], data.c_str(), data.size());
 }
 
