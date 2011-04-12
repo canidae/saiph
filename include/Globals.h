@@ -453,6 +453,7 @@
 #define MESSAGE_YOU_DESTROY "  You destroy the "
 #define MESSAGE_YOU_DIG_A_PIT "  You dig a pit in the floor.  "
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
+#define MESSAGE_YOU_FEEL_LIMBER "  You feel limber!  "
 #define MESSAGE_YOU_FINISH_TAKING_OFF "  You finish taking off your " // followed by helmet/gloves/boots/suit
 #define MESSAGE_YOU_WERE_WEARING "  You were wearing " // an uncursed +3 small shield, for example
 #define MESSAGE_YOU_FINISH_YOUR_PRAYER "  You finish your prayer.  "

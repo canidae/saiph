@@ -188,6 +188,8 @@ void Saiph::parseMessages(const string& messages) {
 			_intrinsics &= ~PROPERTY_LYCANTHROPY;
 		if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos)
 			_stoned = true; // not checking for limbs turned to stone because we're dead then
+		if (messages.find(MESSAGE_YOU_FEEL_LIMBER) != string::npos)
+			_stoned = false;
 		if (messages.find(MESSAGE_HURT_LEFT_LEG) != string::npos || messages.find(MESSAGE_HURT_RIGHT_LEG) != string::npos)
 			_hurt_leg = true;
 		if (messages.find(MESSAGE_LEG_IS_BETTER) != string::npos)
