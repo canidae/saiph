@@ -293,6 +293,11 @@ void Sokoban::analyze() {
 		Debug::warning() << "Sokoban was unable to recognize this level" << endl;
 		return;
 	}
+	if (_moves[level].size() <= 0) {
+		/* look at that, we've solved this sokoban level */
+		Debug::custom(name()) << "Odd, this shouldn't happen, did we solve sokoban level " << level << "?" << endl;
+		return;
+	}
 	/* go to next point */
 	Point p = _moves[level].front();
 	if (p == Saiph::position()) {
