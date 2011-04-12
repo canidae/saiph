@@ -23,5 +23,8 @@ public:
 
 private:
 	int _link[2];
+	int _unanswered_chars;
+	int _synchronous;
+	int removeThorns(char* buffer, int count);
 };
 #endif

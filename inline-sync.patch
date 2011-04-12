@@ -1,0 +1,20 @@
+diff -ur nethack-3.4.3-orig/win/tty/wintty.c nethack-3.4.3/win/tty/wintty.c
+--- nethack-3.4.3-orig/win/tty/wintty.c	2003-12-07 15:39:14.000000000 -0800
++++ nethack-3.4.3/win/tty/wintty.c	2011-04-11 11:15:06.000000000 -0700
+@@ -135,6 +135,7 @@
+ # endif
+ static int clipy = 0, clipymax = 0;
+ #endif /* CLIPPING */
++static int inline_sync = -1;
+ 
+ #if defined(USE_TILES) && defined(MSDOS)
+ extern void FDECL(adjust_cursor_flags, (struct WinDesc *));
+@@ -2520,6 +2521,8 @@
+     char nestbuf;
+ #endif
+ 
++    if (inline_sync < 0) inline_sync = (getenv("SAIPH_INLINE_SYNC") != 0);
++    if (inline_sync) putchar(0xFE);
+     (void) fflush(stdout);
+     /* Note: if raw_print() and wait_synch() get called to report terminal
+      * initialization problems, then wins[] and ttyDisplay might not be
