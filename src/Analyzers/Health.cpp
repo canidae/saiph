@@ -1,5 +1,6 @@
 #include "Analyzers/Health.h"
 
+#include <algorithm>
 #include <stdlib.h>
 #include "Saiph.h"
 #include "World.h"
@@ -201,32 +202,43 @@ void Health::onEvent(event::Event * const event) {
 		}
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
+		int unihorns = -1;
+		int lizards = -1;
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() != CURSED && data::UnicornHorn::unicornHorns().find(i->second.name()) != data::UnicornHorn::unicornHorns().end()) {
-				/* non-cursed unihorn */
-				/* if we want to limit amount of unihorns, do it here, check inventory how many we got */
-				int unihornNum = 0;
-				for (map<unsigned char, Item>::iterator i2 = e->items().begin(); i2 != e->items().end(); ++i2) {
-					if (i2->second.beatitude() != CURSED && data::UnicornHorn::unicornHorns().find(i->second.name()) != data::UnicornHorn::unicornHorns().end())
-						unihornNum++;
+				/* let's carry up to 3 non-cursed unihorn */
+				if (unihorns == -1) {
+					unihorns = 0;
+					for (map<unsigned char, Item>::iterator i2 = Inventory::items().begin(); i2 != Inventory::items().end(); ++i2) {
+						if (i2->second.beatitude() != CURSED && i->second.name() == i2->second.name())
+							++unihorns;
+					}
 				}
-				/* keep at least 3 on hand */
-				if (unihornNum < 3)
+				if (unihorns < 3) {
+					/* unihorns never stack, i->second.count() is always 1 */
 					i->second.want(i->second.count());
+					++unihorns;
+				}
 				continue;
 			}
 			map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
 			if (c != data::Corpse::corpses().end() && (c->second->effects() & EAT_EFFECT_CURE_STONING)) {
-				/* lizard corpse */
-				/* if we want to limit amount of lizard corpses, do it here, check inventory how many we got */
-				int lizardNum = 0;
-				for (map<unsigned char, Item>::iterator i2 = e->items().begin(); i2 != e->items().end(); ++i2) {
-					map<const string, const data::Corpse*>::const_iterator c2 = data::Corpse::corpses().find(i2->second.name());
-					if (c != data::Corpse::corpses().end() && (c->second->effects() & EAT_EFFECT_CURE_STONING))
-						lizardNum++;
+				/* let's carry up to 3 lizard corpse */
+				if (lizards == -1) {
+					lizards = 0;
+					for (map<unsigned char, Item>::iterator i2 = Inventory::items().begin(); i2 != Inventory::items().end(); ++i2) {
+						if (i->second.name() == i2->second.name())
+							++lizards;
+					}
 				}
-				if (lizardNum < 3)
-					i->second.want(i->second.count());
+				if (lizards < 3) {
+					/* lizard corpses stack, so we need this check */
+					int want = min(i->second.count(), 3 - i->second.count());
+					if (want > 0) {
+						i->second.want(want);
+						lizards += want;
+					}
+				}
 				continue;
 			}
 		}
