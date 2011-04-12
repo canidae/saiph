@@ -202,43 +202,16 @@ void Health::onEvent(event::Event * const event) {
 		}
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		int unihorns = -1;
-		int lizards = -1;
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.beatitude() != CURSED && data::UnicornHorn::unicornHorns().find(i->second.name()) != data::UnicornHorn::unicornHorns().end()) {
-				/* let's carry up to 3 non-cursed unihorn */
-				if (unihorns == -1) {
-					unihorns = 0;
-					for (map<unsigned char, Item>::iterator i2 = Inventory::items().begin(); i2 != Inventory::items().end(); ++i2) {
-						if (i2->second.beatitude() != CURSED && i->second.name() == i2->second.name())
-							++unihorns;
-					}
-				}
-				if (unihorns < 3) {
-					/* unihorns never stack, i->second.count() is always 1 */
-					i->second.want(i->second.count());
-					++unihorns;
-				}
+				/* let's pick up all non-cursed unihorns */
+				i->second.want(i->second.count());
 				continue;
 			}
 			map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->second.name());
 			if (c != data::Corpse::corpses().end() && (c->second->effects() & EAT_EFFECT_CURE_STONING)) {
-				/* let's carry up to 3 lizard corpse */
-				if (lizards == -1) {
-					lizards = 0;
-					for (map<unsigned char, Item>::iterator i2 = Inventory::items().begin(); i2 != Inventory::items().end(); ++i2) {
-						if (i->second.name() == i2->second.name())
-							++lizards;
-					}
-				}
-				if (lizards < 3) {
-					/* lizard corpses stack, so we need this check */
-					int want = min(i->second.count(), 3 - i->second.count());
-					if (want > 0) {
-						i->second.want(want);
-						lizards += want;
-					}
-				}
+				/* let's pick up all lizard corpses */
+				i->second.want(i->second.count());
 				continue;
 			}
 		}
