@@ -9,6 +9,8 @@
 #include "Actions/Search.h"
 #include "Events/TakeMeThere.h"
 
+#include <sstream>
+
 using namespace analyzer;
 using namespace event;
 using namespace std;
@@ -31,6 +33,7 @@ void Explore::analyze() {
 	if (World::currentPriority() < PRIORITY_EXPLORE_ROGUE && World::level().branch() == BRANCH_ROGUE) {
 		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) ROGUE_STAIRS).begin(); s != World::level().symbols((unsigned char) ROGUE_STAIRS).end(); ++s) {
 			Tile& tile = World::shortestPath(s->first);
+			Debug::custom(name()) << "Want to explore rogue stairs on this level" << endl;
 			if (tile.cost() >= UNPASSABLE)
 				continue;
 			else if (tile.direction() == NOWHERE)
@@ -51,6 +54,7 @@ void Explore::analyze() {
 				continue;
 			if (tile.direction() == NOWHERE)
 				tile.direction(UP);
+			Debug::custom(name()) << "Want to explore starts up on this level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.cost()))));
 			break;
 		}
@@ -77,6 +81,7 @@ void Explore::analyze() {
 		if (World::level().branch() == BRANCH_MINES && best_type > 1) {
 			/* don't bother searching the mines */
 		} else if (best_tile.cost() < UNPASSABLE) {
+			Debug::custom(name()) << "Want to explore this level at type " << best_type << endl;
 			if (best_tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
 			else
@@ -94,6 +99,7 @@ void Explore::analyze() {
 				continue;
 			if (tile.direction() == NOWHERE)
 				tile.direction(DOWN);
+			Debug::custom(name()) << "Want to explore starts down on this level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.cost()))));
 			break;
 		}
@@ -109,6 +115,7 @@ void Explore::analyze() {
 				continue;
 			if (tile.direction() == NOWHERE)
 				continue; // shouldn't happen (too often)
+			Debug::custom(name()) << "Want to explore magic portal on this level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, tile.cost()))));
 			break;
 		}
@@ -118,44 +125,49 @@ void Explore::analyze() {
 	if (best_type > 1 && World::currentPriority() < PRIORITY_EXPLORE_LEVEL) {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
+			Level& lv = World::level(l->first);
+			ostringstream desco (ostringstream::out);
+			desco << lv.depth() << ',' << lv.branch();
+			std::string desc(desco.str());
 			if (Saiph::position().level() == l->first)
 				continue; // same level as we're currently on
-			if (World::level(l->first).branch() == BRANCH_SOKOBAN)
+			if (lv.branch() == BRANCH_SOKOBAN)
 				continue; // no point exploring sokoban
-			if (World::level(l->first).symbols(STAIRS_DOWN).size() <= 0 || World::level(l->first).symbols(STAIRS_UP).size() <= 0) {
+			if (lv.symbols(STAIRS_DOWN).size() <= 0 || lv.symbols(STAIRS_UP).size() <= 0) {
 				/* stairs up or down not found on level, should explore this level more unless: */
-				if (World::level(l->first).branch() == BRANCH_MINES && World::level(l->first).depth() >= 10)
+				if (lv.branch() == BRANCH_MINES && lv.depth() >= 10)
 					continue; // may be mine's end
-				Debug::custom(name()) << "Looking for stairs up/down on level" << endl;
+				Debug::custom(name()) << "Looking for stairs up/down on level " << desc << endl;
 			} else {
 				/* got both stairs up & down, we should explore unless: */
-				if (World::branchCoordinate(BRANCH_MINES).level() == -1 && World::level(l->first).depth() >= 2 && World::level(l->first).depth() <= 4) {
+				if (World::branchCoordinate(BRANCH_MINES).level() == -1 && lv.depth() >= 2 && lv.depth() <= 4) {
 					/* haven't found mines, level 2-4 got entrance to it */
-					Debug::custom(name()) << "Looking for entrance to the mines" << endl;
-				} else if (World::branchCoordinate(BRANCH_SOKOBAN).level() == -1 && World::level(l->first).depth() >= 6 && World::level(l->first).depth() <= 10) {
+					Debug::custom(name()) << "Looking for entrance to the mines on level " << desc << endl;
+				} else if (World::branchCoordinate(BRANCH_SOKOBAN).level() == -1 && lv.depth() >= 6 && lv.depth() <= 10) {
 					/* haven't found sokoban, entrance is between level 6 and 10 */
-					Debug::custom(name()) << "Looking for entrance to sokoban" << endl;
+					Debug::custom(name()) << "Looking for entrance to sokoban on level " << desc << endl;
 				} else {
 					/* otherwise, don't explore unless we don't know where any of the stairs lead */
 					bool explore = false;
-					for (map<Point, int>::const_iterator s = World::level(l->first).symbols(STAIRS_UP).begin(); !explore && s != World::level(l->first).symbols(STAIRS_UP).end(); ++s) {
+					for (map<Point, int>::const_iterator s = lv.symbols(STAIRS_UP).begin(); !explore && s != lv.symbols(STAIRS_UP).end(); ++s) {
 						if (s->second == UNKNOWN_SYMBOL_VALUE)
 							explore = true;
 					}
-					for (map<Point, int>::const_iterator s = World::level(l->first).symbols(STAIRS_DOWN).begin(); !explore && s != World::level(l->first).symbols(STAIRS_DOWN).end(); ++s) {
+					for (map<Point, int>::const_iterator s = lv.symbols(STAIRS_DOWN).begin(); !explore && s != lv.symbols(STAIRS_DOWN).end(); ++s) {
 						if (s->second == UNKNOWN_SYMBOL_VALUE)
 							explore = true;
 					}
+					Debug::custom(name()) << "Looking for stair connections on level " << desc << endl;
 					if (!explore)
 						continue;
 				}
 			}
-			if (l->second > 1 && World::level(l->first).branch() == BRANCH_MINES) {
-				Debug::custom(name()) << "Not travelling to level " << l->first << ", it's in the mines and we've already explored it enough" << endl;
+			if (l->second > 1 && lv.branch() == BRANCH_MINES) {
+				Debug::custom(name()) << "Not travelling to level " << desc << ", it's in the mines and we've already explored it enough" << endl;
 				continue;
 			}
 			if (l->second >= best_type) {
-				Debug::custom(name()) << "Not travelling to level " << l->first << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
+				Debug::custom(name()) << "Not travelling to level " << desc << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
 				continue;
 			}
 			/* can we path to upstairs on this level? */
@@ -179,7 +191,7 @@ void Explore::analyze() {
 			}
 		}
 		if (best_tile.cost() < UNREACHABLE) {
-			Debug::custom(name()) << "Heading towards " << best_tile.coordinate() << " to explore that level" << endl;
+			Debug::custom(name()) << "Heading towards " << best_tile.coordinate() << " to explore level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
 		}
 	}
