@@ -518,10 +518,12 @@ Tile World::shortestPath(unsigned char symbol) {
 	return best_tile;
 }
 
-void World::run() {
+void World::run(int speed) {
 	int last_turn = 0;
 	int stuck_counter = 0;
 	while (true) {
+		if (speed == SPEED_SLOW)
+			usleep(200000);
 		/* check if we're in the middle of an action.
 		 * Inventory and Level may send events that analyzers react on and set an action,
 		 * so we check if we're in the middle of an action here and remember it for later.
@@ -1316,6 +1318,7 @@ void World::update() {
 /* main */
 int main(int argc, const char* argv[]) {
 	int connection_type = CONNECTION_TELNET;
+	int initial_speed = SPEED_FAST;
 	string logfile = "saiph.log";
 
 	bool showUsage = false;
@@ -1336,6 +1339,12 @@ int main(int argc, const char* argv[]) {
 					break;
 				case 't':
 					connection_type = CONNECTION_TELNET;
+					break;
+				case '2':
+					initial_speed = SPEED_FAST;
+					break;
+				case '1':
+					initial_speed = SPEED_SLOW;
 					break;
 				case 'L':
 					if (argc > ++a)
@@ -1359,6 +1368,10 @@ int main(int argc, const char* argv[]) {
 			cout << "\t-l  Use local nethack executable" << endl;
 			cout << "\t-t  Use telnet nethack server" << endl;
 			cout << endl;
+			cout << "\t-0  Start paused (NOT IMPLEMENTED)" << endl;
+			cout << "\t-1  Start at slow speed" << endl;
+			cout << "\t-2  Start at full speed" << endl;
+			cout << endl;
 			cout << "\t-L <logfile>  Log file to write Saiph output" << endl;
 			return 1;
 		}
@@ -1373,7 +1386,7 @@ int main(int argc, const char* argv[]) {
 	Analyzer::init();
 
 	/* run */
-	World::run();
+	World::run(initial_speed);
 	Debug::notice() << "Quitting gracefully" << endl;
 
 	/* destroy */

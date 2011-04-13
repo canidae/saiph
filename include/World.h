@@ -13,6 +13,9 @@
 #define END "(end) " // yeah, space should be there
 #define PAGE "(%d of %d)"
 #define PAGE_DIRTY "%*[^(]" PAGE
+#define SPEED_PAUSE 0
+#define SPEED_SLOW 1
+#define SPEED_FAST 2
 
 #include <list>
 #include <map>
@@ -60,7 +63,7 @@ public:
 	static Tile& shortestPath(const Point& target);
 	static Tile shortestPath(const Coordinate& target);
 	static Tile shortestPath(unsigned char symbol);
-	static void run();
+	static void run(int init_speed);
 
 private:
 	static Connection* _connection;
