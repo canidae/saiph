@@ -11,3 +11,6 @@ Makefile
 Makefile-saiph.mk
 cmake_install.cmake
 nbproject
+logs/
+tags
+core
