@@ -25,9 +25,6 @@ Replace "canidae" if you used another name for that repo.
 
 Building & running:
 -------------------
-If you're running locally you'll have to do this once before executing saiph:
- export NETHACKOPTIONS=@<path to nethackrc>
-
 If you are running on a public server, you will need to create a file named
 ".account" in the directory where you run saiph; it must have three lines,
 consisting of the host name, the dgamelaunch user name, and the password,
