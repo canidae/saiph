@@ -44,7 +44,7 @@ Local::Local() : _unanswered_chars(1), _synchronous(0) {
 		int result;
 		setenv("TERM", "xterm", 1);
 		setenv("SAIPH_INLINE_SYNC", "1", 1);
-		result = execl(LOCAL_NETHACK, LOCAL_NETHACK, NULL);
+		result = execl("/bin/sh", "sh", "-c", LOCAL_NETHACK, NULL);
 		if (result < 0) {
 			Debug::error() << LOCAL_DEBUG_NAME << "Unable to enter the dungeon" << endl;
 			exit(3);
