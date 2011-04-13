@@ -1,7 +1,12 @@
 #include "Local.h"
 
 #include <stdlib.h>
+#include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+
+#include <vector>
 
 #ifdef __APPLE__
 #include <util.h>
@@ -41,6 +46,19 @@ Local::Local() : _unanswered_chars(1), _synchronous(0) {
 		_link[1] = fd; // writing
 	} else {
 		/* this is our pty, start nethack here */
+		std::vector<char> path(256);
+		while (getcwd(&path[1], path.size() - 10) == NULL) { /* @ + /nethackrc\0 */
+			if (errno == ERANGE) {
+				path.resize(path.size() * 2);
+			} else {
+				Debug::error() << LOCAL_DEBUG_NAME << "getcwd failed: " << strerror(errno) << endl;
+				exit(1);
+			}
+		}
+		path[0] = '@';
+		strcat(&path[0], "/nethackrc");
+		setenv("NETHACKOPTIONS", &path[0], 1);
+
 		int result;
 		setenv("TERM", "xterm", 1);
 		setenv("SAIPH_INLINE_SYNC", "1", 1);
