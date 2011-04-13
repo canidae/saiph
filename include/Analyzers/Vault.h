@@ -3,6 +3,7 @@
 
 #include <string>
 #include "Analyzers/Analyzer.h"
+#include "Point.h"
 
 /* Croesus */
 #define VAULT_CROESUS "Croesus\n"
@@ -20,9 +21,9 @@ namespace analyzer {
 		void actionCompleted(const std::string& messages);
 
 	private:
+		int _last_saw_guard_turn;
 		bool _answering_guard;
 		bool _dropping_gold;
-		bool _looking_at_ground;
 		bool _following_guard;
 	};
 }
