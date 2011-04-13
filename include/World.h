@@ -101,6 +101,7 @@ private:
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
 	static bool directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders);
+	static void dumpMap(Level& which);
 	static void dumpMaps();
 	static bool executeCommand(const std::string& command);
 	static void fetchMenu();

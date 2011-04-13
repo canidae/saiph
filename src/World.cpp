@@ -772,29 +772,7 @@ bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_
 	return true;
 }
 
-void World::dumpMaps() {
-	/* XXX: World echoes output from the game in the top left corner */
-	/* frames/turns per second */
-	timeval cur_time;
-	gettimeofday(&cur_time, NULL);
-	double seconds = (cur_time.tv_sec + cur_time.tv_usec / 1000000.0) - (_start_time.tv_sec + _start_time.tv_usec / 1000000.0);
-	if (seconds == 0.0)
-		seconds = 0.001;
-	double fps = (double) _frame_count / seconds;
-	double tps = (double) _turn / seconds;
-	cout << (unsigned char) 27 << "[25;1H";
-	cout << "Frames/second: " << (unsigned char) 27 << "[32m";
-	cout << (int) fps << "." << (int) (fps * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-	cout << (unsigned char) 27 << "[25;26H";
-	cout << "Turns/second: " << (unsigned char) 27 << "[32m";
-	cout << (int) tps << "." << (int) (tps * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-	cout << (unsigned char) 27 << "[25;51H";
-	cout << "Run time: " << (unsigned char) 27 << "[32m";
-	cout << (int) seconds << "." << (int) (seconds * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-
+void World::dumpMap(Level& lv) {
 	/* monsters and map as saiph sees it */
 	Point p;
 	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
@@ -802,8 +780,8 @@ void World::dumpMaps() {
 		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
 			if (!p.insideMap())
 				continue;
-			const Tile& t = level().tile(p);
-			if (p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
+			const Tile& t = lv.tile(p);
+			if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
 				cout << (unsigned char) 27 << "[95m@" << (unsigned char) 27 << "[0m";
 			else if (t.monster() != ILLEGAL_MONSTER)
 				cout << (unsigned char) 27 << "[" << (t.monster() == _view[p.row()][p.col()] ? "91" : "93") << "m" << t.monster() << (unsigned char) 27 << "[0m";
@@ -829,6 +807,32 @@ void World::dumpMaps() {
 		}
 	}
 	 */
+}
+
+void World::dumpMaps() {
+	/* XXX: World echoes output from the game in the top left corner */
+	/* frames/turns per second */
+	timeval cur_time;
+	gettimeofday(&cur_time, NULL);
+	double seconds = (cur_time.tv_sec + cur_time.tv_usec / 1000000.0) - (_start_time.tv_sec + _start_time.tv_usec / 1000000.0);
+	if (seconds == 0.0)
+		seconds = 0.001;
+	double fps = (double) _frame_count / seconds;
+	double tps = (double) _turn / seconds;
+	cout << (unsigned char) 27 << "[25;1H";
+	cout << "Frames/second: " << (unsigned char) 27 << "[32m";
+	cout << (int) fps << "." << (int) (fps * 10) % 10;
+	cout << (unsigned char) 27 << "[0m     ";
+	cout << (unsigned char) 27 << "[25;26H";
+	cout << "Turns/second: " << (unsigned char) 27 << "[32m";
+	cout << (int) tps << "." << (int) (tps * 10) % 10;
+	cout << (unsigned char) 27 << "[0m     ";
+	cout << (unsigned char) 27 << "[25;51H";
+	cout << "Run time: " << (unsigned char) 27 << "[32m";
+	cout << (int) seconds << "." << (int) (seconds * 10) % 10;
+	cout << (unsigned char) 27 << "[0m     ";
+
+	dumpMap(level());
 
 	/* status & inventory */
 	cout << (unsigned char) 27 << "[2;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[2;82H";
