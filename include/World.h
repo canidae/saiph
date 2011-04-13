@@ -46,6 +46,7 @@ public:
 	static int turn();
 	static unsigned int internalTurn();
 	static const std::vector<Point>& changes();
+	static void forgetChanges();
 	static const Coordinate& branchCoordinate(int branch);
 	static Level& level();
 	static Level& level(int level);

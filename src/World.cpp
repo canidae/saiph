@@ -884,11 +884,14 @@ void World::dumpMaps() {
 	}
 }
 
-bool World::executeCommand(const string& command) {
-	/* send a command to nethack */
+void World::forgetChanges() {
 	for (vector<Point>::iterator c = _changes.begin(); c != _changes.end(); ++c)
 		_changed[c->row()][c->col()] = false;
 	_changes.clear();
+}
+
+bool World::executeCommand(const string& command) {
+	/* send a command to nethack */
 	_messages = "  "; // we want 2 spaces before the first message too
 	if (command.size() <= 0) {
 		/* huh? no command? */
