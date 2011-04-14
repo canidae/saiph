@@ -2,6 +2,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <termios.h>
+#include <unistd.h>
 #include "Connection.h"
 #include "Debug.h"
 #include "Inventory.h"
@@ -54,6 +56,9 @@ timeval World::_start_time;
 vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
 Coordinate World::_branches[BRANCHES] = {Coordinate()};
+
+static struct termios _save_termios, _current_termios;
+static int _current_speed;
 
 /* methods */
 char World::view(const Point& point) {
@@ -518,12 +523,48 @@ Tile World::shortestPath(unsigned char symbol) {
 	return best_tile;
 }
 
+static void _end_termios() {
+	tcsetattr(0, TCSANOW, &_save_termios);
+}
+
+static void _init_termios() {
+	tcgetattr(0, &_save_termios);
+	atexit(&_end_termios);
+	_current_termios = _save_termios;
+	_current_termios.c_iflag &= ~IXON;
+	_current_termios.c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN);
+	_current_termios.c_cc[VTIME] = 0;
+}
+
+static void _set_keywait(bool wait) {
+	_current_termios.c_cc[VMIN] = wait ? 1 : 0;
+	tcsetattr(0, TCSANOW, &_current_termios);
+}
+
+static void _do_commands() {
+	char cmd;
+
+	do {
+		if (read(0, &cmd, 1) <= 0) return;
+		switch (cmd) {
+			case '0': _current_speed = SPEED_PAUSE; break;
+			case '1': _current_speed = SPEED_SLOW; break;
+			case '2': _current_speed = SPEED_FAST; break;
+		}
+		_set_keywait(_current_speed == SPEED_PAUSE);
+	} while (_current_speed == SPEED_PAUSE);
+}
+
 void World::run(int speed) {
 	int last_turn = 0;
 	int stuck_counter = 0;
+	_current_speed = speed;
+	_init_termios();
+	_set_keywait(speed == SPEED_PAUSE);
 	while (true) {
-		if (speed == SPEED_SLOW)
+		if (_current_speed == SPEED_SLOW)
 			usleep(200000);
+		_do_commands();
 		/* check if we're in the middle of an action.
 		 * Inventory and Level may send events that analyzers react on and set an action,
 		 * so we check if we're in the middle of an action here and remember it for later.
@@ -1347,6 +1388,9 @@ int main(int argc, const char* argv[]) {
 				case 't':
 					connection_type = CONNECTION_TELNET;
 					break;
+				case '0':
+					initial_speed = SPEED_PAUSE;
+					break;
 				case '2':
 					initial_speed = SPEED_FAST;
 					break;
@@ -1375,7 +1419,7 @@ int main(int argc, const char* argv[]) {
 			cout << "\t-l  Use local nethack executable" << endl;
 			cout << "\t-t  Use telnet nethack server" << endl;
 			cout << endl;
-			cout << "\t-0  Start paused (NOT IMPLEMENTED)" << endl;
+			cout << "\t-0  Start paused" << endl;
 			cout << "\t-1  Start at slow speed" << endl;
 			cout << "\t-2  Start at full speed" << endl;
 			cout << endl;
