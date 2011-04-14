@@ -541,7 +541,7 @@ static void _set_keywait(bool wait) {
 	tcsetattr(0, TCSANOW, &_current_termios);
 }
 
-static void _do_commands() {
+void World::doCommands() {
 	char cmd;
 
 	do {
@@ -550,6 +550,11 @@ static void _do_commands() {
 			case '0': _current_speed = SPEED_PAUSE; break;
 			case '1': _current_speed = SPEED_SLOW; break;
 			case '2': _current_speed = SPEED_FAST; break;
+			case 'q': case 'Q':
+				executeCommand(string(1, (char) 27));
+				executeCommand(QUIT);
+				executeCommand(string(1, YES));
+				exit(0);
 		}
 		_set_keywait(_current_speed == SPEED_PAUSE);
 	} while (_current_speed == SPEED_PAUSE);
@@ -564,7 +569,7 @@ void World::run(int speed) {
 	while (true) {
 		if (_current_speed == SPEED_SLOW)
 			usleep(200000);
-		_do_commands();
+		doCommands();
 		/* check if we're in the middle of an action.
 		 * Inventory and Level may send events that analyzers react on and set an action,
 		 * so we check if we're in the middle of an action here and remember it for later.

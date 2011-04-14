@@ -104,6 +104,7 @@ private:
 	static void dumpMap(Level& which);
 	static void dumpMaps();
 	static bool executeCommand(const std::string& command);
+	static void doCommands();
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
 	static void fetchMessages();
