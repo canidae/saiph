@@ -172,7 +172,8 @@ int Passtune::nextGuess(int gears, int tumblers) {
 			temp.push_back(i);
 		}
 
-	int current_combination = temp[random() % total];
+	// XXX was random before logging mode added
+	int current_combination = temp[0];
 	temp.clear();
 
 	total_notes = 1;
