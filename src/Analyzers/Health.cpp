@@ -66,13 +66,15 @@ void Health::analyze() {
 			/* TODO: eat eucalyptus leaf (if foodpoisoned or ill and no unihorn) */
 			/* if we can't cure this in any other way, just pray even if it's not safe, because we'll die for sure if we don't */
 			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
+		} else if ((Saiph::confused() || Saiph::hallucinating() || Saiph::stunned()) && canApplyUnihorn()) {
+			_resting = true; // don't move if we don't have unihorn and are conf/hallu/stun
 		}
 	} else if (_resting) {
 		/* [still] resting */
-		if (Saiph::hitpoints() > Saiph::hitpointsMax() * 6 / 7) {
+		if (Saiph::hitpoints() > Saiph::hitpointsMax() * 6 / 7 && (!Saiph::confused() && !Saiph::hallucinating() && !Saiph::stunned())) {
 			/* enough hp (greater than about 86%) to continue our journey */
 			_resting = false;
-		} else if (Saiph::hitpoints() > Saiph::hitpointsMax() * 4 / 7 && Saiph::hitpointsMax() > 42) {
+		} else if (Saiph::hitpoints() > Saiph::hitpointsMax() * 4 / 7 && Saiph::hitpointsMax() > 42 && (!Saiph::confused() && !Saiph::hallucinating() && !Saiph::stunned())) {
 			/* if we don't see any monsters, then we won't rest for so long */
 			bool monster_nearby = false;
 			for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
