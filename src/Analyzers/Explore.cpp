@@ -157,9 +157,9 @@ void Explore::analyze() {
 						if (s->second == UNKNOWN_SYMBOL_VALUE)
 							explore = true;
 					}
-					Debug::custom(name()) << "Looking for stair connections on level " << desc << endl;
 					if (!explore)
 						continue;
+					Debug::custom(name()) << "Looking for stair connections on level " << desc << endl;
 				}
 			}
 			if (l->second > 1 && lv.branch() == BRANCH_MINES) {
