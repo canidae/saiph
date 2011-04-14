@@ -15,10 +15,12 @@ public:
 	Telnet();
 	virtual ~Telnet();
 
-	virtual int retrieve(char* buffer, int count);
 	virtual int transmit(const std::string& data);
 	virtual void start();
 	virtual void stop();
+
+protected:
+	virtual int doRetrieve(char* buffer, int count);
 
 private:
 	int _sock;

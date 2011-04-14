@@ -28,6 +28,7 @@ set(HEADER_FILES
 	include/Local.h
 	include/Monster.h
 	include/Point.h
+	include/Replay.h
 	include/Saiph.h
 	include/Stash.h
 	include/Telnet.h
@@ -179,6 +180,7 @@ set(SOURCE_FILES
 	src/Point.cpp
 	src/Saiph.cpp
 	src/Stash.cpp
+	src/Replay.cpp
 	src/Telnet.cpp
 	src/Tile.cpp
 	src/World.cpp

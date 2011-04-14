@@ -3,6 +3,7 @@
 /* connection interfaces */
 #define CONNECTION_LOCAL 1
 #define CONNECTION_TELNET 2
+#define CONNECTION_REPLAY 3
 
 #include <fstream>
 #include <string>
@@ -14,9 +15,12 @@ public:
 
 	static Connection* create(int interface);
 
-	virtual int retrieve(char* buffer, int count);
+	int retrieve(char* buffer, int count);
 	virtual int transmit(const std::string& data);
 	virtual void start();
 	virtual void stop();
+
+protected:
+	virtual int doRetrieve(char* buffer, int count);
 };
 #endif

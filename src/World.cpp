@@ -5,6 +5,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include "Connection.h"
+#include "Replay.h"
 #include "Debug.h"
 #include "Inventory.h"
 #include "Monster.h"
@@ -1402,6 +1403,19 @@ int main(int argc, const char* argv[]) {
 				case '1':
 					initial_speed = SPEED_SLOW;
 					break;
+				case 'R':
+					connection_type = CONNECTION_REPLAY;
+					if (argc > ++a)
+						Replay::setFile(std::string(argv[a]), false);
+					else
+						showUsage = true;
+					break;
+				case 'T':
+					if (argc > ++a)
+						Replay::setFile(std::string(argv[a]), true);
+					else
+						showUsage = true;
+					break;
 				case 'L':
 					if (argc > ++a)
 						logfile = argv[a];
@@ -1419,10 +1433,12 @@ int main(int argc, const char* argv[]) {
 		}
 
 		if (showUsage) {
-			cout << "Usage: " << argv[0] << " [-l|-t] [-L <logfile>]" << endl;
+			cout << "Usage: " << argv[0] << " [-l|-t] [-L <logfile>] [-R/-T <ttyrec>]" << endl;
 			cout << endl;
 			cout << "\t-l  Use local nethack executable" << endl;
 			cout << "\t-t  Use telnet nethack server" << endl;
+			cout << "\t-R  Replay saved nethack game" << endl;
+			cout << "\t-T  Save raw game data during play" << endl;
 			cout << endl;
 			cout << "\t-0  Start paused" << endl;
 			cout << "\t-1  Start at slow speed" << endl;

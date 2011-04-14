@@ -92,7 +92,7 @@ int Local::removeThorns(char *buffer, int count) {
 	return removed;
 }
 
-int Local::retrieve(char* buffer, int count) {
+int Local::doRetrieve(char* buffer, int count) {
 	/* retrieve data */
 	ssize_t data_received = 0;
 	ssize_t amount;

@@ -1,6 +1,7 @@
 #include "Connection.h"
 #include "Local.h"
 #include "Telnet.h"
+#include "Replay.h"
 
 using namespace std;
 
@@ -22,6 +23,10 @@ Connection* Connection::create(int interface) {
 		return new Telnet();
 		break;
 
+	case CONNECTION_REPLAY:
+		return new Replay();
+		break;
+
 	default:
 		return NULL;
 	}
@@ -30,8 +35,14 @@ Connection* Connection::create(int interface) {
 }
 
 /* methods */
-int Connection::retrieve(char*, int) {
+int Connection::doRetrieve(char*, int) {
 	return 0;
+}
+
+int Connection::retrieve(char* buffer, int size) {
+	int amt = doRetrieve(buffer, size);
+	Replay::recordFrame(buffer, amt);
+	return amt;
 }
 
 int Connection::transmit(const string&) {
