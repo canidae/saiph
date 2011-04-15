@@ -524,20 +524,20 @@ Tile World::shortestPath(unsigned char symbol) {
 	return best_tile;
 }
 
-static void _end_termios() {
+void World::endTermios() {
 	tcsetattr(0, TCSANOW, &_save_termios);
 }
 
-static void _init_termios() {
+void World::initTermios() {
 	tcgetattr(0, &_save_termios);
-	atexit(&_end_termios);
+	atexit(&World::endTermios);
 	_current_termios = _save_termios;
 	_current_termios.c_iflag &= ~IXON;
 	_current_termios.c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN);
 	_current_termios.c_cc[VTIME] = 0;
 }
 
-static void _set_keywait(bool wait) {
+void World::setKeyWait(bool wait) {
 	_current_termios.c_cc[VMIN] = wait ? 1 : 0;
 	tcsetattr(0, TCSANOW, &_current_termios);
 }
@@ -557,7 +557,7 @@ void World::doCommands() {
 				executeCommand(string(1, YES));
 				exit(0);
 		}
-		_set_keywait(_current_speed == SPEED_PAUSE);
+		setKeyWait(_current_speed == SPEED_PAUSE);
 	} while (_current_speed == SPEED_PAUSE);
 }
 
@@ -565,8 +565,8 @@ void World::run(int speed) {
 	int last_turn = 0;
 	int stuck_counter = 0;
 	_current_speed = speed;
-	_init_termios();
-	_set_keywait(speed == SPEED_PAUSE);
+	initTermios();
+	setKeyWait(speed == SPEED_PAUSE);
 	while (true) {
 		if (_current_speed == SPEED_SLOW)
 			usleep(200000);

@@ -19,7 +19,7 @@ Vault::Vault() : Analyzer("Vault"), _answering_guard(false), _dropping_gold(fals
 }
 
 /* methods */
-static void _inspect_list(unsigned& best_cost, Point& target, const map<Point,int>& list) {
+void Vault::findNearestUnstepped(unsigned& best_cost, Point& target, const map<Point,int>& list) {
 	for (map<Point, int>::const_iterator w = list.begin(); w != list.end(); ++w) {
 		Tile& t = World::level().tile(w->first);
 		if (t.search() == TILE_FULLY_SEARCHED) continue;
@@ -85,8 +85,8 @@ void Vault::parseMessages(const string& messages) {
 
 		if (!have_target) {
 			unsigned best_cost = UNPASSABLE;
-			_inspect_list(best_cost, target, World::level().symbols((unsigned char) CORRIDOR));
-			_inspect_list(best_cost, target, World::level().symbols((unsigned char) FLOOR));
+			findNearestUnstepped(best_cost, target, World::level().symbols((unsigned char) CORRIDOR));
+			findNearestUnstepped(best_cost, target, World::level().symbols((unsigned char) FLOOR));
 		}
 
 		Debug::notice() << "Going to follow guard." << endl;

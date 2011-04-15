@@ -2,6 +2,7 @@
 #define ANALYZER_VAULT_H
 
 #include <string>
+#include <map>
 #include "Analyzers/Analyzer.h"
 #include "Point.h"
 
@@ -25,6 +26,7 @@ namespace analyzer {
 		bool _answering_guard;
 		bool _dropping_gold;
 		bool _following_guard;
+		void findNearestUnstepped(unsigned& best_cost, Point& target, const std::map<Point,int>& list);
 	};
 }
 #endif

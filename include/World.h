@@ -98,13 +98,17 @@ private:
 	static unsigned int _internal_turn;
 	static Coordinate _branches[BRANCHES];
 
+	static void dumpMap(Level& which);
+	static void dumpMaps();
+	static void doCommands();
+	static void initTermios();
+	static void endTermios();
+	static void setKeyWait(bool);
+
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
 	static bool directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders);
-	static void dumpMap(Level& which);
-	static void dumpMaps();
 	static bool executeCommand(const std::string& command);
-	static void doCommands();
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);
 	static void fetchMessages();
