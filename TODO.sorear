@@ -1,0 +1,41 @@
+* Generalize pathfinding to generate arbitrary commands, not just directions.  As a start it should be possible for saiph to path through floating eye by Elberething them away (to prevent oscillations, for a start).
+
+  * Another good idea, tying in to item actions, is a tactical analyzer (to borrow a 523 term) that paths across water by fetching levitation boots.  I think the best way would be to accumulate water tiles in a queue and process them all (with triangle-inequality estimated distances) when a levitation item is determined to be reachable.
+
+  * When Loot is interpreted as "having items just in case", a sensible implementation of bag use starts to suggest itself.
+
+* Find and fix whatever causes weird explore behavior: saiph returns to a level for beatifying, then searches the altar level before continuing exploration.
+
+* More debug interfaces: display any level
+
+* A TAEB-like item possibilities tracker?
+
+* Understand whatever makes saiphs quit sokoban.
+
+* Make a branch to experiment with "item actions": Analyzers can say not just "go to a point and do something", but also "get an item and do something".  This simplifies Loot's job quite a bit, as it will only have to deal with items that some analyzer wants to keep in inventory "just in case", like unihorns.
+
+* Situation patch stuff
+
+  * I feel the saiph repo isn't quite the right place for this.
+
+  * canidae wants documentation!
+
+  * Add support for starting in places other than Dlvl 1, like Sokoban or the Castle.
+
+  * Control flags like immortality_on
+
+  * inventory should clear out existing items
+
+  * support item modifiers "equipped" and "identified"; perhaps the latter should be more fine-grained
+
+  * Levels: place monsters at locations, traps, hard_floor, no_monster_gen, doors, shops, knowledge maps.
+
+  * Character: set HP, XL, spells, skills.
+
+* Test and fix footrice barehanded avoidance
+
+* Test and fix "Closed for inventory" processing; don't kick down the doors!
+
+* Handle inventory full conditions without looping.  If rawrmage won't, also handle Overloaded.
+
+* Look into implementing shopping
