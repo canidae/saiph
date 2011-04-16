@@ -330,8 +330,12 @@ void Level::parseMessages(const string& messages) {
 		setDungeonSymbol(Saiph::position(), FOUNTAIN);
 	} else if (messages.find(LEVEL_FOUNTAIN_DRIES_UP) != string::npos || messages.find(LEVEL_FOUNTAIN_DRIES_UP2) != string::npos) {
 		setDungeonSymbol(Saiph::position(), FLOOR);
-	} else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE) != string::npos || messages.find(LEVEL_NO_STAIRS_UP_HERE) != string::npos) {
-		setDungeonSymbol(Saiph::position(), UNKNOWN_TILE);
+	} else if (messages.find(LEVEL_NO_STAIRS_DOWN_HERE) != string::npos) {
+		if (tile(Saiph::position()).symbol() == STAIRS_DOWN)
+			setDungeonSymbol(Saiph::position(), UNKNOWN_TILE);
+	} else if (messages.find(LEVEL_NO_STAIRS_UP_HERE) != string::npos) {
+		if (tile(Saiph::position()).symbol() == STAIRS_UP)
+			setDungeonSymbol(Saiph::position(), UNKNOWN_TILE);
 	} else if ((pos = messages.find(LEVEL_ALTAR_HERE)) != string::npos) {
 		setDungeonSymbol(Saiph::position(), ALTAR);
 		/* set symbol value too */
