@@ -7,7 +7,6 @@
 #include "Actions/Look.h"
 #include "Actions/Move.h"
 #include "Actions/Search.h"
-#include "Events/TakeMeThere.h"
 
 #include <sstream>
 
@@ -17,8 +16,6 @@ using namespace std;
 
 /* constructors/destructor */
 Explore::Explore() : Analyzer("Explore") {
-	/* register events */
-	EventBus::registerEvent(TakeMeThere::ID, this);
 }
 
 /* methods */
@@ -126,7 +123,7 @@ void Explore::analyze() {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
 			Level& lv = World::level(l->first);
-			ostringstream desco (ostringstream::out);
+			ostringstream desco(ostringstream::out);
 			desco << lv.depth() << ',' << lv.branch();
 			std::string desc(desco.str());
 			if (Saiph::position().level() == l->first)

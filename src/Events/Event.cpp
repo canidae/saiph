@@ -8,7 +8,6 @@
 #include "Events/ItemsOnGround.h"
 #include "Events/ReceivedItems.h"
 #include "Events/StashChanged.h"
-#include "Events/TakeMeThere.h"
 #include "Events/WantItems.h"
 
 using namespace event;
@@ -20,9 +19,8 @@ const int ElberethQuery::ID = 2;
 const int ItemsOnGround::ID = 3;
 const int ReceivedItems::ID = 4;
 const int StashChanged::ID = 5;
-const int TakeMeThere::ID = 6;
-const int WantItems::ID = 7;
-const int Beatify::ID = 8;
+const int WantItems::ID = 6;
+const int Beatify::ID = 7;
 
 /* constructors/destructor */
 Event::Event(const std::string& name) : _name(name) {
