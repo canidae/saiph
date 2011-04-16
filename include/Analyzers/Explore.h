@@ -9,16 +9,35 @@
 
 /* search interval */
 #define EXPLORE_SEARCH_INTERVAL 16
-/* priorities */
-#define PRIORITY_EXPLORE_ROGUE 100
-#define PRIORITY_EXPLORE_STAIRS_UP 90
-#define PRIORITY_EXPLORE_LEVEL 80
-#define PRIORITY_EXPLORE_STAIRS_DOWN 70
-#define PRIORITY_EXPLORE_MAGIC_PORTAL 70
+/* base priority */
+#define PRIORITY_EXPLORE 70
+
+
+// find the endpoint of an unknown stair
+#define RRANK_STAIR (-1)
+// dark rooms, unexplored area, dead end searching
+#define RRANK_EXPLORE 0
+// searching walls (or floor, if questish)
+// higher values occur if they are already highly searched
+#define RRANK_SEARCH_MIN 1
+
+
+// Explore's general principle is to assign a rank to tiles, where low ranks are basic exploration and higher represent increasingly desparate searching.  Explore will exhaust tiles available at one rank and any distance before moving on to the next rank.  Order of level exploration is controlled by level-wide modifications of rank, for instance to reward exploring levels 2-4 when the Mines are not yet found.
+// Ranks are either cooked, which depend on depth and level priority factors, or raw, determined (almost) only by level topology.
+// Because the relative distances of tiles on other levels doesn't change in normal movement, we can do a certain amount of caching: only the current level needs to be scanned every turn.
+// This may break once saiph starts finding the Orb of Weight.
 
 class Tile;
 
 namespace analyzer {
+	struct ExploreFocus {
+		Point where;
+		int rank;
+		const char* purpose;
+		unsigned char direction;
+
+		std::string describe() const;
+	};
 
 	class Explore : public Analyzer {
 	public:
@@ -27,9 +46,11 @@ namespace analyzer {
 		void analyze();
 
 	private:
-		std::map<int, int> _explore_levels;
+		std::map<int, ExploreFocus> _explore_levels;
 
-		void explorePoint(Point p, Tile* best_tile, int* best_type);
+		static ExploreFocus analyzeLevel();
+		static void considerPoint(ExploreFocus& best, Point p);
+		static void addOption(ExploreFocus& best, int rank, Point p, unsigned char direction, const char* purpose);
 	};
 }
 #endif

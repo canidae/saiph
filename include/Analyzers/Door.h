@@ -6,7 +6,6 @@
 #include "Analyzers/Analyzer.h"
 
 /* priorities */
-#define PRIORITY_DOOR_LOOT 200
 #define PRIORITY_DOOR_OPEN 100
 
 /* door states */
