@@ -68,6 +68,6 @@ void MonsterInfo::parseMessages(const string& messages) {
 	}
 }
 
-void MonsterInfo::actionCompleted(const string& messages) {
+void MonsterInfo::actionCompleted(const string&) {
 	_checked[_look_at->first] = World::internalTurn();
 }

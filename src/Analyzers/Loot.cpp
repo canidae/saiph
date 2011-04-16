@@ -54,6 +54,8 @@ void Loot::analyze() {
 		if (tile.direction() == NOWHERE) {
 			/* standing on stash, look and remove from visit */
 			if (World::setAction(static_cast<action::Action*> (new action::Look(this)))) {
+				/* TODO: we may get something more important to do just as we step on the loot, making us move away from the stash. 
+					 in that case she won't visit the stash again later. can't remove the stash from _visit here. */
 				_visit.erase(v++);
 				continue;
 			}

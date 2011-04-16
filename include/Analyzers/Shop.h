@@ -8,13 +8,12 @@
 #define SHOP_MESSAGE_LEAVE_TOOL_ANGRY "  \"Leave the "
 
 namespace analyzer {
-
 	class Shop : public Analyzer {
 	public:
 		Shop();
 
 		void analyze();
-		void parseMessages(const std::string& messages);
+		void parseMessages(const std::string&);
 	};
 }
 #endif

@@ -8,14 +8,13 @@
 #include "Analyzers/Analyzer.h"
 
 namespace analyzer {
-
 	class MonsterInfo : public Analyzer {
 	public:
 		MonsterInfo();
 
 		void analyze();
 		void parseMessages(const std::string& messages);
-		void actionCompleted(const std::string& messages);
+		void actionCompleted(const std::string&);
 
 	private:
 		std::map<Point, Monster>::const_iterator _look_at;

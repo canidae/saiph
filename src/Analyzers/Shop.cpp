@@ -16,7 +16,7 @@ Shop::Shop() : Analyzer("Shop") {
 }
 
 /* methods */
-void Shop::parseMessages(const string& messages) {
+void Shop::parseMessages(const string&) {
 	/* FIXME: need to handle pick-axes & stuff */
 	//	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
 	//		/* we're most likely standing in a doorway, next to a shopkeeper.
