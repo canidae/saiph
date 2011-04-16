@@ -45,7 +45,7 @@ void Fight::analyze() {
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data() == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
-			Debug::custom(name()) << "Found monster we don't know data about. Hmm" << endl;
+			Debug::custom(name()) << "Found monster we don't know data about '" << m->second.symbol() << "'. Hmm" << endl;
 			attack_score = data::Monster::saiphDifficultyMax();
 		} else {
 			/* figure out the attack score */
