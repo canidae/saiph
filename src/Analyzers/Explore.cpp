@@ -7,7 +7,6 @@
 #include "Actions/Look.h"
 #include "Actions/Move.h"
 #include "Actions/Search.h"
-#include "Events/TakeMeThere.h"
 
 #include <sstream>
 
@@ -17,8 +16,6 @@ using namespace std;
 
 /* constructors/destructor */
 Explore::Explore() : Analyzer("Explore") {
-	/* register events */
-	EventBus::registerEvent(TakeMeThere::ID, this);
 }
 
 /* methods */
@@ -126,7 +123,7 @@ void Explore::analyze() {
 		Tile best_tile;
 		for (map<int, int>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
 			Level& lv = World::level(l->first);
-			ostringstream desco (ostringstream::out);
+			ostringstream desco(ostringstream::out);
 			desco << lv.depth() << ',' << lv.branch();
 			std::string desc(desco.str());
 			if (Saiph::position().level() == l->first)
@@ -149,15 +146,21 @@ void Explore::analyze() {
 				} else {
 					/* otherwise, don't explore unless we don't know where any of the stairs lead */
 					bool explore = false;
+					bool stairs_up = false;
+					bool stairs_down = false;
 					for (map<Point, int>::const_iterator s = lv.symbols(STAIRS_UP).begin(); !explore && s != lv.symbols(STAIRS_UP).end(); ++s) {
-						if (s->second == UNKNOWN_SYMBOL_VALUE)
+						if (s->second == UNKNOWN_SYMBOL_VALUE) {
 							explore = true;
+							stairs_up = true;
+						}
 					}
 					for (map<Point, int>::const_iterator s = lv.symbols(STAIRS_DOWN).begin(); !explore && s != lv.symbols(STAIRS_DOWN).end(); ++s) {
-						if (s->second == UNKNOWN_SYMBOL_VALUE)
+						if (s->second == UNKNOWN_SYMBOL_VALUE) {
 							explore = true;
+							stairs_down = true;
+						}
 					}
-					if (!explore)
+					if (!explore && stairs_up && stairs_down)
 						continue;
 					Debug::custom(name()) << "Looking for stair connections on level " << desc << endl;
 				}
@@ -165,8 +168,7 @@ void Explore::analyze() {
 			if (l->second > 1 && lv.branch() == BRANCH_MINES) {
 				Debug::custom(name()) << "Not travelling to level " << desc << ", it's in the mines and we've already explored it enough" << endl;
 				continue;
-			}
-			if (l->second >= best_type) {
+			} else if (l->second >= best_type) {
 				Debug::custom(name()) << "Not travelling to level " << desc << ", type value greater than or equal to best type value: " << l->second << " >= " << best_type << endl;
 				continue;
 			}
@@ -191,8 +193,10 @@ void Explore::analyze() {
 			}
 		}
 		if (best_tile.cost() < UNREACHABLE) {
-			Debug::custom(name()) << "Heading towards " << best_tile.coordinate() << " to explore level" << endl;
+			Debug::custom(name()) << "Heading towards " << best_tile << " to explore level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
+		} else {
+			Debug::custom(name()) << "Can't head towards " << best_tile << " to explore level, unable to reach coordinate" << endl;
 		}
 	}
 }

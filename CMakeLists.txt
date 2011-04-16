@@ -161,7 +161,6 @@ set(HEADER_FILES
 	include/Events/ItemsOnGround.h
 	include/Events/ReceivedItems.h
 	include/Events/StashChanged.h
-	include/Events/TakeMeThere.h
 	include/Events/WantItems.h
 )
 

@@ -39,6 +39,8 @@ void Armor::analyze() {
 			map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(to_wear.name());
 			if (a == data::Armor::armors().end())
 				continue;
+			if (Saiph::polymorphed())
+				continue;
 			if (Inventory::itemInSlot(a->second->slot()).beatitude() == CURSED)
 				continue; // can't take off existing armor in this slot
 			if (a->second->slot() == SLOT_SHIRT && (Inventory::itemInSlot(SLOT_SUIT).beatitude() == CURSED || Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED))

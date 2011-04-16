@@ -1,5 +1,6 @@
 #include "Replay.h"
 #include "Debug.h"
+#include "World.h"
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,6 +71,7 @@ int Replay::doRetrieve(char* buffer, int bsize) {
 		(static_cast<unsigned char>(header[8]));
 	if (amount > bsize) {
 		Debug::error() << "Mismatched buffer size in Replay::doRetrieve" << endl;
+		World::destroy();
 		exit(1);
 	}
 	_replaystream.read(buffer, amount);

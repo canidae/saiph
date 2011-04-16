@@ -8,6 +8,7 @@
 #include "Debug.h"
 #include "Globals.h"
 #include "Telnet.h"
+#include "World.h"
 
 using namespace std;
 
@@ -17,7 +18,8 @@ Telnet::Telnet() {
 	ifstream account;
 	account.open(".account");
 	if (!account) {
-		Debug::error() << TELNET_DEBUG_NAME << "Unable to read .account (which should contain url, username and password on separate lines)" << endl;
+		Debug::error() << "Unable to read .account (which should contain url, username and password on separate lines)" << endl;
+		World::destroy();
 		exit(1);
 	}
 	string url;
@@ -34,11 +36,13 @@ Telnet::Telnet() {
 	struct hostent* he = gethostbyname(url.c_str());
 	if (he == NULL) {
 		herror("gethostbyname");
+		World::destroy();
 		exit(1);
 	}
 	_sock = socket(PF_INET, SOCK_STREAM, 0);
 	if (_sock == -1) {
 		perror("socket");
+		World::destroy();
 		exit(1);
 	}
 	struct sockaddr_in addr;
@@ -49,6 +53,7 @@ Telnet::Telnet() {
 
 	if (connect(_sock, (struct sockaddr*) & addr, sizeof (addr)) == -1) {
 		perror("connect");
+		World::destroy();
 		exit(1);
 	}
 
@@ -142,7 +147,7 @@ int Telnet::doRetrieve(char* buffer, int count) {
 		}
 	}
 	if (tries < 0)
-		Debug::warning() << TELNET_DEBUG_NAME << "We were expecting data, but got none. Fix this bug, please!" << endl;
+		Debug::warning() << "We were expecting data, but got none. Fix this bug, please!" << endl;
 	return retrieved;
 }
 
