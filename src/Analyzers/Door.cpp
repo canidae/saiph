@@ -53,12 +53,13 @@ void Door::analyze() {
 			if (d->second != DOOR_LOCKED) {
 				World::setAction(static_cast<action::Action*> (new action::Open(this, tile.direction(), PRIORITY_DOOR_OPEN)));
 			} else {
-				/* we can't apply when we're overtaxed, but logically we can kick... */
-				if (_unlock_tool_key == 0 || Saiph::encumbrance() >= OVERTAXED) {
-					if (!Saiph::hurtLeg())
+				/* see if we can kick if no pick */
+				if (_unlock_tool_key == 0) {
+					if (!Saiph::hurtLeg() && !(Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
 						World::setAction(static_cast<action::Action*> (new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN)));
 				} else {
-					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN)));
+					if (Saiph::encumbrance() <= STRAINED)
+						World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN)));
 				}
 			}
 			_position = d->first;

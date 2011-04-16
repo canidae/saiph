@@ -33,6 +33,10 @@ Monster::Monster(const string& name, const unsigned char& symbol, int difficulty
 		_saiph_difficulty += 25; // magic users can be dangerous
 	if (m3 & M3_COVETOUS)
 		_saiph_difficulty += 50; // covetous!
+	if (m2 & M2_NASTY)
+		_saiph_difficulty += 50; // nasty!
+	if (m2 & M2_STRONG)
+		_saiph_difficulty += 25;
 	/* should look at elemental attacks, resistances, etc */
 	if (_saiph_difficulty < _saiph_difficulty_min)
 		_saiph_difficulty_min = _saiph_difficulty;
