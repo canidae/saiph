@@ -55,7 +55,7 @@ void Door::analyze() {
 			} else {
 				/* see if we can kick if no pick */
 				if (_unlock_tool_key == 0) {
-					if (!Saiph::hurtLeg() && !(Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
+					if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
 						World::setAction(static_cast<action::Action*> (new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN)));
 				} else {
 					if (Saiph::encumbrance() <= STRAINED)
