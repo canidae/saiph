@@ -1,16 +1,26 @@
+Many of these are half-baked ideas, to be investigated as much as implemented.
+
 * Generalize pathfinding to generate arbitrary commands, not just directions.  As a start it should be possible for saiph to path through floating eye by Elberething them away (to prevent oscillations, for a start).
 
   * Another good idea, tying in to item actions, is a tactical analyzer (to borrow a 523 term) that paths across water by fetching levitation boots.  I think the best way would be to accumulate water tiles in a queue and process them all (with triangle-inequality estimated distances) when a levitation item is determined to be reachable.
 
   * When Loot is interpreted as "having items just in case", a sensible implementation of bag use starts to suggest itself.
 
-* Find and fix whatever causes weird explore behavior: saiph returns to a level for beatifying, then searches the altar level before continuing exploration.
+* Can bagging of gold be handled without redoing Loot?
+
+* Don't melee nymphs, E when next to nymphs
+
+* Kiting
+
+* Figure out why saiphs rarely eat elves, fix it
+
+* Try to track nutrition better, so we know when we can eat eyes
 
 * More debug interfaces: display any level
 
 * A TAEB-like item possibilities tracker?
 
-* Understand whatever makes saiphs quit sokoban.
+* Understand whatever makes saiphs quit sokoban.  [It's the lack of any "go to sokoban" code]
 
 * Make a branch to experiment with "item actions": Analyzers can say not just "go to a point and do something", but also "get an item and do something".  This simplifies Loot's job quite a bit, as it will only have to deal with items that some analyzer wants to keep in inventory "just in case", like unihorns.
 
@@ -36,6 +46,28 @@
 
 * Test and fix "Closed for inventory" processing; don't kick down the doors!
 
+  * Don't visit ad aerarium closets unless we can teleport or dig.
+
 * Handle inventory full conditions without looping.  If rawrmage won't, also handle Overloaded.
 
 * Look into implementing shopping
+
+* Try to avoid backtracking to beatify a single elven leather helm or dagger or whatever
+
+* Since saiph likes teleportation so much, she should kill tengu
+
+* Loot boxes
+
+* Dispose of trolls
+
+* Perhaps hunt for the quest portal (but don't attempt the quest yet)
+
+* Finish Explore refactor
+
+* Quest analyzer: should path to leader if "Home 1" known and xl14, should hoard qarts and Bell
+
+* Teach Fight to track covetous mobs
+  int _covetous_timeout; // if 50 turns on one level without seeing a single covetous mob, assume they all went upstairs
+  std::map<std::string, int> _covetous_on_level; // last seen location of each boss
+  // will have issues with Double Trouble and chameleon master liches, but fine for now
+  // if there are known covetors, Fight will path to the > on the level they are on, then go down once in melee range
