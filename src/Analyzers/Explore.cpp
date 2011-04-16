@@ -193,10 +193,10 @@ void Explore::analyze() {
 			}
 		}
 		if (best_tile.cost() < UNREACHABLE) {
-			Debug::custom(name()) << "Heading towards " << best_tile.coordinate() << " to explore level" << endl;
+			Debug::custom(name()) << "Heading towards " << best_tile << " to explore level" << endl;
 			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
 		} else {
-			Debug::custom(name()) << "Can't head towards " << best_tile.coordinate() << " to explore level, unable to reach coordinate" << endl;
+			Debug::custom(name()) << "Can't head towards " << best_tile << " to explore level, unable to reach coordinate" << endl;
 		}
 	}
 }

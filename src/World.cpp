@@ -129,10 +129,17 @@ int World::lastActionID() {
 	return _last_action_id;
 }
 
-void World::init(int connection_type) {
+void World::init(const string& logfile, int connection_type) {
+	Debug::init(logfile);
+	data::Monster::init();
+	data::Item::init();
+	Level::init();
+	Analyzer::init();
+
 	_connection = Connection::create(connection_type);
 	if (_connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
+		destroy();
 		exit(1);
 	}
 
@@ -144,6 +151,13 @@ void World::init(int connection_type) {
 }
 
 void World::destroy() {
+	Debug::notice() << "Quitting gracefully" << endl;
+	Analyzer::destroy();
+	Level::destroy();
+	data::Monster::destroy();
+	data::Item::destroy();
+	Debug::destroy();
+
 	delete _action;
 	delete _connection;
 }
@@ -548,14 +562,25 @@ void World::doCommands() {
 	do {
 		if (read(0, &cmd, 1) <= 0) return;
 		switch (cmd) {
-			case '0': _current_speed = SPEED_PAUSE; break;
-			case '1': _current_speed = SPEED_SLOW; break;
-			case '2': _current_speed = SPEED_FAST; break;
-			case 'q': case 'Q':
-				executeCommand(string(1, (char) 27));
-				executeCommand(QUIT);
-				executeCommand(string(1, YES));
-				exit(0);
+		case '0':
+			_current_speed = SPEED_PAUSE;
+			break;
+
+		case '1':
+			_current_speed = SPEED_SLOW;
+			break;
+
+		case '2':
+			_current_speed = SPEED_FAST;
+			break;
+
+		case 'q':
+		case 'Q':
+			executeCommand(string(1, (char) 27));
+			executeCommand(QUIT);
+			executeCommand(string(1, YES));
+			destroy();
+			exit(0);
 		}
 		setKeyWait(_current_speed == SPEED_PAUSE);
 	} while (_current_speed == SPEED_PAUSE);
@@ -1120,7 +1145,8 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				int tmprow = _cursor.row();
 				int tmpcol = _cursor.col();
 				if (sscanf(&_data[start + 1], "%d;%d", &tmprow, &tmpcol) < 2) {
-					Debug::error() << WORLD_DEBUG_NAME << "Unable to place cursor: " << &_data[start] << endl;
+					Debug::error() << "Unable to place cursor: " << &_data[start] << endl;
+					destroy();
 					exit(13);
 				}
 				_cursor.row(--tmprow); // terminal starts counting from 1
@@ -1149,7 +1175,8 @@ void World::handleEscapeSequence(int* pos, int* color) {
 					_cursor.col(0);
 					*color = 0;
 				} else {
-					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &_data[*pos] << endl;
+					Debug::error() << "Unhandled sequence: " << &_data[*pos] << endl;
+					destroy();
 					exit(9);
 				}
 				break;
@@ -1168,7 +1195,8 @@ void World::handleEscapeSequence(int* pos, int* color) {
 					for (int c = 0; c < COLS; ++c)
 						_view[_cursor.row()][c] = ' ';
 				} else {
-					Debug::error() << WORLD_DEBUG_NAME << "Unhandled sequence: " << &_data[*pos] << endl;
+					Debug::error() << "Unhandled sequence: " << &_data[*pos] << endl;
+					destroy();
 					exit(9);
 				}
 				break;
@@ -1182,7 +1210,8 @@ void World::handleEscapeSequence(int* pos, int* color) {
 			} else if (_data[*pos] == 'm') {
 				/* character attribute (bold, inverse, color, etc) */
 				if (divider > 0) {
-					Debug::error() << WORLD_DEBUG_NAME << "Unsupported character color" << &_data[*pos] << endl;
+					Debug::error() << "Unsupported character color" << &_data[*pos] << endl;
+					destroy();
 					exit(15);
 					break;
 				}
@@ -1192,7 +1221,8 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				int value = 0;
 				int matched = sscanf(&_data[start + 1], "%d", &value);
 				if (matched < 1) {
-					Debug::error() << WORLD_DEBUG_NAME << "Expected numeric value for character attribute: " << &_data[*pos] << endl;
+					Debug::error() << "Expected numeric value for character attribute: " << &_data[*pos] << endl;
+					destroy();
 					exit(14);
 				}
 				switch (value) {
@@ -1223,15 +1253,18 @@ void World::handleEscapeSequence(int* pos, int* color) {
 			} else if (_data[*pos] == 27) {
 				/* escape char found, that shouldn't happen */
 				Debug::rawCharArray(_data, start, *pos + 1);
+				destroy();
 				exit(7);
 			} else if (*pos - start > 7) {
 				/* too long escape sequence? */
-				Debug::error() << WORLD_DEBUG_NAME << "Suspiciously long sequence: " << &_data[*pos] << endl;
+				Debug::error() << "Suspiciously long sequence: " << &_data[*pos] << endl;
+				destroy();
 				exit(8);
 			}
 		}
 		if (*pos >= _data_size) {
-			Debug::error() << WORLD_DEBUG_NAME << "Did not find stop char for sequence: " << _data << endl;
+			Debug::error() << "Did not find stop char for sequence: " << _data << endl;
+			destroy();
 			exit(6);
 		}
 	} else if (_data[*pos] == '(') {
@@ -1257,7 +1290,8 @@ void World::handleEscapeSequence(int* pos, int* color) {
 		/* normal numpad?
 		 * ignore */
 	} else {
-		Debug::error() << WORLD_DEBUG_NAME << "Unsupported escape sequence code at char " << *pos << ": " << &_data[*pos] << endl;
+		Debug::error() << "Unsupported escape sequence code at char " << *pos << ": " << &_data[*pos] << endl;
+		destroy();
 		exit(5);
 	}
 }
@@ -1272,6 +1306,7 @@ void World::update() {
 		_data_size = _connection->retrieve(_data, BUFFER_SIZE);
 		if (_data_size <= 0) {
 			Debug::error() << "No data received, quitting" << endl;
+			destroy();
 			exit(42);
 		}
 	}
@@ -1324,7 +1359,7 @@ void World::update() {
 		default:
 			/* add this char to the view */
 			if (_cursor.col() >= COLS || _cursor.row() >= ROWS || _cursor.col() < 0 || _cursor.row() < 0) {
-				Debug::warning() << WORLD_DEBUG_NAME << "Fell out of the dungeon: " << _cursor.row() << ", " << _cursor.col() << endl;
+				Debug::warning() << "Fell out of the dungeon: " << _cursor.row() << ", " << _cursor.col() << endl;
 				break;
 			}
 			_view[_cursor.row()][_cursor.col()] = (unsigned char) _data[pos];
@@ -1345,7 +1380,7 @@ void World::update() {
 		/* hmm, what else can it be?
 		 * could we be missing data?
 		 * this is bad, we'll lose messages, this should never happen */
-		Debug::warning() << WORLD_DEBUG_NAME << "CURSOR ON UNEXPECTED LOCATION: " << _cursor.row() << ", " << _cursor.col() << endl;
+		Debug::warning() << "CURSOR ON UNEXPECTED LOCATION: " << _cursor.row() << ", " << _cursor.col() << endl;
 		update();
 		return;
 	}
@@ -1450,22 +1485,10 @@ int main(int argc, const char* argv[]) {
 	}
 
 	/* init */
-	Debug::init(logfile);
-	data::Monster::init();
-	data::Item::init();
-	Level::init();
-	World::init(connection_type);
-	Analyzer::init();
-
+	World::init(logfile, connection_type);
 	/* run */
 	World::run(initial_speed);
-	Debug::notice() << "Quitting gracefully" << endl;
-
 	/* destroy */
-	Analyzer::destroy();
 	World::destroy();
-	Level::destroy();
-	data::Monster::destroy();
-	data::Item::destroy();
-	Debug::destroy();
+
 }

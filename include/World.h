@@ -1,7 +1,5 @@
 #ifndef WORLD_H
 #define WORLD_H
-/* debug */
-#define WORLD_DEBUG_NAME "World] "
 /* buffer */
 #define BUFFER_SIZE 65536
 #define MAX_LEVELNAME_LENGTH 16
@@ -53,7 +51,7 @@ public:
 	static const std::vector<Level>& levels();
 	static int currentPriority();
 	static int lastActionID();
-	static void init(int connection_type);
+	static void init(const std::string& logfile, int connection_type);
 	static void destroy();
 	static void registerAnalyzer(analyzer::Analyzer * const analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer * const analyzer);

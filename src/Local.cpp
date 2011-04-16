@@ -5,7 +5,6 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-
 #include <vector>
 
 #ifdef __APPLE__
@@ -16,6 +15,7 @@
 
 #include "Debug.h"
 #include "Globals.h"
+#include "World.h"
 
 using namespace std;
 
@@ -23,7 +23,8 @@ using namespace std;
 Local::Local() : _unanswered_chars(1), _synchronous(0) {
 	/* set up pipes */
 	if (pipe(_link) < 0) {
-		Debug::error() << LOCAL_DEBUG_NAME << "Plumbing failed" << endl;
+		Debug::error() << "Plumbing failed" << endl;
+		World::destroy();
 		exit(1);
 	}
 
@@ -37,7 +38,8 @@ Local::Local() : _unanswered_chars(1), _synchronous(0) {
 	wsize.ws_ypixel = 480;
 	pid_t pid = forkpty(&fd, slave, NULL, &wsize);
 	if (pid == -1) {
-		Debug::error() << LOCAL_DEBUG_NAME << "There is no fork" << endl;
+		Debug::error() << "There is no fork" << endl;
+		World::destroy();
 		exit(1);
 	} else if (pid) {
 		/* main thread */
@@ -51,7 +53,8 @@ Local::Local() : _unanswered_chars(1), _synchronous(0) {
 			if (errno == ERANGE) {
 				path.resize(path.size() * 2);
 			} else {
-				Debug::error() << LOCAL_DEBUG_NAME << "getcwd failed: " << strerror(errno) << endl;
+				Debug::error() << "getcwd failed: " << strerror(errno) << endl;
+				World::destroy();
 				exit(1);
 			}
 		}
@@ -64,7 +67,8 @@ Local::Local() : _unanswered_chars(1), _synchronous(0) {
 		setenv("SAIPH_INLINE_SYNC", "1", 1);
 		result = execl("/bin/sh", "sh", "-c", LOCAL_NETHACK, NULL);
 		if (result < 0) {
-			Debug::error() << LOCAL_DEBUG_NAME << "Unable to enter the dungeon" << endl;
+			Debug::error() << "Unable to enter the dungeon" << endl;
+			World::destroy();
 			exit(3);
 		}
 		return;
@@ -128,7 +132,7 @@ int Local::doRetrieve(char* buffer, int count) {
 				data_received -= th;
 				_unanswered_chars = 0;
 				_synchronous = 1;
-				Debug::info() << LOCAL_DEBUG_NAME << "Using inband syncronization" << endl;
+				Debug::info() << "Using inband syncronization" << endl;
 				fcntl(_link[0], F_SETFL, fcntl(_link[0], F_GETFL) & ~O_NONBLOCK);
 			}
 		}
