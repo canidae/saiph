@@ -34,9 +34,6 @@ void Fight::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
 		return;
 	}
-	/* don't fight hallu, stunned or confused */
-	if (Saiph::hallucinating() || Saiph::stunned() || Saiph::confused())
-		return;
 	/* fight monsters */
 	int attack_score = INT_MIN;
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
