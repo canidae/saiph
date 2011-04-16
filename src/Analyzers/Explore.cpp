@@ -36,8 +36,7 @@ void Explore::analyze() {
 			else if (tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Look(this)));
 			else
-				//World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, tile.cost()))));
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, 100)));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_ROGUE, tile.cost()))));
 			break;
 		}
 	}
@@ -53,8 +52,7 @@ void Explore::analyze() {
 			if (tile.direction() == NOWHERE)
 				tile.direction(UP);
 			Debug::custom(name()) << "Want to explore starts up on this level" << endl;
-			//World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.cost()))));
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, 100)));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_UP, tile.cost()))));
 			break;
 		}
 	}
@@ -84,8 +82,7 @@ void Explore::analyze() {
 			if (best_tile.direction() == NOWHERE)
 				World::setAction(static_cast<action::Action*> (new action::Search(this, (best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1))));
 			else
-				//World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1), best_tile.cost()))));
-				World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, 100)));
+				World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority((best_type < 2) ? PRIORITY_EXPLORE_LEVEL : PRIORITY_EXPLORE_LEVEL / (best_type + 1), best_tile.cost()))));
 		}
 	}
 
@@ -100,8 +97,7 @@ void Explore::analyze() {
 			if (tile.direction() == NOWHERE)
 				tile.direction(DOWN);
 			Debug::custom(name()) << "Want to explore starts down on this level" << endl;
-			//World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.cost()))));
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, 100)));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_STAIRS_DOWN, tile.cost()))));
 			break;
 		}
 	}
@@ -117,8 +113,7 @@ void Explore::analyze() {
 			if (tile.direction() == NOWHERE)
 				continue; // shouldn't happen (too often)
 			Debug::custom(name()) << "Want to explore magic portal on this level" << endl;
-			//World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, tile.cost()))));
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, 100)));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_EXPLORE_MAGIC_PORTAL, tile.cost()))));
 			break;
 		}
 	}
@@ -199,8 +194,7 @@ void Explore::analyze() {
 		}
 		if (best_tile.cost() < UNREACHABLE) {
 			Debug::custom(name()) << "Heading towards " << best_tile << " to explore level" << endl;
-			//World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
-			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, 100)));
+			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE_LEVEL, best_tile.cost()))));
 		} else {
 			Debug::custom(name()) << "Can't head towards " << best_tile << " to explore level, unable to reach coordinate" << endl;
 		}
