@@ -756,45 +756,29 @@ void World::detectPosition() {
 	 * we need to figure out if it's a new level or one we already know of */
 	int found = UNKNOWN_SYMBOL_VALUE;
 	unsigned char symbol = level().tile().symbol();
-	/* maybe we already know where these stairs lead? */
-	if (symbol == STAIRS_DOWN) {
-		/* we did stand on stairs down, set found if we know where they lead */
-		map<Point, int>::const_iterator s = level().symbols((unsigned char) STAIRS_DOWN).find(Saiph::position());
-		if (s != level().symbols((unsigned char) STAIRS_DOWN).end())
-			found = s->second;
-	} else if (symbol == STAIRS_UP) {
-		/* we did stand on stairs up, set found if we know where they lead */
-		map<Point, int>::const_iterator s = level().symbols((unsigned char) STAIRS_UP).find(Saiph::position());
-		if (s != level().symbols((unsigned char) STAIRS_UP).end())
-			found = s->second;
-	} else if (symbol == MAGIC_PORTAL) {
-		/* we did stand on a magic portal, set found if we know where it lead */
-		map<Point, int>::const_iterator s = level().symbols((unsigned char) MAGIC_PORTAL).find(Saiph::position());
-		if (s != level().symbols((unsigned char) MAGIC_PORTAL).end())
-			found = s->second;
-	}
-	if (found == UNKNOWN_SYMBOL_VALUE) {
-		/* we didn't know where the stairs would take us */
-		for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
-			/* check if level got walls on same locations.
-			 * since walls can disappear, we'll allow a 80% match */
-			int total = 0;
-			int matched = 0;
-			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
-				if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
-					++matched;
-				++total;
-			}
-			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
-				if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
-					++matched;
-				++total;
-			}
-			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
-				found = *lm;
-				Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
-				break;
-			}
+	/* XXX - maybe we already know where these stairs lead? */
+	// there used to be code here to take advantage of such prior knowledge, but coupling level linking and level identification in that way caused horrible failures in some cases
+	// for instance, stepping off a stair onto a levelporter
+
+	for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
+		/* check if level got walls on same locations.
+		 * since walls can disappear, we'll allow a 80% match */
+		int total = 0;
+		int matched = 0;
+		for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
+			if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
+				++matched;
+			++total;
+		}
+		for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
+			if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
+				++matched;
+			++total;
+		}
+		if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
+			found = *lm;
+			Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
+			break;
 		}
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {

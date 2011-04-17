@@ -274,6 +274,8 @@ void Level::analyze() {
 		EventBus::broadcast(static_cast<Event*> (&on_ground));
 	}
 
+	if (symbols(STAIRS_UP).size() > 2 || symbols(STAIRS_DOWN).size() > 2)
+		abort();
 
 	/* branches we will recognize immediately */
 	if (_new_level) {
