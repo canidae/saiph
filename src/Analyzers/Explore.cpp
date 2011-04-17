@@ -104,7 +104,7 @@ ExploreFocus Explore::analyzeLevel() {
 	best.rank = INT_MAX;
 
 	if (World::level().branch() == BRANCH_SOKOBAN)
-		return; // There's nothing to find here
+		return best; // There's nothing to find here
 
 	/* find stairs on rogue level */
 	if (World::level().branch() == BRANCH_ROGUE) {
