@@ -20,7 +20,7 @@ void Wish::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
 		extrinsics = currentExtrinsics();
 		string command = "blessed greased fixed +3 " + selectWish();
-		Debug::notice() << WISH_DEBUG_NAME << "Wishing for " << command << endl;
+		Debug::custom(name()) << "Wishing for " << command << endl;
 		command.append("\n");
 		World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
 		return;

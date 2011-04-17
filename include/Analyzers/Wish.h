@@ -5,10 +5,6 @@
 #include <vector>
 #include "Analyzers/Analyzer.h"
 
-#define WISH_DEBUG_NAME "Wish] "
-
-class Saiph;
-
 namespace analyzer {
 	class Wish : public Analyzer {
 	public:
