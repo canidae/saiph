@@ -12,33 +12,13 @@ using namespace analyzer;
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish(Saiph* saiph) : Analyzer("Wish"), saiph(saiph), wand_of_wishing_key(0), zapping_wand(false) {
+Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(0), zapping_wand(false), extrinsics(0) {
 }
 
 /* methods */
 void Wish::parseMessages(const string& messages) {
-	//if (saiph->inventory_changed) {
-		//wand_of_wishing_key = 0;
-		//for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-			//if (i->second.name == "wand of wishing") {
-				//wand_of_wishing_key = i->first;
-			//}
-		//}
-	//}
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
-		haveMR = saiph->extrinsics() & PROPERTY_MAGICRES;
-		if (haveMR) {
-			MRarmor = wearing("gray dragon scale mail") || wearing("gray dragon scales");
-			MRcloak = wearing("cloak of magic resistance");
-		} else
-			MRarmor = MRcloak = false;
-		haveReflection = saiph->extrinsics() & PROPERTY_REFLECTION;
-		if (haveReflection) {
-			reflectionArmor = wearing("silver dragon scale mail") || wearing("silver dragon scales");
-			reflectionAmulet = wearing("amulet of reflection");
-			reflectionShield = wearing("shield of reflection");
-		} else
-			reflectionArmor = reflectionAmulet = reflectionShield = false;
+		extrinsics = currentExtrinsics();
 		string command = "blessed greased fixed +3 " + selectWish();
 		Debug::notice() << WISH_DEBUG_NAME << "Wishing for " << command << endl;
 		command.append("\n");
@@ -46,7 +26,6 @@ void Wish::parseMessages(const string& messages) {
 		return;
 	} else if (zapping_wand && messages.find(MESSAGE_WHAT_TO_ZAP, 0) != string::npos) {
 		zapping_wand = false;
-		//string command = wand_of_wishing_key;
 		return;
 	}
 }
@@ -92,3 +71,41 @@ bool Wish::wearing(const string& name) {
 			return true;
 	return false;
 }
+
+unsigned long long Wish::currentExtrinsics() {
+	/* TODO: look at other sources of MR, artifacts, etc */
+	unsigned long long extrinsics = 0;
+	haveReflection = false;
+	haveMR = false;
+	reflectionArmor = false;
+	MRarmor = false;
+	MRcloak = false;
+	reflectionAmulet = false;
+	reflectionShield = false;
+	if (wearing("silver dragon scale mail") || wearing("silver dragon scales")) {
+		haveReflection = true;
+		reflectionArmor = true;
+	}
+	if (wearing("amulet of reflection")) {
+		haveReflection = true;
+		reflectionAmulet = true;
+	}
+	if (wearing("shield of reflection")) {
+		haveReflection = true;
+		reflectionAmulet = true;
+	}
+	if (wearing("gray dragon scale mail") || wearing("gray dragon scales")) {
+		haveMR = true;
+		MRarmor = true;
+	}
+	if (wearing("cloak of magic resistance")) {
+		haveMR = true;
+		MRcloak = false;
+	}
+	if (haveMR)
+		extrinsics |= PROPERTY_MAGICRES;
+	if (haveReflection)
+		extrinsics |= PROPERTY_REFLECTION;
+	return extrinsics;
+}
+	
