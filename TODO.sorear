@@ -46,6 +46,8 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Test and fix "Closed for inventory" processing; don't kick down the doors!
 
+  * Looks like the issue may be that saiph tries to open DOOR_SHOP_INVENTORY, fails, and sets it to _LOCKED, forgetting CfI status.
+
   * Don't visit ad aerarium closets unless we can teleport or dig.
 
 * Handle inventory full conditions without looping.  If rawrmage won't, also handle Overloaded.
@@ -61,8 +63,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 * Dispose of trolls
 
 * Perhaps hunt for the quest portal (but don't attempt the quest yet)
-
-* Finish Explore refactor
 
 * Quest analyzer: should path to leader if "Home 1" known and xl14, should hoard qarts and Bell
 

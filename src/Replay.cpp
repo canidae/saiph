@@ -75,6 +75,8 @@ int Replay::doRetrieve(char* buffer, int bsize) {
 		exit(1);
 	}
 	_replaystream.read(buffer, amount);
+	if (amount < bsize)
+		buffer[amount] = 0;
 	return amount;
 }
 
