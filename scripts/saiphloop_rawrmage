@@ -1,0 +1,7 @@
+#!/bin/sh
+while [ true ]
+export FILE=`date +%s`
+do ./build/saiph -t -L /dev/shm/saiph-$FILE.log
+tail -n 100 /dev/shm/saiph-$FILE.log >> /dev/shm/all.log
+rm /dev/shm/saiph-$FILE.log
+done
