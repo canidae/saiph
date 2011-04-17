@@ -69,22 +69,22 @@ Telnet::Telnet() {
 	/* that last command we sent to will send us data back.
 	 * let's discard it */
 	char discard[4096];
-	retrieve(discard, 4096);
+	doRetrieve(discard, 4096);
 
 	/* and let's log in */
 	transmit("l");
-	int size = retrieve(discard, TELNET_BUFFER_SIZE);
+	int size = doRetrieve(discard, TELNET_BUFFER_SIZE);
 	transmit(username);
-	size = retrieve(discard, TELNET_BUFFER_SIZE);
+	size = doRetrieve(discard, TELNET_BUFFER_SIZE);
 	transmit(password);
-	size = retrieve(discard, TELNET_BUFFER_SIZE);
+	size = doRetrieve(discard, TELNET_BUFFER_SIZE);
 	/* 19th december 2008 sporkhack was added to nao,
 	 * giving us one more menu.
 	 * send "1" for nethack and hope it'll still work
 	 * on other servers */
 	/* and about a year later it was changed so no need to send "1" anymore */
 	//transmit("1");
-	//size = retrieve(discard, TELNET_BUFFER_SIZE);
+	//size = doRetrieve(discard, TELNET_BUFFER_SIZE);
 
 	/* and start a game */
 	start();
