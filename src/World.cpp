@@ -1395,6 +1395,7 @@ int main(int argc, const char* argv[]) {
 	string logfile = "saiph.log";
 
 	bool showUsage = false;
+	bool t_o_r = false;
 	if (argc > 1) {
 		for (int a = 1; a < argc; ++a) {
 			if (strlen(argv[a]) < 2) {
@@ -1423,6 +1424,7 @@ int main(int argc, const char* argv[]) {
 					initial_speed = SPEED_SLOW;
 					break;
 				case 'R':
+					t_o_r = true;
 					connection_type = CONNECTION_REPLAY;
 					if (argc > ++a)
 						Replay::setFile(std::string(argv[a]), false);
@@ -1430,6 +1432,7 @@ int main(int argc, const char* argv[]) {
 						showUsage = true;
 					break;
 				case 'T':
+					t_o_r = true;
 					if (argc > ++a)
 						Replay::setFile(std::string(argv[a]), true);
 					else
@@ -1467,6 +1470,9 @@ int main(int argc, const char* argv[]) {
 			return 1;
 		}
 	}
+
+	if (!t_o_r)
+		Replay::setFile("saiph.ttyrec", true);
 
 	/* init */
 	World::init(logfile, connection_type);
