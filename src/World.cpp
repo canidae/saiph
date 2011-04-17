@@ -329,7 +329,7 @@ Tile World::shortestPath(const Coordinate& target) {
 	level_added[Saiph::position().level()] = true;
 	Tile level_tile[_levels.size()];
 	level_tile[Saiph::position().level()] = shortestPath(Saiph::position());
-	Debug::pathing() << "Trying to find path to " << target << endl;
+	//Debug::pathing() << "Trying to find path to " << target << endl;
 	while (++pivot < level_count) {
 		/* check if target is on level */
 		if (level_queue[pivot] == target.level()) {
@@ -352,7 +352,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::pathing() << "Following upstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			//Debug::pathing() << "Following upstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where these stairs lead, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -376,7 +376,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::pathing() << "Following downstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			//Debug::pathing() << "Following downstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where these stairs lead, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -400,7 +400,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::info() << "Following magic portal on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			//Debug::info() << "Following magic portal on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where this portal leads, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
