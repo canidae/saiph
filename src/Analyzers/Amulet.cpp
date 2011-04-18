@@ -67,7 +67,6 @@ void Amulet::onEvent(Event * const event) {
 			}
 		}
 	} else if (event->id() == WantItems::ID) {
-		Debug::info() << "WantItems appeared, wearing?" << endl;
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wantItem(i->second))
