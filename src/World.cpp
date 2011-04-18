@@ -760,25 +760,32 @@ void World::detectPosition() {
 	// there used to be code here to take advantage of such prior knowledge, but coupling level linking and level identification in that way caused horrible failures in some cases
 	// for instance, stepping off a stair onto a levelporter
 
-	for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
-		/* check if level got walls on same locations.
-		 * since walls can disappear, we'll allow a 80% match */
-		int total = 0;
-		int matched = 0;
-		for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
-			if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
-				++matched;
-			++total;
-		}
-		for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
-			if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
-				++matched;
-			++total;
-		}
-		if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
-			found = *lm;
-			Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
-			break;
+	// Quest levels are in one-to-one correspondance with names, and are often sufficiently odd as to confuse the wall matcher
+	if (std::string(_levelname).find("Home") != string::npos) {
+		vector<int> &levels = _levelmap[_levelname];
+		if (levels.size()) found = levels[0];
+	}
+	if (found == UNKNOWN_SYMBOL_VALUE) {
+		for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
+			/* check if level got walls on same locations.
+			 * since walls can disappear, we'll allow a 80% match */
+			int total = 0;
+			int matched = 0;
+			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
+				if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
+					++matched;
+				++total;
+			}
+			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
+				if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
+					++matched;
+				++total;
+			}
+			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
+				found = *lm;
+				Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
+				break;
+			}
 		}
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
