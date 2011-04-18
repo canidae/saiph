@@ -23,7 +23,8 @@ void MonsterInfo::analyze() {
 			continue; // don't farlook monsters we can't see
 		if (_look_at->second.symbol() == 'I' || _look_at->second.symbol() == 'm')
 			continue; // don't farlook 'I' or 'm' monsters
-		if (_look_at->second.attitude() == HOSTILE)
+		/* we're paranoid about @ in minetown (elf/watch switchup) */
+		if (_look_at->second.attitude() == HOSTILE && World::level().branch() != BRANCH_MINETOWN && _look_at->second.symbol() != '@')
 			continue; // we don't expect hostile monsters to go friendly (XXX: scroll of taming, etc will need special handling)
 		map<Point, unsigned int>::iterator c = _checked.find(_look_at->first);
 		if (c != _checked.end() && c->second == World::internalTurn())

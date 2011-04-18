@@ -24,8 +24,8 @@ Beatitude::Beatitude() : Analyzer("Beatitude"), _max_priority(ILLEGAL_PRIORITY) 
 void Beatitude::analyze() {
 	if (_beatify.size() <= 0)
 		return; // no items to beatify
-	else if (Saiph::blind() || Saiph::confused() || Saiph::stunned())
-		return; // no buc-testing while blind/confused/stunned
+	else if (Saiph::blind() || Saiph::confused() || Saiph::stunned() || Saiph::hallucinating())
+		return; // no buc-testing while blind/confused/stunned/hallucinating
 	else if (_max_priority < World::currentPriority())
 		return; // got something more important to do
 

@@ -6,17 +6,25 @@
 #include "Saiph.h"
 #include "World.h"
 #include "Events/ReceivedItems.h"
+#include "Actions/Action.h"
+#include "Actions/Pay.h"
 
 using namespace analyzer;
 using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Shop::Shop() : Analyzer("Shop") {
+Shop::Shop() : Analyzer("Shop"), payed(0) {
 }
 
 /* methods */
-void Shop::parseMessages(const string&) {
+void Shop::parseMessages(const string& messages) {
+	if (messages.find(SHOP_MESSAGE_BIT_IT) != string::npos || messages.find(SHOP_MESSAGE_USAGE_FEE) != string::npos || messages.find(SHOP_MESSAGE_SPELLBOOK) != string::npos) { // oops
+		if (World::turn() - payed > 10) {
+			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
+			payed = World::turn();
+		}
+	}
 	/* FIXME: need to handle pick-axes & stuff */
 	//	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
 	//		/* we're most likely standing in a doorway, next to a shopkeeper.
@@ -101,7 +109,16 @@ void Shop::analyze() {
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (!m->second.shopkeeper() || !m->second.visible())
 			continue;
-
+			
+	if (World::shortestPath('-').cost() < UNREACHABLE) {
+		/* we probably don't owe money, since we can leave */
+	} else {
+		/* we can't leave! let's pay for what we bought */
+		if (World::turn() - payed > 10) { // do other things too
+			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
+			payed = World::turn();
+		}
+	}
 		/* figure out if we're in the same room as the shopkeeper */
 		Point nw = Saiph::position();
 		Point se = Saiph::position();

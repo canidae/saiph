@@ -6,6 +6,10 @@
 
 #define SHOP_MESSAGE_LEAVE_TOOL "  \"Will you please leave your "
 #define SHOP_MESSAGE_LEAVE_TOOL_ANGRY "  \"Leave the "
+#define SHOP_MESSAGE_BIT_IT " bit it, you bought it!\" "
+#define SHOP_MESSAGE_USAGE_FEE " Usage fee "
+#define SHOP_MESSAGE_SPELLBOOK " no free library, cad!\" "
+#define PRIORITY_PAY_FOR_ITEMS 400
 
 namespace analyzer {
 	class Shop : public Analyzer {
@@ -14,6 +18,8 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string&);
+	private:
+		int payed;
 	};
 }
 #endif

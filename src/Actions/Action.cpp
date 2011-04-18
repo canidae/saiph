@@ -22,6 +22,7 @@
 #include "Actions/Move.h"
 #include "Actions/Name.h"
 #include "Actions/Open.h"
+#include "Actions/Pay.h"
 #include "Actions/Pray.h"
 #include "Actions/PutOn.h"
 #include "Actions/Remove.h"
@@ -69,6 +70,7 @@ const int TakeOff::ID = 29;
 const int Wear::ID = 30;
 const int Dip::ID = 31;
 const int Donate::ID = 32;
+const int Pay::ID = 33;
 
 /* used for the travel command "_" */
 Point Move::_last_target;
