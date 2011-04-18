@@ -44,13 +44,8 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Test and fix footrice barehanded avoidance
 
-* Test and fix "Closed for inventory" processing; don't kick down the doors!
-
-  * Looks like the issue may be that saiph tries to open DOOR_SHOP_INVENTORY, fails, and sets it to _LOCKED, forgetting CfI status.
-
-  * Don't visit ad aerarium closets unless we can teleport or dig.
-
 * Handle inventory full conditions without looping.  If rawrmage won't, also handle Overloaded.
+  * don't go up stairs Stressed, or walk around Stressed in general
 
 * Look into implementing shopping
 
@@ -59,6 +54,8 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 * Since saiph likes teleportation so much, she should kill tengu
 
 * Loot boxes
+
+* action::Loot is bogus, it will fail if there's a question up when ':' needs to be used
 
 * Dispose of trolls
 
@@ -71,3 +68,24 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   std::map<std::string, int> _covetous_on_level; // last seen location of each boss
   // will have issues with Double Trouble and chameleon master liches, but fine for now
   // if there are known covetors, Fight will path to the > on the level they are on, then go down once in melee range
+
+* After pulling canidae:
+  - change Explore to use std::string* for speed
+  - experiment with allowing inlining for trivial accessors
+  - disable interlevel pathfinding messages, maybe?
+
+* sorph ate a mimic in a shop, probably because it was mimicing stairs down and overwrote SHOP_TILE
+  - the right fix here is to make an in_shop bitfield, because it's not mutually exclusive with anything
+  - instead I'll make Shop 'p'ay if the shopkeeper is blocking the doorway and we haven't tried to pay in 10 turns
+
+* death ray mitigation strategies
+  - buy and MR-test all cloaks
+  - finish Sokoban
+  - buy and strategically use magic lamps
+  - fountain dipping!
+
+* Test and fix "Closed for inventory" processing; don't kick down the doors!
+  * Looks like the issue may be that saiph tries to open DOOR_SHOP_INVENTORY, fails, and sets it to _LOCKED, forgetting CfI status.
+  * Don't visit ad aerarium closets unless we can teleport or dig.
+
+* Paranoid farlook @ every turn in minetown, even (especially) if we think they are hostile, if rawr doesn't get to it first
