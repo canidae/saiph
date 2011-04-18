@@ -1,6 +1,6 @@
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-18 08:23:42.000000000 -0700
-@@ -477,6 +477,116 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-18 10:23:30.000000000 -0700
+@@ -477,6 +477,158 @@
  }
  
  void
@@ -9,9 +9,11 @@
 +    FILE *fp;
 +    char *fn = getenv("NHSITUATIONFILE");
 +    struct obj *otmp;
++    struct monst *mtmp;
 +    int a[10];
 +    int i;
 +    coord c1, c2;
++    char *p;
 +
 +    if (!fn) return;
 +    if (!(fp = fopen(fn, "r"))) {
@@ -72,6 +74,46 @@
 +                pline("Invalid object %s", lbuf);
 +            else
 +                place_object(otmp, a[0], a[1]);
++        } else if (!strncmp(lbuf, "mon ", 4)) {
++            // unhandled wrt sp_lev: alignment, name, mplayers
++            // need x,y,id, peaceful,alseep, appear,appear_as
++            lbuf[strlen(lbuf)-1] = 0;
++            sscanf(lbuf, "mon %d %d %n", &a[0], &a[1], &i);
++            a[2] = a[3] = a[4] = 0;
++            if (!strncmp(lbuf+i, "peaceful ", 12)) { i += 12; a[2] = 1; }
++            if (!strncmp(lbuf+i, "asleep ", 7)) { i += 7; a[3] = 1; }
++            if ((p = strchr(lbuf+i, '|'))) { *(p++) = 0; }
++
++            for (a[5] = 0; a[5] < NUMMONS; a[5]++)
++                if (!strcmp(mons[a[5]].mname, lbuf+i)) break;
++            if (a[5] == NUMMONS) {
++                pline("Invalid mob %s", lbuf);
++                continue;
++            }
++            mtmp = makemon(&mons[a[5]], a[0], a[1], NO_MM_FLAGS);
++            mtmp->mpeaceful = a[2] ? 1 : 0;
++            mtmp->msleeping = a[3] ? 1 : 0;
++            if (p) {
++                for (i = 0; i < NUM_OBJECTS; i++)
++                    if (OBJ_NAME(objects[i]) && !strcmp(OBJ_NAME(objects[i]),p))
++                        break;
++                if (i < NUM_OBJECTS) {
++                    mtmp->m_ap_type = M_AP_OBJECT;
++                    mtmp->mappearance = i;
++                    p = 0;
++                }
++            }
++            if (p) {
++                for (i = 0; i < MAXPCHARS; i++)
++                    if (!strcmp(defsyms[i].explanation,p)) break;
++                if (i < MAXPCHARS) {
++                    mtmp->m_ap_type = M_AP_FURNITURE;
++                    mtmp->mappearance = i;
++                    p = 0;
++                }
++            }
++            if (p) pline("Invalid appearance %s", p);
++            set_malign(mtmp);
 +        } else if (!strncmp(lbuf, "engr ", 5)) {
 +            lbuf[strlen(lbuf)-1] = 0;
 +            sscanf(lbuf, "engr %d %d %d %n", &a[0], &a[1], &a[2], &i);
@@ -117,7 +159,7 @@
  newgame()
  {
  	int i;
-@@ -514,6 +624,7 @@
+@@ -514,6 +666,7 @@
  
  	mklev();
  	u_on_upstairs();

@@ -9,10 +9,15 @@ The following situations are currently available:
 
 buc_lizard.t: BUC-testing of lizard corpses (caused segfaults in past)
 
+floating_eye_pathing.t: Floating eye blocks a corridor.
+
 locked_shop_1.t: Test "Closed for inventory" handling.
 
 locked_shop_2.t: Like 1, but the corridor comes in sideways, so the
     bot must know not to kick down doors from diagonals.
+
+shop_stairs_mimic.t: Mimic mimics stairs in a shop, possibly confusing
+    the old SHOP_TILE detection.
 
 vault.t: Escaping a vault
 
@@ -67,6 +72,11 @@ map
 
 Clears existing level data.  Should be used before any other map
 section command.
+
+mon X Y [peaceful ][asleep ]MONSTERNAME[|APPEARANCE]
+
+Makes a monster at a location.  If peaceful and asleep are not used
+the monster will be hostile and awake respectively.
 
 obj X Y ITEM
 
