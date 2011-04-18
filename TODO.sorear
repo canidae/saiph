@@ -26,8 +26,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Situation patch stuff
 
-  * I feel the saiph repo isn't quite the right place for this.
-
   * canidae wants documentation!
 
   * Add support for starting in places other than Dlvl 1, like Sokoban or the Castle.
@@ -38,7 +36,7 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
   * support item modifiers "equipped" and "identified"; perhaps the latter should be more fine-grained
 
-  * Levels: place monsters at locations, traps, hard_floor, no_monster_gen, doors, shops, knowledge maps.
+  * Levels: place monsters at locations, traps, hard_floor, no_monster_gen, knowledge maps.
 
   * Character: set HP, XL, spells, skills.
 

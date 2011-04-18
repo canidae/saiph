@@ -1,7 +1,6 @@
-diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-11 20:36:20.000000000 -0700
-@@ -477,6 +477,101 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-18 08:23:42.000000000 -0700
+@@ -477,6 +477,116 @@
  }
  
  void
@@ -42,13 +41,20 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 +        } else if (!strcmp(lbuf, "map\n")) {
 +            extern void clear_level_structures();
 +            clear_level_structures();
++        } else if (!strncmp(lbuf, "picture ", 8)) {
++            sscanf(lbuf, "picture %d %d", &a[0], &a[1]);
 +        } else if (!strncmp(lbuf, "at ", 3)) {
 +            sscanf(lbuf, "at %d %d", &a[0], &a[1]);
 +            u.ux = a[0]; u.uy = a[1];
 +        } else if (!strncmp(lbuf, "room ", 5)) {
-+            sscanf(lbuf, "room %d %d %d %d %d %d %d %d",
-+                    &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[7]);
-+            create_room(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
++            sscanf(lbuf, "room %d %d %d %d %d %d",
++                    &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
++            add_room(a[0], a[1], a[2], a[3], a[4], a[5], FALSE);
++        } else if (!strncmp(lbuf, "door ", 5)) {
++            sscanf(lbuf, "door %d %d %d %d", &a[0], &a[1], &a[2], &a[3]);
++            levl[a[0]][a[1]].doormask = a[2];
++            levl[a[0]][a[1]].typ = a[3] ? SDOOR : DOOR;
++            add_door(a[0], a[1], &rooms[nroom-1]);
 +        } else if (!strncmp(lbuf, "corr ", 5)) {
 +            sscanf(lbuf, "corr %d %d %d %d %d %d %d",
 +                    &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6]);
@@ -66,6 +72,10 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 +                pline("Invalid object %s", lbuf);
 +            else
 +                place_object(otmp, a[0], a[1]);
++        } else if (!strncmp(lbuf, "engr ", 5)) {
++            lbuf[strlen(lbuf)-1] = 0;
++            sscanf(lbuf, "engr %d %d %d %n", &a[0], &a[1], &a[2], &i);
++            make_engr_at(a[0], a[1], lbuf+i, 0, a[2]);
 +        } else if (!strcmp(lbuf, "vault\n")) {
 +            extern xchar vault_x, vault_y;
 +            extern void makevtele();
@@ -85,6 +95,10 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 +                for (croom = &rooms[0]; croom != &rooms[nroom]; croom++)
 +                    topologize(croom);
 +            }
++            for (croom = &rooms[0]; croom != &rooms[nroom]; croom++)
++                if (croom->rtype >= SHOPBASE)
++                    stock_room(croom->rtype - SHOPBASE, croom);
++                topologize(croom);
 +            set_wall_state();
 +        } else {
 +            pline("Unknown situation record %s", lbuf);
@@ -103,7 +117,7 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
  newgame()
  {
  	int i;
-@@ -514,6 +609,7 @@
+@@ -514,6 +624,7 @@
  
  	mklev();
  	u_on_upstairs();
@@ -111,21 +125,6 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
  	vision_reset();		/* set up internals for level (after mklev) */
  	check_special_room(FALSE);
  
-diff -u nethack-3.4.3-orig/src/Makefile nethack-3.4.3/src/Makefile
---- nethack-3.4.3-orig/src/Makefile	2011-04-11 11:00:17.000000000 -0700
-+++ nethack-3.4.3/src/Makefile	2011-04-11 11:22:45.000000000 -0700
-@@ -230,8 +230,8 @@
- # WINTTYLIB = -ltermcap
- # WINTTYLIB = -lcurses
- # WINTTYLIB = -lcurses16
--# WINTTYLIB = -lncurses
--WINTTYLIB = -ltermlib
-+WINTTYLIB = -lncurses
-+# WINTTYLIB = -ltermlib
- #
- # libraries for X11
- # If USE_XPM is defined in config.h, you will also need -lXpm here.
-diff -u -x '*.o' nethack-3.4.3-orig/src/mklev.c nethack-3.4.3/src/mklev.c
 --- nethack-3.4.3-orig/src/mklev.c	2003-12-07 15:39:13.000000000 -0800
 +++ nethack-3.4.3/src/mklev.c	2011-04-11 19:38:57.000000000 -0700
 @@ -17,6 +17,13 @@
