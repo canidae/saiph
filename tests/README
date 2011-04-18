@@ -1,0 +1,97 @@
+This directory contains canned situations for testing saiph's reaction
+to them.  They are useful for testing behavior in obscure or late-game
+situations.  To use these, you will need to build and install a custom
+NetHack with patches/situation.patch applied; then, start saiph with
+NHSITUATIONFILE=/full/path/to/whatever.t in the environment.
+
+
+The following situations are currently available:
+
+buc_lizard.t: BUC-testing of lizard corpses (caused segfaults in past)
+
+locked_shop_1.t: Test "Closed for inventory" handling.
+
+locked_shop_2.t: Like 1, but the corridor comes in sideways, so the
+    bot must know not to kick down doors from diagonals.
+
+vault.t: Escaping a vault
+
+wand_on_engr.t: You find a wand on top of an engraved message
+    (rawrmage reported a #quit in this situation)
+
+
+If you want to write your own situation files, the format is very
+simple although not very easy to use.  The situation is interpreted
+as a list of commands to be run after setting up the dungeon and
+the character.
+
+In general, a situation will contain commands to set relevant
+properties of the character, and additionally will either set up a
+custom dungeon level or will transport the character to a defined
+special level.  These commands are available:
+
+Map section commands:
+
+altar X Y ALIGN
+
+Place an altar (1=law, 0=neu, -1=cha) at the given position.
+
+at X Y
+
+Sets initial location of the character.
+
+corr FROMX FROMY TOX TOY 0 23 0
+
+Sets up a corridor.  Should be used after all room and door
+definitions.
+
+door X Y TYPE SECRET
+
+Places a door.  Must be used immediately after the room that the door
+belongs to (it is not possible at this time to set up a freestanding
+door).  TYPEs are 0=no door, 1=broken, 2=open, 4=closed, 8=locked,
+20=closed+trapped, 24=locked+trapped.  SECRET is 1 or 0.
+
+endmap
+
+Sets up wall maps and room reverse mapping, fills shops.  Should be
+used after all other map section commands.
+
+engr X Y TYPE MESSAGE
+
+First two numbers are X,Y coordinate; third is an engraving type code:
+1 (dust), 2 (engraved), 3 (burned), 4 (magic marker graffiti),
+5 (blood), 6 (headstone).
+
+map
+
+Clears existing level data.  Should be used before any other map
+section command.
+
+obj X Y ITEM
+
+Creates a floor item (parsed as a wish).
+
+room TOPLEFTX TOPLEFTY BOTRIGHTX BOTRIGHTY LIT TYPE
+
+The corners represent the floor area; the walls will be outside the
+described area.  TYPE should be 0 for an ordinary room or 14+ for
+a shop, other values are not supported at this time.
+
+vault
+
+Creates a vault, plus niche and teleporter, somewhere on the level.
+
+Character section commands:
+
+inventory
+ITEM
+ITEM
+.
+
+Adds each ITEM (parsed as a wizmode wish) to inventory.
+
+stats STR DEX CON INT WIS CHA
+
+Sets character's stats.  Note that STR ranges from 3 to 126, to allow
+for possibilities like "18/39".
