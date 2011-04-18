@@ -29,8 +29,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   * Levels: traps, hard_floor, no_monster_gen, knowledge maps.
   * Character: set spells, skills.
 
-* Fix footrice barehanded avoidance
-
 * Handle inventory full conditions without looping.  If rawrmage won't, also handle Overloaded.
   * don't go up stairs Stressed, or walk around Stressed in general
 

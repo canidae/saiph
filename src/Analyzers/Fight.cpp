@@ -71,6 +71,8 @@ void Fight::analyze() {
 				continue;
 			}
 		}
+		if (m->second.symbol() == 'c' && (m->second.color() == YELLOW || m->second.color() == BOLD_YELLOW) && (Inventory::keyForSlot(SLOT_WEAPON) == ILLEGAL_ITEM) && (Inventory::keyForSlot(SLOT_GLOVES) == ILLEGAL_ITEM))
+			continue; // Don't even think about attacking cockatrices with our bare hands
 		if (distance == 1) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
