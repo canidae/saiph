@@ -1,13 +1,13 @@
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-18 10:23:30.000000000 -0700
-@@ -477,6 +477,158 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-18 13:12:13.000000000 -0700
+@@ -477,6 +477,233 @@
  }
  
  void
 +read_situation()
 +{
 +    FILE *fp;
-+    char *fn = getenv("NHSITUATIONFILE");
++    char *fn = nh_getenv("NHSITUATIONFILE");
 +    struct obj *otmp;
 +    struct monst *mtmp;
 +    int a[10];
@@ -32,13 +32,88 @@
 +            for (i = 0; i < 6; i++)
 +                ABASE(i) = AMAX(i) = a[i];
 +            // TODO: stats max, temp setting
++        } else if (!strncmp(lbuf, "level ", 6)) {
++            sscanf(lbuf, "level %d", &i);
++            while (u.ulevel < i) pluslvl(FALSE);
++        } else if (!strncmp(lbuf, "align ", 6)) {
++            sscanf(lbuf, "align %d", &i);
++            while (i > ALIGNLIM) moves++;
++            u.ualign.record = i;
++        } else if (!strncmp(lbuf, "goto ", 5)) {
++            lbuf[strlen(lbuf)-1] = 0;
++            s_level *p;
++            d_level go;
++            if (!strcmp(lbuf+5, "invocation")) {
++                go = sanctum_level;
++                go.dlevel--;
++            } else if (!strcmp(lbuf+5, "portal")) {
++                go = portal_level;
++            } else if (!strcmp(lbuf+5, "tower")) {
++                go.dnum = tower_dnum;
++                go.dlevel = 3;
++            } else {
++                for (p = sp_levchn; p; p = p->next)
++                    if (!strcmp(lbuf+5, p->proto)) { go = p->dlevel; break; }
++                if (!p) {
++                    pline("Unknown level %s", lbuf);
++                    continue;
++                }
++            }
++            boolean port = Is_knox(&go) || In_endgame(&go) || Is_qstart(&go);
++            goto_level(&go, !port, FALSE, port);
++        } else if (!strcmp(lbuf, "seal\n")) {
++            struct trap *t;
++            for (t = ftrap; t; t = t->ntrap)
++                if (t->ttyp == MAGIC_PORTAL) break;
++            if (t && !Is_portal_level(&u.uz)) {
++                u.ux = t->tx;
++                u.uy = t->ty;
++                deltrap(t);
++            }
++            levl[u.ux][u.uy].typ = ROOM;
 +        } else if (!strcmp(lbuf, "inventory\n")) {
++            while (invent) useupall(invent);
++            u.ugold = 0;
++            /* XXX Should we erase the player's item knowledge here? */
 +            while (fgets(lbuf, 127, fp)) {
 +                if (!strncmp(lbuf, ".\n", 2)) break;
 +                lbuf[strlen(lbuf)-1] = 0;
-+                otmp = readobjnam(lbuf, (struct obj *)0, FALSE);
-+                if (otmp && otmp != &zeroobj)
-+                    addinv(otmp);
++                p = lbuf; a[0] = a[1] = 0;
++                if (!strncmp(p, "identified ", 11)) { p += 11; a[0] = 1; }
++                if (!strncmp(p, "worn ", 5)) { p += 5; a[1] = 1; }
++                otmp = readobjnam(p, (struct obj *)0, FALSE);
++                if (otmp && otmp != &zeroobj) {
++                    otmp = addinv(otmp);
++                    if (a[0]) fully_identify_obj(otmp);
++
++                    if (a[1] && otmp->oclass == ARMOR_CLASS) {
++                        if (is_shield(otmp) && !uarms) {
++                            setworn(otmp, W_ARMS);
++                            if (uswapwep) setuswapwep((struct obj *) 0);
++                        } else if (is_helmet(otmp) && !uarmh)
++                            setworn(otmp, W_ARMH);
++                        else if (is_gloves(otmp) && !uarmg)
++                            setworn(otmp, W_ARMG);
++#ifdef TOURIST
++                        else if (is_shirt(otmp) && !uarmu)
++                            setworn(otmp, W_ARMU);
++#endif
++                        else if (is_cloak(otmp) && !uarmc)
++                            setworn(otmp, W_ARMC);
++                        else if (is_boots(otmp) && !uarmf)
++                            setworn(otmp, W_ARMF);
++                        else if (is_suit(otmp) && !uarm)
++                            setworn(otmp, W_ARM);
++                    }
++
++                    if (a[1] && (otmp->oclass == WEAPON_CLASS || is_weptool(otmp) ||
++                                otmp->otyp == TIN_OPENER || otmp->otyp == FLINT || otmp->otyp == ROCK)) {
++                        if (is_ammo(otmp) || is_missile(otmp)) {
++                            if (!uquiver) setuqwep(otmp);
++                        } else if (!uwep) setuwep(otmp);
++                        else if (!uswapwep) setuswapwep(otmp);
++                    }
++                }
 +            }
 +        } else if (!strcmp(lbuf, "map\n")) {
 +            extern void clear_level_structures();
@@ -159,7 +234,7 @@
  newgame()
  {
  	int i;
-@@ -514,6 +666,7 @@
+@@ -514,6 +741,7 @@
  
  	mklev();
  	u_on_upstairs();

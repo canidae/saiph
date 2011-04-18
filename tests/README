@@ -94,12 +94,36 @@ Creates a vault, plus niche and teleporter, somewhere on the level.
 
 Character section commands:
 
+align NUMBER
+
+Increases alignment to NUMBER.
+
+goto NAME
+
+Sends player to NAME, which should be a defined special level without
+the .lev extension and variant number (such as soko4, oracle, etc).
+Also supported are special cases invocation, tower (base of Vlad),
+and portal (level going to quest).
+
 inventory
 ITEM
 ITEM
 .
 
-Adds each ITEM (parsed as a wizmode wish) to inventory.
+Adds each ITEM (parsed as a wizmode wish) to inventory.  Each item may
+be preceded by identified or worn (or both in that order); worn items
+are equipped as they would be in starting inventory.  This command
+destroys the previous inventory.
+
+level NUMBER
+
+Increases character level to NUMBER.
+
+seal
+
+Attempts to remove the exit from a branch entered using goto.  Only
+works reliably for levels in the main dungeon, or first levels of
+branches.
 
 stats STR DEX CON INT WIS CHA
 
