@@ -33,7 +33,7 @@ namespace analyzer {
 	struct ExploreFocus {
 		Point where;
 		int rank;
-		const char* purpose;
+		std::string purpose;
 		unsigned char direction;
 
 		std::string describe() const;
@@ -50,7 +50,7 @@ namespace analyzer {
 
 		static ExploreFocus analyzeLevel();
 		static void considerPoint(ExploreFocus& best, Point p);
-		static void addOption(ExploreFocus& best, int rank, Point p, unsigned char direction, const char* purpose);
+		static void addOption(ExploreFocus& best, int rank, const Point& p, unsigned char direction, const std::string& purpose);
 	};
 }
 #endif

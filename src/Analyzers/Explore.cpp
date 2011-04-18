@@ -42,7 +42,7 @@ void Explore::analyze() {
 	Coordinate best_coord;
 	int best_rank = INT_MAX;
 	unsigned int best_cost = UNPASSABLE;
-	const char* best_purpose = "";
+	string best_purpose = "";
 	unsigned char best_direction;
 
 	for (map<int, ExploreFocus>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
@@ -91,7 +91,7 @@ void Explore::analyze() {
 }
 
 /* private methods */
-void Explore::addOption(ExploreFocus& best, int rank, Point p, unsigned char direction, const char* purpose) {
+void Explore::addOption(ExploreFocus& best, int rank, const Point& p, unsigned char direction, const string& purpose) {
 	Level& l = World::level();
 	unsigned int cost = l.tile(p).cost();
 	if ((rank < best.rank && cost < UNPASSABLE) || (rank == best.rank && cost < l.tile(best.where).cost())) {
