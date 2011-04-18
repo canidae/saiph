@@ -73,5 +73,3 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   * Don't visit ad aerarium closets unless we can teleport or dig.
 
 * Paranoid farlook @ every turn in minetown, even (especially) if we think they are hostile, if rawr doesn't get to it first
-
-* try adding a large penalty for pathing through floating eyes in corridors
