@@ -1,0 +1,12 @@
+#!/bin/sh
+# Runs saiph in a loop while avoiding overwriting stuff.
+
+make || exit $?
+mkdir -p logs/
+
+while :; do
+    sleep 1 # no thrashing
+    killall -q nethack # nethack likes to use 100% cpu if saiph crashes
+    TIME=$(date +%s)
+    ./saiph -l -L logs/$TIME.log -T logs/$TIME.ttyrec
+done

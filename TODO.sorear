@@ -69,10 +69,7 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   // will have issues with Double Trouble and chameleon master liches, but fine for now
   // if there are known covetors, Fight will path to the > on the level they are on, then go down once in melee range
 
-* After pulling canidae:
-  - change Explore to use std::string* for speed
-  - experiment with allowing inlining for trivial accessors
-  - disable interlevel pathfinding messages, maybe?
+* experiment with allowing inlining for trivial accessors
 
 * sorph ate a mimic in a shop, probably because it was mimicing stairs down and overwrote SHOP_TILE
   - the right fix here is to make an in_shop bitfield, because it's not mutually exclusive with anything
