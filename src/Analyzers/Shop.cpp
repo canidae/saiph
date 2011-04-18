@@ -19,7 +19,7 @@ Shop::Shop() : Analyzer("Shop"), payed(0) {
 
 /* methods */
 void Shop::parseMessages(const string& messages) {
-	if (messages.find(SHOP_MESSAGE_BIT_IT) != string::npos || messages.find(SHOP_MESSAGE_USAGE_FEE) != string::npos || messages.find(SHOP_MESSAGE_SPELLBOOK) != string::npos) { // oops
+	if (messages.find(SHOP_MESSAGE_BIT_IT) != string::npos || messages.find(SHOP_MESSAGE_USAGE_FEE) != string::npos || messages.find(SHOP_MESSAGE_SPELLBOOK) != string::npos || messages.find(SHOP_MESSAGE_SPELLBOOK2) != string::npos || messages.find(SHOP_MESSAGE_FUEL_TAX) != string::npos) { // oops
 		if (World::turn() - payed > 10) {
 			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
 			payed = World::turn();
