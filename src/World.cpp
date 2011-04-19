@@ -645,6 +645,8 @@ void World::run(int speed) {
 			if (!_question && !_menu) {
 				for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 					(*a)->analyze();
+				for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
+					(*a)->lastChance(_action);
 			}
 
 			/* check if we got some queued actions */

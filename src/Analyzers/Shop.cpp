@@ -5,71 +5,149 @@
 #include "Globals.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Data/Pickaxe.h"
+#include "EventBus.h"
 #include "Events/ReceivedItems.h"
+#include "Events/ShoppingStatus.h"
+#include "Actions/Look.h"
+#include "Actions/Move.h"
+#include "Actions/Drop.h"
+
+// Shop divides space into three regions.  "In shop" is SHOP_TILE and the walls and doors adjacent to them; "Threshold" is 1 square further out; "Out shop" is everything else.
+// Shop maintains a "shop mode" bit, which serves mostly to control whether saiph wants digging tools.  Shop mode must be on in shops and off outside them.
+// If saiph is going to step into a shop, she must be in threshold, and we need to drop or bag our digging tools.  To prevent her from immediately picking them back up, we set shop mode at the same time.
 
 using namespace analyzer;
 using namespace event;
 using namespace std;
 
+#define IN_SHOP_PROPER 0
+#define IN_SHOP 1
+#define THRESHOLD 2
+
 /* constructors/destructor */
 Shop::Shop() : Analyzer("Shop") {
+	EventBus::registerEvent(WantItems::ID, this);
 }
 
 /* methods */
 void Shop::parseMessages(const string&) {
-	/* FIXME: need to handle pick-axes & stuff */
-	//	if (messages.find(SHOP_MESSAGE_LEAVE_TOOL, 0) != string::npos || messages.find(SHOP_MESSAGE_LEAVE_TOOL_ANGRY, 0) != string::npos) {
-	//		/* we're most likely standing in a doorway, next to a shopkeeper.
-	//		 * head for nearest CORRIDOR or FLOOR and drop pick-axe */
-	//		unsigned char dir = ILLEGAL_DIRECTION;
-	//		const PathNode& node = saiph->shortestPath(CORRIDOR);
-	//		dir = node.dir;
-	//		if (node.cost >= UNPASSABLE) {
-	//			const PathNode& node2 = saiph->shortestPath(FLOOR);
-	//			if (node2.cost >= UNPASSABLE) {
-	//				/* this is bad */
-	//				Debug::analyzer(name()) << "Unable to path to CORRIDOR or FLOOR from shopkeeper" << endl;
-	//				return;
-	//			}
-	//			dir = node2.dir;
-	//		}
-	//
-	//		drop_pick_axe = true;
-	//		command = dir;
-	//		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
-	//	} else if (saiph->world->question && messages.find(MESSAGE_WHAT_TO_DROP, 0) == 0 && drop_pick_axe) {
-	//		/* drop our tools */
-	//		for (map<unsigned char, Item>::iterator i = saiph->inventory.begin(); i != saiph->inventory.end(); ++i) {
-	//			if (i->second.name != "pick-axe" && i->second.name != "mattock")
-	//				continue;
-	//			command = i->first;
-	//			priority = PRIORITY_CONTINUE_ACTION;
-	//			drop_pick_axe = false;
-	//			look_at_ground = true;
-	//			return;
-	//		}
-	//		/* request dirty inventory */
-	//		req.request = REQUEST_DIRTY_INVENTORY;
-	//		saiph->request(req);
-	//	} else if (drop_pick_axe && saiph->getDungeonSymbol() != OPEN_DOOR) {
-	//		/* we should've moved away from shopkeeper now, drop the pick-axe */
-	//		command = DROP;
-	//		priority = PRIORITY_SHOP_DROP_DIGGING_TOOL;
-	//	} else if (look_at_ground) {
-	//		/* we'll look at ground after dropping the tools.
-	//		 * this makes us aware of the stash,
-	//		 * and the loot analyzer won't "visit" the stash after we move */
-	//		/* FIXME:
-	//		 * possibly not safe. what if another analyzer do something
-	//		 * with higher priority?
-	//		 * unlikely, but may be possible */
-	//		command = LOOK;
-	//		priority = PRIORITY_LOOK;
-	//		look_at_ground = false;
-	//	}
+}
+
+int Shop::nearShop(const Coordinate& where) {
+	int y0 = where.row() - 2;
+	int x0 = where.col() - 2;
+	int rank = 3;
+
+	if (where.level() == _tentative_shop_door.level())
+		rank = 1 + Point::gridDistance(where, _tentative_shop_door);
+
+	for (int y = y0; y <= y0 + 4; ++y)
+		for (int x = x0; x <= x0 + 4; ++x)
+			if (World::level().tile(Point(y,x)).symbol() == SHOP_TILE)
+				rank = min(rank, Point::gridDistance(Point(y,x), where));
+
+	return rank;
+}
+
+bool Shop::inBlockedDoorway() {
+	static unsigned char check[4] = { N, E, S, W };
+	int shopkeep = 0;
+	int wall = 0;
+	for (unsigned char *it = check; it != (check + 4); ++it) {
+		Point p = Saiph::position();
+		p.moveDirection(*it);
+
+		Tile& t = World::level().tile(p);
+		if (t.symbol() == HORIZONTAL_WALL || t.symbol() == VERTICAL_WALL)
+			wall++;
+
+		map<Point, Monster>::const_iterator m = World::level().monsters().find(p);
+		if (m != World::level().monsters().end() && m->second.shopkeeper())
+			shopkeep++;
+	}
+
+	return wall == 2 && shopkeep == 1;
+}
+
+void Shop::setShopping(bool newState) {
+	if (newState != _shopping) {
+		_shopping = newState;
+		ShoppingStatus e(newState);
+		EventBus::broadcast(static_cast<Event*>(&e));
+	}
+}
+
+void Shop::lastChance(action::Action* const plan) {
+	if (plan->id() == action::Move::ID && nearShop(Saiph::position()) == THRESHOLD) {
+		action::Move *m = static_cast<action::Move *>(plan);
+		Coordinate to = Saiph::position();
+		to.moveDirection(m->target().direction());
+		int nnear = nearShop(to);
+		if (nnear < THRESHOLD && !_shopping) {
+			Debug::custom(name()) << "We seem to be moving into a shop!" << endl;
+			setShopping(true);
+			dropPicks();
+		} else if (nnear > THRESHOLD && _shopping) {
+			Debug::custom(name()) << "We seem to be moving out of a shop!" << endl;
+			setShopping(false);
+			// Force analyzers to rerun so we can maybe get our pick back
+			// Maybe we should have a dedicated NoOp action for this
+			World::setAction(static_cast<action::Action*> (new action::Look(this)));
+		}
+	}
+}
+
+void Shop::dropPicks() {
+	bool have_pick = false;
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i)
+		if (data::Pickaxe::pickaxes().find(i->second.name()) != data::Pickaxe::pickaxes().end())
+			have_pick = true;
+	if (have_pick)
+		World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_SHOP_DROP_DIGGING_TOOL, false)));
+}
+
+void Shop::onEvent(event::Event * const event) {
+	if (event->id() == WantItems::ID) {
+		WantItems* e = static_cast<WantItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (data::Pickaxe::pickaxes().find(i->second.name()) == data::Pickaxe::pickaxes().end())
+				continue;
+
+			int near = nearShop(Saiph::position());
+
+			if (_shopping && near == THRESHOLD) {
+				// drop them all
+				// setting count to 0 prevents any other analyzer from overriding
+				i->second.count(0);
+			} else if (near == IN_SHOP) {
+				// a pick in a doorway is a problem and should be picked up even if shopping
+				i->second.want(i->second.count());
+			} else if (!_shopping) {
+				// XXX for debugging
+				i->second.want(i->second.count());
+			}
+		}
+	}
 }
 
 void Shop::analyze() {
+	int near_shop = nearShop(Saiph::position());
+
+	if (!(near_shop <= IN_SHOP) && inBlockedDoorway()) {
+		Debug::custom(name()) << "A shopkeeper seems to be blocking us, this must be a shop we don't know yet" << endl;
+		_tentative_shop_door = Saiph::position();
+		near_shop = IN_SHOP;
+	}
+
+	if (near_shop <= IN_SHOP)
+		setShopping(true);
+	if (near_shop > THRESHOLD)
+		setShopping(false);
+
+	if (_shopping && near_shop == THRESHOLD)
+		dropPicks();
+
 	/* FIXME:
 	 * this currently bugs. she's marking SHOP_TILE as FLOOR
 	 * and picks up items. why? */
