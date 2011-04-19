@@ -2,46 +2,95 @@
 
 #include <string>
 #include "Actions/Answer.h"
+#include "Actions/Call.h"
+#include "EventBus.h"
+#include "Events/ReceivedItems.h"
+#include "Events/WantItems.h"
 #include "Inventory.h"
+#include "Item.h"
 #include "Globals.h"
 #include "Saiph.h"
 #include "World.h"
 #include "Debug.h"
 
 using namespace analyzer;
+using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(0), zapping_wand(false), extrinsics(0) {
+Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), wished_for_charging(false), zapping_wand(false), extrinsics(0){
+		EventBus::registerEvent(ReceivedItems::ID, this);
 }
 
 /* methods */
 void Wish::parseMessages(const string& messages) {
-	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH, 0) != string::npos) {
-		extrinsics = currentExtrinsics();
-		string command = "blessed greased fixed +3 " + selectWish();
-		Debug::custom(name()) << "Wishing for " << command << endl;
-		command.append("\n");
-		World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
-		return;
-	} else if (zapping_wand && messages.find(MESSAGE_WHAT_TO_ZAP, 0) != string::npos) {
-		zapping_wand = false;
-		return;
+	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != string::npos) {
+		for (map<unsigned char, Item>::iterator l = Inventory::items().begin(); l != Inventory::items().end(); ++l) {
+			Debug::custom(name()) << "item name: " << l->second.name() << endl;
+			if (l->second.name().find("wand of wishing") != string::npos)
+				wand_of_wishing_key = l->first;
+		}
+		if (wand_of_wishing_key == ILLEGAL_ITEM) {
+			extrinsics = currentExtrinsics();
+			string command = "blessed greased fixed +3 " + selectWish();
+			Debug::custom(name()) << "Wishing for " << command << endl;
+			command.append("\n");
+			World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+			return;
+		} else {
+			if (charging_key == ILLEGAL_ITEM) {
+				string command = "3 blessed scrolls of charging\n";
+				Debug::custom(name()) << "Wishing for charging" << endl;
+				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+				wished_for_charging = true;
+			} else {
+				extrinsics = currentExtrinsics();
+				string command = "blessed greased fixed +3 " + selectWish();
+				Debug::custom(name()) << "Wishing for " << command << endl;
+				command.append("\n");
+				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+			}
+		}
 	}
 }
 
 void Wish::analyze() {
 	//if we have a wand of wishing, we need to decide if we should zap
-	//TODO: get charging and recharge it; currently it'll wrest it before charging
-	//since it has no idea of "this wand is empty"
-	//if (wand_of_wishing_key != 0) {
-		//if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
-			//zapping_wand = true;
-			//command = ZAP_WAND;
-			//priority = PRIORITY_WISH_ZAP_WAND;
-		//}
-	//}
+	if (wand_of_wishing_key != ILLEGAL_ITEM) {
+		if (Inventory::itemAtKey(wand_of_wishing_key).name().find("of wishing named EMPTY") != string::npos) {
+			//if (charging_key != ILLEGAL_ITEM)
+				// TODO: read charging, charge wand
+			//else
+				// TODO: wrest
+		} else {
+			currentExtrinsics();
+			if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
+				zapping_wand = true;
+			}
+		}
+	}
 }
+
+void Wish::onEvent(event::Event * const event) {
+	if (event->id() == ReceivedItems::ID) {
+		if (!wished_for_charging)
+			return; // we didn't wish for charging, so who cares
+		ReceivedItems* e = static_cast<ReceivedItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			charging_key = i->first;
+			World::queueAction(static_cast<action::Action*> (new action::Call(this, charging_key, "scroll of charging")));
+			break;
+		}
+		wished_for_charging = false;
+	} else if (event->id() == WantItems::ID) {
+		WantItems* e = static_cast<WantItems*> (event);
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (i->second.name().find("of charging") != string::npos)
+				i->second.want(i->second.count());
+			}
+	}
+}
+
 
 string Wish::selectWish() {
 	//if (wish_from_wand && !have_charging)

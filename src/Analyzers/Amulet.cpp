@@ -56,13 +56,13 @@ void Amulet::onEvent(Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.beatitude() != BEATITUDE_UNKNOWN || data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
-				continue; // known beatitude or not an amulet
+			if (data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
+				continue; // not an amulet
 			else if (i->second.beatitude() == BEATITUDE_UNKNOWN && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
 				Beatify b(i->first, 175);
 				EventBus::broadcast(&b);
-			} else if (i->second.beatitude() != CURSED && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
-				if (i->second.name().find("strangulation") != string::npos && i->second.name().find("restful") != string::npos)
+			} else if ((i->second.beatitude() != CURSED) && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+				if (i->second.name().find("strangulation") == string::npos && i->second.name().find("restful") == string::npos)
 					_amulet_key = i->first;
 			}
 		}

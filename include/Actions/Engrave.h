@@ -3,10 +3,13 @@
 
 #include "Saiph.h"
 #include "World.h"
+#include "Debug.h"
+#include "Inventory.h"
 #include "Actions/Action.h"
 
 // TODO: (can't engrave)
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
+#define MESSAGE_WISHING_NO_CHARGES "  with a wand of wishing.  "
 
 namespace action {
 
@@ -53,9 +56,21 @@ namespace action {
 				_sequence = 1;
 			else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos)
 				_sequence = 2;
-			else if (_sequence < 3)
+			else if (messages.find(MESSAGE_ENGRAVE_WHAT) != std::string::npos)
 				_sequence = 3;
+			else if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != std::string::npos) {
+				// oh boy!
+				Item& wandWishing = Inventory::items()[_item.command()[0]];
+				wandWishing.name("wand of wishing"); // update name
+				_sequence = 4;
+			} else if (messages.find(MESSAGE_WISHING_NO_CHARGES) != std::string::npos) {
+				Item& wandWishing = Inventory::items()[_item.command()[0]];
+				wandWishing.name("wand of wishing named EMPTY"); // update name
+				_sequence = 4;
+			}
 			else if (_sequence == 3)
+				_sequence = 4;
+			else
 				_sequence = 4;
 		}
 

@@ -351,6 +351,7 @@
 #define MESSAGE_ENGRAVE_DUST_ADD "  What do you want to add to the writing in the dust here? "
 #define MESSAGE_ENGRAVE_FROST "  What do you want to write in the frost here? "
 #define MESSAGE_ENGRAVE_FROST_ADD "  What do you want to add to the writing in the frost here? "
+#define MESSAGE_ENGRAVE_WHAT "  What do you want to  "
 #define MESSAGE_ENGRAVE_WITH "  What do you want to write with? "
 #define MESSAGE_ENTER_GEHENNOM "  Are you sure you want to enter? [yn] (n)  "
 #define MESSAGE_FALL_INTO_PIT "  You fall into a pit!  "

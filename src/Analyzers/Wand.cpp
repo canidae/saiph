@@ -7,6 +7,7 @@
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Call.h"
+#include "Actions/Answer.h"
 #include "Actions/Engrave.h"
 #include "Data/Item.h"
 #include "Data/Wand.h"
@@ -61,6 +62,11 @@ void Wand::onEvent(Event * const event) {
 }
 
 void Wand::actionCompleted(const std::string& messages) {
+	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != string::npos) {
+		// nice, we got a wish (from a wand as well)!
+		_engrave_test_wand_key = ILLEGAL_ITEM;
+		return;
+	}
 	if (_engrave_test_wand_key != 0 && World::lastActionID() == action::Engrave::ID) {
 		// name wand if we can identify it
 		/* TODO: now she'll just discard all wands she can't identify directly, need a better handling */

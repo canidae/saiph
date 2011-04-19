@@ -6,8 +6,8 @@
 #include "Analyzers/Analyzer.h"
 
 /* priorities */
-#define PRIORITY_AMULET_LOOT 200
-#define PRIORITY_AMULET_WEAR 200
+#define PRIORITY_AMULET_LOOT 400
+#define PRIORITY_AMULET_WEAR 400
 #define PRIORITY_AMULET_REMOVE_HARM 925
 /* bad amulet messages */
 #define STRANGULATION_5TTL "  It constricts your throat!  "

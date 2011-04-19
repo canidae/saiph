@@ -20,6 +20,7 @@
 #include "Analyzers/Vault.h"
 #include "Analyzers/Wand.h"
 #include "Analyzers/Weapon.h"
+#include "Analyzers/Wish.h"
 #include "World.h"
 
 using namespace analyzer;
@@ -57,6 +58,7 @@ void Analyzer::init() {
 	_analyzers.push_back(new Vault());
 	_analyzers.push_back(new Wand());
 	_analyzers.push_back(new Weapon());
+	_analyzers.push_back(new Wish());
 
 	for (std::vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a)
 		World::registerAnalyzer(*a);

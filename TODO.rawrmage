@@ -1,3 +1,8 @@
 TODO list for rawrmage
- - Wand Analyzer is overrunning wishing, see local ~/wishing.log
+ - Amulet needs to consider priorities of amulets to wear.
+	- LS > everything (if reflection from other source)
+	- Refl > everything (if no other reflection)
  - Amulet is taking amulets from shops, on SHOP_TILE!
+ - Finish WoW, charging, wresting
+ - Read action, Wrest action(?)
+ - Shopping!
