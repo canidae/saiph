@@ -10,6 +10,10 @@ namespace event {
 	class Event;
 }
 
+namespace action {
+	class Action;
+}
+
 namespace analyzer {
 
 	class Analyzer {
@@ -22,6 +26,7 @@ namespace analyzer {
 		const std::string& name();
 		virtual void parseMessages(const std::string&);
 		virtual void analyze();
+		virtual void lastChance(action::Action * const);
 		virtual void onEvent(event::Event * const);
 		virtual void actionCompleted(const std::string& messages);
 		virtual void actionFailed();
