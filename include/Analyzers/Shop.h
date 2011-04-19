@@ -34,7 +34,7 @@ namespace analyzer {
 	private:
 		bool _shopping;
 		Coordinate _tentative_shop_door;
-
+		int payed;
 		bool inBlockedDoorway();
 		int nearShop(const Coordinate&);
 		void dropPicks();

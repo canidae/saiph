@@ -9,6 +9,7 @@
 #include "EventBus.h"
 #include "Events/ReceivedItems.h"
 #include "Events/ShoppingStatus.h"
+#include "Actions/Pay.h"
 #include "Actions/Look.h"
 #include "Actions/Move.h"
 #include "Actions/Drop.h"
