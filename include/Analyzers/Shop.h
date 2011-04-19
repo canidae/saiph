@@ -28,10 +28,6 @@ namespace analyzer {
 		void analyze();
 		void lastChance(action::Action *const);
 		void parseMessages(const std::string&);
-<<<<<<< HEAD
-	private:
-		int payed;
-=======
 
 		void onEvent(event::Event * const event);
 
@@ -43,7 +39,6 @@ namespace analyzer {
 		int nearShop(const Coordinate&);
 		void dropPicks();
 		void setShopping(bool);
->>>>>>> 47177e70fa34e2dfee446dd55fa5f96e4db244c1
 	};
 }
 #endif
