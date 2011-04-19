@@ -221,6 +221,10 @@ int Level::depth() const {
 	return _depth;
 }
 
+int Level::identifier() const {
+	return _level;
+}
+
 const string& Level::name() const {
 	return _name;
 }
