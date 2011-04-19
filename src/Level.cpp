@@ -300,6 +300,10 @@ void Level::analyze() {
 			Debug::notice() << "Found the rogue level: " << Saiph::position() << endl;
 			branch(BRANCH_ROGUE);
 		}
+		if (name().find("Home") != string::npos) {
+			Debug::notice() << "Found a quest level: " << Saiph::position() << endl;
+			branch(BRANCH_QUEST);
+		}
 		_new_level = false;
 	}
 	/* branches we won't immediately recognize */

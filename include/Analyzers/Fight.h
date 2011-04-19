@@ -2,6 +2,7 @@
 #define ANALYZER_FIGHT_H
 
 #include <set>
+#include <map>
 #include <string>
 #include "Analyzers/Analyzer.h"
 
@@ -11,6 +12,10 @@
 #define PRIORITY_FIGHT_MOVE_MIN 150
 #define PRIORITY_FIGHT_THROW_MAX 300
 #define PRIORITY_FIGHT_THROW_MIN 200
+#define PRIORITY_FIGHT_POSITION_BOSS 250
+#define PRIORITY_FIGHT_POSITION_BOSS_LURE 450
+
+#define BOSS_PATIENCE 50
 
 namespace event {
 	class Event;
@@ -29,6 +34,9 @@ namespace analyzer {
 
 	private:
 		std::set<unsigned char> _projectile_slots; // slots where we got weapons we should throw
+		std::map<std::string, int> _boss_last_seen;
+		int _boss_waiting_since;
+		int _boss_waiting_level;
 	};
 }
 #endif

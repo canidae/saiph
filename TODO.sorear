@@ -1,6 +1,6 @@
 Many of these are half-baked ideas, to be investigated as much as implemented.
 
-* Generalize pathfinding to generate arbitrary commands, not just directions.  As a start it should be possible for saiph to path through floating eye by Elberething them away (to prevent oscillations, for a start).
+* Generalize pathfinding to generate arbitrary commands, not just directions.
 
   * Another good idea, tying in to item actions, is a tactical analyzer (to borrow a 523 term) that paths across water by fetching levitation boots.  I think the best way would be to accumulate water tiles in a queue and process them all (with triangle-inequality estimated distances) when a levitation item is determined to be reachable.
 
@@ -48,12 +48,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Quest analyzer: should path to leader if "Home 1" known and xl14, should hoard qarts and Bell
 
-* Teach Fight to track covetous mobs
-  int _covetous_timeout; // if 50 turns on one level without seeing a single covetous mob, assume they all went upstairs
-  std::map<std::string, int> _covetous_on_level; // last seen location of each boss
-  // will have issues with Double Trouble and chameleon master liches, but fine for now
-  // if there are known covetors, Fight will path to the > on the level they are on, then go down once in melee range
-
 * experiment with allowing inlining for trivial accessors
 
 * sorph ate a mimic in a shop, probably because it was mimicing stairs down and overwrote SHOP_TILE
@@ -76,3 +70,10 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * saiph shouldn't rest off blindness when she has a unihorn
 * don't try to get Excal if we already have it
+
+* Quest fiddly bits:
+  * Explore should know not to explore Q1 until xl14
+  * Explore should not go down from Q1 until quest_accepted
+  * Quest analyzer needs to path to chest if xl14 & !quest_accepted
+  * Quest analyzer should pick up qarts
+  * Add a DestroyBoulders analysis

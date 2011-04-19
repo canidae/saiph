@@ -9,6 +9,7 @@
 #include "Actions/Fight.h"
 #include "Actions/Move.h"
 #include "Actions/Throw.h"
+#include "Actions/Search.h"
 #include "Data/Dagger.h"
 #include "Data/Dart.h"
 #include "Data/Monster.h"
@@ -34,6 +35,91 @@ void Fight::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
 		return;
 	}
+
+	bool bosses_adjacent = false;
+
+	if (Saiph::position().level() != _boss_waiting_level) {
+		_boss_waiting_level = Saiph::position().level();
+		_boss_waiting_since = World::turn();
+	}
+
+	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+		if (Point::gridDistance(m->first, Saiph::position()) > 1)
+			continue;
+		if (m->second.data() == NULL)
+			continue;
+		if ((m->second.data()->m3() & M3_COVETOUS) == 0)
+			continue;
+
+		Debug::custom(name()) << "Moving " << m->second.data()->name() << " to " << World::level().name() << endl;
+		_boss_last_seen[m->second.data()->name()] = Saiph::position().level();
+		_boss_waiting_since = World::turn();
+		bosses_adjacent = true;
+	}
+
+	if ((World::turn() - _boss_waiting_since) > BOSS_PATIENCE) {
+		for (map<string, int>::iterator m = _boss_last_seen.begin(); m != _boss_last_seen.end(); ) {
+			if (m->second != Saiph::position().level()) {
+				++m;
+				continue;
+			}
+			const vector<Level>& levels = World::levels();
+			int tgt = UNKNOWN_SYMBOL_VALUE;
+			Debug::custom(name()) << "Current level = " << m->second << " = " << World::level().depth() << "," << World::level().branch() << endl;
+			for (unsigned i = 0; i < levels.size(); ++i) {
+				Debug::custom(name()) << "Level " << i << " = " << levels[i].depth() << "," << levels[i].branch() << endl;
+				if (levels[i].branch() == World::level().branch() && levels[i].depth() == (World::level().depth() - 1)) {
+					tgt = i;
+					break;
+				}
+			}
+			Debug::custom(name()) << m->first << " has not been seen in " << BOSS_PATIENCE << " turns; moving it to " << tgt << endl;
+			if (tgt == UNKNOWN_SYMBOL_VALUE)
+				_boss_last_seen.erase(m++);
+			else {
+				m->second = tgt;
+				++m;
+			}
+		}
+	}
+
+	vector<Coordinate> interesting_boss_stairs;
+	for (map<string, int>::iterator b = _boss_last_seen.begin(); b != _boss_last_seen.end(); ++b) {
+		Level& lv = World::level(b->second);
+		for (map<Point,int>::const_iterator m = lv.symbols(STAIRS_DOWN).begin(); m != lv.symbols(STAIRS_DOWN).end(); ++m)
+			interesting_boss_stairs.push_back(Coordinate(b->second, m->first));
+		for (map<Point,int>::const_iterator m = lv.symbols(STAIRS_UP).begin(); m != lv.symbols(STAIRS_UP).end(); ++m)
+			interesting_boss_stairs.push_back(Coordinate(b->second, m->first));
+	}
+
+	if (interesting_boss_stairs.size()) {
+		Tile best_tile;
+		for (vector<Coordinate>::iterator it = interesting_boss_stairs.begin(); it != interesting_boss_stairs.end(); ++it) {
+			Tile tn = World::shortestPath(*it);
+			if (tn.cost() < best_tile.cost()) best_tile = tn;
+		}
+		if (best_tile.cost() < UNPASSABLE) {
+			if (best_tile.direction() != NOWHERE) {
+				Debug::custom(name()) << "Going to fight a boss at " << best_tile.coordinate() << endl;
+				World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, PRIORITY_FIGHT_POSITION_BOSS)));
+			} else if (best_tile.symbol() == STAIRS_UP) {
+				// Hah! We're on the <, you're done for.  Just wait for you to come...
+				Debug::custom(name()) << "Waiting to kill a boss at " << best_tile.coordinate() << endl;
+				World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_FIGHT_POSITION_BOSS)));
+			} else {
+				// We want to fight the boss on the stairs on the next level down
+				if (bosses_adjacent) {
+					Debug::custom(name()) << "Luring a boss downstairs at " << best_tile.coordinate() << endl;
+					best_tile.direction(DOWN);
+					World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, PRIORITY_FIGHT_POSITION_BOSS_LURE)));
+				} else {
+					Debug::custom(name()) << "Waiting to lure a boss downstairs at " << best_tile.coordinate() << endl;
+					World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_FIGHT_POSITION_BOSS)));
+				}
+			}
+		}
+	}
+
 	/* fight monsters */
 	int attack_score = INT_MIN;
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
@@ -56,7 +142,7 @@ void Fight::analyze() {
 			 * stuff, if they use wands, etc */
 			attack_score = m->second.data()->saiphDifficulty();
 		}
-		int distance = max(abs(m->first.row() - Saiph::position().row()), abs(m->first.col() - Saiph::position().col()));
+		int distance = Point::gridDistance(m->first, Saiph::position());
 		bool floating_eye = (m->second.symbol() == S_EYE && m->second.color() == BLUE);
 		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength() / 2 && Saiph::encumbrance() < OVERTAXED) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
