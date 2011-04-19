@@ -39,7 +39,7 @@ namespace action {
 		virtual void update(const std::string& messages) {
 			if (messages.find(MESSAGE_WHAT_TO_APPLY) != std::string::npos) {
 				_sequence = 1;
-			} else if (messages.find(MESSAGE_IN_WHAT_DIRECTION) != std::string::npos) {
+			} else if (messages.find(MESSAGE_DIG_DIRECTION) != std::string::npos) {
 				_sequence = 2;
 			} else if (_sequence == 2) {
 				/* mark inventory dirty if update_inventory is true */

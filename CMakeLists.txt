@@ -72,6 +72,7 @@ set(HEADER_FILES
 	include/Analyzers/Analyzer.h
 	include/Analyzers/Armor.h
 	include/Analyzers/Beatitude.h
+	include/Analyzers/Boulder.h
 #	include/Analyzers/Blind.h
 #	include/Analyzers/Dig.h
 	include/Analyzers/DiggingTool.h
@@ -193,6 +194,7 @@ set(SOURCE_FILES
 	src/Analyzers/Analyzer.cpp
 	src/Analyzers/Armor.cpp
 	src/Analyzers/Beatitude.cpp
+	src/Analyzers/Boulder.cpp
 #	src/Analyzers/Blind.cpp
 #	src/Analyzers/Dig.cpp
 	src/Analyzers/DiggingTool.cpp

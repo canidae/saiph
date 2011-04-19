@@ -3,6 +3,7 @@
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
+#include "Analyzers/Boulder.h"
 #include "Analyzers/DiggingTool.h"
 #include "Analyzers/Donate.h"
 #include "Analyzers/Door.h"
@@ -42,6 +43,7 @@ void Analyzer::init() {
 	_analyzers.push_back(new Amulet());
 	_analyzers.push_back(new Armor());
 	_analyzers.push_back(new Beatitude());
+	_analyzers.push_back(new Boulder());
 	_analyzers.push_back(new Donate());
 	_analyzers.push_back(new DiggingTool());
 	_analyzers.push_back(new Door());
