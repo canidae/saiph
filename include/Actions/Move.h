@@ -42,6 +42,10 @@ namespace action {
 			return ID;
 		}
 
+		Tile& target() {
+			return _target;
+		}
+
 		virtual const Command& command() {
 			switch (_sequence) {
 			case 0:
