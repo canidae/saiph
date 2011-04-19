@@ -1,6 +1,6 @@
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-18 13:12:13.000000000 -0700
-@@ -477,6 +477,233 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-19 08:38:24.000000000 -0700
+@@ -477,6 +477,239 @@
  }
  
  void
@@ -35,6 +35,12 @@
 +        } else if (!strncmp(lbuf, "level ", 6)) {
 +            sscanf(lbuf, "level %d", &i);
 +            while (u.ulevel < i) pluslvl(FALSE);
++        } else if (!strncmp(lbuf, "blind ", 6)) {
++            sscanf(lbuf, "blind %d", &i);
++            make_blinded(i, FALSE);
++        } else if (!strncmp(lbuf, "hallu ", 6)) {
++            sscanf(lbuf, "hallu %d", &i);
++            make_hallucinated(i, FALSE, 0);
 +        } else if (!strncmp(lbuf, "align ", 6)) {
 +            sscanf(lbuf, "align %d", &i);
 +            while (i > ALIGNLIM) moves++;
@@ -155,7 +161,7 @@
 +            lbuf[strlen(lbuf)-1] = 0;
 +            sscanf(lbuf, "mon %d %d %n", &a[0], &a[1], &i);
 +            a[2] = a[3] = a[4] = 0;
-+            if (!strncmp(lbuf+i, "peaceful ", 12)) { i += 12; a[2] = 1; }
++            if (!strncmp(lbuf+i, "peaceful ", 9)) { i += 9; a[2] = 1; }
 +            if (!strncmp(lbuf+i, "asleep ", 7)) { i += 7; a[3] = 1; }
 +            if ((p = strchr(lbuf+i, '|'))) { *(p++) = 0; }
 +
@@ -234,7 +240,7 @@
  newgame()
  {
  	int i;
-@@ -514,6 +741,7 @@
+@@ -514,6 +747,7 @@
  
  	mklev();
  	u_on_upstairs();

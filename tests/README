@@ -98,12 +98,16 @@ align NUMBER
 
 Increases alignment to NUMBER.
 
+blind TURNS
+
 goto NAME
 
 Sends player to NAME, which should be a defined special level without
 the .lev extension and variant number (such as soko4, oracle, etc).
 Also supported are special cases invocation, tower (base of Vlad),
 and portal (level going to quest).
+
+hallu TURNS
 
 inventory
 ITEM
