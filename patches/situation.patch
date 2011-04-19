@@ -1,18 +1,19 @@
-diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-11 20:36:20.000000000 -0700
-@@ -477,6 +477,101 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-19 08:38:24.000000000 -0700
+@@ -477,6 +477,239 @@
  }
  
  void
 +read_situation()
 +{
 +    FILE *fp;
-+    char *fn = getenv("NHSITUATIONFILE");
++    char *fn = nh_getenv("NHSITUATIONFILE");
 +    struct obj *otmp;
++    struct monst *mtmp;
 +    int a[10];
 +    int i;
 +    coord c1, c2;
++    char *p;
 +
 +    if (!fn) return;
 +    if (!(fp = fopen(fn, "r"))) {
@@ -31,24 +32,112 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 +            for (i = 0; i < 6; i++)
 +                ABASE(i) = AMAX(i) = a[i];
 +            // TODO: stats max, temp setting
++        } else if (!strncmp(lbuf, "level ", 6)) {
++            sscanf(lbuf, "level %d", &i);
++            while (u.ulevel < i) pluslvl(FALSE);
++        } else if (!strncmp(lbuf, "blind ", 6)) {
++            sscanf(lbuf, "blind %d", &i);
++            make_blinded(i, FALSE);
++        } else if (!strncmp(lbuf, "hallu ", 6)) {
++            sscanf(lbuf, "hallu %d", &i);
++            make_hallucinated(i, FALSE, 0);
++        } else if (!strncmp(lbuf, "align ", 6)) {
++            sscanf(lbuf, "align %d", &i);
++            while (i > ALIGNLIM) moves++;
++            u.ualign.record = i;
++        } else if (!strncmp(lbuf, "goto ", 5)) {
++            lbuf[strlen(lbuf)-1] = 0;
++            s_level *p;
++            d_level go;
++            if (!strcmp(lbuf+5, "invocation")) {
++                go = sanctum_level;
++                go.dlevel--;
++            } else if (!strcmp(lbuf+5, "portal")) {
++                go = portal_level;
++            } else if (!strcmp(lbuf+5, "tower")) {
++                go.dnum = tower_dnum;
++                go.dlevel = 3;
++            } else {
++                for (p = sp_levchn; p; p = p->next)
++                    if (!strcmp(lbuf+5, p->proto)) { go = p->dlevel; break; }
++                if (!p) {
++                    pline("Unknown level %s", lbuf);
++                    continue;
++                }
++            }
++            boolean port = Is_knox(&go) || In_endgame(&go) || Is_qstart(&go);
++            goto_level(&go, !port, FALSE, port);
++        } else if (!strcmp(lbuf, "seal\n")) {
++            struct trap *t;
++            for (t = ftrap; t; t = t->ntrap)
++                if (t->ttyp == MAGIC_PORTAL) break;
++            if (t && !Is_portal_level(&u.uz)) {
++                u.ux = t->tx;
++                u.uy = t->ty;
++                deltrap(t);
++            }
++            levl[u.ux][u.uy].typ = ROOM;
 +        } else if (!strcmp(lbuf, "inventory\n")) {
++            while (invent) useupall(invent);
++            u.ugold = 0;
++            /* XXX Should we erase the player's item knowledge here? */
 +            while (fgets(lbuf, 127, fp)) {
 +                if (!strncmp(lbuf, ".\n", 2)) break;
 +                lbuf[strlen(lbuf)-1] = 0;
-+                otmp = readobjnam(lbuf, (struct obj *)0, FALSE);
-+                if (otmp && otmp != &zeroobj)
-+                    addinv(otmp);
++                p = lbuf; a[0] = a[1] = 0;
++                if (!strncmp(p, "identified ", 11)) { p += 11; a[0] = 1; }
++                if (!strncmp(p, "worn ", 5)) { p += 5; a[1] = 1; }
++                otmp = readobjnam(p, (struct obj *)0, FALSE);
++                if (otmp && otmp != &zeroobj) {
++                    otmp = addinv(otmp);
++                    if (a[0]) fully_identify_obj(otmp);
++
++                    if (a[1] && otmp->oclass == ARMOR_CLASS) {
++                        if (is_shield(otmp) && !uarms) {
++                            setworn(otmp, W_ARMS);
++                            if (uswapwep) setuswapwep((struct obj *) 0);
++                        } else if (is_helmet(otmp) && !uarmh)
++                            setworn(otmp, W_ARMH);
++                        else if (is_gloves(otmp) && !uarmg)
++                            setworn(otmp, W_ARMG);
++#ifdef TOURIST
++                        else if (is_shirt(otmp) && !uarmu)
++                            setworn(otmp, W_ARMU);
++#endif
++                        else if (is_cloak(otmp) && !uarmc)
++                            setworn(otmp, W_ARMC);
++                        else if (is_boots(otmp) && !uarmf)
++                            setworn(otmp, W_ARMF);
++                        else if (is_suit(otmp) && !uarm)
++                            setworn(otmp, W_ARM);
++                    }
++
++                    if (a[1] && (otmp->oclass == WEAPON_CLASS || is_weptool(otmp) ||
++                                otmp->otyp == TIN_OPENER || otmp->otyp == FLINT || otmp->otyp == ROCK)) {
++                        if (is_ammo(otmp) || is_missile(otmp)) {
++                            if (!uquiver) setuqwep(otmp);
++                        } else if (!uwep) setuwep(otmp);
++                        else if (!uswapwep) setuswapwep(otmp);
++                    }
++                }
 +            }
 +        } else if (!strcmp(lbuf, "map\n")) {
 +            extern void clear_level_structures();
 +            clear_level_structures();
++        } else if (!strncmp(lbuf, "picture ", 8)) {
++            sscanf(lbuf, "picture %d %d", &a[0], &a[1]);
 +        } else if (!strncmp(lbuf, "at ", 3)) {
 +            sscanf(lbuf, "at %d %d", &a[0], &a[1]);
 +            u.ux = a[0]; u.uy = a[1];
 +        } else if (!strncmp(lbuf, "room ", 5)) {
-+            sscanf(lbuf, "room %d %d %d %d %d %d %d %d",
-+                    &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6], &a[7]);
-+            create_room(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
++            sscanf(lbuf, "room %d %d %d %d %d %d",
++                    &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
++            add_room(a[0], a[1], a[2], a[3], a[4], a[5], FALSE);
++        } else if (!strncmp(lbuf, "door ", 5)) {
++            sscanf(lbuf, "door %d %d %d %d", &a[0], &a[1], &a[2], &a[3]);
++            levl[a[0]][a[1]].doormask = a[2];
++            levl[a[0]][a[1]].typ = a[3] ? SDOOR : DOOR;
++            add_door(a[0], a[1], &rooms[nroom-1]);
 +        } else if (!strncmp(lbuf, "corr ", 5)) {
 +            sscanf(lbuf, "corr %d %d %d %d %d %d %d",
 +                    &a[0], &a[1], &a[2], &a[3], &a[4], &a[5], &a[6]);
@@ -66,6 +155,50 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 +                pline("Invalid object %s", lbuf);
 +            else
 +                place_object(otmp, a[0], a[1]);
++        } else if (!strncmp(lbuf, "mon ", 4)) {
++            // unhandled wrt sp_lev: alignment, name, mplayers
++            // need x,y,id, peaceful,alseep, appear,appear_as
++            lbuf[strlen(lbuf)-1] = 0;
++            sscanf(lbuf, "mon %d %d %n", &a[0], &a[1], &i);
++            a[2] = a[3] = a[4] = 0;
++            if (!strncmp(lbuf+i, "peaceful ", 9)) { i += 9; a[2] = 1; }
++            if (!strncmp(lbuf+i, "asleep ", 7)) { i += 7; a[3] = 1; }
++            if ((p = strchr(lbuf+i, '|'))) { *(p++) = 0; }
++
++            for (a[5] = 0; a[5] < NUMMONS; a[5]++)
++                if (!strcmp(mons[a[5]].mname, lbuf+i)) break;
++            if (a[5] == NUMMONS) {
++                pline("Invalid mob %s", lbuf);
++                continue;
++            }
++            mtmp = makemon(&mons[a[5]], a[0], a[1], NO_MM_FLAGS);
++            mtmp->mpeaceful = a[2] ? 1 : 0;
++            mtmp->msleeping = a[3] ? 1 : 0;
++            if (p) {
++                for (i = 0; i < NUM_OBJECTS; i++)
++                    if (OBJ_NAME(objects[i]) && !strcmp(OBJ_NAME(objects[i]),p))
++                        break;
++                if (i < NUM_OBJECTS) {
++                    mtmp->m_ap_type = M_AP_OBJECT;
++                    mtmp->mappearance = i;
++                    p = 0;
++                }
++            }
++            if (p) {
++                for (i = 0; i < MAXPCHARS; i++)
++                    if (!strcmp(defsyms[i].explanation,p)) break;
++                if (i < MAXPCHARS) {
++                    mtmp->m_ap_type = M_AP_FURNITURE;
++                    mtmp->mappearance = i;
++                    p = 0;
++                }
++            }
++            if (p) pline("Invalid appearance %s", p);
++            set_malign(mtmp);
++        } else if (!strncmp(lbuf, "engr ", 5)) {
++            lbuf[strlen(lbuf)-1] = 0;
++            sscanf(lbuf, "engr %d %d %d %n", &a[0], &a[1], &a[2], &i);
++            make_engr_at(a[0], a[1], lbuf+i, 0, a[2]);
 +        } else if (!strcmp(lbuf, "vault\n")) {
 +            extern xchar vault_x, vault_y;
 +            extern void makevtele();
@@ -85,6 +218,10 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
 +                for (croom = &rooms[0]; croom != &rooms[nroom]; croom++)
 +                    topologize(croom);
 +            }
++            for (croom = &rooms[0]; croom != &rooms[nroom]; croom++)
++                if (croom->rtype >= SHOPBASE)
++                    stock_room(croom->rtype - SHOPBASE, croom);
++                topologize(croom);
 +            set_wall_state();
 +        } else {
 +            pline("Unknown situation record %s", lbuf);
@@ -103,7 +240,7 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
  newgame()
  {
  	int i;
-@@ -514,6 +609,7 @@
+@@ -514,6 +747,7 @@
  
  	mklev();
  	u_on_upstairs();
@@ -111,21 +248,6 @@ diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
  	vision_reset();		/* set up internals for level (after mklev) */
  	check_special_room(FALSE);
  
-diff -u nethack-3.4.3-orig/src/Makefile nethack-3.4.3/src/Makefile
---- nethack-3.4.3-orig/src/Makefile	2011-04-11 11:00:17.000000000 -0700
-+++ nethack-3.4.3/src/Makefile	2011-04-11 11:22:45.000000000 -0700
-@@ -230,8 +230,8 @@
- # WINTTYLIB = -ltermcap
- # WINTTYLIB = -lcurses
- # WINTTYLIB = -lcurses16
--# WINTTYLIB = -lncurses
--WINTTYLIB = -ltermlib
-+WINTTYLIB = -lncurses
-+# WINTTYLIB = -ltermlib
- #
- # libraries for X11
- # If USE_XPM is defined in config.h, you will also need -lXpm here.
-diff -u -x '*.o' nethack-3.4.3-orig/src/mklev.c nethack-3.4.3/src/mklev.c
 --- nethack-3.4.3-orig/src/mklev.c	2003-12-07 15:39:13.000000000 -0800
 +++ nethack-3.4.3/src/mklev.c	2011-04-11 19:38:57.000000000 -0700
 @@ -17,6 +17,13 @@

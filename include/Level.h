@@ -33,6 +33,7 @@ public:
 	const std::map<Point, Stash>& stashes() const;
 	const std::map<Point, int>& symbols(unsigned char symbol) const;
 	void analyze();
+	int identifier() const;
 	void parseMessages(const std::string& messages);
 	void setDirtyStash(const Point& point);
 	void setDungeonSymbol(const Point& point, unsigned char symbol);

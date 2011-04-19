@@ -7,6 +7,7 @@
 #include "Item.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Data/Monster.h"
 #include "Events/ItemsOnGround.h"
 #include "Events/ReceivedItems.h"
 #include "Events/StashChanged.h"
@@ -19,7 +20,7 @@
 #define COST_ALTAR 4 // better not fight on altars
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
-#define COST_MONSTER 64 // try not to path through monsters
+#define COST_MONSTER 128 // try not to path through monsters
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 /* max moves a monster can do before we think it's a new monster */
@@ -219,6 +220,10 @@ int Level::depth() const {
 	return _depth;
 }
 
+int Level::identifier() const {
+	return _level;
+}
+
 const string& Level::name() const {
 	return _name;
 }
@@ -293,6 +298,10 @@ void Level::analyze() {
 			/* rogue level, set branch */
 			Debug::notice() << "Found the rogue level: " << Saiph::position() << endl;
 			branch(BRANCH_ROGUE);
+		}
+		if (name().find("Home") != string::npos) {
+			Debug::notice() << "Found a quest level: " << Saiph::position() << endl;
+			branch(BRANCH_QUEST);
 		}
 		_new_level = false;
 	}

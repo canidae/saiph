@@ -32,6 +32,9 @@ void Explore::analyze() {
 	// we need to analyze the current level unconditionally, in case we hit a trap door or something
 	_explore_levels[Saiph::position().level()] = analyzeLevel();
 
+	if (World::currentPriority() > PRIORITY_EXPLORE)
+		return;
+
 	if (Saiph::blind() || Saiph::confused() || Saiph::hallucinating() || Saiph::stunned())
 		return; // don't explore when we're blind/confused/hallucinating/stunned
 

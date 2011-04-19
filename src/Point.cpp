@@ -1,6 +1,7 @@
 #include "Point.h"
 
 #include "Globals.h"
+#include <cstdlib>
 
 using namespace std;
 
@@ -104,6 +105,10 @@ Point& Point::moveSouthwest() {
 Point& Point::moveWest() {
 	--_col;
 	return *this;
+}
+
+int Point::gridDistance(const Point& p1, const Point& p2) {
+	return max(abs(p1.row() - p2.row()), abs(p1.col() - p2.col()));
 }
 
 /* operator overloading */

@@ -329,7 +329,7 @@ Tile World::shortestPath(const Coordinate& target) {
 	level_added[Saiph::position().level()] = true;
 	Tile level_tile[_levels.size()];
 	level_tile[Saiph::position().level()] = shortestPath(Saiph::position());
-	Debug::pathing() << "Trying to find path to " << target << endl;
+	//Debug::pathing() << "Trying to find path to " << target << endl;
 	while (++pivot < level_count) {
 		/* check if target is on level */
 		if (level_queue[pivot] == target.level()) {
@@ -352,7 +352,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::pathing() << "Following upstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			//Debug::pathing() << "Following upstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where these stairs lead, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -376,7 +376,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::pathing() << "Following downstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			//Debug::pathing() << "Following downstairs on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where these stairs lead, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -400,7 +400,7 @@ Tile World::shortestPath(const Coordinate& target) {
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
-			Debug::info() << "Following magic portal on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
+			//Debug::info() << "Following magic portal on " << tile.coordinate() << " (" << _levels[level_queue[pivot]].name() << ") leading to level " << s->second << " (" << _levels[s->second].name() << ")" << endl;
 			/* we know where this portal leads, add the level to the queue */
 			level_added[s->second] = true;
 			level_queue[level_count++] = s->second;
@@ -760,25 +760,33 @@ void World::detectPosition() {
 	// there used to be code here to take advantage of such prior knowledge, but coupling level linking and level identification in that way caused horrible failures in some cases
 	// for instance, stepping off a stair onto a levelporter
 
-	for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
-		/* check if level got walls on same locations.
-		 * since walls can disappear, we'll allow a 80% match */
-		int total = 0;
-		int matched = 0;
-		for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
-			if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
-				++matched;
-			++total;
-		}
-		for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
-			if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
-				++matched;
-			++total;
-		}
-		if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
-			found = *lm;
-			Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
-			break;
+	// Quest levels are in one-to-one correspondance with names, and are often sufficiently odd as to confuse the wall matcher
+	if (std::string(_levelname).find("Home") != string::npos) {
+		vector<int> &levels = _levelmap[_levelname];
+		if (levels.size())
+			found = levels[0];
+	}
+	if (found == UNKNOWN_SYMBOL_VALUE) {
+		for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {
+			/* check if level got walls on same locations.
+			 * since walls can disappear, we'll allow a 80% match */
+			int total = 0;
+			int matched = 0;
+			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) VERTICAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) VERTICAL_WALL).end(); ++s) {
+				if (_view[s->first.row()][s->first.col()] == VERTICAL_WALL)
+					++matched;
+				++total;
+			}
+			for (map<Point, int>::const_iterator s = _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).begin(); s != _levels[*lm].symbols((unsigned char) HORIZONTAL_WALL).end(); ++s) {
+				if (_view[s->first.row()][s->first.col()] == HORIZONTAL_WALL)
+					++matched;
+				++total;
+			}
+			if (matched > 0 && min(matched, total) * 5 >= max(matched, total) * 4) {
+				found = *lm;
+				Debug::notice() << "Recognized level " << found << ": '" << _levelname << "' - '" << _levels[found].name() << "'" << endl;
+				break;
+			}
 		}
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {

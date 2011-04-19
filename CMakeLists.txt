@@ -159,8 +159,10 @@ set(HEADER_FILES
 	include/Events/ElberethQuery.h
 	include/Events/Event.h
 	include/Events/ItemsOnGround.h
+	include/Events/QuestStatus.h
 	include/Events/ReceivedItems.h
 	include/Events/StashChanged.h
+	include/Events/ShoppingStatus.h
 	include/Events/WantItems.h
 )
 

@@ -1,0 +1,5 @@
+#!/bin/sh
+# probably only useful for sorear, but useful to version
+cd /usr/src
+diff -u nethack-3.4.3-orig/src/allmain.c nethack-3.4.3/src/allmain.c
+diff -u nethack-3.4.3-orig/src/mklev.c nethack-3.4.3/src/mklev.c

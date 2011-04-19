@@ -29,6 +29,8 @@ public:
 	bool operator==(const Point& p) const;
 	bool operator!=(const Point& p) const;
 
+	static int gridDistance(const Point& p1, const Point& p2);
+
 private:
 	int _row;
 	int _col;

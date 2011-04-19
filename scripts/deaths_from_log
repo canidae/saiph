@@ -1,19 +1,25 @@
 #!/usr/bin/perl
+use autodie;
 
 my @lines;
-while (<>) {
+
+for my $file (@ARGV) {
+    open my $fh, '<', $file;
+    seek $fh, -65536, 2 if 65536 < -s $fh;
+    while (<$fh>) {
     next unless /Points/../^<T/;
 
-    if (/^<T/) {
-	my $a = join "", @lines;#  $lines[-2] . $lines[-1];
-	$a =~ s/[\r\n]//g;
-	$a =~ s/\x1B\[.m//g;
-	$a =~ s/...//;
-	$a =~ s/  +/ /g;
-	print "$a\n";
-	@lines = ();
-    } else {
-	@lines = () if /^\x1B/ && /saiph-/;
-	push @lines, $_ if /^\x1B/;
+	    if (/^<T/) {
+		my $a = join "", @lines;#  $lines[-2] . $lines[-1];
+		$a =~ s/[\r\n]//g;
+		$a =~ s/\x1B\[.m//g;
+		$a =~ s/...//;
+		$a =~ s/  +/ /g;
+		print "$file: $a\n";
+		@lines = ();
+	    } else {
+		@lines = () if /^\x1B/ && /saiph-/;
+		push @lines, $_ if /^\x1B/;
+	    }
     }
 }

@@ -6,7 +6,9 @@
 #include "Events/EatItem.h"
 #include "Events/ElberethQuery.h"
 #include "Events/ItemsOnGround.h"
+#include "Events/QuestStatus.h"
 #include "Events/ReceivedItems.h"
+#include "Events/ShoppingStatus.h"
 #include "Events/StashChanged.h"
 #include "Events/WantItems.h"
 
@@ -21,6 +23,8 @@ const int ReceivedItems::ID = 4;
 const int StashChanged::ID = 5;
 const int WantItems::ID = 6;
 const int Beatify::ID = 7;
+const int QuestStatus::ID = 8;
+const int ShoppingStatus::ID = 9;
 
 /* constructors/destructor */
 Event::Event(const std::string& name) : _name(name) {
