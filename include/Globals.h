@@ -453,6 +453,7 @@
 #define MESSAGE_WHAT_TO_ZAP "  What do you want to zap? "
 #define MESSAGE_WHAT_TUNE "  What tune are you playing? "
 #define MESSAGE_WHICH_RING_FINGER "  Which ring-finger, Right or Left? [rl]  "
+#define MESSAGE_WISHING_NO_CHARGES "  with a wand of wishing.  "
 #define MESSAGE_YOU_DESTROY "  You destroy the "
 #define MESSAGE_YOU_DIG_A_PIT "  You dig a pit in the floor.  "
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "

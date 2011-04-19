@@ -9,7 +9,6 @@
 
 // TODO: (can't engrave)
 #define MESSAGE_YOU_CANT_HOLD "  You can't even hold anything!  "
-#define MESSAGE_WISHING_NO_CHARGES "  with a wand of wishing.  "
 
 namespace action {
 
@@ -67,7 +66,9 @@ namespace action {
 				Item& wandWishing = Inventory::items()[_item.command()[0]];
 				wandWishing.name("wand of wishing named EMPTY"); // update name
 				_sequence = 4;
-			}
+			} 
+			else if (_sequence < 3)
+				_sequence = 3;
 			else if (_sequence == 3)
 				_sequence = 4;
 			else
