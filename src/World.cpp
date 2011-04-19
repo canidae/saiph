@@ -763,7 +763,8 @@ void World::detectPosition() {
 	// Quest levels are in one-to-one correspondance with names, and are often sufficiently odd as to confuse the wall matcher
 	if (std::string(_levelname).find("Home") != string::npos) {
 		vector<int> &levels = _levelmap[_levelname];
-		if (levels.size()) found = levels[0];
+		if (levels.size())
+			found = levels[0];
 	}
 	if (found == UNKNOWN_SYMBOL_VALUE) {
 		for (vector<int>::iterator lm = _levelmap[_levelname].begin(); lm != _levelmap[_levelname].end(); ++lm) {

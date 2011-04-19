@@ -107,7 +107,7 @@ Point& Point::moveWest() {
 	return *this;
 }
 
-int Point::gridDistance(Point p1, Point p2) {
+int Point::gridDistance(const Point& p1, const Point& p2) {
 	return max(abs(p1.row() - p2.row()), abs(p1.col() - p2.col()));
 }
 

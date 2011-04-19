@@ -20,8 +20,7 @@
 #define COST_ALTAR 4 // better not fight on altars
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
-#define COST_MONSTER 64 // try not to path through monsters
-#define COST_FLOATING_EYE 5000 // floating eyes in corridors are very hard to kill
+#define COST_MONSTER 128 // try not to path through monsters
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 /* max moves a monster can do before we think it's a new monster */
@@ -751,11 +750,7 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += _pathcost[next.symbol()];
-	if (next.monster() == 'e') {
-		Monster& m = _monsters[to];
-		const data::Monster *mi = m.data();
-		cost += ((mi != 0) && (mi->name() == "floating eye")) ? max(COST_MONSTER, COST_FLOATING_EYE - (World::turn() - m.lastSeen())) : COST_MONSTER;
-	} else if (next.monster() != ILLEGAL_MONSTER)
+	if (next.monster() != ILLEGAL_MONSTER)
 		cost += COST_MONSTER;
 	return cost;
 }
