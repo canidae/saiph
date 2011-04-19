@@ -74,6 +74,7 @@ set(HEADER_FILES
 	include/Analyzers/Beatitude.h
 #	include/Analyzers/Blind.h
 #	include/Analyzers/Dig.h
+	include/Analyzers/DiggingTool.h
 	include/Analyzers/Donate.h
 	include/Analyzers/Door.h
 	include/Analyzers/Elbereth.h
@@ -158,11 +159,11 @@ set(HEADER_FILES
 	include/Events/EatItem.h
 	include/Events/ElberethQuery.h
 	include/Events/Event.h
+	include/Events/GotDiggingTool.h
 	include/Events/ItemsOnGround.h
 	include/Events/QuestStatus.h
 	include/Events/ReceivedItems.h
 	include/Events/StashChanged.h
-	include/Events/ShoppingStatus.h
 	include/Events/WantItems.h
 )
 
@@ -194,6 +195,7 @@ set(SOURCE_FILES
 	src/Analyzers/Beatitude.cpp
 #	src/Analyzers/Blind.cpp
 #	src/Analyzers/Dig.cpp
+	src/Analyzers/DiggingTool.cpp
 	src/Analyzers/Donate.cpp
 	src/Analyzers/Door.cpp
 	src/Analyzers/Elbereth.cpp
