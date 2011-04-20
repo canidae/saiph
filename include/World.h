@@ -57,7 +57,7 @@ public:
 	static void unregisterAnalyzer(analyzer::Analyzer * const analyzer);
 	static bool setAction(action::Action* action, bool deleteAction = true);
 	static bool queueAction(action::Action* action);
-	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
+	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders, int eff_range, int danger_range);
 	static std::string cursorMoves(Point source, const Point& target);
 	static Tile& shortestPath(const Point& target);
 	static Tile shortestPath(const Coordinate& target);
@@ -105,7 +105,6 @@ private:
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
-	static bool directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders);
 	static bool executeCommand(const std::string& command);
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);

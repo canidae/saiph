@@ -202,77 +202,56 @@ bool World::queueAction(action::Action* action) {
 	return true;
 }
 
-unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
-	/* is the target in a direct line from the player? */
-	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END) {
-		/* outside map */
+unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders, int eff_range, int danger_range) {
+	int dist = Point::gridDistance(Saiph::position(), point);
+
+	/* outside map */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
 		return ILLEGAL_DIRECTION;
-	} else if (point == Saiph::position()) {
-		/* eh? don't do this */
-		return NOWHERE;
-	} else if (point.row() == Saiph::position().row()) {
-		/* aligned horizontally */
-		if (point.col() > Saiph::position().col()) {
-			while (point.moveWest().col() > Saiph::position().col()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return E;
-		} else {
-			while (point.moveEast().col() < Saiph::position().col()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return W;
-		}
-	} else if (point.col() == Saiph::position().col()) {
-		/* aligned vertically */
-		if (point.row() > Saiph::position().row()) {
-			while (point.moveNorth().row() > Saiph::position().row()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return S;
-		} else {
-			while (point.moveSouth().row() < Saiph::position().row()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return N;
-		}
-	} else if (abs(point.row() - Saiph::position().row()) == abs(point.col() - Saiph::position().col())) {
-		/* aligned diagonally */
-		if (point.row() > Saiph::position().row()) {
-			if (point.col() > Saiph::position().col()) {
-				while (point.moveNorthwest().row() > Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return SE;
-			} else {
-				while (point.moveNortheast().row() > Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return SW;
-			}
-		} else {
-			if (point.col() > Saiph::position().col()) {
-				while (point.moveSouthwest().row() < Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return NE;
-			} else {
-				while (point.moveSoutheast().row() < Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return NW;
-			}
-		}
+	if (point.row() != Saiph::position().row() && abs(point.row() - Saiph::position().row()) != dist)
+		return ILLEGAL_DIRECTION;
+	if (point.col() != Saiph::position().col() && abs(point.col() - Saiph::position().col()) != dist)
+		return ILLEGAL_DIRECTION;
+	if (dist > eff_range)
+		return ILLEGAL_DIRECTION;
+
+	static unsigned char dirs[] = { NW, N, NE, W, NOWHERE, E, SW, S, SE };
+	int index = 4;
+
+	if (point.row() < Saiph::position().row())
+		index -= 3;
+	else if (point.row() > Saiph::position().row())
+		index += 3;
+
+	if (point.col() < Saiph::position().col())
+		index -= 1;
+	else if (point.col() > Saiph::position().col())
+		index += 1;
+
+	unsigned char dir = dirs[index];
+	int realized_range = 0;
+	bool ok = false;
+	Point temp = Saiph::position();
+
+	// Follow out the beam as far as it can go.  If it reaches our target and can't reach a friendly, fire!
+	while (true) {
+		if (temp.row() < MAP_ROW_BEGIN || temp.row() > MAP_ROW_END || temp.col() < MAP_COL_BEGIN || temp.col() > MAP_COL_END)
+			break;
+		const Tile& t = level().tile(temp);
+		if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
+			break;
+		if (temp == point)
+			ok = true;
+		const map<Point, Monster>::const_iterator m = level().monsters().find(temp);
+		if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible() && (realized_range < dist || m->second.attitude() == FRIENDLY))
+			return ILLEGAL_DIRECTION;
+		if (realized_range == danger_range || (!ignore_sinks && t.symbol() == SINK))
+			break;
+		++realized_range;
+		temp.moveDirection(dir);
 	}
-	return ILLEGAL_DIRECTION;
+
+	return ok ? dir : ILLEGAL_DIRECTION;
 }
 
 std::string World::cursorMoves(Point source, const Point& target) {
@@ -830,18 +809,6 @@ void World::detectPosition() {
 
 	/* set new position for saiph */
 	Saiph::position(Coordinate(found, _cursor));
-}
-
-bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders) {
-	const Tile& t = level().tile(point);
-	if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
-		return false;
-	if (!ignore_sinks && t.symbol() == SINK)
-		return false;
-	const map<Point, Monster>::const_iterator m = level().monsters().find(point);
-	if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible())
-		return false;
-	return true;
 }
 
 void World::dumpMap(Level& lv) {
