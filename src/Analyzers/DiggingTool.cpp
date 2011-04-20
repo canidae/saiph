@@ -54,6 +54,7 @@ int DiggingTool::scoreDigger(const Item& item) {
 	if (item.beatitude() != BEATITUDE_UNKNOWN) score += 2;
 	// prefer pick-axes - they're lighter
 	if (item.name() == "pick-axe") score++;
+	else if (Inventory::keyForSlot(SLOT_SHIELD)) score = -1;
 	return score;
 }
 
