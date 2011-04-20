@@ -66,3 +66,5 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   - When there are E-ignoring monsters around, a good way to heal is to run away
   - Do not drop items which are (being w  (drop_armor_bug)
   - We should not be pathing over magic portals to get to points on the same level
+
+Q incubus nymphs queued-MonsterInfo superclearing inlining Medusa

@@ -10,6 +10,7 @@
 #include "Item.h"
 #include "World.h"
 #include "Actions/Action.h"
+#include "Actions/Look.h"
 #include "Events/WantItems.h"
 
 namespace action {
@@ -18,7 +19,7 @@ namespace action {
 	public:
 		static const int ID;
 
-		Loot(analyzer::Analyzer* analyzer, int priority, bool safe_stash) : Action(analyzer), _loot(",", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _look(":", PRIORITY_LOOK), _safe_stash(safe_stash), _keys() {
+		Loot(analyzer::Analyzer* analyzer, int priority, bool safe_stash) : Action(analyzer), _loot(",", priority), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _safe_stash(safe_stash), _keys() {
 		}
 
 		virtual ~Loot() {
@@ -43,9 +44,6 @@ namespace action {
 
 			case 2:
 				return _close_page;
-
-			case 3:
-				return _look;
 
 			default:
 				return Action::NOOP;
@@ -74,9 +72,6 @@ namespace action {
 					/* all pages shown */
 					_sequence = 3;
 				}
-			} else if (_sequence == 3) {
-				/* looked at ground */
-				_sequence = 4;
 			}
 			if (_sequence == 1 && _keys.size() <= 0) {
 				/* figure out which items we would like to loot */
@@ -116,12 +111,13 @@ namespace action {
 					_sequence = 2;
 				}
 			}
+			if (_sequence == 3)
+				World::queueAction(new action::Look(analyzer()));
 		}
 
 	private:
 		const Command _loot;
 		const Command _close_page;
-		const Command _look;
 		const bool _safe_stash;
 		Command _loot_item;
 		std::queue<std::string> _keys;
