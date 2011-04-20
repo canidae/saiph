@@ -185,6 +185,7 @@
 #define UP '<'
 #define DOWN '>'
 #define NOWHERE '.'
+#define SIT 128 // pseudo direction required for traversing magic portals
 
 /* dungeon symbols */
 #define SOLID_ROCK ' '

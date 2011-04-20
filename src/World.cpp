@@ -408,7 +408,7 @@ Tile World::shortestPath(const Coordinate& target) {
 				/* pathing to portal on level we're standing on */
 				level_tile[s->second] = tile;
 				if (tile.direction() == NOWHERE)
-					level_tile[s->second].direction(DOWN);
+					level_tile[s->second].direction(SIT);
 			} else {
 				/* pathing to portal on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];

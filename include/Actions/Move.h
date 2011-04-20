@@ -27,6 +27,8 @@ namespace action {
 			}
 			if (travel)
 				_do_travel = Command("_", priority);
+			else if (_target.direction() == SIT)
+				_do_travel = Command("#sit\n", priority);
 			else
 				_do_travel = Command(_target.direction(), priority);
 		}
