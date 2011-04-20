@@ -42,25 +42,37 @@ void Door::analyze() {
 		Tile& tile = World::shortestPath(d->first);
 		if (tile.cost() == UNREACHABLE)
 			continue; // can't reach this door
-		if (World::level().branch() == BRANCH_MINETOWN && d->second == DOOR_LOCKED && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
+		if (World::level().branch() == BRANCH_MINETOWN && (d->second & DOOR_IS_LOCKED) && (_unlock_tool_key == 0 || Inventory::items()[_unlock_tool_key].name() == "lock pick" || Inventory::items()[_unlock_tool_key].name() == "credit card"))
 			continue; // don't kick/pick doors when we're in minetown
-		if (d->second == DOOR_SHOP_INVENTORY && _unlock_tool_key == 0)
+		if ((d->second & (DOOR_IS_SHOP | DOOR_IS_LOCKED)) == (DOOR_IS_SHOP | DOOR_IS_LOCKED) && _unlock_tool_key == 0)
 			continue; // shop and we got no means of opening it (well, except kicking)
 		if (Saiph::inAPit() && tile.distance() == 1)
 			continue; // in a pit next to the door, prevent her from trying to open it (and fail)
 		if (tile.distance() == 1) {
 			/* open/pick/kick door */
-			if (d->second != DOOR_LOCKED) {
+			if (!(d->second & DOOR_IS_LOCKED)) {
 				World::setAction(static_cast<action::Action*> (new action::Open(this, tile.direction(), PRIORITY_DOOR_OPEN)));
+			} else if (_unlock_tool_key != 0) {
+				if (Saiph::encumbrance() <= STRAINED)
+					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN)));
 			} else {
 				/* see if we can kick if no pick */
-				if (_unlock_tool_key == 0) {
-					if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
-						World::setAction(static_cast<action::Action*> (new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN)));
-				} else {
-					if (Saiph::encumbrance() <= STRAINED)
-						World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN)));
+				if (Saiph::position().row() != d->first.row() && Saiph::position().col() != d->first.col()) {
+					stack<Point> ps;
+					ps.push(Point(Saiph::position().row(), d->first.col()));
+					ps.push(Point(d->first.row(), Saiph::position().col()));
+					Tile pst;
+					for (; !ps.empty(); ps.pop()) {
+						pst = World::shortestPath(ps.top());
+						if (pst.symbol() != CORRIDOR) continue;
+						if (pst.search() == TILE_FULLY_SEARCHED) continue;
+						// Try to stand orthogonally next to doors before kicking them, to catch "closed for inventory"
+						World::setAction(static_cast<action::Action*> (new action::Move(this, pst, PRIORITY_DOOR_OPEN)));
+						return;
+					}
 				}
+				if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
+					World::setAction(static_cast<action::Action*> (new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN)));
 			}
 			_position = d->first;
 			return;
@@ -75,10 +87,10 @@ void Door::analyze() {
 void Door::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SUCCEED_UNLOCKING) != string::npos || messages.find(MESSAGE_SUCCEED_PICKING) != string::npos) {
 		/* door unlocked */
-		World::level().setDungeonSymbolValue(_position, UNKNOWN_SYMBOL_VALUE);
+		World::level().setDungeonSymbolValue(_position, getDoorFlags(_position) & ~DOOR_IS_LOCKED);
 	} else if (messages.find(MESSAGE_DOOR_LOCKED) != string::npos) {
 		/* door is locked, set the value to 1 */
-		World::level().setDungeonSymbolValue(_position, DOOR_LOCKED);
+		World::level().setDungeonSymbolValue(_position, getDoorFlags(_position) | DOOR_IS_LOCKED);
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
 		World::setAction(static_cast<action::Action*> (new action::Answer(this, YES)));
@@ -97,7 +109,7 @@ void Door::parseMessages(const string& messages) {
 
 			if (World::level().tile(top).symbol() == CLOSED_DOOR) {
 				Debug::custom(name()) << "Marking " << top << " as DOOR_SHOP_INVENTORY" << endl;
-				World::level().setDungeonSymbol(top, DOOR_SHOP_INVENTORY);
+				World::level().setDungeonSymbolValue(top, getDoorFlags(top) | DOOR_IS_SHOP);
 				break;
 			}
 		}
@@ -158,4 +170,13 @@ bool Door::wantItem(const Item& item) {
 	if (i->second.name() == "credit card")
 		return false;
 	return true;
+}
+
+int Door::getDoorFlags(const Point& pt) {
+	map<Point, int>::const_iterator sp = World::level().symbols(CLOSED_DOOR).find(pt);
+	if (sp == World::level().symbols(CLOSED_DOOR).end())
+		return 0;
+	if (sp->second == UNKNOWN_SYMBOL_VALUE)
+		return 0;
+	return sp->second;
 }

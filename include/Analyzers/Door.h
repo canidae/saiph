@@ -8,9 +8,9 @@
 /* priorities */
 #define PRIORITY_DOOR_OPEN 100
 
-/* door states */
-#define DOOR_LOCKED 1
-#define DOOR_SHOP_INVENTORY 2
+/* door states, not mutually exclusive */
+#define DOOR_IS_LOCKED 1
+#define DOOR_IS_SHOP 2
 
 class Item;
 
@@ -29,6 +29,7 @@ namespace analyzer {
 		unsigned char _unlock_tool_key;
 
 		bool wantItem(const Item& item);
+		int getDoorFlags(const Point& pt);
 	};
 }
 #endif

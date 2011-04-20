@@ -316,7 +316,7 @@
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT "  You cannot reach the bottom of the pit.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
-#define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
+#define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory\"."
 #define MESSAGE_COLD_RES_GAIN1 "  You feel full of hot air.  "
 #define MESSAGE_COLD_RES_LOSE1 "  You feel cooler!  "
 #define MESSAGE_CRAWL_OUT_OF_PIT "  You crawl to the edge of the pit.  "
