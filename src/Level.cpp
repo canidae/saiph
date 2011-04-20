@@ -129,6 +129,7 @@ void Level::init() {
 	_passable[(unsigned char) ICE] = true;
 	_passable[(unsigned char) LAVA] = true;
 	_passable[(unsigned char) LOWERED_DRAWBRIDGE] = true;
+	_passable[(unsigned char) MAGIC_PORTAL] = true;
 	_passable[(unsigned char) TRAP] = true;
 	_passable[(unsigned char) UNKNOWN_TILE] = true;
 	_passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
@@ -152,6 +153,7 @@ void Level::init() {
 	_passable[(unsigned char) CHAINS] = true;
 	_passable[(unsigned char) VENOM] = true;
 	/* dungeon layout */
+	/* roughly speaking, _dungeon is the types that we should continue to remember after they are obscured */
 	_dungeon[(unsigned char) VERTICAL_WALL] = true;
 	_dungeon[(unsigned char) HORIZONTAL_WALL] = true;
 	_dungeon[(unsigned char) FLOOR] = true;
@@ -177,6 +179,7 @@ void Level::init() {
 	_dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
 	_dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
 	_dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
+	_dungeon[(unsigned char) MAGIC_PORTAL] = true;
 	/* cost for pathing on certain tiles */
 	_pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
 	_pathcost[(unsigned char) GRAVE] = COST_GRAVE;
