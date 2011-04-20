@@ -63,6 +63,10 @@ void Quest::parseMessages(const string& messages) {
 		if (menu.find(accepted_messages[Saiph::role()]) != string::npos)
 			setStatus(_portal_level, QUEST_STATUS_GIVEN);
 	}
+
+	if (Saiph::position().level() != _portal_level && (messages.find("pleading for help.  ") != string::npos || messages.find("demanding your attendance.  ") != string::npos || messages.find("  Look for a ...ic transporter.  ") != string::npos)) {
+		setStatus(Saiph::position().level(), _status);
+	}
 }
 
 void Quest::analyze() {
@@ -93,10 +97,17 @@ void Quest::onEvent(event::Event * const event) {
 	if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (i->second.name() == "silver bell" || i->second.name() == "Bell of Opening" || i->second.name() == artifacts[Saiph::role()])
+			if (i->second.name() == "silver bell" || i->second.name() == "Bell of Opening") {
+				_seen_bell = true;
 				i->second.want(i->second.count());
-			else
+			} else if (i->second.name() == artifacts[Saiph::role()]) {
+				_seen_arti = true;
+				i->second.want(i->second.count());
+			} else
 				Debug::custom(name()) << "Rejecting " << i->second.name() << endl;
+
+			if (_status != QUEST_STATUS_COMPLETED && _seen_bell && _seen_arti)
+				setStatus(_portal_level, QUEST_STATUS_COMPLETED);
 		}
 	}
 }

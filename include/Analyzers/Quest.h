@@ -25,6 +25,8 @@ namespace analyzer {
 		Point _leader_pos;
 		int _status;
 		int _portal_level;
+		bool _seen_bell;
+		bool _seen_arti;
 		std::map<int, std::string> artifacts;
 		std::map<int, std::string> accepted_messages;
 	};

@@ -7,8 +7,10 @@
 #include "Actions/Look.h"
 #include "Actions/Move.h"
 #include "Actions/Search.h"
+#include "Events/QuestStatus.h"
 
 #include <sstream>
+//#include <stdlib.h>
 
 // pseudo direction
 #define LOOK ':'
@@ -18,7 +20,8 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Explore::Explore() : Analyzer("Explore") {
+Explore::Explore() : Analyzer("Explore"), _portal_level(-1) {
+	EventBus::registerEvent(QuestStatus::ID, this);
 }
 
 /* methods */
@@ -48,6 +51,8 @@ void Explore::analyze() {
 	for (map<int, ExploreFocus>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
 		Level& lv = World::level(l->first);
 		if (l->second.rank == INT_MAX) {
+			//static int _done[32];
+			//if (!(_done[l->first]++)) abort();
 			Debug::custom(name()) << "Nothing to do on level " << lv.depth() << "," << lv.branch() << endl;
 			continue;
 		}
@@ -56,6 +61,12 @@ void Explore::analyze() {
 		// don't search shallow levels if we can search deep ones
 		if (l->second.rank >= RRANK_SEARCH_MIN)
 			rank += 1000 * (100 - lv.depth());
+		if (_quest_status >= QUEST_STATUS_READY && _quest_status < QUEST_STATUS_COMPLETED && (l->first == _portal_level || lv.branch() == BRANCH_QUEST))
+			rank -= 5000000; // finish the quest before exploring
+		if (_quest_status == QUEST_STATUS_NOT_READY && lv.branch() == BRANCH_QUEST) {
+			Debug::custom(name()) << "Not ready to quest" << endl;
+			continue;
+		}
 		Debug::custom(name()) << "For level " << lv.depth() << "," << lv.branch() << ", best explore point is " << l->second.describe() << endl;
 		Coordinate dest(l->first, l->second.where);
 		Tile path = World::shortestPath(dest);
@@ -87,6 +98,14 @@ void Explore::analyze() {
 		}
 	} else {
 		World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE, best_cost))));
+	}
+}
+
+void Explore::onEvent(Event * const event) {
+	if (event->id() == QuestStatus::ID) {
+		QuestStatus* e = static_cast<QuestStatus*> (event);
+		_quest_status = e->newState();
+		_portal_level = e->portalLevel();
 	}
 }
 
@@ -139,10 +158,12 @@ ExploreFocus Explore::analyzeLevel() {
 		considerPoint(best, w->first);
 
 	/* explore stairs down */
-	for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
-		if (s->second != UNKNOWN_SYMBOL_VALUE)
-			continue; // we know where these stairs lead
-		addOption(best, RRANK_STAIR, s->first, DOWN, "finding endpoint of stairs down");
+	if (World::level().branch() != BRANCH_QUEST || World::level().depth() != 1 || _quest_status >= QUEST_STATUS_GIVEN) {
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			addOption(best, RRANK_STAIR, s->first, DOWN, "finding endpoint of stairs down");
+		}
 	}
 
 	/* explore magic portals */
@@ -152,6 +173,13 @@ ExploreFocus Explore::analyzeLevel() {
 		if (s->first == Saiph::position())
 			continue; // oscillate if the trap doesn't trigger
 		addOption(best, RRANK_STAIR, s->first, NOWHERE, "finding endpoint of magic portal");
+	}
+
+	if (World::level().identifier() == _portal_level && World::level().symbols((unsigned char) MAGIC_PORTAL).size() == 0) {
+		for (map<Point, int>::const_iterator w = World::level().symbols((unsigned char) FLOOR).begin(); w != World::level().symbols((unsigned char) FLOOR).end(); ++w) {
+			if (World::level().tile(w->first).search() != TILE_FULLY_SEARCHED)
+				addOption(best, RRANK_EXPLORE, w->first, NOWHERE, "searching for quest portal");
+		}
 	}
 
 	if (World::level().branch() == BRANCH_MINES && best.rank >= RRANK_SEARCH_MIN)

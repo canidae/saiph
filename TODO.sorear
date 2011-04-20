@@ -67,13 +67,10 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 * saiph shouldn't rest off blindness when she has a unihorn
 * don't try to get Excal if we already have it
 
-* Perhaps hunt for the quest portal (but don't attempt the quest yet)
-
 * Quest fiddly bits:
   * Explore should know not to explore Q1 until xl14
   * Explore should not go down from Q1 until quest_accepted
-  * Quest analyzer needs to path to chest if xl14 & !quest_accepted
-  * Quest analyzer should pick up qarts
+  * Perhaps hunt for the quest portal (but don't attempt the quest yet)
 
 * Pick handling ideas
   * Hysteretic process - when saiph enters the "inner shop zone", disable pick want and drop our picks.  When she exits/would exit(?) "outer shop zone", reenable pick wanting.
