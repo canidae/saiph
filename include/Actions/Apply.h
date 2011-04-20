@@ -41,6 +41,9 @@ namespace action {
 				if (_update_inventory)
 					Inventory::update();
 				_sequence = 2;
+			} else {
+				failed();
+				_sequence = 2;
 			}
 		}
 

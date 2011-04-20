@@ -42,7 +42,10 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Dispose of trolls
 
-* experiment with allowing inlining for trivial accessors
+* Optimization: When MonsterInfo et al produce high-priority actions, don't take one, take them all and don't analyze until they're all done.
+  - Also, mark some analyzers as "run this later in the cycle, and don't run it at all if there are 1000+ actions pending", or just have an earlyAnalyze method
+  - do not remember mobs if the level is completely open
+  - experiment with allowing inlining for trivial accessors
 
 * sorph ate a mimic in a shop, probably because it was mimicing stairs down and overwrote SHOP_TILE
   - the right fix here is to make an in_shop bitfield, because it's not mutually exclusive with anything
@@ -62,11 +65,9 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Flesh out "Roamer" ideas
 
-* Optimization: When MonsterInfo et al produce high-priority actions, don't take one, take them all and don't analyze until they're all done.
-  - Also, mark some analyzers as "run this later in the cycle, and don't run it at all if there are 1000+ actions pending"
+* Medusa analyzer.
 
 * 4/20 night results:
-  - make resuming unlock work (minetown_key_troubles)
   - When there are E-ignoring monsters around, a good way to heal is to run away
   - Do not drop items which are (being w  (drop_armor_bug)
   - When facing monsters that can kill us in one turn, E and run.  Or: ignore sleeping mimics in low-level shops.

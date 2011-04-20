@@ -47,6 +47,9 @@ namespace action {
 				_sequence = 2;
 			} else if (_sequence == 2) {
 				_sequence = 3;
+			} else {
+				failed();
+				_sequence = 3;
 			}
 		}
 
