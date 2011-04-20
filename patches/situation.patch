@@ -1,6 +1,6 @@
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-19 17:56:07.000000000 -0700
-@@ -477,6 +477,233 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-19 21:14:32.000000000 -0700
+@@ -477,6 +477,236 @@
  }
  
  void
@@ -141,6 +141,9 @@
 +            sscanf(lbuf, "altar %d %d %d", &a[0], &a[1], &a[2]);
 +            levl[a[0]][a[1]].typ = ALTAR;
 +            levl[a[0]][a[1]].altarmask = Align2amask( a[2] );
++        } else if (!strncmp(lbuf, "fountain ", 9)) {
++            sscanf(lbuf, "fountain %d %d", &a[0], &a[1]);
++            levl[a[0]][a[1]].typ = FOUNTAIN;
 +        } else if (!strncmp(lbuf, "obj ", 4)) {
 +            lbuf[strlen(lbuf)-1] = 0;
 +            sscanf(lbuf, "obj %d %d %n", &a[0], &a[1], &i);
@@ -234,7 +237,7 @@
  newgame()
  {
  	int i;
-@@ -514,6 +741,7 @@
+@@ -514,6 +744,7 @@
  
  	mklev();
  	u_on_upstairs();
