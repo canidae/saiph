@@ -3,6 +3,7 @@
 #include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
+#include "EventBus.h"
 #include "Actions/Dip.h"
 #include "Actions/Move.h"
 #include "Events/ChangedInventoryItems.h"
@@ -14,6 +15,8 @@ using namespace std;
 
 /* constructors/destructor */
 Excalibur::Excalibur() : Analyzer("Excalibur"), _long_sword_key(ILLEGAL_ITEM) {
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
+	EventBus::registerEvent(ReceivedItems::ID, this);
 }
 
 /* methods */

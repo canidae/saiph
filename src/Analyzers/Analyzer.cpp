@@ -3,6 +3,8 @@
 #include "Analyzers/Amulet.h"
 #include "Analyzers/Armor.h"
 #include "Analyzers/Beatitude.h"
+#include "Analyzers/Boulder.h"
+#include "Analyzers/DiggingTool.h"
 #include "Analyzers/Donate.h"
 #include "Analyzers/Door.h"
 #include "Analyzers/Elbereth.h"
@@ -15,6 +17,7 @@
 #include "Analyzers/Lamp.h"
 #include "Analyzers/Loot.h"
 #include "Analyzers/MonsterInfo.h"
+#include "Analyzers/Quest.h"
 #include "Analyzers/Shop.h"
 #include "Analyzers/Sokoban.h"
 #include "Analyzers/Vault.h"
@@ -41,7 +44,9 @@ void Analyzer::init() {
 	_analyzers.push_back(new Amulet());
 	_analyzers.push_back(new Armor());
 	_analyzers.push_back(new Beatitude());
+	_analyzers.push_back(new Boulder());
 	_analyzers.push_back(new Donate());
+	_analyzers.push_back(new DiggingTool());
 	_analyzers.push_back(new Door());
 	_analyzers.push_back(new Elbereth());
 	_analyzers.push_back(new Enhance());
@@ -53,6 +58,7 @@ void Analyzer::init() {
 	_analyzers.push_back(new Lamp());
 	_analyzers.push_back(new Loot());
 	_analyzers.push_back(new MonsterInfo());
+	_analyzers.push_back(new Quest());
 	_analyzers.push_back(new Shop());
 	_analyzers.push_back(new Sokoban());
 	_analyzers.push_back(new Vault());

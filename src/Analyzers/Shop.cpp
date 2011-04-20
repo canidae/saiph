@@ -8,7 +8,6 @@
 #include "Data/Pickaxe.h"
 #include "EventBus.h"
 #include "Events/ReceivedItems.h"
-#include "Events/ShoppingStatus.h"
 #include "Actions/Pay.h"
 #include "Actions/Look.h"
 #include "Actions/Move.h"
@@ -72,11 +71,9 @@ bool Shop::inBlockedDoorway() {
 }
 
 void Shop::setShopping(bool newState) {
-	if (newState != _shopping) {
-		_shopping = newState;
-		ShoppingStatus e(newState);
-		EventBus::broadcast(static_cast<Event*>(&e));
-	}
+	if (_shopping != newState)
+		Debug::custom(name()) << "Shop status is now " << newState << endl;
+	_shopping = newState;
 }
 
 void Shop::lastChance(action::Action* const plan) {
@@ -123,9 +120,6 @@ void Shop::onEvent(event::Event * const event) {
 				i->second.count(0);
 			} else if (near == IN_SHOP) {
 				// a pick in a doorway is a problem and should be picked up even if shopping
-				i->second.want(i->second.count());
-			} else if (!_shopping) {
-				// XXX for debugging
 				i->second.want(i->second.count());
 			}
 		}

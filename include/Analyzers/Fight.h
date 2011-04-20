@@ -30,6 +30,7 @@ namespace analyzer {
 		Fight();
 
 		void analyze();
+		void parseMessages(const std::string&);
 		void onEvent(event::Event * const event);
 
 	private:

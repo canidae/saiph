@@ -72,8 +72,10 @@ set(HEADER_FILES
 	include/Analyzers/Analyzer.h
 	include/Analyzers/Armor.h
 	include/Analyzers/Beatitude.h
+	include/Analyzers/Boulder.h
 #	include/Analyzers/Blind.h
 #	include/Analyzers/Dig.h
+	include/Analyzers/DiggingTool.h
 	include/Analyzers/Donate.h
 	include/Analyzers/Door.h
 	include/Analyzers/Elbereth.h
@@ -92,6 +94,7 @@ set(HEADER_FILES
 #	include/Analyzers/Ring.h
 #	include/Analyzers/Rub.h
 #	include/Analyzers/Scroll.h
+	include/Analyzers/Quest.h
 	include/Analyzers/Shop.h
 	include/Analyzers/Sokoban.h
 #	include/Analyzers/Throne.h
@@ -158,11 +161,11 @@ set(HEADER_FILES
 	include/Events/EatItem.h
 	include/Events/ElberethQuery.h
 	include/Events/Event.h
+	include/Events/GotDiggingTool.h
 	include/Events/ItemsOnGround.h
 	include/Events/QuestStatus.h
 	include/Events/ReceivedItems.h
 	include/Events/StashChanged.h
-	include/Events/ShoppingStatus.h
 	include/Events/WantItems.h
 )
 
@@ -192,8 +195,10 @@ set(SOURCE_FILES
 	src/Analyzers/Analyzer.cpp
 	src/Analyzers/Armor.cpp
 	src/Analyzers/Beatitude.cpp
+	src/Analyzers/Boulder.cpp
 #	src/Analyzers/Blind.cpp
 #	src/Analyzers/Dig.cpp
+	src/Analyzers/DiggingTool.cpp
 	src/Analyzers/Donate.cpp
 	src/Analyzers/Door.cpp
 	src/Analyzers/Elbereth.cpp
@@ -212,6 +217,7 @@ set(SOURCE_FILES
 #	src/Analyzers/Ring.cpp
 #	src/Analyzers/Rub.cpp
 #	src/Analyzers/Scroll.cpp
+	src/Analyzers/Quest.cpp
 	src/Analyzers/Shop.cpp
 	src/Analyzers/Sokoban.cpp
 #	src/Analyzers/Throne.cpp

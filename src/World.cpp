@@ -811,13 +811,19 @@ void World::detectPosition() {
 		Debug::notice() << "Found new level " << found << ": " << _levelname << endl;
 	}
 
-	/* were we on stairs or a magic portal on last Saiph::position()? */
-	if (symbol == STAIRS_DOWN || symbol == STAIRS_UP || symbol == MAGIC_PORTAL) {
-		/* yes, we were on stairs or a magic portal, set where it leads */
+	/* magic portals are much more fiddly because we usually aren't standing still when we find them */
+	if (_messages.find("  You activated a magic portal!  ") != string::npos) {
+		level(found).setDungeonSymbol(_cursor, MAGIC_PORTAL);
+		level(found).setDungeonSymbolValue(_cursor, Saiph::position().level());
+	}
+
+	/* were we on stairs on last Saiph::position()? */
+	if (symbol == STAIRS_DOWN || symbol == STAIRS_UP) {
+		/* yes, we were on stairs, set where it leads */
 		level().setDungeonSymbolValue(Saiph::position(), found);
-		/* pretend we're standing on STAIRS_UP, STAIRS_DOWN or MAGIC_PORTAL when we discover new levels.
+		/* pretend we're standing on STAIRS_UP or STAIRS_DOWN when we discover new levels.
 		 * if we're wrong, it'll fix itself */
-		level(found).setDungeonSymbol(_cursor, (symbol == STAIRS_UP ? STAIRS_DOWN : (symbol == STAIRS_DOWN ? STAIRS_UP : MAGIC_PORTAL)));
+		level(found).setDungeonSymbol(_cursor, (symbol == STAIRS_UP ? STAIRS_DOWN : STAIRS_UP));
 		/* set where it leads */
 		level(found).setDungeonSymbolValue(_cursor, Saiph::position().level());
 	}

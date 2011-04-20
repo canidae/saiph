@@ -29,6 +29,10 @@
 
 class Tile;
 
+namespace event {
+	class Event;
+}
+
 namespace analyzer {
 	struct ExploreFocus {
 		Point where;
@@ -44,11 +48,15 @@ namespace analyzer {
 		Explore();
 
 		void analyze();
+		void onEvent(event::Event * const);
 
 	private:
 		std::map<int, ExploreFocus> _explore_levels;
 
-		static ExploreFocus analyzeLevel();
+		int _portal_level;
+		int _quest_status;
+
+		ExploreFocus analyzeLevel();
 		static void considerPoint(ExploreFocus& best, Point p);
 		static void addOption(ExploreFocus& best, int rank, const Point& p, unsigned char direction, const std::string& purpose);
 	};

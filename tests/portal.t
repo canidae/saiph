@@ -14,5 +14,5 @@ identified uncursed pick-axe
 stats 18 16 16 7 7 9
 align 40
 level 14
-goto Val-strt
+goto portal
 seal

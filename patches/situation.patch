@@ -1,6 +1,6 @@
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-19 08:38:24.000000000 -0700
-@@ -477,6 +477,239 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-19 21:14:32.000000000 -0700
+@@ -477,6 +477,236 @@
  }
  
  void
@@ -53,7 +53,7 @@
 +                go = sanctum_level;
 +                go.dlevel--;
 +            } else if (!strcmp(lbuf+5, "portal")) {
-+                go = portal_level;
++                go = dungeon_branch("The Quest")->end1;
 +            } else if (!strcmp(lbuf+5, "tower")) {
 +                go.dnum = tower_dnum;
 +                go.dlevel = 3;
@@ -68,14 +68,8 @@
 +            boolean port = Is_knox(&go) || In_endgame(&go) || Is_qstart(&go);
 +            goto_level(&go, !port, FALSE, port);
 +        } else if (!strcmp(lbuf, "seal\n")) {
-+            struct trap *t;
-+            for (t = ftrap; t; t = t->ntrap)
-+                if (t->ttyp == MAGIC_PORTAL) break;
-+            if (t && !Is_portal_level(&u.uz)) {
-+                u.ux = t->tx;
-+                u.uy = t->ty;
-+                deltrap(t);
-+            }
++            struct trap *t = t_at(u.ux, u.uy);
++            if (t) deltrap(t);
 +            levl[u.ux][u.uy].typ = ROOM;
 +        } else if (!strcmp(lbuf, "inventory\n")) {
 +            while (invent) useupall(invent);
@@ -147,6 +141,9 @@
 +            sscanf(lbuf, "altar %d %d %d", &a[0], &a[1], &a[2]);
 +            levl[a[0]][a[1]].typ = ALTAR;
 +            levl[a[0]][a[1]].altarmask = Align2amask( a[2] );
++        } else if (!strncmp(lbuf, "fountain ", 9)) {
++            sscanf(lbuf, "fountain %d %d", &a[0], &a[1]);
++            levl[a[0]][a[1]].typ = FOUNTAIN;
 +        } else if (!strncmp(lbuf, "obj ", 4)) {
 +            lbuf[strlen(lbuf)-1] = 0;
 +            sscanf(lbuf, "obj %d %d %n", &a[0], &a[1], &i);
@@ -240,7 +237,7 @@
  newgame()
  {
  	int i;
-@@ -514,6 +747,7 @@
+@@ -514,6 +744,7 @@
  
  	mklev();
  	u_on_upstairs();
