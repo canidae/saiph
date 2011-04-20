@@ -24,19 +24,19 @@ Quest::Quest() : Analyzer("Quest"), _status(QUEST_STATUS_NOT_READY), _portal_lev
 	/* register events */
 	EventBus::registerEvent(WantItems::ID, this);
 
-	artifacts[ARCHEOLOGIST] = "The Orb of Detection";
-	artifacts[BARBARIAN] = "The Heart of Ahriman";
-	artifacts[CAVEMAN] = "The Sceptre of Might";
-	artifacts[HEALER] = "The Staff of Aesculapius";
-	artifacts[KNIGHT] = "The Magic Mirror of Merlin";
-	artifacts[MONK] = "The Eyes of the Overworld";
-	artifacts[PRIEST] = "The Mitre of Holiness";
-	artifacts[RANGER] = "The Longbow of Diana";
-	artifacts[ROGUE] = "The Master Key of Thievery";
-	artifacts[SAMURAI] = "The Tsurugi of Muramasa";
-	artifacts[TOURIST] = "The Platinum Yendorian Express Card";
-	artifacts[VALKYRIE] = "The Orb of Fate";
-	artifacts[WIZARD] = "The Eye of the Aethiopica";
+	artifacts[ARCHEOLOGIST] = "Orb of Detection";
+	artifacts[BARBARIAN] = "Heart of Ahriman";
+	artifacts[CAVEMAN] = "Sceptre of Might";
+	artifacts[HEALER] = "Staff of Aesculapius";
+	artifacts[KNIGHT] = "Magic Mirror of Merlin";
+	artifacts[MONK] = "Eyes of the Overworld";
+	artifacts[PRIEST] = "Mitre of Holiness";
+	artifacts[RANGER] = "Longbow of Diana";
+	artifacts[ROGUE] = "Master Key of Thievery";
+	artifacts[SAMURAI] = "Tsurugi of Muramasa";
+	artifacts[TOURIST] = "Platinum Yendorian Express Card";
+	artifacts[VALKYRIE] = "Orb of Fate";
+	artifacts[WIZARD] = "Eye of the Aethiopica";
 
 	accepted_messages[ARCHEOLOGIST] = "Youmustthendefeat";
 	accepted_messages[BARBARIAN]    = "defeathim,andreturn";
@@ -103,8 +103,7 @@ void Quest::onEvent(event::Event * const event) {
 			} else if (i->second.name() == artifacts[Saiph::role()]) {
 				_seen_arti = true;
 				i->second.want(i->second.count());
-			} else
-				Debug::custom(name()) << "Rejecting " << i->second.name() << endl;
+			}
 
 			if (_status != QUEST_STATUS_COMPLETED && _seen_bell && _seen_arti)
 				setStatus(_portal_level, QUEST_STATUS_COMPLETED);
