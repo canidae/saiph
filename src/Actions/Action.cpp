@@ -4,6 +4,7 @@
 #include "Actions/Apply.h"
 #include "Actions/ApplyInDirection.h"
 #include "Actions/Call.h"
+#include "Actions/Chat.h"
 #include "Actions/Donate.h"
 #include "Actions/Dip.h"
 #include "Actions/Drop.h"
@@ -71,6 +72,7 @@ const int Wear::ID = 30;
 const int Dip::ID = 31;
 const int Donate::ID = 32;
 const int Pay::ID = 33;
+const int Chat::ID = 34;
 
 /* used for the travel command "_" */
 Point Move::_last_target;

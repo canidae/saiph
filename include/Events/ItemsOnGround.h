@@ -9,6 +9,11 @@ namespace event {
 
 	class ItemsOnGround : public Event {
 	public:
+	
+	
+	
+	
+	
 		static const int ID;
 
 		ItemsOnGround(const std::list<Item> items) : Event("ItemsOnGround"), _items(items) {
