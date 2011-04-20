@@ -63,3 +63,17 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 * Paranoid farlook @ every turn in minetown, even (especially) if we think they are hostile, if rawr doesn't get to it first
 
 * Fix wish for "Elbereth"
+
+* Flesh out "Roamer" ideas
+
+* Optimization: When MonsterInfo et al produce high-priority actions, don't take one, take them all and don't analyze until they're all done.
+  - Also, mark some analyzers as "run this later in the cycle, and don't run it at all if there are 1000+ actions pending"
+
+* 4/20 night results:
+  - make resuming unlock work (minetown_key_troubles)
+  - implement WARNED_DOOR (minetown_key_troubles)
+  - We shouldn't throw daggers if (Skilled and) there are peacefuls behind the target
+  - When there are E-ignoring monsters around, a good way to heal is to run away
+  - Do not drop items which are (being w  (drop_armor_bug)
+  - When facing monsters that can kill us in one turn, E and run.  Or: ignore sleeping mimics in low-level shops.
+  - We should not be pathing over magic portals to get to points on the same level
