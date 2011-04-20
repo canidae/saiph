@@ -115,10 +115,6 @@ void Loot::onEvent(Event * const event) {
 	} else if (event->id() == ItemsOnGround::ID) {
 		/* standing on stash, ask if anyone want anything */
 		// TODO: proper shopping code
-		if (World::level().tile().symbol() == SHOP_TILE && action::Loot::canLoot() && Saiph::zorkmids() > 0) {
-			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-			bool looting = false;
-		}
 		if (World::level().tile().symbol() != SHOP_TILE && action::Loot::canLoot()) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			int index = 0;

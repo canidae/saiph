@@ -2,7 +2,6 @@
 
 #include "EventBus.h"
 #include "Events/Beatify.h"
-#include "Events/BuyItems.h"
 #include "Events/ChangedInventoryItems.h"
 #include "Events/EatItem.h"
 #include "Events/ElberethQuery.h"
@@ -26,7 +25,6 @@ const int WantItems::ID = 6;
 const int Beatify::ID = 7;
 const int QuestStatus::ID = 8;
 const int ShoppingStatus::ID = 9;
-const int BuyItems::ID = 10;
 
 /* constructors/destructor */
 Event::Event(const std::string& name) : _name(name) {
