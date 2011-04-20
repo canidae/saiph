@@ -10,7 +10,6 @@
 #include "Events/QuestStatus.h"
 
 #include <sstream>
-//#include <stdlib.h>
 
 // pseudo direction
 #define LOOK ':'
@@ -51,8 +50,6 @@ void Explore::analyze() {
 	for (map<int, ExploreFocus>::iterator l = _explore_levels.begin(); l != _explore_levels.end(); ++l) {
 		Level& lv = World::level(l->first);
 		if (l->second.rank == INT_MAX) {
-			//static int _done[32];
-			//if (!(_done[l->first]++)) abort();
 			Debug::custom(name()) << "Nothing to do on level " << lv.depth() << "," << lv.branch() << endl;
 			continue;
 		}
@@ -61,7 +58,9 @@ void Explore::analyze() {
 		// don't search shallow levels if we can search deep ones
 		if (l->second.rank >= RRANK_SEARCH_MIN)
 			rank += 1000 * (100 - lv.depth());
-		if (_quest_status >= QUEST_STATUS_READY && _quest_status < QUEST_STATUS_COMPLETED && (l->first == _portal_level || lv.branch() == BRANCH_QUEST))
+		if (_quest_status == QUEST_STATUS_READY && l->first == _portal_level)
+			rank -= 5000000; // find the quest before exploring
+		if (_quest_status == QUEST_STATUS_GIVEN && lv.branch() == BRANCH_QUEST)
 			rank -= 5000000; // finish the quest before exploring
 		if (_quest_status == QUEST_STATUS_NOT_READY && lv.branch() == BRANCH_QUEST) {
 			Debug::custom(name()) << "Not ready to quest" << endl;
