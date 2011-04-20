@@ -2,6 +2,7 @@
 #define ACTION_PAY_H
 
 #include "World.h"
+#include "Inventory.h"
 #include "Actions/Action.h"
 
 namespace action {

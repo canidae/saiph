@@ -127,6 +127,8 @@ void Fight::analyze() {
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
 			continue; // don't attack friendlies except dwarfs
+		else if (m->second.symbol() == 'm' && m->second.color() == BLUE && Saiph::experience() < 3)
+			continue; // below level three, let strange objects be
 		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment() == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data() == NULL) {

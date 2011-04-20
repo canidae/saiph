@@ -58,8 +58,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Don't visit ad aerarium closets unless we can teleport or dig.
 
-* Fix wish for "Elbereth"
-
 * Flesh out "Roamer" ideas
 
 * Medusa analyzer.
@@ -67,5 +65,4 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 * 4/20 night results:
   - When there are E-ignoring monsters around, a good way to heal is to run away
   - Do not drop items which are (being w  (drop_armor_bug)
-  - When facing monsters that can kill us in one turn, E and run.  Or: ignore sleeping mimics in low-level shops.
   - We should not be pathing over magic portals to get to points on the same level
