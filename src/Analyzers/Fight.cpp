@@ -211,3 +211,43 @@ void Fight::onEvent(Event * const event) {
 		}
 	}
 }
+
+void Fight::parseMessages(const string& messages) {
+	vector<string> deaths;
+	string::size_type p, p2;
+	// Monnam is [killed/destroyed][ by the %s]!
+	// You [destroy/kill] mon_nam!
+	for (p = 0; ; ) {
+		if ((p2 = messages.find("  You kill ", p)) == string::npos) break;
+		p = messages.find("!  ", p2 + 11);
+		deaths.push_back(messages.substr(p2 + 11, p - (p2 + 11)));
+	}
+	for (p = 0; ; ) {
+		if ((p2 = messages.find("  You destroy ", p)) == string::npos) break;
+		p = messages.find("!  ", p2 + 14);
+		deaths.push_back(messages.substr(p2 + 14, p - (p2 + 14)));
+	}
+	for (p = 0; ; ) {
+		if ((p = messages.find(" is killed", p)) == string::npos) break;
+		p2 = messages.rfind("  ", p);
+		deaths.push_back(messages.substr(p2 + 2, p - (p2 + 2)));
+		p += 10;
+	}
+	for (p = 0; ; ) {
+		if ((p = messages.find(" is destroyed", p)) == string::npos) break;
+		p2 = messages.rfind("  ", p);
+		deaths.push_back(messages.substr(p2 + 2, p - (p2 + 2)));
+		p += 13;
+	}
+
+	for (vector<string>::iterator di = deaths.begin(); di != deaths.end(); ++di) {
+		map<string,int>::iterator bossit = _boss_last_seen.begin();
+		// needs to be a substring match for now because I don't feel like stripping off all the adjectives nethack puts on
+		while (bossit != _boss_last_seen.end() && di->find(bossit->first) == string::npos) ++bossit;
+		if (bossit != _boss_last_seen.end()) {
+			_boss_last_seen.erase(bossit);
+			Debug::custom(name()) << "We seem to have killed <" << *di << ">" << endl;
+			Debug::custom(name()) << "Removing it from the boss list." << endl;
+		}
+	}
+}
