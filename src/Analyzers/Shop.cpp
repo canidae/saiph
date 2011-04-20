@@ -8,6 +8,7 @@
 #include "Data/Pickaxe.h"
 #include "EventBus.h"
 #include "Events/ReceivedItems.h"
+#include "Events/ShopDetected.h"
 #include "Actions/Pay.h"
 #include "Actions/Look.h"
 #include "Actions/Move.h"
@@ -221,6 +222,8 @@ void Shop::analyze() {
 		}
 
 		Debug::custom(name()) << "Shop bounds are " << nw << " to " << se << endl;
+		ShopDetected ev(nw, se);
+		EventBus::broadcast(&ev);
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		for (p.row(nw.row()); p.row() <= se.row(); p.moveSouth()) {

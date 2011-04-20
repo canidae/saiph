@@ -17,6 +17,7 @@
 #include "Events/ChangedInventoryItems.h"
 #include "Events/ReceivedItems.h"
 #include "Events/WantItems.h"
+#include "Events/ShopDetected.h"
 
 using namespace analyzer;
 using namespace event;
@@ -28,6 +29,7 @@ Door::Door() : Analyzer("Door"), _unlock_tool_key(0) {
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
+	EventBus::registerEvent(ShopDetected::ID, this);
 }
 
 /* methods */
@@ -139,6 +141,22 @@ void Door::onEvent(Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if ((_unlock_tool_key != ILLEGAL_ITEM && i->first == _unlock_tool_key) || wantItem(i->second))
 				i->second.want(i->second.count());
+		}
+	} else if (event->id() == ShopDetected::ID) {
+		ShopDetected* e = static_cast<ShopDetected*> (event);
+		stack<Point> ps;
+		for (int x = e->ul().col(); x <= e->lr().col(); ++x) {
+			ps.push(Point(e->ul().row() - 1, x));
+			ps.push(Point(e->lr().row() + 1, x));
+		}
+		for (int y = e->ul().row() - 1; y <= e->lr().row() + 1; ++y) {
+			ps.push(Point(y, e->ul().col() - 1));
+			ps.push(Point(y, e->lr().col() + 1));
+		}
+		for (; !ps.empty(); ps.pop()) {
+			if (World::level().tile(ps.top()).symbol() != CLOSED_DOOR)
+				continue;
+			World::level().setDungeonSymbolValue(ps.top(), getDoorFlags(ps.top()) | DOOR_IS_SHOP);
 		}
 	}
 }

@@ -1,9 +1,7 @@
 Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Generalize pathfinding to generate arbitrary commands, not just directions.
-
   * Another good idea, tying in to item actions, is a tactical analyzer (to borrow a 523 term) that paths across water by fetching levitation boots.  I think the best way would be to accumulate water tiles in a queue and process them all (with triangle-inequality estimated distances) when a levitation item is determined to be reachable.
-
   * When Loot is interpreted as "having items just in case", a sensible implementation of bag use starts to suggest itself.
 
 * Can bagging of gold be handled without redoing Loot?
@@ -56,9 +54,7 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   - buy and strategically use magic lamps
   - fountain dipping!
 
-* Fix "Closed for inventory" processing; don't kick down the doors!
-  * Looks like the issue may be that saiph tries to open DOOR_SHOP_INVENTORY, fails, and sets it to _LOCKED, forgetting CfI status.
-  * Don't visit ad aerarium closets unless we can teleport or dig.
+* Don't visit ad aerarium closets unless we can teleport or dig.
 
 * Paranoid farlook @ every turn in minetown, even (especially) if we think they are hostile, if rawr doesn't get to it first
 

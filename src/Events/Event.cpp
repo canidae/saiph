@@ -9,6 +9,7 @@
 #include "Events/ItemsOnGround.h"
 #include "Events/QuestStatus.h"
 #include "Events/ReceivedItems.h"
+#include "Events/ShopDetected.h"
 #include "Events/StashChanged.h"
 #include "Events/WantItems.h"
 
@@ -25,6 +26,7 @@ const int WantItems::ID = 6;
 const int Beatify::ID = 7;
 const int QuestStatus::ID = 8;
 const int GotDiggingTool::ID = 9;
+const int ShopDetected::ID = 10;
 
 /* constructors/destructor */
 Event::Event(const std::string& name) : _name(name) {

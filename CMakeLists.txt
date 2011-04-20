@@ -165,6 +165,7 @@ set(HEADER_FILES
 	include/Events/ItemsOnGround.h
 	include/Events/QuestStatus.h
 	include/Events/ReceivedItems.h
+	include/Events/ShopDetected.h
 	include/Events/StashChanged.h
 	include/Events/WantItems.h
 )
