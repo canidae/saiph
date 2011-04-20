@@ -71,6 +71,8 @@ bool Shop::inBlockedDoorway() {
 }
 
 void Shop::setShopping(bool newState) {
+	if (_shopping != newState)
+		Debug::custom(name()) << "Shop status is now " << newState << endl;
 	_shopping = newState;
 }
 

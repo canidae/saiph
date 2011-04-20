@@ -129,7 +129,7 @@ void Loot::onEvent(Event * const event) {
 				if (index == UCHAR_MAX || i == e->items().end()) {
 					EventBus::broadcast(static_cast<Event*> (&wi));
 					for (map<unsigned char, Item>::iterator i = wi.items().begin(); i != wi.items().end(); ++i) {
-						if (i->second.want() <= 0)
+						if (i->second.want() <= 0 || i->second.count() <= 0)
 							continue;
 						/* someone want an item in this stash */
 						World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_LOOT, safe_stash)));

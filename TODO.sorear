@@ -74,7 +74,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   * Explore should not go down from Q1 until quest_accepted
   * Quest analyzer needs to path to chest if xl14 & !quest_accepted
   * Quest analyzer should pick up qarts
-  * Add a DestroyBoulders analysis
 
 * Pick handling ideas
   * Hysteretic process - when saiph enters the "inner shop zone", disable pick want and drop our picks.  When she exits/would exit(?) "outer shop zone", reenable pick wanting.

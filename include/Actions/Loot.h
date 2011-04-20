@@ -96,7 +96,7 @@ namespace action {
 				/* pick up stuff that was wanted by analyzers */
 				std::ostringstream tmp;
 				for (std::map<unsigned char, Item>::iterator i = wi.items().begin(); i != wi.items().end(); ++i) {
-					if (i->second.want() <= 0)
+					if (i->second.want() <= 0 || i->second.count() <= 0)
 						continue;
 					tmp.str("");
 					if (i->second.want() >= i->second.count())

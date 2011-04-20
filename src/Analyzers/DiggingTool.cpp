@@ -41,7 +41,7 @@ void DiggingTool::onEvent(Event * const event) {
 
 		if (key >= 0) {
 			Item& item = e->items()[(unsigned char)key];
-			item.want(item.count());
+			item.want(min(1, item.count()));
 		}
 	}
 }
@@ -54,7 +54,6 @@ int DiggingTool::scoreDigger(const Item& item) {
 	if (item.beatitude() != BEATITUDE_UNKNOWN) score += 2;
 	// prefer pick-axes - they're lighter
 	if (item.name() == "pick-axe") score++;
-	Debug::custom(name()) << "Scoring " << item.name() << " at " << score << endl;
 	return score;
 }
 
@@ -76,7 +75,6 @@ void DiggingTool::rankDiggers(int& key, int& score, const map<unsigned char, Ite
 		}
 	}
 
-	Debug::custom(name()) << "Best digger is " << key << " with score " << score << endl;
 }
 
 void DiggingTool::findDigger() {
