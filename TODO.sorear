@@ -49,7 +49,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * sorph ate a mimic in a shop, probably because it was mimicing stairs down and overwrote SHOP_TILE
   - the right fix here is to make an in_shop bitfield, because it's not mutually exclusive with anything
-  - instead I'll make Shop 'p'ay if the shopkeeper is blocking the doorway and we haven't tried to pay in 10 turns
 
 * death ray mitigation strategies
   - buy and MR-test all cloaks
@@ -58,8 +57,6 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
   - fountain dipping!
 
 * Don't visit ad aerarium closets unless we can teleport or dig.
-
-* Paranoid farlook @ every turn in minetown, even (especially) if we think they are hostile, if rawr doesn't get to it first
 
 * Fix wish for "Elbereth"
 

@@ -169,22 +169,31 @@ void Shop::analyze() {
 	//			return;
 	//		}
 	//	}
+
+	if (World::level().tile().symbol() == SHOP_TILE) {
+		unsigned int reach_any = UNREACHABLE;
+		bool adj_shk = false;
+
+		for (map<Point,int>::const_iterator ppt = World::level().symbols(OPEN_DOOR).begin(); ppt != World::level().symbols(OPEN_DOOR).end(); ++ppt)
+			reach_any = min(reach_any, World::level().tile(ppt->first).cost());
+
+		for (map<Point, Monster>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit)
+			if (Point::gridDistance(mit->first, Saiph::position()) == 1)
+				adj_shk = true;
+
+		if (adj_shk && reach_any >= UNPASSABLE && World::turn() - _payed > 10) {
+			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
+			Debug::custom(name()) << "Setting action to pay." << endl;
+		}
+	}
+
 	if (World::level().tile().symbol() != FLOOR && World::level().tile().symbol() != UNKNOWN_TILE)
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (!m->second.shopkeeper() || !m->second.visible())
 			continue;
-			
-	if (World::shortestPath('-').cost() < UNREACHABLE) {
-		/* we probably don't owe money, since we can leave */
-	} else {
-		/* we can't leave! let's pay for what we bought */
-		if (World::turn() - payed > 10) { // do other things too
-			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
-			payed = World::turn();
-		}
-	}
+
 		/* figure out if we're in the same room as the shopkeeper */
 		Point nw = Saiph::position();
 		Point se = Saiph::position();
@@ -232,3 +241,9 @@ void Shop::analyze() {
 		}
 	}
 }
+
+void Shop::actionFailed() {
+	// Try something else for a while
+	_payed = World::turn();
+}
+

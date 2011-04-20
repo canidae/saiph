@@ -38,15 +38,17 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-            if (messages.find(MESSAGE_ITEMIZED_BILLING) != std::string::npos) {
+			if (messages.find(MESSAGE_ITEMIZED_BILLING) != std::string::npos) {
 				/* asking if we want to use itemized billing */
-                _sequence = 1;
+				_sequence = 1;
 			} else if (messages.find(MESSAGE_PAY) != std::string::npos) {
 				/* we do want to pay for this item */
 				_sequence = 2;
 			} else {
 				/* we finished paying */
+				if (_sequence != 2) failed();
 				_sequence = 3;
+				Inventory::update();
 			}
 		}
 

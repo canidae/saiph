@@ -28,13 +28,14 @@ namespace analyzer {
 		void analyze();
 		void lastChance(action::Action *const);
 		void parseMessages(const std::string&);
+		void actionFailed();
 
 		void onEvent(event::Event * const event);
 
 	private:
 		bool _shopping;
 		Coordinate _tentative_shop_door;
-		int payed;
+		int _payed;
 		bool inBlockedDoorway();
 		int nearShop(const Coordinate&);
 		void dropPicks();
