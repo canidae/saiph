@@ -94,6 +94,7 @@ set(HEADER_FILES
 #	include/Analyzers/Ring.h
 #	include/Analyzers/Rub.h
 #	include/Analyzers/Scroll.h
+	include/Analyzers/Quest.h
 	include/Analyzers/Shop.h
 	include/Analyzers/Sokoban.h
 #	include/Analyzers/Throne.h
@@ -216,6 +217,7 @@ set(SOURCE_FILES
 #	src/Analyzers/Ring.cpp
 #	src/Analyzers/Rub.cpp
 #	src/Analyzers/Scroll.cpp
+	src/Analyzers/Quest.cpp
 	src/Analyzers/Shop.cpp
 	src/Analyzers/Sokoban.cpp
 #	src/Analyzers/Throne.cpp

@@ -17,6 +17,7 @@
 #include "Analyzers/Lamp.h"
 #include "Analyzers/Loot.h"
 #include "Analyzers/MonsterInfo.h"
+#include "Analyzers/Quest.h"
 #include "Analyzers/Shop.h"
 #include "Analyzers/Sokoban.h"
 #include "Analyzers/Vault.h"
@@ -57,6 +58,7 @@ void Analyzer::init() {
 	_analyzers.push_back(new Lamp());
 	_analyzers.push_back(new Loot());
 	_analyzers.push_back(new MonsterInfo());
+	_analyzers.push_back(new Quest());
 	_analyzers.push_back(new Shop());
 	_analyzers.push_back(new Sokoban());
 	_analyzers.push_back(new Vault());
