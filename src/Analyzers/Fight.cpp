@@ -175,7 +175,7 @@ void Fight::analyze() {
 		if (tile.cost() >= UNPASSABLE)
 			continue; // can't move to monster
 		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
-		priority = action::Move::calculatePriority(priority, tile.cost());
+		priority = action::Move::calculatePriority(priority, 25 * tile.cost());
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, priority, false)));
 		Debug::custom(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
