@@ -57,9 +57,25 @@ timeval World::_start_time;
 vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
 Coordinate World::_branches[BRANCHES] = {Coordinate()};
+Point World::_cout_cursor;
+int World::_cout_last_color;
 
 static struct termios _save_termios, _current_termios;
 static int _current_speed;
+
+const char* World::_ansi_colors[] = {
+	/*   0 */ "0", "0;1", "", "", "", "", "", "0;7", "", "",
+	/*  10 */ "", "", "", "", "", "", "", "", "", "",
+	/*  20 */ "", "", "", "", "", "", "", "", "", "",
+	/*  30 */ "0;30", "0;31", "0;32", "0;33", "0;34", "0;35", "0;36", "0;37", "", "",
+	/*  40 */ "0;7;30", "0;7;31", "0;7;32", "0;7;33", "0;7;34", "0;7;35", "0;7;36", "0;7;37", "", "",
+	/*  50 */ "", "", "", "", "", "", "", "", "", "",
+	/*  60 */ "", "", "", "", "", "", "", "", "", "",
+	/*  70 */ "", "", "", "", "", "", "", "", "", "",
+	/*  80 */ "", "", "", "", "", "", "", "", "", "",
+	/*  90 */ "0;1;30", "0;1;31", "0;1;32", "0;1;33", "0;1;34", "0;1;35", "0;1;36", "0;1;37", "", "",
+	/* 100 */ "1;7;30", "1;7;31", "1;7;32", "1;7;33", "1;7;34", "1;7;35", "1;7;36", "1;7;37",
+};
 
 /* methods */
 char World::view(const Point& point) {
@@ -720,6 +736,9 @@ void World::run(int speed) {
 
 /* private methods */
 void World::addChangedLocation(const Point& point) {
+	coutGoto(1 + point.row(), 1 + point.col());
+	coutOneChar(_color[point.row()][point.col()], _view[point.row()][point.col()]);
+
 	/* add a location changed since last frame unless it's already added */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END || _changed[point.row()][point.col()])
 		return;
@@ -816,6 +835,27 @@ void World::detectPosition() {
 
 	/* set new position for saiph */
 	Saiph::position(Coordinate(found, _cursor));
+}
+
+void World::coutSetColor(int color) {
+	if (color != _cout_last_color) {
+		cout << "\033[" << _ansi_colors[color] << 'm';
+		_cout_last_color = color;
+	}
+}
+
+void World::coutOneChar(int color, unsigned char ch) {
+	coutSetColor(color);
+	cout << (unsigned char)((ch >= ' ' && ch <= '~') ? ch : '?');
+	_cout_cursor.moveEast();
+}
+
+void World::coutGoto(int row, int col) {
+	if (row != _cout_cursor.row() || col != _cout_cursor.col()) {
+		cout << "\033[" << row << ';' << col << 'H';
+		_cout_cursor.row(row);
+		_cout_cursor.col(row);
+	}
 }
 
 void World::dumpMap(Level& lv) {
@@ -1131,20 +1171,27 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				if (_data[*pos - 1] == '[') {
 					/* erase everything below current position */
 					for (int r = _cursor.row() + 1; r < ROWS; ++r) {
-						for (int c = 0; c < COLS; ++c)
+						for (int c = 0; c < COLS; ++c) {
 							_view[r][c] = ' ';
+							addChangedLocation(Point(r,c));
+						}
 					}
 				} else if (_data[*pos - 1] == '1') {
 					/* erase everything above current position */
 					for (int r = _cursor.row() - 1; r >= 0; --r) {
-						for (int c = 0; c < COLS; ++c)
+						for (int c = 0; c < COLS; ++c) {
 							_view[r][c] = ' ';
+							addChangedLocation(Point(r,c));
+						}
 					}
 				} else if (_data[*pos - 1] == '2') {
 					/* erase entire display */
-					memset(_view, ' ', sizeof (_view));
-					for (int r = 0; r < ROWS; ++r)
-						_view[r][COLS] = '\0';
+					for (int r = 0; r < ROWS; ++r) {
+						for (int c = 0; c < COLS; ++c) {
+							_view[r][c] = ' ';
+							addChangedLocation(Point(r,c));
+						}
+					}
 					_cursor.row(0);
 					_cursor.col(0);
 					*color = 0;
@@ -1158,16 +1205,22 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				/* erase in line */
 				if (_data[*pos - 1] == '[') {
 					/* erase everything to the right */
-					for (int c = _cursor.col(); c < COLS; ++c)
+					for (int c = _cursor.col(); c < COLS; ++c) {
 						_view[_cursor.row()][c] = ' ';
+						addChangedLocation(Point(_cursor.row(),c));
+					}
 				} else if (_data[*pos - 1] == '1') {
 					/* erase everything to the left */
-					for (int c = 0; c < _cursor.col(); ++c)
+					for (int c = 0; c < _cursor.col(); ++c) {
 						_view[_cursor.row()][c] = ' ';
+						addChangedLocation(Point(_cursor.row(),c));
+					}
 				} else if (_data[*pos - 1] == '2') {
 					/* erase entire line */
-					for (int c = 0; c < COLS; ++c)
+					for (int c = 0; c < COLS; ++c) {
 						_view[_cursor.row()][c] = ' ';
+						addChangedLocation(Point(_cursor.row(),c));
+					}
 				} else {
 					Debug::error() << "Unhandled sequence: " << &_data[*pos] << endl;
 					destroy();
@@ -1287,9 +1340,6 @@ void World::update() {
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
 	/* also, we do this in two loops because otherwise it flickers a lot */
-	for (int a = 0; a < _data_size; ++a)
-		cout << _data[a];
-	cout.flush(); // same reason as in saiph.dumpMaps()
 	Debug::rawCharArray(_data, 0, _data_size);
 	for (int pos = 0; pos < _data_size; ++pos) {
 		switch (_data[pos]) {
@@ -1343,6 +1393,10 @@ void World::update() {
 			break;
 		}
 	}
+
+	coutSetColor(NO_COLOR);
+	coutGoto(_cursor.row()+1, _cursor.col()+1);
+	cout.flush();
 
 	fetchMessages();
 

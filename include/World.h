@@ -96,6 +96,9 @@ private:
 	static int _last_action_id;
 	static unsigned int _internal_turn;
 	static Coordinate _branches[BRANCHES];
+	static Point _cout_cursor;
+	static int _cout_last_color;
+	static const char *_ansi_colors[INVERSE_BOLD_WHITE+1];
 
 	static void dumpMap(Level& which);
 	static void dumpMaps();
@@ -103,6 +106,9 @@ private:
 	static void initTermios();
 	static void endTermios();
 	static void setKeyWait(bool);
+	static void coutSetColor(int);
+	static void coutOneChar(int,unsigned char);
+	static void coutGoto(int,int);
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
