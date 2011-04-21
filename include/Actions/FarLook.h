@@ -1,11 +1,9 @@
 #ifndef ACTION_FAR_LOOK_H
 #define	ACTION_FAR_LOOK_H
 
-#include "Globals.h"
-#include "Point.h"
-#include "Saiph.h"
-#include "World.h"
 #include "Actions/Action.h"
+
+class Point;
 
 namespace action {
 	class FarLook : public Action {

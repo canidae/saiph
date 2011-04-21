@@ -2,7 +2,6 @@
 #define ACTION_KICK_H
 
 #include "Actions/Action.h"
-#include "Globals.h"
 
 namespace action {
 	class Kick : public Action {

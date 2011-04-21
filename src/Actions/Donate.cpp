@@ -1,5 +1,8 @@
 #include "Actions/Donate.h"
 
+#include <sstream>
+#include "Globals.h"
+
 using namespace action;
 
 /* constructors/destructor */

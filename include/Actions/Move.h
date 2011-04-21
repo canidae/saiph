@@ -1,11 +1,9 @@
 #ifndef ACTION_MOVE_H
 #define ACTION_MOVE_H
 
-#include "Actions/Action.h"
-#include "Globals.h"
 #include "Point.h"
 #include "Tile.h"
-#include "World.h"
+#include "Actions/Action.h"
 
 #define MOVE_COST_MEDIAN 200
 #define MOVE_WHERE_TO_GO "  Where do you want to travel to?  "

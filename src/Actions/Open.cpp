@@ -1,5 +1,7 @@
 #include "Actions/Open.h"
 
+#include "Globals.h"
+
 using namespace action;
 
 /* constructors/destructor */

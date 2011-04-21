@@ -1,8 +1,6 @@
 #ifndef ACTION_WIELD_H
 #define	ACTION_WIELD_H
 
-#include "Inventory.h"
-#include "World.h"
 #include "Actions/Action.h"
 
 /* messages */

@@ -1,8 +1,6 @@
 #ifndef ACTION_PRAY_H
 #define ACTION_PRAY_H
 
-#include "Saiph.h"
-#include "World.h"
 #include "Actions/Action.h"
 
 #define PRAY_PRAYER_TIMEOUT 1000

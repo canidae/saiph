@@ -3,16 +3,18 @@
 #include <stdlib.h>
 #include "Debug.h"
 #include "Globals.h"
+#include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
-#include "Data/Pickaxe.h"
 #include "EventBus.h"
-#include "Events/ReceivedItems.h"
-#include "Events/ShopDetected.h"
 #include "Actions/Pay.h"
 #include "Actions/Look.h"
 #include "Actions/Move.h"
 #include "Actions/Drop.h"
+#include "Data/Pickaxe.h"
+#include "Events/ReceivedItems.h"
+#include "Events/ShopDetected.h"
+#include "Events/WantItems.h"
 
 // Shop divides space into three regions.  "In shop" is SHOP_TILE and the walls and doors adjacent to them; "Threshold" is 1 square further out; "Out shop" is everything else.
 // Shop maintains a "shop mode" bit, which serves mostly to control whether saiph wants digging tools.  Shop mode must be on in shops and off outside them.

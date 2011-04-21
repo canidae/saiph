@@ -1,5 +1,7 @@
 #include "Actions/Eat.h"
 
+#include "Inventory.h"
+
 using namespace action;
 
 /* constructors/destructor */

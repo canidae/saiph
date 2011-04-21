@@ -1,5 +1,11 @@
 #include "Actions/Drop.h"
 
+#include <sstream>
+#include "EventBus.h"
+#include "Inventory.h"
+#include "World.h"
+#include "Events/WantItems.h"
+
 using namespace action;
 
 /* constructors/destructor */

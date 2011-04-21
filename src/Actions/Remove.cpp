@@ -1,5 +1,8 @@
 #include "Actions/Remove.h"
 
+#include "Inventory.h"
+#include "World.h"
+
 using namespace action;
 
 /* constructors/destructor */

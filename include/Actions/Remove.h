@@ -1,8 +1,6 @@
 #ifndef ACTION_REMOVE_H
 #define ACTION_REMOVE_H
 
-#include "Inventory.h"
-#include "World.h"
 #include "Actions/Action.h"
 
 namespace action {

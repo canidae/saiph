@@ -1,7 +1,6 @@
 #ifndef ACTION_EAT_CORPSE_H
 #define ACTION_EAT_CORPSE_H
 
-#include "World.h"
 #include "Actions/Action.h"
 
 namespace action {

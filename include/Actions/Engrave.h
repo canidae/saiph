@@ -1,10 +1,6 @@
 #ifndef ACTION_ENGRAVE_H
 #define ACTION_ENGRAVE_H
 
-#include "Saiph.h"
-#include "World.h"
-#include "Debug.h"
-#include "Inventory.h"
 #include "Actions/Action.h"
 
 // TODO: (can't engrave)

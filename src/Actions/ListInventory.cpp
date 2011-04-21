@@ -1,5 +1,7 @@
 #include "Actions/ListInventory.h"
 
+#include "World.h"
+
 using namespace action;
 
 /* constructors/destructor */

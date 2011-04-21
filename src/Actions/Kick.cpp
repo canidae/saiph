@@ -1,5 +1,7 @@
 #include "Actions/Kick.h"
 
+#include "Globals.h"
+
 using namespace action;
 
 /* constructors/destructor */

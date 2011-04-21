@@ -1,5 +1,8 @@
 #include "Actions/Move.h"
 
+#include "World.h"
+#include "Analyzers/Analyzer.h"
+
 using namespace action;
 
 /* constructors/destructor */

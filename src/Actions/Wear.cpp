@@ -1,5 +1,8 @@
 #include "Actions/Wear.h"
 
+#include "Inventory.h"
+#include "World.h"
+
 using namespace action;
 
 /* constructors/destructor */

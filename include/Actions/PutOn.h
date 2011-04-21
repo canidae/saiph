@@ -1,8 +1,6 @@
 #ifndef ACTION_PUT_ON_H
 #define ACTION_PUT_ON_H
 
-#include "Inventory.h"
-#include "World.h"
 #include "Actions/Action.h"
 
 namespace action {

@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <stdlib.h>
+#include "EventBus.h"
+#include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Apply.h"
@@ -12,7 +14,6 @@
 #include "Actions/Eat.h"
 #include "Actions/Rest.h"
 #include "Data/UnicornHorn.h"
-#include "EventBus.h"
 #include "Events/Beatify.h"
 #include "Events/ChangedInventoryItems.h"
 #include "Events/ElberethQuery.h"

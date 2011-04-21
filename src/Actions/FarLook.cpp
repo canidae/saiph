@@ -1,5 +1,7 @@
 #include "Actions/FarLook.h"
 
+#include "World.h"
+
 using namespace action;
 
 /* constructors/destructor */

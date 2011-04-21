@@ -1,5 +1,12 @@
 #include "Actions/Loot.h"
 
+#include <map>
+#include <sstream>
+#include "EventBus.h"
+#include "World.h"
+#include "Actions/Look.h"
+#include "Events/WantItems.h"
+
 using namespace action;
 
 /* constructors/destructor */

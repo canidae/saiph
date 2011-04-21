@@ -2,8 +2,6 @@
 #define ACTION_SEARCH_H
 
 #include "Actions/Action.h"
-#include "Saiph.h"
-#include "World.h"
 
 namespace action {
 	class Search : public Action {

@@ -1,5 +1,7 @@
 #include "Actions/ListPlayerAttributes.h"
 
+#include "World.h"
+
 using namespace action;
 
 /* constructors/destructor */

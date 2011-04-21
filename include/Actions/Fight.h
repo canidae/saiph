@@ -2,7 +2,6 @@
 #define ACTION_FIGHT_H
 
 #include "Actions/Action.h"
-#include "Globals.h"
 
 namespace action {
 	class Fight : public Action {

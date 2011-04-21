@@ -1,8 +1,6 @@
 #ifndef ACTION_NAME_H
 #define ACTION_NAME_H
 
-#include "Inventory.h"
-#include "World.h"
 #include "Actions/Action.h"
 
 namespace action {

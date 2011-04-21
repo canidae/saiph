@@ -1,5 +1,7 @@
 #include "Actions/Fight.h"
 
+#include "Globals.h"
+
 using namespace action;
 
 /* constructors/destructor */

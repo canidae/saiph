@@ -1,5 +1,6 @@
 #include "Actions/Action.h"
 
+#include "Analyzers/Analyzer.h"
 #include "Actions/Answer.h"
 #include "Actions/Apply.h"
 #include "Actions/ApplyInDirection.h"

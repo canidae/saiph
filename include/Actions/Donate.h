@@ -1,8 +1,6 @@
 #ifndef ACTION_DONATE_H
 #define	ACTION_DONATE_H
 
-#include <sstream>
-#include "Globals.h"
 #include "Actions/Action.h"
 
 namespace action {

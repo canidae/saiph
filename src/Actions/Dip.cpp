@@ -1,5 +1,7 @@
 #include "Actions/Dip.h"
 
+#include "Inventory.h"
+
 using namespace action;
 
 /* constructors/destructor */

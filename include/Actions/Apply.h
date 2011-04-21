@@ -1,7 +1,6 @@
 #ifndef ACTION_APPLY_H
 #define ACTION_APPLY_H
 
-#include "Inventory.h"
 #include "Actions/Action.h"
 
 namespace action {

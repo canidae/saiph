@@ -1,17 +1,8 @@
 #ifndef ACTION_LOOT_H
 #define ACTION_LOOT_H
 
-#include <map>
 #include <queue>
-#include <sstream>
-#include <vector>
-#include "EventBus.h"
-#include "Inventory.h"
-#include "Item.h"
-#include "World.h"
 #include "Actions/Action.h"
-#include "Actions/Look.h"
-#include "Events/WantItems.h"
 
 namespace action {
 	class Loot : public Action {
