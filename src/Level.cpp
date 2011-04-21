@@ -631,7 +631,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			/* remove monster from _map */
 			_map[nearest->first.row()][nearest->first.col()].monster(ILLEGAL_MONSTER);
 			/* update monster */
-			nearest->second.lastSeen(World::turn());
+			nearest->second.lastMoved(World::turn());
 			_monsters[point] = nearest->second;
 			_monsters.erase(nearest);
 		} else {
@@ -661,6 +661,7 @@ void Level::updateMonsters() {
 		m->second.visible((m->first != Saiph::position() && symbol == m->second.symbol() && color == m->second.color()));
 		if (m->second.visible()) {
 			/* monster still visible, don't remove it */
+			m->second.lastSeen(World::turn());
 			++m;
 			continue;
 		} else if (!open && Point::gridDistance(Saiph::position(), m->first) > 1) {

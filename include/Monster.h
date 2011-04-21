@@ -21,6 +21,8 @@ public:
 	int attitude(int attitude);
 	int lastSeen() const;
 	int lastSeen(int last_seen);
+	int lastMoved() const;
+	int lastMoved(int last_moved);
 	bool shopkeeper() const;
 	bool shopkeeper(bool shopkeeper);
 	bool priest() const;
@@ -34,6 +36,7 @@ private:
 	bool _visible;
 	int _attitude;
 	int _last_seen;
+	int _last_moved;
 	bool _shopkeeper;
 	bool _priest;
 	const data::Monster* _data;

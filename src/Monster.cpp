@@ -2,7 +2,7 @@
 #include "Data/Monster.h"
 
 /* constructors/destructor */
-Monster::Monster(unsigned char symbol, int color, int last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::monster(symbol, color)) {
+Monster::Monster(unsigned char symbol, int color, int last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _last_moved(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::monster(symbol, color)) {
 }
 
 /* methods */
@@ -49,6 +49,15 @@ int Monster::lastSeen() const {
 int Monster::lastSeen(int last_seen) {
 	_last_seen = last_seen;
 	return this->lastSeen();
+}
+
+int Monster::lastMoved() const {
+	return _last_moved;
+}
+
+int Monster::lastMoved(int last_moved) {
+	_last_moved = last_moved;
+	return this->lastMoved();
 }
 
 bool Monster::shopkeeper() const {
