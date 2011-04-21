@@ -173,6 +173,8 @@ void World::init(const string& logfile, int connection_type) {
 	/* set start time */
 	gettimeofday(&World::_start_time, NULL);
 
+	cout << "\033[2J";
+
 	/* fetch the first "frame" */
 	update();
 }
@@ -555,7 +557,6 @@ void World::initTermios() {
 	_current_termios.c_iflag &= ~IXON;
 	_current_termios.c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN);
 	_current_termios.c_cc[VTIME] = 0;
-	cout << "\033[2J";
 }
 
 void World::setKeyWait(bool wait) {
@@ -851,16 +852,18 @@ void World::coutSetColor(int color) {
 }
 
 void World::coutOneChar(int color, unsigned char ch) {
+	//cout << "%c" << color << ',' << ch << '%';
 	coutSetColor(color);
 	cout << (unsigned char)((ch >= ' ' && ch <= '~') ? ch : '?');
 	_cout_cursor.moveEast();
 }
 
 void World::coutGoto(int row, int col) {
+	//cout << "%g" << row << ',' << col << '%';
 	if (row != _cout_cursor.row() || col != _cout_cursor.col()) {
 		cout << "\033[" << row << ';' << col << 'H';
 		_cout_cursor.row(row);
-		_cout_cursor.col(row);
+		_cout_cursor.col(col);
 	}
 }
 
