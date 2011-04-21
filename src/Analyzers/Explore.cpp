@@ -171,6 +171,8 @@ ExploreFocus Explore::analyzeLevel() {
 			continue; // we know where this portal lead
 		if (s->first == Saiph::position())
 			continue; // oscillate if the trap doesn't trigger
+		if (World::level().identifier() == _portal_level && _quest_status == QUEST_STATUS_NOT_READY)
+			continue; // No.
 		addOption(best, RRANK_STAIR, s->first, NOWHERE, "finding endpoint of magic portal");
 	}
 

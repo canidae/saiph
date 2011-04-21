@@ -72,6 +72,8 @@ void Quest::parseMessages(const string& messages) {
 void Quest::analyze() {
 	if (Saiph::experience() >= 14 && _status == QUEST_STATUS_NOT_READY)
 		setStatus(_portal_level, QUEST_STATUS_READY);
+	else if (Saiph::experience() < 14 && _status == QUEST_STATUS_READY)
+		setStatus(_portal_level, QUEST_STATUS_NOT_READY);
 
 	// our only active job is to chat with the leader
 	if (World::level().depth() != 1 || World::level().branch() != BRANCH_QUEST || _status != QUEST_STATUS_READY)
