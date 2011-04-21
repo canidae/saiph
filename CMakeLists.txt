@@ -191,6 +191,39 @@ set(SOURCE_FILES
 	src/World.cpp
 	# Actions
 	src/Actions/Action.cpp
+	src/Actions/Answer.cpp
+	src/Actions/Apply.cpp
+	src/Actions/ApplyInDirection.cpp
+	src/Actions/Call.cpp
+	src/Actions/Dip.cpp
+	src/Actions/Donate.cpp
+	src/Actions/Drop.cpp
+	src/Actions/DropGold.cpp
+	src/Actions/Eat.cpp
+	src/Actions/EatCorpse.cpp
+	src/Actions/Engrave.cpp
+	src/Actions/Enhance.cpp
+	src/Actions/FarLook.cpp
+	src/Actions/Fight.cpp
+	src/Actions/Kick.cpp
+	src/Actions/ListInventory.cpp
+	src/Actions/ListPlayerAttributes.cpp
+	src/Actions/Look.cpp
+	src/Actions/Loot.cpp
+	src/Actions/Move.cpp
+	src/Actions/Name.cpp
+	src/Actions/Open.cpp
+	src/Actions/Pay.cpp
+	src/Actions/Pray.cpp
+	src/Actions/PutOn.cpp
+	src/Actions/Remove.cpp
+	src/Actions/Rest.cpp
+	src/Actions/Search.cpp
+	src/Actions/TakeOff.cpp
+	src/Actions/Throw.cpp
+	src/Actions/Unlock.cpp
+	src/Actions/Wear.cpp
+	src/Actions/Wield.cpp
 	# Analyzers
 	src/Analyzers/Amulet.cpp
 	src/Analyzers/Analyzer.cpp

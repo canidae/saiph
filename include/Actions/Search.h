@@ -2,40 +2,20 @@
 #define ACTION_SEARCH_H
 
 #include "Actions/Action.h"
+#include "Saiph.h"
+#include "World.h"
 
 namespace action {
-
 	class Search : public Action {
 	public:
 		static const int ID;
 
-		Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _turn_before_search(World::turn()), _search("16s", priority) {
-		}
+		Search(analyzer::Analyzer* analyzer, int priority);
+		virtual ~Search();
 
-		virtual ~Search() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _search;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string&) {
-			if (_sequence == 0) {
-				/* increase search counter on level */
-				World::level().increaseAdjacentSearchCount(Saiph::position(), World::turn() - _turn_before_search);
-				_sequence = 1;
-			}
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string&);
 
 	private:
 		const int _turn_before_search;

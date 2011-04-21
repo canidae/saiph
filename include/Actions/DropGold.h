@@ -4,44 +4,16 @@
 #include "Actions/Action.h"
 
 namespace action {
-
 	class DropGold : public Action {
 	public:
 		static const int ID;
 
-		DropGold(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _drop("d", priority), _gold("$", PRIORITY_CONTINUE_ACTION) {
-		}
+		DropGold(analyzer::Analyzer* analyzer, int priority);
+		virtual ~DropGold();
 
-		virtual ~DropGold() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _drop;
-
-			case 1:
-				return _gold;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string& messages) {
-			if (messages.find(MESSAGE_WHAT_TO_DROP) != std::string::npos) {
-				_sequence = 1;
-			} else if (_sequence == 1) {
-				_sequence = 2;
-			} else {
-				failed();
-				_sequence = 2;
-			}
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string& messages);
 
 	private:
 		const Command _drop;

@@ -2,46 +2,20 @@
 #define	ACTION_WEAR_H
 
 #include "Inventory.h"
+#include "World.h"
 #include "Actions/Action.h"
 
 namespace action {
-
 	class Wear : public Action {
 	public:
 		static const int ID;
 
-		Wear(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _wear("W", priority), _wear_key(key, PRIORITY_CONTINUE_ACTION) {
-		}
+		Wear(analyzer::Analyzer* analyzer, unsigned char key, int priority);
+		virtual ~Wear();
 
-		virtual ~Wear() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _wear;
-
-			case 1:
-				return _wear_key;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string& messages) {
-			if (World::question() && messages.find(MESSAGE_WHAT_TO_WEAR) != std::string::npos) {
-				_sequence = 1;
-			} else if (_sequence == 1) {
-				/* also mark the inventory dirty when we do this */
-				Inventory::update();
-				_sequence = 2;
-			}
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string& messages);
 
 	private:
 		const Command _wear;

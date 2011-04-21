@@ -2,6 +2,7 @@
 #define	ACTION_WIELD_H
 
 #include "Inventory.h"
+#include "World.h"
 #include "Actions/Action.h"
 
 /* messages */
@@ -9,43 +10,16 @@
 #define WIELD_WEAPON_CURSED " is welded to your "
 
 namespace action {
-
 	class Wield : public Action {
 	public:
 		static const int ID;
 
-		Wield(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _wield("w", priority), _wield_key(key, PRIORITY_CONTINUE_ACTION) {
-		}
+		Wield(analyzer::Analyzer* analyzer, unsigned char key, int priority);
+		virtual ~Wield();
 
-		virtual ~Wield() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _wield;
-
-			case 1:
-				return _wield_key;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string& messages) {
-			if (World::question() && messages.find(MESSAGE_WHAT_TO_WIELD) != std::string::npos) {
-				_sequence = 1;
-			} else if (_sequence == 1 || messages.find(WIELD_WEAPON_CURSED) != std::string::npos) {
-				/* also mark the inventory dirty when we do this */
-				Inventory::update();
-				_sequence = 2;
-			}
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string& messages);
 
 	private:
 		const Command _wield;

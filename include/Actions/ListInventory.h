@@ -5,40 +5,16 @@
 #include "Actions/Action.h"
 
 namespace action {
-
 	class ListInventory : public Action {
 	public:
 		static const int ID;
 
-		ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_inventory("i", PRIORITY_LIST_INVENTORY), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
-		}
+		ListInventory(analyzer::Analyzer* analyzer);
+		virtual ~ListInventory();
 
-		virtual ~ListInventory() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _list_inventory;
-
-			case 1:
-				return _close_page;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string&) {
-			if (_sequence == 0)
-				_sequence = 1;
-			else if (_sequence == 1 && !World::menu())
-				_sequence = 2;
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string&);
 
 	private:
 		const Command _list_inventory;
