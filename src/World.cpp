@@ -114,6 +114,13 @@ Level& World::level(int level) {
 	return _levels[level];
 }
 
+int World::findLevel(int branch, int depth) {
+	for (unsigned i = 0; i < _levels.size(); ++i)
+		if (_levels[i].branch() == branch && _levels[i].depth() == depth)
+			return i;
+	return -1;
+}
+
 const vector<Level>& World::levels() {
 	return _levels;
 }

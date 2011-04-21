@@ -48,6 +48,7 @@ public:
 	static const Coordinate& branchCoordinate(int branch);
 	static Level& level();
 	static Level& level(int level);
+	static int findLevel(int branch, int depth);
 	static const std::vector<Level>& levels();
 	static int currentPriority();
 	static int lastActionID();

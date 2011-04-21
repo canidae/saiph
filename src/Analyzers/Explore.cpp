@@ -58,10 +58,10 @@ void Explore::analyze() {
 		// don't search shallow levels if we can search deep ones
 		if (l->second.rank >= RRANK_SEARCH_MIN)
 			rank += 1000 * (100 - lv.depth());
-		if (_quest_status == QUEST_STATUS_READY && l->first == _portal_level)
+		if (_quest_status == QUEST_STATUS_READY && l->first == _portal_level && World::findLevel(BRANCH_QUEST, 1) < 0)
 			rank -= 5000000; // find the quest before exploring
-		if (_quest_status == QUEST_STATUS_GIVEN && lv.branch() == BRANCH_QUEST)
-			rank -= 5000000; // finish the quest before exploring
+		if (lv.branch() == BRANCH_QUEST)
+			rank += (_quest_status >= QUEST_STATUS_READY && _quest_status <= QUEST_STATUS_GIVEN) ? -5000000 : +5000000; // finish the quest before exploring
 		if (_quest_status == QUEST_STATUS_NOT_READY && lv.branch() == BRANCH_QUEST) {
 			Debug::custom(name()) << "Not ready to quest" << endl;
 			continue;
