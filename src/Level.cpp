@@ -731,8 +731,6 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 	if (next.monster() != ILLEGAL_MONSTER && abs(Saiph::position().row() - to.row()) <= 1 && abs(Saiph::position().col() - to.col()) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
-	if (next.symbol() == ICE && (Saiph::intrinsics() & PROPERTY_COLD))
-		cost -= (COST_ICE - COST_CARDINAL);
 	cost += _pathcost[next.symbol()];
 	if (next.monster() != ILLEGAL_MONSTER)
 		cost += COST_MONSTER;
