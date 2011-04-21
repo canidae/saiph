@@ -480,6 +480,15 @@ void Level::setMonster(const Point& point, const Monster& monster) {
 	_monsters[point] = monster;
 }
 
+bool Level::isCompletelyOpen() const {
+	if (symbols(SOLID_ROCK).size() > 0) return false;
+	if (symbols(TREE).size() > 0) return false;
+	if (symbols(CLOSED_DOOR).size() > 0) return false;
+	if (symbols(VERTICAL_WALL).size() > 0) return false;
+	if (symbols(HORIZONTAL_WALL).size() > 0) return false;
+	return true;
+}
+
 void Level::increaseAdjacentSearchCount(const Point& point, int count) {
 	/* increase search count for adjacent points to given point */
 	Point p = point;
@@ -637,6 +646,10 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 void Level::updateMonsters() {
 	/* remove monsters that seems to be gone
 	 * and make monsters we can't see !visible */
+
+	/* Hack - don't remember monsters if we can see the entire map; speeds up exploring Val-fila and Val-filb quite a bit */
+	bool open = isCompletelyOpen();
+
 	for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end();) {
 		unsigned char symbol;
 		int color = World::color(m->first);
@@ -650,7 +663,7 @@ void Level::updateMonsters() {
 			/* monster still visible, don't remove it */
 			++m;
 			continue;
-		} else if (abs(Saiph::position().row() - m->first.row()) > 1 || abs(Saiph::position().col() - m->first.col()) > 1) {
+		} else if (!open && Point::gridDistance(Saiph::position(), m->first) > 1) {
 			/* player is not next to where we last saw the monster */
 			++m;
 			continue;
