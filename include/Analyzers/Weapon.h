@@ -23,7 +23,7 @@ namespace analyzer {
 		Weapon();
 
 		void analyze();
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		unsigned char _wield_weapon;

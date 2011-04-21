@@ -30,7 +30,7 @@ namespace analyzer {
 		void parseMessages(const std::string&);
 		void actionFailed();
 
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		bool _shopping;

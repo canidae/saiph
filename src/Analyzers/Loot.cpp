@@ -107,7 +107,7 @@ void Loot::parseMessages(const string& messages) {
 	}
 }
 
-void Loot::onEvent(Event * const event) {
+void Loot::onEvent(Event* const event) {
 	if (event->id() == StashChanged::ID) {
 		/* stash changed, we need to visit it again */
 		StashChanged* e = static_cast<StashChanged*> (event);

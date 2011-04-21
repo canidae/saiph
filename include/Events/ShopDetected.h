@@ -5,22 +5,31 @@
 #include "Point.h"
 
 namespace event {
-
 	class ShopDetected : public Event {
 	public:
 		static const int ID;
 
-		ShopDetected(Point ul, Point lr) : Event("ShopDetected"), _ul(ul), _lr(lr) { }
+		ShopDetected(Point ul, Point lr) : Event("ShopDetected"), _ul(ul), _lr(lr) {
+		}
 
-		virtual ~ShopDetected() { }
+		virtual ~ShopDetected() {
+		}
 
-		virtual int id() { return ID; }
+		virtual int id() {
+			return ID;
+		}
 
-		const Point& ul() const { return _ul; }
-		const Point& lr() const { return _lr; }
+		const Point& ul() const {
+			return _ul;
+		}
+
+		const Point& lr() const {
+			return _lr;
+		}
 
 	private:
-		Point _ul, _lr;
+		Point _ul;
+		Point _lr;
 	};
 }
 #endif

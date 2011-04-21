@@ -51,9 +51,9 @@ void Elbereth::parseMessages(const string& messages) {
 		++_elbereth_count; // found another elbereth
 }
 
-void Elbereth::onEvent(Event * const evt) {
+void Elbereth::onEvent(Event* const evt) {
 	if (evt->id() == ElberethQuery::ID) {
-		ElberethQuery * const q = static_cast<ElberethQuery * const> (evt);
+		ElberethQuery* const q = static_cast<ElberethQuery* const> (evt);
 		if (World::lastActionID() != action::Look::ID) {
 			/* data is outdated */
 			_engraving_type = ELBERETH_MUST_CHECK;

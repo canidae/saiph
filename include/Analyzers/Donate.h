@@ -13,7 +13,7 @@ namespace analyzer {
 		Donate();
 
 		void analyze();
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		Coordinate _priest_loc;

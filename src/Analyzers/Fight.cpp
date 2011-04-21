@@ -96,7 +96,8 @@ void Fight::analyze() {
 		Tile best_tile;
 		for (vector<Coordinate>::iterator it = interesting_boss_stairs.begin(); it != interesting_boss_stairs.end(); ++it) {
 			Tile tn = World::shortestPath(*it);
-			if (tn.cost() < best_tile.cost()) best_tile = tn;
+			if (tn.cost() < best_tile.cost())
+				best_tile = tn;
 		}
 		if (best_tile.cost() < UNPASSABLE) {
 			if (best_tile.direction() != NOWHERE) {
@@ -183,7 +184,7 @@ void Fight::analyze() {
 	}
 }
 
-void Fight::onEvent(Event * const event) {
+void Fight::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
@@ -222,23 +223,27 @@ void Fight::parseMessages(const string& messages) {
 	// Monnam is [killed/destroyed][ by the %s]!
 	// You [destroy/kill] mon_nam!
 	for (p = 0; ; ) {
-		if ((p2 = messages.find("  You kill ", p)) == string::npos) break;
+		if ((p2 = messages.find("  You kill ", p)) == string::npos)
+			break;
 		p = messages.find("!  ", p2 + 11);
 		deaths.push_back(messages.substr(p2 + 11, p - (p2 + 11)));
 	}
 	for (p = 0; ; ) {
-		if ((p2 = messages.find("  You destroy ", p)) == string::npos) break;
+		if ((p2 = messages.find("  You destroy ", p)) == string::npos)
+			break;
 		p = messages.find("!  ", p2 + 14);
 		deaths.push_back(messages.substr(p2 + 14, p - (p2 + 14)));
 	}
 	for (p = 0; ; ) {
-		if ((p = messages.find(" is killed", p)) == string::npos) break;
+		if ((p = messages.find(" is killed", p)) == string::npos)
+			break;
 		p2 = messages.rfind("  ", p);
 		deaths.push_back(messages.substr(p2 + 2, p - (p2 + 2)));
 		p += 10;
 	}
 	for (p = 0; ; ) {
-		if ((p = messages.find(" is destroyed", p)) == string::npos) break;
+		if ((p = messages.find(" is destroyed", p)) == string::npos)
+			break;
 		p2 = messages.rfind("  ", p);
 		deaths.push_back(messages.substr(p2 + 2, p - (p2 + 2)));
 		p += 13;

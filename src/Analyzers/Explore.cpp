@@ -100,7 +100,7 @@ void Explore::analyze() {
 	}
 }
 
-void Explore::onEvent(Event * const event) {
+void Explore::onEvent(Event* const event) {
 	if (event->id() == QuestStatus::ID) {
 		QuestStatus* e = static_cast<QuestStatus*> (event);
 		_quest_status = e->newState();

@@ -63,7 +63,7 @@ void Donate::analyze() {
 	}
 }
 
-void Donate::onEvent(Event * const event) {
+void Donate::onEvent(Event* const event) {
 	if (event->id() == WantItems::ID) {
 		/* we want gold to donate to priests */
 		WantItems* e = static_cast<WantItems*> (event);

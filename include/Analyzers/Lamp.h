@@ -41,7 +41,7 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string& messages);
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		unsigned char _lamp_key;

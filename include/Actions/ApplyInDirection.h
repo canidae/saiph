@@ -45,7 +45,8 @@ namespace action {
 				/* mark inventory dirty if update_inventory is true */
 				if (_update_inventory)
 					Inventory::update();
-				if (_sequence != 2) failed();
+				if (_sequence != 2)
+					failed();
 				_sequence = 3;
 			}
 		}

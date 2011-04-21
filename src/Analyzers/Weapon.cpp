@@ -30,7 +30,7 @@ void Weapon::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::Wield(this, _wield_weapon, WEAPON_WIELD_PRIORITY)));
 }
 
-void Weapon::onEvent(event::Event * const event) {
+void Weapon::onEvent(event::Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {

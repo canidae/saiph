@@ -18,7 +18,7 @@ Run::Run : Analyzer("Run") {
     EventBus::registerEvent(RunAway::ID, this);
 }
 
-void Run::onEvent(Event * const evt) {
+void Run::onEvent(Event* const evt) {
     if (evt->id() == RunAway::ID) {
-        RunAway * const e = static_cast<RunAway * const> (evt);
+        RunAway* const e = static_cast<RunAway* const> (evt);
 

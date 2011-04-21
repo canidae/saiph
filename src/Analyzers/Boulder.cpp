@@ -44,7 +44,7 @@ void Boulder::analyze() {
 	}
 }
 
-void Boulder::onEvent(Event * const event) {
+void Boulder::onEvent(Event* const event) {
 	if (event->id() == GotDiggingTool::ID)
 		_pick_key = (static_cast<GotDiggingTool*> (event))->key();
 }

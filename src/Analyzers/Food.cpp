@@ -133,7 +133,7 @@ void Food::parseMessages(const string& messages) {
 	}
 }
 
-void Food::onEvent(Event * const event) {
+void Food::onEvent(Event* const event) {
 	if (event->id() == ItemsOnGround::ID) {
 		// FIXME?: do we want/need to eat corpses in shops?
 		if (World::level().tile().symbol() != SHOP_TILE) {

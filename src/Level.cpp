@@ -481,11 +481,16 @@ void Level::setMonster(const Point& point, const Monster& monster) {
 }
 
 bool Level::isCompletelyOpen() const {
-	if (symbols(SOLID_ROCK).size() > 0) return false;
-	if (symbols(TREE).size() > 0) return false;
-	if (symbols(CLOSED_DOOR).size() > 0) return false;
-	if (symbols(VERTICAL_WALL).size() > 0) return false;
-	if (symbols(HORIZONTAL_WALL).size() > 0) return false;
+	if (symbols(SOLID_ROCK).size() > 0)
+		return false;
+	if (symbols(TREE).size() > 0)
+		return false;
+	if (symbols(CLOSED_DOOR).size() > 0)
+		return false;
+	if (symbols(VERTICAL_WALL).size() > 0)
+		return false;
+	if (symbols(HORIZONTAL_WALL).size() > 0)
+		return false;
 	return true;
 }
 

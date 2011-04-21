@@ -54,8 +54,8 @@ public:
 	static int lastActionID();
 	static void init(const std::string& logfile, int connection_type);
 	static void destroy();
-	static void registerAnalyzer(analyzer::Analyzer * const analyzer);
-	static void unregisterAnalyzer(analyzer::Analyzer * const analyzer);
+	static void registerAnalyzer(analyzer::Analyzer* const analyzer);
+	static void unregisterAnalyzer(analyzer::Analyzer* const analyzer);
 	static bool setAction(action::Action* action, bool deleteAction = true);
 	static bool queueAction(action::Action* action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders, int eff_range, int danger_range);

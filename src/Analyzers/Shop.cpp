@@ -43,10 +43,12 @@ int Shop::nearShop(const Coordinate& where) {
 	if (where.level() == _tentative_shop_door.level())
 		rank = 1 + Point::gridDistance(where, _tentative_shop_door);
 
-	for (int y = y0; y <= y0 + 4; ++y)
-		for (int x = x0; x <= x0 + 4; ++x)
+	for (int y = y0; y <= y0 + 4; ++y) {
+		for (int x = x0; x <= x0 + 4; ++x) {
 			if (World::level().tile(Point(y,x)).symbol() == SHOP_TILE)
 				rank = min(rank, Point::gridDistance(Point(y,x), where));
+		}
+	}
 
 	return rank;
 }
@@ -99,14 +101,15 @@ void Shop::lastChance(action::Action* const plan) {
 
 void Shop::dropPicks() {
 	bool have_pick = false;
-	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i)
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		if (data::Pickaxe::pickaxes().find(i->second.name()) != data::Pickaxe::pickaxes().end())
 			have_pick = true;
+	}
 	if (have_pick)
 		World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_SHOP_DROP_DIGGING_TOOL, false)));
 }
 
-void Shop::onEvent(event::Event * const event) {
+void Shop::onEvent(event::Event* const event) {
 	if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -177,9 +180,10 @@ void Shop::analyze() {
 		for (map<Point,int>::const_iterator ppt = World::level().symbols(OPEN_DOOR).begin(); ppt != World::level().symbols(OPEN_DOOR).end(); ++ppt)
 			reach_any = min(reach_any, World::level().tile(ppt->first).cost());
 
-		for (map<Point, Monster>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit)
+		for (map<Point, Monster>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit) {
 			if (Point::gridDistance(mit->first, Saiph::position()) == 1)
 				adj_shk = true;
+		}
 
 		if (adj_shk && reach_any >= UNPASSABLE && World::turn() - _payed > 10) {
 			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));

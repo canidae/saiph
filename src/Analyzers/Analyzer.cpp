@@ -86,10 +86,10 @@ void Analyzer::parseMessages(const std::string&) {
 void Analyzer::analyze() {
 }
 
-void Analyzer::lastChance(action::Action * const) {
+void Analyzer::lastChance(action::Action* const) {
 }
 
-void Analyzer::onEvent(event::Event * const) {
+void Analyzer::onEvent(event::Event* const) {
 }
 
 void Analyzer::actionCompleted(const std::string&) {

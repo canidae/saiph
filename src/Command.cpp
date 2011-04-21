@@ -33,6 +33,6 @@ bool Command::operator==(const Command& c) const {
 	return _priority == c._priority && _command == _command;
 }
 
-ostream & operator<<(ostream& os, const Command& c) {
+ostream& operator<<(ostream& os, const Command& c) {
 	return os << "(" << c.priority() << "): " << c.command();
 }

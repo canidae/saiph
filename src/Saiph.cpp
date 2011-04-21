@@ -92,48 +92,42 @@ void Saiph::parseMessages(const string& messages) {
 					_role = ARCHEOLOGIST;
 					_intrinsics |= PROPERTY_SPEED;
 					_intrinsics |= PROPERTY_STEALTH;
-				}
-				else if (role == "Barbarian") {
+				} else if (role == "Barbarian") {
 					_role = BARBARIAN;
 					_intrinsics |= PROPERTY_POISON;
-				}
-				else if (role == "Caveman")
+				} else if (role == "Caveman") {
 					_role = CAVEMAN;
-				else if (role == "Healer") {
+				} else if (role == "Healer") {
 					_role = HEALER;
 					_intrinsics |= PROPERTY_POISON;
-				}
-				else if (role == "Knight")
+				} else if (role == "Knight") {
 					_role = KNIGHT;
-				else if (role == "Monk") {
+				} else if (role == "Monk") {
 					_role = MONK;
 					_intrinsics |= PROPERTY_SLEEP;
 					_intrinsics |= PROPERTY_SPEED;
 					_conducts |= CONDUCT_VEGETARIAN;
-				}
-				else if (role == "Priest")
+				} else if (role == "Priest") {
 					_role = PRIEST;
-				else if (role == "Ranger")
+				} else if (role == "Ranger") {
 					_role = RANGER;
-				else if (role == "Rogue") {
+				} else if (role == "Rogue") {
 					_role = ROGUE;
 					_intrinsics |= PROPERTY_STEALTH;
-				}
-				else if (role == "Samurai") {
+				} else if (role == "Samurai") {
 					_role = SAMURAI;
 					_intrinsics |= PROPERTY_SPEED;
-				}
-				else if (role == "Tourist")
+				} else if (role == "Tourist") {
 					_role = TOURIST;
-				else if (role == "Valkyrie") {
+				} else if (role == "Valkyrie") {
 					_role = VALKYRIE;
 					_intrinsics |= PROPERTY_COLD;
 					_intrinsics |= PROPERTY_STEALTH;
-				}
-				else if (role == "Wizard")
+				} else if (role == "Wizard") {
 					_role = WIZARD;
-				else
+				} else {
 					_role = UNKNOWN_ROLE;
+				}
 			}
 			/* current gender */
 			pos = messages.find(':', pos + 2);

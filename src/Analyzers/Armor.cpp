@@ -107,7 +107,7 @@ void Armor::parseMessages(const string& messages) {
 	}
 }
 
-void Armor::onEvent(event::Event * const event) {
+void Armor::onEvent(event::Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {

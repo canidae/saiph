@@ -51,13 +51,13 @@ namespace action {
 		}
 
 		virtual void update(const std::string& messages) {
-			if (messages.find(MESSAGE_ENGRAVE_WITH) != std::string::npos)
+			if (messages.find(MESSAGE_ENGRAVE_WITH) != std::string::npos) {
 				_sequence = 1;
-			else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos)
+			} else if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos) {
 				_sequence = 2;
-			else if (messages.find(MESSAGE_ENGRAVE_WHAT) != std::string::npos)
+			} else if (messages.find(MESSAGE_ENGRAVE_WHAT) != std::string::npos) {
 				_sequence = 3;
-			else if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != std::string::npos) {
+			} else if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != std::string::npos) {
 				// oh boy!
 				Item& wandWishing = Inventory::items()[_item.command()[0]];
 				wandWishing.name("wand of wishing"); // update name
@@ -66,13 +66,13 @@ namespace action {
 				Item& wandWishing = Inventory::items()[_item.command()[0]];
 				wandWishing.name("wand of wishing named EMPTY"); // update name
 				_sequence = 4;
-			} 
-			else if (_sequence < 3)
+			} else if (_sequence < 3) {
 				_sequence = 3;
-			else if (_sequence == 3)
+			} else if (_sequence == 3) {
 				_sequence = 4;
-			else
+			} else {
 				_sequence = 4;
+			}
 		}
 
 	private:

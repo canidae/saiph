@@ -12,7 +12,7 @@ namespace analyzer {
 
 		void parseMessages(const std::string& messages);
 		void analyze();
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 	private:
 		bool MRarmor, MRcloak, haveMR;
 		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;

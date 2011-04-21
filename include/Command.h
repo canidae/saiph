@@ -44,5 +44,5 @@ private:
 	int _priority;
 };
 
-std::ostream & operator<<(std::ostream& os, const Command& c);
+std::ostream& operator<<(std::ostream& os, const Command& c);
 #endif

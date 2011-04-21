@@ -134,9 +134,10 @@ Level& World::level(int level) {
 }
 
 int World::findLevel(int branch, int depth) {
-	for (unsigned i = 0; i < _levels.size(); ++i)
+	for (unsigned i = 0; i < _levels.size(); ++i) {
 		if (_levels[i].branch() == branch && _levels[i].depth() == depth)
 			return i;
+	}
 	return -1;
 }
 
@@ -188,12 +189,12 @@ void World::destroy() {
 	delete _connection;
 }
 
-void World::registerAnalyzer(Analyzer * const analyzer) {
+void World::registerAnalyzer(Analyzer* const analyzer) {
 	Debug::info() << "Registering analyzer " << analyzer->name() << endl;
 	_analyzers.push_back(analyzer);
 }
 
-void World::unregisterAnalyzer(Analyzer * const analyzer) {
+void World::unregisterAnalyzer(Analyzer* const analyzer) {
 	Debug::info() << "Unregistering analyzer " << analyzer->name() << endl;
 	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
@@ -566,7 +567,8 @@ void World::doCommands() {
 	char cmd;
 
 	do {
-		if (read(0, &cmd, 1) <= 0) return;
+		if (read(0, &cmd, 1) <= 0)
+			return;
 		switch (cmd) {
 		case '0':
 			_current_speed = SPEED_PAUSE;
@@ -949,23 +951,37 @@ void World::dumpMaps() {
 	/* status & inventory */
 	cout << "\033[m";
 	std::string buf;
-	if (Saiph::intrinsics() & PROPERTY_COLD)   buf += "\033[1;34mCold ";
-	if (Saiph::intrinsics() & PROPERTY_DISINT) buf += "\033[1;35mDisInt ";
-	if (Saiph::intrinsics() & PROPERTY_FIRE)   buf += "\033[1;31mFire ";
-	if (Saiph::intrinsics() & PROPERTY_POISON) buf += "\033[1;32mPoison ";
-	if (Saiph::intrinsics() & PROPERTY_SHOCK)  buf += "\033[1;36mShock ";
-	if (Saiph::intrinsics() & PROPERTY_SLEEP)  buf += "\033[1;33mSleep ";
+	if (Saiph::intrinsics() & PROPERTY_COLD)
+		buf += "\033[1;34mCold ";
+	if (Saiph::intrinsics() & PROPERTY_DISINT)
+		buf += "\033[1;35mDisInt ";
+	if (Saiph::intrinsics() & PROPERTY_FIRE)
+		buf += "\033[1;31mFire ";
+	if (Saiph::intrinsics() & PROPERTY_POISON)
+		buf += "\033[1;32mPoison ";
+	if (Saiph::intrinsics() & PROPERTY_SHOCK)
+		buf += "\033[1;36mShock ";
+	if (Saiph::intrinsics() & PROPERTY_SLEEP)
+		buf += "\033[1;33mSleep ";
 	coutRhsLine(1, buf);
 
 	buf.clear();
-	if (Saiph::intrinsics() & PROPERTY_ESP)              buf += "\033[1;35mESP ";
-	if (Saiph::intrinsics() & PROPERTY_SPEED)            buf += "\033[1;31mSpeed ";
-	if (Saiph::intrinsics() & PROPERTY_STEALTH)          buf += "\033[1;34mStealth ";
-	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL) buf += "\033[1;36mTeleCon ";
-	if (Saiph::intrinsics() & PROPERTY_TELEPORT)         buf += "\033[1;33mTeleport ";
-	if (Saiph::intrinsics() & PROPERTY_LYCANTHROPY)      buf += "\033[1;31mLycan ";
-	if (Saiph::hurtLeg())                                buf += "\033[1;34mLeg ";
-	if (Saiph::polymorphed())                            buf += "\033[1;32mPoly ";
+	if (Saiph::intrinsics() & PROPERTY_ESP)
+		buf += "\033[1;35mESP ";
+	if (Saiph::intrinsics() & PROPERTY_SPEED)
+		buf += "\033[1;31mSpeed ";
+	if (Saiph::intrinsics() & PROPERTY_STEALTH)
+		buf += "\033[1;34mStealth ";
+	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL)
+		buf += "\033[1;36mTeleCon ";
+	if (Saiph::intrinsics() & PROPERTY_TELEPORT)
+		buf += "\033[1;33mTeleport ";
+	if (Saiph::intrinsics() & PROPERTY_LYCANTHROPY)
+		buf += "\033[1;31mLycan ";
+	if (Saiph::hurtLeg())
+		buf += "\033[1;34mLeg ";
+	if (Saiph::polymorphed())
+		buf += "\033[1;32mPoly ";
 	coutRhsLine(2, buf);
 
 	int ir = 3;

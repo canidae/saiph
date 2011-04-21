@@ -136,6 +136,6 @@ bool Point::operator!=(const Point& p) const {
 	return (_row != p._row || _col != p._col);
 }
 
-ostream & operator<<(ostream& os, const Point& p) {
+ostream& operator<<(ostream& os, const Point& p) {
 	return os << "(" << p.row() << ", " << p.col() << ")";
 }

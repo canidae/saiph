@@ -38,5 +38,5 @@ private:
 	unsigned int _updated; // last internal turn this node was updated, used for pathing
 };
 
-std::ostream & operator<<(std::ostream& os, Tile& t);
+std::ostream& operator<<(std::ostream& os, Tile& t);
 #endif

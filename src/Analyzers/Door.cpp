@@ -66,8 +66,8 @@ void Door::analyze() {
 					Tile pst;
 					for (; !ps.empty(); ps.pop()) {
 						pst = World::shortestPath(ps.top());
-						if (pst.symbol() != CORRIDOR) continue;
-						if (pst.search() == TILE_FULLY_SEARCHED) continue;
+						if (pst.symbol() != CORRIDOR || pst.search() == TILE_FULLY_SEARCHED)
+							continue;
 						// Try to stand orthogonally next to doors before kicking them, to catch "closed for inventory"
 						World::setAction(static_cast<action::Action*> (new action::Move(this, pst, PRIORITY_DOOR_OPEN)));
 						return;
@@ -118,7 +118,7 @@ void Door::parseMessages(const string& messages) {
 	}
 }
 
-void Door::onEvent(Event * const event) {
+void Door::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
 		map<unsigned char, Item>::iterator i = Inventory::items().find(_unlock_tool_key);

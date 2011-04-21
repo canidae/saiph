@@ -70,7 +70,7 @@ void Lamp::parseMessages(const string& messages) {
 	}
 }
 
-void Lamp::onEvent(event::Event * const event) {
+void Lamp::onEvent(event::Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, find lamp */
 		findLamp();

@@ -22,5 +22,5 @@ private:
 	int _level;
 };
 
-std::ostream & operator<<(std::ostream& os, const Coordinate& c);
+std::ostream& operator<<(std::ostream& os, const Coordinate& c);
 #endif

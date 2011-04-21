@@ -158,7 +158,7 @@ void Health::parseMessages(const string& messages) {
 	}
 }
 
-void Health::onEvent(event::Event * const event) {
+void Health::onEvent(event::Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {

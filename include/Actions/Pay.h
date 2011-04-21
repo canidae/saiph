@@ -47,7 +47,8 @@ namespace action {
 				_sequence = 2;
 			} else {
 				/* we finished paying */
-				if (_sequence != 2) failed();
+				if (_sequence != 2)
+					failed();
 				_sequence = 3;
 				Inventory::update();
 			}

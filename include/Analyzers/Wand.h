@@ -12,7 +12,7 @@ namespace analyzer {
 		Wand();
 
 		void analyze();
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 		void actionCompleted(const std::string& messages);
 
 	private:

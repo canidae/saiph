@@ -63,7 +63,8 @@ void Replay::recordFrame(char *buffer, int count) {
 int Replay::doRetrieve(char* buffer, int bsize) {
 	char header[12];
 	_replaystream.read(header, 12);
-	if (_replaystream.gcount() != 12) return 0;
+	if (_replaystream.gcount() != 12)
+		return 0;
 	int amount =
 		(static_cast<unsigned char>(header[11]) << 24) +
 		(static_cast<unsigned char>(header[10]) << 16) +

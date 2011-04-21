@@ -59,19 +59,19 @@ void Excalibur::parseMessages(const string& messages) {
 	}
 }
 
-void Excalibur::onEvent(event::Event * const event) {
+void Excalibur::onEvent(event::Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
 			map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
-			if (*k == _long_sword_key && i == Inventory::items().end())
+			if (*k == _long_sword_key && i == Inventory::items().end()) {
 				_long_sword_key = ILLEGAL_ITEM;
-			else if (i != Inventory::items().end() && i->second.name() == EXCALIBUR_NAME) {
+			} else if (i != Inventory::items().end() && i->second.name() == EXCALIBUR_NAME) {
 				World::unregisterAnalyzer(this); 
 				break; // we already have Excalibur
-			}
-			else if (i != Inventory::items().end() && i->second.name() == EXCALIBUR_LONG_SWORD)
+			} else if (i != Inventory::items().end() && i->second.name() == EXCALIBUR_LONG_SWORD) {
 				_long_sword_key = *k;
+			}
 		}
 	} else if (event->id() == ReceivedItems::ID) {
 		if (_long_sword_key == ILLEGAL_ITEM) {
