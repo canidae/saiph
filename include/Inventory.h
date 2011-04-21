@@ -14,13 +14,13 @@ public:
 	
 	static void analyze();
 	static void parseMessages(const std::string& messages);
-	static std::map<unsigned char, Item>& items();
+	static std::map<unsigned char, Item>& items() { return _items; }
 	static const Item& itemAtKey(unsigned char key);
 	static const Item& itemInSlot(int slot);
 	static unsigned char keyForSlot(int slot);
 	static int slotForKey(unsigned char key);
 	static unsigned long long extrinsicsFromItems();
-	static bool updated();
+	static bool updated() { return _updated; }
 	static void update();
 
 private:

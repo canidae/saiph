@@ -16,12 +16,12 @@ public:
 	unsigned char direction();
 	unsigned char direction(unsigned char direction);
 	unsigned int distance();
-	unsigned char monster() const; // only character, most analyzers should use list of Monster from Level instead
+	unsigned char monster() const { return _monster; } // only character, most analyzers should use list of Monster from Level instead
 	unsigned char monster(unsigned char monster);
-	unsigned int search() const;
+	unsigned int search() const { return _search; }
 	unsigned int search(unsigned int search);
 	unsigned int searchInc(int count = 1);
-	unsigned char symbol() const;
+	unsigned char symbol() const { return _symbol; }
 	unsigned char symbol(unsigned char symbol);
 	void updatePath(unsigned char direction, unsigned int distance, unsigned int cost);
 

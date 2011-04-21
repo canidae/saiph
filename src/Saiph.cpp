@@ -280,109 +280,9 @@ bool Saiph::parseStatusRow(const char* statusrow, char* levelname, int* turn) {
 	return true;
 }
 
-int Saiph::alignment() {
-	return _alignment;
-}
-
-int Saiph::charisma() {
-	return _charisma;
-}
-
-int Saiph::constitution() {
-	return _constitution;
-}
-
-int Saiph::dexterity() {
-	return _dexterity;
-}
-
-int Saiph::intelligence() {
-	return _intelligence;
-}
-
-int Saiph::strength() {
-	return _strength;
-}
-
-int Saiph::wisdom() {
-	return _wisdom;
-}
-
-int Saiph::armor() {
-	return _armor;
-}
-
-int Saiph::encumbrance() {
-	return _encumbrance;
-}
-
-int Saiph::experience() {
-	return _experience;
-}
-
-int Saiph::hunger() {
-	return _hunger;
-}
-
-int Saiph::hitpoints() {
-	return _hitpoints;
-}
-
-int Saiph::hitpointsMax() {
-	return _hitpoints_max;
-}
-
-int Saiph::power() {
-	return _power;
-}
-
-int Saiph::powerMax() {
-	return _power_max;
-}
-
-bool Saiph::blind() {
-	return _blind;
-}
-
-bool Saiph::confused() {
-	return _confused;
-}
-
-bool Saiph::foodpoisoned() {
-	return _foodpoisoned;
-}
-
-bool Saiph::hallucinating() {
-	return _hallucinating;
-}
-
-bool Saiph::ill() {
-	return _ill;
-}
-
-bool Saiph::slimed() {
-	return _slimed;
-}
-
-bool Saiph::stoned() {
-	return _stoned;
-}
-
-bool Saiph::stunned() {
-	return _stunned;
-}
-
-bool Saiph::hurtLeg() {
-	return _hurt_leg;
-}
-
 bool Saiph::hurtLeg(bool hurt_leg) {
 	_hurt_leg = hurt_leg;
 	return Saiph::hurtLeg();
-}
-
-bool Saiph::polymorphed() {
-	return _polymorphed;
 }
 
 bool Saiph::polymorphed(bool polymorphed) {
@@ -390,21 +290,9 @@ bool Saiph::polymorphed(bool polymorphed) {
 	return Saiph::polymorphed();
 }
 
-bool Saiph::engulfed() {
-	return _engulfed;
-}
-
 bool Saiph::engulfed(bool engulfed) {
 	_engulfed = engulfed;
 	return Saiph::engulfed();
-}
-
-bool Saiph::inAPit() {
-	return _in_a_pit;
-}
-
-const Coordinate& Saiph::position() {
-	return _position;
 }
 
 const Coordinate& Saiph::position(const Coordinate& position) {
@@ -412,14 +300,6 @@ const Coordinate& Saiph::position(const Coordinate& position) {
 		_in_a_pit = false; // sometimes she gets out of a pit without any message about it (teleportitis?)
 	_position = position;
 	return Saiph::position();
-}
-
-int Saiph::zorkmids() {
-	return _zorkmids;
-}
-
-unsigned long long Saiph::conducts() {
-	return _conducts;
 }
 
 unsigned long long Saiph::addConducts(unsigned long long conducts) {
@@ -430,10 +310,6 @@ unsigned long long Saiph::addConducts(unsigned long long conducts) {
 unsigned long long Saiph::removeConducts(unsigned long long conducts) {
 	_conducts &= ~conducts;
 	return Saiph::conducts();
-}
-
-unsigned long long Saiph::intrinsics() {
-	return _intrinsics;
 }
 
 unsigned long long Saiph::addIntrinsics(unsigned long long intrinsics) {
@@ -460,27 +336,7 @@ unsigned long long Saiph::removeExtrinsics(unsigned long long extrinsics) {
 	return Saiph::extrinsics();
 }
 
-int Saiph::lastPrayed() {
-	return _last_prayed;
-}
-
 int Saiph::lastPrayed(int last_prayed) {
 	_last_prayed = last_prayed;
 	return Saiph::lastPrayed();
-}
-
-const string& Saiph::name() {
-	return _name;
-}
-
-const string& Saiph::race() {
-	return _race;
-}
-
-int Saiph::role() {
-	return _role;
-}
-
-int Saiph::gender() {
-	return _gender;
 }

@@ -34,22 +34,22 @@ class Connection;
 
 class World {
 public:
-	static char view(const Point& point);
-	static int color(const Point& point);
-	static const Point& cursor();
-	static bool menu();
-	static bool question();
-	static int curPage();
-	static int maxPage();
-	static int turn();
-	static unsigned int internalTurn();
-	static const std::vector<Point>& changes();
+	static char view(const Point& point) { return _view[point.row()][point.col()]; }
+	static int color(const Point& point) { return _color[point.row()][point.col()]; }
+	static const Point& cursor() { return _cursor; }
+	static bool menu() { return _menu; }
+	static bool question() { return _question; }
+	static int curPage() { return _cur_page; }
+	static int maxPage() { return _max_page; }
+	static int turn() { return _turn; }
+	static unsigned int internalTurn() { return _internal_turn; }
+	static const std::vector<Point>& changes() { return _changes; }
 	static void forgetChanges();
-	static const Coordinate& branchCoordinate(int branch);
-	static Level& level();
-	static Level& level(int level);
+	static const Coordinate& branchCoordinate(int branch) { return _branches[branch]; }
+	static Level& level() { return _levels[Saiph::position().level()]; }
+	static Level& level(int level) { return _levels[level]; }
 	static int findLevel(int branch, int depth);
-	static const std::vector<Level>& levels();
+	static const std::vector<Level>& levels() { return _levels; }
 	static int currentPriority();
 	static int lastActionID();
 	static void init(const std::string& logfile, int connection_type);

@@ -11,23 +11,23 @@ class Monster {
 public:
 	Monster(unsigned char symbol = ILLEGAL_MONSTER, int color = 0, int last_seen = -1);
 
-	unsigned char symbol() const;
+	unsigned char symbol() const { return _symbol; }
 	unsigned char symbol(unsigned char symbol);
-	int color() const;
+	int color() const { return _color; }
 	int color(int color);
-	bool visible() const;
+	bool visible() const { return _visible; }
 	bool visible(bool visible);
-	int attitude() const;
+	int attitude() const { return _attitude; }
 	int attitude(int attitude);
-	int lastSeen() const;
+	int lastSeen() const { return _last_seen; }
 	int lastSeen(int last_seen);
-	int lastMoved() const;
+	int lastMoved() const { return _last_moved; }
 	int lastMoved(int last_moved);
-	bool shopkeeper() const;
+	bool shopkeeper() const { return _shopkeeper; }
 	bool shopkeeper(bool shopkeeper);
-	bool priest() const;
+	bool priest() const { return _priest; }
 	bool priest(bool priest);
-	const data::Monster* data() const;
+	const data::Monster* data() const { return _data; }
 	const data::Monster* data(const data::Monster* data);
 
 private:

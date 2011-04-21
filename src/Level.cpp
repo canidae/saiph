@@ -82,13 +82,6 @@ Level::Level(int level, const string& name, int branch) : _level(level), _monste
 }
 
 /* public static methods */
-bool Level::isPassable(unsigned char symbol) {
-	return _passable[symbol];
-}
-
-const Tile& Level::outsideMap() {
-	return _outside_map;
-}
 
 void Level::init() {
 	/* monsters */
@@ -210,25 +203,9 @@ void Level::destroy() {
 }
 
 /* public methods */
-int Level::branch() const {
-	return _branch;
-}
-
 int Level::branch(int branch) {
 	_branch = branch;
 	return this->branch();
-}
-
-int Level::depth() const {
-	return _depth;
-}
-
-int Level::identifier() const {
-	return _level;
-}
-
-const string& Level::name() const {
-	return _name;
 }
 
 Tile& Level::tile() {
@@ -241,18 +218,6 @@ Tile& Level::tile(const Point& point) {
 	if (!point.insideMap())
 		return _outside_map;
 	return _map[point.row()][point.col()];
-}
-
-const map<Point, Monster>& Level::monsters() const {
-	return _monsters;
-}
-
-const map<Point, Stash>& Level::stashes() const {
-	return _stashes;
-}
-
-const map<Point, int>& Level::symbols(unsigned char symbol) const {
-	return _symbols[symbol];
 }
 
 void Level::analyze() {

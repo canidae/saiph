@@ -38,17 +38,9 @@ unsigned int Tile::distance() {
 	return _distance;
 }
 
-unsigned char Tile::monster() const {
-	return _monster;
-}
-
 unsigned char Tile::monster(unsigned char monster) {
 	_monster = monster;
 	return this->monster();
-}
-
-unsigned int Tile::search() const {
-	return _search;
 }
 
 unsigned int Tile::search(unsigned int search) {
@@ -60,10 +52,6 @@ unsigned int Tile::searchInc(int count) {
 	if (_search < TILE_FULLY_SEARCHED)
 		_search += count;
 	return _search;
-}
-
-unsigned char Tile::symbol() const {
-	return _symbol;
 }
 
 unsigned char Tile::symbol(unsigned char symbol) {

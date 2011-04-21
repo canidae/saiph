@@ -81,67 +81,11 @@ const char* World::_ansi_colors[] = {
 };
 
 /* methods */
-char World::view(const Point& point) {
-	return _view[point.row()][point.col()];
-}
-
-int World::color(const Point& point) {
-	return _color[point.row()][point.col()];
-}
-
-const Point& World::cursor() {
-	return _cursor;
-}
-
-bool World::menu() {
-	return _menu;
-}
-
-bool World::question() {
-	return _question;
-}
-
-int World::curPage() {
-	return _cur_page;
-}
-
-int World::maxPage() {
-	return _max_page;
-}
-
-int World::turn() {
-	return _turn;
-}
-
-unsigned int World::internalTurn() {
-	return _internal_turn;
-}
-
-const vector<Point>& World::changes() {
-	return _changes;
-}
-
-const Coordinate& World::branchCoordinate(int branch) {
-	return _branches[branch];
-}
-
-Level& World::level() {
-	return level(Saiph::position().level());
-}
-
-Level& World::level(int level) {
-	return _levels[level];
-}
-
 int World::findLevel(int branch, int depth) {
 	for (unsigned i = 0; i < _levels.size(); ++i)
 		if (_levels[i].branch() == branch && _levels[i].depth() == depth)
 			return i;
 	return -1;
-}
-
-const vector<Level>& World::levels() {
-	return _levels;
 }
 
 int World::currentPriority() {

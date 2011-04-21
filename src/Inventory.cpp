@@ -120,10 +120,6 @@ void Inventory::parseMessages(const string& messages) {
 	}
 }
 
-std::map<unsigned char, Item>& Inventory::items() {
-	return _items;
-}
-
 const Item& Inventory::itemAtKey(unsigned char key) {
 	map<unsigned char, Item>::iterator i = _items.find(key);
 	if (i != _items.end())
@@ -157,10 +153,6 @@ unsigned long long Inventory::extrinsicsFromItems() {
 	if (!_extrinsics_updated)
 		updateExtrinsics();
 	return _extrinsics_from_items;
-}
-
-bool Inventory::updated() {
-	return _updated;
 }
 
 void Inventory::update() {

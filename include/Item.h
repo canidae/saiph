@@ -8,25 +8,25 @@ public:
 	Item(const std::string& text, int want = 0);
 	Item();
 
-	const std::string& name() const;
+	const std::string& name() const { return _name; }
 	const std::string& name(const std::string &name);
-	int count() const;
+	int count() const { return _count; }
 	int count(int count);
-	int beatitude() const;
+	int beatitude() const { return _beatitude; }
 	int beatitude(int beatitude);
-	bool greased() const;
+	bool greased() const { return _greased; }
 	bool greased(bool greased);
-	bool fixed() const;
+	bool fixed() const { return _fixed; }
 	bool fixed(bool fixed);
-	int damage() const;
+	int damage() const { return _damage; }
 	int damage(int damage);
-	bool unknownEnchantment() const;
+	bool unknownEnchantment() const { return _unknown_enchantment; }
 	bool unknownEnchantment(bool unknown_enchantment);
-	int enchantment() const;
+	int enchantment() const { return _enchantment; }
 	int enchantment(int enchantment);
-	const std::string& additional() const;
+	const std::string& additional() const { return _additional; }
 	const std::string& additional(const std::string& additional);
-	int want() const;
+	int want() const { return _want; }
 	int want(int want);
 
 	bool operator==(const Item& i) const;
