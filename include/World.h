@@ -99,6 +99,8 @@ private:
 	static Point _cout_cursor;
 	static int _cout_last_color;
 	static const char *_ansi_colors[INVERSE_BOLD_WHITE+1];
+	static unsigned char _shadow_map_dump[MAP_ROW_END - MAP_ROW_BEGIN + 1][MAP_COL_END - MAP_COL_BEGIN + 1][2];
+	static std::string _shadow_rhs[50];
 
 	static void dumpMap(Level& which);
 	static void dumpMaps();
@@ -109,6 +111,7 @@ private:
 	static void coutSetColor(int);
 	static void coutOneChar(int,unsigned char);
 	static void coutGoto(int,int);
+	static void coutRhsLine(int, const std::string&);
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();

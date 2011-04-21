@@ -4,6 +4,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sstream>
 #include "Connection.h"
 #include "Replay.h"
 #include "Debug.h"
@@ -59,6 +60,8 @@ int World::_last_action_id = NO_ACTION;
 Coordinate World::_branches[BRANCHES] = {Coordinate()};
 Point World::_cout_cursor;
 int World::_cout_last_color;
+unsigned char World::_shadow_map_dump[MAP_ROW_END - MAP_ROW_BEGIN + 1][MAP_COL_END - MAP_COL_BEGIN + 1][2];
+std::string World::_shadow_rhs[50];
 
 static struct termios _save_termios, _current_termios;
 static int _current_speed;
@@ -551,6 +554,7 @@ void World::initTermios() {
 	_current_termios.c_iflag &= ~IXON;
 	_current_termios.c_lflag &= ~(ISIG | ICANON | ECHO | IEXTEN);
 	_current_termios.c_cc[VTIME] = 0;
+	cout << "\033[2J";
 }
 
 void World::setKeyWait(bool wait) {
@@ -858,23 +862,45 @@ void World::coutGoto(int row, int col) {
 	}
 }
 
+void World::coutRhsLine(int row, const std::string& line) {
+	if (line != _shadow_rhs[row]) {
+		cout << "\033[" << (1+row) << ";82H" << line << "\033[K";
+		_shadow_rhs[row] = line;
+	}
+}
+
 void World::dumpMap(Level& lv) {
 	/* monsters and map as saiph sees it */
 	Point p;
+	_cout_last_color = -1;
+	_cout_cursor.row(-1);
 	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
-		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";1H";
 		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
-			if (!p.insideMap())
-				continue;
 			const Tile& t = lv.tile(p);
-			if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
-				cout << (unsigned char) 27 << "[95m@" << (unsigned char) 27 << "[0m";
-			else if (t.monster() != ILLEGAL_MONSTER)
-				cout << (unsigned char) 27 << "[" << (t.monster() == _view[p.row()][p.col()] ? "91" : "93") << "m" << t.monster() << (unsigned char) 27 << "[0m";
-			else if (t.symbol() > 31 && t.symbol() < 127)
-				cout << t.symbol();
-			else
-				cout << (unsigned char) 27 << "[96m?" << (unsigned char) 27 << "[0m"; // can't display character
+			unsigned char color;
+			unsigned char symbol;
+
+			if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+				color = BOLD_MAGENTA;
+				symbol = '@';
+			} else if (t.monster() != ILLEGAL_MONSTER) {
+				color = t.monster() == _view[p.row()][p.col()] ? BOLD_RED : BOLD_YELLOW;
+				symbol = t.monster();
+			} else if (t.symbol() > 31 && t.symbol() < 127) {
+				color = NO_COLOR;
+				symbol = t.symbol();
+			} else {
+				color = BOLD_CYAN;
+				symbol = '?';
+			}
+
+			unsigned char* old = &_shadow_map_dump[p.row() - MAP_ROW_BEGIN][p.col() - MAP_COL_BEGIN][0];
+			if (symbol != old[0] || color != old[1]) {
+				coutGoto(p.row() + 26, p.col() + 1);
+				coutOneChar(color, symbol);
+				old[0] = symbol;
+				old[1] = color;
+			}
 		}
 	}
 
@@ -921,57 +947,44 @@ void World::dumpMaps() {
 	dumpMap(level());
 
 	/* status & inventory */
-	cout << (unsigned char) 27 << "[2;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[2;82H";
-	if (Saiph::intrinsics() & PROPERTY_COLD)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_DISINT)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_FIRE)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_POISON)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_SHOCK)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_SLEEP)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
+	cout << "\033[m";
+	std::string buf;
+	if (Saiph::intrinsics() & PROPERTY_COLD)   buf += "\033[1;34mCold ";
+	if (Saiph::intrinsics() & PROPERTY_DISINT) buf += "\033[1;35mDisInt ";
+	if (Saiph::intrinsics() & PROPERTY_FIRE)   buf += "\033[1;31mFire ";
+	if (Saiph::intrinsics() & PROPERTY_POISON) buf += "\033[1;32mPoison ";
+	if (Saiph::intrinsics() & PROPERTY_SHOCK)  buf += "\033[1;36mShock ";
+	if (Saiph::intrinsics() & PROPERTY_SLEEP)  buf += "\033[1;33mSleep ";
+	coutRhsLine(1, buf);
 
-	cout << (unsigned char) 27 << "[3;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[3;82H";
-	if (Saiph::intrinsics() & PROPERTY_ESP)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_SPEED)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Speed " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_STEALTH)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Stealth " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_TELEPORT)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
-	if (Saiph::intrinsics() & PROPERTY_LYCANTHROPY)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
-	if (Saiph::hurtLeg())
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
-	if (Saiph::polymorphed())
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
+	buf.empty();
+	if (Saiph::intrinsics() & PROPERTY_ESP)              buf += "\033[1;35mESP ";
+	if (Saiph::intrinsics() & PROPERTY_SPEED)            buf += "\033[1;31mSpeed ";
+	if (Saiph::intrinsics() & PROPERTY_STEALTH)          buf += "\033[1;34mStealth ";
+	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL) buf += "\033[1;36mTeleCon ";
+	if (Saiph::intrinsics() & PROPERTY_TELEPORT)         buf += "\033[1;33mTeleport ";
+	if (Saiph::intrinsics() & PROPERTY_LYCANTHROPY)      buf += "\033[1;31mLycan ";
+	if (Saiph::hurtLeg())                                buf += "\033[1;34mLeg ";
+	if (Saiph::polymorphed())                            buf += "\033[1;32mPoly ";
+	coutRhsLine(2, buf);
 
-	int ir = 0;
-	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end() && ir < 46; ++i) {
-		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
-		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+	int ir = 3;
+	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end() && ir < 50; ++i) {
+		ostringstream ss;
+		ss << "\033[m";
 		if (i->second.beatitude() == BLESSED)
-			cout << (unsigned char) 27 << "[32m";
+			ss << (unsigned char) 27 << "[32m";
 		else if (i->second.beatitude() == CURSED)
-			cout << (unsigned char) 27 << "[31m";
+			ss << (unsigned char) 27 << "[31m";
 		else if (i->second.beatitude() == UNCURSED)
-			cout << (unsigned char) 27 << "[33m";
-		cout << i->first;
-		cout << " - " << i->second;
-		cout << (unsigned char) 27 << "[m";
-		++ir;
+			ss << (unsigned char) 27 << "[33m";
+		ss << i->first;
+		ss << " - " << i->second;
+		ss << (unsigned char) 27 << "[m";
+		coutRhsLine(ir++, ss.str());
 	}
-	for (; ir < 46; ++ir) {
-		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
-		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-	}
+	for (; ir < 50; ++ir)
+		coutRhsLine(ir, "");
 }
 
 void World::forgetChanges() {
@@ -1341,6 +1354,8 @@ void World::update() {
 	 * this must be done here because if we get --More-- messages we'll update again */
 	/* also, we do this in two loops because otherwise it flickers a lot */
 	Debug::rawCharArray(_data, 0, _data_size);
+	_cout_last_color = -1;
+	_cout_cursor.row(-1);
 	for (int pos = 0; pos < _data_size; ++pos) {
 		switch (_data[pos]) {
 		case 0:
