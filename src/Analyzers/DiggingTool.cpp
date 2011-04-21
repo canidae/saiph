@@ -36,7 +36,7 @@ void DiggingTool::onEvent(Event* const event) {
 		int key;
 		int score;
 
-		rankDiggers(key, score, (e->dropping ? NULL : &Inventory::items()), &e->items());
+		rankDiggers(key, score, (e->dropping() ? NULL : &Inventory::items()), &e->items());
 
 		if (key >= 0) {
 			Item& item = e->items()[(unsigned char)key];
