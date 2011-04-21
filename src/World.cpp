@@ -957,7 +957,7 @@ void World::dumpMaps() {
 	if (Saiph::intrinsics() & PROPERTY_SLEEP)  buf += "\033[1;33mSleep ";
 	coutRhsLine(1, buf);
 
-	buf.empty();
+	buf.clear();
 	if (Saiph::intrinsics() & PROPERTY_ESP)              buf += "\033[1;35mESP ";
 	if (Saiph::intrinsics() & PROPERTY_SPEED)            buf += "\033[1;31mSpeed ";
 	if (Saiph::intrinsics() & PROPERTY_STEALTH)          buf += "\033[1;34mStealth ";
