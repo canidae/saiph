@@ -9,12 +9,12 @@ class Stash {
 public:
 	Stash(unsigned char symbol = ILLEGAL_ITEM, int color = NO_COLOR, int last_inspected = 0);
 
-	unsigned char symbol() const { return _symbol; }
+	unsigned char symbol() const;
 	unsigned char symbol(unsigned char symbol);
-	int color() const { return _color; }
+	int color() const;
 	int color(int color);
-	std::list<Item>& items() { return _items; }
-	int lastInspected() const { return _last_inspected; }
+	std::list<Item>& items();
+	int lastInspected() const;
 	int lastInspected(int last_inspected);
 
 private:

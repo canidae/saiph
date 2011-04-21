@@ -22,54 +22,54 @@ public:
 	static bool parseAttributeRow(const char* attributerow);
 	static bool parseStatusRow(const char* statusrow, char* levelname, int* turn);
 
-	static int alignment() { return _alignment; }
-	static int charisma() { return _charisma; }
-	static int constitution() { return _constitution; }
-	static int dexterity() { return _dexterity; }
-	static int intelligence() { return _intelligence; }
-	static int strength() { return _strength; }
-	static int wisdom() { return _wisdom; }
-	static int armor() { return _armor; }
-	static int encumbrance() { return _encumbrance; }
-	static int experience() { return _experience; }
-	static int hunger() { return _hunger; }
-	static int hitpoints() { return _hitpoints; }
-	static int hitpointsMax() { return _hitpoints_max; }
-	static int power() { return _power; }
-	static int powerMax() { return _power_max; }
-	static bool blind() { return _blind; }
-	static bool confused() { return _confused; }
-	static bool foodpoisoned() { return _foodpoisoned; }
-	static bool hallucinating() { return _hallucinating; }
-	static bool ill() { return _ill; }
-	static bool slimed() { return _slimed; }
-	static bool stoned() { return _stoned; }
-	static bool stunned() { return _stunned; }
-	static bool hurtLeg() { return _hurt_leg; }
+	static int alignment();
+	static int charisma();
+	static int constitution();
+	static int dexterity();
+	static int intelligence();
+	static int strength();
+	static int wisdom();
+	static int armor();
+	static int encumbrance();
+	static int experience();
+	static int hunger();
+	static int hitpoints();
+	static int hitpointsMax();
+	static int power();
+	static int powerMax();
+	static bool blind();
+	static bool confused();
+	static bool foodpoisoned();
+	static bool hallucinating();
+	static bool ill();
+	static bool slimed();
+	static bool stoned();
+	static bool stunned();
+	static bool hurtLeg();
 	static bool hurtLeg(bool hurt_leg);
-	static bool polymorphed() { return _polymorphed; }
+	static bool polymorphed();
 	static bool polymorphed(bool polymorphed);
-	static bool engulfed() { return _engulfed; }
+	static bool engulfed();
 	static bool engulfed(bool engulfed);
-	static bool inAPit() { return _in_a_pit; }
-	static const Coordinate& position() { return _position; }
+	static bool inAPit();
+	static const Coordinate& position();
 	static const Coordinate& position(const Coordinate& position);
-	static int zorkmids() { return _zorkmids; }
-	static unsigned long long conducts() { return _conducts; }
+	static int zorkmids();
+	static unsigned long long conducts();
 	static unsigned long long addConducts(unsigned long long conducts);
 	static unsigned long long removeConducts(unsigned long long conducts);
-	static unsigned long long intrinsics() { return _intrinsics; }
+	static unsigned long long intrinsics();
 	static unsigned long long addIntrinsics(unsigned long long intrinsics);
 	static unsigned long long removeIntrinsics(unsigned long long intrinsics);
 	static unsigned long long extrinsics();
 	static unsigned long long addExtrinsics(unsigned long long extrinsics);
 	static unsigned long long removeExtrinsics(unsigned long long extrinsics);
-	static int lastPrayed() { return _last_prayed; }
+	static int lastPrayed();
 	static int lastPrayed(int last_prayed);
-	static const std::string& name() { return _name; }
-	static const std::string& race() { return _race; }
-	static int role() { return _role; }
-	static int gender() { return _gender; }
+	static const std::string& name();
+	static const std::string& race();
+	static int role();
+	static int gender();
 
 private:
 	/* attributes */

@@ -19,22 +19,22 @@ class Level {
 public:
 	Level(int level, const std::string &name, int branch = BRANCH_MAIN);
 
-	static bool isPassable(unsigned char symbol) { return _passable[symbol]; }
-	static const Tile& outsideMap() { return _outside_map; }
+	static bool isPassable(unsigned char symbol);
+	static const Tile& outsideMap();
 	static void init();
 	static void destroy();
-	int branch() const { return _branch; }
+	int branch() const;
 	int branch(int branch);
-	int depth() const { return _depth; }
-	const std::string& name() const { return _name; }
+	int depth() const;
+	const std::string& name() const;
 	Tile& tile();
 	Tile& tile(const Point& point);
-	const std::map<Point, Monster>& monsters() const { return _monsters; }
-	const std::map<Point, Stash>& stashes() const { return _stashes; }
-	const std::map<Point, int>& symbols(unsigned char symbol) const { return _symbols[symbol]; }
+	const std::map<Point, Monster>& monsters() const;
+	const std::map<Point, Stash>& stashes() const;
+	const std::map<Point, int>& symbols(unsigned char symbol) const;
 	bool isCompletelyOpen() const;
 	void analyze();
-	int identifier() const { return _level; }
+	int identifier() const;
 	void parseMessages(const std::string& messages);
 	void setDirtyStash(const Point& point);
 	void setDungeonSymbol(const Point& point, unsigned char symbol);

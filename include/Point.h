@@ -2,33 +2,32 @@
 #define POINT_H
 
 #include <iostream>
-#include "Globals.h"
 
 class Point {
 public:
-	Point(int row = -1, int col = -1) : _row(row), _col(col) { }
+	Point(int row = -1, int col = -1);
 
-	int col() const  { return _col; }
-	int col(int col) { return (_col = col); }
-	int row() const  { return _row; }
-	int row(int row) { return (_row = row); }
+	int col() const;
+	int col(int col);
+	int row() const;
+	int row(int row);
 	bool insideMap() const;
 	Point& moveDirection(unsigned char direction);
-	Point& moveNorthwest() { --_row; --_col; return *this; }
-	Point& moveNorth()     { --_row; return *this; }
-	Point& moveNortheast() { --_row; ++_col; return *this; }
-	Point& moveEast()      { ++_col; return *this; }
-	Point& moveSoutheast() { ++_row; ++_col; return *this; }
-	Point& moveSouth()     { ++_row; return *this; }
-	Point& moveSouthwest() { ++_row; --_col; return *this; }
-	Point& moveWest()      { --_col; return *this; }
+	Point& moveNorthwest();
+	Point& moveNorth();
+	Point& moveNortheast();
+	Point& moveEast();
+	Point& moveSoutheast();
+	Point& moveSouth();
+	Point& moveSouthwest();
+	Point& moveWest();
 
 	bool operator<(const Point& p) const;
 	bool operator>(const Point& p) const;
 	bool operator<=(const Point& p) const;
 	bool operator>=(const Point& p) const;
-	bool operator==(const Point& p) const { return _row == p._row && _col == p._col; }
-	bool operator!=(const Point& p) const { return _row != p._row || _col != p._col; }
+	bool operator==(const Point& p) const;
+	bool operator!=(const Point& p) const;
 
 	static int gridDistance(const Point& p1, const Point& p2);
 

@@ -232,9 +232,17 @@ Item::Item() : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(fal
 }
 
 /* methods */
+const string& Item::name() const {
+	return _name;
+}
+
 const string& Item::name(const string& name) {
 	_name = name;
 	return this->name();
+}
+
+int Item::count() const {
+	return _count;
 }
 
 int Item::count(int count) {
@@ -242,9 +250,17 @@ int Item::count(int count) {
 	return this->count();
 }
 
+int Item::beatitude() const {
+	return _beatitude;
+}
+
 int Item::beatitude(int beatitude) {
 	_beatitude = beatitude;
 	return this->beatitude();
+}
+
+bool Item::greased() const {
+	return _greased;
 }
 
 bool Item::greased(bool greased) {
@@ -252,9 +268,17 @@ bool Item::greased(bool greased) {
 	return this->greased();
 }
 
+bool Item::fixed() const {
+	return _fixed;
+}
+
 bool Item::fixed(bool fixed) {
 	_fixed = fixed;
 	return this->fixed();
+}
+
+int Item::damage() const {
+	return _damage;
 }
 
 int Item::damage(int damage) {
@@ -262,9 +286,17 @@ int Item::damage(int damage) {
 	return this->damage();
 }
 
+bool Item::unknownEnchantment() const {
+	return _unknown_enchantment;
+}
+
 bool Item::unknownEnchantment(bool unknown_enchantment) {
 	_unknown_enchantment = unknown_enchantment;
 	return this->unknownEnchantment();
+}
+
+int Item::enchantment() const {
+	return _enchantment;
 }
 
 int Item::enchantment(int enchantment) {
@@ -272,9 +304,17 @@ int Item::enchantment(int enchantment) {
 	return this->enchantment();
 }
 
+const std::string& Item::additional() const {
+	return _additional;
+}
+
 const std::string& Item::additional(const std::string& additional) {
 	_additional = additional;
 	return this->additional();
+}
+
+int Item::want() const {
+	return _want;
 }
 
 int Item::want(int want) {
