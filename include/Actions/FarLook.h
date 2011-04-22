@@ -1,16 +1,24 @@
 #ifndef ACTION_FAR_LOOK_H
-#define	ACTION_FAR_LOOK_H
+#define ACTION_FAR_LOOK_H
 
 #include "Actions/Action.h"
-
-class Point;
+#include "Point.h"
+#include <vector>
+#include <string>
 
 namespace action {
 	class FarLook : public Action {
 	public:
 		static const int ID;
 
-		FarLook(analyzer::Analyzer* analyzer, const Point& location);
+		class Request {
+		public:
+			Request(const Point& where);
+			Point where;
+			std::string result;
+		};
+
+		FarLook(analyzer::Analyzer* analyzer, std::vector<Request>& requests);
 		virtual ~FarLook();
 
 		virtual int id();
@@ -18,7 +26,9 @@ namespace action {
 		virtual void update(const std::string&);
 
 	private:
-		const Command _far_look;
+		std::vector<Request>::iterator _current;
+		std::vector<Request>::iterator _end;
+		Command _command;
 	};
 }
 #endif

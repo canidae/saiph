@@ -2,10 +2,17 @@
 
 #include "World.h"
 
+#include <vector>
+#include <string>
+
 using namespace action;
+using namespace std;
 
 /* constructors/destructor */
-FarLook::FarLook(analyzer::Analyzer* analyzer, const Point& location) : Action(analyzer, false), _far_look(";" + World::cursorMoves(Saiph::position(), location) + ".", PRIORITY_LOOK) {
+FarLook::Request::Request(const Point& where) : where(where) {
+}
+
+FarLook::FarLook(analyzer::Analyzer* analyzer, vector<FarLook::Request>& requests) : Action(analyzer, false), _current(requests.begin()), _end(requests.end()) {
 }
 
 FarLook::~FarLook() {
@@ -17,16 +24,14 @@ int FarLook::id() {
 }
 
 const Command& FarLook::command() {
-	switch (_sequence) {
-	case 0:
-		return _far_look;
-
-	default:
+	if (_current == _end)
 		return Action::NOOP;
-	}
+
+	_command = Command(";" + World::cursorMoves(Saiph::position(), _current->where) + ".", PRIORITY_LOOK);
+	return _command;
 }
 
-void FarLook::update(const std::string&) {
-	if (_sequence == 0)
-		_sequence = 1;
+void FarLook::update(const std::string& output) {
+	_current->result = output;
+	++_current;
 }

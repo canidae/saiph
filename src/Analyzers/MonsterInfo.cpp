@@ -18,27 +18,38 @@ MonsterInfo::MonsterInfo() : Analyzer("MonsterInfo") {
 void MonsterInfo::analyze() {
 	if (Saiph::hallucinating())
 		return; // if we're hallucinating, the output is garbage
-	for (_look_at = World::level().monsters().begin(); _look_at != World::level().monsters().end(); ++_look_at) {
-		if (!_look_at->second.visible())
+	_requests.clear();
+	for (map<Point, Monster>::const_iterator look_at = World::level().monsters().begin(); look_at != World::level().monsters().end(); ++look_at) {
+		if (!look_at->second.visible())
 			continue; // don't farlook monsters we can't see
-		if (_look_at->second.symbol() == 'I' || _look_at->second.symbol() == 'm')
+		if (look_at->second.symbol() == 'I' || look_at->second.symbol() == 'm')
 			continue; // don't farlook 'I' or 'm' monsters
 		/* we're paranoid about @ in minetown (elf/watch switchup) */
-		if (_look_at->second.attitude() == HOSTILE && World::level().branch() != BRANCH_MINETOWN && _look_at->second.symbol() != '@')
+		if (look_at->second.attitude() == HOSTILE && World::level().branch() != BRANCH_MINETOWN && look_at->second.symbol() != '@')
 			continue; // we don't expect hostile monsters to go friendly (XXX: scroll of taming, etc will need special handling)
-		map<Point, unsigned int>::iterator c = _checked.find(_look_at->first);
+		map<Point, unsigned int>::iterator c = _checked.find(look_at->first);
 		if (c != _checked.end() && c->second == World::internalTurn())
 			continue; // already checked this monster this turn
-		World::setAction(static_cast<action::Action*> (new action::FarLook(this, _look_at->first)));
-		return;
+		_requests.push_back(action::FarLook::Request(look_at->first));
 	}
+	if (!_requests.empty())
+		World::setAction(new action::FarLook(this, _requests));
 }
 
-void MonsterInfo::parseMessages(const string& messages) {
-	if (_look_at != World::level().monsters().end() && messages.size() > 5 && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ') {
-		/* probably looked at a monster */
+void MonsterInfo::actionCompleted(const string&) {
+	for (vector<action::FarLook::Request>::iterator looked_at = _requests.begin(); looked_at != _requests.end(); ++looked_at) {
+		_checked[looked_at->where] = World::internalTurn();
+		string messages = looked_at->result;
+
+		map<Point, Monster>::const_iterator pmonster = World::level().monsters().find(looked_at->where);
+
+		if (!(pmonster != World::level().monsters().end() && messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ')) {
+			Debug::warning() << "Bogus farlook result " << messages << endl;
+			continue;
+		}
+
 		string::size_type pos = string::npos;
-		Monster monster = _look_at->second;
+		Monster monster = pmonster->second;
 		if ((pos = messages.find(" (peaceful ")) != string::npos) {
 			/* it's friendly */
 			monster.attitude(FRIENDLY);
@@ -65,10 +76,6 @@ void MonsterInfo::parseMessages(const string& messages) {
 		if (pos2 != string::npos)
 			monster.data(data::Monster::monster(messages.substr(pos, pos2 - pos)));
 		/* update level */
-		World::level().setMonster(_look_at->first, monster);
+		World::level().setMonster(looked_at->where, monster);
 	}
-}
-
-void MonsterInfo::actionCompleted(const string&) {
-	_checked[_look_at->first] = World::internalTurn();
 }

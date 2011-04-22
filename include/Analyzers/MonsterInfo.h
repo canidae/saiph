@@ -3,9 +3,11 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include "Monster.h"
 #include "Point.h"
 #include "Analyzers/Analyzer.h"
+#include "Actions/FarLook.h"
 
 namespace analyzer {
 	class MonsterInfo : public Analyzer {
@@ -13,11 +15,10 @@ namespace analyzer {
 		MonsterInfo();
 
 		void analyze();
-		void parseMessages(const std::string& messages);
 		void actionCompleted(const std::string&);
 
 	private:
-		std::map<Point, Monster>::const_iterator _look_at;
+		std::vector<action::FarLook::Request> _requests;
 		std::map<Point, unsigned int> _checked;
 	};
 }
