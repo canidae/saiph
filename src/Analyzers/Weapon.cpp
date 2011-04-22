@@ -1,5 +1,6 @@
 #include "Analyzers/Weapon.h"
 
+#include <stdlib.h>
 #include "EventBus.h"
 #include "Inventory.h"
 #include "Saiph.h"
@@ -11,6 +12,7 @@
 #include "Events/Event.h"
 #include "Events/ReceivedItems.h"
 #include "Events/WantItems.h"
+#include "Events/ChangedSkills.h"
 
 using namespace analyzer;
 using namespace event;
@@ -22,6 +24,7 @@ Weapon::Weapon() : Analyzer("Weapon"), _wield_weapon(ILLEGAL_ITEM), _melee_weapo
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
+	EventBus::registerEvent(ChangedSkills::ID, this);
 }
 
 /* methods */
@@ -52,6 +55,17 @@ void Weapon::onEvent(event::Event* const event) {
 
 		}
 		setBestWeapons();
+	} else if (event->id() == ChangedSkills::ID) {
+		for (map<unsigned char, Item>::const_iterator k = Inventory::items().begin(); k != Inventory::items().end(); ++k) {
+			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(k->second.name());
+			if (w == data::Weapon::weapons().end())
+				continue; // not a weapon
+			int score = calculateWeaponScore(k->second, w->second);
+			if (isRangedWeapon(w->second))
+				_range_weapons[k->first] = score;
+			else
+				_melee_weapons[k->first] = score;
+		}
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -99,8 +113,6 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 	map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(item.name());
 	if (w == data::Weapon::weapons().end())
 		return false; // not a weapon
-	if (w->second->type() == WEAPON_PICKAXE)
-		return false; // causing issues with shop, ignore them for now
 	int score = calculateWeaponScore(item, w->second);
 	if (score <= 0)
 		return false;
@@ -127,7 +139,7 @@ bool Weapon::betterThanWhatWeGot(const Item& item) {
 }
 
 int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
-	if (!weapon->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
+	if (!weapon->oneHanded() && Saiph::likesShields())
 		return 0; // for now, don't try to wield two-hander when we got a shield
 	int score = 0;
 	for (vector<data::Attack>::const_iterator a = weapon->attackSmall().begin(); a != weapon->attackSmall().end(); ++a)
@@ -140,105 +152,20 @@ int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
 	score -= item.damage() * 2;
 
 	/* set role/skill specific score */
-	int skill = 0;
-	switch (Saiph::role()) {
-	case BARBARIAN:
-		switch (weapon->type()) {
-		case WEAPON_DAGGER:
-		case WEAPON_SABER:
-		case WEAPON_FLAIL:
-		case WEAPON_QUARTERSTAFF:
-		case WEAPON_BOW:
-			/* basic */
-			skill = 1;
-			break;
-
-		case WEAPON_PICKAXE:
-		case WEAPON_BROADSWORD:
-		case WEAPON_LONGSWORD:
-		case WEAPON_SCIMITAR:
-		case WEAPON_CLUB:
-		case WEAPON_MACE:
-		case WEAPON_MORNINGSTAR:
-		case WEAPON_SPEAR:
-		case WEAPON_TRIDENT:
-			/* skilled */
-			skill = 2;
-			break;
-
-		case WEAPON_AXE:
-		case WEAPON_SHORTSWORD:
-		case WEAPON_TWOHANDEDSWORD:
-		case WEAPON_HAMMER:
-			/* expert */
-			skill = 3;
-			break;
-
-		default:
-			/* unskilled */
-			skill = 0;
-			break;
-		}
-		break;
-
-	case VALKYRIE:
-		switch (weapon->type()) {
-		case WEAPON_SCIMITAR:
-		case WEAPON_SABER:
-		case WEAPON_QUARTERSTAFF:
-		case WEAPON_JAVELIN:
-		case WEAPON_TRIDENT:
-		case WEAPON_SLING:
-			/* basic */
-			skill = 1;
-			break;
-
-		case WEAPON_PICKAXE:
-		case WEAPON_SHORTSWORD:
-		case WEAPON_BROADSWORD:
-		case WEAPON_POLEARM:
-		case WEAPON_SPEAR:
-		case WEAPON_LANCE:
-			/* skilled */
-			skill = 2;
-			break;
-
-		case WEAPON_DAGGER:
-		case WEAPON_AXE:
-		case WEAPON_LONGSWORD:
-		case WEAPON_TWOHANDEDSWORD:
-		case WEAPON_HAMMER:
-			/* expert */
-			skill = 3;
-			break;
-
-		default:
-			/* unskilled */
-			skill = 0;
-			break;
-		}
-		break;
-
-	default:
-		skill = 0;
-		break;
-	}
+	int skill = data::Skill::roleMax(Saiph::role(), abs(weapon->type()));
 
 	/* score += tohit + 2 * damage */
 	switch (skill) {
-	case 1:
-		/* basic */
+	case P_BASIC:
 		/* +hit = 0, +dam = 0 */
 		break;
 
-	case 2:
-		/* skilled */
+	case P_SKILLED:
 		/* +hit = 2, +dam = 1 */
 		score += 2 + 1 * 2;
 		break;
 
-	case 3:
-		/* expert */
+	case P_EXPERT:
 		/* +hit = 3, +dam = 2 */
 		score += 3 + 2 * 2;
 		break;
@@ -255,7 +182,7 @@ int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
 
 bool Weapon::isRangedWeapon(const data::Weapon* weapon) {
 	/* TODO: roles may have different preferences of which weapons to throw */
-	return (weapon->type() == WEAPON_DAGGER || weapon->type() == WEAPON_DART || weapon->type() == WEAPON_JAVELIN || weapon->type() == WEAPON_KNIFE || weapon->type() == WEAPON_SHURIKEN || weapon->type() == WEAPON_SPEAR);
+	return (weapon->type() == P_DAGGER || weapon->type() == -P_DART || weapon->type() == P_JAVELIN || weapon->type() == P_KNIFE || weapon->type() == -P_SHURIKEN || weapon->type() == P_SPEAR);
 }
 
 void Weapon::setBestWeapons() {

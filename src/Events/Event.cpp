@@ -3,6 +3,7 @@
 #include "EventBus.h"
 #include "Events/Beatify.h"
 #include "Events/ChangedInventoryItems.h"
+#include "Events/ChangedSkills.h"
 #include "Events/EatItem.h"
 #include "Events/ElberethQuery.h"
 #include "Events/GotDiggingTool.h"
@@ -27,6 +28,7 @@ const int Beatify::ID = 7;
 const int QuestStatus::ID = 8;
 const int GotDiggingTool::ID = 9;
 const int ShopDetected::ID = 10;
+const int ChangedSkills::ID = 11;
 
 /* constructors/destructor */
 Event::Event(const std::string& name) : _name(name) {

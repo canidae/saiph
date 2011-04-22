@@ -25,7 +25,7 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 * Situation patch stuff
   * Control flags like immortality_on
   * Levels: traps, hard_floor, no_monster_gen, knowledge maps.
-  * Character: set spells, skills.
+  * Character: set spells.
 
 * Handle inventory full conditions without looping.  If rawrmage won't, also handle Overloaded.
   * don't go up stairs Stressed, or walk around Stressed in general
@@ -61,15 +61,14 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Flesh out "Roamer" ideas
 
-* Medusa analyzer.
+* Experiment with a lastChance() / Saiph::canDig() way to handle digging and levitating over water.
+
+* Queue:
+  - Saiph::likesShields() and #twoweapon
+  - PoGL / wraith corpse improvements
+  - Medusa analyzer.
 
 * 4/20 night results:
   - When there are E-ignoring monsters around, a good way to heal is to run away
   - Do not drop items which are (being w  (drop_armor_bug)
   - We should not be pathing over magic portals to get to points on the same level
-
-* When we portal into the Quest using a known portal, set the destination, so we won't oscillate if the leader keeps kicking us out.
-  - Don't "Quest" until we're ready, either.
-  - Briefly being HD:15 doesn't make you ready!
-
-Q inlining Medusa

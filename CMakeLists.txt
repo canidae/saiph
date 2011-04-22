@@ -159,6 +159,7 @@ set(HEADER_FILES
 	# Events
 	include/Events/Beatify.h
 	include/Events/ChangedInventoryItems.h
+	include/Events/ChangedSkills.h
 	include/Events/EatItem.h
 	include/Events/ElberethQuery.h
 	include/Events/Event.h

@@ -199,7 +199,7 @@ void Fight::onEvent(Event* const event) {
 				map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 				if (w == data::Weapon::weapons().end())
 					continue; // not a weapon
-				if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
+				if (w->second->type() == P_DAGGER || w->second->type() == -P_DART || w->second->type() == P_JAVELIN || w->second->type() == P_KNIFE || w->second->type() == -P_SHURIKEN || w->second->type() == P_SPEAR)
 					_projectile_slots.insert(*k);
 				else
 					_projectile_slots.erase(*k);
@@ -211,7 +211,7 @@ void Fight::onEvent(Event* const event) {
 			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 			if (w == data::Weapon::weapons().end())
 				continue; // not a weapon
-			if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
+			if (w->second->type() == P_DAGGER || w->second->type() == -P_DART || w->second->type() == P_JAVELIN || w->second->type() == P_KNIFE || w->second->type() == -P_SHURIKEN || w->second->type() == P_SPEAR)
 				_projectile_slots.insert(i->first);
 		}
 	}

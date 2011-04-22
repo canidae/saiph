@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Analyzers/Analyzer.h"
 #include "Actions/Enhance.h"
+#include "EventBus.h"
+#include "Events/ChangedSkills.h"
 #include "Debug.h"
 #include "World.h"
 
@@ -70,9 +72,11 @@ void Enhance::update(const std::string& messages) {
 
 		_sequence = has_a ? 2 : 1;
 	} else if (_sequence == 1) {
+		event::ChangedSkills cs;
 		Saiph::updateSkills(_results);
 		for (int i = 1; i < P_NUM_SKILLS; ++i)
 			Debug::custom("Skills") << data::Skill::name(i) << " = " << data::Skill::levelName(Saiph::skill(i)) << endl;
+		EventBus::broadcast(&cs);
 		_sequence = 3;
 	} else if (_sequence == 2) {
 		_sequence = 3;
