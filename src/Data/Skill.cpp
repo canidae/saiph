@@ -15,7 +15,7 @@ map<int,vector<int> > Skill::_role_maxima;
 /* public static methods */
 void Skill::init() {
 	static const char* ilnames[] = {
-		"Invalid", "Basic", "Skilled", "Expert", "Master", "Grand Master", NULL
+		"Invalid", "Unskilled", "Basic", "Skilled", "Expert", "Master", "Grand Master", NULL
 	};
 	static const char* isnames[] = {
 		"none", "dagger", "knife", "axe", "pick-axe", "short sword", "broadsword", "long sword", "two-handed sword", "scimitar", "saber", "club",
@@ -220,7 +220,7 @@ void Skill::init() {
 			if (rmp[1] == UNKNOWN_ROLE)
 				break;
 			cri = &_role_maxima[rmp[1]];
-			cri->resize(P_NUM_SKILLS+1, P_UNSKILLED);
+			cri->resize(P_NUM_SKILLS, P_UNSKILLED);
 		} else {
 			(*cri)[rmp[0]] = rmp[1];
 		}
@@ -228,7 +228,7 @@ void Skill::init() {
 }
 
 int Skill::parse(const string& name) {
-	for (int i = 1; i <= P_NUM_SKILLS; ++i) {
+	for (int i = 1; i < P_NUM_SKILLS; ++i) {
 		if (_names[i] == name)
 			return i;
 	}
@@ -260,5 +260,7 @@ const vector<string>& Skill::levelNames() {
 }
 
 int Skill::roleMax(int role, int skill) {
+	if (role == UNKNOWN_ROLE)
+		return P_UNSKILLED;
 	return _role_maxima[role][skill];
 }

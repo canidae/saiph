@@ -52,6 +52,9 @@ public:
 	static bool engulfed();
 	static bool engulfed(bool engulfed);
 	static bool inAPit();
+	static int skill(int which);
+	static int maxSkill(int which);
+	static void updateSkills(int* curp);
 	static const Coordinate& position();
 	static const Coordinate& position(const Coordinate& position);
 	static int zorkmids();
@@ -113,6 +116,8 @@ private:
 	static unsigned long long _extrinsics;
 	/* last turn she prayed */
 	static int _last_prayed;
+	/* current skills, 0 = restricted */
+	static int _current_skills[];
 	/* name */
 	static std::string _name;
 	/* race */

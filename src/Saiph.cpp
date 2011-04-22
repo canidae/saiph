@@ -5,6 +5,7 @@
 #include "Globals.h"
 #include "Inventory.h"
 #include "World.h"
+#include "Data/Skill.h"
 
 using namespace analyzer;
 using namespace std;
@@ -49,6 +50,8 @@ unsigned long long Saiph::_conducts = 0;
 /* intrinsics/extrinsics */
 unsigned long long Saiph::_intrinsics = 0;
 unsigned long long Saiph::_extrinsics = 0;
+/* current skills */
+int Saiph::_current_skills[P_NUM_SKILLS];
 /* last turn she prayed */
 int Saiph::_last_prayed = 0;
 /* name */
@@ -395,6 +398,21 @@ bool Saiph::engulfed(bool engulfed) {
 
 bool Saiph::inAPit() {
 	return _in_a_pit;
+}
+
+int Saiph::skill(int which) {
+	return _current_skills[which] ? _current_skills[which] : P_UNSKILLED;
+}
+
+int Saiph::maxSkill(int which) {
+	int rmax = data::Skill::roleMax(role(), which);
+	/* account for divine unrestriction */
+	return (rmax > P_UNSKILLED) ? rmax : _current_skills[which] ? P_BASIC : P_UNSKILLED;
+}
+
+void Saiph::updateSkills(int* curp) {
+	for (int i = 0; i < P_NUM_SKILLS; ++i)
+		_current_skills[i] = curp[i];
 }
 
 const Coordinate& Saiph::position() {

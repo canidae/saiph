@@ -2,6 +2,10 @@
 #define ACTION_ENHANCE_H
 
 #include "Actions/Action.h"
+#include "Command.h"
+#include "Data/Skill.h"
+
+#include <string>
 
 namespace action {
 	class Enhance : public Action {
@@ -19,6 +23,7 @@ namespace action {
 		const Command _do_enhance;
 		const Command _next_page;
 		const Command _enhance_a;
+		int _results[P_NUM_SKILLS];
 	};
 }
 #endif
