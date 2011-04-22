@@ -17,6 +17,7 @@ namespace action {
 
 	private:
 		const Command _do_enhance;
+		const Command _next_page;
 		const Command _enhance_a;
 	};
 }
