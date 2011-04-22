@@ -144,6 +144,7 @@ set(HEADER_FILES
 	include/Data/Shirt.h
 	include/Data/Shortsword.h
 	include/Data/Shuriken.h
+	include/Data/Skill.h
 	include/Data/SlingAmmo.h
 	include/Data/Sling.h
 	include/Data/Spear.h
@@ -301,6 +302,7 @@ set(SOURCE_FILES
 	src/Data/Shirt.cpp
 	src/Data/Shortsword.cpp
 	src/Data/Shuriken.cpp
+	src/Data/Skill.cpp
 	src/Data/SlingAmmo.cpp
 	src/Data/Sling.cpp
 	src/Data/Spear.cpp

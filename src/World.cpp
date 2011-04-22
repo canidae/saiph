@@ -14,6 +14,7 @@
 #include "Actions/Move.h"
 #include "Analyzers/Analyzer.h"
 #include "Data/Item.h"
+#include "Data/Skill.h"
 #include "Data/Monster.h"
 #include "Events/Event.h"
 
@@ -160,6 +161,7 @@ void World::init(const string& logfile, int connection_type) {
 	Debug::init(logfile);
 	data::Monster::init();
 	data::Item::init();
+	data::Skill::init();
 	Level::init();
 	Analyzer::init();
 

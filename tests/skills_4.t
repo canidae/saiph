@@ -38,4 +38,3 @@ skillx 36 1 2 20
 skillx 37 1 2 20
 skillx 38 1 2 20
 skillx 39 1 2 20
-skillx 40 1 2 20
