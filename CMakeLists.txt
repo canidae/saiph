@@ -62,8 +62,10 @@ set(HEADER_FILES
 	include/Actions/Remove.h
 	include/Actions/Rest.h
 	include/Actions/Search.h
+	include/Actions/SwapWeapon.h
 	include/Actions/TakeOff.h
 	include/Actions/Throw.h
+	include/Actions/TwoWeapon.h
 	include/Actions/Unlock.h
 	include/Actions/Wear.h
 	include/Actions/Wield.h
@@ -221,8 +223,10 @@ set(SOURCE_FILES
 	src/Actions/Remove.cpp
 	src/Actions/Rest.cpp
 	src/Actions/Search.cpp
+	src/Actions/SwapWeapon.cpp
 	src/Actions/TakeOff.cpp
 	src/Actions/Throw.cpp
+	src/Actions/TwoWeapon.cpp
 	src/Actions/Unlock.cpp
 	src/Actions/Wear.cpp
 	src/Actions/Wield.cpp

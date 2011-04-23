@@ -9,6 +9,8 @@
 #include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Actions/TwoWeapon.h"
+#include "Actions/SwapWeapon.h"
 #include "Actions/Wield.h"
 #include "Data/Weapon.h"
 #include "Events/Beatify.h"
@@ -37,8 +39,39 @@ Weapon::Weapon() : Analyzer("Weapon"), _best_weapon(ILLEGAL_ITEM), _alt_weapon(I
 
 /* methods */
 void Weapon::analyze() {
-	if (!Saiph::polymorphed() && _best_weapon != ILLEGAL_ITEM && _best_weapon != Inventory::keyForSlot(SLOT_WEAPON) && Inventory::itemInSlot(SLOT_WEAPON).beatitude() != CURSED)
-		World::setAction(static_cast<action::Action*> (new action::Wield(this, _best_weapon, WEAPON_WIELD_PRIORITY)));
+	if (Saiph::polymorphed() || _best_weapon == ILLEGAL_ITEM || Inventory::itemInSlot(SLOT_WEAPON).beatitude() == CURSED)
+		return;
+
+	map<string, const data::Weapon*>::const_iterator idata = data::Weapon::weapons().find(Inventory::itemAtKey(_best_weapon).name());
+
+	bool two_weapons =
+		_alt_weapon != ILLEGAL_ITEM &&  // need two weapons
+		Saiph::maxSkill(P_TWO_WEAPON_COMBAT) >= P_BASIC && // and some possible skill
+		idata != data::Weapon::weapons().end() && // and a proper weapon
+		Saiph::skill(idata->second->type()) == Saiph::maxSkill(idata->second->type()) && // and maxxed skill
+		Inventory::itemAtKey(_alt_weapon).beatitude() != BEATITUDE_UNKNOWN; // and BUCed secondary
+
+	if (two_weapons) {
+		unsigned char cur_weap = Inventory::keyForSlot(SLOT_WEAPON);
+		unsigned char cur_a_weap = Inventory::keyForSlot(SLOT_ALTERNATE_WEAPON);
+		unsigned char cur_o_weap = Inventory::keyForSlot(SLOT_OFFHAND_WEAPON);
+
+		if (_best_weapon == cur_weap && _alt_weapon == cur_o_weap)
+			;
+		else if (_best_weapon == cur_weap && _alt_weapon == cur_a_weap)
+			World::setAction(static_cast<action::Action*> (new action::TwoWeapon(this, WEAPON_WIELD_PRIORITY)));
+		else if (_alt_weapon == cur_a_weap)
+			World::setAction(static_cast<action::Action*> (new action::Wield(this, _best_weapon, WEAPON_WIELD_PRIORITY)));
+		else if (_alt_weapon == cur_weap)
+			World::setAction(static_cast<action::Action*> (new action::SwapWeapon(this, WEAPON_WIELD_PRIORITY)));
+		else
+			World::setAction(static_cast<action::Action*> (new action::Wield(this, _alt_weapon, WEAPON_WIELD_PRIORITY)));
+	} else {
+		if (_best_weapon != Inventory::keyForSlot(SLOT_WEAPON))
+			World::setAction(static_cast<action::Action*> (new action::Wield(this, _best_weapon, WEAPON_WIELD_PRIORITY)));
+		else if (Inventory::keyForSlot(SLOT_OFFHAND_WEAPON) != ILLEGAL_ITEM)
+			World::setAction(static_cast<action::Action*> (new action::TwoWeapon(this, WEAPON_WIELD_PRIORITY)));
+	}
 }
 
 void Weapon::onEvent(event::Event* const event) {
