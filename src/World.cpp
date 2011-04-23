@@ -66,6 +66,7 @@ std::string World::_shadow_rhs[50];
 
 static struct termios _save_termios, _current_termios;
 static int _current_speed;
+int World::_display_level = -1;
 
 const char* World::_ansi_colors[] = {
 	/*   0 */ "0", "0;1", "", "", "", "", "", "0;7", "", "",
@@ -585,6 +586,23 @@ void World::doCommands() {
 			_current_speed = SPEED_FAST;
 			break;
 
+		case '<':
+			if (_display_level < 0)
+				_display_level = Saiph::position().level();
+			if (_display_level) {
+				--_display_level;
+				refresh();
+			}
+			break;
+
+		case '>':
+			if (_display_level < 0)
+				_display_level = Saiph::position().level();
+			if (_display_level < int(_levels.size()) - 1) {
+				++_display_level;
+				refresh();
+			}
+			break;
 
 		case 12:
 			refresh();
@@ -639,6 +657,7 @@ void World::run(int speed) {
 				_branches[level().branch()] = Saiph::position();
 
 			/* dump maps */
+			_display_level = -1;
 			dumpMaps();
 		}
 
@@ -962,19 +981,25 @@ void World::dumpMaps() {
 	double fps = (double) _frame_count / seconds;
 	double tps = (double) _turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
-	cout << "Frames/second: " << (unsigned char) 27 << "[32m";
-	cout << (int) fps << "." << (int) (fps * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-	cout << (unsigned char) 27 << "[25;26H";
-	cout << "Turns/second: " << (unsigned char) 27 << "[32m";
-	cout << (int) tps << "." << (int) (tps * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-	cout << (unsigned char) 27 << "[25;51H";
-	cout << "Run time: " << (unsigned char) 27 << "[32m";
-	cout << (int) seconds << "." << (int) (seconds * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
+	if (_display_level == -1) {
+		cout << "Frames/second: " << (unsigned char) 27 << "[32m";
+		cout << (int) fps << "." << (int) (fps * 10) % 10;
+		cout << (unsigned char) 27 << "[0m     ";
+		cout << (unsigned char) 27 << "[25;26H";
+		cout << "Turns/second: " << (unsigned char) 27 << "[32m";
+		cout << (int) tps << "." << (int) (tps * 10) % 10;
+		cout << (unsigned char) 27 << "[0m     ";
+		cout << (unsigned char) 27 << "[25;51H";
+		cout << "Run time: " << (unsigned char) 27 << "[32m";
+		cout << (int) seconds << "." << (int) (seconds * 10) % 10;
+		cout << (unsigned char) 27 << "[0m     ";
+	} else {
+		ostringstream status;
+		status << "Currently displaying level id " << _display_level << " at depth " << level(_display_level).depth() << ", branch " << level(_display_level).branch();
+		cout << "\033[25;1H" << status.str() << string(' ', 80 - status.str().size());
+	}
 
-	dumpMap(level());
+	dumpMap(_display_level < 0 ? level() : level(_display_level));
 
 	/* status & inventory */
 	cout << "\033[m";
