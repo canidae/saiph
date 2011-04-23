@@ -36,9 +36,10 @@ void DiggingTool::onEvent(Event* const event) {
 		int key;
 		int score;
 
-		rankDiggers(key, score, (e->dropping() ? NULL : &Inventory::items()), &e->items());
+		// WantItems is called once per page while dropping, but the ranking needs to see the whole list...
+		rankDiggers(key, score, (e->dropping() ? NULL : &Inventory::items()), (e->dropping() ? &Inventory::items() : &e->items()));
 
-		if (key >= 0) {
+		if (key >= 0 && e->items().find(key) != e->items().end()) {
 			Item& item = e->items()[(unsigned char)key];
 			item.want(min(1, item.count()));
 		}
