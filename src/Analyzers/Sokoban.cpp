@@ -4,6 +4,7 @@
 #include "Globals.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Coordinate.h"
 #include "Actions/Move.h"
 
 using namespace analyzer;
@@ -266,68 +267,85 @@ void Sokoban::parseMessages(const string& messages) {
 void Sokoban::analyze() {
 	if (World::currentPriority() >= SOKOBAN_SOLVE_PRIORITY)
 		return;
-	if (World::level().branch() != BRANCH_SOKOBAN)
-		return;
-	map<int, int>::iterator l = _levelmap.find(Saiph::position().level());
-	int level = -1;
-	if (l == _levelmap.end()) {
-		for (int s = 0; s < (int) _moves.size(); ++s) {
-			/* 2nd. entry should be a unique boulder for each level */
-			deque<Point>::iterator f = _moves[s].begin();
-			if (f == _moves[s].end() || ++f == _moves[s].end())
-				continue; // seems like this level is completed
-			if (World::level().tile(*f).symbol() != BOULDER)
-				continue; // expected boulder, can't be this level
-			/* this must be it */
-			_levelmap[Saiph::position().level()] = s;
-			level = s;
-			Debug::custom(name()) << "Recognized sokoban level " << s << endl;
-			break;
-		}
-	} else {
-		/* already discovered this sokoban level */
-		level = l->second;
-	}
-	if (level == -1) {
-		/* huh? */
-		Debug::warning() << "Sokoban was unable to recognize this level" << endl;
-		return;
-	}
-	if (_moves[level].size() <= 0) {
-		/* hmmm */
-		Debug::custom(name()) << "Odd, this shouldn't happen, did we solve sokoban level " << level << "?" << endl;
-		return;
-	}
-	/* go to next point */
-	Point p = _moves[level].front();
-	if (p == Saiph::position()) {
-		/* we're standing at the next point, erase it and go to next */
-		_moves[level].pop_front();
-		if (_moves[level].size() > 0) {
-			p = _moves[level].front();
+
+	for (unsigned ix = 0; ix < World::levels().size(); ++ix) {
+		Level& lev = World::level(ix);
+
+		if (lev.branch() != BRANCH_SOKOBAN)
+			continue;
+
+		map<int, int>::iterator l = _levelmap.find(ix);
+		int level = -1;
+		if (l == _levelmap.end()) {
+			for (int s = 0; s < (int) _moves.size(); ++s) {
+				/* 2nd. entry should be a unique boulder for each level */
+				deque<Point>::iterator f = _moves[s].begin();
+				if (f == _moves[s].end() || ++f == _moves[s].end())
+					continue; // seems like this level is completed
+				if (lev.tile(*f).symbol() != BOULDER)
+					continue; // expected boulder, can't be this level
+				/* this must be it */
+				_levelmap[ix] = s;
+				level = s;
+				Debug::custom(name()) << "Recognized " << ix << " as sokoban level " << s << endl;
+				break;
+			}
 		} else {
-			/* look at that, we've solved this sokoban level */
-			Debug::custom(name()) << "Solved sokoban level " << level << endl;
-			return;
+			/* already discovered this sokoban level */
+			level = l->second;
 		}
-	}
-	Tile& tile = World::shortestPath(p);
-	if (tile.cost() == UNREACHABLE) {
-		/* this is bad */
-		Debug::custom(name()) << "Unable to move to " << tile << endl;
-		return;
-	} else if (tile.cost() == UNPASSABLE) {
-		if (tile.symbol() == BOULDER) {
-			/* pushing boulder */
-			Debug::custom(name()) << "Pushing a boulder: " << tile << endl;
+		if (level == -1) {
+			/* huh? */
+			Debug::warning() << "Sokoban was unable to recognize level " << ix << endl;
+			continue;
+		}
+		if (_moves[level].size() <= 0) {
+			/* hmmm */
+			Debug::custom(name()) << "Odd, this shouldn't happen, did we solve sokoban level " << level << "?" << endl;
+			map<Point, int>::const_iterator pi = lev.symbols(STAIRS_UP).begin();
+			if (pi != lev.symbols(STAIRS_UP).end() && pi->second == UNKNOWN_SYMBOL_VALUE) {
+				Debug::custom(name()) << "Heading to unvisited Sokoban level at depth " << lev.depth() - 1 << endl;
+				Tile tile = World::shortestPath(Coordinate(ix, pi->first));
+				if (tile.cost() >= UNPASSABLE)
+					continue;
+				if (tile.direction() == NOWHERE)
+					tile.direction(UP);
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
+			}
+			continue;
+		}
+
+		/* go to next point */
+		Coordinate p(ix, _moves[level].front());
+		if (p == Saiph::position()) {
+			/* we're standing at the next point, erase it and go to next */
+			_moves[level].pop_front();
+			if (_moves[level].size() > 0) {
+				p = Coordinate(ix, _moves[level].front());
+			} else {
+				/* look at that, we've solved this sokoban level */
+				Debug::custom(name()) << "Solved sokoban level " << level << endl;
+				continue;
+			}
+		}
+		Tile tile = World::shortestPath(p);
+		if (tile.cost() == UNREACHABLE) {
+			/* this is bad */
+			Debug::custom(name()) << "Unable to move to " << tile << endl;
+			return;
+		} else if (tile.cost() == UNPASSABLE) {
+			if (tile.symbol() == BOULDER) {
+				/* pushing boulder */
+				Debug::custom(name()) << "Pushing a boulder: " << tile << endl;
+			} else {
+				/* uh, not good at all */
+				Debug::custom(name()) << "Wanted to move on to an unpassable non-boulder square: " << tile << endl;
+				return;
+			}
 		} else {
-			/* uh, not good at all */
-			Debug::custom(name()) << "Wanted to move on to an unpassable non-boulder square: " << tile << endl;
-			return;
+			/* probably moving to correct point before pushing boulder */
+			Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
 		}
-	} else {
-		/* probably moving to correct point before pushing boulder */
-		Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
 	}
-	World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
 }
