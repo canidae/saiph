@@ -29,17 +29,64 @@
 #define LEVEL_DEBUG_NAME "Level] "
 /* messages */
 #define LEVEL_ALTAR_HERE "  There is an altar to "
+#define LEVEL_ARROW_TRAP_ESCAPE "  You escape an arrow trap.  "
+#define LEVEL_ARROW_TRAP_HERE "  There is an arrow trap here.  "
+#define LEVEL_ARROW_TRAP_TRIGGER "  An arrow shoots out at you!  "
+#define LEVEL_BEAR_TRAP_ESCAPE "  You escape a bear trap.  "
+#define LEVEL_BEAR_TRAP_FLOAT "  You float over a bear trap.  "
+#define LEVEL_BEAR_TRAP_HERE "  There is a bear trap here.  "
+#define LEVEL_BEAR_TRAP_TRIGGER "  A bear trap closes on your foot!  "
+#define LEVEL_DART_TRAP_ESCAPE "  You escape a dart trap.  "
+#define LEVEL_DART_TRAP_HERE "  There is a dart trap here.  "
+#define LEVEL_DART_TRAP_TRIGGER "  A little dart shoots out at you!  "
+#define LEVEL_FALLING_ROCK_TRAP_ESCAPE "  You escape a falling rock trap.  "
+#define LEVEL_FALLING_ROCK_TRAP_HERE "  There is a falling rock trap here.  "
+#define LEVEL_FALLING_ROCK_TRAP_TRIGGER "  A trap door in the ceiling opens and a rock falls on your head!  "
+#define LEVEL_FIRE_TRAP_ESCAPE "  You escape a fire trap.  "
+#define LEVEL_FIRE_TRAP_HERE "  There is a fire trap here.  "
+#define LEVEL_FIRE_TRAP_TRIGGER "  A tower of flame erupts from the floor!  "
+#define LEVEL_HOLE_ESCAPE "  You escape a hole.  "
+#define LEVEL_HOLE_FLOAT "  You float over a hole.  "
 #define LEVEL_FOUNTAIN_DRIES_UP "  The fountain dries up!  "
 #define LEVEL_FOUNTAIN_DRIES_UP2 "  As the hand retreats, the fountain disappears!  "
 #define LEVEL_FOUNTAIN_HERE "  There is a fountain here.  "
 #define LEVEL_GRAVE_HERE "  There is a grave here.  "
+#define LEVEL_LAND_MINE_ESCAPE "  You escape a land mine.  "
+#define LEVEL_LAND_MINE_FLOAT "  There is a trigger in a pile of soil below you.  "
+#define LEVEL_LAND_MINE_HERE "  There is a land mine here.  "
+#define LEVEL_LEVEL_TELEPORTER_TRAP_ESCAPE "  You escape a level teleporter trap.  "
+#define LEVEL_MAGIC_TRAP_ESCAPE "  You escape a magic trap.  "
+#define LEVEL_MAGIC_TRAP_HERE "  There is a magic trap here.  "
+// TODO: trap detection with levitation, holes, trap doors, pit, web, squeaky board, etc
 #define LEVEL_NO_STAIRS_DOWN_HERE "  You can't go down here.  "
 #define LEVEL_NO_STAIRS_UP_HERE "  You can't go up here.  "
 #define LEVEL_OPEN_DOOR_HERE "  There is an open door here.  "
+#define LEVEL_POLYMORPH_TRAP_ESCAPE "  You escape a polymorph trap.  "
+#define LEVEL_ROLLING_BOULDER_TRAP_ESCAPE "  You escape a rolling boulder trap.  "
+#define LEVEL_ROLLING_BOULDER_TRAP_HERE "  There is a rolling boulder trap here.  "
+#define LEVEL_ROLLING_BOULDER_TRAP_TRIGGER "  Click! You trigger a rolling boulder trap!  "
+#define LEVEL_RUST_TRAP_ESCAPE "  You escape a rust trap.  "
+#define LEVEL_RUST_TRAP_HERE "  There is a rust trap here.  "
+#define LEVEL_RUST_TRAP_TRIGGER "  A gush of water hits "
+#define LEVEL_SLEEPING_GAS_TRAP_ESCAPE "  You escape a sleeping gas trap.  "
+#define LEVEL_SLEEPING_GAS_TRAP_HERE "  There is a sleeping gas trap here.  "
+#define LEVEL_SLEEPING_GAS_TRAP_TRIGGER "  A cloud of gas puts you to sleep!  "
+#define LEVEL_SQUEAKY_BOARD_ESCAPE "  You escape a squeaky board.  "
+#define LEVEL_SQUEAKY_BOARD_FLOAT "  You notice a loose board below you.  "
+#define LEVEL_SQUEAKY_BOARD_HERE "  There is a squeaky board here.  "
+#define LEVEL_SQUEAKY_BOARD_TRIGGER "  A board beneath you squeaks loudly.  "
 #define LEVEL_STAIRCASE_DOWN_HERE "  There is a staircase down here.  "
 #define LEVEL_STAIRCASE_UP_HERE "  There is a staircase up here.  "
+#define LEVEL_PIT_ESCAPE "  You escape a pit.  "
+#define LEVEL_PIT_FLOAT "  You float over a pit.  "
 #define LEVEL_PIT_HERE "  There is a pit here.  "
+#define LEVEL_SPIKED_PIT_ESCAPE "  You escape a spiked pit.  "
+#define LEVEL_SPIKED_PIT_FLOAT "  You float over a spiked pit.  "
 #define LEVEL_SPIKED_PIT_HERE "  There is a spiked pit here.  "
+#define LEVEL_TELEPORTATION_TRAP_ESCAPE "  You escape a teleportation trap.  "
+#define LEVEL_TELEPORTATION_TRAP_HERE "  There is a teleportation trap here.  "
+#define LEVEL_TRAP_DOOR_ESCAPE "  You escape a trap door.  "
+#define LEVEL_TRAP_DOOR_FLOAT "  You don't fall in.  "
 #define LEVEL_THERE_IS_NOTHING_HERE "  There is nothing here to pick up.  "
 #define LEVEL_THINGS_THAT_ARE_HERE "  Things that are here:  "
 #define LEVEL_THINGS_THAT_YOU_FEEL_HERE "  Things that you feel here:  "
@@ -53,6 +100,10 @@
 #define LEVEL_SHOP_ON_LEVEL1 "  You hear someone cursing shoplifters.  "
 #define LEVEL_SHOP_ON_LEVEL2 "  You hear the chime of a cash register.  "
 #define LEVEL_SHOP_ON_LEVEL3 "  You hear Neiman and Marcus arguing!  "
+#define LEVEL_WEB_ESCAPE "  You escape a web.  "
+#define LEVEL_WEB_FLOAT "  You float over a web.  "
+#define LEVEL_WEB_HERE "  There is a web here.  "
+#define LEVEL_WEB_TRIGGER "  You stumble into a spider web!  "
 
 using namespace event;
 using namespace std;
@@ -358,12 +409,70 @@ void Level::parseMessages(const string& messages) {
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = CHAOTIC;
 		else
 			_symbols[(unsigned char) ALTAR][Saiph::position()] = UNALIGNED;
-	} else if (messages.find(LEVEL_PIT_HERE) != string::npos) {
+	} else if (messages.find(LEVEL_ARROW_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_ARROW_TRAP_HERE) != string::npos || messages.find(LEVEL_ARROW_TRAP_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_ARROW);
+	} else if (messages.find(LEVEL_BEAR_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_BEAR_TRAP_FLOAT) != string::npos || messages.find(LEVEL_BEAR_TRAP_TRIGGER) != string::npos || messages.find(LEVEL_BEAR_TRAP_HERE) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_BEAR);
+	} else if (messages.find(LEVEL_DART_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_DART_TRAP_HERE) != string::npos || messages.find(LEVEL_DART_TRAP_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_DART);
+	} else if (messages.find(LEVEL_FALLING_ROCK_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_FALLING_ROCK_TRAP_HERE) != string::npos || messages.find(LEVEL_FALLING_ROCK_TRAP_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_FALLING_ROCK);
+	} else if (messages.find(LEVEL_FIRE_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_FIRE_TRAP_HERE) != string::npos) {
+		/* can't use message on trigger, the same message may come from a magic trap */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_FIRE);
+	} else if (messages.find(LEVEL_HOLE_ESCAPE) != string::npos || messages.find(LEVEL_HOLE_FLOAT) != string::npos) {
+		/* can't use messages for falling in, by the time we read the message, we're somewhere else */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_HOLE);
+	} else if (messages.find(LEVEL_LAND_MINE_ESCAPE) != string::npos || messages.find(LEVEL_LAND_MINE_FLOAT) != string::npos || messages.find(LEVEL_LAND_MINE_HERE) != string::npos) {
+		/* no need to parse message when trap triggered, it'll be gone then */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_LAND_MINE);
+	} else if (messages.find(LEVEL_LEVEL_TELEPORTER_TRAP_ESCAPE) != string::npos) {
+		/* level teleporter traps disappear on use */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_LEVEL_TELEPORTER);
+	} else if (messages.find(LEVEL_MAGIC_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_MAGIC_TRAP_HERE) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_MAGIC);
+	} else if (messages.find(LEVEL_PIT_ESCAPE) != string::npos  || messages.find(LEVEL_PIT_FLOAT) != string::npos || messages.find(LEVEL_PIT_HERE) != string::npos) {
 		setDungeonSymbol(Saiph::position(), TRAP);
 		setDungeonSymbolValue(Saiph::position(), TRAP_PIT);
-	} else if (messages.find(LEVEL_SPIKED_PIT_HERE) != string::npos) {
+	} else if (messages.find(LEVEL_POLYMORPH_TRAP_ESCAPE) != string::npos) {
+		/* polymorph traps disappear on use */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_POLYMORPH);
+	} else if (messages.find(LEVEL_ROLLING_BOULDER_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_ROLLING_BOULDER_TRAP_HERE) != string::npos || messages.find(LEVEL_ROLLING_BOULDER_TRAP_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_ROLLING_BOULDER);
+	} else if (messages.find(LEVEL_RUST_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_RUST_TRAP_HERE) != string::npos || messages.find(LEVEL_RUST_TRAP_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_RUST);
+	} else if (messages.find(LEVEL_SLEEPING_GAS_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_SLEEPING_GAS_TRAP_HERE) != string::npos || messages.find(LEVEL_SLEEPING_GAS_TRAP_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_SLEEPING_GAS);
+	} else if (messages.find(LEVEL_SPIKED_PIT_ESCAPE) != string::npos || messages.find(LEVEL_SPIKED_PIT_FLOAT) != string::npos || messages.find(LEVEL_SPIKED_PIT_HERE) != string::npos) {
 		setDungeonSymbol(Saiph::position(), TRAP);
 		setDungeonSymbolValue(Saiph::position(), TRAP_SPIKED_PIT);
+	} else if (messages.find(LEVEL_SQUEAKY_BOARD_ESCAPE) != string::npos || messages.find(LEVEL_SQUEAKY_BOARD_FLOAT) != string::npos || messages.find(LEVEL_SQUEAKY_BOARD_HERE) != string::npos || messages.find(LEVEL_SQUEAKY_BOARD_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_SQUEAKY_BOARD);
+	} else if (messages.find(LEVEL_TELEPORTATION_TRAP_ESCAPE) != string::npos || messages.find(LEVEL_TELEPORTATION_TRAP_HERE) != string::npos) {
+		/* no message when triggered (unless telecontrol, but that can trigger on teleportitis too) */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_TELEPORTATION);
+	} else if (messages.find(LEVEL_TRAP_DOOR_ESCAPE) != string::npos || messages.find(LEVEL_TRAP_DOOR_FLOAT) != string::npos) {
+		/* can't use messages for falling in, by the time we read the message, we're somewhere else */
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_TRAP_DOOR);
+	} else if (messages.find(LEVEL_WEB_ESCAPE) != string::npos || messages.find(LEVEL_WEB_FLOAT) != string::npos || messages.find(LEVEL_WEB_HERE) != string::npos || messages.find(LEVEL_WEB_TRIGGER) != string::npos) {
+		setDungeonSymbol(Saiph::position(), TRAP);
+		setDungeonSymbolValue(Saiph::position(), TRAP_WEB);
 	} else if (messages.find(LEVEL_WALL_UNDIGGABLE) != string::npos) {
 		_walls_diggable = false;
 	} else if (messages.find(LEVEL_FLOOR_OR_GROUND_UNDIGGABLE) != string::npos) {

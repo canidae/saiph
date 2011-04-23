@@ -186,8 +186,25 @@
 #define OUTSIDE_MAP 254
 
 /* trap values */
-#define TRAP_PIT 1
-#define TRAP_SPIKED_PIT 2
+#define TRAP_ARROW 1
+#define TRAP_BEAR 2
+#define TRAP_DART 3
+#define TRAP_FALLING_ROCK 4
+#define TRAP_FIRE 5
+#define TRAP_HOLE 6
+#define TRAP_LAND_MINE 7
+#define TRAP_LEVEL_TELEPORTER 8
+#define TRAP_MAGIC 9
+#define TRAP_PIT 10
+#define TRAP_POLYMORPH 11
+#define TRAP_ROLLING_BOULDER 12
+#define TRAP_RUST 13
+#define TRAP_SLEEPING_GAS 14
+#define TRAP_SPIKED_PIT 15
+#define TRAP_SQUEAKY_BOARD 16
+#define TRAP_TELEPORTATION 17
+#define TRAP_TRAP_DOOR 18
+#define TRAP_WEB 19
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
