@@ -48,6 +48,8 @@ void Weapon::analyze() {
 		_alt_weapon != ILLEGAL_ITEM &&  // need two weapons
 		Saiph::maxSkill(P_TWO_WEAPON_COMBAT) >= P_BASIC && // and some possible skill
 		idata != data::Weapon::weapons().end() && // and a proper weapon
+		idata->second->oneHanded() && // one-handed weapon :)
+		!Saiph::likesShields() && // not conflicting with Armor
 		Saiph::skill(idata->second->type()) == Saiph::maxSkill(idata->second->type()) && // and maxxed skill
 		Inventory::itemAtKey(_alt_weapon).beatitude() != BEATITUDE_UNKNOWN; // and BUCed secondary
 
