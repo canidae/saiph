@@ -1,42 +1,34 @@
 #ifndef ACTION_FAR_LOOK_H
-#define	ACTION_FAR_LOOK_H
+#define ACTION_FAR_LOOK_H
 
-#include "Globals.h"
 #include "Actions/Action.h"
+#include "Point.h"
+#include <vector>
+#include <string>
 
 namespace action {
-
 	class FarLook : public Action {
 	public:
 		static const int ID;
 
-		FarLook(analyzer::Analyzer* analyzer, const Point& location) : Action(analyzer, false), _far_look(";" + World::cursorMoves(Saiph::position(), location) + ".", PRIORITY_LOOK) {
-		}
+		class Request {
+		public:
+			Request(const Point& where);
+			Point where;
+			std::string result;
+		};
 
-		virtual ~FarLook() {
-		}
+		FarLook(analyzer::Analyzer* analyzer, std::vector<Request>& requests);
+		virtual ~FarLook();
 
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _far_look;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string&) {
-			if (_sequence == 0)
-				_sequence = 1;
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string&);
 
 	private:
-		const Command _far_look;
+		std::vector<Request>::iterator _current;
+		std::vector<Request>::iterator _end;
+		Command _command;
 	};
 }
 #endif

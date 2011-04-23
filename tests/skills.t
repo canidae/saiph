@@ -1,0 +1,25 @@
+level 2
+skillx 10 2 3 80
+skillx 11 1 2 20
+skillx 12 2 2 80
+skillx 13 2 2 20
+skillx 14 2 2 20
+skillx 15 2 2 20
+skillx 16 2 2 20
+skillx 17 2 2 20
+skillx 18 2 2 20
+skillx 19 2 2 20
+skillx 20 2 2 20
+skillx 21 2 2 20
+skillx 22 2 2 20
+skillx 23 2 2 20
+skillx 24 2 2 20
+skillx 25 2 2 20
+skillx 26 2 2 20
+skillx 27 2 2 20
+skillx 28 2 2 60
+skillx 35 2 2 20
+skillx 36 2 2 20
+skillx 37 6 6 20
+skillx 38 2 2 20
+skillx 39 2 2 20

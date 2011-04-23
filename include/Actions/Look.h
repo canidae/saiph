@@ -4,35 +4,16 @@
 #include "Actions/Action.h"
 
 namespace action {
-
 	class Look : public Action {
 	public:
 		static const int ID;
 
-		Look(analyzer::Analyzer* analyzer) : Action(analyzer, false), _look(":", PRIORITY_LOOK) {
-		}
+		Look(analyzer::Analyzer* analyzer);
+		virtual ~Look();
 
-		virtual ~Look() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _look;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string&) {
-			if (_sequence == 0)
-				_sequence = 1;
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string&);
 
 	private:
 		const Command _look;

@@ -2,6 +2,7 @@
 
 #include "Debug.h"
 #include "EventBus.h"
+#include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Eat.h"
@@ -133,7 +134,7 @@ void Food::parseMessages(const string& messages) {
 	}
 }
 
-void Food::onEvent(Event * const event) {
+void Food::onEvent(Event* const event) {
 	if (event->id() == ItemsOnGround::ID) {
 		// FIXME?: do we want/need to eat corpses in shops?
 		if (World::level().tile().symbol() != SHOP_TILE) {

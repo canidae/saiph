@@ -6,24 +6,15 @@
 #include "Events/Event.h"
 
 namespace event {
-
 	class ItemsOnGround : public Event {
 	public:
 		static const int ID;
 
-		ItemsOnGround(const std::list<Item> items) : Event("ItemsOnGround"), _items(items) {
-		}
+		ItemsOnGround(const std::list<Item>& items);
+		virtual ~ItemsOnGround();
 
-		virtual ~ItemsOnGround() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const std::list<Item>& items() const {
-			return _items;
-		}
+		virtual int id();
+		virtual const std::list<Item>& items() const;
 
 	private:
 		const std::list<Item> _items;

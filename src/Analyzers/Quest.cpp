@@ -57,8 +57,10 @@ void Quest::parseMessages(const string& messages) {
 	if (_status == QUEST_STATUS_READY && World::level().branch() == BRANCH_QUEST && World::level().depth() == 1) {
 		// unfortunately, nethack's quest pager inserts spaces unpredictably
 		string menu;
-		for (string::const_iterator ch = messages.begin(); ch != messages.end(); ++ch)
-			if (*ch != ' ') menu.push_back(*ch);
+		for (string::const_iterator ch = messages.begin(); ch != messages.end(); ++ch) {
+			if (*ch != ' ')
+				menu.push_back(*ch);
+		}
 
 		if (menu.find(accepted_messages[Saiph::role()]) != string::npos)
 			setStatus(_portal_level, QUEST_STATUS_GIVEN);
@@ -72,15 +74,16 @@ void Quest::parseMessages(const string& messages) {
 void Quest::analyze() {
 	if (Saiph::experience() >= 14 && _status == QUEST_STATUS_NOT_READY)
 		setStatus(_portal_level, QUEST_STATUS_READY);
+	else if (Saiph::experience() < 14 && _status == QUEST_STATUS_READY)
+		setStatus(_portal_level, QUEST_STATUS_NOT_READY);
 
 	// our only active job is to chat with the leader
 	if (World::level().depth() != 1 || World::level().branch() != BRANCH_QUEST || _status != QUEST_STATUS_READY)
 		return;
 
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-		if (!m->second.visible()) continue;
-		if (!m->second.data()) continue;
-		if (m->second.data()->sounds() != MS_LEADER) continue;
+		if (!m->second.visible() || !m->second.data() || m->second.data()->sounds() != MS_LEADER)
+			continue;
 		_leader_pos = m->first;
 	}
 
@@ -93,7 +96,7 @@ void Quest::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::Move(this, go, PRIORITY_QUEST_GET_QUEST, go.cost())));
 }
 
-void Quest::onEvent(event::Event * const event) {
+void Quest::onEvent(event::Event* const event) {
 	if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {

@@ -22,8 +22,10 @@ Vault::Vault() : Analyzer("Vault"), _answering_guard(false), _dropping_gold(fals
 void Vault::findNearestUnstepped(unsigned& best_cost, Point& target, const map<Point, int>& list) {
 	for (map<Point, int>::const_iterator w = list.begin(); w != list.end(); ++w) {
 		Tile& t = World::level().tile(w->first);
-		if (t.search() == TILE_FULLY_SEARCHED) continue;
-		if (t.cost() >= best_cost) continue;
+		if (t.search() == TILE_FULLY_SEARCHED)
+			continue;
+		if (t.cost() >= best_cost)
+			continue;
 		best_cost = t.cost();
 		target = w->first;
 	}

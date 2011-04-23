@@ -5,6 +5,7 @@
 #include "Globals.h"
 #include "Inventory.h"
 #include "World.h"
+#include "Data/Skill.h"
 
 using namespace analyzer;
 using namespace std;
@@ -49,6 +50,8 @@ unsigned long long Saiph::_conducts = 0;
 /* intrinsics/extrinsics */
 unsigned long long Saiph::_intrinsics = 0;
 unsigned long long Saiph::_extrinsics = 0;
+/* current skills */
+int Saiph::_current_skills[P_NUM_SKILLS];
 /* last turn she prayed */
 int Saiph::_last_prayed = 0;
 /* name */
@@ -92,48 +95,42 @@ void Saiph::parseMessages(const string& messages) {
 					_role = ARCHEOLOGIST;
 					_intrinsics |= PROPERTY_SPEED;
 					_intrinsics |= PROPERTY_STEALTH;
-				}
-				else if (role == "Barbarian") {
+				} else if (role == "Barbarian") {
 					_role = BARBARIAN;
 					_intrinsics |= PROPERTY_POISON;
-				}
-				else if (role == "Caveman")
+				} else if (role == "Caveman") {
 					_role = CAVEMAN;
-				else if (role == "Healer") {
+				} else if (role == "Healer") {
 					_role = HEALER;
 					_intrinsics |= PROPERTY_POISON;
-				}
-				else if (role == "Knight")
+				} else if (role == "Knight") {
 					_role = KNIGHT;
-				else if (role == "Monk") {
+				} else if (role == "Monk") {
 					_role = MONK;
 					_intrinsics |= PROPERTY_SLEEP;
 					_intrinsics |= PROPERTY_SPEED;
 					_conducts |= CONDUCT_VEGETARIAN;
-				}
-				else if (role == "Priest")
+				} else if (role == "Priest") {
 					_role = PRIEST;
-				else if (role == "Ranger")
+				} else if (role == "Ranger") {
 					_role = RANGER;
-				else if (role == "Rogue") {
+				} else if (role == "Rogue") {
 					_role = ROGUE;
 					_intrinsics |= PROPERTY_STEALTH;
-				}
-				else if (role == "Samurai") {
+				} else if (role == "Samurai") {
 					_role = SAMURAI;
 					_intrinsics |= PROPERTY_SPEED;
-				}
-				else if (role == "Tourist")
+				} else if (role == "Tourist") {
 					_role = TOURIST;
-				else if (role == "Valkyrie") {
+				} else if (role == "Valkyrie") {
 					_role = VALKYRIE;
 					_intrinsics |= PROPERTY_COLD;
 					_intrinsics |= PROPERTY_STEALTH;
-				}
-				else if (role == "Wizard")
+				} else if (role == "Wizard") {
 					_role = WIZARD;
-				else
+				} else {
 					_role = UNKNOWN_ROLE;
+				}
 			}
 			/* current gender */
 			pos = messages.find(':', pos + 2);
@@ -403,6 +400,21 @@ bool Saiph::inAPit() {
 	return _in_a_pit;
 }
 
+int Saiph::skill(int which) {
+	return _current_skills[which] ? _current_skills[which] : P_UNSKILLED;
+}
+
+int Saiph::maxSkill(int which) {
+	int rmax = data::Skill::roleMax(role(), which);
+	/* account for divine unrestriction */
+	return (rmax > P_UNSKILLED) ? rmax : _current_skills[which] ? P_BASIC : P_UNSKILLED;
+}
+
+void Saiph::updateSkills(int* curp) {
+	for (int i = 0; i < P_NUM_SKILLS; ++i)
+		_current_skills[i] = curp[i];
+}
+
 const Coordinate& Saiph::position() {
 	return _position;
 }
@@ -416,6 +428,19 @@ const Coordinate& Saiph::position(const Coordinate& position) {
 
 int Saiph::zorkmids() {
 	return _zorkmids;
+}
+
+// This function is a really big hack.  Intelligently deciding whether to use a shield based on what we have and what we can do is hard, so fudge it based on role.
+// Fortunately it's normally quite simple; shields are rarely ever worthwhile.
+bool Saiph::likesShields() {
+	switch (_role) {
+		case VALKYRIE:
+			return skill(P_LONG_SWORD) < P_EXPERT;
+		case CAVEMAN:
+			return true;
+		default:
+			return false;
+	}
 }
 
 unsigned long long Saiph::conducts() {

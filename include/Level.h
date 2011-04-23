@@ -32,6 +32,7 @@ public:
 	const std::map<Point, Monster>& monsters() const;
 	const std::map<Point, Stash>& stashes() const;
 	const std::map<Point, int>& symbols(unsigned char symbol) const;
+	bool isCompletelyOpen() const;
 	void analyze();
 	int identifier() const;
 	void parseMessages(const std::string& messages);

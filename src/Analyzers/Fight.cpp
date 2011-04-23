@@ -96,7 +96,8 @@ void Fight::analyze() {
 		Tile best_tile;
 		for (vector<Coordinate>::iterator it = interesting_boss_stairs.begin(); it != interesting_boss_stairs.end(); ++it) {
 			Tile tn = World::shortestPath(*it);
-			if (tn.cost() < best_tile.cost()) best_tile = tn;
+			if (tn.cost() < best_tile.cost())
+				best_tile = tn;
 		}
 		if (best_tile.cost() < UNPASSABLE) {
 			if (best_tile.direction() != NOWHERE) {
@@ -127,6 +128,10 @@ void Fight::analyze() {
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
 			continue; // don't attack friendlies except dwarfs
+		else if (m->second.symbol() == 'm' && m->second.color() == BLUE && Saiph::experience() < 3)
+			continue; // below level three, let strange objects be
+		else if (m->second.symbol() == 'n' && (m->second.lastSeen() - m->second.lastMoved()) >= 3)
+			continue; // let sleeping nymphs lie
 		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment() == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
 		else if (m->second.data() == NULL) {
@@ -144,10 +149,10 @@ void Fight::analyze() {
 		}
 		int distance = Point::gridDistance(m->first, Saiph::position());
 		bool floating_eye = (m->second.symbol() == S_EYE && m->second.color() == BLUE);
-		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && distance <= Saiph::strength() / 2 && Saiph::encumbrance() < OVERTAXED) {
+		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && Saiph::encumbrance() < OVERTAXED && !Saiph::hallucinating()) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
-			unsigned char in_line = World::directLine(m->first, false, true);
+			unsigned char in_line = World::directLine(m->first, false, true, Saiph::strength() / 2, Saiph::strength() / 2);
 			if (in_line != ILLEGAL_DIRECTION) {
 				/* we can throw at monster */
 				attack_score -= distance;
@@ -173,13 +178,13 @@ void Fight::analyze() {
 		if (tile.cost() >= UNPASSABLE)
 			continue; // can't move to monster
 		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
-		priority = action::Move::calculatePriority(priority, tile.cost());
+		priority = action::Move::calculatePriority(priority, 25 * tile.cost());
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, priority, false)));
 		Debug::custom(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 
-void Fight::onEvent(Event * const event) {
+void Fight::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
@@ -194,7 +199,7 @@ void Fight::onEvent(Event * const event) {
 				map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 				if (w == data::Weapon::weapons().end())
 					continue; // not a weapon
-				if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
+				if (w->second->type() == P_DAGGER || w->second->type() == -P_DART || w->second->type() == P_JAVELIN || w->second->type() == P_KNIFE || w->second->type() == -P_SHURIKEN || w->second->type() == P_SPEAR)
 					_projectile_slots.insert(*k);
 				else
 					_projectile_slots.erase(*k);
@@ -206,7 +211,7 @@ void Fight::onEvent(Event * const event) {
 			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
 			if (w == data::Weapon::weapons().end())
 				continue; // not a weapon
-			if (w->second->type() == WEAPON_DAGGER || w->second->type() == WEAPON_DART || w->second->type() == WEAPON_JAVELIN || w->second->type() == WEAPON_KNIFE || w->second->type() == WEAPON_SHURIKEN || w->second->type() == WEAPON_SPEAR)
+			if (w->second->type() == P_DAGGER || w->second->type() == -P_DART || w->second->type() == P_JAVELIN || w->second->type() == P_KNIFE || w->second->type() == -P_SHURIKEN || w->second->type() == P_SPEAR)
 				_projectile_slots.insert(i->first);
 		}
 	}
@@ -218,23 +223,27 @@ void Fight::parseMessages(const string& messages) {
 	// Monnam is [killed/destroyed][ by the %s]!
 	// You [destroy/kill] mon_nam!
 	for (p = 0; ; ) {
-		if ((p2 = messages.find("  You kill ", p)) == string::npos) break;
+		if ((p2 = messages.find("  You kill ", p)) == string::npos)
+			break;
 		p = messages.find("!  ", p2 + 11);
 		deaths.push_back(messages.substr(p2 + 11, p - (p2 + 11)));
 	}
 	for (p = 0; ; ) {
-		if ((p2 = messages.find("  You destroy ", p)) == string::npos) break;
+		if ((p2 = messages.find("  You destroy ", p)) == string::npos)
+			break;
 		p = messages.find("!  ", p2 + 14);
 		deaths.push_back(messages.substr(p2 + 14, p - (p2 + 14)));
 	}
 	for (p = 0; ; ) {
-		if ((p = messages.find(" is killed", p)) == string::npos) break;
+		if ((p = messages.find(" is killed", p)) == string::npos)
+			break;
 		p2 = messages.rfind("  ", p);
 		deaths.push_back(messages.substr(p2 + 2, p - (p2 + 2)));
 		p += 10;
 	}
 	for (p = 0; ; ) {
-		if ((p = messages.find(" is destroyed", p)) == string::npos) break;
+		if ((p = messages.find(" is destroyed", p)) == string::npos)
+			break;
 		p2 = messages.rfind("  ", p);
 		deaths.push_back(messages.substr(p2 + 2, p - (p2 + 2)));
 		p += 13;

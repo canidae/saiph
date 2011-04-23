@@ -1,6 +1,6 @@
 --- nethack-3.4.3-orig/src/allmain.c	2003-12-07 15:39:13.000000000 -0800
-+++ nethack-3.4.3/src/allmain.c	2011-04-19 21:14:32.000000000 -0700
-@@ -477,6 +477,236 @@
++++ nethack-3.4.3/src/allmain.c	2011-04-20 13:11:53.000000000 -0700
+@@ -477,6 +477,239 @@
  }
  
  void
@@ -35,6 +35,9 @@
 +        } else if (!strncmp(lbuf, "level ", 6)) {
 +            sscanf(lbuf, "level %d", &i);
 +            while (u.ulevel < i) pluslvl(FALSE);
++        } else if (!strncmp(lbuf, "skill ", 6)) {
++            sscanf(lbuf, "skill %d %d", &a[0], &a[1]);
++            P_SKILL(a[0]) = a[1];
 +        } else if (!strncmp(lbuf, "blind ", 6)) {
 +            sscanf(lbuf, "blind %d", &i);
 +            make_blinded(i, FALSE);
@@ -237,7 +240,7 @@
  newgame()
  {
  	int i;
-@@ -514,6 +744,7 @@
+@@ -514,6 +747,7 @@
  
  	mklev();
  	u_on_upstairs();

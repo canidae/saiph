@@ -36,10 +36,10 @@ void Beatitude::analyze() {
 	if (tile.direction() == NOWHERE)
 		World::setAction(static_cast<action::Action*> (new action::Drop(this, _max_priority, false)));
 	else
-		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, _max_priority)));
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(_max_priority, tile.cost()))));
 }
 
-void Beatitude::onEvent(event::Event * const event) {
+void Beatitude::onEvent(event::Event* const event) {
 	if (event->id() == Beatify::ID) {
 		Beatify* e = static_cast<Beatify*> (event);
 		set<unsigned char>::iterator b = _beatify.find(e->key());

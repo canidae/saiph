@@ -18,8 +18,8 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), wished_for_charging(false), zapping_wand(false), extrinsics(0){
-		EventBus::registerEvent(ReceivedItems::ID, this);
+Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), wished_for_charging(false), zapping_wand(false), extrinsics(0) {
+	EventBus::registerEvent(ReceivedItems::ID, this);
 }
 
 /* methods */
@@ -59,9 +59,9 @@ void Wish::analyze() {
 	if (wand_of_wishing_key != ILLEGAL_ITEM) {
 		if (Inventory::itemAtKey(wand_of_wishing_key).name().find("of wishing named EMPTY") != string::npos) {
 			//if (charging_key != ILLEGAL_ITEM)
-				// TODO: read charging, charge wand
+			// TODO: read charging, charge wand
 			//else
-				// TODO: wrest
+			// TODO: wrest
 		} else {
 			currentExtrinsics();
 			if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
@@ -71,7 +71,7 @@ void Wish::analyze() {
 	}
 }
 
-void Wish::onEvent(event::Event * const event) {
+void Wish::onEvent(event::Event* const event) {
 	if (event->id() == ReceivedItems::ID) {
 		if (!wished_for_charging)
 			return; // we didn't wish for charging, so who cares
@@ -87,10 +87,9 @@ void Wish::onEvent(event::Event * const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (i->second.name().find("of charging") != string::npos)
 				i->second.want(i->second.count());
-			}
+		}
 	}
 }
-
 
 string Wish::selectWish() {
 	//if (wish_from_wand && !have_charging)
@@ -103,21 +102,23 @@ string Wish::selectWish() {
 		if (MRarmor)
 			return "amulet of reflection";
 		return "silver dragon scale mail";
-	} else if (!wearing("speed boots"))
+	} else if (!wearing("speed boots")) {
 		return "speed boots";
-	else if (!wearing("gauntlets of power"))
+	} else if (!wearing("gauntlets of power")) {
 		return "gauntlets of power";
+	}
 	//just some survival items
 	//TODO: wait until we wear amulets
-//	if (!reflectionAmulet)
-//		return "amulet of life saving";
+	//	if (!reflectionAmulet)
+	//		return "amulet of life saving";
 	return "potion of full healing";
 }
 
 bool Wish::wearing(const string& name) {
-	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i)
+	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		if (i->second.name().find(name) != string::npos)
 			return true;
+	}
 	return false;
 }
 
@@ -157,4 +158,4 @@ unsigned long long Wish::currentExtrinsics() {
 		extrinsics |= PROPERTY_REFLECTION;
 	return extrinsics;
 }
-	
+

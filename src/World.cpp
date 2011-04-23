@@ -4,6 +4,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sstream>
 #include "Connection.h"
 #include "Replay.h"
 #include "Debug.h"
@@ -13,6 +14,7 @@
 #include "Actions/Move.h"
 #include "Analyzers/Analyzer.h"
 #include "Data/Item.h"
+#include "Data/Skill.h"
 #include "Data/Monster.h"
 #include "Events/Event.h"
 
@@ -57,9 +59,27 @@ timeval World::_start_time;
 vector<Analyzer*> World::_analyzers;
 int World::_last_action_id = NO_ACTION;
 Coordinate World::_branches[BRANCHES] = {Coordinate()};
+Point World::_cout_cursor;
+int World::_cout_last_color;
+unsigned char World::_shadow_map_dump[MAP_ROW_END - MAP_ROW_BEGIN + 1][MAP_COL_END - MAP_COL_BEGIN + 1][2];
+std::string World::_shadow_rhs[50];
 
 static struct termios _save_termios, _current_termios;
 static int _current_speed;
+
+const char* World::_ansi_colors[] = {
+	/*   0 */ "0", "0;1", "", "", "", "", "", "0;7", "", "",
+	/*  10 */ "", "", "", "", "", "", "", "", "", "",
+	/*  20 */ "", "", "", "", "", "", "", "", "", "",
+	/*  30 */ "0;30", "0;31", "0;32", "0;33", "0;34", "0;35", "0;36", "0;37", "", "",
+	/*  40 */ "0;7;30", "0;7;31", "0;7;32", "0;7;33", "0;7;34", "0;7;35", "0;7;36", "0;7;37", "", "",
+	/*  50 */ "", "", "", "", "", "", "", "", "", "",
+	/*  60 */ "", "", "", "", "", "", "", "", "", "",
+	/*  70 */ "", "", "", "", "", "", "", "", "", "",
+	/*  80 */ "", "", "", "", "", "", "", "", "", "",
+	/*  90 */ "0;1;30", "0;1;31", "0;1;32", "0;1;33", "0;1;34", "0;1;35", "0;1;36", "0;1;37", "", "",
+	/* 100 */ "1;7;30", "1;7;31", "1;7;32", "1;7;33", "1;7;34", "1;7;35", "1;7;36", "1;7;37",
+};
 
 /* methods */
 char World::view(const Point& point) {
@@ -114,6 +134,14 @@ Level& World::level(int level) {
 	return _levels[level];
 }
 
+int World::findLevel(int branch, int depth) {
+	for (unsigned i = 0; i < _levels.size(); ++i) {
+		if (_levels[i].branch() == branch && _levels[i].depth() == depth)
+			return i;
+	}
+	return -1;
+}
+
 const vector<Level>& World::levels() {
 	return _levels;
 }
@@ -133,6 +161,7 @@ void World::init(const string& logfile, int connection_type) {
 	Debug::init(logfile);
 	data::Monster::init();
 	data::Item::init();
+	data::Skill::init();
 	Level::init();
 	Analyzer::init();
 
@@ -145,6 +174,8 @@ void World::init(const string& logfile, int connection_type) {
 
 	/* set start time */
 	gettimeofday(&World::_start_time, NULL);
+
+	cout << "\033[2J";
 
 	/* fetch the first "frame" */
 	update();
@@ -162,12 +193,12 @@ void World::destroy() {
 	delete _connection;
 }
 
-void World::registerAnalyzer(Analyzer * const analyzer) {
+void World::registerAnalyzer(Analyzer* const analyzer) {
 	Debug::info() << "Registering analyzer " << analyzer->name() << endl;
 	_analyzers.push_back(analyzer);
 }
 
-void World::unregisterAnalyzer(Analyzer * const analyzer) {
+void World::unregisterAnalyzer(Analyzer* const analyzer) {
 	Debug::info() << "Unregistering analyzer " << analyzer->name() << endl;
 	for (vector<Analyzer*>::iterator a = _analyzers.begin(); a != _analyzers.end(); ++a) {
 		if ((*a)->name() == analyzer->name()) {
@@ -202,77 +233,56 @@ bool World::queueAction(action::Action* action) {
 	return true;
 }
 
-unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders) {
-	/* is the target in a direct line from the player? */
-	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END) {
-		/* outside map */
+unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boulders, int eff_range, int danger_range) {
+	int dist = Point::gridDistance(Saiph::position(), point);
+
+	/* outside map */
+	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END)
 		return ILLEGAL_DIRECTION;
-	} else if (point == Saiph::position()) {
-		/* eh? don't do this */
-		return NOWHERE;
-	} else if (point.row() == Saiph::position().row()) {
-		/* aligned horizontally */
-		if (point.col() > Saiph::position().col()) {
-			while (point.moveWest().col() > Saiph::position().col()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return E;
-		} else {
-			while (point.moveEast().col() < Saiph::position().col()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return W;
-		}
-	} else if (point.col() == Saiph::position().col()) {
-		/* aligned vertically */
-		if (point.row() > Saiph::position().row()) {
-			while (point.moveNorth().row() > Saiph::position().row()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return S;
-		} else {
-			while (point.moveSouth().row() < Saiph::position().row()) {
-				if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-					return ILLEGAL_DIRECTION;
-			}
-			return N;
-		}
-	} else if (abs(point.row() - Saiph::position().row()) == abs(point.col() - Saiph::position().col())) {
-		/* aligned diagonally */
-		if (point.row() > Saiph::position().row()) {
-			if (point.col() > Saiph::position().col()) {
-				while (point.moveNorthwest().row() > Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return SE;
-			} else {
-				while (point.moveNortheast().row() > Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return SW;
-			}
-		} else {
-			if (point.col() > Saiph::position().col()) {
-				while (point.moveSouthwest().row() < Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return NE;
-			} else {
-				while (point.moveSoutheast().row() < Saiph::position().row()) {
-					if (!directLineHelper(point, ignore_sinks, ignore_boulders))
-						return ILLEGAL_DIRECTION;
-				}
-				return NW;
-			}
-		}
+	if (point.row() != Saiph::position().row() && abs(point.row() - Saiph::position().row()) != dist)
+		return ILLEGAL_DIRECTION;
+	if (point.col() != Saiph::position().col() && abs(point.col() - Saiph::position().col()) != dist)
+		return ILLEGAL_DIRECTION;
+	if (dist > eff_range)
+		return ILLEGAL_DIRECTION;
+
+	static unsigned char dirs[] = { NW, N, NE, W, NOWHERE, E, SW, S, SE };
+	int index = 4;
+
+	if (point.row() < Saiph::position().row())
+		index -= 3;
+	else if (point.row() > Saiph::position().row())
+		index += 3;
+
+	if (point.col() < Saiph::position().col())
+		index -= 1;
+	else if (point.col() > Saiph::position().col())
+		index += 1;
+
+	unsigned char dir = dirs[index];
+	int realized_range = 0;
+	bool ok = false;
+	Point temp = Saiph::position();
+
+	// Follow out the beam as far as it can go.  If it reaches our target and can't reach a friendly, fire!
+	while (true) {
+		if (temp.row() < MAP_ROW_BEGIN || temp.row() > MAP_ROW_END || temp.col() < MAP_COL_BEGIN || temp.col() > MAP_COL_END)
+			break;
+		const Tile& t = level().tile(temp);
+		if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
+			break;
+		if (temp == point)
+			ok = true;
+		const map<Point, Monster>::const_iterator m = level().monsters().find(temp);
+		if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible() && (realized_range < dist || m->second.attitude() == FRIENDLY))
+			return ILLEGAL_DIRECTION;
+		if (realized_range == danger_range || (!ignore_sinks && t.symbol() == SINK))
+			break;
+		++realized_range;
+		temp.moveDirection(dir);
 	}
-	return ILLEGAL_DIRECTION;
+
+	return ok ? dir : ILLEGAL_DIRECTION;
 }
 
 std::string World::cursorMoves(Point source, const Point& target) {
@@ -408,7 +418,7 @@ Tile World::shortestPath(const Coordinate& target) {
 				/* pathing to portal on level we're standing on */
 				level_tile[s->second] = tile;
 				if (tile.direction() == NOWHERE)
-					level_tile[s->second].direction(DOWN);
+					level_tile[s->second].direction(SIT);
 			} else {
 				/* pathing to portal on another level */
 				level_tile[s->second] = level_tile[level_queue[pivot]];
@@ -560,7 +570,8 @@ void World::doCommands() {
 	char cmd;
 
 	do {
-		if (read(0, &cmd, 1) <= 0) return;
+		if (read(0, &cmd, 1) <= 0)
+			return;
 		switch (cmd) {
 		case '0':
 			_current_speed = SPEED_PAUSE;
@@ -674,17 +685,12 @@ void World::run(int speed) {
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else {
-				Debug::warning() << "I have no idea what to do... Searching 16 times" << endl;
-				cout << (unsigned char) 27 << "[1;82H";
-				cout << (unsigned char) 27 << "[K"; // erase everything to the right
-				cout << "No idea what to do: 16s";
-				/* return cursor back to where it was */
-				cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
-				cout.flush();
-				++World::_internal_turn; // will cost a turn
+				Debug::warning() << "I have no idea what to do... Quitting" << endl;
 				_last_action_id = NO_ACTION;
-				executeCommand("16s");
-				continue;
+				executeCommand(string(1, (char) 27));
+				executeCommand(QUIT);
+				executeCommand(string(1, YES));
+				return;
 			}
 		}
 
@@ -734,6 +740,9 @@ void World::run(int speed) {
 
 /* private methods */
 void World::addChangedLocation(const Point& point) {
+	coutGoto(1 + point.row(), 1 + point.col());
+	coutOneChar(_color[point.row()][point.col()], _view[point.row()][point.col()]);
+
 	/* add a location changed since last frame unless it's already added */
 	if (point.row() < MAP_ROW_BEGIN || point.row() > MAP_ROW_END || point.col() < MAP_COL_BEGIN || point.col() > MAP_COL_END || _changed[point.row()][point.col()])
 		return;
@@ -832,35 +841,68 @@ void World::detectPosition() {
 	Saiph::position(Coordinate(found, _cursor));
 }
 
-bool World::directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders) {
-	const Tile& t = level().tile(point);
-	if (!Level::isPassable(t.symbol()) && (!ignore_boulders || t.symbol() != BOULDER))
-		return false;
-	if (!ignore_sinks && t.symbol() == SINK)
-		return false;
-	const map<Point, Monster>::const_iterator m = level().monsters().find(point);
-	if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible())
-		return false;
-	return true;
+void World::coutSetColor(int color) {
+	if (color != _cout_last_color) {
+		cout << "\033[" << _ansi_colors[color] << 'm';
+		_cout_last_color = color;
+	}
+}
+
+void World::coutOneChar(int color, unsigned char ch) {
+	//cout << "%c" << color << ',' << ch << '%';
+	coutSetColor(color);
+	cout << (unsigned char)((ch >= ' ' && ch <= '~') ? ch : '?');
+	_cout_cursor.moveEast();
+}
+
+void World::coutGoto(int row, int col) {
+	//cout << "%g" << row << ',' << col << '%';
+	if (row != _cout_cursor.row() || col != _cout_cursor.col()) {
+		cout << "\033[" << row << ';' << col << 'H';
+		_cout_cursor.row(row);
+		_cout_cursor.col(col);
+	}
+}
+
+void World::coutRhsLine(int row, const std::string& line) {
+	if (line != _shadow_rhs[row]) {
+		cout << "\033[" << (1+row) << ";82H" << line << "\033[K";
+		_shadow_rhs[row] = line;
+	}
 }
 
 void World::dumpMap(Level& lv) {
 	/* monsters and map as saiph sees it */
 	Point p;
+	_cout_last_color = -1;
+	_cout_cursor.row(-1);
 	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
-		cout << (unsigned char) 27 << "[" << p.row() + 26 << ";1H";
 		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
-			if (!p.insideMap())
-				continue;
 			const Tile& t = lv.tile(p);
-			if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col())
-				cout << (unsigned char) 27 << "[95m@" << (unsigned char) 27 << "[0m";
-			else if (t.monster() != ILLEGAL_MONSTER)
-				cout << (unsigned char) 27 << "[" << (t.monster() == _view[p.row()][p.col()] ? "91" : "93") << "m" << t.monster() << (unsigned char) 27 << "[0m";
-			else if (t.symbol() > 31 && t.symbol() < 127)
-				cout << t.symbol();
-			else
-				cout << (unsigned char) 27 << "[96m?" << (unsigned char) 27 << "[0m"; // can't display character
+			unsigned char color;
+			unsigned char symbol;
+
+			if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+				color = BOLD_MAGENTA;
+				symbol = '@';
+			} else if (t.monster() != ILLEGAL_MONSTER) {
+				color = t.monster() == _view[p.row()][p.col()] ? BOLD_RED : BOLD_YELLOW;
+				symbol = t.monster();
+			} else if (t.symbol() > 31 && t.symbol() < 127) {
+				color = NO_COLOR;
+				symbol = t.symbol();
+			} else {
+				color = BOLD_CYAN;
+				symbol = '?';
+			}
+
+			unsigned char* old = &_shadow_map_dump[p.row() - MAP_ROW_BEGIN][p.col() - MAP_COL_BEGIN][0];
+			if (symbol != old[0] || color != old[1]) {
+				coutGoto(p.row() + 26, p.col() + 1);
+				coutOneChar(color, symbol);
+				old[0] = symbol;
+				old[1] = color;
+			}
 		}
 	}
 
@@ -907,57 +949,58 @@ void World::dumpMaps() {
 	dumpMap(level());
 
 	/* status & inventory */
-	cout << (unsigned char) 27 << "[2;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[2;82H";
+	cout << "\033[m";
+	std::string buf;
 	if (Saiph::intrinsics() & PROPERTY_COLD)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Cold " << (unsigned char) 27 << "[m";
+		buf += "\033[1;34mCold ";
 	if (Saiph::intrinsics() & PROPERTY_DISINT)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "DisInt " << (unsigned char) 27 << "[m";
+		buf += "\033[1;35mDisInt ";
 	if (Saiph::intrinsics() & PROPERTY_FIRE)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Fire " << (unsigned char) 27 << "[m";
+		buf += "\033[1;31mFire ";
 	if (Saiph::intrinsics() & PROPERTY_POISON)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poison " << (unsigned char) 27 << "[m";
+		buf += "\033[1;32mPoison ";
 	if (Saiph::intrinsics() & PROPERTY_SHOCK)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "Shock " << (unsigned char) 27 << "[m";
+		buf += "\033[1;36mShock ";
 	if (Saiph::intrinsics() & PROPERTY_SLEEP)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Sleep " << (unsigned char) 27 << "[m";
+		buf += "\033[1;33mSleep ";
+	coutRhsLine(1, buf);
 
-	cout << (unsigned char) 27 << "[3;82H" << (unsigned char) 27 << "[K" << (unsigned char) 27 << "[3;82H";
+	buf.clear();
 	if (Saiph::intrinsics() & PROPERTY_ESP)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[35m" << "ESP " << (unsigned char) 27 << "[m";
+		buf += "\033[1;35mESP ";
 	if (Saiph::intrinsics() & PROPERTY_SPEED)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Speed " << (unsigned char) 27 << "[m";
+		buf += "\033[1;31mSpeed ";
 	if (Saiph::intrinsics() & PROPERTY_STEALTH)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Stealth " << (unsigned char) 27 << "[m";
+		buf += "\033[1;34mStealth ";
 	if (Saiph::intrinsics() & PROPERTY_TELEPORT_CONTROL)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[36m" << "TeleCon " << (unsigned char) 27 << "[m";
+		buf += "\033[1;36mTeleCon ";
 	if (Saiph::intrinsics() & PROPERTY_TELEPORT)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[33m" << "Teleport " << (unsigned char) 27 << "[m";
+		buf += "\033[1;33mTeleport ";
 	if (Saiph::intrinsics() & PROPERTY_LYCANTHROPY)
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[31m" << "Lycan " << (unsigned char) 27 << "[m";
+		buf += "\033[1;31mLycan ";
 	if (Saiph::hurtLeg())
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[34m" << "Leg " << (unsigned char) 27 << "[m";
+		buf += "\033[1;34mLeg ";
 	if (Saiph::polymorphed())
-		cout << (unsigned char) 27 << "[1m" << (unsigned char) 27 << "[32m" << "Poly " << (unsigned char) 27 << "[m";
+		buf += "\033[1;32mPoly ";
+	coutRhsLine(2, buf);
 
-	int ir = 0;
-	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end() && ir < 46; ++i) {
-		cout << (unsigned char) 27 << "[" << (4 + ir) << ";82H";
-		cout << (unsigned char) 27 << "[K"; // erase everything to the right
+	int ir = 3;
+	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end() && ir < 50; ++i) {
+		ostringstream ss;
+		ss << "\033[m";
 		if (i->second.beatitude() == BLESSED)
-			cout << (unsigned char) 27 << "[32m";
+			ss << (unsigned char) 27 << "[32m";
 		else if (i->second.beatitude() == CURSED)
-			cout << (unsigned char) 27 << "[31m";
+			ss << (unsigned char) 27 << "[31m";
 		else if (i->second.beatitude() == UNCURSED)
-			cout << (unsigned char) 27 << "[33m";
-		cout << i->first;
-		cout << " - " << i->second;
-		cout << (unsigned char) 27 << "[m";
-		++ir;
+			ss << (unsigned char) 27 << "[33m";
+		ss << i->first;
+		ss << " - " << i->second;
+		ss << (unsigned char) 27 << "[m";
+		coutRhsLine(ir++, ss.str());
 	}
-	for (; ir < 46; ++ir) {
-		cout << (unsigned char) 27 << "[" << (5 + ir) << ";82H";
-		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-	}
+	for (; ir < 50; ++ir)
+		coutRhsLine(ir, "");
 }
 
 void World::forgetChanges() {
@@ -1157,20 +1200,27 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				if (_data[*pos - 1] == '[') {
 					/* erase everything below current position */
 					for (int r = _cursor.row() + 1; r < ROWS; ++r) {
-						for (int c = 0; c < COLS; ++c)
+						for (int c = 0; c < COLS; ++c) {
 							_view[r][c] = ' ';
+							addChangedLocation(Point(r,c));
+						}
 					}
 				} else if (_data[*pos - 1] == '1') {
 					/* erase everything above current position */
 					for (int r = _cursor.row() - 1; r >= 0; --r) {
-						for (int c = 0; c < COLS; ++c)
+						for (int c = 0; c < COLS; ++c) {
 							_view[r][c] = ' ';
+							addChangedLocation(Point(r,c));
+						}
 					}
 				} else if (_data[*pos - 1] == '2') {
 					/* erase entire display */
-					memset(_view, ' ', sizeof (_view));
-					for (int r = 0; r < ROWS; ++r)
-						_view[r][COLS] = '\0';
+					for (int r = 0; r < ROWS; ++r) {
+						for (int c = 0; c < COLS; ++c) {
+							_view[r][c] = ' ';
+							addChangedLocation(Point(r,c));
+						}
+					}
 					_cursor.row(0);
 					_cursor.col(0);
 					*color = 0;
@@ -1184,16 +1234,22 @@ void World::handleEscapeSequence(int* pos, int* color) {
 				/* erase in line */
 				if (_data[*pos - 1] == '[') {
 					/* erase everything to the right */
-					for (int c = _cursor.col(); c < COLS; ++c)
+					for (int c = _cursor.col(); c < COLS; ++c) {
 						_view[_cursor.row()][c] = ' ';
+						addChangedLocation(Point(_cursor.row(),c));
+					}
 				} else if (_data[*pos - 1] == '1') {
 					/* erase everything to the left */
-					for (int c = 0; c < _cursor.col(); ++c)
+					for (int c = 0; c < _cursor.col(); ++c) {
 						_view[_cursor.row()][c] = ' ';
+						addChangedLocation(Point(_cursor.row(),c));
+					}
 				} else if (_data[*pos - 1] == '2') {
 					/* erase entire line */
-					for (int c = 0; c < COLS; ++c)
+					for (int c = 0; c < COLS; ++c) {
 						_view[_cursor.row()][c] = ' ';
+						addChangedLocation(Point(_cursor.row(),c));
+					}
 				} else {
 					Debug::error() << "Unhandled sequence: " << &_data[*pos] << endl;
 					destroy();
@@ -1313,10 +1369,9 @@ void World::update() {
 	/* print world & data (to cerr, for debugging)
 	 * this must be done here because if we get --More-- messages we'll update again */
 	/* also, we do this in two loops because otherwise it flickers a lot */
-	for (int a = 0; a < _data_size; ++a)
-		cout << _data[a];
-	cout.flush(); // same reason as in saiph.dumpMaps()
 	Debug::rawCharArray(_data, 0, _data_size);
+	_cout_last_color = -1;
+	_cout_cursor.row(-1);
 	for (int pos = 0; pos < _data_size; ++pos) {
 		switch (_data[pos]) {
 		case 0:
@@ -1369,6 +1424,10 @@ void World::update() {
 			break;
 		}
 	}
+
+	coutSetColor(NO_COLOR);
+	coutGoto(_cursor.row()+1, _cursor.col()+1);
+	cout.flush();
 
 	fetchMessages();
 

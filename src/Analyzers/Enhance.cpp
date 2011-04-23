@@ -8,6 +8,7 @@ using namespace std;
 
 /* constructors/destructor */
 Enhance::Enhance() : Analyzer("Enhance") {
+	World::queueAction(static_cast<action::Action*> (new action::Enhance(this)));
 }
 
 /* methods */

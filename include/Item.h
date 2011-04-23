@@ -46,5 +46,5 @@ private:
 	bool _is_item; // used for speeding up comparison;
 };
 
-std::ostream & operator<<(std::ostream& out, const Item& item);
+std::ostream& operator<<(std::ostream& out, const Item& item);
 #endif

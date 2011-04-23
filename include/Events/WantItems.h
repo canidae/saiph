@@ -14,45 +14,20 @@
  * in case of drop, we first "remove" all items in our inventory and let the analyzer "pick up" what they want.
  * the analyzer set the "want" value how many they want of a given item and we set it to -1 when we drop for beatifying */
 namespace event {
-
 	class WantItems : public Event {
 	public:
 		static const int ID;
 
-		WantItems(bool dropping, bool safe_stash) : Event("WantItems"), _dropping(dropping), _safe_stash(safe_stash), _items() {
-		}
+		WantItems(bool dropping, bool safe_stash);
+		virtual ~WantItems();
 
-		virtual ~WantItems() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual std::map<unsigned char, Item>& items() {
-			return _items;
-		}
-
-		virtual std::map<unsigned char, Item>& items(const std::map<unsigned char, Item>& items) {
-			_items = items;
-			return this->items();
-		}
-
-		virtual void clear() {
-			_items.clear();
-		}
-
-		virtual void addItem(unsigned char key, const Item& item) {
-			_items[key] = item;
-		}
-
-		virtual bool dropping() {
-			return _dropping;
-		}
-
-		virtual bool safeStash() {
-			return _safe_stash;
-		}
+		virtual int id();
+		virtual std::map<unsigned char, Item>& items();
+		virtual std::map<unsigned char, Item>& items(const std::map<unsigned char, Item>& items);
+		virtual void clear();
+		virtual void addItem(unsigned char key, const Item& item);
+		virtual bool dropping();
+		virtual bool safeStash();
 
 	private:
 		const bool _dropping;

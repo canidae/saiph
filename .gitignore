@@ -12,6 +12,7 @@ Makefile-saiph.mk
 cmake_install.cmake
 nbproject
 logs/
+tlogs/
 tags
 core
 saiph.ttyrec

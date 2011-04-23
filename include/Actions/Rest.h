@@ -4,35 +4,16 @@
 #include "Actions/Action.h"
 
 namespace action {
-
 	class Rest : public Action {
 	public:
 		static const int ID;
 
-		Rest(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _rest("16s", priority) {
-		}
+		Rest(analyzer::Analyzer* analyzer, int priority);
+		virtual ~Rest();
 
-		virtual ~Rest() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Command& command() {
-			switch (_sequence) {
-			case 0:
-				return _rest;
-
-			default:
-				return Action::NOOP;
-			}
-		}
-
-		virtual void update(const std::string&) {
-			if (_sequence == 0)
-				_sequence = 1;
-		}
+		virtual int id();
+		virtual const Command& command();
+		virtual void update(const std::string&);
 
 	private:
 		const Command _rest;

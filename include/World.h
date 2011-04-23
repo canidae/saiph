@@ -48,16 +48,17 @@ public:
 	static const Coordinate& branchCoordinate(int branch);
 	static Level& level();
 	static Level& level(int level);
+	static int findLevel(int branch, int depth);
 	static const std::vector<Level>& levels();
 	static int currentPriority();
 	static int lastActionID();
 	static void init(const std::string& logfile, int connection_type);
 	static void destroy();
-	static void registerAnalyzer(analyzer::Analyzer * const analyzer);
-	static void unregisterAnalyzer(analyzer::Analyzer * const analyzer);
+	static void registerAnalyzer(analyzer::Analyzer* const analyzer);
+	static void unregisterAnalyzer(analyzer::Analyzer* const analyzer);
 	static bool setAction(action::Action* action, bool deleteAction = true);
 	static bool queueAction(action::Action* action);
-	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders);
+	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders, int eff_range, int danger_range);
 	static std::string cursorMoves(Point source, const Point& target);
 	static Tile& shortestPath(const Point& target);
 	static Tile shortestPath(const Coordinate& target);
@@ -95,6 +96,11 @@ private:
 	static int _last_action_id;
 	static unsigned int _internal_turn;
 	static Coordinate _branches[BRANCHES];
+	static Point _cout_cursor;
+	static int _cout_last_color;
+	static const char *_ansi_colors[INVERSE_BOLD_WHITE+1];
+	static unsigned char _shadow_map_dump[MAP_ROW_END - MAP_ROW_BEGIN + 1][MAP_COL_END - MAP_COL_BEGIN + 1][2];
+	static std::string _shadow_rhs[50];
 
 	static void dumpMap(Level& which);
 	static void dumpMaps();
@@ -102,10 +108,13 @@ private:
 	static void initTermios();
 	static void endTermios();
 	static void setKeyWait(bool);
+	static void coutSetColor(int);
+	static void coutOneChar(int,unsigned char);
+	static void coutGoto(int,int);
+	static void coutRhsLine(int, const std::string&);
 
 	static void addChangedLocation(const Point& point);
 	static void detectPosition();
-	static bool directLineHelper(const Point& point, bool ignore_sinks, bool ignore_boulders);
 	static bool executeCommand(const std::string& command);
 	static void fetchMenu();
 	static void fetchMenuText(int stoprow, int startcol, bool addspaces);

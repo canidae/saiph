@@ -41,7 +41,7 @@ void Amulet::parseMessages(const string& messages) {
 }
 
 /* methods */
-void Amulet::onEvent(Event * const event) {
+void Amulet::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator i = e->keys().begin(); i != e->keys().end(); ++i) {
@@ -56,9 +56,9 @@ void Amulet::onEvent(Event * const event) {
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end())
+			if (data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end()) {
 				continue; // not an amulet
-			else if (i->second.beatitude() == BEATITUDE_UNKNOWN && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
+			} else if (i->second.beatitude() == BEATITUDE_UNKNOWN && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
 				Beatify b(i->first, 175);
 				EventBus::broadcast(&b);
 			} else if ((i->second.beatitude() != CURSED) && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {

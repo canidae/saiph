@@ -35,7 +35,7 @@ void Wand::analyze() {
 	World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST)));
 }
 
-void Wand::onEvent(Event * const event) {
+void Wand::onEvent(Event* const event) {
 	if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {

@@ -62,8 +62,10 @@ set(HEADER_FILES
 	include/Actions/Remove.h
 	include/Actions/Rest.h
 	include/Actions/Search.h
+	include/Actions/SwapWeapon.h
 	include/Actions/TakeOff.h
 	include/Actions/Throw.h
+	include/Actions/TwoWeapon.h
 	include/Actions/Unlock.h
 	include/Actions/Wear.h
 	include/Actions/Wield.h
@@ -91,6 +93,7 @@ set(HEADER_FILES
 	include/Analyzers/MonsterInfo.h
 #	include/Analyzers/Passtune.h
 #	include/Analyzers/Potion.h
+	include/Analyzers/RandomWalk.h
 #	include/Analyzers/Ring.h
 #	include/Analyzers/Rub.h
 #	include/Analyzers/Scroll.h
@@ -144,6 +147,7 @@ set(HEADER_FILES
 	include/Data/Shirt.h
 	include/Data/Shortsword.h
 	include/Data/Shuriken.h
+	include/Data/Skill.h
 	include/Data/SlingAmmo.h
 	include/Data/Sling.h
 	include/Data/Spear.h
@@ -158,6 +162,7 @@ set(HEADER_FILES
 	# Events
 	include/Events/Beatify.h
 	include/Events/ChangedInventoryItems.h
+	include/Events/ChangedSkills.h
 	include/Events/EatItem.h
 	include/Events/ElberethQuery.h
 	include/Events/Event.h
@@ -165,6 +170,7 @@ set(HEADER_FILES
 	include/Events/ItemsOnGround.h
 	include/Events/QuestStatus.h
 	include/Events/ReceivedItems.h
+	include/Events/ShopDetected.h
 	include/Events/StashChanged.h
 	include/Events/WantItems.h
 )
@@ -190,6 +196,41 @@ set(SOURCE_FILES
 	src/World.cpp
 	# Actions
 	src/Actions/Action.cpp
+	src/Actions/Answer.cpp
+	src/Actions/Apply.cpp
+	src/Actions/ApplyInDirection.cpp
+	src/Actions/Call.cpp
+	src/Actions/Dip.cpp
+	src/Actions/Donate.cpp
+	src/Actions/Drop.cpp
+	src/Actions/DropGold.cpp
+	src/Actions/Eat.cpp
+	src/Actions/EatCorpse.cpp
+	src/Actions/Engrave.cpp
+	src/Actions/Enhance.cpp
+	src/Actions/FarLook.cpp
+	src/Actions/Fight.cpp
+	src/Actions/Kick.cpp
+	src/Actions/ListInventory.cpp
+	src/Actions/ListPlayerAttributes.cpp
+	src/Actions/Look.cpp
+	src/Actions/Loot.cpp
+	src/Actions/Move.cpp
+	src/Actions/Name.cpp
+	src/Actions/Open.cpp
+	src/Actions/Pay.cpp
+	src/Actions/Pray.cpp
+	src/Actions/PutOn.cpp
+	src/Actions/Remove.cpp
+	src/Actions/Rest.cpp
+	src/Actions/Search.cpp
+	src/Actions/SwapWeapon.cpp
+	src/Actions/TakeOff.cpp
+	src/Actions/Throw.cpp
+	src/Actions/TwoWeapon.cpp
+	src/Actions/Unlock.cpp
+	src/Actions/Wear.cpp
+	src/Actions/Wield.cpp
 	# Analyzers
 	src/Analyzers/Amulet.cpp
 	src/Analyzers/Analyzer.cpp
@@ -214,6 +255,7 @@ set(SOURCE_FILES
 	src/Analyzers/MonsterInfo.cpp
 #	src/Analyzers/Passtune.cpp
 #	src/Analyzers/Potion.cpp
+	src/Analyzers/RandomWalk.cpp
 #	src/Analyzers/Ring.cpp
 #	src/Analyzers/Rub.cpp
 #	src/Analyzers/Scroll.cpp
@@ -267,6 +309,7 @@ set(SOURCE_FILES
 	src/Data/Shirt.cpp
 	src/Data/Shortsword.cpp
 	src/Data/Shuriken.cpp
+	src/Data/Skill.cpp
 	src/Data/SlingAmmo.cpp
 	src/Data/Sling.cpp
 	src/Data/Spear.cpp
@@ -279,7 +322,19 @@ set(SOURCE_FILES
 	src/Data/Weapon.cpp
 	src/Data/Whip.cpp
 	# Events
+	src/Events/Beatify.cpp
+	src/Events/ChangedInventoryItems.cpp
+	src/Events/ChangedSkills.cpp
+	src/Events/EatItem.cpp
+	src/Events/ElberethQuery.cpp
 	src/Events/Event.cpp
+	src/Events/GotDiggingTool.cpp
+	src/Events/ItemsOnGround.cpp
+	src/Events/QuestStatus.cpp
+	src/Events/ReceivedItems.cpp
+	src/Events/ShopDetected.cpp
+	src/Events/StashChanged.cpp
+	src/Events/WantItems.cpp
 )
 
 add_executable(saiph ${HEADER_FILES} ${SOURCE_FILES})

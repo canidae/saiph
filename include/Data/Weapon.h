@@ -6,6 +6,7 @@
 #include <vector>
 #include "Globals.h"
 #include "Data/Attack.h"
+#include "Data/Skill.h"
 #include "Data/Item.h"
 
 namespace data {

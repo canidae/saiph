@@ -13,7 +13,7 @@ namespace analyzer {
 		Beatitude();
 
 		void analyze();
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		std::set<unsigned char> _beatify;

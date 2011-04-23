@@ -78,6 +78,6 @@ void Tile::updatePath(unsigned char direction, unsigned int distance, unsigned i
 	_updated = World::internalTurn();
 }
 
-ostream & operator<<(ostream& os, Tile& t) {
+ostream& operator<<(ostream& os, Tile& t) {
 	return os << "(coordinate=" << t.coordinate() << ", symbol=" << t.symbol() << ", monster=" << t.monster() << ", direction=" << t.direction() << ", search=" << t.search() << ", distance=" << t.distance() << ", cost=" << t.cost() << ")";
 }

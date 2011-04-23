@@ -10,28 +10,16 @@
 #define QUEST_STATUS_REJECTED 4
 
 namespace event {
-
 	class QuestStatus : public Event {
 	public:
 		static const int ID;
 
-		QuestStatus(int nstate, int portal_level) : Event("QuestStatus"), _new_state(nstate), _portal_level(portal_level) {
-		}
+		QuestStatus(int nstate, int portal_level);
+		virtual ~QuestStatus();
 
-		virtual ~QuestStatus() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		int newState() const {
-			return _new_state;
-		}
-
-		int portalLevel() const {
-			return _portal_level;
-		}
+		virtual int id();
+		int newState() const;
+		int portalLevel() const;
 
 	private:
 		int _new_state;

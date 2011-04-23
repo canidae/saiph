@@ -28,7 +28,7 @@ DiggingTool::DiggingTool() : Analyzer("DiggingTool"), _digging_tool_key(0) {
 }
 
 /* methods */
-void DiggingTool::onEvent(Event * const event) {
+void DiggingTool::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID || event->id() == ReceivedItems::ID) {
 		findDigger();
 	} else if (event->id() == WantItems::ID) {
@@ -36,10 +36,10 @@ void DiggingTool::onEvent(Event * const event) {
 		int key;
 		int score;
 
-		if (e->dropping()) rankDiggers(key, score, NULL, &e->items());
-		else rankDiggers(key, score, &Inventory::items(), &e->items());
+		// WantItems is called once per page while dropping, but the ranking needs to see the whole list...
+		rankDiggers(key, score, (e->dropping() ? NULL : &Inventory::items()), (e->dropping() ? &Inventory::items() : &e->items()));
 
-		if (key >= 0) {
+		if (key >= 0 && e->items().find(key) != e->items().end()) {
 			Item& item = e->items()[(unsigned char)key];
 			item.want(min(1, item.count()));
 		}
@@ -51,10 +51,13 @@ int DiggingTool::scoreDigger(const Item& item) {
 	if (data::Pickaxe::pickaxes().find(item.name()) == data::Pickaxe::pickaxes().end() || item.beatitude() == CURSED)
 		return -1;
 	int score = 1;
-	if (item.beatitude() != BEATITUDE_UNKNOWN) score += 2;
+	if (item.beatitude() != BEATITUDE_UNKNOWN)
+		score += 2;
 	// prefer pick-axes - they're lighter
-	if (item.name() == "pick-axe") score++;
-	else if (Inventory::keyForSlot(SLOT_SHIELD)) score = -1;
+	if (item.name() == "pick-axe")
+		score++;
+	else if (Inventory::keyForSlot(SLOT_SHIELD))
+		score = -1;
 	return score;
 }
 

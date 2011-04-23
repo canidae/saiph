@@ -26,8 +26,8 @@ namespace analyzer {
 		const std::string& name();
 		virtual void parseMessages(const std::string&);
 		virtual void analyze();
-		virtual void lastChance(action::Action * const);
-		virtual void onEvent(event::Event * const);
+		virtual void lastChance(action::Action* const);
+		virtual void onEvent(event::Event* const);
 		virtual void actionCompleted(const std::string& messages);
 		virtual void actionFailed();
 

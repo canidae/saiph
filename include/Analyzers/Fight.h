@@ -31,7 +31,7 @@ namespace analyzer {
 
 		void analyze();
 		void parseMessages(const std::string&);
-		void onEvent(event::Event * const event);
+		void onEvent(event::Event* const event);
 
 	private:
 		std::set<unsigned char> _projectile_slots; // slots where we got weapons we should throw

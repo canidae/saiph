@@ -331,7 +331,7 @@ bool Item::operator!=(const Item& i) const {
 	return !(*this == i);
 }
 
-ostream & operator<<(ostream& out, const Item& item) {
+ostream& operator<<(ostream& out, const Item& item) {
 	if (item.name() == "") {
 		out << "(no item)";
 	} else {

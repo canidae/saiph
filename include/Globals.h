@@ -116,40 +116,6 @@
 #define SLOT_ALTERNATE_WEAPON 13
 #define SLOT_QUIVER 14
 
-/* weapon types */
-#define WEAPON_AXE            1 << 0
-#define WEAPON_BOOMERANG      1 << 1
-#define WEAPON_BOW            1 << 2
-#define WEAPON_BROADSWORD     1 << 3
-#define WEAPON_CLUB           1 << 4
-#define WEAPON_CROSSBOW       1 << 5
-#define WEAPON_DAGGER         1 << 6
-#define WEAPON_DART           1 << 7
-#define WEAPON_FLAIL          1 << 8
-#define WEAPON_HAMMER         1 << 9
-#define WEAPON_JAVELIN        1 << 10
-#define WEAPON_KNIFE          1 << 11
-#define WEAPON_LANCE          1 << 12
-#define WEAPON_LONGSWORD      1 << 13
-#define WEAPON_MACE           1 << 14
-#define WEAPON_MORNINGSTAR    1 << 15
-#define WEAPON_PICKAXE        1 << 16
-#define WEAPON_POLEARM        1 << 17
-#define WEAPON_QUARTERSTAFF   1 << 18
-#define WEAPON_SABER          1 << 19
-#define WEAPON_SCIMITAR       1 << 20
-#define WEAPON_SHORTSWORD     1 << 21
-#define WEAPON_SHURIKEN       1 << 22
-#define WEAPON_SLING          1 << 23
-#define WEAPON_SPEAR          1 << 24
-#define WEAPON_TRIDENT        1 << 25
-#define WEAPON_TWOHANDEDSWORD 1 << 26
-#define WEAPON_UNICORNHORN    1 << 27
-#define WEAPON_WHIP           1 << 28
-#define WEAPON_BOW_AMMO       1 << 29
-#define WEAPON_CROSSBOW_AMMO  1 << 30
-#define WEAPON_SLING_AMMO     1 << 31
-
 /* genders */
 #define UNKNOWN_GENDER 0 << 0
 #define FEMALE         1 << 0
@@ -185,6 +151,7 @@
 #define UP '<'
 #define DOWN '>'
 #define NOWHERE '.'
+#define SIT 128 // pseudo direction required for traversing magic portals
 
 /* dungeon symbols */
 #define SOLID_ROCK ' '
@@ -219,8 +186,25 @@
 #define OUTSIDE_MAP 254
 
 /* trap values */
-#define TRAP_PIT 1
-#define TRAP_SPIKED_PIT 2
+#define TRAP_ARROW 1
+#define TRAP_BEAR 2
+#define TRAP_DART 3
+#define TRAP_FALLING_ROCK 4
+#define TRAP_FIRE 5
+#define TRAP_HOLE 6
+#define TRAP_LAND_MINE 7
+#define TRAP_LEVEL_TELEPORTER 8
+#define TRAP_MAGIC 9
+#define TRAP_PIT 10
+#define TRAP_POLYMORPH 11
+#define TRAP_ROLLING_BOULDER 12
+#define TRAP_RUST 13
+#define TRAP_SLEEPING_GAS 14
+#define TRAP_SPIKED_PIT 15
+#define TRAP_SQUEAKY_BOARD 16
+#define TRAP_TELEPORTATION 17
+#define TRAP_TRAP_DOOR 18
+#define TRAP_WEB 19
 
 /* special monster symbols */
 #define ILLEGAL_MONSTER 0
@@ -315,7 +299,7 @@
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT "  You cannot reach the bottom of the pit.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
-#define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory.\""
+#define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory\"."
 #define MESSAGE_COLD_RES_GAIN1 "  You feel full of hot air.  "
 #define MESSAGE_COLD_RES_LOSE1 "  You feel cooler!  "
 #define MESSAGE_CRAWL_OUT_OF_PIT "  You crawl to the edge of the pit.  "

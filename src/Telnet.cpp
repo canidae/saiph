@@ -51,7 +51,7 @@ Telnet::Telnet() {
 	addr.sin_addr = *((struct in_addr*) he->h_addr);
 	memset(addr.sin_zero, '\0', sizeof (addr.sin_zero));
 
-	if (connect(_sock, (struct sockaddr*) & addr, sizeof (addr)) == -1) {
+	if (connect(_sock, (struct sockaddr*) &addr, sizeof (addr)) == -1) {
 		perror("connect");
 		World::destroy();
 		exit(1);

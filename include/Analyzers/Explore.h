@@ -48,7 +48,7 @@ namespace analyzer {
 		Explore();
 
 		void analyze();
-		void onEvent(event::Event * const);
+		void onEvent(event::Event* const);
 
 	private:
 		std::map<int, ExploreFocus> _explore_levels;

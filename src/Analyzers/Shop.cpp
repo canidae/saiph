@@ -3,15 +3,18 @@
 #include <stdlib.h>
 #include "Debug.h"
 #include "Globals.h"
+#include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
-#include "Data/Pickaxe.h"
 #include "EventBus.h"
-#include "Events/ReceivedItems.h"
 #include "Actions/Pay.h"
 #include "Actions/Look.h"
 #include "Actions/Move.h"
 #include "Actions/Drop.h"
+#include "Data/Pickaxe.h"
+#include "Events/ReceivedItems.h"
+#include "Events/ShopDetected.h"
+#include "Events/WantItems.h"
 
 // Shop divides space into three regions.  "In shop" is SHOP_TILE and the walls and doors adjacent to them; "Threshold" is 1 square further out; "Out shop" is everything else.
 // Shop maintains a "shop mode" bit, which serves mostly to control whether saiph wants digging tools.  Shop mode must be on in shops and off outside them.
@@ -42,10 +45,12 @@ int Shop::nearShop(const Coordinate& where) {
 	if (where.level() == _tentative_shop_door.level())
 		rank = 1 + Point::gridDistance(where, _tentative_shop_door);
 
-	for (int y = y0; y <= y0 + 4; ++y)
-		for (int x = x0; x <= x0 + 4; ++x)
+	for (int y = y0; y <= y0 + 4; ++y) {
+		for (int x = x0; x <= x0 + 4; ++x) {
 			if (World::level().tile(Point(y,x)).symbol() == SHOP_TILE)
 				rank = min(rank, Point::gridDistance(Point(y,x), where));
+		}
+	}
 
 	return rank;
 }
@@ -98,14 +103,15 @@ void Shop::lastChance(action::Action* const plan) {
 
 void Shop::dropPicks() {
 	bool have_pick = false;
-	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i)
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		if (data::Pickaxe::pickaxes().find(i->second.name()) != data::Pickaxe::pickaxes().end())
 			have_pick = true;
+	}
 	if (have_pick)
 		World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_SHOP_DROP_DIGGING_TOOL, false)));
 }
 
-void Shop::onEvent(event::Event * const event) {
+void Shop::onEvent(event::Event* const event) {
 	if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -168,22 +174,32 @@ void Shop::analyze() {
 	//			return;
 	//		}
 	//	}
+
+	if (World::level().tile().symbol() == SHOP_TILE) {
+		unsigned int reach_any = UNREACHABLE;
+		bool adj_shk = false;
+
+		for (map<Point,int>::const_iterator ppt = World::level().symbols(OPEN_DOOR).begin(); ppt != World::level().symbols(OPEN_DOOR).end(); ++ppt)
+			reach_any = min(reach_any, World::level().tile(ppt->first).cost());
+
+		for (map<Point, Monster>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit) {
+			if (Point::gridDistance(mit->first, Saiph::position()) == 1)
+				adj_shk = true;
+		}
+
+		if (adj_shk && reach_any >= UNPASSABLE && World::turn() - _payed > 10) {
+			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
+			Debug::custom(name()) << "Setting action to pay." << endl;
+		}
+	}
+
 	if (World::level().tile().symbol() != FLOOR && World::level().tile().symbol() != UNKNOWN_TILE)
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
 	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (!m->second.shopkeeper() || !m->second.visible())
 			continue;
-			
-	if (World::shortestPath('-').cost() < UNREACHABLE) {
-		/* we probably don't owe money, since we can leave */
-	} else {
-		/* we can't leave! let's pay for what we bought */
-		if (World::turn() - payed > 10) { // do other things too
-			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
-			payed = World::turn();
-		}
-	}
+
 		/* figure out if we're in the same room as the shopkeeper */
 		Point nw = Saiph::position();
 		Point se = Saiph::position();
@@ -221,6 +237,8 @@ void Shop::analyze() {
 		}
 
 		Debug::custom(name()) << "Shop bounds are " << nw << " to " << se << endl;
+		ShopDetected ev(nw, se);
+		EventBus::broadcast(&ev);
 
 		/* mark all tiles within boundaries as SHOP_TILE */
 		for (p.row(nw.row()); p.row() <= se.row(); p.moveSouth()) {
@@ -229,3 +247,9 @@ void Shop::analyze() {
 		}
 	}
 }
+
+void Shop::actionFailed() {
+	// Try something else for a while
+	_payed = World::turn();
+}
+

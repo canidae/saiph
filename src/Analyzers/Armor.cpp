@@ -29,6 +29,11 @@ Armor::Armor() : Analyzer("Armor"), _put_on() {
 
 /* methods */
 void Armor::analyze() {
+	// hack - this is currently the only case where we want to take off armor
+	if (Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM && Inventory::itemInSlot(SLOT_SHIELD).beatitude() != CURSED && !Saiph::likesShields()) {
+		World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(SLOT_SHIELD), ARMOR_WEAR_PRIORITY)));
+		return;
+	}
 	if (_put_on.size() > 0) {
 		/* put on highest scoring armor */
 		unsigned char best_key = ILLEGAL_ITEM;
@@ -107,7 +112,7 @@ void Armor::parseMessages(const string& messages) {
 	}
 }
 
-void Armor::onEvent(event::Event * const event) {
+void Armor::onEvent(event::Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
@@ -154,6 +159,8 @@ bool Armor::betterThanCurrent(const Item& item) {
 	map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(item.name());
 	if (a == data::Armor::armors().end())
 		return false; // not armor
+	if (a->second->slot() == SLOT_SHIELD && !Saiph::likesShields())
+		return false;
 
 	int score = calculateArmorScore(item, a->second);
 	if (score <= 0)
