@@ -93,6 +93,7 @@ set(HEADER_FILES
 	include/Analyzers/MonsterInfo.h
 #	include/Analyzers/Passtune.h
 #	include/Analyzers/Potion.h
+	include/Analyzers/RandomWalk.h
 #	include/Analyzers/Ring.h
 #	include/Analyzers/Rub.h
 #	include/Analyzers/Scroll.h
@@ -254,6 +255,7 @@ set(SOURCE_FILES
 	src/Analyzers/MonsterInfo.cpp
 #	src/Analyzers/Passtune.cpp
 #	src/Analyzers/Potion.cpp
+	src/Analyzers/RandomWalk.cpp
 #	src/Analyzers/Ring.cpp
 #	src/Analyzers/Rub.cpp
 #	src/Analyzers/Scroll.cpp
