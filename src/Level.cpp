@@ -877,11 +877,8 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 		return UNREACHABLE;
 	if (next.symbol() == TRAP && _branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (next.monster() != ILLEGAL_MONSTER) {
-		map<Point, Monster>::const_iterator m = World::level().monsters().find(next.coordinate());
-		if (m != monsters().end() && m->second.lastSeen() + 5 > World::turn())
-			return UNREACHABLE; // don't path through monsters we've recently seen
-	}
+	if (next.monster() != ILLEGAL_MONSTER && abs(Saiph::position().row() - to.row()) <= 1 && abs(Saiph::position().col() - to.col()) <= 1)
+		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += _pathcost[next.symbol()];
 	if (next.monster() != ILLEGAL_MONSTER)
