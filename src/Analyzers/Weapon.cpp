@@ -193,6 +193,18 @@ void Weapon::setBestWeapons() {
 	int alt_score = 0;
 	int potentially_best_score = 0;
 	_best_missiles.clear();
+	/* give a tiny bonus to the current equipped weapons, to prevent pointless swapping when items come in and out of inventory */
+	if (Inventory::keyForSlot(SLOT_WEAPON) != ILLEGAL_ITEM) {
+		best_score = calculateWeaponScore(Inventory::itemInSlot(SLOT_WEAPON), WEAPON_USE_PRIMARY);
+		if (best_score > 0)
+			_best_weapon = Inventory::keyForSlot(SLOT_WEAPON);
+	}
+
+	if (Inventory::keyForSlot(SLOT_OFFHAND_WEAPON) != ILLEGAL_ITEM) {
+		alt_score = calculateWeaponScore(Inventory::itemInSlot(SLOT_OFFHAND_WEAPON), WEAPON_USE_ALTERNATE);
+		if (alt_score > 0)
+			_alt_weapon = Inventory::keyForSlot(SLOT_OFFHAND_WEAPON);
+	}
 
 	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		int pscore = calculateWeaponScore(i->second, WEAPON_USE_PRIMARY);
