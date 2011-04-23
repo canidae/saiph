@@ -879,7 +879,7 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 		return UNREACHABLE;
 	if (next.monster() != ILLEGAL_MONSTER) {
 		map<Point, Monster>::const_iterator m = World::level().monsters().find(next.coordinate());
-		if (m != monsters().end() && m->second.lastSeen() + 5 > World::turn())
+		if (m != monsters().end() && m->second.lastSeen() + 3 > World::turn())
 			return UNREACHABLE; // don't path through monsters we've recently seen
 	}
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
