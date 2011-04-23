@@ -7,7 +7,8 @@
 
 #define WEAPON_WIELD_PRIORITY 200
 /* how many melee and ranged weapon stacks we want */
-#define WEAPON_COUNT_MELEE 2
+//#define WEAPON_COUNT_MELEE 2
+// due to its integration with #tw weapon count is constrained to 2
 #define WEAPON_COUNT_RANGE 5
 
 namespace data {
@@ -26,13 +27,13 @@ namespace analyzer {
 		void onEvent(event::Event* const event);
 
 	private:
-		unsigned char _wield_weapon;
-		std::map<unsigned char, int> _melee_weapons;
-		std::map<unsigned char, int> _range_weapons;
+		unsigned char _best_weapon;
+		unsigned char _alt_weapon;
+		unsigned char _potentially_best_weapon;
+		std::map<unsigned char, int> _best_missiles;
 
 		bool betterThanWhatWeGot(const Item& item);
-		int calculateWeaponScore(const Item& item, const data::Weapon* weapon);
-		bool isRangedWeapon(const data::Weapon* weapon);
+		int calculateWeaponScore(const Item& item, int use, bool potential = false);
 		void setBestWeapons();
 	};
 }

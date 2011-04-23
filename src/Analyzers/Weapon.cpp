@@ -1,6 +1,10 @@
 #include "Analyzers/Weapon.h"
 
+#include <map>
+#include <string>
+
 #include <stdlib.h>
+#include "Debug.h"
 #include "EventBus.h"
 #include "Inventory.h"
 #include "Saiph.h"
@@ -14,12 +18,16 @@
 #include "Events/WantItems.h"
 #include "Events/ChangedSkills.h"
 
+#define WEAPON_USE_PRIMARY   0
+#define WEAPON_USE_ALTERNATE 1
+#define WEAPON_USE_MISSILE   2
+
 using namespace analyzer;
 using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Weapon::Weapon() : Analyzer("Weapon"), _wield_weapon(ILLEGAL_ITEM), _melee_weapons(), _range_weapons() {
+Weapon::Weapon() : Analyzer("Weapon"), _best_weapon(ILLEGAL_ITEM), _alt_weapon(ILLEGAL_ITEM), _potentially_best_weapon(ILLEGAL_ITEM), _best_missiles() {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -29,118 +37,74 @@ Weapon::Weapon() : Analyzer("Weapon"), _wield_weapon(ILLEGAL_ITEM), _melee_weapo
 
 /* methods */
 void Weapon::analyze() {
-	if (!Saiph::polymorphed() && _wield_weapon != ILLEGAL_ITEM && _wield_weapon != Inventory::keyForSlot(SLOT_WEAPON))
-		World::setAction(static_cast<action::Action*> (new action::Wield(this, _wield_weapon, WEAPON_WIELD_PRIORITY)));
+	if (!Saiph::polymorphed() && _best_weapon != ILLEGAL_ITEM && _best_weapon != Inventory::keyForSlot(SLOT_WEAPON) && Inventory::itemInSlot(SLOT_WEAPON).beatitude() != CURSED)
+		World::setAction(static_cast<action::Action*> (new action::Wield(this, _best_weapon, WEAPON_WIELD_PRIORITY)));
 }
 
 void Weapon::onEvent(event::Event* const event) {
-	if (event->id() == ChangedInventoryItems::ID) {
-		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
-		for (set<unsigned char>::iterator k = e->keys().begin(); k != e->keys().end(); ++k) {
-			const Item& item = Inventory::itemAtKey(*k);
-			if (item.count() <= 0) {
-				/* we lost this item */
-				_range_weapons.erase(*k);
-				_melee_weapons.erase(*k);
-				continue;
-			}
-			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(item.name());
-			if (w == data::Weapon::weapons().end())
-				continue; // not a weapon
-			int score = calculateWeaponScore(item, w->second);
-			if (isRangedWeapon(w->second))
-				_range_weapons[*k] = score;
-			else
-				_melee_weapons[*k] = score;
-
-		}
-		setBestWeapons();
-	} else if (event->id() == ChangedSkills::ID) {
-		for (map<unsigned char, Item>::const_iterator k = Inventory::items().begin(); k != Inventory::items().end(); ++k) {
-			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(k->second.name());
-			if (w == data::Weapon::weapons().end())
-				continue; // not a weapon
-			int score = calculateWeaponScore(k->second, w->second);
-			if (isRangedWeapon(w->second))
-				_range_weapons[k->first] = score;
-			else
-				_melee_weapons[k->first] = score;
-		}
-	} else if (event->id() == ReceivedItems::ID) {
-		ReceivedItems* e = static_cast<ReceivedItems*> (event);
-		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(i->second.name());
-			if (w == data::Weapon::weapons().end())
-				continue; // not a weapon
-			int score = calculateWeaponScore(i->second, w->second);
-			if (isRangedWeapon(w->second)) {
-				_range_weapons[i->first] = score;
-			} else {
-				_melee_weapons[i->first] = score;
-				if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-					Beatify b(i->first, 175);
-					EventBus::broadcast(&b);
-				}
-			}
-		}
+	if (event->id() == ChangedInventoryItems::ID || event->id() == ChangedSkills::ID || event->id() == ReceivedItems::ID) {
 		setBestWeapons();
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-//		if (e->dropping() || Saiph::encumbrance() < BURDENED) {
-			/* dropping items or we're burdened (which means don't loot weapons) */
-			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (e->dropping()) {
-					if (_range_weapons.find(i->first) != _range_weapons.end() || _melee_weapons.find(i->first) != _melee_weapons.end()) {
-						/* don't drop weapons in one of our lists */
-						i->second.want(i->second.count());
-					}
-				} else {
-					/* looting, is this better than what we got? */
-					if (betterThanWhatWeGot(i->second))
-						i->second.want(i->second.count());
+		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
+			if (e->dropping()) {
+				if (_best_missiles.find(i->first) != _best_missiles.end() || _best_weapon == i->first || _alt_weapon == i->first || _potentially_best_weapon == i->first) {
+					/* don't drop weapons in one of our lists */
+					i->second.want(i->second.count());
 				}
+			} else {
+				/* looting, is this better than what we got? */
+				if (betterThanWhatWeGot(i->second))
+					i->second.want(i->second.count());
 			}
-//		}
+		}
 	}
 }
 
 /* private methods */
 bool Weapon::betterThanWhatWeGot(const Item& item) {
-	if (item.beatitude() == CURSED)
-		return false;
-	if (Saiph::alignment() == LAWFUL && item.name().find("poisoned") != string::npos)
-		return false; // ignore poisoned weapons if we're lawful
-	map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(item.name());
-	if (w == data::Weapon::weapons().end())
-		return false; // not a weapon
-	int score = calculateWeaponScore(item, w->second);
-	if (score <= 0)
-		return false;
+	int pscore = calculateWeaponScore(item, WEAPON_USE_PRIMARY, true);
+	int ascore = calculateWeaponScore(item, WEAPON_USE_ALTERNATE, true);
+	int mscore = calculateWeaponScore(item, WEAPON_USE_MISSILE);
 
-	int min_score = INT_MAX;
-	if ((int) _melee_weapons.size() < WEAPON_COUNT_MELEE)
-		return true; // melee weapon we got room for
-	if (isRangedWeapon(w->second)) {
-		if ((int) _range_weapons.size() < WEAPON_COUNT_RANGE)
-			return true; // ranged weapon we got room for
-		/* check if this weapon is better than any of the ranged weapons we already got */
-		for (map<unsigned char, int>::iterator m = _range_weapons.begin(); m != _range_weapons.end(); ++m) {
-			if (m->second < min_score)
-				min_score = m->second;
-		}
-	} else {
-		/* check if this weapon is better than any of the melee weapons we already got */
-		for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
-			if (m->second < min_score)
-				min_score = m->second;
+	if (pscore > 0 && (_best_weapon == ILLEGAL_ITEM || pscore > calculateWeaponScore(Inventory::itemAtKey(_best_weapon), WEAPON_USE_PRIMARY, true)))
+		return true;
+	if (ascore > 0 && (_alt_weapon == ILLEGAL_ITEM || ascore > calculateWeaponScore(Inventory::itemAtKey(_alt_weapon), WEAPON_USE_ALTERNATE, true)))
+		return true;
+	if (mscore > 0) {
+		if (int(_best_missiles.size()) < WEAPON_COUNT_RANGE)
+			return true;
+		for (map<unsigned char, int>::iterator m = _best_missiles.begin(); m != _best_missiles.end(); ++m) {
+			if (mscore > m->second)
+				return true;
 		}
 	}
-	return score > min_score; // returns true if this weapon is better than any weapon we got
+
+	return false;
 }
 
-int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
-	if (!weapon->oneHanded() && Saiph::likesShields())
-		return 0; // for now, don't try to wield two-hander when we got a shield
+int Weapon::calculateWeaponScore(const Item& item, int use, bool potential) {
+	if (item.beatitude() == CURSED && use != WEAPON_USE_MISSILE)
+		return 0;
+	if (Saiph::alignment() == LAWFUL && item.name().find("poisoned") != string::npos)
+		return 0; // ignore poisoned weapons if we're lawful
+	map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(item.name());
+	if (w == data::Weapon::weapons().end())
+		return 0; // not a weapon
+	const data::Weapon* weapon = w->second;
+	// if we want a shield, ignore two-hander, also alternate weapons should be small (for #tw) or light (for backup)
+	if (!weapon->oneHanded() && (use == WEAPON_USE_ALTERNATE || Saiph::likesShields()))
+		return 0;
+	// offhand cannot be an artifact
+	if (use == WEAPON_USE_ALTERNATE && (weapon->properties() & PROPERTY_ARTIFACT))
+		return 0;
+	int type = weapon->type();
+	// only some weapons throw well
+	if (use == WEAPON_USE_MISSILE && !(type == P_DAGGER || type == -P_DART || type == P_JAVELIN || type == P_KNIFE || type == -P_SHURIKEN || type == P_SPEAR))
+		return 0;
+	// some weapons are only for throwing
+	if (use != WEAPON_USE_MISSILE && type < 0)
+		return 0;
 	int score = 0;
 	for (vector<data::Attack>::const_iterator a = weapon->attackSmall().begin(); a != weapon->attackSmall().end(); ++a)
 		score += a->avgDamage();
@@ -152,7 +116,8 @@ int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
 	score -= item.damage() * 2;
 
 	/* set role/skill specific score */
-	int skill = data::Skill::roleMax(Saiph::role(), abs(weapon->type()));
+	/* an infrequently used weapon or a #twoweapon candidate won't advance, so use current skill */
+	int skill = (use == WEAPON_USE_ALTERNATE) ? Saiph::skill(abs(weapon->type())) : Saiph::maxSkill(abs(weapon->type()));
 
 	/* score += tohit + 2 * damage */
 	switch (skill) {
@@ -177,53 +142,80 @@ int Weapon::calculateWeaponScore(const Item& item, const data::Weapon* weapon) {
 		break;
 	}
 
+	// beatitude doesn't matter so much for missiles
+	if (!potential && use != WEAPON_USE_MISSILE && item.beatitude() == BEATITUDE_UNKNOWN)
+		score /= 2;
+	if (use == WEAPON_USE_MISSILE && item.beatitude() == CURSED)
+		score = score * 6 / 7;
+
 	return score;
 }
 
-bool Weapon::isRangedWeapon(const data::Weapon* weapon) {
-	/* TODO: roles may have different preferences of which weapons to throw */
-	return (weapon->type() == P_DAGGER || weapon->type() == -P_DART || weapon->type() == P_JAVELIN || weapon->type() == P_KNIFE || weapon->type() == -P_SHURIKEN || weapon->type() == P_SPEAR);
-}
-
 void Weapon::setBestWeapons() {
-	/* set the best weapon we got for wielding.
-	 * also clean up _melee_weapons and _range_weapons */
-	while ((int) _range_weapons.size() > WEAPON_COUNT_RANGE) {
-		map<unsigned char, int>::iterator remove = _range_weapons.begin();
-		for (map<unsigned char, int>::iterator m = ++(_range_weapons.begin()); m != _range_weapons.end(); ++m) {
-			if (m->second < remove->second)
-				remove = m;
-		}
-		_range_weapons.erase(remove);
-	}
-	while ((int) _melee_weapons.size() > WEAPON_COUNT_MELEE) {
-		map<unsigned char, int>::iterator remove = _melee_weapons.begin();
-		for (map<unsigned char, int>::iterator m = ++(_melee_weapons.begin()); m != _melee_weapons.end(); ++m) {
-			if (m->second < remove->second)
-				remove = m;
-		}
-		_melee_weapons.erase(remove);
-	}
+	/* scan inventory and cache the best weapons we have; WantItems and wield handling will use these */
+	_potentially_best_weapon = _best_weapon = _alt_weapon = ILLEGAL_ITEM;
+	int best_score = 0;
+	int alt_score = 0;
+	int potentially_best_score = 0;
+	_best_missiles.clear();
 
-	/* check if the weapon we're wielding is cursed */
-	unsigned char cur_key = Inventory::keyForSlot(SLOT_WEAPON);
-	if (cur_key != ILLEGAL_ITEM) {
-		const Item& item = Inventory::itemAtKey(cur_key);
-		if (item.beatitude() == CURSED) {
-			_wield_weapon = cur_key;
-			return;
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+		int pscore = calculateWeaponScore(i->second, WEAPON_USE_PRIMARY);
+		if (pscore > best_score) {
+			best_score = pscore;
+			_best_weapon = i->first;
 		}
 	}
 
-	/* find best weapon, weapons we don't know beatitude of are penalized */
-	int best_score = INT_MIN;
-	int best_key = ILLEGAL_ITEM;
-	for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
-		int score = Inventory::itemAtKey(m->first).beatitude() == BEATITUDE_UNKNOWN ? m->second / 2 : m->second;
-		if (score > best_score) {
-			best_score = score;
-			best_key = m->first;
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+		if (i->first == _best_weapon)
+			continue;
+		int ascore = calculateWeaponScore(i->second, WEAPON_USE_ALTERNATE);
+		if (ascore > alt_score) {
+			alt_score = ascore;
+			_alt_weapon = i->first;
 		}
 	}
-	_wield_weapon = best_key;
+
+	// carry up to 1 weapon which could be better than our primary or alternate, if it's not cursed
+	if (_best_weapon != ILLEGAL_ITEM && _alt_weapon != ILLEGAL_ITEM)
+		potentially_best_score = min(calculateWeaponScore(Inventory::itemAtKey(_best_weapon), WEAPON_USE_PRIMARY, true),
+				calculateWeaponScore(Inventory::itemAtKey(_alt_weapon), WEAPON_USE_PRIMARY, true));
+
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+		if (i->second.beatitude() != BEATITUDE_UNKNOWN)
+			continue;
+		int ptscore = calculateWeaponScore(i->second, WEAPON_USE_PRIMARY, true);
+		if (ptscore > potentially_best_score) {
+			potentially_best_score = ptscore;
+			_potentially_best_weapon = i->first;
+		}
+	}
+
+	multimap<int, unsigned char> mq;
+
+	for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+		if (i->first == _best_weapon || i->first == _alt_weapon)
+			continue;
+		int mscore = calculateWeaponScore(i->second, WEAPON_USE_MISSILE);
+		if (mscore > 0)
+			mq.insert(pair<int, unsigned char>(-mscore, i->first));
+	}
+
+	multimap<int, unsigned char>::iterator mqi = mq.begin();
+	while (_best_missiles.size() < WEAPON_COUNT_RANGE && mqi != mq.end()) {
+		_best_missiles[mqi->second] = -mqi->first;
+		++mqi;
+	}
+
+	if (_potentially_best_weapon != ILLEGAL_ITEM) {
+		Beatify b(_potentially_best_weapon, 175);
+		EventBus::broadcast(&b);
+	}
+
+	Debug::custom(name()) << "Best melee weapon (" << best_score << ") is: " << Inventory::itemAtKey(_best_weapon) << endl;
+	Debug::custom(name()) << "Best alternate weapon (" << alt_score << ") is: " << Inventory::itemAtKey(_alt_weapon) << endl;
+	Debug::custom(name()) << "Best candidate weapon (" << potentially_best_score << ") is: " << Inventory::itemAtKey(_potentially_best_weapon) << endl;
+	for (map<unsigned char, int>::const_iterator i = _best_missiles.begin(); i != _best_missiles.end(); ++i)
+		Debug::custom(name()) << "High quality missile (" << i->second << ") is: " << Inventory::itemAtKey(i->first) << endl;
 }
