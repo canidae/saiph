@@ -101,6 +101,7 @@ private:
 	static const char *_ansi_colors[INVERSE_BOLD_WHITE+1];
 	static unsigned char _shadow_map_dump[MAP_ROW_END - MAP_ROW_BEGIN + 1][MAP_COL_END - MAP_COL_BEGIN + 1][2];
 	static std::string _shadow_rhs[50];
+	static int _display_level;
 
 	static void dumpMap(Level& which);
 	static void dumpMaps();
@@ -121,5 +122,6 @@ private:
 	static void fetchMessages();
 	static void handleEscapeSequence(int* pos, int* color);
 	static void update();
+	static void refresh();
 };
 #endif

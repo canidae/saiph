@@ -585,6 +585,11 @@ void World::doCommands() {
 			_current_speed = SPEED_FAST;
 			break;
 
+
+		case 12:
+			refresh();
+			break;
+
 		case 'q':
 		case 'Q':
 			executeCommand(string(1, (char) 27));
@@ -744,6 +749,24 @@ void World::run(int speed) {
 }
 
 /* private methods */
+void World::refresh() {
+	cout << "\033[2J";
+	_cout_last_color = -1;
+	_cout_cursor.row(-1);
+	for (int row = 0; row < ROWS; ++row) {
+		coutGoto(1 + row, 1);
+		for (int col = 0; col < COLS; ++col)
+			coutOneChar(_color[row][col], _view[row][col]);
+	}
+	memset(_shadow_map_dump, 0, sizeof _shadow_map_dump);
+	for (int row = 0; row < 50; ++row)
+		_shadow_rhs[row].clear();
+	coutSetColor(NO_COLOR);
+	dumpMaps();
+	coutGoto(_cursor.row() + 1, _cursor.col() + 1);
+	cout.flush();
+}
+
 void World::addChangedLocation(const Point& point) {
 	coutGoto(1 + point.row(), 1 + point.col());
 	coutOneChar(_color[point.row()][point.col()], _view[point.row()][point.col()]);
