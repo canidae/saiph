@@ -75,7 +75,7 @@ void Wand::actionCompleted(const std::string& messages) {
 				continue;
 			if (messages.find(w->second->engraveMessage()) != string::npos) {
 				if (w->second->name() == "wand of death" || w->second->name() == "wand of sleep")
-					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of death/sleep")));
+					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of death"))); // TODO: hack to make her hang on to these wands
 				else if (w->first == "wand of teleportation" || w->first == "wand of cancellation" || w->first == "wand of make invisible")
 					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of vanish")));
 				else
