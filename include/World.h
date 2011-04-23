@@ -34,6 +34,7 @@ class Connection;
 
 class World {
 public:
+	typedef void (*drawfunc)(void* cookie, Level& lv, const Point& pt, unsigned char& symbol, unsigned char& color);
 	static char view(const Point& point);
 	static int color(const Point& point);
 	static const Point& cursor();
@@ -56,6 +57,7 @@ public:
 	static void destroy();
 	static void registerAnalyzer(analyzer::Analyzer* const analyzer);
 	static void unregisterAnalyzer(analyzer::Analyzer* const analyzer);
+	static void registerDrawFunc(char key, drawfunc fnc, void* cookie);
 	static bool setAction(action::Action* action, bool deleteAction = true);
 	static bool queueAction(action::Action* action);
 	static unsigned char directLine(Point point, bool ignore_sinks, bool ignore_boulders, int eff_range, int danger_range);
@@ -102,6 +104,12 @@ private:
 	static unsigned char _shadow_map_dump[MAP_ROW_END - MAP_ROW_BEGIN + 1][MAP_COL_END - MAP_COL_BEGIN + 1][2];
 	static std::string _shadow_rhs[50];
 	static int _display_level;
+	static std::map<char, std::pair<void*, drawfunc> > _draw_funcs;
+	static std::map<char, std::pair<void*, drawfunc> >::iterator _current_draw_func;
+
+	static void drawNormal(void*, Level&, const Point&, unsigned char&, unsigned char&);
+	static void drawDirections(void*, Level&, const Point&, unsigned char&, unsigned char&);
+	static void drawCosts(void*, Level&, const Point&, unsigned char&, unsigned char&);
 
 	static void dumpMap(Level& which);
 	static void dumpMaps();
