@@ -963,9 +963,25 @@ void World::drawCosts(void*, Level& lv, const Point& p, unsigned char& symbol, u
 	if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
 		color = MAGENTA;
 		symbol = '@';
-	} else if (t.direction() != ILLEGAL_DIRECTION)
-		symbol = (char) (t.cost() % 64 + 48);
-	else
+	} else if (t.direction() != ILLEGAL_DIRECTION) {
+		unsigned cost = t.cost();
+		if (cost < 140) {
+			color = BOLD_RED + (cost / 20);
+			symbol = 'a' + int(cost % 20);
+		} else if (cost < 1540) {
+			color = RED + ((cost - 140) / 200);
+			symbol = 'a' + int(((cost - 140) / 10) % 20);
+		} else if (cost < UNPASSABLE) {
+			color = WHITE;
+			symbol = 't';
+		} else if (cost == UNPASSABLE) {
+			color = WHITE;
+			symbol = 'u';
+		} else {
+			color = WHITE;
+			symbol = 'U';
+		}
+	} else
 		symbol = t.symbol();
 }
 
