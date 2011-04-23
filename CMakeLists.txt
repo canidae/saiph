@@ -320,7 +320,19 @@ set(SOURCE_FILES
 	src/Data/Weapon.cpp
 	src/Data/Whip.cpp
 	# Events
+	src/Events/Beatify.cpp
+	src/Events/ChangedInventoryItems.cpp
+	src/Events/ChangedSkills.cpp
+	src/Events/EatItem.cpp
+	src/Events/ElberethQuery.cpp
 	src/Events/Event.cpp
+	src/Events/GotDiggingTool.cpp
+	src/Events/ItemsOnGround.cpp
+	src/Events/QuestStatus.cpp
+	src/Events/ReceivedItems.cpp
+	src/Events/ShopDetected.cpp
+	src/Events/StashChanged.cpp
+	src/Events/WantItems.cpp
 )
 
 add_executable(saiph ${HEADER_FILES} ${SOURCE_FILES})

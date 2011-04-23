@@ -1,31 +1,20 @@
 #ifndef EVENT_SHOP_DETECTED_H
 #define EVENT_SHOP_DETECTED_H
 
-#include "Events/Event.h"
 #include "Point.h"
+#include "Events/Event.h"
 
 namespace event {
 	class ShopDetected : public Event {
 	public:
 		static const int ID;
 
-		ShopDetected(Point ul, Point lr) : Event("ShopDetected"), _ul(ul), _lr(lr) {
-		}
+		ShopDetected(const Point& ul, const Point& lr);
+		virtual ~ShopDetected();
 
-		virtual ~ShopDetected() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		const Point& ul() const {
-			return _ul;
-		}
-
-		const Point& lr() const {
-			return _lr;
-		}
+		virtual int id();
+		const Point& ul() const;
+		const Point& lr() const;
 
 	private:
 		Point _ul;

@@ -1,29 +1,19 @@
 #ifndef EVENT_STASH_CHANGED_H
 #define EVENT_STASH_CHANGED_H
 
-#include <list>
 #include "Coordinate.h"
 #include "Events/Event.h"
 
 namespace event {
-
 	class StashChanged : public Event {
 	public:
 		static const int ID;
 
-		StashChanged(const Coordinate& position) : Event("StashChanged"), _position(position) {
-		}
+		StashChanged(const Coordinate& position);
+		virtual ~StashChanged();
 
-		virtual ~StashChanged() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual const Coordinate& position() const {
-			return _position;
-		}
+		virtual int id();
+		virtual const Coordinate& position() const;
 
 	private:
 		const Coordinate _position;

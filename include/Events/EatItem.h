@@ -4,28 +4,16 @@
 #include "Events/Event.h"
 
 namespace event {
-
 	class EatItem : public Event {
 	public:
 		static const int ID;
 
-		EatItem() : Event("EatItem"), _key(0), _priority(0) {
-		}
+		EatItem();
+		virtual ~EatItem();
 
-		virtual ~EatItem() {
-		}
-
-		virtual int id() {
-			return ID;
-		}
-
-		virtual unsigned char key() {
-			return _key;
-		}
-
-		virtual int priority() {
-			return _priority;
-		}
+		virtual int id();
+		virtual unsigned char key();
+		virtual int priority();
 
 	private:
 		unsigned char _key;

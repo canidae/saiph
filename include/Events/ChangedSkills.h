@@ -10,12 +10,10 @@ namespace event {
 	public:
 		static const int ID;
 
-		ChangedSkills() : Event("ChangedSkills") {
-		}
+		ChangedSkills();
+		virtual ~ChangedSkills();
 
-		virtual int id() {
-			return ID;
-		}
+		virtual int id();
 	};
 }
 #endif
