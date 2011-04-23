@@ -29,10 +29,8 @@
 #include "Actions/Remove.h"
 #include "Actions/Rest.h"
 #include "Actions/Search.h"
-#include "Actions/SwapWeapon.h"
 #include "Actions/TakeOff.h"
 #include "Actions/Throw.h"
-#include "Actions/TwoWeapon.h"
 #include "Actions/Unlock.h"
 #include "Actions/Wear.h"
 #include "Actions/Wield.h"
@@ -74,8 +72,6 @@ const int Wear::ID = 30;
 const int Dip::ID = 31;
 const int Donate::ID = 32;
 const int Pay::ID = 33;
-const int TwoWeapon::ID = 33;
-const int SwapWeapon::ID = 33;
 
 /* used for the travel command "_" */
 Point Move::_last_target;

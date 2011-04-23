@@ -430,19 +430,6 @@ int Saiph::zorkmids() {
 	return _zorkmids;
 }
 
-// This function is a really big hack.  Intelligently deciding whether to use a shield based on what we have and what we can do is hard, so fudge it based on role.
-// Fortunately it's normally quite simple; shields are rarely ever worthwhile.
-bool Saiph::likesShields() {
-	switch (_role) {
-		case VALKYRIE:
-			return skill(P_LONG_SWORD) < P_EXPERT;
-		case CAVEMAN:
-			return true;
-		default:
-			return false;
-	}
-}
-
 unsigned long long Saiph::conducts() {
 	return _conducts;
 }
