@@ -25,7 +25,7 @@ const Command& SwapWeapon::command() {
 	}
 }
 
-void SwapWeapon::update(const std::string& messages) {
+void SwapWeapon::update(const std::string&) {
 	_sequence = 1;
 	Inventory::update();
 }

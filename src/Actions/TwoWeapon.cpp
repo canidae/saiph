@@ -25,7 +25,7 @@ const Command& TwoWeapon::command() {
 	}
 }
 
-void TwoWeapon::update(const std::string& messages) {
+void TwoWeapon::update(const std::string&) {
 	_sequence = 1;
 	Inventory::update();
 }
