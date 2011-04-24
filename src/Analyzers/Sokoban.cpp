@@ -349,7 +349,7 @@ void Sokoban::analyze() {
 		if (tile.cost() == UNREACHABLE) {
 			/* this is bad */
 			Debug::custom(name()) << "Unable to move to " << tile << endl;
-			goto last_solver;
+			return;
 		} else if (tile.direction() == NOWHERE) {
 			if (lev.tile(bopos).symbol() == BOULDER) {
 				/* pushing boulder */
@@ -362,12 +362,12 @@ void Sokoban::analyze() {
 					++_retry_count;
 					_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
 				} else {
-					goto last_solver;
+					return;
 				}
 			} else {
 				/* uh, not good at all */
 				Debug::custom(name()) << "Wanted to push a non-boulder: " << lev.tile(bopos) << endl;
-				goto last_solver;
+				return;
 			}
 		} else {
 			/* probably moving to correct point before pushing boulder */
@@ -375,27 +375,21 @@ void Sokoban::analyze() {
 		}
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
 	}
-last_solver:
 
 	// odds and ends to make Sokoban work better - the loop above is the heart of exploration
 	// we count on the loop above to assign level IDs
-	// XXX: Saiph won't currently loot from pits.
-	if (World::level().branch() == BRANCH_SOKOBAN) {
+	if (World::level().branch() == BRANCH_SOKOBAN && _levelmap[Saiph::position().level()] - 1 >= 2) {
 		for (map<Point,int>::const_iterator pi = World::level().symbols(TRAP).begin(); pi != World::level().symbols(TRAP).end(); ++pi) {
 			Tile& tl = World::level().tile(pi->first);
 			if (tl.cost() == UNREACHABLE)
 				continue;
-			if (World::view(pi->first) == '^' || tl.search() == TILE_FULLY_SEARCHED)
+			if (World::view(pi->first) == '^')
 				continue;
 			Debug::custom(name()) << "Something maybe worth clearing at " << tl << endl;
-			if (Point::gridDistance(Saiph::position(), pi->first) > 1) {
+			if (Point::gridDistance(Saiph::position(), pi->first) > 1)
 				World::setAction(static_cast<action::Action*> (new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY)));
-			} else if (tl.monster() == ILLEGAL_MONSTER) {
-				if (_levelmap[Saiph::position().level()] - 1 >= 2) // these levels have holes
-					World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
-				else if (Saiph::hitpoints() > 8) // just a pit, walk in
-					World::setAction(static_cast<action::Action*> (new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY)));
-			}
+			else if (tl.monster() == ILLEGAL_MONSTER)
+				World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
 		}
 	}
 }
