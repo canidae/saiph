@@ -6,6 +6,7 @@
 #include "World.h"
 #include "Coordinate.h"
 #include "Actions/Move.h"
+#include "Actions/Kick.h"
 
 #define RETRY_COUNT 10
 #define TURNS_BETWEEN_RETRIES 10
@@ -279,9 +280,8 @@ void Sokoban::analyze() {
 		if (lev.branch() != BRANCH_SOKOBAN)
 			continue;
 
-		map<int, int>::iterator l = _levelmap.find(ix);
-		int level = -1;
-		if (l == _levelmap.end()) {
+		int level = _levelmap[ix] - 1;
+		if (level < 0) {
 			for (int s = 0; s < (int) _moves.size(); ++s) {
 				/* 2nd. entry should be a unique boulder for each level */
 				deque<Point>::iterator f = _moves[s].begin();
@@ -290,16 +290,12 @@ void Sokoban::analyze() {
 				if (lev.tile(*f).symbol() != BOULDER)
 					continue; // expected boulder, can't be this level
 				/* this must be it */
-				_levelmap[ix] = s;
-				level = s;
+				_levelmap[ix] = (level = s) + 1;
 				Debug::custom(name()) << "Recognized " << ix << " as sokoban level " << s << endl;
 				break;
 			}
-		} else {
-			/* already discovered this sokoban level */
-			level = l->second;
 		}
-		if (level == -1) {
+		if (level < 0) {
 			/* huh? */
 			Debug::warning() << "Sokoban was unable to recognize level " << ix << endl;
 			continue;
@@ -362,5 +358,22 @@ void Sokoban::analyze() {
 			Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
 		}
 		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
+	}
+
+	// odds and ends to make Sokoban work better - the loop above is the heart of exploration
+	// we count on the loop above to assign level IDs
+	if (World::level().branch() == BRANCH_SOKOBAN && _levelmap[Saiph::position().level()] - 1 >= 2) {
+		for (map<Point,int>::const_iterator pi = World::level().symbols(TRAP).begin(); pi != World::level().symbols(TRAP).end(); ++pi) {
+			Tile& tl = World::level().tile(pi->first);
+			if (tl.cost() == UNREACHABLE)
+				continue;
+			if (World::view(pi->first) == '^')
+				continue;
+			Debug::custom(name()) << "Something maybe worth clearing at " << tl << endl;
+			if (Point::gridDistance(Saiph::position(), pi->first) > 1)
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+			else if (tl.monster() == ILLEGAL_MONSTER)
+				World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+		}
 	}
 }

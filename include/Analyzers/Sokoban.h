@@ -8,6 +8,7 @@
 #include "Analyzers/Analyzer.h"
 
 #define SOKOBAN_SOLVE_PRIORITY 100
+#define SOKOBAN_CLEAR_ITEMS_PRIORITY 200
 
 namespace analyzer {
 
