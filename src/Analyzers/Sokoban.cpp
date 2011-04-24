@@ -6,6 +6,7 @@
 #include "World.h"
 #include "Coordinate.h"
 #include "Actions/Move.h"
+#include "Actions/Search.h"
 #include "Actions/Kick.h"
 
 #define RETRY_COUNT 10
@@ -271,8 +272,11 @@ void Sokoban::parseMessages(const string& messages) {
 void Sokoban::analyze() {
 	if (World::currentPriority() >= SOKOBAN_SOLVE_PRIORITY)
 		return;
-	if (_retry_turn > int(World::turn()))
+	if (_retry_turn > int(World::turn())) {
+		// We don't want the normal desparation actions running - we aren't that desparate.
+		World::setAction(static_cast<action::Action*> (new action::Search(this, SOKOBAN_REST_PRIORITY)));
 		return;
+	}
 
 	for (unsigned ix = 0; ix < World::levels().size(); ++ix) {
 		Level& lev = World::level(ix);
