@@ -20,7 +20,7 @@ namespace analyzer {
 		void parseMessages(const std::string& messages);
 
 	private:
-		std::vector<std::deque<Point> > _moves;
+		std::vector<std::deque<std::pair<Point, char> > > _moves;
 		std::map<int, int> _levelmap;
 		int _retry_count;
 		int _retry_turn;

@@ -255,10 +255,10 @@ void Sokoban::addMoves(int level, Point pos, const string& moves) {
 				break;
 			}
 			/* then add position to move to before continue pushing */
-			_moves[level].push_back(pos);
 			prev = (unsigned char) moves[m];
 		}
-		_moves[level].push_back(pos.moveDirection(moves[m]));
+		_moves[level].push_back(make_pair(pos, moves[m]));
+		pos.moveDirection(moves[m]); // now at old boulder location
 	}
 }
 
@@ -283,11 +283,13 @@ void Sokoban::analyze() {
 		int level = _levelmap[ix] - 1;
 		if (level < 0) {
 			for (int s = 0; s < (int) _moves.size(); ++s) {
-				/* 2nd. entry should be a unique boulder for each level */
-				deque<Point>::iterator f = _moves[s].begin();
-				if (f == _moves[s].end() || ++f == _moves[s].end())
+				/* 1st. entry should be a unique boulder for each level */
+				deque<pair<Point, char> >::iterator f = _moves[s].begin();
+				if (f == _moves[s].end())
 					continue; // seems like this level is completed
-				if (lev.tile(*f).symbol() != BOULDER)
+				Point b = f->first;
+				b.moveDirection(f->second);
+				if (lev.tile(b).symbol() != BOULDER)
 					continue; // expected boulder, can't be this level
 				/* this must be it */
 				_levelmap[ix] = (level = s) + 1;
@@ -317,32 +319,42 @@ void Sokoban::analyze() {
 		}
 
 		/* go to next point */
-		Coordinate p(ix, _moves[level].front());
-		if (p == Saiph::position()) {
-			/* we're standing at the next point, erase it and go to next */
+		pair<Point, char> next_move = _moves[level].front();
+		Point bopos = next_move.first;
+		bopos.moveDirection(next_move.second);
+		Point bnpos = bopos;
+		bnpos.moveDirection(next_move.second);
+
+		if (Level::isPassable(lev.tile(bopos).symbol())) {
+			// the move looks complete, erase it and go to next
 			_moves[level].pop_front();
 			_retry_count = 0;
 			if (_moves[level].size() > 0) {
-				p = Coordinate(ix, _moves[level].front());
+				next_move = _moves[level].front();
+				bopos = next_move.first;
+				bopos.moveDirection(next_move.second);
+				bnpos = bopos;
+				bnpos.moveDirection(next_move.second);
 			} else {
 				/* look at that, we've solved this sokoban level */
 				Debug::custom(name()) << "Solved sokoban level " << level << endl;
 				continue;
 			}
 		}
-		Tile tile = World::shortestPath(p);
+		Tile tile = World::shortestPath(Coordinate(ix, next_move.first));
 		if (tile.cost() == UNREACHABLE) {
 			/* this is bad */
 			Debug::custom(name()) << "Unable to move to " << tile << endl;
 			return;
-		} else if (tile.cost() == UNPASSABLE) {
-			if (tile.symbol() == BOULDER) {
+		} else if (tile.direction() == NOWHERE) {
+			if (lev.tile(bopos).symbol() == BOULDER) {
 				/* pushing boulder */
-				Debug::custom(name()) << "Pushing a boulder: " << tile << endl;
-			} else if (tile.symbol() == UNKNOWN_TILE_UNPASSABLE) {
+				tile.direction(next_move.second);
+				Debug::custom(name()) << "Pushing a boulder: " << lev.tile(bopos) << " (" << next_move.second << ")" << endl;
+			} else if (lev.tile(bopos).symbol() == UNKNOWN_TILE_UNPASSABLE) {
 				Debug::custom(name()) << "Failed to push boulder" << endl;
 				if (_retry_count < RETRY_COUNT) {
-					tile.symbol(BOULDER);
+					lev.tile(bopos).symbol(BOULDER);
 					++_retry_count;
 					_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
 				} else {
@@ -350,7 +362,7 @@ void Sokoban::analyze() {
 				}
 			} else {
 				/* uh, not good at all */
-				Debug::custom(name()) << "Wanted to move on to an unpassable non-boulder square: " << tile << endl;
+				Debug::custom(name()) << "Wanted to push a non-boulder: " << lev.tile(bopos) << endl;
 				return;
 			}
 		} else {
