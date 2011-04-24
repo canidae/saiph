@@ -7,10 +7,13 @@
 #include "Coordinate.h"
 #include "Actions/Move.h"
 
+#define RETRY_COUNT 10
+#define TURNS_BETWEEN_RETRIES 10
+
 using namespace analyzer;
 using namespace std;
 
-Sokoban::Sokoban() : Analyzer("Sokoban") {
+Sokoban::Sokoban() : Analyzer("Sokoban"), _retry_count(0), _retry_turn(-1) {
 	/* 8 sokoban levels */
 	_moves.resize(8);
 
@@ -258,6 +261,22 @@ void Sokoban::addMoves(int level, Point pos, const string& moves) {
 	}
 }
 
+void Sokoban::actionFailed() {
+	map<int, int>::iterator l = _levelmap.find(Saiph::position().level());
+	if (l == _levelmap.end())
+		return;
+	if (_moves[l->second].empty())
+		return;
+	if (World::level().tile(_moves[l->second].front()).symbol() == UNKNOWN_TILE_UNPASSABLE) {
+		Debug::custom(name()) << "Failed to push boulder" << endl;
+		if (_retry_count < RETRY_COUNT) {
+			World::level().tile(_moves[l->second].front()).symbol(BOULDER);
+			++_retry_count;
+			_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
+		}
+	}
+}
+
 void Sokoban::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_PERHAPS_THATS_WHY) != string::npos) {
 		/* monster blocking the way, should be marked as "I", no handling for the time being */
@@ -266,6 +285,8 @@ void Sokoban::parseMessages(const string& messages) {
 
 void Sokoban::analyze() {
 	if (World::currentPriority() >= SOKOBAN_SOLVE_PRIORITY)
+		return;
+	if (_retry_turn > int(World::turn()))
 		return;
 
 	for (unsigned ix = 0; ix < World::levels().size(); ++ix) {
@@ -320,6 +341,7 @@ void Sokoban::analyze() {
 		if (p == Saiph::position()) {
 			/* we're standing at the next point, erase it and go to next */
 			_moves[level].pop_front();
+			_retry_count = 0;
 			if (_moves[level].size() > 0) {
 				p = Coordinate(ix, _moves[level].front());
 			} else {

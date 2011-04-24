@@ -17,10 +17,13 @@ namespace analyzer {
 
 		void analyze(void);
 		void parseMessages(const std::string& messages);
+		void actionFailed();
 
 	private:
 		std::vector<std::deque<Point> > _moves;
 		std::map<int, int> _levelmap;
+		int _retry_count;
+		int _retry_turn;
 
 		void addMoves(int level, Point pos, const std::string& moves);
 	};
