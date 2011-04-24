@@ -17,7 +17,6 @@ namespace analyzer {
 
 		void analyze(void);
 		void parseMessages(const std::string& messages);
-		void actionFailed();
 
 	private:
 		std::vector<std::deque<Point> > _moves;

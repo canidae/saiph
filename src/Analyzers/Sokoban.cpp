@@ -261,22 +261,6 @@ void Sokoban::addMoves(int level, Point pos, const string& moves) {
 	}
 }
 
-void Sokoban::actionFailed() {
-	map<int, int>::iterator l = _levelmap.find(Saiph::position().level());
-	if (l == _levelmap.end())
-		return;
-	if (_moves[l->second].empty())
-		return;
-	if (World::level().tile(_moves[l->second].front()).symbol() == UNKNOWN_TILE_UNPASSABLE) {
-		Debug::custom(name()) << "Failed to push boulder" << endl;
-		if (_retry_count < RETRY_COUNT) {
-			World::level().tile(_moves[l->second].front()).symbol(BOULDER);
-			++_retry_count;
-			_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
-		}
-	}
-}
-
 void Sokoban::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_PERHAPS_THATS_WHY) != string::npos) {
 		/* monster blocking the way, should be marked as "I", no handling for the time being */
@@ -359,6 +343,15 @@ void Sokoban::analyze() {
 			if (tile.symbol() == BOULDER) {
 				/* pushing boulder */
 				Debug::custom(name()) << "Pushing a boulder: " << tile << endl;
+			} else if (tile.symbol() == UNKNOWN_TILE_UNPASSABLE) {
+				Debug::custom(name()) << "Failed to push boulder" << endl;
+				if (_retry_count < RETRY_COUNT) {
+					tile.symbol(BOULDER);
+					++_retry_count;
+					_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
+				} else {
+					return;
+				}
 			} else {
 				/* uh, not good at all */
 				Debug::custom(name()) << "Wanted to move on to an unpassable non-boulder square: " << tile << endl;
