@@ -127,7 +127,7 @@ void Fight::analyze() {
 		if (m->second.symbol() == PET)
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
-			continue; // don't attack friendlies except dwarfs
+			continue; // don't attack friendlies except dwarves
 		else if (m->second.symbol() == 'm' && m->second.color() == BLUE && Saiph::experience() < 3)
 			continue; // below level three, let strange objects be
 		else if (m->second.symbol() == 'n' && (m->second.lastSeen() - m->second.lastMoved()) >= 3)

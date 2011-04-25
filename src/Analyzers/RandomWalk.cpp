@@ -6,7 +6,7 @@
 #include "Tile.h"
 #include "World.h"
 #include "Actions/Move.h"
-#include "Actions/Rest.h"
+#include "Actions/Search.h"
 
 using namespace analyzer;
 
@@ -60,5 +60,5 @@ void RandomWalk::analyze() {
 	if (t.cost() < UNPASSABLE)
 		World::setAction(static_cast<action::Action*> (new action::Move(this, t, 1)));
 	else
-		World::setAction(static_cast<action::Action*> (new action::Rest(this, 1)));
+		World::setAction(static_cast<action::Action*> (new action::Search(this, 1)));
 }
