@@ -6,6 +6,9 @@
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Move.h"
+#include "Actions/Search.h"
+#include "Actions/PutOn.h"
+#include "Actions/Remove.h"
 #include "Actions/ApplyInDirection.h"
 #include "Events/WantItems.h"
 #include "Events/GotDiggingTool.h"
@@ -48,6 +51,42 @@ void Medusa::analyze() {
 		} else if (t.cost() <= UNPASSABLE) {
 			World::setAction(new action::Move(this, t, action::Move::calculatePriority(PRIORITY_MEDUSA_DIG_DOWN, t.cost())));
 		}
+	}
+
+	if (_medusa_level >= 0 && World::level().depth() == World::level(_medusa_level).depth() + 1 && !_medusa_killed && !World::level().symbols(STAIRS_UP).empty()) {
+		Tile stairs = World::shortestPath(World::level().symbols(STAIRS_UP).begin()->first);
+		unsigned char blinder_key = ILLEGAL_ITEM;
+		for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+			if (i->second.name() == "blindfold" || i->second.name() == "towel")
+				blinder_key = i->first;
+		}
+		if (stairs.direction() != NOWHERE) {
+			World::setAction(new action::Move(this, stairs, PRIORITY_MEDUSA_KILL_MEDUSA));
+		} else if (!Saiph::blind() && blinder_key != ILLEGAL_ITEM) {
+			World::setAction(new action::PutOn(this, blinder_key, PRIORITY_MEDUSA_KILL_MEDUSA));
+		} else { /* already blind, or no blindfold (we'll probably die...) */
+			_fighting_medusa = true; // TODO move this to actionCompleted somehow
+			_medusa_done_turn = World::turn() + 20;
+			stairs.direction(UP);
+			World::setAction(new action::Move(this, stairs, PRIORITY_MEDUSA_KILL_MEDUSA));
+		}
+	}
+
+	if (Inventory::keyForSlot(SLOT_EYES) != ILLEGAL_ITEM && _medusa_killed) {
+		World::setAction(new action::Remove(this, Inventory::keyForSlot(SLOT_EYES), PRIORITY_MEDUSA_KILL_MEDUSA));
+	}
+
+	if (Saiph::position().level() == _medusa_level && _fighting_medusa) {
+		for (map<Point,Monster>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
+			if (i->second.visible() && (i->second.symbol() == 'I' || (i->second.symbol() == '@' && i->second.color() == BOLD_GREEN)))
+				_medusa_done_turn = World::turn() + 20;
+		}
+		if (unsigned(World::turn()) > _medusa_done_turn) {
+			_medusa_killed = true;
+			_fighting_medusa = false;
+			Debug::custom(name()) << "Medusa seems dead." << endl;
+		}
+		World::setAction(new action::Search(this, PRIORITY_MEDUSA_KILL_MEDUSA));
 	}
 }
 

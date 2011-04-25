@@ -13,6 +13,8 @@ identified uncursed pick-axe
 12 +0 daggers
 .
 stats 18 16 16 7 7 9
+skill 7 4
+skill 1 4
 level 12
 goto medusa
 seal
