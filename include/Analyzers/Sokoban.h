@@ -26,7 +26,7 @@ namespace analyzer {
 		int _retry_count;
 		int _retry_turn;
 
-		void addMoves(int level, Point pos, const std::string& moves);
+		void addMoves(int level, Point& boulder, const std::string& moves);
 	};
 }
 #endif
