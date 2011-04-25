@@ -25,6 +25,7 @@ namespace analyzer {
 		std::map<int, int> _levelmap;
 		int _retry_count;
 		int _retry_turn;
+		bool _given_up;
 
 		void addMoves(int level, Point& boulder, const std::string& moves);
 	};

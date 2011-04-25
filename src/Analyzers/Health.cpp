@@ -12,7 +12,7 @@
 #include "Actions/Look.h"
 #include "Actions/Pray.h"
 #include "Actions/Eat.h"
-#include "Actions/Rest.h"
+#include "Actions/Search.h"
 #include "Data/UnicornHorn.h"
 #include "Events/Beatify.h"
 #include "Events/ChangedInventoryItems.h"
@@ -96,7 +96,7 @@ void Health::analyze() {
 				if (eq.count() < 3)
 					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_HEALTH_REST_FOR_HP_HIGH, (eq.count() > 0))));
 				else
-					World::setAction(static_cast<action::Action*> (new action::Rest(this, PRIORITY_HEALTH_REST_FOR_HP_HIGH)));
+					World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_HEALTH_REST_FOR_HP_HIGH)));
 			}
 			/* TODO: handle digged/burned elbereth */
 		}

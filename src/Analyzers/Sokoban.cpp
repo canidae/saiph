@@ -16,7 +16,7 @@
 using namespace analyzer;
 using namespace std;
 
-Sokoban::Sokoban() : Analyzer("Sokoban"), _retry_count(0), _retry_turn(-1) {
+Sokoban::Sokoban() : Analyzer("Sokoban"), _retry_count(0), _retry_turn(-1), _given_up(false) {
 	/* 8 sokoban levels */
 	_moves.resize(8);
 
@@ -394,8 +394,9 @@ void Sokoban::parseMessages(const string& messages) {
 }
 
 void Sokoban::analyze() {
-	if (World::currentPriority() >= SOKOBAN_SOLVE_PRIORITY)
+	if (_given_up || World::currentPriority() >= SOKOBAN_SOLVE_PRIORITY)
 		return;
+
 	if (_retry_turn > int(World::turn())) {
 		// We don't want the normal desparation actions running - we aren't that desparate.
 		World::setAction(static_cast<action::Action*> (new action::Search(this, SOKOBAN_REST_PRIORITY)));
@@ -408,7 +409,10 @@ void Sokoban::analyze() {
 		if (lev.branch() != BRANCH_SOKOBAN)
 			continue;
 
-		int level = _levelmap[ix] - 1;
+		int level = -1;
+		/* we need to check if the entry exists, otherwise we get the default value (0), which cause issues */
+		if (_levelmap.find(ix) != _levelmap.end())
+			level = _levelmap[ix];
 		if (level < 0) {
 			for (int s = 0; s < (int) _moves.size(); ++s) {
 				if (_moves[s].size() == 0)
@@ -420,7 +424,8 @@ void Sokoban::analyze() {
 				if (lev.tile(b).symbol() != BOULDER)
 					continue; // expected boulder, can't be this level
 				/* this must be it */
-				_levelmap[ix] = (level = s) + 1;
+				level = s;
+				_levelmap[ix] = level;
 				Debug::custom(name()) << "Recognized " << ix << " as sokoban level " << s << endl;
 				/* clear alternative level so we don't mistakenly identifies a later level as it */
 				_moves[s^1].clear();
@@ -466,6 +471,9 @@ void Sokoban::analyze() {
 			} else {
 				/* look at that, we've solved this sokoban level */
 				Debug::custom(name()) << "Solved sokoban level " << level << endl;
+				/* let's "give up" solving sokoban, nothing left to solve */
+				if (level >= 6)
+					_given_up = true;
 				continue;
 			}
 		}
@@ -486,13 +494,19 @@ void Sokoban::analyze() {
 					++_retry_count;
 					_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
 				} else {
+					_given_up = true;
 					return;
 				}
 			} else {
 				/* uh, not good at all */
 				Debug::custom(name()) << "Wanted to push a non-boulder: " << lev.tile(bopos) << endl;
+				_given_up = true;
 				return;
 			}
+		} else if (tile.cost() == UNPASSABLE) {
+			/* possibly monster in the way */
+			Debug::custom(name()) << "Tried to move on to an unpassable tile: " << lev.tile(bopos) << endl;
+			return;
 		} else {
 			/* probably moving to correct point before pushing boulder */
 			Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
@@ -502,7 +516,7 @@ void Sokoban::analyze() {
 
 	// odds and ends to make Sokoban work better - the loop above is the heart of exploration
 	// we count on the loop above to assign level IDs
-	if (World::level().branch() == BRANCH_SOKOBAN && _levelmap[Saiph::position().level()] - 1 >= 2) {
+	if (World::level().branch() == BRANCH_SOKOBAN && _levelmap[Saiph::position().level()] >= 2) {
 		for (map<Point, int>::const_iterator pi = World::level().symbols(TRAP).begin(); pi != World::level().symbols(TRAP).end(); ++pi) {
 			Tile& tl = World::level().tile(pi->first);
 			if (tl.cost() == UNREACHABLE)
