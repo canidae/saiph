@@ -4,12 +4,18 @@
 #include "Globals.h"
 #include "Saiph.h"
 #include "World.h"
+#include "Coordinate.h"
 #include "Actions/Move.h"
+#include "Actions/Search.h"
+#include "Actions/Kick.h"
+
+#define RETRY_COUNT 10
+#define TURNS_BETWEEN_RETRIES 10
 
 using namespace analyzer;
 using namespace std;
 
-Sokoban::Sokoban() : Analyzer("Sokoban") {
+Sokoban::Sokoban() : Analyzer("Sokoban"), _retry_count(0), _retry_turn(-1) {
 	/* 8 sokoban levels */
 	_moves.resize(8);
 
@@ -220,40 +226,9 @@ Sokoban::Sokoban() : Analyzer("Sokoban") {
 
 void Sokoban::addMoves(int level, Point pos, const string& moves) {
 	/* translate moves to positions */
-	unsigned char prev = ILLEGAL_DIRECTION;
 	for (int m = 0; m < (int) moves.size(); ++m) {
-		if (prev != moves[m]) {
-			/* shifting direction, need to place her correctly */
-			/* place "pos" at boulder by repeating last move unless it's the first move */
-			if (prev != ILLEGAL_DIRECTION)
-				pos.moveDirection(moves[m - 1]);
-			/* then move point to opposite direction of the direction we're going to push */
-			switch (moves[m]) {
-			case N:
-				pos.moveSouth();
-				break;
-
-			case E:
-				pos.moveWest();
-				break;
-
-			case S:
-				pos.moveNorth();
-				break;
-
-			case W:
-				pos.moveEast();
-				break;
-
-			default:
-				Debug::error() << "Error parsing sokoban movement '" << moves[m] << "'" << endl;
-				break;
-			}
-			/* then add position to move to before continue pushing */
-			_moves[level].push_back(pos);
-			prev = (unsigned char) moves[m];
-		}
-		_moves[level].push_back(pos.moveDirection(moves[m]));
+		_moves[level].push_back(make_pair(pos, moves[m]));
+		pos.moveDirection(moves[m]);
 	}
 }
 
@@ -266,68 +241,123 @@ void Sokoban::parseMessages(const string& messages) {
 void Sokoban::analyze() {
 	if (World::currentPriority() >= SOKOBAN_SOLVE_PRIORITY)
 		return;
-	if (World::level().branch() != BRANCH_SOKOBAN)
+	if (_retry_turn > int(World::turn())) {
+		// We don't want the normal desparation actions running - we aren't that desparate.
+		World::setAction(static_cast<action::Action*> (new action::Search(this, SOKOBAN_REST_PRIORITY)));
 		return;
-	map<int, int>::iterator l = _levelmap.find(Saiph::position().level());
-	int level = -1;
-	if (l == _levelmap.end()) {
-		for (int s = 0; s < (int) _moves.size(); ++s) {
-			/* 2nd. entry should be a unique boulder for each level */
-			deque<Point>::iterator f = _moves[s].begin();
-			if (f == _moves[s].end() || ++f == _moves[s].end())
-				continue; // seems like this level is completed
-			if (World::level().tile(*f).symbol() != BOULDER)
-				continue; // expected boulder, can't be this level
-			/* this must be it */
-			_levelmap[Saiph::position().level()] = s;
-			level = s;
-			Debug::custom(name()) << "Recognized sokoban level " << s << endl;
-			break;
+	}
+
+	for (unsigned ix = 0; ix < World::levels().size(); ++ix) {
+		Level& lev = World::level(ix);
+
+		if (lev.branch() != BRANCH_SOKOBAN)
+			continue;
+
+		int level = _levelmap[ix] - 1;
+		if (level < 0) {
+			for (int s = 0; s < (int) _moves.size(); ++s) {
+				if (_moves[s].size() == 0 || _moves[s^1].size() == 0)
+					continue; // seems like this level is completed
+				/* 1st. entry should be a unique boulder for each level */
+				deque<pair<Point, char> >::iterator f = _moves[s].begin();
+				if (lev.tile(f->first).symbol() != BOULDER)
+					continue; // expected boulder, can't be this level
+				/* this must be it */
+				_levelmap[ix] = (level = s) + 1;
+				Debug::custom(name()) << "Recognized " << ix << " as sokoban level " << s << endl;
+				for (; f != _moves[s].end(); ++f) {
+					unsigned char f1 = lev.tile(f->first.atDirection(Point::oppositeDirection(f->second))).symbol();
+					unsigned char f2 = lev.tile(f->first).symbol();
+					unsigned char f3 = lev.tile(f->first.atDirection(f->second)).symbol();
+					if (f1 == HORIZONTAL_WALL || f2 == HORIZONTAL_WALL || f3 == HORIZONTAL_WALL || f1 == VERTICAL_WALL || f2 == VERTICAL_WALL || f3 == VERTICAL_WALL)
+						Debug::custom(name()) << "Sanity check failed, move " << f->first << "," << f->second << " requires moving through a wall!" << endl;
+				}
+				break;
+			}
 		}
-	} else {
-		/* already discovered this sokoban level */
-		level = l->second;
-	}
-	if (level == -1) {
-		/* huh? */
-		Debug::warning() << "Sokoban was unable to recognize this level" << endl;
-		return;
-	}
-	if (_moves[level].size() <= 0) {
-		/* hmmm */
-		Debug::custom(name()) << "Odd, this shouldn't happen, did we solve sokoban level " << level << "?" << endl;
-		return;
-	}
-	/* go to next point */
-	Point p = _moves[level].front();
-	if (p == Saiph::position()) {
-		/* we're standing at the next point, erase it and go to next */
-		_moves[level].pop_front();
-		if (_moves[level].size() > 0) {
-			p = _moves[level].front();
-		} else {
-			/* look at that, we've solved this sokoban level */
-			Debug::custom(name()) << "Solved sokoban level " << level << endl;
-			return;
+		if (level < 0) {
+			/* huh? */
+			Debug::warning() << "Sokoban was unable to recognize level " << ix << endl;
+			continue;
 		}
-	}
-	Tile& tile = World::shortestPath(p);
-	if (tile.cost() == UNREACHABLE) {
-		/* this is bad */
-		Debug::custom(name()) << "Unable to move to " << tile << endl;
-		return;
-	} else if (tile.cost() == UNPASSABLE) {
-		if (tile.symbol() == BOULDER) {
-			/* pushing boulder */
-			Debug::custom(name()) << "Pushing a boulder: " << tile << endl;
-		} else {
+		if (_moves[level].size() <= 0) {
+			/* hmmm */
+			Debug::custom(name()) << "Odd, this shouldn't happen, did we solve sokoban level " << level << "?" << endl;
+			map<Point, int>::const_iterator pi = lev.symbols(STAIRS_UP).begin();
+			if (pi != lev.symbols(STAIRS_UP).end() && pi->second == UNKNOWN_SYMBOL_VALUE) {
+				Debug::custom(name()) << "Heading to unvisited Sokoban level at depth " << lev.depth() - 1 << endl;
+				Tile tile = World::shortestPath(Coordinate(ix, pi->first));
+				if (tile.cost() >= UNPASSABLE)
+					continue;
+				if (tile.direction() == NOWHERE)
+					tile.direction(UP);
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
+			}
+			continue;
+		}
+
+		/* go to next point */
+		pair<Point, char> next_move = _moves[level].front();
+		unsigned char symbol = lev.tile(next_move.first).symbol();
+
+		if (Level::isPassable(symbol)) {
+			// the move looks complete, erase it and go to next
+			_moves[level].pop_front();
+			_retry_count = 0;
+			if (_moves[level].size() > 0) {
+				next_move = _moves[level].front();
+				symbol = lev.tile(next_move.first).symbol();
+			} else {
+				/* look at that, we've solved this sokoban level */
+				Debug::custom(name()) << "Solved sokoban level " << level << endl;
+				continue;
+			}
+		}
+		if (symbol == UNKNOWN_TILE_UNPASSABLE) {
+			Debug::custom(name()) << "Failed to push boulder" << endl;
+			if (_retry_count < RETRY_COUNT) {
+				lev.tile(next_move.first).symbol(BOULDER);
+				++_retry_count;
+				_retry_turn = World::turn() + TURNS_BETWEEN_RETRIES;
+			} else {
+				goto last_solver;
+			}
+		} else if (symbol != BOULDER) {
 			/* uh, not good at all */
-			Debug::custom(name()) << "Wanted to move on to an unpassable non-boulder square: " << tile << endl;
-			return;
+			Debug::custom(name()) << "Wanted to push a non-boulder: " << lev.tile(next_move.first) << endl;
+			goto last_solver;
 		}
-	} else {
-		/* probably moving to correct point before pushing boulder */
-		Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
+		Tile tile = World::shortestPath(Coordinate(ix, next_move.first.atDirection(Point::oppositeDirection(next_move.second))));
+		if (tile.cost() >= UNPASSABLE) {
+			/* this is bad */
+			Debug::custom(name()) << "Unable to move to " << tile << endl;
+			goto last_solver;
+		} else if (tile.direction() == NOWHERE) {
+			/* pushing boulder */
+			tile.direction(next_move.second);
+			Debug::custom(name()) << "Pushing a boulder: " << lev.tile(next_move.first) << " (" << next_move.second << ")" << endl;
+		} else {
+			/* probably moving to correct point before pushing boulder */
+			Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
+		}
+		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
 	}
-	World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
+last_solver:
+
+	// odds and ends to make Sokoban work better - the loop above is the heart of exploration
+	// we count on the loop above to assign level IDs
+	if (World::level().branch() == BRANCH_SOKOBAN && _levelmap[Saiph::position().level()] - 1 >= 2) {
+		for (map<Point,int>::const_iterator pi = World::level().symbols(TRAP).begin(); pi != World::level().symbols(TRAP).end(); ++pi) {
+			Tile& tl = World::level().tile(pi->first);
+			if (tl.cost() == UNREACHABLE)
+				continue;
+			if (World::view(pi->first) == '^')
+				continue;
+			Debug::custom(name()) << "Something maybe worth clearing at " << tl << endl;
+			if (Point::gridDistance(Saiph::position(), pi->first) > 1)
+				World::setAction(static_cast<action::Action*> (new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+			else if (tl.monster() == ILLEGAL_MONSTER)
+				World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+		}
+	}
 }

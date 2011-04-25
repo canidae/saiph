@@ -5,6 +5,9 @@
 
 using namespace std;
 
+/* static data */
+const unsigned char Point::directions[] = { NW, N, NE, E, SE, S, SW, W };
+
 /* constructors/destructor */
 Point::Point(int row, int col) : _row(row), _col(col) {
 }
@@ -63,6 +66,12 @@ Point& Point::moveDirection(unsigned char direction) {
 	}
 }
 
+Point Point::atDirection(unsigned char direction) const {
+	Point n = *this;
+	n.moveDirection(direction);
+	return n;
+}
+
 Point& Point::moveNorthwest() {
 	--_row;
 	--_col;
@@ -109,6 +118,37 @@ Point& Point::moveWest() {
 
 int Point::gridDistance(const Point& p1, const Point& p2) {
 	return max(abs(p1.row() - p2.row()), abs(p1.col() - p2.col()));
+}
+
+unsigned char Point::oppositeDirection(unsigned char direction) {
+	switch (direction) {
+	case NW:
+		return SE;
+
+	case N:
+		return S;
+
+	case NE:
+		return SW;
+
+	case E:
+		return W;
+
+	case SE:
+		return NW;
+
+	case S:
+		return N;
+
+	case SW:
+		return NE;
+
+	case W:
+		return E;
+
+	default:
+		return direction;
+	}
 }
 
 /* operator overloading */

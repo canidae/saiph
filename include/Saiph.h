@@ -69,7 +69,6 @@ public:
 	static unsigned long long removeExtrinsics(unsigned long long extrinsics);
 	static int lastPrayed();
 	static int lastPrayed(int last_prayed);
-	static bool likesShields();
 	static const std::string& name();
 	static const std::string& race();
 	static int role();

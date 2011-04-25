@@ -213,6 +213,11 @@ void Inventory::setSlot(unsigned char key, const Item& item) {
 			_slots[SLOT_AMULET] = key;
 			return;
 		}
+		/* eyepiece */
+		if (item.name() == "blindfold" || item.name() == "towel" || item.name() == "lenses" || item.name() == "Eyes of the Overworld") {
+			_slots[SLOT_EYES] = key;
+			return;
+		}
 	} else if (item.additional() == "wielded") {
 		_slots[SLOT_WEAPON] = key;
 	} else if (item.additional().find("weapon in ") == 0) {
