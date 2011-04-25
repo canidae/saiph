@@ -88,6 +88,7 @@ set(HEADER_FILES
 	include/Analyzers/Health.h
 	include/Analyzers/Lamp.h
 	include/Analyzers/Loot.h
+	include/Analyzers/Medusa.h
 	include/Analyzers/MonsterInfo.h
 #	include/Analyzers/Passtune.h
 #	include/Analyzers/Potion.h
@@ -248,6 +249,7 @@ set(SOURCE_FILES
 	src/Analyzers/Health.cpp
 	src/Analyzers/Lamp.cpp
 	src/Analyzers/Loot.cpp
+	src/Analyzers/Medusa.cpp
 	src/Analyzers/MonsterInfo.cpp
 #	src/Analyzers/Passtune.cpp
 #	src/Analyzers/Potion.cpp
