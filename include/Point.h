@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-#define NUM_DIRS 8
-
 class Point {
 public:
 	Point(int row = -1, int col = -1);
@@ -15,7 +13,6 @@ public:
 	int row(int row);
 	bool insideMap() const;
 	Point& moveDirection(unsigned char direction);
-	Point atDirection(unsigned char direction) const;
 	Point& moveNorthwest();
 	Point& moveNorth();
 	Point& moveNortheast();
@@ -33,9 +30,6 @@ public:
 	bool operator!=(const Point& p) const;
 
 	static int gridDistance(const Point& p1, const Point& p2);
-	static unsigned char oppositeDirection(unsigned char direction);
-
-	static const unsigned char directions[NUM_DIRS];
 
 private:
 	int _row;
