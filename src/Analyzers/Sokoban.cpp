@@ -256,22 +256,15 @@ void Sokoban::analyze() {
 		int level = _levelmap[ix] - 1;
 		if (level < 0) {
 			for (int s = 0; s < (int) _moves.size(); ++s) {
-				if (_moves[s].size() == 0 || _moves[s^1].size() == 0)
-					continue; // seems like this level is completed
 				/* 1st. entry should be a unique boulder for each level */
 				deque<pair<Point, char> >::iterator f = _moves[s].begin();
+				if (f == _moves[s].end())
+					continue; // seems like this level is completed
 				if (lev.tile(f->first).symbol() != BOULDER)
 					continue; // expected boulder, can't be this level
 				/* this must be it */
 				_levelmap[ix] = (level = s) + 1;
 				Debug::custom(name()) << "Recognized " << ix << " as sokoban level " << s << endl;
-				for (; f != _moves[s].end(); ++f) {
-					unsigned char f1 = lev.tile(f->first.atDirection(Point::oppositeDirection(f->second))).symbol();
-					unsigned char f2 = lev.tile(f->first).symbol();
-					unsigned char f3 = lev.tile(f->first.atDirection(f->second)).symbol();
-					if (f1 == HORIZONTAL_WALL || f2 == HORIZONTAL_WALL || f3 == HORIZONTAL_WALL || f1 == VERTICAL_WALL || f2 == VERTICAL_WALL || f3 == VERTICAL_WALL)
-						Debug::custom(name()) << "Sanity check failed, move " << f->first << "," << f->second << " requires moving through a wall!" << endl;
-				}
 				break;
 			}
 		}
