@@ -134,17 +134,35 @@ void Armor::onEvent(event::Event* const event) {
 		}
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
-		if (e->safeStash() && World::shortestPath(ALTAR).cost() >= UNPASSABLE) {
-			/* on safe stash and can't path to altar, drop */
-		} else if (Saiph::encumbrance() < BURDENED && (!e->safeStash() || World::shortestPath(ALTAR).cost() < UNPASSABLE)) {
-			/* we're not burdened and not on a safe stash or we can't reach an altar, loot armor */
-			/* if we are on a safe stash and can't reach an altar then we will drop armor */
-			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (betterThanCurrent(i->second))
-					i->second.want(i->second.count());
-			}
-		}
-	}
+                if (Saiph::encumbrance() >= BURDENED) {
+                    /* burdened and beatifying, (and is on a stash): pick up */
+                    if(World::shortestPath(ALTAR).cost() < UNPASSABLE){
+                        if(Saiph::encumbrance() < STRESSED){
+                            if(e->safeStash()){
+                                for(map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i){
+                                    if (betterThanCurrent(i->second))
+                                        i->second.want(i->second.count());
+                                }
+                            }
+                        }
+                        /* burdened and not beatifying: stash */
+                    } else  {
+                        if(e->safeStash()){
+                        }
+                    }
+                /* not burdened */
+                } else {
+                    /* and not on safe stash: pick up */
+                    if(!e->safeStash()){
+                        /* ^ this also means 'drop at every safe stash if not burdened' */
+                        /* to avoid this, check whether on upstair, without stashing */
+                        for(map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i){
+                            if (betterThanCurrent(i->second))
+                                i->second.want(i->second.count());
+                        }
+                    }
+                }
+        }
 }
 
 /* private methods */
