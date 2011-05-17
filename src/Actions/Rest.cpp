@@ -3,7 +3,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Rest::Rest(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _rest("16s", priority) {
+Rest::Rest(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _rest("s", priority) {
 }
 
 Rest::~Rest() {

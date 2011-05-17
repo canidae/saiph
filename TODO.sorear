@@ -14,11 +14,7 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Try to track nutrition better, so we know when we can eat eyes
 
-* More debug interfaces: display any level
-
 * A TAEB-like item possibilities tracker?
-
-* Understand whatever makes saiphs quit sokoban.  [It's the lack of any "go to sokoban" code]
 
 * Make a branch to experiment with "item actions": Analyzers can say not just "go to a point and do something", but also "get an item and do something".  This simplifies Loot's job quite a bit, as it will only have to deal with items that some analyzer wants to keep in inventory "just in case", like unihorns.
 
@@ -39,14 +35,7 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Loot boxes
 
-* action::Loot is bogus, it will fail if there's a question up when ':' needs to be used
-
 * Dispose of trolls
-
-* Optimization: When MonsterInfo et al produce high-priority actions, don't take one, take them all and don't analyze until they're all done.
-  - Also, mark some analyzers as "run this later in the cycle, and don't run it at all if there are 1000+ actions pending", or just have an earlyAnalyze method
-  - do not remember mobs if the level is completely open
-  - experiment with allowing inlining for trivial accessors
 
 * sorph ate a mimic in a shop, probably because it was mimicing stairs down and overwrote SHOP_TILE
   - the right fix here is to make an in_shop bitfield, because it's not mutually exclusive with anything
@@ -63,8 +52,9 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Experiment with a lastChance() / Saiph::canDig() way to handle digging and levitating over water.
 
+* canidae has talked about merging Armor and Weapon
+
 * Queue:
-  - Saiph::likesShields() and #twoweapon
   - PoGL / wraith corpse improvements
   - Medusa analyzer.
 

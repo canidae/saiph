@@ -66,6 +66,9 @@ std::string World::_shadow_rhs[50];
 
 static struct termios _save_termios, _current_termios;
 static int _current_speed;
+int World::_display_level = -1;
+map<char, pair<void*, World::drawfunc> > World::_draw_funcs;
+map<char, pair<void*, World::drawfunc> >::iterator World::_current_draw_func;
 
 const char* World::_ansi_colors[] = {
 	/*   0 */ "0", "0;1", "", "", "", "", "", "0;7", "", "",
@@ -165,6 +168,11 @@ void World::init(const string& logfile, int connection_type) {
 	Level::init();
 	Analyzer::init();
 
+	registerDrawFunc('n', &drawNormal, NULL);
+	registerDrawFunc('c', &drawCosts, NULL);
+	registerDrawFunc('d', &drawDirections, NULL);
+	_current_draw_func = _draw_funcs.find('n');
+
 	_connection = Connection::create(connection_type);
 	if (_connection == NULL) {
 		cout << "ERROR: Don't know what interface this is: " << connection_type << endl;
@@ -196,6 +204,10 @@ void World::destroy() {
 void World::registerAnalyzer(Analyzer* const analyzer) {
 	Debug::info() << "Registering analyzer " << analyzer->name() << endl;
 	_analyzers.push_back(analyzer);
+}
+
+void World::registerDrawFunc(char key, drawfunc fnc, void* cookie) {
+	_draw_funcs[key] = make_pair(cookie, fnc);
 }
 
 void World::unregisterAnalyzer(Analyzer* const analyzer) {
@@ -585,6 +597,38 @@ void World::doCommands() {
 			_current_speed = SPEED_FAST;
 			break;
 
+		case 'd':
+			setKeyWait(true);
+			if (read(0, &cmd, 1) <= 0)
+				break;
+			if (_display_level < 0)
+				_display_level = Saiph::position().level();
+			_current_draw_func = _draw_funcs.find(cmd);
+			refresh();
+			break;
+
+		case '<':
+			if (_display_level < 0)
+				_display_level = Saiph::position().level();
+			if (_display_level) {
+				--_display_level;
+				refresh();
+			}
+			break;
+
+		case '>':
+			if (_display_level < 0)
+				_display_level = Saiph::position().level();
+			if (_display_level < int(_levels.size()) - 1) {
+				++_display_level;
+				refresh();
+			}
+			break;
+
+		case 12:
+			refresh();
+			break;
+
 		case 'q':
 		case 'Q':
 			executeCommand(string(1, (char) 27));
@@ -604,9 +648,6 @@ void World::run(int speed) {
 	initTermios();
 	setKeyWait(speed == SPEED_PAUSE);
 	while (true) {
-		if (_current_speed == SPEED_SLOW)
-			usleep(200000);
-		doCommands();
 		/* check if we're in the middle of an action.
 		 * Inventory and Level may send events that analyzers react on and set an action,
 		 * so we check if we're in the middle of an action here and remember it for later.
@@ -634,8 +675,12 @@ void World::run(int speed) {
 				_branches[level().branch()] = Saiph::position();
 
 			/* dump maps */
+			_display_level = -1;
 			dumpMaps();
 		}
+		if (_current_speed == SPEED_SLOW)
+			usleep(200000);
+		doCommands();
 
 		/* append this turn's messages to the buffer.
 		 * if we're in a multi-message action, the messages will be queued for actionCompleted */
@@ -685,12 +730,17 @@ void World::run(int speed) {
 				executeCommand(string(1, (char) 27));
 				continue;
 			} else {
-				Debug::warning() << "I have no idea what to do... Quitting" << endl;
+				Debug::warning() << "I have no idea what to do... Searching 16 times" << endl;
+				cout << (unsigned char) 27 << "[1;82H";
+				cout << (unsigned char) 27 << "[K"; // erase everything to the right
+				cout << "No idea what to do: 16s";
+				/* return cursor back to where it was */
+				cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
+				cout.flush();
+				++World::_internal_turn; // will cost a turn
 				_last_action_id = NO_ACTION;
-				executeCommand(string(1, (char) 27));
-				executeCommand(QUIT);
-				executeCommand(string(1, YES));
-				return;
+				executeCommand("16s");
+				continue;
 			}
 		}
 
@@ -739,6 +789,24 @@ void World::run(int speed) {
 }
 
 /* private methods */
+void World::refresh() {
+	cout << "\033[2J";
+	_cout_last_color = -1;
+	_cout_cursor.row(-1);
+	for (int row = 0; row < ROWS; ++row) {
+		coutGoto(1 + row, 1);
+		for (int col = 0; col < COLS; ++col)
+			coutOneChar(_color[row][col], _view[row][col]);
+	}
+	memset(_shadow_map_dump, 0, sizeof _shadow_map_dump);
+	for (int row = 0; row < 50; ++row)
+		_shadow_rhs[row].clear();
+	coutSetColor(NO_COLOR);
+	dumpMaps();
+	coutGoto(_cursor.row() + 1, _cursor.col() + 1);
+	cout.flush();
+}
+
 void World::addChangedLocation(const Point& point) {
 	coutGoto(1 + point.row(), 1 + point.col());
 	coutOneChar(_color[point.row()][point.col()], _view[point.row()][point.col()]);
@@ -871,30 +939,79 @@ void World::coutRhsLine(int row, const std::string& line) {
 	}
 }
 
+void World::drawNormal(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {
+	const Tile& t = lv.tile(p);
+
+	if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+		color = BOLD_MAGENTA;
+		symbol = '@';
+	} else if (t.monster() != ILLEGAL_MONSTER) {
+		color = t.monster() == _view[p.row()][p.col()] ? BOLD_RED : BOLD_YELLOW;
+		symbol = t.monster();
+	} else if (t.symbol() > 31 && t.symbol() < 127) {
+		color = NO_COLOR;
+		symbol = t.symbol();
+	} else {
+		color = BOLD_CYAN;
+		symbol = '?';
+	}
+}
+
+void World::drawCosts(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {
+	Tile& t = lv.tile(p);
+	color = NO_COLOR;
+	if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+		color = MAGENTA;
+		symbol = '@';
+	} else if (t.direction() != ILLEGAL_DIRECTION) {
+		unsigned cost = t.cost();
+		if (cost < 140) {
+			color = BOLD_RED + (cost / 20);
+			symbol = 'a' + int(cost % 20);
+		} else if (cost < 1540) {
+			color = RED + ((cost - 140) / 200);
+			symbol = 'a' + int(((cost - 140) / 10) % 20);
+		} else if (cost < UNPASSABLE) {
+			color = WHITE;
+			symbol = 't';
+		} else if (cost == UNPASSABLE) {
+			color = WHITE;
+			symbol = 'u';
+		} else {
+			color = WHITE;
+			symbol = 'U';
+		}
+	} else
+		symbol = t.symbol();
+}
+
+void World::drawDirections(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {
+	Tile& t = lv.tile(p);
+	color = NO_COLOR;
+	if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+		color = MAGENTA;
+		symbol = '@';
+	} else if (t.direction() != ILLEGAL_DIRECTION)
+		symbol = t.direction();
+	else
+		symbol = t.symbol();
+}
+
 void World::dumpMap(Level& lv) {
 	/* monsters and map as saiph sees it */
 	Point p;
 	_cout_last_color = -1;
 	_cout_cursor.row(-1);
+	if (_current_draw_func == _draw_funcs.end())
+		_current_draw_func = _draw_funcs.find('n');
+
+	void* cookie = _current_draw_func->second.first;
+	drawfunc df = _current_draw_func->second.second;
+	unsigned char symbol, color;
+
 	for (p.row(MAP_ROW_BEGIN); p.row() <= MAP_ROW_END; p.moveSouth()) {
 		for (p.col(MAP_COL_BEGIN); p.col() <= MAP_COL_END; p.moveEast()) {
-			const Tile& t = lv.tile(p);
-			unsigned char color;
-			unsigned char symbol;
-
-			if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
-				color = BOLD_MAGENTA;
-				symbol = '@';
-			} else if (t.monster() != ILLEGAL_MONSTER) {
-				color = t.monster() == _view[p.row()][p.col()] ? BOLD_RED : BOLD_YELLOW;
-				symbol = t.monster();
-			} else if (t.symbol() > 31 && t.symbol() < 127) {
-				color = NO_COLOR;
-				symbol = t.symbol();
-			} else {
-				color = BOLD_CYAN;
-				symbol = '?';
-			}
+			df(cookie, lv, p, symbol, color);
 
 			unsigned char* old = &_shadow_map_dump[p.row() - MAP_ROW_BEGIN][p.col() - MAP_COL_BEGIN][0];
 			if (symbol != old[0] || color != old[1]) {
@@ -905,22 +1022,6 @@ void World::dumpMap(Level& lv) {
 			}
 		}
 	}
-
-	/* path map */
-	/*
-	for (p.row = MAP_ROW_BEGIN; p.row <= MAP_ROW_END; ++p.row) {
-		cout << (unsigned char) 27 << "[" << p.row + 26 << ";1H";
-		for (p.col = MAP_COL_BEGIN; p.col <= MAP_COL_END; ++p.col) {
-			if (p.row == postion.row && p.col == Saiph::position().col)
-				cout << (unsigned char) 27 << "[35m@" << (unsigned char) 27 << "[m";
-			else if (levels[Saiph::position().level].pathmap[p.row][p.col].dir != ILLEGAL_DIRECTION)
-				//cout << (unsigned char) levels[Saiph::position().level].pathmap[p.row][p.col].dir;
-				cout << (char) (levels[Saiph::position().level].pathmap[p.row][p.col].cost % 64 + 48);
-			else
-				cout << getDungeonSymbol(p);
-		}
-	}
-	 */
 }
 
 void World::dumpMaps() {
@@ -934,19 +1035,25 @@ void World::dumpMaps() {
 	double fps = (double) _frame_count / seconds;
 	double tps = (double) _turn / seconds;
 	cout << (unsigned char) 27 << "[25;1H";
-	cout << "Frames/second: " << (unsigned char) 27 << "[32m";
-	cout << (int) fps << "." << (int) (fps * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-	cout << (unsigned char) 27 << "[25;26H";
-	cout << "Turns/second: " << (unsigned char) 27 << "[32m";
-	cout << (int) tps << "." << (int) (tps * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
-	cout << (unsigned char) 27 << "[25;51H";
-	cout << "Run time: " << (unsigned char) 27 << "[32m";
-	cout << (int) seconds << "." << (int) (seconds * 10) % 10;
-	cout << (unsigned char) 27 << "[0m     ";
+	if (_display_level == -1) {
+		cout << "Frames/second: " << (unsigned char) 27 << "[32m";
+		cout << (int) fps << "." << (int) (fps * 10) % 10;
+		cout << (unsigned char) 27 << "[0m     ";
+		cout << (unsigned char) 27 << "[25;26H";
+		cout << "Turns/second: " << (unsigned char) 27 << "[32m";
+		cout << (int) tps << "." << (int) (tps * 10) % 10;
+		cout << (unsigned char) 27 << "[0m     ";
+		cout << (unsigned char) 27 << "[25;51H";
+		cout << "Run time: " << (unsigned char) 27 << "[32m";
+		cout << (int) seconds << "." << (int) (seconds * 10) % 10;
+		cout << (unsigned char) 27 << "[0m     ";
+	} else {
+		ostringstream status;
+		status << "Currently displaying level id " << _display_level << " at depth " << level(_display_level).depth() << ", branch " << level(_display_level).branch();
+		cout << "\033[25;1H" << status.str() << string(' ', 80 - status.str().size());
+	}
 
-	dumpMap(level());
+	dumpMap(_display_level < 0 ? level() : level(_display_level));
 
 	/* status & inventory */
 	cout << "\033[m";

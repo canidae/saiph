@@ -127,7 +127,7 @@ void Fight::analyze() {
 		if (m->second.symbol() == PET)
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
-			continue; // don't attack friendlies except dwarfs
+			continue; // don't attack friendlies except dwarves
 		else if (m->second.symbol() == 'm' && m->second.color() == BLUE && Saiph::experience() < 3)
 			continue; // below level three, let strange objects be
 		else if (m->second.symbol() == 'n' && (m->second.lastSeen() - m->second.lastMoved()) >= 3)
@@ -260,3 +260,56 @@ void Fight::parseMessages(const string& messages) {
 		}
 	}
 }
+
+// The return value from this is intended to represent the per-1000 damage that we'll get standing here and fighting.  It is of course extremely approximate.
+int Fight::pointVulnerability(const Point& pt, int elbereth_factor, bool isCrowd, bool isStalk, bool isFast) {
+	Tile& t = World::level().tile(pt);
+	int vuln = 1000;
+
+	if (t.symbol() == FOUNTAIN || t.symbol() == GRAVE || t.symbol() == ALTAR || t.symbol() == WATER || t.symbol() == LAVA)
+		vuln += 9 * elbereth_factor; /* can't E here */
+	if (!isStalk && (t.symbol() == STAIRS_UP || t.symbol() == STAIRS_DOWN))
+		vuln /= 3; /* easy escape, very desirable */
+
+	int open_neighbors = 0;
+	for (int row = pt.row() - 1; row <= pt.row() + 1; ++row) {
+		for (int col = pt.col() - 1; col <= pt.col() + 1; ++col) {
+			if (Level::isPassable(World::level().tile(Point(row,col)).symbol()))
+				++open_neighbors;
+		}
+	}
+
+	/* TODO: Weight open neighbors 4/2/1 by direction relative to centroid of threat
+	   This will improve behavior in cases like this:
+	   .|..aa.
+	   ..@.aaa
+	   .|..aa.
+	 */
+
+	if (isCrowd)
+		vuln = (vuln * (2 + open_neighbors)) / 10;
+
+	vuln += t.distance() * (isFast ? 100 : 10);
+
+	return vuln;
+}
+/*
+void Fight::checkPanic() {
+	int threat = 0;
+	int threat_stalkers = 0;
+	int threat_eignorers = 0;
+	int threat_single = 0;
+	int threat_fast = 0;
+
+	// loop over mobs
+
+	// generate flags
+
+	int max_vulnerability = saiph_power * 1000 / threat;
+
+	if (pointVulnerability(Saiph::position(), ...) < max_vulnerability)
+		return;
+
+	// we're scared, find the closest safe enough point and go there
+}
+*/
