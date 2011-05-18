@@ -2,13 +2,14 @@
 #define ANALYZER_AMULET_H
 
 #include <set>
+#include <map>
 #include <string>
 #include "Analyzers/Analyzer.h"
 
 /* priorities */
 #define PRIORITY_AMULET_LOOT 400
 #define PRIORITY_AMULET_WEAR 400
-#define PRIORITY_AMULET_REMOVE_HARM 925
+#define PRIORITY_AMULET_REMOVE_HARM 1200
 /* bad amulet messages */
 #define STRANGULATION_5TTL "  It constricts your throat!  "
 // we don't use these...
@@ -32,9 +33,10 @@ namespace analyzer {
 
 	private:
 		unsigned char _amulet_key;
-
+		
 		bool wantItem(const Item& item);
-		void wearAmulet(const std::set<unsigned char>& keys);
+		unsigned char bestAmulet(const std::map<unsigned char, Item>& keys);
+		bool wearing(const std::string& name);
 	};
 }
 #endif

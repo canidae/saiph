@@ -44,28 +44,15 @@ void Amulet::parseMessages(const string& messages) {
 void Amulet::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
+		map<unsigned char, Item> k;
 		for (set<unsigned char>::iterator i = e->keys().begin(); i != e->keys().end(); ++i) {
-			Item item = Inventory::itemAtKey(*i);
-			if (item.beatitude() != CURSED && item.beatitude() != BEATITUDE_UNKNOWN && data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end()) {
-				if (item.name().find("strangulation") != string::npos && item.name().find("restful") != string::npos)
-					_amulet_key = *i;
-				break;
-			}
+			Item item = Inventory::items().find(*i)->second;
+			k.insert(pair<unsigned char, Item>(*i, item));
 		}
-		//todo: determine best amulet
+		_amulet_key = bestAmulet(k);
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
-		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if (data::Amulet::amulets().find(i->second.name()) == data::Amulet::amulets().end()) {
-				continue; // not an amulet
-			} else if (i->second.beatitude() == BEATITUDE_UNKNOWN && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
-				Beatify b(i->first, 175);
-				EventBus::broadcast(&b);
-			} else if ((i->second.beatitude() != CURSED) && data::Amulet::amulets().find(i->second.name()) != data::Amulet::amulets().end()) {
-				if (i->second.name().find("strangulation") == string::npos && i->second.name().find("restful") == string::npos)
-					_amulet_key = i->first;
-			}
-		}
+		_amulet_key = bestAmulet((e->items()));
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -77,34 +64,44 @@ void Amulet::onEvent(Event* const event) {
 
 /* private methods */
 bool Amulet::wantItem(const Item& item) {
-	if (item.name().find("strangulation") != string::npos && item.name().find("restful") != string::npos)
+	if (item.name().find("strangulation") != string::npos || item.name().find("restful") != string::npos)
+		return false;
+	if (item.beatitude() == CURSED)
 		return false;
 	return data::Amulet::amulets().find(item.name()) != data::Amulet::amulets().end();
 }
 
-void Amulet::wearAmulet(const set<unsigned char>& keys) {
-	/* FIXME: need to make this smarter, so we can handle both ChangedInventoryItems and ReceivedItems events */
-	if (Inventory::itemInSlot(SLOT_AMULET).beatitude() == CURSED)
-		return; // wearing a cursed amulet, no point trying to wear another amulet
-
-	/* find the best amulet */
-	unsigned char best_key = Inventory::keyForSlot(SLOT_AMULET);
-
-	for (set<unsigned char>::const_iterator k = keys.begin(); k != keys.end(); ++k) {
-		map<unsigned char, Item>::iterator i = Inventory::items().find(*k);
-		if (i == Inventory::items().end())
-			return; // huh? this can't happen
+unsigned char Amulet::bestAmulet(const map<unsigned char, Item>& keys) {
+	unsigned char reflection, life_saving, unchanging, unknown, ESP = ILLEGAL_ITEM;
+	reflection = life_saving = unchanging = unknown = ESP = ILLEGAL_ITEM;
+	for (map<unsigned char, Item>::const_iterator i = keys.begin(); i != keys.end(); ++i) {
 		map<const string, const data::Amulet*>::const_iterator a = data::Amulet::amulets().find(i->second.name());
 		if (a == data::Amulet::amulets().end())
-			return; // this is no amulet
-
-		/* TODO: is this amulet better than the one we wear? */
-		/* TODO: if we find a better amulet, take off current amulet and return */
+			continue;
+		if (i->second.name().find("reflection") != string::npos)
+			reflection = i->first;
+		else if (i->second.name().find("life saving") != string::npos)
+			life_saving = i->first;
+		else if (i->second.name().find("unchanging") != string::npos)
+			unchanging = i->first;
+		else if (i->second.name().find("ESP") != string::npos)
+			ESP = i->first;
+		unknown = i->first;
 	}
+	if (unchanging == ILLEGAL_ITEM)
+		unchanging = unknown;
+	Debug::info() << "refl: " << reflection << " ls : " << life_saving << endl;
+	// priorities: reflection > life saving > unchanging > ESP
+	if (wearing("silver dragon scale mail") || wearing("silver dragon scales"))
+		return (life_saving != ILLEGAL_ITEM) ? life_saving : (unchanging != ILLEGAL_ITEM) ? unchanging : ESP;
+	else
+		return (reflection != ILLEGAL_ITEM) ? reflection : (life_saving != ILLEGAL_ITEM) ? life_saving : unchanging;
+}
 
-	if (best_key == ILLEGAL_ITEM)
-		return; // no new amulet to put on or wearing best amulet
-
-	/* put on this amulet */
-	//World::setAction(static_cast<action::Action*> (new action::PutOn(this, best_key, PRIORITY_AMULET_WEAR)));
+bool Amulet::wearing(const string& name) {
+	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+		if (i->second.name().find(name) != string::npos)
+			return true;
+	}
+	return false;
 }
