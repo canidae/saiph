@@ -46,7 +46,7 @@ void Amulet::onEvent(Event* const event) {
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);
 		map<unsigned char, Item> k;
 		for (set<unsigned char>::iterator i = e->keys().begin(); i != e->keys().end(); ++i) {
-			Item item = Inventory::items().find(*i)->second;
+			Item item = Inventory::itemAtKey(*i);
 			k.insert(pair<unsigned char, Item>(*i, item));
 		}
 		_amulet_key = bestAmulet(k);
