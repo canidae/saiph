@@ -142,6 +142,9 @@ void Armor::onEvent(event::Event* const event) {
                                                 for(map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i){
                                                         if (betterThanCurrent(i->second))
                                                                 i->second.want(i->second.count());
+                                                        if(i->second.count() >= 10){
+                                                            break;
+                                                        }
                                                 }
                                         }
                                 }
