@@ -12,6 +12,7 @@
 #define PRIORITY_AMULET_REMOVE_HARM 1200
 /* bad amulet messages */
 #define STRANGULATION_5TTL "  It constricts your throat!  "
+#define RESTFUL_SLEEP "  You fall asleep.  "
 // we don't use these...
 #ifdef EXTRA_STRANGULATION
 #define STRANGULATION_4TTL "  You find it hard to breathe.  "

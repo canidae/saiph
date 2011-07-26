@@ -7,6 +7,7 @@
 #include "Inventory.h"
 #include "Item.h"
 #include "World.h"
+#include "Actions/Call.h"
 #include "Actions/PutOn.h"
 #include "Actions/Remove.h"
 #include "Data/Amulet.h"
@@ -37,7 +38,10 @@ void Amulet::analyze() {
 void Amulet::parseMessages(const string& messages) {
 	if (messages.find(STRANGULATION_5TTL) != string::npos) {
 		World::setAction(static_cast<action::Action*> (new action::Remove(this, _amulet_key, PRIORITY_AMULET_REMOVE_HARM)));
-	} // TODO: ID restful sleep too
+	} else if (messages.find(RESTFUL_SLEEP) != string::npos) {
+		World::queueAction(static_cast<action::Action*> (new action::Call(this, _amulet_key, "restful sleep")));
+		World::setAction(static_cast<action::Action*> (new action::Remove(this, _amulet_key, PRIORITY_AMULET_REMOVE_HARM)));
+	}
 }
 
 /* methods */
@@ -85,6 +89,8 @@ unsigned char Amulet::bestAmulet(const map<unsigned char, Item>& keys) {
 			EventBus::broadcast(&b);
 			continue;
 		}
+		if ((i->second.name().find("restful") != string::npos) || i->second.name().find("strangulation") != string::npos)
+			continue;
 		if (i->second.name().find("reflection") != string::npos)
 			reflection = i->first;
 		else if (i->second.name().find("life saving") != string::npos)

@@ -4,5 +4,5 @@ at 40 10
 altar 41 10 1
 endmap
 inventory
-cursed amulet of life saving
+uncursed amulet of restful sleep
 .
