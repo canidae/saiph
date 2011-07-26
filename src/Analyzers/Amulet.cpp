@@ -78,6 +78,13 @@ unsigned char Amulet::bestAmulet(const map<unsigned char, Item>& keys) {
 		map<const string, const data::Amulet*>::const_iterator a = data::Amulet::amulets().find(i->second.name());
 		if (a == data::Amulet::amulets().end())
 			continue;
+		if (i->second.beatitude() == CURSED)
+			continue;
+		if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
+			Beatify b(i->first, 900);
+			EventBus::broadcast(&b);
+			continue;
+		}
 		if (i->second.name().find("reflection") != string::npos)
 			reflection = i->first;
 		else if (i->second.name().find("life saving") != string::npos)

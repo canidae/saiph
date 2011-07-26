@@ -4,6 +4,5 @@ at 40 10
 altar 41 10 1
 endmap
 inventory
-identified uncursed amulet of magical breathing
-uncursed amulet of life saving
+cursed amulet of life saving
 .
