@@ -56,7 +56,7 @@ void Amulet::onEvent(Event* const event) {
 		_amulet_key = bestAmulet(k);
 	} else if (event->id() == ReceivedItems::ID) {
 		ReceivedItems* e = static_cast<ReceivedItems*> (event);
-		_amulet_key = bestAmulet((e->items()));
+		_amulet_key = bestAmulet(e->items());
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
@@ -76,8 +76,10 @@ bool Amulet::wantItem(const Item& item) {
 }
 
 unsigned char Amulet::bestAmulet(const map<unsigned char, Item>& keys) {
-	unsigned char reflection, life_saving, unchanging, unknown, ESP = ILLEGAL_ITEM;
-	reflection = life_saving = unchanging = unknown = ESP = ILLEGAL_ITEM;
+	Item suit = Inventory::itemInSlot(SLOT_SUIT);
+	Item shield = Inventory::itemInSlot(SLOT_SHIELD);
+	bool reflection = suit.name().find("silver dragon") != string::npos || shield.name().find("silver shield") != string::npos || shield.name().find("reflection") != string::npos;
+	unsigned char best = ILLEGAL_ITEM;
 	for (map<unsigned char, Item>::const_iterator i = keys.begin(); i != keys.end(); ++i) {
 		map<const string, const data::Amulet*>::const_iterator a = data::Amulet::amulets().find(i->second.name());
 		if (a == data::Amulet::amulets().end())
@@ -85,36 +87,23 @@ unsigned char Amulet::bestAmulet(const map<unsigned char, Item>& keys) {
 		if (i->second.beatitude() == CURSED)
 			continue;
 		if (i->second.beatitude() == BEATITUDE_UNKNOWN) {
-			Beatify b(i->first, 900);
+			Beatify b(i->first, 200);
 			EventBus::broadcast(&b);
 			continue;
 		}
 		if ((i->second.name().find("restful") != string::npos) || i->second.name().find("strangulation") != string::npos)
 			continue;
-		if (i->second.name().find("reflection") != string::npos)
-			reflection = i->first;
-		else if (i->second.name().find("life saving") != string::npos)
-			life_saving = i->first;
-		else if (i->second.name().find("unchanging") != string::npos)
-			unchanging = i->first;
-		else if (i->second.name().find("ESP") != string::npos)
-			ESP = i->first;
-		unknown = i->first;
+		// priorities: reflection > life saving > unknown > unchanging > ESP
+		if (!reflection && i->second.name().find("reflection") != string::npos)
+			return i->first; // amulet of reflection and no reflection from armor, break loop and return this amulet
+		if (i->second.name().find("life saving") != string::npos)
+			best = i->first; // life saving amulet is best
+		else if (i->second.name().find("unchanging") != string::npos && (best == ILLEGAL_ITEM || Inventory::itemAtKey(best).name().find("ESP") != string::npos))
+			best = i->first; // found unchanging amulet and currently best amulet is esp, replace best
+		else if (best == ILLEGAL_ITEM && i->second.name().find("ESP") != string::npos)
+			best = i->first; // found esp amulet and no other amulets are found, set best
+		else if (best == ILLEGAL_ITEM || Inventory::itemAtKey(best).name().find("life saving") == string::npos)
+			best = i->first; // found unknown amulet and haven't found life saving amulet, replace best
 	}
-	if (unchanging == ILLEGAL_ITEM)
-		unchanging = unknown;
-	Debug::info() << "refl: " << reflection << " ls : " << life_saving << endl;
-	// priorities: reflection > life saving > unchanging > ESP
-	if (wearing("silver dragon scale mail") || wearing("silver dragon scales"))
-		return (life_saving != ILLEGAL_ITEM) ? life_saving : (unchanging != ILLEGAL_ITEM) ? unchanging : ESP;
-	else
-		return (reflection != ILLEGAL_ITEM) ? reflection : (life_saving != ILLEGAL_ITEM) ? life_saving : unchanging;
-}
-
-bool Amulet::wearing(const string& name) {
-	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
-		if (i->second.name().find(name) != string::npos)
-			return true;
-	}
-	return false;
+	return best;
 }

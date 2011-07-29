@@ -9,7 +9,7 @@
 /* priorities */
 #define PRIORITY_AMULET_LOOT 400
 #define PRIORITY_AMULET_WEAR 400
-#define PRIORITY_AMULET_REMOVE_HARM 1200
+#define PRIORITY_AMULET_REMOVE_HARM 925
 /* bad amulet messages */
 #define STRANGULATION_5TTL "  It constricts your throat!  "
 #define RESTFUL_SLEEP "  You fall asleep.  "
@@ -37,7 +37,6 @@ namespace analyzer {
 		
 		bool wantItem(const Item& item);
 		unsigned char bestAmulet(const std::map<unsigned char, Item>& keys);
-		bool wearing(const std::string& name);
 	};
 }
 #endif
