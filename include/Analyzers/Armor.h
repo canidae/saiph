@@ -32,6 +32,7 @@ namespace analyzer {
 		std::set<unsigned char> _put_on;
 
 		bool betterThanCurrent(const Item& item);
+		int loopTimeout;
 		int calculateArmorScore(const Item& item, const data::Armor* armor);
 	};
 }
