@@ -136,28 +136,26 @@ void Armor::onEvent(event::Event* const event) {
 		WantItems* e = static_cast<WantItems*> (event);
                 if (Saiph::encumbrance() >= BURDENED) {
                         /* burdened and beatifying, (and is on a stash): pick up */
-                        if(World::shortestPath(ALTAR).cost() < UNPASSABLE){
-                                if(Saiph::encumbrance() < STRESSED){
-                                        if(e->safeStash()){
-                                                for(map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i){
+                        if (World::shortestPath(ALTAR).cost() < UNPASSABLE) {
+                                if (Saiph::encumbrance() < STRESSED) {
+                                        if (e->safeStash()) {
+                                                for (map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i) {
                                                         if (betterThanCurrent(i->second))
                                                                 i->second.want(i->second.count());
                                                 }
                                         }
                                 }
                         /* burdened and not beatifying: stash */
-                        } else  {
-                                if(e->safeStash()){
-									loopTimeout = World::turn() + 10;
-                                }
+                        } else if (e->safeStash()) {
+				loopTimeout = World::turn() + 10;
                         }
                 /* not burdened */
                 } else {
                         /* and not on safe stash: pick up */
-                        if(!e->safeStash() && loopTimeout == World::turn()){
+                        if (!e->safeStash() && loopTimeout == World::turn()) {
                                 /* ^ this also means 'drop at every safe stash if not burdened' */
                                 /* TODO: to avoid this, check whether on upstair, without stashing */
-                                for(map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i){
+                                for (map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i) {
                                         if (betterThanCurrent(i->second))
                                                 i->second.want(i->second.count());
                                 }
