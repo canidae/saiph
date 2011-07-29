@@ -146,6 +146,7 @@ void Fight::analyze() {
 			 * this is a too simple solution, we need to consider stuff as how hard they hit, if they steal
 			 * stuff, if they use wands, etc */
 			attack_score = m->second.data()->saiphDifficulty();
+			Debug::custom(name()) << "Attack score for monster '" << m->second.data()->name() << ": " << attack_score << endl;
 		}
 		int distance = Point::gridDistance(m->first, Saiph::position());
 		bool floating_eye = (m->second.symbol() == S_EYE && m->second.color() == BLUE);

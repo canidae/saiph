@@ -1,0 +1,5 @@
+#!/bin/sh
+while [ true ]
+export FILE=`date +%s`
+do ./saiph -l -L logs/saiph-$FILE.log
+done

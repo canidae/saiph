@@ -20,7 +20,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Armor::Armor() : Analyzer("Armor"), _put_on() {
+Armor::Armor() : Analyzer("Armor"), _put_on(), loopTimeout(World::turn()) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -148,12 +148,13 @@ void Armor::onEvent(event::Event* const event) {
                         /* burdened and not beatifying: stash */
                         } else  {
                                 if(e->safeStash()){
+									loopTimeout = World::turn() + 10;
                                 }
                         }
                 /* not burdened */
                 } else {
                         /* and not on safe stash: pick up */
-                        if(!e->safeStash()){
+                        if(!e->safeStash() && loopTimeout == World::turn()){
                                 /* ^ this also means 'drop at every safe stash if not burdened' */
                                 /* TODO: to avoid this, check whether on upstair, without stashing */
                                 for(map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i){

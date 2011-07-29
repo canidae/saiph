@@ -77,7 +77,7 @@ void Weapon::onEvent(event::Event* const event) {
 			/* dropping items or we're burdened (which means don't loot weapons) */
 			for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 				if (e->dropping()) {
-					if ((_range_weapons.find(i->first) != _range_weapons.end() || _melee_weapons.find(i->first) != _melee_weapons.end()) && betterThanWhatWeGot(i->second)) {
+					if ((_range_weapons.find(i->first) != _range_weapons.end() || _melee_weapons.find(i->first) != _melee_weapons.end())) {
 						/* don't drop weapons in one of our lists */
 						i->second.want(i->second.count());
 					}
