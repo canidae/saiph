@@ -56,9 +56,30 @@ Many of these are half-baked ideas, to be investigated as much as implemented.
 
 * Queue:
   - PoGL / wraith corpse improvements
-  - Medusa analyzer.
 
 * 4/20 night results:
   - When there are E-ignoring monsters around, a good way to heal is to run away
   - Do not drop items which are (being w  (drop_armor_bug)
   - We should not be pathing over magic portals to get to points on the same level
+
+* 4/25:
+  - Cursed weapon prevents gloves
+
+* When we detect a sokoban level, push_back Coordinates for the two scrolls of earth, then some logic to
+  1. pick up and #name earth any scrolls on those squares
+  2. remove them from the set if empty or scrolls gone
+  3. want scrolls of earth in soko
+
+* we could do with an event for "no items on square", including triggering on stash removal
+
+* GrayStone analyzer
+  * when we see a gray stone, mark the square in a set
+  * try to kick gray stones
+  * on actionCompleted, mark the corresponding target as _nonloadstone_square (target must be reachable through explored squares and devoid of gray stones already)
+  * unless Thump!, then mark as _loadstone_square and don't look at it again
+  * refuse pickup of unID grey stones unless on _nonloadstone_square
+
+* AutoName analyzer
+  * If lamp, flute, horn, conical hat, bag, candle, whistle, harp, [most gems, gray stones], then re-call foo $i++
+  * If gray stone (N), flavored helm, flavored amulet, then arti-name; if slipped, recall (A), else if (B), recall (B), else disable artinaming for that item flavor
+  * grey stones which are not luckstones after AutoName are unluckstones and worthless
