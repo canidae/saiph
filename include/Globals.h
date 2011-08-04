@@ -299,6 +299,9 @@
 #define MESSAGE_BURNED_TEXT "  Some text has been burned into the floor here.  "
 #define MESSAGE_CANNOT_REACH_BOTTOM_OF_PIT "  You cannot reach the bottom of the pit.  "
 #define MESSAGE_CANT_REACH_OVER_PIT "  You can't reach over the edge of the pit.  "
+#define MESSAGE_CHARGE_WHAT "  What do you want to charge? "
+#define MESSAGE_CHARGED_SOMETHING " glows "
+#define MESSAGE_CHARGING_READ "  This is a charging scroll!  "
 #define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory\"."
 #define MESSAGE_COLD_RES_GAIN1 "  You feel full of hot air.  "
 #define MESSAGE_COLD_RES_LOSE1 "  You feel cooler!  "
@@ -389,6 +392,7 @@
 #define MESSAGE_POISON_RES_GAIN2 "  You feel especially healthy.  "
 #define MESSAGE_POISON_RES_LOSE1 "  You feel a little sick!  "
 #define MESSAGE_POLYMORPH "  You turn into "
+#define MESSAGE_READ_WHAT "  What do you want to read? "
 #define MESSAGE_REALLY_ATTACK "Really attack"
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SEVERAL_MORE_OBJECTS_HERE "  There are several more objects here.  "

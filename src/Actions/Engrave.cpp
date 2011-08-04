@@ -53,8 +53,8 @@ void Engrave::update(const std::string& messages) {
 		wandWishing.name("wand of wishing"); // update name
 		_sequence = 4;
 	} else if (messages.find(MESSAGE_WISHING_NO_CHARGES) != std::string::npos) {
-		Item& wandWishing = Inventory::items()[_item.command()[0]];
-		wandWishing.name("wand of wishing named EMPTY"); // update name
+		// Item& wandWishing = Inventory::items()[_item.command()[0]];
+		// wandWishing.name("wand of wishing named EMPTY"); // update name
 		_sequence = 4;
 	} else if (_sequence < 3) {
 		_sequence = 3;

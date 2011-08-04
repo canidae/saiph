@@ -1,6 +1,7 @@
 #include "Analyzers/Armor.h"
 
 #include "EventBus.h"
+#include "Debug.h"
 #include "Inventory.h"
 #include "Item.h"
 #include "Saiph.h"
@@ -147,12 +148,12 @@ void Armor::onEvent(event::Event* const event) {
                                 }
                         /* burdened and not beatifying: stash */
                         } else if (e->safeStash()) {
-				loopTimeout = World::turn() + 10;
+								loopTimeout = World::turn() + 10;
                         }
                 /* not burdened */
                 } else {
                         /* and not on safe stash: pick up */
-                        if (!e->safeStash() && loopTimeout == World::turn()) {
+                        if (!e->safeStash() && loopTimeout <= World::turn()) {
                                 /* ^ this also means 'drop at every safe stash if not burdened' */
                                 /* TODO: to avoid this, check whether on upstair, without stashing */
                                 for (map<unsigned char, Item>::iterator i = e->items ().begin(); i != e->items().end(); ++i) {

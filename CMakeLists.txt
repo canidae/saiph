@@ -40,6 +40,7 @@ set(HEADER_FILES
 	include/Actions/Apply.h
 	include/Actions/ApplyInDirection.h
 	include/Actions/Call.h
+	include/Actions/Charge.h
 	include/Actions/Donate.h
 	include/Actions/DropGold.h
 	include/Actions/Drop.h
@@ -67,6 +68,7 @@ set(HEADER_FILES
 	include/Actions/Unlock.h
 	include/Actions/Wear.h
 	include/Actions/Wield.h
+	include/Actions/Wish.h
 	# Analyzers
 	include/Analyzers/Amulet.h
 	include/Analyzers/Analyzer.h
@@ -199,6 +201,7 @@ set(SOURCE_FILES
 	src/Actions/Apply.cpp
 	src/Actions/ApplyInDirection.cpp
 	src/Actions/Call.cpp
+	src/Actions/Charge.cpp
 	src/Actions/Dip.cpp
 	src/Actions/Donate.cpp
 	src/Actions/Drop.cpp
@@ -228,6 +231,7 @@ set(SOURCE_FILES
 	src/Actions/Unlock.cpp
 	src/Actions/Wear.cpp
 	src/Actions/Wield.cpp
+	src/Actions/Wish.cpp
 	# Analyzers
 	src/Analyzers/Amulet.cpp
 	src/Analyzers/Analyzer.cpp
