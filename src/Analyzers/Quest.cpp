@@ -39,17 +39,17 @@ Quest::Quest() : Analyzer("Quest"), _status(QUEST_STATUS_NOT_READY), _portal_lev
 	artifacts[WIZARD] = "Eye of the Aethiopica";
 
 	accepted_messages[ARCHEOLOGIST] = "Youmustthendefeat";
-	accepted_messages[BARBARIAN]    = "defeathim,andreturn";
-	accepted_messages[CAVEMAN]      = "indeedreadynow";
-	accepted_messages[HEALER]       = "yousenseasmile";
-	accepted_messages[KNIGHT]       = "Thouarttrulyready";
-	accepted_messages[MONK]         = "trulyreadynow";
-	accepted_messages[PRIEST]       = "trulyreadynow";
-	accepted_messages[ROGUE]        = "onestepbackward";
-	accepted_messages[SAMURAI]      = "indeedyouareready";
-	accepted_messages[TOURIST]      = "provenyourselfaworthy";
-	accepted_messages[VALKYRIE]     = "thatyoucandefeat";
-	accepted_messages[WIZARD]       = "youtrulyareready";
+	accepted_messages[BARBARIAN] = "defeathim,andreturn";
+	accepted_messages[CAVEMAN] = "indeedreadynow";
+	accepted_messages[HEALER] = "yousenseasmile";
+	accepted_messages[KNIGHT] = "Thouarttrulyready";
+	accepted_messages[MONK] = "trulyreadynow";
+	accepted_messages[PRIEST] = "trulyreadynow";
+	accepted_messages[ROGUE] = "onestepbackward";
+	accepted_messages[SAMURAI] = "indeedyouareready";
+	accepted_messages[TOURIST] = "provenyourselfaworthy";
+	accepted_messages[VALKYRIE] = "thatyoucandefeat";
+	accepted_messages[WIZARD] = "youtrulyareready";
 }
 
 /* methods */
@@ -96,7 +96,7 @@ void Quest::analyze() {
 		World::setAction(static_cast<action::Action*> (new action::Move(this, go, PRIORITY_QUEST_GET_QUEST, go.cost())));
 }
 
-void Quest::onEvent(event::Event* const event) {
+void Quest::onEvent(event::Event * const event) {
 	if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {

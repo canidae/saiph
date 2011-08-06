@@ -113,9 +113,9 @@ void Explore::addOption(ExploreFocus& best, int rank, const Point& p, unsigned c
 	Level& l = World::level();
 	unsigned int cost = l.tile(p).cost();
 	if ((rank < best.rank && cost < UNPASSABLE) || (rank == best.rank && cost < l.tile(best.where).cost())) {
-		best.rank      = rank;
-		best.where     = p;
-		best.purpose   = purpose;
+		best.rank = rank;
+		best.where = p;
+		best.purpose = purpose;
 		best.direction = direction;
 	}
 }

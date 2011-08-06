@@ -59,11 +59,21 @@ void Wish::update(const std::string& messages) {
 		_sequence = 3;
 	} else {
 		_sequence = 4;
-	} if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos && !_wished) {
+	}
+	if (messages.find(MESSAGE_ENGRAVE_ADD) != std::string::npos && !_wished) {
 		// aww, empty!
 		/* it's interesting that we have to check if we've already made
 		 * a wish in this action due to the way we handle actually
 		 * making the wish -- it's done in the middle of the action!
+		 */
+		/* FIXME:
+		 * two errors here:
+		 * - naming the item this way will only name the item within saiph's memory
+		 *   and this may very well be lost when changes are done to inventory
+		 * - you don't name it "EMPTY" this way, see analyzer "Lamp.cpp" (line 68)
+		 * 
+		 * also, we need to rethink our strategy of making a new action for every specialized task,
+		 * we're getting too many actions, this one could fall under "Zap" or "Engrave".
 		 */
 		Item& wandWishing = Inventory::items()[_wish_wand.command()[0]];
 		wandWishing.name("wand of wishing named EMPTY"); // update name

@@ -38,21 +38,21 @@ void Replay::recordFrame(char *buffer, int count) {
 	char header[12];
 	// faked a bit
 	long long timestamp = 300000LL * (sequence++);
-	long microsec = (long)(timestamp % 1000000LL);
-	long sec = (long)(timestamp / 1000000LL);
+	long microsec = (long) (timestamp % 1000000LL);
+	long sec = (long) (timestamp / 1000000LL);
 
-	header[ 0] = char((microsec >>  0) & 0xFF);
-	header[ 1] = char((microsec >>  8) & 0xFF);
+	header[ 0] = char((microsec >> 0) & 0xFF);
+	header[ 1] = char((microsec >> 8) & 0xFF);
 	header[ 2] = char((microsec >> 16) & 0xFF);
 	header[ 3] = char((microsec >> 24) & 0xFF);
-	header[ 4] = char((sec      >>  0) & 0xFF);
-	header[ 5] = char((sec      >>  8) & 0xFF);
-	header[ 6] = char((sec      >> 16) & 0xFF);
-	header[ 7] = char((sec      >> 24) & 0xFF);
-	header[ 8] = char((count    >>  0) & 0xFF);
-	header[ 9] = char((count    >>  8) & 0xFF);
-	header[10] = char((count    >> 16) & 0xFF);
-	header[11] = char((count    >> 24) & 0xFF);
+	header[ 4] = char((sec >> 0) & 0xFF);
+	header[ 5] = char((sec >> 8) & 0xFF);
+	header[ 6] = char((sec >> 16) & 0xFF);
+	header[ 7] = char((sec >> 24) & 0xFF);
+	header[ 8] = char((count >> 0) & 0xFF);
+	header[ 9] = char((count >> 8) & 0xFF);
+	header[10] = char((count >> 16) & 0xFF);
+	header[11] = char((count >> 24) & 0xFF);
 
 	_recordstream->write(header, 12);
 	_recordstream->write(buffer, count);
@@ -66,10 +66,10 @@ int Replay::doRetrieve(char* buffer, int bsize) {
 	if (_replaystream.gcount() != 12)
 		return 0;
 	int amount =
-		(static_cast<unsigned char>(header[11]) << 24) +
-		(static_cast<unsigned char>(header[10]) << 16) +
-		(static_cast<unsigned char>(header[9]) << 8) +
-		(static_cast<unsigned char>(header[8]));
+		(static_cast<unsigned char> (header[11]) << 24) +
+		(static_cast<unsigned char> (header[10]) << 16) +
+		(static_cast<unsigned char> (header[9]) << 8) +
+		(static_cast<unsigned char> (header[8]));
 	if (amount > bsize) {
 		Debug::error() << "Mismatched buffer size in Replay::doRetrieve" << endl;
 		World::destroy();

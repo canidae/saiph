@@ -204,9 +204,10 @@ Sokoban::Sokoban() : Analyzer("Sokoban"), _retry_count(0), _retry_turn(-1), _giv
 	addMoves(4, a3a, "ll");
 	addMoves(4, d3a, "k"); // looking for item beneath boulder
 	addMoves(4, e3a, "k"); // looking for item beneath boulder
-	/* XXX: we deviate slightly from spoiler solution on nethack wiki here to reduce amount of moves.
-	 *      we move the last boulder twice, then move a previously unmoved boulder to check for items,
-	 *      before we do the remaining moves with last boulder */
+	/* XXX:
+	 * we deviate slightly from spoiler solution on nethack wiki here to reduce amount of moves.
+	 * we move the last boulder twice, then move a previously unmoved boulder to check for items,
+	 * before we do the remaining moves with last boulder */
 	addMoves(4, c3a, "jj");
 	addMoves(4, b3a, "h"); // looking for items beneath boulder
 	addMoves(4, c3a, "ljjjjjjlllllllllll");

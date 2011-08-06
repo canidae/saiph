@@ -21,7 +21,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), named_empty(false), named_full(false), wished_for_charging(false), wished_for_aor(false), wished_for_speed(false), wished_for_gop(false), will_wish(false), extrinsics(0) {
+Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), named_empty(false), named_full(false), wished_for_charging(false), wished_for_aor(false), wished_for_speed(false), wished_for_gop(false), will_wish(false) {
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
@@ -35,7 +35,6 @@ void Wish::parseMessages(const string& messages) {
 				wand_of_wishing_key = l->first;
 		}
 		if (wand_of_wishing_key == ILLEGAL_ITEM) {
-			extrinsics = currentExtrinsics();
 			string command = "blessed greased fixed +3 " + selectWish();
 			Debug::custom(name()) << "Wishing for " << command << endl;
 			command.append("\n");
@@ -48,7 +47,6 @@ void Wish::parseMessages(const string& messages) {
 				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
 				wished_for_charging = true;
 			} else {
-				extrinsics = currentExtrinsics();
 				string command = "blessed greased fixed +3 " + selectWish();
 				// identify that we need to type-name these things.
 				if (command.find("amulet of reflection") != string::npos)
@@ -79,7 +77,6 @@ void Wish::analyze() {
 			}
 			will_wish = false;
 			if (charging_key != ILLEGAL_ITEM && Inventory::itemAtKey(charging_key).beatitude() == BLESSED && Inventory::itemAtKey(wand_of_wishing_key).name().find("full") == string::npos) {
-				currentExtrinsics();
 				if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
 					World::setAction(static_cast<action::Action*> (new action::Charge(this, charging_key, wand_of_wishing_key, 100)));
 					if (named_full == false) {
@@ -92,7 +89,6 @@ void Wish::analyze() {
 			}	
 			// TODO: wrest
 		} else {
-			currentExtrinsics();
 			if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
 				// we don't use markers, this is all we want
 				will_wish = true;
@@ -169,41 +165,3 @@ bool Wish::wearing(const string& name) {
 	}
 	return false;
 }
-
-unsigned long long Wish::currentExtrinsics() {
-	/* TODO: look at other sources of MR, artifacts, etc */
-	unsigned long long extrinsics = 0;
-	haveReflection = false;
-	haveMR = false;
-	reflectionArmor = false;
-	MRarmor = false;
-	MRcloak = false;
-	reflectionAmulet = false;
-	reflectionShield = false;
-	if (wearing("silver dragon scale mail") || wearing("silver dragon scales")) {
-		haveReflection = true;
-		reflectionArmor = true;
-	}
-	if (wearing("amulet of reflection")) {
-		haveReflection = true;
-		reflectionAmulet = true;
-	}
-	if (wearing("shield of reflection")) {
-		haveReflection = true;
-		reflectionAmulet = true;
-	}
-	if (wearing("gray dragon scale mail") || wearing("gray dragon scales")) {
-		haveMR = true;
-		MRarmor = true;
-	}
-	if (wearing("cloak of magic resistance")) {
-		haveMR = true;
-		MRcloak = false;
-	}
-	if (haveMR)
-		extrinsics |= PROPERTY_MAGICRES;
-	if (haveReflection)
-		extrinsics |= PROPERTY_REFLECTION;
-	return extrinsics;
-}
-

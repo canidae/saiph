@@ -27,8 +27,6 @@ namespace analyzer {
 		bool wished_for_gop;
 		bool will_wish;
 		std::string selectWish();
-		unsigned long long extrinsics;
-		unsigned long long currentExtrinsics();
 		bool wearing(const std::string& name);
 	};
 }

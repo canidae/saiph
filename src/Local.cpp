@@ -109,7 +109,7 @@ int Local::doRetrieve(char* buffer, int count) {
 				_unanswered_chars -= th;
 				data_received += amount;
 			}
-		} while (amount >= 0 && _unanswered_chars);
+		} while (amount > 0 && _unanswered_chars);
 	} else {
 		/* make reading blocking */
 		//fcntl(link[0], F_SETFL, fcntl(link[0], F_GETFL) & ~O_NONBLOCK);
