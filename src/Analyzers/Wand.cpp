@@ -65,6 +65,7 @@ void Wand::actionCompleted(const std::string& messages) {
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != string::npos) {
 		// nice, we got a wish (from a wand as well)!
 		_engrave_test_wand_key = ILLEGAL_ITEM;
+		Inventory::update(); // need to list inventory to detect our wishing wand
 		return;
 	}
 	if (_engrave_test_wand_key != 0 && World::lastActionID() == action::Engrave::ID) {

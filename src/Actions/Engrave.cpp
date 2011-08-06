@@ -1,6 +1,5 @@
 #include "Actions/Engrave.h"
 
-#include "Inventory.h"
 #include "World.h"
 
 using namespace action;
@@ -48,13 +47,8 @@ void Engrave::update(const std::string& messages) {
 	} else if (messages.find(MESSAGE_ENGRAVE_WHAT) != std::string::npos) {
 		_sequence = 3;
 	} else if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != std::string::npos) {
-		// oh boy!
-		Item& wandWishing = Inventory::items()[_item.command()[0]];
-		wandWishing.name("wand of wishing"); // update name
 		_sequence = 4;
 	} else if (messages.find(MESSAGE_WISHING_NO_CHARGES) != std::string::npos) {
-		// Item& wandWishing = Inventory::items()[_item.command()[0]];
-		// wandWishing.name("wand of wishing named EMPTY"); // update name
 		_sequence = 4;
 	} else if (_sequence < 3) {
 		_sequence = 3;
