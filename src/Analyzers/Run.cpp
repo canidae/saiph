@@ -14,11 +14,11 @@ using namespace std;
 
 /* constructors/destructor */
 Run::Run : Analyzer("Run") {
-    /* register events */
-    EventBus::registerEvent(RunAway::ID, this);
+	/* register events */
+	EventBus::registerEvent(RunAway::ID, this);
 }
 
-void Run::onEvent(Event* const evt) {
-    if (evt->id() == RunAway::ID) {
-        RunAway* const e = static_cast<RunAway* const> (evt);
+void Run::onEvent(Event * const evt) {
+	if (evt->id() == RunAway::ID) {
+		RunAway * const e = static_cast<RunAway * const> (evt);
 
