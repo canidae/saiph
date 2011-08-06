@@ -128,6 +128,10 @@ void Fight::analyze() {
 			continue; // we're not fighting pets :)
 		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
 			continue; // don't attack friendlies except dwarves
+			/* I'm not sure about how good this is for her in the mines.
+			 * This was added to prevent her sticking in levels that were
+			 * being dug out - but I still sometimes see this happening
+			 * and it may have killed her. -rawrmage */
 		else if (m->second.symbol() == 'm' && m->second.color() == BLUE && Saiph::experience() < 3)
 			continue; // below level three, let strange objects be
 		else if (m->second.symbol() == 'n' && (m->second.lastSeen() - m->second.lastMoved()) >= 3)

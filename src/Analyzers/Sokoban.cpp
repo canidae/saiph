@@ -527,7 +527,12 @@ void Sokoban::analyze() {
 			if (Point::gridDistance(Saiph::position(), pi->first) > 1)
 				World::setAction(static_cast<action::Action*> (new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY)));
 			else if (tl.monster() == ILLEGAL_MONSTER)
-				World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+				/* issue with kicking items to clear sokoban pits with hurt legs / strained
+				 * I think this is a problem with Actions, perhaps checks that the action
+				 * can be completed should be done in the action, and report to the analyzer
+				 * that the action failed? */ 
+				if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRAINED))
+					World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
 		}
 	}
 }
