@@ -124,8 +124,19 @@ ExploreFocus Explore::analyzeLevel() {
 	ExploreFocus best;
 	best.rank = INT_MAX;
 
-	if (World::level().branch() == BRANCH_SOKOBAN)
-		return best; // There's nothing to find here
+	if (World::level().branch() == BRANCH_SOKOBAN) {
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_UP).begin(); s != World::level().symbols((unsigned char) STAIRS_UP).end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			addOption(best, RRANK_STAIR, s->first, UP, "finding endpoint of stairs up");
+		}
+		for (map<Point, int>::const_iterator s = World::level().symbols((unsigned char) STAIRS_DOWN).begin(); s != World::level().symbols((unsigned char) STAIRS_DOWN).end(); ++s) {
+			if (s->second != UNKNOWN_SYMBOL_VALUE)
+				continue; // we know where these stairs lead
+			addOption(best, RRANK_STAIR, s->first, DOWN, "finding endpoint of stairs down");
+		}
+		return best;
+	}
 
 	/* find stairs on rogue level */
 	if (World::level().branch() == BRANCH_ROGUE) {

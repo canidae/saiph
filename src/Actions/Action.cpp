@@ -5,6 +5,7 @@
 #include "Actions/Apply.h"
 #include "Actions/ApplyInDirection.h"
 #include "Actions/Call.h"
+#include "Actions/Charge.h"
 #include "Actions/Donate.h"
 #include "Actions/Dip.h"
 #include "Actions/Drop.h"
@@ -34,6 +35,7 @@
 #include "Actions/Unlock.h"
 #include "Actions/Wear.h"
 #include "Actions/Wield.h"
+#include "Actions/Wish.h"
 
 using namespace action;
 
@@ -72,6 +74,8 @@ const int Wear::ID = 30;
 const int Dip::ID = 31;
 const int Donate::ID = 32;
 const int Pay::ID = 33;
+const int Wish::ID = 34;
+const int Charge::ID = 35;
 
 /* used for the travel command "_" */
 Point Move::_last_target;

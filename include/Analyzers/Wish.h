@@ -13,13 +13,19 @@ namespace analyzer {
 		void parseMessages(const std::string& messages);
 		void analyze();
 		void onEvent(event::Event* const event);
+
 	private:
 		bool MRarmor, MRcloak, haveMR;
 		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;
 		unsigned char wand_of_wishing_key;
 		unsigned char charging_key;
+		bool named_empty;
+		bool named_full;
 		bool wished_for_charging;
-		bool zapping_wand;
+		bool wished_for_aor;
+		bool wished_for_speed;
+		bool wished_for_gop;
+		bool will_wish;
 		std::string selectWish();
 		unsigned long long extrinsics;
 		unsigned long long currentExtrinsics();
