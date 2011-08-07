@@ -32,7 +32,7 @@ void Wand::analyze() {
 		return;
 	if (!action::Engrave::canEngrave())
 		return;
-	World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST)));
+	World::setAction(new action::Engrave(this, ELBERETH "\n", _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST));
 }
 
 void Wand::onEvent(Event* const event) {
@@ -76,16 +76,16 @@ void Wand::actionCompleted(const std::string& messages) {
 				continue;
 			if (messages.find(w->second->engraveMessage()) != string::npos) {
 				if (w->second->name() == "wand of death" || w->second->name() == "wand of sleep")
-					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of death"))); // TODO: hack to make her hang on to these wands
+					World::queueAction(new action::Call(this, _engrave_test_wand_key, "wand of death")); // TODO: hack to make her hang on to these wands
 				else if (w->first == "wand of teleportation" || w->first == "wand of cancellation" || w->first == "wand of make invisible")
-					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of vanish")));
+					World::queueAction(new action::Call(this, _engrave_test_wand_key, "wand of vanish"));
 				else
-					World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, w->first)));
+					World::queueAction(new action::Call(this, _engrave_test_wand_key, w->first));
 				_engrave_test_wand_key = ILLEGAL_ITEM;
 				return;
 			}
 		}
-		World::queueAction(static_cast<action::Action*> (new action::Call(this, _engrave_test_wand_key, "wand of unknown")));
+		World::queueAction(new action::Call(this, _engrave_test_wand_key, "wand of unknown"));
 		_engrave_test_wand_key = ILLEGAL_ITEM;
 	}
 }

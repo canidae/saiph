@@ -35,11 +35,11 @@ void Amulet::analyze() {
 		if (worn_amulet != best_amulet) {
 			if (worn_amulet == ILLEGAL_ITEM) {
 				//Debug::custom("Amulet") << "Will wear best." << endl;
-				World::setAction(static_cast<action::Action*> (new action::PutOn(this, best_amulet, PRIORITY_AMULET_WEAR)));
+				World::setAction(new action::PutOn(this, best_amulet, PRIORITY_AMULET_WEAR));
 			} else if (Inventory::itemInSlot(worn_amulet).beatitude() != CURSED) {
 				bool harm = amuletScore(false, worn_amulet, Inventory::itemInSlot(worn_amulet)) < 0;
 				//Debug::custom("Amulet") << "To remove " << (harm ? "harmful " : "superceded ") << "amulet." << endl;
-				World::setAction(static_cast<action::Action*> (new action::Remove(this, worn_amulet, harm ? PRIORITY_AMULET_REMOVE_HARM : PRIORITY_AMULET_WEAR)));
+				World::setAction(new action::Remove(this, worn_amulet, harm ? PRIORITY_AMULET_REMOVE_HARM : PRIORITY_AMULET_WEAR));
 			}
 		}
 	}
@@ -50,7 +50,7 @@ void Amulet::parseMessages(const string& messages) {
 		Inventory::update();
 	} else if (messages.find(RESTFUL_SLEEP) != string::npos) {
 		char worn_amulet = Inventory::keyForSlot(SLOT_AMULET);
-		World::queueAction(static_cast<action::Action*> (new action::Call(this, worn_amulet, "amulet of restful sleep")));
+		World::queueAction(new action::Call(this, worn_amulet, "amulet of restful sleep"));
 	}
 }
 

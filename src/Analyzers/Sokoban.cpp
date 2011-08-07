@@ -400,7 +400,7 @@ void Sokoban::analyze() {
 
 	if (_retry_turn > int(World::turn())) {
 		// We don't want the normal desparation actions running - we aren't that desparate.
-		World::setAction(static_cast<action::Action*> (new action::Search(this, SOKOBAN_REST_PRIORITY)));
+		World::setAction(new action::Search(this, SOKOBAN_REST_PRIORITY));
 		return;
 	}
 
@@ -447,7 +447,7 @@ void Sokoban::analyze() {
 					continue;
 				if (tile.direction() == NOWHERE)
 					tile.direction(UP);
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
+				World::setAction(new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY));
 			}
 			continue;
 		}
@@ -512,7 +512,7 @@ void Sokoban::analyze() {
 			/* probably moving to correct point before pushing boulder */
 			Debug::custom(name()) << "Moving to the right spot to push a boulder: " << tile << endl;
 		}
-		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY)));
+		World::setAction(new action::Move(this, tile, SOKOBAN_SOLVE_PRIORITY));
 	}
 
 	// odds and ends to make Sokoban work better - the loop above is the heart of exploration
@@ -526,9 +526,9 @@ void Sokoban::analyze() {
 				continue;
 			Debug::custom(name()) << "Something maybe worth clearing at " << tl << endl;
 			if (Point::gridDistance(Saiph::position(), pi->first) > 1)
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+				World::setAction(new action::Move(this, tl, SOKOBAN_CLEAR_ITEMS_PRIORITY));
 			else if (tl.monster() == ILLEGAL_MONSTER)
-				World::setAction(static_cast<action::Action*> (new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY)));
+				World::setAction(new action::Kick(this, tl.direction(), SOKOBAN_CLEAR_ITEMS_PRIORITY));
 		}
 	}
 }

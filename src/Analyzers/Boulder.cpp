@@ -36,10 +36,10 @@ void Boulder::analyze() {
 			continue; // in a pit next to the boulder
 		if (tile.distance() == 1) {
 			/* smash it! */
-			World::setAction(static_cast<action::Action*> (new action::ApplyInDirection(this, _pick_key, tile.direction(), PRIORITY_BOULDER_DESTROY)));
+			World::setAction(new action::ApplyInDirection(this, _pick_key, tile.direction(), PRIORITY_BOULDER_DESTROY));
 		} else {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_BOULDER_DESTROY, tile.distance()))));
+			World::setAction(new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_BOULDER_DESTROY, tile.distance())));
 		}
 	}
 }

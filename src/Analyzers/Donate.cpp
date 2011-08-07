@@ -56,9 +56,9 @@ void Donate::analyze() {
 		if (_priest_loc.level() != -1) {
 			Tile tile = World::shortestPath(_priest_loc);
 			if (tile.distance() == 1)
-				World::setAction(static_cast<action::Action*> (new action::Donate(this, tile.direction(), Saiph::experience() * 400, DONATE_PRIORITY)));
+				World::setAction(new action::Donate(this, tile.direction(), Saiph::experience() * 400, DONATE_PRIORITY));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Move(this, tile, DONATE_PRIORITY)));
+				World::setAction(new action::Move(this, tile, DONATE_PRIORITY));
 		}
 	}
 }

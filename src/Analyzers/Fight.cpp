@@ -32,7 +32,7 @@ Fight::Fight() : Analyzer("Fight") {
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
 	if (Saiph::engulfed()) {
-		World::setAction(static_cast<action::Action*> (new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX)));
+		World::setAction(new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX));
 		return;
 	}
 
@@ -102,20 +102,20 @@ void Fight::analyze() {
 		if (best_tile.cost() < UNPASSABLE) {
 			if (best_tile.direction() != NOWHERE) {
 				Debug::custom(name()) << "Going to fight a boss at " << best_tile.coordinate() << endl;
-				World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, PRIORITY_FIGHT_POSITION_BOSS)));
+				World::setAction(new action::Move(this, best_tile, PRIORITY_FIGHT_POSITION_BOSS));
 			} else if (best_tile.symbol() == STAIRS_UP) {
 				// Hah! We're on the <, you're done for.  Just wait for you to come...
 				Debug::custom(name()) << "Waiting to kill a boss at " << best_tile.coordinate() << endl;
-				World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_FIGHT_POSITION_BOSS)));
+				World::setAction(new action::Search(this, PRIORITY_FIGHT_POSITION_BOSS));
 			} else {
 				// We want to fight the boss on the stairs on the next level down
 				if (bosses_adjacent) {
 					Debug::custom(name()) << "Luring a boss downstairs at " << best_tile.coordinate() << endl;
 					best_tile.direction(DOWN);
-					World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, PRIORITY_FIGHT_POSITION_BOSS_LURE)));
+					World::setAction(new action::Move(this, best_tile, PRIORITY_FIGHT_POSITION_BOSS_LURE));
 				} else {
 					Debug::custom(name()) << "Waiting to lure a boss downstairs at " << best_tile.coordinate() << endl;
-					World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_FIGHT_POSITION_BOSS)));
+					World::setAction(new action::Search(this, PRIORITY_FIGHT_POSITION_BOSS));
 				}
 			}
 		}
@@ -158,7 +158,7 @@ void Fight::analyze() {
 				/* we can throw at monster */
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_THROW_MIN;
-				World::setAction(static_cast<action::Action*> (new action::Throw(this, *_projectile_slots.begin(), in_line, priority)));
+				World::setAction(new action::Throw(this, *_projectile_slots.begin(), in_line, priority));
 				Debug::custom(name()) << "Setting action to throw at '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
@@ -168,7 +168,7 @@ void Fight::analyze() {
 		if (distance == 1) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
-			World::setAction(static_cast<action::Action*> (new action::Fight(this, World::shortestPath(m->first).direction(), priority)));
+			World::setAction(new action::Fight(this, World::shortestPath(m->first).direction(), priority));
 			Debug::custom(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
 			continue;
 		}
@@ -180,7 +180,7 @@ void Fight::analyze() {
 			continue; // can't move to monster
 		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
 		priority = action::Move::calculatePriority(priority, 25 * tile.cost());
-		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, priority, false)));
+		World::setAction(new action::Move(this, tile, priority, false));
 		Debug::custom(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }

@@ -31,7 +31,7 @@ Health::Health() : Analyzer("Health"), _resting(false), _was_polymorphed(false),
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
-	World::queueAction(static_cast<action::Action*> (new action::ListPlayerAttributes(this)));
+	World::queueAction(new action::ListPlayerAttributes(this));
 }
 
 /* methods */
@@ -48,7 +48,7 @@ void Health::analyze() {
 				/* TODO: should not enter this block if we could quaff */
 				/* quaffing won't work... how about pray? */
 				if (action::Pray::isSafeToPray()) {
-					World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_PRAY_FOR_HP)));
+					World::setAction(new action::Pray(this, PRIORITY_HEALTH_PRAY_FOR_HP));
 					doing_something = true;
 				}
 			}
@@ -66,7 +66,7 @@ void Health::analyze() {
 			/* unable to use unihorn, need to try something else */
 			/* TODO: eat eucalyptus leaf (if foodpoisoned or ill and no unihorn) */
 			/* if we can't cure this in any other way, just pray even if it's not safe, because we'll die for sure if we don't */
-			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY)));
+			World::setAction(new action::Pray(this, PRIORITY_HEALTH_CURE_DEADLY));
 		}
 	} else if (_resting) {
 		/* [still] resting */
@@ -87,16 +87,16 @@ void Health::analyze() {
 		if (_resting) {
 			/* not enough hp and we want to rest, we should elbereth */
 			ElberethQuery eq;
-			EventBus::broadcast(static_cast<Event*> (&eq));
+			EventBus::broadcast(&eq);
 			if (eq.type() == ELBERETH_MUST_CHECK) {
 				/* we don't know, we must look */
-				World::setAction(static_cast<action::Action*> (new action::Look(this)));
+				World::setAction(new action::Look(this));
 			} else if (eq.type() == ELBERETH_DUSTED || eq.type() == ELBERETH_NONE) {
 				/* no elbereth or dusted elbereth, engrave or rest, depending on amount of elbereths */
 				if (eq.count() < 3)
-					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_HEALTH_REST_FOR_HP_HIGH, (eq.count() > 0))));
+					World::setAction(new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_HEALTH_REST_FOR_HP_HIGH, (eq.count() > 0)));
 				else
-					World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_HEALTH_REST_FOR_HP_HIGH)));
+					World::setAction(new action::Search(this, PRIORITY_HEALTH_REST_FOR_HP_HIGH));
 			}
 			/* TODO: handle digged/burned elbereth */
 		}
@@ -106,29 +106,29 @@ void Health::analyze() {
 		/* TODO: eat sprig of wolfsbane */
 		/* no? try praying instead */
 		if (action::Pray::isSafeToPrayMajorTrouble())
-			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_LYCANTHROPY)));
+			World::setAction(new action::Pray(this, PRIORITY_HEALTH_CURE_LYCANTHROPY));
 	}
 	if (Saiph::stoned()) {
 		// cure stoning
 		if (_lizard_key != ILLEGAL_ITEM) { // use lizard corpse if we have it
-			World::setAction(static_cast<action::Action*> (new action::Eat(this, _lizard_key, PRIORITY_HEALTH_CURE_STONING)));
+			World::setAction(new action::Eat(this, _lizard_key, PRIORITY_HEALTH_CURE_STONING));
 		} else {
 			//we'll die if we don't pray, so let's pray
-			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_STONING)));
+			World::setAction(new action::Pray(this, PRIORITY_HEALTH_CURE_STONING));
 		}
 	}
 	if (Saiph::polymorphed()) {
 		/* cure polymorph */
 		if (action::Pray::isSafeToPray())
-			World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_HEALTH_CURE_POLYMORPH)));
+			World::setAction(new action::Pray(this, PRIORITY_HEALTH_CURE_POLYMORPH));
 		/* also check player attributes */
 		if (!_was_polymorphed)
-			World::queueAction(static_cast<action::Action*> (new action::ListPlayerAttributes(this)));
+			World::queueAction(new action::ListPlayerAttributes(this));
 		_was_polymorphed = true;
 	}
 	if (_was_polymorphed && !Saiph::polymorphed()) {
 		/* returned to normal form, check player attributes again */
-		World::queueAction(static_cast<action::Action*> (new action::ListPlayerAttributes(this)));
+		World::queueAction(new action::ListPlayerAttributes(this));
 		_was_polymorphed = false;
 	}
 	if (_prev_str < Saiph::strength() || _prev_dex < Saiph::dexterity() || _prev_con < Saiph::constitution() || _prev_int < Saiph::intelligence() || _prev_wis < Saiph::wisdom() || _prev_cha < Saiph::charisma()) {
@@ -140,7 +140,7 @@ void Health::analyze() {
 	/* apply unihorn until we've cured everything */
 	if (_unihorn_priority >= 0 && canApplyUnihorn()) {
 		/* unihorn failed last attempt, try again */
-		World::setAction(static_cast<action::Action*> (new action::Apply(this, _unihorn_key, _unihorn_priority, false)));
+		World::setAction(new action::Apply(this, _unihorn_key, _unihorn_priority, false));
 	}
 
 	/* set previous stat values */

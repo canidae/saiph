@@ -45,10 +45,10 @@ void Excalibur::analyze() {
 		return; // can't get to any fountains
 	if (tile.direction() == NOWHERE) {
 		/* standing on (in?) fountain, dip */
-		World::setAction(static_cast<action::Action*> (new action::Dip(this, got_long_sword, ILLEGAL_ITEM, PRIORITY_EXCALIBUR_DIP)));
+		World::setAction(new action::Dip(this, got_long_sword, ILLEGAL_ITEM, PRIORITY_EXCALIBUR_DIP));
 	} else {
 		/* move towards fountain */
-		World::setAction(static_cast<action::Action*> (new action::Move(this, tile, PRIORITY_EXCALIBUR_DIP)));
+		World::setAction(new action::Move(this, tile, PRIORITY_EXCALIBUR_DIP));
 	}
 }
 

@@ -37,18 +37,18 @@ void Vault::parseMessages(const string& messages) {
 		/* if we got some means of getting out (teleportitis, wand of teleport, scroll of teleport, pick-axe),
 		 * then claim we're Croesus */
 		if (Saiph::intrinsics() & PROPERTY_TELEPORT) {
-			World::setAction(static_cast<action::Action*> (new action::Answer(this, VAULT_CROESUS)));
+			World::setAction(new action::Answer(this, VAULT_CROESUS));
 			Debug::notice() << "Not dropping gold since we can tele out" << endl;
 			return;
 		}
 		/* otherwise, tell our real name */
-		World::setAction(static_cast<action::Action*> (new action::Answer(this, "saiph\n")));
+		World::setAction(new action::Answer(this, "saiph\n"));
 		Debug::notice() << "Oops, we're stuck in a vault." << endl;
 		_answering_guard = true;
 	} else if (_dropping_gold) {
 		/* drop gold */
 		Debug::notice() << "Going to drop gold for the guard." << endl;
-		World::setAction(static_cast<action::Action*> (new action::DropGold(this, 999)));
+		World::setAction(new action::DropGold(this, 999));
 	} else if (messages.find(VAULT_MESSAGE_DISAPPEAR) != string::npos) {
 		/* guard is gone, stop following */
 		Debug::notice() << "No longer following guard." << endl;
@@ -94,9 +94,9 @@ void Vault::parseMessages(const string& messages) {
 		Debug::notice() << "Going to follow guard." << endl;
 		Tile& tile = World::shortestPath(target);
 		if (tile.cost() >= UNPASSABLE)
-			World::setAction(static_cast<action::Action*> (new action::Rest(this, 999)));
+			World::setAction(new action::Rest(this, 999));
 		else
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, 999, false)));
+			World::setAction(new action::Move(this, tile, 999, false));
 		return;
 	}
 }

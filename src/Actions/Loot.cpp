@@ -79,7 +79,7 @@ void Loot::update(const std::string& messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<event::Event*> (&wi));
+		EventBus::broadcast(&wi);
 		/* pick up stuff that was wanted by analyzers */
 		std::ostringstream tmp;
 		for (std::map<unsigned char, Item>::iterator i = wi.items().begin(); i != wi.items().end(); ++i) {

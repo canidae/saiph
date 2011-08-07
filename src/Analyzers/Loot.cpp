@@ -33,7 +33,7 @@ Loot::Loot() : Analyzer("Loot"), _visit() {
 void Loot::analyze() {
 	/* check inventory if it's not updated */
 	if (!Inventory::updated()) {
-		World::setAction(static_cast<action::Action*> (new action::ListInventory(this)));
+		World::setAction(new action::ListInventory(this));
 		return;
 	}
 
@@ -53,7 +53,7 @@ void Loot::analyze() {
 		Tile tile = World::shortestPath(*v);
 		if (tile.direction() == NOWHERE) {
 			/* standing on stash, look and remove from visit */
-			if (World::setAction(static_cast<action::Action*> (new action::Look(this)))) {
+			if (World::setAction(new action::Look(this))) {
 				/* TODO: we may get something more important to do just as we step on the loot, making us move away from the stash. 
 					 in that case she won't visit the stash again later. can't remove the stash from _visit here. */
 				_visit.erase(v++);
@@ -61,7 +61,7 @@ void Loot::analyze() {
 			}
 		} else if (tile.cost() < UNPASSABLE) {
 			/* move to stash */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost()))));
+			World::setAction(new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_LOOT_VISIT, tile.cost())));
 		}
 		++v;
 	}
@@ -75,25 +75,25 @@ void Loot::analyze() {
 				wi.addItem(i->first, i->second);
 		}
 		bool drop_on_stairs = false;
-		EventBus::broadcast(static_cast<Event*> (&wi));
+		EventBus::broadcast(&wi);
 		for (map<unsigned char, Item>::iterator i = wi.items().begin(); !drop_on_stairs && i != wi.items().end(); ++i) {
 			if (i->second.want() <= 0 || i->second.want() < i->second.count())
 				drop_on_stairs = true;
 		}
 		if (drop_on_stairs) {
 			ElberethQuery eq;
-			EventBus::broadcast(static_cast<Event*> (&eq));
+			EventBus::broadcast(&eq);
 			if (eq.type() == ELBERETH_MUST_CHECK) {
 				/* we don't know, we must look */
-				World::setAction(static_cast<action::Action*> (new action::Look(this)));
+				World::setAction(new action::Look(this));
 			} else if (eq.type() == ELBERETH_DUSTED || eq.type() == ELBERETH_NONE) {
 				/* no elbereth or dusted elbereth */
 				if (eq.count() < 3) {
 					/* less than 3 elbereths, engrave */
-					World::setAction(static_cast<action::Action*> (new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_DROP, (eq.count() > 0))));
+					World::setAction(new action::Engrave(this, ELBERETH "\n", HANDS, PRIORITY_LOOT_DROP, (eq.count() > 0)));
 				} else {
 					/* 3 or more elbereths, drop stuff we don't want */
-					World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_LOOT_DROP, true)));
+					World::setAction(new action::Drop(this, PRIORITY_LOOT_DROP, true));
 				}
 			}
 		}
@@ -103,7 +103,7 @@ void Loot::analyze() {
 void Loot::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_SEVERAL_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_SEVERAL_MORE_OBJECTS_HERE) != string::npos || messages.find(MESSAGE_MANY_MORE_OBJECTS_HERE) != string::npos) {
 		/* several/many objects herek, take a look around */
-		World::setAction(static_cast<action::Action*> (new action::Look(this)));
+		World::setAction(new action::Look(this));
 	}
 }
 
@@ -127,12 +127,12 @@ void Loot::onEvent(Event* const event) {
 				wi.addItem(index++, *i);
 				++i;
 				if (index == UCHAR_MAX || i == e->items().end()) {
-					EventBus::broadcast(static_cast<Event*> (&wi));
+					EventBus::broadcast(&wi);
 					for (map<unsigned char, Item>::iterator i = wi.items().begin(); i != wi.items().end(); ++i) {
 						if (i->second.want() <= 0 || i->second.count() <= 0)
 							continue;
 						/* someone want an item in this stash */
-						World::setAction(static_cast<action::Action*> (new action::Loot(this, PRIORITY_LOOT, safe_stash)));
+						World::setAction(new action::Loot(this, PRIORITY_LOOT, safe_stash));
 						looting = true;
 						break;
 					}

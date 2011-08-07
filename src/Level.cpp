@@ -330,7 +330,7 @@ void Level::analyze() {
 	if (s != _stashes.end() && s->second.items().size() > 0) {
 		/* broadcast "ItemsOnGround" */
 		ItemsOnGround on_ground(s->second.items());
-		EventBus::broadcast(static_cast<Event*> (&on_ground));
+		EventBus::broadcast(&on_ground);
 	}
 
 	/* branches we will recognize immediately */
@@ -552,7 +552,7 @@ void Level::setDirtyStash(const Point& point) {
 	if (s != _stashes.end()) {
 		s->second.items().clear();
 		StashChanged sc(Coordinate(Saiph::position().level(), point));
-		EventBus::broadcast(static_cast<Event*> (&sc));
+		EventBus::broadcast(&sc);
 	}
 }
 
@@ -685,7 +685,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 				/* broadcast StashChanged unless we looked at the stash last turn */
 				if (broadcast) {
 					StashChanged sc(Coordinate(Saiph::position().level(), point));
-					EventBus::broadcast(static_cast<Event*> (&sc));
+					EventBus::broadcast(&sc);
 				}
 			}
 		} else {
@@ -693,7 +693,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			_stashes[point] = Stash(symbol, color);
 			/* broadcast StashChanged */
 			StashChanged sc(Coordinate(Saiph::position().level(), point));
-			EventBus::broadcast(static_cast<Event*> (&sc));
+			EventBus::broadcast(&sc);
 		}
 	} else if (symbol == t.symbol()) {
 		/* if there ever was a stash here, it's gone now */

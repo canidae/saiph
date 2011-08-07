@@ -28,7 +28,7 @@ Weapon::Weapon() : Analyzer("Weapon"), _wield_weapon(ILLEGAL_ITEM), _melee_weapo
 /* methods */
 void Weapon::analyze() {
 	if (!Saiph::polymorphed() && _wield_weapon != ILLEGAL_ITEM && _wield_weapon != Inventory::keyForSlot(SLOT_WEAPON))
-		World::setAction(static_cast<action::Action*> (new action::Wield(this, _wield_weapon, WEAPON_WIELD_PRIORITY)));
+		World::setAction(new action::Wield(this, _wield_weapon, WEAPON_WIELD_PRIORITY));
 }
 
 void Weapon::onEvent(event::Event* const event) {

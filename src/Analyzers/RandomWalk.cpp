@@ -58,7 +58,7 @@ void RandomWalk::analyze() {
 
 	Tile t = World::level().tile(p);
 	if (t.cost() < UNPASSABLE)
-		World::setAction(static_cast<action::Action*> (new action::Move(this, t, 1)));
+		World::setAction(new action::Move(this, t, 1));
 	else
-		World::setAction(static_cast<action::Action*> (new action::Rest(this, 1)));
+		World::setAction(new action::Rest(this, 1));
 }

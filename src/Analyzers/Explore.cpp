@@ -88,15 +88,15 @@ void Explore::analyze() {
 		return;
 	} else if (best_tile.direction() == NOWHERE) {
 		if (best_direction == LOOK) {
-			World::setAction(static_cast<action::Action*> (new action::Look(this)));
+			World::setAction(new action::Look(this));
 		} else if (best_direction == NOWHERE) {
-			World::setAction(static_cast<action::Action*> (new action::Search(this, PRIORITY_EXPLORE)));
+			World::setAction(new action::Search(this, PRIORITY_EXPLORE));
 		} else {
 			best_tile.direction(best_direction);
-			World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE, best_cost))));
+			World::setAction(new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE, best_cost)));
 		}
 	} else {
-		World::setAction(static_cast<action::Action*> (new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE, best_cost))));
+		World::setAction(new action::Move(this, best_tile, action::Move::calculatePriority(PRIORITY_EXPLORE, best_cost)));
 	}
 }
 

@@ -53,10 +53,10 @@ void Door::analyze() {
 		if (tile.distance() == 1) {
 			/* open/pick/kick door */
 			if (!(d->second & DOOR_IS_LOCKED)) {
-				World::setAction(static_cast<action::Action*> (new action::Open(this, tile.direction(), PRIORITY_DOOR_OPEN)));
+				World::setAction(new action::Open(this, tile.direction(), PRIORITY_DOOR_OPEN));
 			} else if (_unlock_tool_key != 0) {
 				if (Saiph::encumbrance() <= STRAINED)
-					World::setAction(static_cast<action::Action*> (new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN)));
+					World::setAction(new action::Unlock(this, _unlock_tool_key, tile.direction(), PRIORITY_DOOR_OPEN));
 			} else {
 				/* see if we can kick if no pick */
 				if (Saiph::position().row() != d->first.row() && Saiph::position().col() != d->first.col()) {
@@ -69,18 +69,18 @@ void Door::analyze() {
 						if (pst.symbol() != CORRIDOR || pst.search() == TILE_FULLY_SEARCHED)
 							continue;
 						// Try to stand orthogonally next to doors before kicking them, to catch "closed for inventory"
-						World::setAction(static_cast<action::Action*> (new action::Move(this, pst, PRIORITY_DOOR_OPEN)));
+						World::setAction(new action::Move(this, pst, PRIORITY_DOOR_OPEN));
 						return;
 					}
 				}
 				if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
-					World::setAction(static_cast<action::Action*> (new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN)));
+					World::setAction(new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN));
 			}
 			_position = d->first;
 			return;
 		} else if (tile.distance() < min_distance) {
 			/* go to door */
-			World::setAction(static_cast<action::Action*> (new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance()))));
+			World::setAction(new action::Move(this, tile, action::Move::calculatePriority(PRIORITY_DOOR_OPEN, tile.distance())));
 			min_distance = tile.distance();
 		}
 	}
@@ -95,7 +95,7 @@ void Door::parseMessages(const string& messages) {
 		World::level().setDungeonSymbolValue(_position, getDoorFlags(_position) | DOOR_IS_LOCKED);
 	} else if (messages.find(MESSAGE_BREAK_SHOP_DOOR) != string::npos) {
 		/* oops, we broke a shopkeepers door, better pay */
-		World::setAction(static_cast<action::Action*> (new action::Answer(this, YES)));
+		World::setAction(new action::Answer(this, YES));
 	} else if (messages.find(MESSAGE_CLOSED_FOR_INVENTORY) != string::npos) {
 		/* a shop that is closed for inventory */
 		stack<Point> door;

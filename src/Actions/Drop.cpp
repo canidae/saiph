@@ -97,7 +97,7 @@ void Drop::update(const std::string& messages) {
 			pos += length;
 		}
 		/* broadcast event */
-		EventBus::broadcast(static_cast<event::Event*> (&wi));
+		EventBus::broadcast(&wi);
 		/* drop stuff no analyzer wanted */
 		std::ostringstream tmp;
 		for (std::map<unsigned char, Item>::const_iterator i = wi.items().begin(); i != wi.items().end(); ++i) {

@@ -31,7 +31,7 @@ void Lamp::analyze() {
 
 	map<unsigned char, Item>::iterator l = Inventory::items().find(_lamp_key);
 	if (l != Inventory::items().end() && l->second.additional() == "")
-		World::setAction(static_cast<action::Action*> (new action::Apply(this, _lamp_key, 100, false))); // turn on lamp
+		World::setAction(new action::Apply(this, _lamp_key, 100, false)); // turn on lamp
 }
 
 void Lamp::parseMessages(const string& messages) {
@@ -61,11 +61,11 @@ void Lamp::parseMessages(const string& messages) {
 			if (i->second.name() == "oil lamp") {
 				_seen_oil_lamp = true;
 			} else if (i->second.name() == "lamp") {
-				World::queueAction(static_cast<action::Action*> (new action::Call(this, i->first, "oil lamp")));
+				World::queueAction(new action::Call(this, i->first, "oil lamp"));
 				_seen_oil_lamp = true;
 			}
 			/* since it's empty, we'll also discard it */
-			World::queueAction(static_cast<action::Action*> (new action::Name(this, i->first, DISCARD)));
+			World::queueAction(new action::Name(this, i->first, DISCARD));
 		}
 	}
 }
@@ -99,11 +99,11 @@ void Lamp::findLamp() {
 		/* maybe we know what kind of lamp it is? */
 		if (_seen_oil_lamp && !_seen_magic_lamp && l->second.name() == "lamp") {
 			/* this must be a magic lamp */
-			World::queueAction(static_cast<action::Action*> (new action::Call(this, l->first, "magic lamp")));
+			World::queueAction(new action::Call(this, l->first, "magic lamp"));
 			_seen_magic_lamp = true;
 		} else if (!_seen_oil_lamp && _seen_magic_lamp && l->second.name() == "lamp") {
 			/* this must be an oil lamp */
-			World::queueAction(static_cast<action::Action*> (new action::Call(this, l->first, "oil lamp")));
+			World::queueAction(new action::Call(this, l->first, "oil lamp"));
 			_seen_oil_lamp = true;
 		}
 		return;

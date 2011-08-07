@@ -93,7 +93,7 @@ void Quest::analyze() {
 	Tile& go = World::shortestPath(_leader_pos);
 
 	if (go.distance() > 1 && go.cost() < UNPASSABLE)
-		World::setAction(static_cast<action::Action*> (new action::Move(this, go, PRIORITY_QUEST_GET_QUEST, go.cost())));
+		World::setAction(new action::Move(this, go, PRIORITY_QUEST_GET_QUEST, go.cost()));
 }
 
 void Quest::onEvent(event::Event * const event) {

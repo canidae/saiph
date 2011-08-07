@@ -89,7 +89,7 @@ void Food::analyze() {
 			}
 			if (eat != Inventory::items().end()) {
 				/* we got something to eat, hooray! */
-				World::setAction(static_cast<action::Action*> (new action::Eat(this, eat->first, (Saiph::hunger() == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING))));
+				World::setAction(new action::Eat(this, eat->first, (Saiph::hunger() == WEAK ? PRIORITY_FOOD_EAT_WEAK : PRIORITY_FOOD_EAT_FAINTING)));
 				return;
 			}
 		}
@@ -98,7 +98,7 @@ void Food::analyze() {
 			/* bad enough to pray for help.
 			 * if this doesn't work... help! */
 			if (action::Pray::isSafeToPrayMajorTrouble())
-				World::setAction(static_cast<action::Action*> (new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD)));
+				World::setAction(new action::Pray(this, PRIORITY_FOOD_PRAY_FOR_FOOD));
 		}
 	}
 }
@@ -146,7 +146,7 @@ void Food::onEvent(Event* const event) {
 					map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
 					/* check that item is a corpse, it's safe to eat and that the corpse rots */
 					if (c != data::Corpse::corpses().end() && safeToEat(c) && !(c->second->effects() & EAT_EFFECT_NEVER_ROT)) {
-						World::setAction(static_cast<action::Action*> (new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE)));
+						World::setAction(new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE));
 						break;
 					}
 				}
@@ -187,7 +187,7 @@ void Food::onEvent(Event* const event) {
 		}
 	} else if (event->id() == EatItem::ID) {
 		EatItem* e = static_cast<EatItem*> (event);
-		World::setAction(static_cast<action::Action*> (new action::Eat(this, e->key(), e->priority())));
+		World::setAction(new action::Eat(this, e->key(), e->priority()));
 	}
 }
 

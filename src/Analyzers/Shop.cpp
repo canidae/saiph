@@ -96,7 +96,7 @@ void Shop::lastChance(action::Action* const plan) {
 			setShopping(false);
 			// Force analyzers to rerun so we can maybe get our pick back
 			// Maybe we should have a dedicated NoOp action for this
-			World::setAction(static_cast<action::Action*> (new action::Look(this)));
+			World::setAction(new action::Look(this));
 		}
 	}
 }
@@ -108,7 +108,7 @@ void Shop::dropPicks() {
 			have_pick = true;
 	}
 	if (have_pick)
-		World::setAction(static_cast<action::Action*> (new action::Drop(this, PRIORITY_SHOP_DROP_DIGGING_TOOL, false)));
+		World::setAction(new action::Drop(this, PRIORITY_SHOP_DROP_DIGGING_TOOL, false));
 }
 
 void Shop::onEvent(event::Event* const event) {
@@ -188,7 +188,7 @@ void Shop::analyze() {
 		}
 
 		if (adj_shk && reach_any >= UNPASSABLE && World::turn() - _payed > 10) {
-			World::setAction(static_cast<action::Action*> (new action::Pay(this, PRIORITY_PAY_FOR_ITEMS)));
+			World::setAction(new action::Pay(this, PRIORITY_PAY_FOR_ITEMS));
 			Debug::custom(name()) << "Setting action to pay." << endl;
 		}
 	}

@@ -64,13 +64,13 @@ void Armor::analyze() {
 		map<const string, const data::Armor*>::const_iterator a = data::Armor::armors().find(best_wear.name());
 		if (a != data::Armor::armors().end() && betterThanCurrent(best_wear)) {
 			if (((a->second->slot() == SLOT_SHIRT || a->second->slot() == SLOT_SUIT) && Inventory::keyForSlot(SLOT_CLOAK) != ILLEGAL_ITEM))
-				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(SLOT_CLOAK), ARMOR_WEAR_PRIORITY)));
+				World::setAction(new action::TakeOff(this, Inventory::keyForSlot(SLOT_CLOAK), ARMOR_WEAR_PRIORITY));
 			else if (a->second->slot() == SLOT_SHIRT && Inventory::keyForSlot(SLOT_SUIT) != ILLEGAL_ITEM)
-				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(SLOT_SUIT), ARMOR_WEAR_PRIORITY)));
+				World::setAction(new action::TakeOff(this, Inventory::keyForSlot(SLOT_SUIT), ARMOR_WEAR_PRIORITY));
 			else if (Inventory::keyForSlot(a->second->slot()) != ILLEGAL_ITEM)
-				World::setAction(static_cast<action::Action*> (new action::TakeOff(this, Inventory::keyForSlot(a->second->slot()), ARMOR_WEAR_PRIORITY)));
+				World::setAction(new action::TakeOff(this, Inventory::keyForSlot(a->second->slot()), ARMOR_WEAR_PRIORITY));
 			else
-				World::setAction(static_cast<action::Action*> (new action::Wear(this, best_key, ARMOR_WEAR_PRIORITY)));
+				World::setAction(new action::Wear(this, best_key, ARMOR_WEAR_PRIORITY));
 		} else {
 			_put_on.erase(best_key);
 		}
@@ -104,7 +104,7 @@ void Armor::parseMessages(const string& messages) {
 			if (Inventory::itemInSlot(SLOT_SHIRT).beatitude() == CURSED)
 				remove = true;
 		}
-		World::setAction(static_cast<action::Action*> (new action::Answer(this, (remove ? YES : NO))));
+		World::setAction(new action::Answer(this, (remove ? YES : NO)));
 	}
 }
 

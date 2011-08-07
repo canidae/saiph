@@ -71,7 +71,7 @@ void Inventory::parseMessages(const string& messages) {
 		}
 		/* broadcast ChangedInventoryItems */
 		if (_changed.keys().size() > 0)
-			EventBus::broadcast(static_cast<Event*> (&_changed));
+			EventBus::broadcast(&_changed);
 	} else if (!World::menu() && (messages.find(MESSAGE_NOT_CARRYING_ANYTHING) != string::npos || messages.find(MESSAGE_NOT_CARRYING_ANYTHING_EXCEPT_GOLD) != string::npos)) {
 		/* we're not carrying anything */
 		_extrinsics_updated = true;
@@ -84,7 +84,7 @@ void Inventory::parseMessages(const string& messages) {
 		_updated = true;
 		if (_changed.keys().size() > 0) {
 			/* broadcast ChangedInventoryItems */
-			EventBus::broadcast(static_cast<Event*> (&_changed));
+			EventBus::broadcast(&_changed);
 		}
 	}
 	if (!World::menu() && (messages.find(MESSAGE_STEALS) != string::npos || messages.find(MESSAGE_STOLE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE) != string::npos || messages.find(MESSAGE_DESTROY_POTION_FIRE2) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD) != string::npos || messages.find(MESSAGE_DESTROY_POTION_COLD2) != string::npos || messages.find(MESSAGE_DESTROY_RING) != string::npos || messages.find(MESSAGE_DESTROY_RING2) != string::npos || messages.find(MESSAGE_DESTROY_WAND) != string::npos || messages.find(MESSAGE_DESTROY_WAND2) != string::npos || messages.find(MESSAGE_POLYMORPH) != string::npos || messages.find(MESSAGE_FOOCUBUS_QUESTION) != string::npos || messages.find(MESSAGE_FOOCUBUS_REMOVE) != string::npos)) {
@@ -113,7 +113,7 @@ void Inventory::parseMessages(const string& messages) {
 		}
 		if (received.items().size() > 0) {
 			/* broadcast "ReceivedItems" */
-			EventBus::broadcast(static_cast<Event*> (&received));
+			EventBus::broadcast(&received);
 			/* make any stash at location dirty too */
 			World::level().setDirtyStash(Saiph::position());
 		}

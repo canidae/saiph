@@ -38,13 +38,13 @@ void Wish::parseMessages(const string& messages) {
 			string command = "blessed greased fixed +3 " + selectWish();
 			Debug::custom(name()) << "Wishing for " << command << endl;
 			command.append("\n");
-			World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+			World::queueAction(new action::Answer(this, command));
 			return;
 		} else {
 			if (charging_key == ILLEGAL_ITEM) {
 				string command = "3 blessed scrolls of charging\n";
 				Debug::custom(name()) << "Wishing for charging" << endl;
-				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+				World::queueAction(new action::Answer(this, command));
 				wished_for_charging = true;
 			} else {
 				string command = "blessed greased fixed +3 " + selectWish();
@@ -57,7 +57,7 @@ void Wish::parseMessages(const string& messages) {
 					wished_for_gop = true;
 				Debug::custom(name()) << "Wishing for " << command << endl;
 				command.append("\n");
-				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+				World::queueAction(new action::Answer(this, command));
 			}
 		}
 	}
@@ -72,15 +72,15 @@ void Wish::analyze() {
 			 * of an action, and then we need to formally name it.
 			 */
 			if (!named_empty) {
-				World::queueAction(static_cast<action::Action*> (new action::Name(this, wand_of_wishing_key, "EMPTY")));
+				World::queueAction(new action::Name(this, wand_of_wishing_key, "EMPTY"));
 				named_empty = true;
 			}
 			will_wish = false;
 			if (charging_key != ILLEGAL_ITEM && Inventory::itemAtKey(charging_key).beatitude() == BLESSED && Inventory::itemAtKey(wand_of_wishing_key).name().find("full") == string::npos) {
 				if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
-					World::setAction(static_cast<action::Action*> (new action::Charge(this, charging_key, wand_of_wishing_key, 100)));
+					World::setAction(new action::Charge(this, charging_key, wand_of_wishing_key, 100));
 					if (named_full == false) {
-						World::queueAction(static_cast<action::Action*> (new action::Name(this, wand_of_wishing_key, "full")));
+						World::queueAction(new action::Name(this, wand_of_wishing_key, "full"));
 						named_full = true;
 					}
 					Inventory::update();
@@ -97,7 +97,7 @@ void Wish::analyze() {
 		if (will_wish && Inventory::itemAtKey(wand_of_wishing_key) != Inventory::NO_ITEM) {
 			action::Wish* wishAction = new action::Wish(this, wand_of_wishing_key, 100);
 			if (wishAction->canEngrave())
-				World::setAction(static_cast<action::Action*> (wishAction));
+				World::setAction(wishAction);
 			will_wish = false;
 		}	
 	}
@@ -111,13 +111,13 @@ void Wish::onEvent(event::Event* const event) {
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
 			if (wished_for_charging) {
 				charging_key = i->first;
-				World::queueAction(static_cast<action::Action*> (new action::Call(this, charging_key, "scroll of charging")));
+				World::queueAction(new action::Call(this, charging_key, "scroll of charging"));
 			} else if (wished_for_aor) {
-				World::queueAction(static_cast<action::Action*> (new action::Call(this, i->first, "amulet of reflection")));
+				World::queueAction(new action::Call(this, i->first, "amulet of reflection"));
 			} else if (wished_for_speed) {
-				World::queueAction(static_cast<action::Action*> (new action::Call(this, i->first, "speed boots")));
+				World::queueAction(new action::Call(this, i->first, "speed boots"));
 			} else if (wished_for_gop) {
-				World::queueAction(static_cast<action::Action*> (new action::Call(this, i->first, "gauntlets of power")));
+				World::queueAction(new action::Call(this, i->first, "gauntlets of power"));
 			}
 			break;
 		}
