@@ -53,6 +53,7 @@ public:
 	static const std::vector<Level>& levels();
 	static int currentPriority();
 	static action::Action* lastAction();
+	static std::string lastData();
 	static int lastActionID();
 	static void init(const std::string& logfile, int connection_type);
 	static void destroy();

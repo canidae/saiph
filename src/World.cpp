@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <termios.h>
 #include <unistd.h>
 #include <sstream>
@@ -158,6 +159,10 @@ int World::currentPriority() {
 
 action::Action* World::lastAction() {
 	return _last_action;
+}
+
+std::string World::lastData() {
+	return string(_data, _data_size);
 }
 
 int World::lastActionID() {
@@ -753,7 +758,14 @@ void World::run(int speed) {
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << _action->analyzer()->name() << " " << _action->command();
+		string activity = _action->analyzer()->name();
+		activity += ' ';
+		activity += _action->command().command();
+		if (activity.size() > 78) {
+			activity.erase(activity.begin() + 75, activity.end());
+			activity += "...";
+		}
+		cout << activity;
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
