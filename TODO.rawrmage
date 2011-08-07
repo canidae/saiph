@@ -1,8 +1,33 @@
 TODO list for rawrmage
- - Amulet needs to consider priorities of amulets to wear.
-	- LS > everything (if reflection from other source)
-	- Refl > everything (if no other reflection)
- - Amulet is taking amulets from shops, on SHOP_TILE!
- - Finish WoW, charging, wresting
- - Read action, Wrest action(?)
- - Shopping!
+ - Shopping! - far goal
+ - Why is there an armor drop and pickup loop between Burdened and Stressed?
+ - You can't take off your gloves when a weapon is welded to your hand.
+ - Various loops with nymphs - why?
+   - From what I've observed it looks like we want to move away from nymphs,
+     but we instantly forget this and move back, causing oscillation.
+ X We can't kick with wounded legs - thought we'd already fixed this, but
+   this was observed in Sokoban.
+   - fixed, we didn't make the necessary check
+ - Adopt a more "defensive" combat strategy.
+ - Are we walking into vault teleporters? Why?
+ - Don't go up stairs when stressed, don't try.
+ - Saiph desperately needs to manage inventory better as a whole.
+   - She currently likes to hoard tons of stuff and not want to get rid of it.
+     Perhaps this is because we have "I want to pick this up to evaluate it"
+     acting the same as "I don't want to drop this." Code is there to 
+     differentiate between the two in Armor, at least, but we shouldn't have 
+     to explicitly add that to every analyzer. An event which is the 
+     counterpart of WantItems for asking an analyzer "What are you willing to
+     get rid of?" and changing the behavior of wantItems to only govern
+     pickup is one way of limiting this.
+   - To determine what an Analyzer is willing to drop we need to have more 
+     precise weight management, as well as some sort of algorithm for every
+     analyzer to score items.
+   - (yes, I know this has been discussed to death already. sorry for keeping
+     on this.)
+ - Documentation:
+     - A "Guide to Saiph" would be nice
+	- How does she work? What are Analyzers, Actions, Events?
+	- Where are good places to look to familiarize yourself?
+     - Formalize TODOs in LP bug reports/blueprints
+     - Go through files and attempt to comment
