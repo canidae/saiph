@@ -4,6 +4,7 @@
 #include "Actions/Answer.h"
 #include "Actions/Call.h"
 #include "Actions/Charge.h"
+#include "Actions/Engrave.h"
 #include "Actions/Name.h"
 #include "Actions/Wish.h"
 #include "EventBus.h"
@@ -29,36 +30,24 @@ Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key
 /* methods */
 void Wish::parseMessages(const string& messages) {
 	if (messages.find(MESSAGE_FOR_WHAT_DO_YOU_WISH) != string::npos) {
-		for (map<unsigned char, Item>::iterator l = Inventory::items().begin(); l != Inventory::items().end(); ++l) {
-			Debug::custom(name()) << "item name: " << l->second.name() << endl;
-			if (l->second.name().find("wand of wishing") != string::npos)
-				wand_of_wishing_key = l->first;
-		}
-		if (wand_of_wishing_key == ILLEGAL_ITEM) {
+		bool from_wand = (World::lastActionID() == action::Engrave::ID || World::lastActionID() == action::Wish::ID); // or zap
+		if (from_wand && charging_key == ILLEGAL_ITEM) {
+			string command = "3 blessed scrolls of charging\n";
+			Debug::custom(name()) << "Wishing for charging" << endl;
+			World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
+			wished_for_charging = true;
+		} else {
 			string command = "blessed greased fixed +3 " + selectWish();
+			// identify that we need to type-name these things.
+			if (command.find("amulet of reflection") != string::npos)
+				wished_for_aor = true;
+			else if (command.find("speed boots") != string::npos)
+				wished_for_speed = true;
+			else if (command.find("gauntlets of power") != string::npos)
+				wished_for_gop = true;
 			Debug::custom(name()) << "Wishing for " << command << endl;
 			command.append("\n");
 			World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
-			return;
-		} else {
-			if (charging_key == ILLEGAL_ITEM) {
-				string command = "3 blessed scrolls of charging\n";
-				Debug::custom(name()) << "Wishing for charging" << endl;
-				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
-				wished_for_charging = true;
-			} else {
-				string command = "blessed greased fixed +3 " + selectWish();
-				// identify that we need to type-name these things.
-				if (command.find("amulet of reflection") != string::npos)
-					wished_for_aor = true;
-				else if (command.find("speed boots") != string::npos)
-					wished_for_speed = true;
-				else if (command.find("gauntlets of power") != string::npos)
-					wished_for_gop = true;
-				Debug::custom(name()) << "Wishing for " << command << endl;
-				command.append("\n");
-				World::queueAction(static_cast<action::Action*> (new action::Answer(this, command)));
-			}
 		}
 	}
 }
