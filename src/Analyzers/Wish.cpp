@@ -8,6 +8,7 @@
 #include "Actions/Name.h"
 #include "Actions/Wish.h"
 #include "EventBus.h"
+#include "Events/ChangedInventoryItems.h"
 #include "Events/ReceivedItems.h"
 #include "Events/WantItems.h"
 #include "Inventory.h"
@@ -24,6 +25,7 @@ using namespace std;
 /* constructors/destructor */
 Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), named_empty(false), named_full(false), wished_for_charging(false), wished_for_aor(false), wished_for_speed(false), wished_for_gop(false), will_wish(false) {
 	EventBus::registerEvent(ReceivedItems::ID, this);
+	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
 }
 
@@ -120,6 +122,14 @@ void Wish::onEvent(event::Event* const event) {
 				i->second.want(i->second.count());
 			else if (i->second.name().find("full") != string::npos)
 				i->second.want(i->second.count());
+		}
+	}
+
+	if (event->id() == ReceivedItems::ID || event->id() == ChangedInventoryItems::ID) {
+		wand_of_wishing_key = ILLEGAL_ITEM;
+		for (map<unsigned char, Item>::const_iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
+			if (i->second.name().find("wand of wishing") != string::npos)
+				wand_of_wishing_key = i->first;
 		}
 	}
 }
