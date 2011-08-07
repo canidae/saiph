@@ -42,6 +42,7 @@ void Wish::parseMessages(const string& messages) {
 
 void Wish::analyze() {
 	//if we have a wand of wishing, we need to decide if we should zap
+	//TODO: for now always drain wands
 	if (wand_of_wishing_key != ILLEGAL_ITEM) {
 		if (Inventory::itemAtKey(wand_of_wishing_key).name().find("named EMPTY") != string::npos) {
 			/* this is really counter-intutitive, but we need it
@@ -54,29 +55,23 @@ void Wish::analyze() {
 			}
 			will_wish = false;
 			if (charging_key != ILLEGAL_ITEM && Inventory::itemAtKey(charging_key).beatitude() == BLESSED && Inventory::itemAtKey(wand_of_wishing_key).name().find("full") == string::npos) {
-				if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
-					World::setAction(static_cast<action::Action*> (new action::Charge(this, charging_key, wand_of_wishing_key, 100)));
-					if (named_full == false) {
-						World::queueAction(static_cast<action::Action*> (new action::Name(this, wand_of_wishing_key, "full")));
-						named_full = true;
-					}
-					Inventory::update();
-					will_wish = true;
+				World::setAction(static_cast<action::Action*> (new action::Charge(this, charging_key, wand_of_wishing_key, 100)));
+				if (named_full == false) {
+					World::queueAction(static_cast<action::Action*> (new action::Name(this, wand_of_wishing_key, "full")));
+					named_full = true;
 				}
+				Inventory::update();
+				will_wish = true;
 			}	
 			// TODO: wrest
 		} else {
-			if (!haveReflection || !haveMR || !wearing("speed boots") || !wearing("gauntlets of power")) {
-				// we don't use markers, this is all we want
-				will_wish = true;
-			}
+			will_wish = true;
 		}
 		if (will_wish && Inventory::itemAtKey(wand_of_wishing_key) != Inventory::NO_ITEM) {
-			action::Wish* wishAction = new action::Wish(this, wand_of_wishing_key, 100);
-			if (wishAction->canEngrave())
-				World::setAction(static_cast<action::Action*> (wishAction));
+			if (action::Engrave::canEngrave())
+				World::setAction(new action::Wish(this, wand_of_wishing_key, 100));
 			will_wish = false;
-		}	
+		}
 	}
 }
 
@@ -118,28 +113,33 @@ string Wish::selectWish(bool wish_from_wand) {
 		_last_wish_call = "scroll of charging";
 		return "3 scrolls of charging";
 	}
-	if (!haveMR) {
-		if (reflectionArmor)
+	bool have_mr = (have("cloak of magic resistance") || have("gray dragon scale") || have("Magicbane"));
+	bool reflect = (have("amulet of reflection") || have("shield of reflection") || have("silver shield") || have("silver dragon scale"));
+
+	if (wish_from_wand && !have_mr && !reflect)
+		return "silver dragon scale mail";
+
+	if (!have_mr) {
+		if (have("silver dragon scale"))
 			return _last_wish_call = "cloak of magic resistance";
 		return "gray dragon scale mail";
-	} else if (!haveReflection) {
-		if (MRarmor)
+	} else if (!reflect) {
+		if (have("gray dragon scale"))
 			return _last_wish_call = "amulet of reflection";
 		return "silver dragon scale mail";
-	} else if (!wearing("speed boots")) {
+	} else if (!have("speed boots")) {
 		return _last_wish_call = "speed boots";
-	} else if (!wearing("gauntlets of power")) {
+	} else if (!have("gauntlets of power")) {
 		return _last_wish_call = "gauntlets of power";
 	}
 	//just some survival items
-	//TODO: wait until we wear amulets
-	//	if (!reflectionAmulet)
-	//		return "amulet of life saving";
+	if (!have("amulet of reflection"))
+		return _last_wish_call = "amulet of life saving";
 	_last_wish_call = "potion of full healing";
 	return "3 potions of full healing";
 }
 
-bool Wish::wearing(const string& name) {
+bool Wish::have(const string& name) {
 	for (map<unsigned char, Item>::iterator i = Inventory::items().begin(); i != Inventory::items().end(); ++i) {
 		if (i->second.name().find(name) != string::npos)
 			return true;

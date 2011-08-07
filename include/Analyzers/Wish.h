@@ -15,8 +15,6 @@ namespace analyzer {
 		void onEvent(event::Event* const event);
 
 	private:
-		bool MRarmor, MRcloak, haveMR;
-		bool reflectionArmor, reflectionAmulet, reflectionShield, haveReflection;
 		unsigned char wand_of_wishing_key;
 		unsigned char charging_key;
 		bool named_empty;
@@ -24,7 +22,7 @@ namespace analyzer {
 		bool will_wish;
 		std::string _last_wish_call;
 		std::string selectWish(bool from_wand);
-		bool wearing(const std::string& name);
+		bool have(const std::string& name);
 	};
 }
 #endif
