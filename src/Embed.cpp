@@ -105,10 +105,10 @@ int Embed::hook_input() {
 	return v;
 }
 
+/* note: no locking is needed here, because, between this and the read in doRetrieve,
+   a mutex unlock (after signal) here and lock in doRetrieve (in wait) must intervene. */
 void Embed::hook_output(const char *s, int l) {
-	pthread_mutex_lock(&mutex);
 	outputq.insert(outputq.end(), s, s+l);
-	pthread_mutex_unlock(&mutex);
 }
 
 void Embed::hook_exit(int) {
