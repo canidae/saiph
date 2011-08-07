@@ -52,6 +52,7 @@ public:
 	static int findLevel(int branch, int depth);
 	static const std::vector<Level>& levels();
 	static int currentPriority();
+	static action::Action* lastAction();
 	static int lastActionID();
 	static void init(const std::string& logfile, int connection_type);
 	static void destroy();
@@ -70,6 +71,7 @@ public:
 private:
 	static Connection* _connection;
 	static action::Action* _action;
+	static action::Action* _last_action;
 	static std::list<action::Action*> _action_queue;
 	static bool _changed[MAP_ROW_END + 1][MAP_COL_END + 1]; // just to prevent that same location is added twice in vector "changes"
 	static char _view[ROWS][COLS + 1]; // + 1 because we'll make the last character on each line '\0' (for easier parsing)
