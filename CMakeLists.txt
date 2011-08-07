@@ -9,6 +9,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -s")
 
 find_library(INETUTILS_LIBRARIES NAMES util)
+find_library(DYNAMIC_LINKER NAMES dl)
+find_library(THREADS NAMES pthread)
 
 include_directories(
 	${SAIPH_SOURCE_DIR}/include
@@ -20,6 +22,7 @@ set(HEADER_FILES
 	include/Connection.h
 	include/Coordinate.h
 	include/Debug.h
+	include/Embed.h
 	include/EventBus.h
 	include/Globals.h
 	include/Inventory.h
@@ -182,6 +185,7 @@ set(SOURCE_FILES
 	src/Connection.cpp
 	src/Coordinate.cpp
 	src/Debug.cpp
+	src/Embed.cpp
 	src/EventBus.cpp
 	src/Inventory.cpp
 	src/Item.cpp
@@ -340,4 +344,4 @@ set(SOURCE_FILES
 )
 
 add_executable(saiph ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(saiph ${INETUTILS_LIBRARIES})
+target_link_libraries(saiph ${INETUTILS_LIBRARIES} ${DYNAMIC_LINKER} ${THREADS})

@@ -4,6 +4,7 @@
 #define CONNECTION_LOCAL 1
 #define CONNECTION_TELNET 2
 #define CONNECTION_REPLAY 3
+#define CONNECTION_EMBED 4
 
 #include <fstream>
 #include <string>

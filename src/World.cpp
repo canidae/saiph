@@ -1596,6 +1596,9 @@ int main(int argc, const char* argv[]) {
 				case 't':
 					connection_type = CONNECTION_TELNET;
 					break;
+				case 'E':
+					connection_type = CONNECTION_EMBED;
+					break;
 				case '0':
 					initial_speed = SPEED_PAUSE;
 					break;
@@ -1642,6 +1645,7 @@ int main(int argc, const char* argv[]) {
 			cout << "\t-l  Use local nethack executable" << endl;
 			cout << "\t-t  Use telnet nethack server" << endl;
 			cout << "\t-R  Replay saved nethack game" << endl;
+			cout << "\t-E  Use in-process nethack interface" << endl;
 			cout << "\t-T  Save raw game data during play" << endl;
 			cout << endl;
 			cout << "\t-0  Start paused" << endl;
