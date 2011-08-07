@@ -36,7 +36,8 @@ namespace analyzer {
 		unsigned char _amulet_key;
 		
 		bool wantItem(const Item& item);
-		unsigned char bestAmulet(const std::map<unsigned char, Item>& keys);
+		int amuletScore(bool reflection, char key, const Item& amulet);
+		unsigned char bestAmulet();
 	};
 }
 #endif
