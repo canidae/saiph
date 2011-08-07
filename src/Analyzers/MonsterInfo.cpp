@@ -22,11 +22,8 @@ void MonsterInfo::analyze() {
 	for (map<Point, Monster>::const_iterator look_at = World::level().monsters().begin(); look_at != World::level().monsters().end(); ++look_at) {
 		if (!look_at->second.visible())
 			continue; // don't farlook monsters we can't see
-		if (look_at->second.symbol() == 'I' || look_at->second.symbol() == 'm')
+		if (look_at->second.symbol() == 'I' || (look_at->second.symbol() == 'm' && look_at->second.color() == BLUE))
 			continue; // don't farlook 'I' or 'm' monsters
-		/* we're paranoid about @ in minetown (elf/watch switchup) */
-		if (look_at->second.attitude() == HOSTILE && World::level().branch() != BRANCH_MINETOWN && look_at->second.symbol() != '@')
-			continue; // we don't expect hostile monsters to go friendly (XXX: scroll of taming, etc will need special handling)
 		map<Point, unsigned int>::iterator c = _checked.find(look_at->first);
 		if (c != _checked.end() && c->second == World::internalTurn())
 			continue; // already checked this monster this turn
