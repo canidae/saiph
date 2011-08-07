@@ -127,7 +127,7 @@ int Embed::doRetrieve(char* buffer, int count) {
 	/* retrieve data */
 	ssize_t amount = std::min((ssize_t)count - 1, (ssize_t)outputq.size());
 	std::copy(outputq.begin(), outputq.begin() + amount, buffer);
-	outputq.empty();
+	outputq.clear();
 
 	buffer[amount] = '\0';
 	pthread_mutex_unlock(&mutex);
