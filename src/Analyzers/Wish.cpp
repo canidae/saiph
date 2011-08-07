@@ -116,9 +116,9 @@ string Wish::selectWish(bool wish_from_wand) {
 			return _last_wish_call = "amulet of reflection";
 		return "silver dragon scale mail";
 	} else if (!have("speed boots")) {
-		return _last_wish_call = "speed boots";
+		return _last_wish_call = "pair of speed boots";
 	} else if (!have("gauntlets of power")) {
-		return _last_wish_call = "gauntlets of power";
+		return _last_wish_call = "pair of gauntlets of power";
 	}
 	//just some survival items
 	if (!have("amulet of reflection"))
