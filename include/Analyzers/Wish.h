@@ -21,12 +21,9 @@ namespace analyzer {
 		unsigned char charging_key;
 		bool named_empty;
 		bool named_full;
-		bool wished_for_charging;
-		bool wished_for_aor;
-		bool wished_for_speed;
-		bool wished_for_gop;
 		bool will_wish;
-		std::string selectWish();
+		std::string _last_wish_call;
+		std::string selectWish(bool from_wand);
 		bool wearing(const std::string& name);
 	};
 }
