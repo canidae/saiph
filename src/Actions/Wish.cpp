@@ -1,4 +1,5 @@
 #include "Actions/Wish.h"
+#include "Actions/Name.h"
 #include "Analyzers/Wish.h"
 #include "Inventory.h"
 #include "Saiph.h"
@@ -66,18 +67,13 @@ void Wish::update(const std::string& messages) {
 		 * a wish in this action due to the way we handle actually
 		 * making the wish -- it's done in the middle of the action!
 		 */
-		/* FIXME:
-		 * two errors here:
-		 * - naming the item this way will only name the item within saiph's memory
-		 *   and this may very well be lost when changes are done to inventory
-		 * - you don't name it "EMPTY" this way, see analyzer "Lamp.cpp" (line 68)
-		 * 
-		 * also, we need to rethink our strategy of making a new action for every specialized task,
+		/*
+		 * we need to rethink our strategy of making a new action for every specialized task,
 		 * we're getting too many actions, this one could fall under "Zap" or "Engrave".
 		 */
-		Item& wandWishing = Inventory::items()[_wish_wand.command()[0]];
-		wandWishing.name("wand of wishing named EMPTY"); // update name
+		std::string oname = Inventory::items()[_wish_wand.command()[0]].name();
+		if (oname.find("EMPTY") == std::string::npos)
+			World::queueAction(new action::Name(analyzer(), _wish_wand.command()[0], oname + " EMPTY"));
 		_sequence = 4;
 	}
-
 }
