@@ -42,6 +42,7 @@ vector<Level> World::_levels;
 
 Connection* World::_connection = NULL;
 action::Action* World::_action = NULL;
+action::Action* World::_last_action = NULL;
 list<action::Action*> World::_action_queue;
 bool World::_changed[MAP_ROW_END + 1][MAP_COL_END + 1] = {
 	{false}
@@ -155,6 +156,10 @@ int World::currentPriority() {
 	return _action->command().priority();
 }
 
+action::Action* World::lastAction() {
+	return _last_action;
+}
+
 int World::lastActionID() {
 	/* return the id of the last action */
 	return _last_action_id;
@@ -227,7 +232,8 @@ bool World::setAction(action::Action* action, bool deleteAction) {
 				delete action;
 			return false; // already got an action with higher priority
 		}
-		delete World::_action;
+		if (World::_action != World::_last_action)
+			delete World::_action;
 	}
 	World::_action = action;
 	return true;
@@ -756,6 +762,9 @@ void World::run(int speed) {
 
 		/* execute the command */
 		_last_action_id = _action->id();
+		if (_last_action != _action)
+			delete _last_action;
+		_last_action = _action;
 		executeCommand(_action->command().command());
 
 		/* check if we're stuck */
