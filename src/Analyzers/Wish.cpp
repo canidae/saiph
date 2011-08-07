@@ -23,7 +23,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM), named_empty(false), named_full(false), will_wish(false) {
+Wish::Wish() : Analyzer("Wish"), wand_of_wishing_key(ILLEGAL_ITEM), charging_key(ILLEGAL_ITEM) {
 	EventBus::registerEvent(ReceivedItems::ID, this);
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(WantItems::ID, this);
@@ -40,37 +40,25 @@ void Wish::parseMessages(const string& messages) {
 	}
 }
 
+void Wish::actionCompleted(const string&) {
+	if (World::lastActionID() == action::Charge::ID)
+		World::queueAction(static_cast<action::Action*> (new action::Name(this, wand_of_wishing_key, "wand of wishing RECHARGED")));
+}
+
 void Wish::analyze() {
 	//if we have a wand of wishing, we need to decide if we should zap
 	//TODO: for now always drain wands
 	if (wand_of_wishing_key != ILLEGAL_ITEM) {
-		if (Inventory::itemAtKey(wand_of_wishing_key).name().find("named EMPTY") != string::npos) {
-			/* this is really counter-intutitive, but we need it
-			 * since we have to find out it's empty in the middle
-			 * of an action, and then we need to formally name it.
-			 */
-			if (!named_empty) {
-				World::queueAction(new action::Name(this, wand_of_wishing_key, "EMPTY"));
-				named_empty = true;
-			}
-			will_wish = false;
-			if (charging_key != ILLEGAL_ITEM && Inventory::itemAtKey(charging_key).beatitude() == BLESSED && Inventory::itemAtKey(wand_of_wishing_key).name().find("full") == string::npos) {
-				World::setAction(static_cast<action::Action*> (new action::Charge(this, charging_key, wand_of_wishing_key, 100)));
-				if (named_full == false) {
-					World::queueAction(new action::Name(this, wand_of_wishing_key, "full"));
-					named_full = true;
-				}
+		const string& name = Inventory::itemAtKey(wand_of_wishing_key).name();
+		if (name.find("EMPTY") != string::npos && name.find("RECHARGED") == string::npos) {
+			// this wand is chargable, don't wrest it!
+			if (charging_key != ILLEGAL_ITEM && Inventory::itemAtKey(charging_key).beatitude() == BLESSED) {
+				World::setAction(new action::Charge(this, charging_key, wand_of_wishing_key, 100));
 				Inventory::update();
-				will_wish = true;
 			}	
-			// TODO: wrest
 		} else {
-			will_wish = true;
-		}
-		if (will_wish && Inventory::itemAtKey(wand_of_wishing_key) != Inventory::NO_ITEM) {
 			if (action::Engrave::canEngrave())
 				World::setAction(new action::Wish(this, wand_of_wishing_key, 100));
-			will_wish = false;
 		}
 	}
 }

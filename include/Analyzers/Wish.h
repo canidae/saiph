@@ -11,15 +11,13 @@ namespace analyzer {
 		Wish();
 
 		void parseMessages(const std::string& messages);
+		void actionCompleted(const std::string& messages);
 		void analyze();
 		void onEvent(event::Event* const event);
 
 	private:
 		unsigned char wand_of_wishing_key;
 		unsigned char charging_key;
-		bool named_empty;
-		bool named_full;
-		bool will_wish;
 		std::string _last_wish_call;
 		std::string selectWish(bool from_wand);
 		bool have(const std::string& name);
