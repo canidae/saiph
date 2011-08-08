@@ -16,12 +16,14 @@ namespace action {
 	public:
 		static const Command NOOP;
 
-		Action(analyzer::Analyzer* analyzer, bool increase_turn_counter = true);
+		// time_taken values correspond to NetHack nomul values, 1,2,3, counts in moves, -1,-2,-3 count in turns
+		// values of 2 or more are counted as "indeterminate" due to interruption potential
+		Action(analyzer::Analyzer* analyzer, int time_taken = 1);
 		virtual ~Action();
 
 		virtual int id() = 0;
 		analyzer::Analyzer* analyzer();
-		bool increaseTurnCounter();
+		int timeTaken();
 		virtual const Command& command() = 0;
 		virtual void update(const std::string& messages) = 0;
 		virtual void failed();
@@ -31,7 +33,7 @@ namespace action {
 
 	private:
 		analyzer::Analyzer* _analyzer;
-		bool _increase_turn_counter;
+		int _time_taken;
 	};
 }
 #endif

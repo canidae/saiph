@@ -5,6 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
+// TODO: slower if we're levitating
 Throw::Throw(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_throw("t", priority), _throw_item(key, PRIORITY_CONTINUE_ACTION), _throw_direction(direction, PRIORITY_CONTINUE_ACTION) {
 }
 

@@ -5,7 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Unlock::Unlock(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _apply_direction(direction, PRIORITY_CONTINUE_ACTION), _do_unlock("y", PRIORITY_CONTINUE_ACTION) {
+Unlock::Unlock(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority) : Action(analyzer, 50), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _apply_direction(direction, PRIORITY_CONTINUE_ACTION), _do_unlock("y", PRIORITY_CONTINUE_ACTION) {
 }
 
 Unlock::~Unlock() {

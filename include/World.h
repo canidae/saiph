@@ -42,8 +42,9 @@ public:
 	static bool question();
 	static int curPage();
 	static int maxPage();
-	static int turn();
-	static unsigned int internalTurn();
+	static int turn(); // corresponds to monster_moves and the T: counter
+	static unsigned int internalTurn(); // monotonically increases but corresponds to nothing in nethack
+	static int subTurn(); // index of current move in current turn() or -1 if unknown
 	static const std::vector<Point>& changes();
 	static void forgetChanges();
 	static const Coordinate& branchCoordinate(int branch);
@@ -97,6 +98,9 @@ private:
 	static int _cur_page;
 	static int _max_page;
 	static int _turn;
+	static int _sub_turn;
+	static int _min_saiph_energy;
+	static int _max_saiph_energy;
 	static std::vector<analyzer::Analyzer*> _analyzers;
 	static int _last_action_id;
 	static unsigned int _internal_turn;

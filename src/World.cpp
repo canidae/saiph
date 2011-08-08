@@ -807,7 +807,7 @@ void World::run(int speed) {
 		/* and increase _internal_turn if the action actually cost a turn.
 		 * the turn counter in game may not increase if we're [very] fast,
 		 * but we still need to know if a turn lapsed, hence _internal_turn */
-		if (_action->command() == action::Action::NOOP && _action->increaseTurnCounter())
+		if (_action->command() == action::Action::NOOP && _action->timeTaken() != 0)
 			++World::_internal_turn;
 	}
 }

@@ -14,7 +14,7 @@ using namespace std;
 FarLook::Request::Request(const Point& where) : where(where) {
 }
 
-FarLook::FarLook(analyzer::Analyzer* analyzer, vector<FarLook::Request>& requests) : Action(analyzer, false), _current(requests.begin()), _end(requests.end()) {
+FarLook::FarLook(analyzer::Analyzer* analyzer, vector<FarLook::Request>& requests) : Action(analyzer, 0), _current(requests.begin()), _end(requests.end()) {
 }
 
 FarLook::~FarLook() {

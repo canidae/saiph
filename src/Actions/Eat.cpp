@@ -5,7 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Eat::Eat(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _eat("e", priority), _item(key, PRIORITY_CONTINUE_ACTION), _answer_no(NO, PRIORITY_CONTINUE_ACTION), _answer_yes(YES, PRIORITY_CONTINUE_ACTION) {
+Eat::Eat(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer, 50), _eat("e", priority), _item(key, PRIORITY_CONTINUE_ACTION), _answer_no(NO, PRIORITY_CONTINUE_ACTION), _answer_yes(YES, PRIORITY_CONTINUE_ACTION) {
 }
 
 Eat::~Eat() {

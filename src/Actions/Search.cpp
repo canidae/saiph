@@ -6,7 +6,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Search::Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _turn_before_search(World::turn()), _search("16s", priority) {
+Search::Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer, 16), _turn_before_search(World::turn()), _search("16s", priority) {
 }
 
 Search::~Search() {
@@ -30,6 +30,7 @@ const Command& Search::command() {
 void Search::update(const std::string&) {
 	if (_sequence == 0) {
 		/* increase search counter on level */
+		/* this is actually an underestimate because of speed.  c'est la vie */
 		World::level().increaseAdjacentSearchCount(Saiph::position(), World::turn() - _turn_before_search);
 		_sequence = 1;
 	}

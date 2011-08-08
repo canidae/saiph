@@ -5,7 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
-ListInventory::ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer, false), _list_inventory("i", PRIORITY_LIST_INVENTORY), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+ListInventory::ListInventory(analyzer::Analyzer* analyzer) : Action(analyzer, 0), _list_inventory("i", PRIORITY_LIST_INVENTORY), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 }
 
 ListInventory::~ListInventory() {

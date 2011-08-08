@@ -5,6 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
+// can be slower if we're attacking a floating eye or gelat cube, or while polymorphed; generic paralysis check tests that
 Fight::Fight(analyzer::Analyzer* analyzer, unsigned char direction, int priority, bool attack_friendly) : Action(analyzer), _fight(std::string("F").append(std::string(1, direction)), priority), _attack_friendly(attack_friendly ? YES : NO, PRIORITY_CONTINUE_ACTION) {
 }
 
