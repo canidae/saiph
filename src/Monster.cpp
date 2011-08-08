@@ -1,8 +1,22 @@
 #include "Monster.h"
 #include "Data/Monster.h"
 
+#include <sstream>
+
+/* static data */
+int Monster::_next_id;
+std::map<std::string, Monster*> Monster::_by_id;
+std::multimap<int, Monster*> Monster::_by_last_seen;
+
 /* constructors/destructor */
-Monster::Monster(unsigned char symbol, int color, int last_seen) : _symbol(symbol), _color(color), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(last_seen), _last_moved(last_seen), _shopkeeper(false), _priest(false), _data(data::Monster::monster(symbol, color)) {
+Monster::Monster(const std::string& id) : _id(id), _symbol(ILLEGAL_MONSTER), _color(BLACK), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(0), _last_moved(0), _last_seen_pos(), _shopkeeper(false), _priest(false), _data(0) {
+	if (id.empty()) {
+		int newid = _next_id++;
+		std::ostringstream buf;
+		buf << newid;
+		_id = buf.str();
+	}
+	index();
 }
 
 /* methods */
@@ -42,12 +56,22 @@ int Monster::attitude(int attitude) {
 	return this->attitude();
 }
 
+Coordinate Monster::lastSeenPos() const {
+	return _last_seen_pos;
+}
+
+void Monster::lastSeenPos(const Coordinate& last_seen_pos) {
+	_last_seen_pos = last_seen_pos;
+}
+
 int Monster::lastSeen() const {
 	return _last_seen;
 }
 
 int Monster::lastSeen(int last_seen) {
+	unindex();
 	_last_seen = last_seen;
+	index();
 	return this->lastSeen();
 }
 
@@ -85,4 +109,25 @@ const data::Monster* Monster::data() const {
 const data::Monster* Monster::data(const data::Monster* data) {
 	_data = data;
 	return this->data();
+}
+
+std::map<std::string, Monster*>& Monster::byID() {
+	return _by_id;
+}
+
+std::multimap<int, Monster*>& Monster::byLastSeen() {
+	return _by_last_seen;
+}
+
+void Monster::index() {
+	_by_id.insert(std::make_pair(_id, this));
+	_by_last_seen.insert(std::make_pair(_last_seen, this));
+}
+
+void Monster::unindex() {
+	_by_id.erase(_id);
+	std::multimap<int, Monster*>::iterator i = _by_last_seen.find(_last_seen);
+	while (i != _by_last_seen.end() && i->second != this) ++i;
+	if (i != _by_last_seen.end())
+		_by_last_seen.erase(i);
 }

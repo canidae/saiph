@@ -12,8 +12,8 @@ Move::Move(analyzer::Analyzer* analyzer, const Tile& target, int priority, bool 
 	} else if (_last_target == target.coordinate()) {
 		travel = false;
 	} else if (travel) {
-		for (std::map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-			if (m->second.visible()) {
+		for (std::map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+			if (m->second->visible()) {
 				travel = false;
 				break;
 			}

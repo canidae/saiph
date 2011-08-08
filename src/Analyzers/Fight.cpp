@@ -43,16 +43,16 @@ void Fight::analyze() {
 		_boss_waiting_since = World::turn();
 	}
 
-	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 		if (Point::gridDistance(m->first, Saiph::position()) > 1)
 			continue;
-		if (m->second.data() == NULL)
+		if (m->second->data() == NULL)
 			continue;
-		if ((m->second.data()->m3() & M3_COVETOUS) == 0)
+		if ((m->second->data()->m3() & M3_COVETOUS) == 0)
 			continue;
 
-		Debug::custom(name()) << "Moving " << m->second.data()->name() << " to " << World::level().name() << endl;
-		_boss_last_seen[m->second.data()->name()] = Saiph::position().level();
+		Debug::custom(name()) << "Moving " << m->second->data()->name() << " to " << World::level().name() << endl;
+		_boss_last_seen[m->second->data()->name()] = Saiph::position().level();
 		_boss_waiting_since = World::turn();
 		bosses_adjacent = true;
 	}
@@ -123,24 +123,24 @@ void Fight::analyze() {
 
 	/* fight monsters */
 	int attack_score = INT_MIN;
-	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-		if (m->second.symbol() == PET)
+	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+		if (m->second->symbol() == PET)
 			continue; // we're not fighting pets :)
-		else if (m->second.attitude() == FRIENDLY && m->second.symbol() != S_HUMANOID)
+		else if (m->second->attitude() == FRIENDLY && m->second->symbol() != S_HUMANOID)
 			continue; // don't attack friendlies except dwarves
 			/* I'm not sure about how good this is for her in the mines.
 			 * This was added to prevent her sticking in levels that were
 			 * being dug out - but I still sometimes see this happening
 			 * and it may have killed her. -rawrmage */
-		else if (m->second.symbol() == 'm' && m->second.color() == BLUE && Saiph::experience() < 3)
+		else if (m->second->symbol() == 'm' && m->second->color() == BLUE && Saiph::experience() < 3)
 			continue; // below level three, let strange objects be
-		else if (m->second.symbol() == 'n' && (m->second.lastSeen() - m->second.lastMoved()) >= 3)
+		else if (m->second->symbol() == 'n' && (m->second->lastSeen() - m->second->lastMoved()) >= 3)
 			continue; // let sleeping nymphs lie
-		else if (m->second.symbol() == S_UNICORN && ((m->second.color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second.color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second.color() == BLUE && Saiph::alignment() == CHAOTIC)))
+		else if (m->second->symbol() == S_UNICORN && ((m->second->color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second->color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second->color() == BLUE && Saiph::alignment() == CHAOTIC)))
 			continue; // don't attack unicorns of same alignment
-		else if (m->second.data() == NULL) {
+		else if (m->second->data() == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
-			Debug::custom(name()) << "Found monster we don't know data about '" << m->second.symbol() << "'. Hmm" << endl;
+			Debug::custom(name()) << "Found monster we don't know data about '" << m->second->symbol() << "'. Hmm" << endl;
 			attack_score = data::Monster::saiphDifficultyMax();
 		} else {
 			/* figure out the attack score */
@@ -149,12 +149,12 @@ void Fight::analyze() {
 			 * currently we use "saiph_difficulty", whether we can melee/throw at it and how far away it is.
 			 * this is a too simple solution, we need to consider stuff as how hard they hit, if they steal
 			 * stuff, if they use wands, etc */
-			attack_score = m->second.data()->saiphDifficulty();
-			Debug::custom(name()) << "Attack score for monster '" << m->second.data()->name() << ": " << attack_score << endl;
+			attack_score = m->second->data()->saiphDifficulty();
+			Debug::custom(name()) << "Attack score for monster '" << m->second->data()->name() << ": " << attack_score << endl;
 		}
 		int distance = Point::gridDistance(m->first, Saiph::position());
-		bool floating_eye = (m->second.symbol() == S_EYE && m->second.color() == BLUE);
-		if (m->second.visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && Saiph::encumbrance() < OVERTAXED && !Saiph::hallucinating()) {
+		bool floating_eye = (m->second->symbol() == S_EYE && m->second->color() == BLUE);
+		if (m->second->visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && Saiph::encumbrance() < OVERTAXED && !Saiph::hallucinating()) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
 			unsigned char in_line = World::directLine(m->first, false, true, Saiph::strength() / 2, Saiph::strength() / 2);
@@ -163,17 +163,17 @@ void Fight::analyze() {
 				attack_score -= distance;
 				int priority = (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_THROW_MAX - PRIORITY_FIGHT_THROW_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_THROW_MIN;
 				World::setAction(new action::Throw(this, *_projectile_slots.begin(), in_line, priority));
-				Debug::custom(name()) << "Setting action to throw at '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
+				Debug::custom(name()) << "Setting action to throw at '" << m->second->symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 				continue;
 			}
 		}
-		if (m->second.symbol() == 'c' && (m->second.color() == YELLOW || m->second.color() == BOLD_YELLOW) && (Inventory::keyForSlot(SLOT_WEAPON) == ILLEGAL_ITEM) && (Inventory::keyForSlot(SLOT_GLOVES) == ILLEGAL_ITEM))
+		if (m->second->symbol() == 'c' && (m->second->color() == YELLOW || m->second->color() == BOLD_YELLOW) && (Inventory::keyForSlot(SLOT_WEAPON) == ILLEGAL_ITEM) && (Inventory::keyForSlot(SLOT_GLOVES) == ILLEGAL_ITEM))
 			continue; // Don't even think about attacking cockatrices with our bare hands
 		if (distance == 1) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
 			World::setAction(new action::Fight(this, World::shortestPath(m->first).direction(), priority));
-			Debug::custom(name()) << "Setting action to melee '" << m->second.symbol() << "' with priority " << priority << endl;
+			Debug::custom(name()) << "Setting action to melee '" << m->second->symbol() << "' with priority " << priority << endl;
 			continue;
 		}
 		if (Saiph::hallucinating() || Saiph::blind() || Saiph::confused() || Saiph::stunned())
@@ -185,7 +185,7 @@ void Fight::analyze() {
 		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
 		priority = action::Move::calculatePriority(priority, 25 * tile.cost());
 		World::setAction(new action::Move(this, tile, priority, false));
-		Debug::custom(name()) << "Setting action to move towards '" << m->second.symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
+		Debug::custom(name()) << "Setting action to move towards '" << m->second->symbol() << "' which is " << distance << " squares away with priority " << priority << endl;
 	}
 }
 

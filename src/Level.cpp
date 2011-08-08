@@ -296,7 +296,7 @@ Tile& Level::tile(const Point& point) {
 	return _map[point.row()][point.col()];
 }
 
-const map<Point, Monster>& Level::monsters() const {
+const map<Point, Monster*>& Level::monsters() const {
 	return _monsters;
 }
 
@@ -312,8 +312,8 @@ void Level::analyze() {
 	if (Saiph::engulfed()) {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster she can't see */
-		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
-			m->second.visible(false);
+		for (map<Point, Monster*>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
+			m->second->visible(false);
 		return;
 	}
 	/* update changed symbols */
@@ -585,12 +585,6 @@ void Level::setDungeonSymbolValue(const Point& point, int value) {
 	_symbols[_map[point.row()][point.col()].symbol()][point] = value;
 }
 
-void Level::setMonster(const Point& point, const Monster& monster) {
-	if (!point.insideMap())
-		return;
-	_monsters[point] = monster;
-}
-
 bool Level::isCompletelyOpen() const {
 	if (symbols(SOLID_ROCK).size() > 0)
 		return false;
@@ -720,7 +714,7 @@ void Level::setFarlookResults(const map<Point, string>& res) {
 		_turn_farlooks[i->first] = i->second;
 }
 
-bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, const data::Monster*& data) {
+bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, std::string& name, const data::Monster*& data) {
 	map<Point,string>::iterator pfarlook = _turn_farlooks.find(c);
 	unsigned char symbol = World::view(c);
 	int color = World::color(c);
@@ -755,9 +749,10 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 	string::size_type pos2 = messages.find(" - ", pos);
 	if (pos2 == string::npos)
 		pos2 = messages.find(")", pos);
-	if (pos2 != string::npos)
-		data = data::Monster::monster(messages.substr(pos, pos2 - pos));
-	else
+	if (pos2 != string::npos) {
+		name = messages.substr(pos, pos2 - pos);
+		data = data::Monster::monster(name);
+	} else
 		data = 0;
 
 	return true;
@@ -790,9 +785,6 @@ void Level::updateMonsters() {
 	if (farlooksNeeded().size() > 0)
 		return;
 
-	/* Hack - don't remember monsters if we can see the entire map; speeds up exploring Val-fila and Val-filb quite a bit */
-	bool open = isCompletelyOpen();
-
 	if (World::internalTurn() != _farlooked_turn)
 		_turn_farlooks.clear();
 
@@ -801,96 +793,80 @@ void Level::updateMonsters() {
 		unsigned char symbol = World::view(point);
 		int color = World::color(point);
 
-		Tile& t = _map[point.row()][point.col()];
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 			msymbol = PET;
 		else
 			msymbol = symbol;
-		/* find nearest monster */
-		int min_distance = INT_MAX;
-		map<Point, Monster>::iterator nearest = _monsters.end();
-		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m) {
-			if (m->second.symbol() != msymbol || m->second.color() != color)
-				continue; // not the same monster
-			unsigned char old_symbol;
-			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
-				old_symbol = PET;
-			else
-				old_symbol = World::view(m->first);
-			if (m->second.symbol() == old_symbol && m->second.color() == World::color(m->first)) {
-				/* note about this "point == m->first":
-				 * the character for the monster may be updated even if it hasn't moved,
-				 * if this is the case, we should return and neither move nor add the
-				 * monster as that will screw up the data we know about the monster */
-				if (point == m->first)
-					return;
-				continue; // this monster already is on its square
-			}
-			/* see if this monster is closer than the last found monster */
-			int distance = max(abs(m->first.row() - point.row()), abs(m->first.col() - point.col()));
-			if (distance > MAX_MONSTER_MOVE)
-				continue; // too far away from where we last saw it, probably new monster
-			else if (distance >= min_distance)
-				continue;
-			else if ((m->second.priest() || m->second.shopkeeper()) && distance > 1)
-				continue; // shopkeepers and priests are very close to eachother in minetown
-			/* it is */
-			min_distance = distance;
-			nearest = m;
-		}
-		if (nearest != _monsters.end()) {
-			/* we know of this monster, move it to new location */
-			/* remove monster from _map */
-			_map[nearest->first.row()][nearest->first.col()].monster(ILLEGAL_MONSTER);
-			/* update monster */
-			nearest->second.lastMoved(World::turn());
-			_monsters[point] = nearest->second;
-			_monsters.erase(nearest);
-		} else {
-			/* add monster */
-			_monsters[point] = Monster(msymbol, color, World::turn());
-		}
 
 		bool shopkeeper = false, priest = false;
 		const data::Monster* data = 0;
 		int attitude = ATTITUDE_UNKNOWN;
+		std::string name;
 
-		if (parseFarlook(point, shopkeeper, priest, attitude, data)) {
-			Monster& m = _monsters[point];
-			m.attitude(attitude);
-			m.shopkeeper(shopkeeper);
-			m.priest(priest);
-			m.data(data);
+		parseFarlook(point, shopkeeper, priest, attitude, name, data);
+
+		/* find nearest monster */
+		int min_distance = INT_MAX;
+		Monster* nearest = 0;
+		// we only care about recently seen monsters here
+		for (map<int, Monster*>::iterator m = Monster::byLastSeen().lower_bound(World::internalTurn() - MAX_MONSTER_MOVE); m != Monster::byLastSeen().end(); ++m) {
+			if (m->second->symbol() != msymbol || m->second->color() != color)
+				continue; // not the same monster
+			if (m->second->lastSeen() == (int)World::internalTurn())
+				continue; // already accounted for
+			if (m->second->lastSeenPos().level() != _level)
+				continue; // not interested
+			/* see if this monster is closer than the last found monster */
+			int distance = Point::gridDistance(m->second->lastSeenPos(), point);
+			if (distance > MAX_MONSTER_MOVE)
+				continue; // too far away from where we last saw it, probably new monster
+			else if (distance >= min_distance)
+				continue;
+			else if ((m->second->priest() || m->second->shopkeeper()) && distance > 1)
+				continue; // shopkeepers and priests are very close to eachother in minetown
+			/* it is */
+			min_distance = distance;
+			nearest = m->second;
 		}
-		/* set monster on tile */
-		t.monster(msymbol);
+
+		if (nearest != 0) {
+			if (point != nearest->lastSeenPos()) {
+				nearest->lastMoved(World::internalTurn());
+				nearest->lastSeenPos(Coordinate(_level, point));
+			}
+		} else {
+			/* add monster */
+			string id;
+			if (data && (data->genoFlags() & G_UNIQ) != 0) {
+				id = name;
+			}
+			nearest = new Monster(id);
+			nearest->lastMoved(World::internalTurn());
+			nearest->lastSeenPos(Coordinate(_level, point));
+		}
+		nearest->symbol(msymbol);
+		nearest->color(color);
+		nearest->lastSeen(World::internalTurn());
+		nearest->attitude(attitude);
+		nearest->shopkeeper(shopkeeper);
+		nearest->priest(priest);
+		nearest->data(data);
 	}
 
-	for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end();) {
-		unsigned char symbol;
-		int color = World::color(m->first);
-		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
-			symbol = PET;
-		else
-			symbol = World::view(m->first);
-		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible((m->first != Saiph::position() && symbol == m->second.symbol() && color == m->second.color()));
-		if (m->second.visible()) {
-			/* monster still visible, don't remove it */
-			m->second.lastSeen(World::turn());
-			++m;
-			continue;
-		} else if (!open && Point::gridDistance(Saiph::position(), m->first) > 1) {
-			/* player is not next to where we last saw the monster */
-			++m;
-			continue;
-		}
-		/* remove monster from _map */
+	for (map<Point, Monster*>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
 		_map[m->first.row()][m->first.col()].monster(ILLEGAL_MONSTER);
-		/* remove monster from list */
-		_monsters.erase(m++);
+	_monsters.clear();
+
+	/* set monsters on tiles */
+	for (map<int, Monster*>::iterator m = Monster::byLastSeen().lower_bound(World::internalTurn() - MAX_MONSTER_MOVE); m != Monster::byLastSeen().end(); ++m) {
+		Coordinate c = m->second->lastSeenPos();
+		if (c.level() != _level)
+			continue; // not interested
+		m->second->visible(m->second->lastSeen() == (int)World::internalTurn());
+		_map[c.row()][c.col()].monster(m->second->symbol());
+		_monsters[c] = m->second;
 	}
 }
 

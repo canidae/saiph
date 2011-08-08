@@ -35,7 +35,7 @@ public:
 	const std::string& name() const;
 	Tile& tile();
 	Tile& tile(const Point& point);
-	const std::map<Point, Monster>& monsters() const;
+	const std::map<Point, Monster*>& monsters() const;
 	const std::map<Point, Stash>& stashes() const;
 	const std::map<Point, int>& symbols(unsigned char symbol) const;
 	bool isCompletelyOpen() const;
@@ -45,7 +45,6 @@ public:
 	void setDirtyStash(const Point& point);
 	void setDungeonSymbol(const Point& point, unsigned char symbol);
 	void setDungeonSymbolValue(const Point& point, int value);
-	void setMonster(const Point& point, const Monster& monster);
 	static void setFarlookResults(const std::map<Point, std::string>& farlooks);
 	std::vector<Point> farlooksNeeded();
 	void increaseAdjacentSearchCount(const Point& point, int count = 1);
@@ -66,7 +65,7 @@ private:
 	static unsigned _farlooked_turn;
 	int _level;
 	Tile _map[MAP_ROW_END + 1][MAP_COL_END + 1];
-	std::map<Point, Monster> _monsters;
+	std::map<Point, Monster*> _monsters;
 	std::set<Point> _monster_points;
 	std::map<Point, Stash> _stashes;
 	std::map<Point, int> _symbols[UCHAR_MAX + 1];
@@ -79,7 +78,7 @@ private:
 
 	void updateMapPoint(const Point& point, unsigned char symbol, int color);
 	void updateMonsters();
-	bool parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, const data::Monster*& data);
+	bool parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, std::string& name, const data::Monster*& data);
 	void updatePathMap();
 	unsigned int updatePathMapCalculateCost(const Point& to, const Point& from);
 	void updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance);

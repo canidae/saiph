@@ -77,8 +77,8 @@ void Medusa::analyze() {
 	}
 
 	if (Saiph::position().level() == _medusa_level && _fighting_medusa) {
-		for (map<Point,Monster>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
-			if (i->second.visible() && (i->second.symbol() == 'I' || (i->second.symbol() == '@' && i->second.color() == BOLD_GREEN)))
+		for (map<Point,Monster*>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
+			if (i->second->visible() && (i->second->symbol() == 'I' || (i->second->symbol() == '@' && i->second->color() == BOLD_GREEN)))
 				_medusa_done_turn = World::turn() + 20;
 		}
 		if (unsigned(World::turn()) > _medusa_done_turn) {

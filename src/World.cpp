@@ -296,8 +296,8 @@ unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boul
 			break;
 		if (temp == point)
 			ok = true;
-		const map<Point, Monster>::const_iterator m = level().monsters().find(temp);
-		if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible() && (realized_range < dist || m->second.attitude() == FRIENDLY))
+		const map<Point, Monster*>::const_iterator m = level().monsters().find(temp);
+		if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second->visible() && (realized_range < dist || m->second->attitude() == FRIENDLY))
 			return ILLEGAL_DIRECTION;
 		if (realized_range == danger_range || (!ignore_sinks && t.symbol() == SINK))
 			break;
