@@ -7,6 +7,30 @@
 #include "World.h"
 #include "Data/Skill.h"
 
+#define MESSAGE_SPEED_GAIN1 "  You feel quick!  "
+#define MESSAGE_SPEED_GAIN2 "  You seem faster.  "
+#define MESSAGE_SPEED_GAIN3 "  You speed up.  "
+#define MESSAGE_SPEED_GAIN4 "  Your quickness feels more natural.  "
+#define MESSAGE_SPEED_GAIN5 "  \"and thus I grant thee the gift of Speed!\"  "
+
+#define MESSAGE_SPEED_LOSE1 "  You feel slow!  "
+#define MESSAGE_SPEED_LOSE2 "  You seem slower.  "
+#define MESSAGE_SPEED_LOSE3 "  You feel slower.  "
+#define MESSAGE_SPEED_LOSE4 "  You are slowing down.  "
+#define MESSAGE_SPEED_LOSE5 "  Your limbs are getting oozy.  "
+#define MESSAGE_SPEED_LOSE6 "  You slow down.  "
+#define MESSAGE_SPEED_LOSE7 "  Your quickness feels less natural.  "
+
+#define MESSAGE_VERYFAST_LOSE1 "  You slow down.  "
+#define MESSAGE_VERYFAST_LOSE2 "  Your quickness feels less natural.  "
+#define MESSAGE_VERYFAST_LOSE3 "  You feel yourself slowing down.  "
+#define MESSAGE_VERYFAST_LOSE4 "  You feel yourself slowing down a bit.  "
+
+#define MESSAGE_VERYFAST_GAIN1 "  You are suddenly moving faster.  "
+#define MESSAGE_VERYFAST_GAIN2 "  You are suddenly moving much faster.  "
+#define MESSAGE_VERYFAST_GAIN3 "  Your knees seem more flexible now.  "
+
+
 using namespace analyzer;
 using namespace std;
 
@@ -183,6 +207,14 @@ void Saiph::parseMessages(const string& messages) {
 			_intrinsics |= PROPERTY_LYCANTHROPY;
 		if (messages.find(MESSAGE_LYCANTHROPY_LOSE1) != string::npos)
 			_intrinsics &= ~PROPERTY_LYCANTHROPY;
+		if (messages.find(MESSAGE_SPEED_GAIN1) != string::npos || messages.find(MESSAGE_SPEED_GAIN2) != string::npos || messages.find(MESSAGE_SPEED_GAIN3) != string::npos || messages.find(MESSAGE_SPEED_GAIN4) != string::npos || messages.find(MESSAGE_SPEED_GAIN5) != string::npos)
+			_intrinsics |= PROPERTY_SPEED;
+		if (messages.find(MESSAGE_SPEED_LOSE1) != string::npos || messages.find(MESSAGE_SPEED_LOSE2) != string::npos || messages.find(MESSAGE_SPEED_LOSE3) != string::npos || messages.find(MESSAGE_SPEED_LOSE4) != string::npos || messages.find(MESSAGE_SPEED_LOSE5) != string::npos || messages.find(MESSAGE_SPEED_LOSE6) != string::npos || messages.find(MESSAGE_SPEED_LOSE7) != string::npos)
+			_intrinsics &= ~PROPERTY_SPEED;
+		if (messages.find(MESSAGE_VERYFAST_GAIN1) != string::npos || messages.find(MESSAGE_VERYFAST_GAIN2) != string::npos || messages.find(MESSAGE_VERYFAST_GAIN3) != string::npos)
+			_intrinsics |= PROPERTY_VERYFAST;
+		if (messages.find(MESSAGE_VERYFAST_LOSE1) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE2) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE3) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE4) != string::npos)
+			_intrinsics &= ~PROPERTY_VERYFAST;
 		if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos)
 			_stoned = true; // not checking for limbs turned to stone because we're dead then
 		if (messages.find(MESSAGE_YOU_FEEL_LIMBER) != string::npos)
