@@ -704,6 +704,10 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 	}
 }
 
+void Level::clearFarlookData() {
+	_farlooked_turn = (unsigned)-1;
+}
+
 void Level::setFarlookResults(const map<Point, string>& res) {
 	if (_farlooked_turn != World::internalTurn()) {
 		_farlooked_turn = World::internalTurn();
@@ -746,14 +750,29 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 
 	priest = (messages.find("priest of ", pos) != string::npos || messages.find("priestess of ", pos) != string::npos);
 
+	// pos2 is the end of the 
 	string::size_type pos2 = messages.find(" - ", pos);
 	if (pos2 == string::npos)
 		pos2 = messages.find(")", pos);
+
 	if (pos2 != string::npos) {
-		name = messages.substr(pos, pos2 - pos);
-		data = data::Monster::monster(name);
-	} else
+		string::size_type pos3 = messages.find(" called ", pos);
+		if (pos3 == string::npos) {
+			name = messages.substr(pos, pos2 - pos);
+			data = data::Monster::monster(name);
+		} else {
+			name = messages.substr((pos3 + 8), pos2 - (pos3 + 8));
+			data = data::Monster::monster(messages.substr(pos, pos3 - pos));
+		}
+	} else {
+		Debug::warning() << "Cannot find end of subdescription" << endl;
 		data = 0;
+	}
+
+	if (shopkeeper)
+		data = data::Monster::monster("shopkeeper");
+	if (priest)
+		data = data::Monster::monster("aligned priest");
 
 	return true;
 }
@@ -807,31 +826,43 @@ void Level::updateMonsters() {
 
 		parseFarlook(point, shopkeeper, priest, attitude, name, data);
 
-		/* find nearest monster */
-		int min_distance = INT_MAX;
 		Monster* nearest = 0;
-		// we only care about recently seen monsters here
-		for (map<int, Monster*>::iterator m = Monster::byLastSeen().lower_bound(World::internalTurn() - MAX_MONSTER_MOVE); m != Monster::byLastSeen().end(); ++m) {
-			if (m->second->symbol() != msymbol || m->second->color() != color)
-				continue; // not the same monster
-			if (m->second->lastSeen() == (int)World::internalTurn())
-				continue; // already accounted for
-			if (m->second->lastSeenPos().level() != _level)
-				continue; // not interested
-			/* see if this monster is closer than the last found monster */
-			int distance = Point::gridDistance(m->second->lastSeenPos(), point);
-			if (distance > MAX_MONSTER_MOVE)
-				continue; // too far away from where we last saw it, probably new monster
-			else if (distance >= min_distance)
-				continue;
-			else if ((m->second->priest() || m->second->shopkeeper()) && distance > 1)
-				continue; // shopkeepers and priests are very close to eachother in minetown
-			/* it is */
-			min_distance = distance;
-			nearest = m->second;
+		// note: in the event of a named non-unique monster that is not indexed under that name, it
+		// will be created with a new name and then renamed, hopefully avoiding crashes when there are five Rexes in bones
+		// but there will be issues if the bonemaker guessed an in-use identifier
+		if (!name.empty() && Monster::byID().find(name) != Monster::byID().end()) {
+			//Debug::notice() << "name of existing monster found" << endl;
+			nearest = Monster::byID()[name];
+			nearest->called(true);
+		} else {
+			/* find nearest monster */
+			int min_distance = INT_MAX;
+			// we only care about recently seen monsters here
+			for (map<int, Monster*>::iterator m = Monster::byLastSeen().lower_bound(World::internalTurn() - MAX_MONSTER_MOVE); m != Monster::byLastSeen().end(); ++m) {
+				if (m->second->symbol() != msymbol || m->second->color() != color)
+					continue; // not the same monster
+				if ((m->second->lastSeen() == (int)World::internalTurn()) && (Point(m->second->lastSeenPos()) != point))
+					continue; // already accounted for
+				if (m->second->called())
+					continue; // would be obvious
+				if (m->second->lastSeenPos().level() != _level)
+					continue; // not interested
+				/* see if this monster is closer than the last found monster */
+				int distance = Point::gridDistance(m->second->lastSeenPos(), point);
+				if (distance > MAX_MONSTER_MOVE)
+					continue; // too far away from where we last saw it, probably new monster
+				else if (distance >= min_distance)
+					continue;
+				else if ((m->second->priest() || m->second->shopkeeper()) && distance > 1)
+					continue; // shopkeepers and priests are very close to eachother in minetown
+				/* it is */
+				min_distance = distance;
+				nearest = m->second;
+			}
 		}
 
 		if (nearest != 0) {
+			//Debug::notice() << "for " << point << ", using existing monster " << nearest->id() << endl;
 			if (point != nearest->lastSeenPos()) {
 				nearest->lastMoved(World::internalTurn());
 				nearest->lastSeenPos(Coordinate(_level, point));
@@ -843,8 +874,10 @@ void Level::updateMonsters() {
 				id = name;
 			}
 			nearest = new Monster(id);
+			nearest->called(!id.empty());
 			nearest->lastMoved(World::internalTurn());
 			nearest->lastSeenPos(Coordinate(_level, point));
+			//Debug::notice() << "for " << point << ", using new monster " << nearest->id() << endl;
 		}
 		nearest->symbol(msymbol);
 		nearest->color(color);
@@ -865,6 +898,9 @@ void Level::updateMonsters() {
 		if (c.level() != _level)
 			continue; // not interested
 		m->second->visible(m->second->lastSeen() == (int)World::internalTurn());
+		if (!m->second->visible() && Point::gridDistance(c, Saiph::position()) <= 1)
+			continue; // obviously not here
+		//Debug::notice() << "Marking " << m->second->id() << " tactically interesting at " << c << endl;
 		_map[c.row()][c.col()].monster(m->second->symbol());
 		_monsters[c] = m->second;
 	}

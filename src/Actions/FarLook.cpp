@@ -43,7 +43,9 @@ const Command& FarLook::command() {
 void FarLook::update(const std::string&) {
 	string buf(World::lastData());
 	map<Point,string> aout;
-	for (vector<FarLook::Request>::iterator iter = _current; iter != _end; ++iter) {
+
+	for (vector<FarLook::Request>::iterator iter = _end; iter != _current; ) {
+		--iter;
 		size_t ix = buf.rfind("Pick an object");
 		if (ix == string::npos)
 			ix = buf.rfind("Please move the cursor to an unknown object");

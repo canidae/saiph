@@ -9,7 +9,7 @@ std::map<std::string, Monster*> Monster::_by_id;
 std::multimap<int, Monster*> Monster::_by_last_seen;
 
 /* constructors/destructor */
-Monster::Monster(const std::string& id) : _id(id), _symbol(ILLEGAL_MONSTER), _color(BLACK), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(0), _last_moved(0), _last_seen_pos(), _shopkeeper(false), _priest(false), _data(0) {
+Monster::Monster(const std::string& id) : _id(id), _symbol(ILLEGAL_MONSTER), _color(BLACK), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(0), _last_moved(0), _last_seen_pos(), _called(false), _shopkeeper(false), _priest(false), _data(0) {
 	if (id.empty()) {
 		int newid = _next_id++;
 		std::ostringstream buf;
@@ -20,6 +20,10 @@ Monster::Monster(const std::string& id) : _id(id), _symbol(ILLEGAL_MONSTER), _co
 }
 
 /* methods */
+const std::string& Monster::id() const {
+	return _id;
+}
+
 unsigned char Monster::symbol() const {
 	return _symbol;
 }
@@ -82,6 +86,15 @@ int Monster::lastMoved() const {
 int Monster::lastMoved(int last_moved) {
 	_last_moved = last_moved;
 	return this->lastMoved();
+}
+
+bool Monster::called() const {
+	return _called;
+}
+
+bool Monster::called(bool called) {
+	_called = called;
+	return this->called();
 }
 
 bool Monster::shopkeeper() const {

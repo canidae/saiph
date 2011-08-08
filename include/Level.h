@@ -46,6 +46,7 @@ public:
 	void setDungeonSymbol(const Point& point, unsigned char symbol);
 	void setDungeonSymbolValue(const Point& point, int value);
 	static void setFarlookResults(const std::map<Point, std::string>& farlooks);
+	static void clearFarlookData();
 	std::vector<Point> farlooksNeeded();
 	void increaseAdjacentSearchCount(const Point& point, int count = 1);
 

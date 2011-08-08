@@ -15,6 +15,7 @@ class Monster {
 public:
 	Monster(const std::string& id);
 
+	const std::string& id() const;
 	unsigned char symbol() const;
 	unsigned char symbol(unsigned char symbol);
 	int color() const;
@@ -29,6 +30,8 @@ public:
 	int lastMoved(int last_moved);
 	Coordinate lastSeenPos() const;
 	void lastSeenPos(const Coordinate& in);
+	bool called() const;
+	bool called(bool called);
 	bool shopkeeper() const;
 	bool shopkeeper(bool shopkeeper);
 	bool priest() const;

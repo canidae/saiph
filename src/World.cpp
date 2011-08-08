@@ -761,6 +761,9 @@ void World::run(int speed) {
 		string activity = _action->analyzer()->name();
 		activity += ' ';
 		activity += _action->command().command();
+		size_t nl_index;
+		while ((nl_index = activity.find('\n')) != string::npos)
+			activity.replace(nl_index, 1, "\\n");
 		if (activity.size() > 78) {
 			activity.erase(activity.begin() + 75, activity.end());
 			activity += "...";

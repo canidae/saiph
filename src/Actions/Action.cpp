@@ -6,6 +6,7 @@
 #include "Actions/ApplyInDirection.h"
 #include "Actions/Call.h"
 #include "Actions/Charge.h"
+#include "Actions/Christen.h"
 #include "Actions/Donate.h"
 #include "Actions/Dip.h"
 #include "Actions/Drop.h"
@@ -76,6 +77,7 @@ const int Donate::ID = 32;
 const int Pay::ID = 33;
 const int Wish::ID = 34;
 const int Charge::ID = 35;
+const int Christen::ID = 36;
 
 /* used for the travel command "_" */
 Point Move::_last_target;
