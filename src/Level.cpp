@@ -870,14 +870,14 @@ void Level::updateMonsters() {
 		} else {
 			/* add monster */
 			string id;
-			if (data && (data->genoFlags() & G_UNIQ) != 0) {
+			if (data && (shopkeeper || priest || (data->genoFlags() & G_UNIQ) != 0)) {
 				id = name;
 			}
 			nearest = new Monster(id);
 			nearest->called(!id.empty());
 			nearest->lastMoved(World::internalTurn());
 			nearest->lastSeenPos(Coordinate(_level, point));
-			//Debug::notice() << "for " << point << ", using new monster " << nearest->id() << endl;
+			Debug::notice() << "for " << point << ", using new monster " << nearest->id() << endl;
 		}
 		nearest->symbol(msymbol);
 		nearest->color(color);
