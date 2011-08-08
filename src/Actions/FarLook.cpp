@@ -1,6 +1,7 @@
 #include "Actions/FarLook.h"
 
 #include "World.h"
+#include "Level.h"
 #include "Debug.h"
 
 #include <vector>
@@ -40,7 +41,8 @@ const Command& FarLook::command() {
 }
 
 void FarLook::update(const std::string&) {
-	std::string buf(World::lastData());
+	string buf(World::lastData());
+	map<Point,string> aout;
 	for (vector<FarLook::Request>::iterator iter = _current; iter != _end; ++iter) {
 		size_t ix = buf.rfind("Pick an object");
 		if (ix == string::npos)
@@ -60,9 +62,11 @@ void FarLook::update(const std::string&) {
 			// XXX: Is it possible for this to wrap?
 			iter->result.insert(0, 2, ' ');
 			iter->result.append("  ");
+			aout[iter->where] = iter->result;
 			Debug::custom("FarLook") << iter->where << " => " << iter->result << endl;
 		}
 	}
+	Level::setFarlookResults(aout);
 
 	_current = _end;
 }

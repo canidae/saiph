@@ -19,7 +19,6 @@ namespace analyzer {
 
 	private:
 		std::vector<action::FarLook::Request> _requests;
-		std::map<Point, unsigned int> _checked;
 	};
 }
 #endif

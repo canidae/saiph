@@ -122,6 +122,8 @@ bool Level::_dungeon[UCHAR_MAX + 1] = {false};
 bool Level::_monster[UCHAR_MAX + 1] = {false};
 bool Level::_item[UCHAR_MAX + 1] = {false};
 Tile Level::_outside_map;
+map<Point,string> Level::_turn_farlooks;
+unsigned Level::_farlooked_turn = (unsigned)-1;
 
 /* constructors/destructor */
 Level::Level(int level, const string& name, int branch) : _level(level), _monsters(), _stashes(), _symbols(), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true), _new_level(true) {
@@ -702,6 +704,104 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 
 	/* update monsters */
 	if (_monster[symbol] && point != Saiph::position()) {
+		_monster_points.insert(point);
+	} else {
+		_monster_points.erase(point);
+	}
+}
+
+void Level::setFarlookResults(const map<Point, string>& res) {
+	if (_farlooked_turn != World::internalTurn()) {
+		_farlooked_turn = World::internalTurn();
+		_turn_farlooks.clear();
+	}
+
+	for (map<Point, string>::const_iterator i = res.begin(); i != res.end(); ++i)
+		_turn_farlooks[i->first] = i->second;
+}
+
+bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, const data::Monster*& data) {
+	map<Point,string>::iterator pfarlook = _turn_farlooks.find(c);
+	unsigned char symbol = World::view(c);
+	int color = World::color(c);
+	if (pfarlook == _turn_farlooks.end())
+		return false;
+
+	string& messages = pfarlook->second;
+	if (!(messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ')) {
+		Debug::warning() << "Bogus farlook result " << messages << endl;
+		return false;
+	}
+
+	string::size_type pos = string::npos;
+
+	if ((pos = messages.find(" (peaceful ")) != string::npos) {
+		/* it's friendly */
+		attitude = FRIENDLY;
+		pos += sizeof (" (peaceful ") - 1;
+	} else if ((pos = messages.find(" (")) != string::npos) {
+		/* hostile */
+		if (messages.find(" (Oracle", pos) == pos)
+			attitude = FRIENDLY; // never attack oracle
+		else
+			attitude = HOSTILE;
+		pos += sizeof (" (") - 1;
+	}
+	// shopkeepers are always white @, and their names are capitalized
+	shopkeeper = (pos != string::npos && pos < messages.size() && symbol == '@' && color == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z');
+
+	priest = (messages.find("priest of ", pos) != string::npos || messages.find("priestess of ", pos) != string::npos);
+
+	string::size_type pos2 = messages.find(" - ", pos);
+	if (pos2 == string::npos)
+		pos2 = messages.find(")", pos);
+	if (pos2 != string::npos)
+		data = data::Monster::monster(messages.substr(pos, pos2 - pos));
+	else
+		data = 0;
+
+	return true;
+}
+
+vector<Point> Level::farlooksNeeded() {
+	vector<Point> ret;
+
+	if (Saiph::hallucinating())
+		return ret;
+
+	for (set<Point>::const_iterator look_at = _monster_points.begin(); look_at != _monster_points.end(); ++look_at) {
+		unsigned char symbol = World::view(*look_at);
+		int color = World::color(*look_at);
+		if (symbol == 'I' || (symbol == 'm' && color == BLUE))
+			continue; // don't farlook 'I' or 'm' monsters
+		map<Point, string>::iterator c = _turn_farlooks.find(*look_at);
+		if (c != _turn_farlooks.end() && _farlooked_turn == World::internalTurn())
+			continue; // already checked this monster this turn
+		ret.push_back(*look_at);
+	}
+
+	return ret;
+}
+
+void Level::updateMonsters() {
+	/* remove monsters that seems to be gone
+	 * and make monsters we can't see !visible */
+
+	if (farlooksNeeded().size() > 0)
+		return;
+
+	/* Hack - don't remember monsters if we can see the entire map; speeds up exploring Val-fila and Val-filb quite a bit */
+	bool open = isCompletelyOpen();
+
+	if (World::internalTurn() != _farlooked_turn)
+		_turn_farlooks.clear();
+
+	for (set<Point>::iterator pi = _monster_points.begin(); pi != _monster_points.end(); ++pi) {
+		Point point = *pi;
+		unsigned char symbol = World::view(point);
+		int color = World::color(point);
+
+		Tile& t = _map[point.row()][point.col()];
 		/* add a monster, or update position of an existing monster */
 		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
@@ -752,17 +852,21 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 			/* add monster */
 			_monsters[point] = Monster(msymbol, color, World::turn());
 		}
+
+		bool shopkeeper = false, priest = false;
+		const data::Monster* data = 0;
+		int attitude = ATTITUDE_UNKNOWN;
+
+		if (parseFarlook(point, shopkeeper, priest, attitude, data)) {
+			Monster& m = _monsters[point];
+			m.attitude(attitude);
+			m.shopkeeper(shopkeeper);
+			m.priest(priest);
+			m.data(data);
+		}
 		/* set monster on tile */
 		t.monster(msymbol);
 	}
-}
-
-void Level::updateMonsters() {
-	/* remove monsters that seems to be gone
-	 * and make monsters we can't see !visible */
-
-	/* Hack - don't remember monsters if we can see the entire map; speeds up exploring Val-fila and Val-filb quite a bit */
-	bool open = isCompletelyOpen();
 
 	for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end();) {
 		unsigned char symbol;
