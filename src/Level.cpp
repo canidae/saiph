@@ -904,6 +904,22 @@ void Level::updateMonsters() {
 		_map[c.row()][c.col()].monster(m->second->symbol());
 		_monsters[c] = m->second;
 	}
+
+	/*
+	for (int y = MAP_ROW_BEGIN; y <= MAP_ROW_END; ++y) {
+		for (int x = MAP_COL_BEGIN; x <= MAP_COL_END; ++x) {
+			Point p(y,x);
+			if (_monster_points.find(p) != _monster_points.end())
+				Debug::info() << "_monster_points contains " << p << endl;
+			if (_monsters.find(p) != _monsters.end())
+				Debug::info() << "_monsters contains " << p << endl;
+			if (_map[y][x].monster() != ILLEGAL_MONSTER)
+				Debug::info() << "_map has non-illegal at " << p << endl;
+			if (_turn_farlooks.find(p) != _turn_farlooks.end())
+				Debug::info() << "_turn_farlooks contains " << p << endl;
+		}
+	}
+	*/
 }
 
 void Level::updatePathMap() {

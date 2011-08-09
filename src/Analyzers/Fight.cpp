@@ -17,6 +17,11 @@
 #include "Events/ChangedInventoryItems.h"
 #include "Events/ReceivedItems.h"
 
+/*
+#include <sstream>
+#include <iomanip>
+*/
+
 using namespace analyzer;
 using namespace event;
 using namespace std;
@@ -31,6 +36,25 @@ Fight::Fight() : Analyzer("Fight") {
 /* methods */
 void Fight::analyze() {
 	/* if engulfed try to fight our way out */
+
+	/*
+	Level& l = World::level();
+	for (int y = MAP_ROW_BEGIN; y <= MAP_ROW_END; ++y) {
+		string mobs;
+		ostringstream costs;
+		for (int x = MAP_COL_BEGIN; x <= MAP_COL_END; ++x) {
+			Tile& t = l.tile(Point(y,x));
+			mobs.push_back(t.symbol() > 126 ? '?' : t.symbol());
+			mobs.push_back(' ');
+			mobs.push_back(t.monster() == ILLEGAL_MONSTER ? '_' : t.monster());
+			mobs.push_back(' ');
+			costs << setw(4) << (t.cost() > 999 ? 999 : t.cost());
+		}
+		Debug::info() << mobs << endl;
+		Debug::info() << costs.str() << endl;
+	}
+	*/
+
 	if (Saiph::engulfed()) {
 		World::setAction(new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX));
 		return;
