@@ -798,9 +798,9 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 		type = "ghost";
 		called = messages.substr(pos, pos_g - pos);
 		if (!called.empty() && called[called.size() - 1] == 's')
-			called.pop_back();
+			called.erase(called.size() - 1);
 		if (!called.empty() && called[called.size() - 1] == '\'')
-			called.pop_back();
+			called.erase(called.size() - 1);
 	} else {
 		type = messages.substr(pos);
 	}
