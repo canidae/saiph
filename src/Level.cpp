@@ -736,48 +736,92 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 		return false;
 	}
 
-	string::size_type pos = string::npos;
+	Debug::info() << "Farlook: parsing " << messages << endl;
 
-	if ((pos = messages.find(" (peaceful ")) != string::npos) {
+	string::size_type pos = messages.find(" (");
+	if (pos == string::npos)
+		return false; // no useful data
+	pos += 2;
+
+	// Note: Trimming like this will only affect call, if even, for non-ghosts.  However, given a ghost with a name that contains trim characters, we
+	// would lose the fact that it is a ghost.  Fortunately, "ghost" itself is a workable trim end.
+	string::size_type pos_g = messages.find(" ghost", pos);
+	string::size_type pos_end = string::npos;
+	if (pos_g == string::npos) {
+		pos_end = messages.find(" - ", pos);
+		if (pos_end == string::npos)
+			pos_end = min(messages.find(")", pos), messages.find(", ", pos));
+
+		if (pos_end == string::npos) {
+			Debug::warning() << "Bogus farlook result " << messages << endl;
+			return false;
+		}
+
+		messages.erase(pos_end); // don't let the rest be fooled by [seen: warn of orcs] or similar
+	}
+
+	Debug::info() << "Farlook: main = " << messages.substr(pos) << endl;
+
+	attitude = HOSTILE;
+	// this risks finding spurious matches with ghosts, but they'll be renamed quickly anyway
+	if (messages.substr(pos,sizeof("tail of a ")-1) == "tail of a ") {
+		pos += (sizeof("tail of a ") - 1);
+	} else if (messages.substr(pos,sizeof("tail of ")-1) == "tail of ") {
+		pos += (sizeof("tail of ") - 1);
+	}
+
+	if (messages.substr(pos,sizeof("tame ")-1) == "tame ") {
+		/* it's really friendly... approximate */
+		attitude = FRIENDLY;
+		pos += (sizeof("tame ") - 1);
+	} else if (messages.substr(pos,sizeof("peaceful ")-1) == "peaceful ") {
 		/* it's friendly */
 		attitude = FRIENDLY;
-		pos += sizeof (" (peaceful ") - 1;
-	} else if ((pos = messages.find(" (")) != string::npos) {
-		/* hostile */
-		if (messages.find(" (Oracle", pos) == pos)
-			attitude = FRIENDLY; // never attack oracle
-		else
-			attitude = HOSTILE;
-		pos += sizeof (" (") - 1;
+		pos += (sizeof("peaceful ") - 1);
 	}
-	// shopkeepers are always white @, and their names are capitalized
-	shopkeeper = (pos != string::npos && pos < messages.size() && symbol == '@' && color == BOLD_WHITE && messages[pos] >= 'A' && messages[pos] <= 'Z');
 
-	priest = (messages.find("priest of ", pos) != string::npos || messages.find("priestess of ", pos) != string::npos);
+	string::size_type pos_c = messages.find(" called ", pos);
 
-	// pos2 is the end of the 
-	string::size_type pos2 = messages.find(" - ", pos);
-	if (pos2 == string::npos)
-		pos2 = messages.find(")", pos);
+	string type;
+	string called;
 
-	if (pos2 != string::npos) {
-		string::size_type pos3 = messages.find(" called ", pos);
-		if (pos3 == string::npos) {
-			name = messages.substr(pos, pos2 - pos);
-			data = data::Monster::monster(name);
-		} else {
-			name = messages.substr((pos3 + 8), pos2 - (pos3 + 8));
-			data = data::Monster::monster(messages.substr(pos, pos3 - pos));
-		}
+	if (pos_c != string::npos) {
+		// If the farlook string contains "called", the monster is definitely called, and therefore definitely callable.
+		// It does not matter that we get the name exactly right because it will just be renamed; just make sure not to accidentally get a valid name
+		// The most important confusing case is X called Y's ghost.  Also, we might chop too much off a name with a ,, ), or -.
+
+		type   = messages.substr(pos, pos_c - pos);
+		called = messages.substr(pos_c + 8);
+	} else if ((pos_g = messages.find(" ghost", pos)) != string::npos) {
+		// must be a real ghost; anything with ghost in the call string would be caught above
+
+		type = "ghost";
+		called = messages.substr(pos, pos_g - pos);
+		if (!called.empty() && called[called.size() - 1] == 's')
+			called.pop_back();
+		if (!called.empty() && called[called.size() - 1] == '\'')
+			called.pop_back();
 	} else {
-		Debug::warning() << "Cannot find end of subdescription" << endl;
-		data = 0;
+		type = messages.substr(pos);
 	}
 
-	if (shopkeeper)
-		data = data::Monster::monster("shopkeeper");
-	if (priest)
-		data = data::Monster::monster("aligned priest");
+	Debug::info() << "Farlook: type = '" << type << "', called = '" << called << "'" << endl;
+
+	priest = shopkeeper = false;
+
+	// shopkeepers are always white @, and their names are capitalized
+	if (symbol == '@' && color == BOLD_WHITE && type[0] >= 'A' && type[1] <= 'Z') {
+		shopkeeper = true;
+		called = type;
+		type = "shopkeeper";
+	}
+
+	if (type.find(" of ") != string::npos && type.find("Minion of Huhetotl") == string::npos && type.find("Master of Thieves") == string::npos && type.find("Wizard of Yendor") == string::npos) {
+		priest = true;
+		type = "aligned priest"; // TODO
+	}
+
+	data = data::Monster::monster(type);
 
 	return true;
 }
