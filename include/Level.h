@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 #include "Globals.h"
-#include "Monster.h"
 #include "Point.h"
 #include "Stash.h"
 #include "Tile.h"
@@ -22,6 +21,7 @@ namespace data {
 }
 
 class Item;
+class Monster;
 
 class Level {
 public:

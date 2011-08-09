@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include "EventBus.h"
+#include "Monster.h"
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Look.h"

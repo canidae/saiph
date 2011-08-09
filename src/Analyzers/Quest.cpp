@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "Debug.h"
 #include "EventBus.h"
+#include "Monster.h"
 #include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"

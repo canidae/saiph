@@ -4,6 +4,7 @@
 #include "Debug.h"
 #include "EventBus.h"
 #include "Inventory.h"
+#include "Monster.h"
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Fight.h"

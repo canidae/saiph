@@ -2,6 +2,7 @@
 
 #include "Debug.h"
 #include "Saiph.h"
+#include "Monster.h"
 #include "World.h"
 #include "Actions/Action.h"
 #include "Actions/Answer.h"

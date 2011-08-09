@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include "Debug.h"
+#include "Monster.h"
 #include "EventBus.h"
 #include "Inventory.h"
 #include "Item.h"

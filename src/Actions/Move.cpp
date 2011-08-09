@@ -1,6 +1,7 @@
 #include "Actions/Move.h"
 
 #include "World.h"
+#include "Monster.h"
 #include "Analyzers/Analyzer.h"
 
 using namespace action;
