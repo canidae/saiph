@@ -146,6 +146,31 @@ void Fight::analyze() {
 		}
 	}
 
+	map<Point,int> mon_range;
+	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+		if (World::subTurn() >= 0 && World::subTurn() + 1 < Saiph::minMovesThisTurn()) {
+			mon_range[m->first] = (m->second->maxMovesThisTurn() > World::subTurn()) ? 1 : 0;
+		} else {
+			mon_range[m->first] = std::max(0, m->second->maxMovesThisTurn() - std::max(0,World::subTurn()));
+		}
+	}
+
+	set<Point> safe_backup;
+	for (int y = Saiph::position().row() - 1; y <= Saiph::position().row() + 1; ++y) {
+		for (int x = Saiph::position().col() - 1; x <= Saiph::position().col() + 1; ++x) {
+			Point p(y,x);
+			if (!p.insideMap() || World::level().tile(p).cost() >= UNPASSABLE)
+				continue;
+			bool ok = true;
+			for (map<Point,int>::const_iterator m = mon_range.begin(); m != mon_range.end(); ++m)
+				ok = ok && (Point::gridDistance(p, m->first) > m->second);
+			if (ok) {
+				//Debug::custom(name()) << "Found safe backup square " << p << endl;
+				safe_backup.insert(p);
+			}
+		}
+	}
+
 	/* fight monsters */
 	int attack_score = INT_MIN;
 	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
@@ -179,7 +204,8 @@ void Fight::analyze() {
 		}
 		int distance = Point::gridDistance(m->first, Saiph::position());
 		bool floating_eye = (m->second->symbol() == S_EYE && m->second->color() == BLUE);
-		if (m->second->visible() && (distance > 1 || floating_eye) && _projectile_slots.size() > 0 && Saiph::encumbrance() < OVERTAXED && !Saiph::hallucinating()) {
+		bool can_shoot = _projectile_slots.size() > 0 && Saiph::encumbrance() < OVERTAXED && !Saiph::hallucinating();
+		if (m->second->visible() && (distance > 1 || floating_eye) && can_shoot) {
 			/* got projectiles and monster is not next to us or it's a floating eye.
 			 * should check if we can throw projectile at the monster */
 			unsigned char in_line = World::directLine(m->first, false, true, Saiph::strength() / 2, Saiph::strength() / 2);
@@ -194,6 +220,32 @@ void Fight::analyze() {
 		}
 		if (m->second->symbol() == 'c' && (m->second->color() == YELLOW || m->second->color() == BOLD_YELLOW) && (Inventory::keyForSlot(SLOT_WEAPON) == ILLEGAL_ITEM) && (Inventory::keyForSlot(SLOT_GLOVES) == ILLEGAL_ITEM))
 			continue; // Don't even think about attacking cockatrices with our bare hands
+		// TODO: can't kite if mob has motion-affecting statuses
+		int speed = m->second->data() ? m->second->data()->moveRate() : 36;
+		bool kitable = m->second->data() && Saiph::maxSpeed() > speed && (can_shoot || Saiph::minSpeed() > speed);
+		Debug::custom(name()) << "kitable=" << kitable << " speed=" << speed << " range=" << mon_range[m->first] << " distance=" << distance << endl;
+		if (kitable && mon_range[m->first] > 0 && distance <= 2) {
+			// mob will strike back if we attack it or move towards it, and we can avoid that
+			Point good;
+			int min_dist = 100;
+			for (int i = 0; i < 8; ++i) {
+				Point p = Saiph::position();
+				unsigned char dir = "hjklyubn"[i];
+				p.moveDirection(dir);
+				if (safe_backup.find(p) != safe_backup.end() && Point::gridDistance(m->first, p) < min_dist) {
+					good = p;
+					min_dist = Point::gridDistance(m->first, p);
+					break;
+				}
+			}
+			if (good.insideMap()) {
+				int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
+				World::setAction(new action::Move(this, World::level().tile(good), priority, false));
+				Debug::custom(name()) << "Setting action to kite '" << m->second->symbol() << "' moving to " << good << endl;
+				continue;
+			}
+		}
+
 		if (distance == 1) {
 			/* next to monster, and it's not a floating eye. melee */
 			int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
@@ -209,7 +261,7 @@ void Fight::analyze() {
 			continue; // can't move to monster
 		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
 		int cost = std::max(0, int(tile.cost()) - COST_MONSTER);
-		priority = action::Move::calculatePriority(priority, 5 * cost);
+		priority = action::Move::calculatePriority(priority, cost);
 		World::setAction(new action::Move(this, tile, priority, false));
 		Debug::custom(name()) << "Setting action to move towards '" << m->second->symbol() << "' which is " << cost << " cost away with priority " << priority << endl;
 	}
