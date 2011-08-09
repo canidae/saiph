@@ -11,6 +11,9 @@ namespace data {
 	class Monster;
 }
 
+// Number of turns to remember a monster's movement pattern for.  This is probably overkill; 6 suffices to find the movement holes for a soldier under good conditions
+#define MOVE_MEMORY 20
+
 class Monster {
 public:
 	Monster(const std::string& id);
@@ -25,11 +28,9 @@ public:
 	int attitude() const;
 	int attitude(int attitude);
 	int lastSeen() const;
-	int lastSeen(int last_seen);
 	int lastMoved() const;
-	int lastMoved(int last_moved);
 	Coordinate lastSeenPos() const;
-	void lastSeenPos(const Coordinate& in);
+	void observed(const Coordinate& in);
 	bool called() const;
 	bool called(bool called);
 	bool shopkeeper() const;
@@ -52,6 +53,9 @@ private:
 	int _attitude;
 	int _last_seen;
 	int _last_moved;
+	int _observed_turn;
+	int _observed_subturn;
+	int _movehist[MOVE_MEMORY];
 	Coordinate _last_seen_pos;
 	// has the monster been 'C'alled with its _id?  always true for G_UNIQ
 	bool _called;

@@ -865,10 +865,6 @@ void Level::updateMonsters() {
 
 		if (nearest != 0) {
 			//Debug::notice() << "for " << point << ", using existing monster " << nearest->id() << endl;
-			if (point != nearest->lastSeenPos()) {
-				nearest->lastMoved(World::internalTurn());
-				nearest->lastSeenPos(Coordinate(_level, point));
-			}
 		} else {
 			/* add monster */
 			string id;
@@ -877,17 +873,15 @@ void Level::updateMonsters() {
 			}
 			nearest = new Monster(id);
 			nearest->called(!id.empty());
-			nearest->lastMoved(World::internalTurn());
-			nearest->lastSeenPos(Coordinate(_level, point));
 			Debug::notice() << "for " << point << ", using new monster " << nearest->id() << endl;
 		}
 		nearest->symbol(msymbol);
 		nearest->color(color);
-		nearest->lastSeen(World::internalTurn());
 		nearest->attitude(attitude);
 		nearest->shopkeeper(shopkeeper);
 		nearest->priest(priest);
 		nearest->data(data);
+		nearest->observed(Coordinate(_level, point));
 	}
 
 	for (map<Point, Monster*>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)

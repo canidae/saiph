@@ -11,4 +11,9 @@ mon 17 10 rothe
 mon 17 12 rothe
 mon 18 9 rothe
 mon 20 11 rothe
+mon 11 15 leocrotta
+inventory
+identified worn speed boots
+identified worn +3 katana
+identified worn +3 dwarvish mithril-coat
 endmap
