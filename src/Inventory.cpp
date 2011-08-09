@@ -237,14 +237,17 @@ void Inventory::setSlot(unsigned char key, const Item& item) {
 
 void Inventory::updateExtrinsics() {
 	/* figure out what extrinsics we get from items */
+	_extrinsics_from_items = 0;
 	for (int s = 0; s < SLOTS; ++s) {
 		const Item& item = itemInSlot(s);
 		if (item.count() <= 0)
 			continue; // no item in slot
 		map<const string, const data::Item*>::const_iterator i = data::Item::items().find(item.name());
-		if (i == data::Item::items().end())
+		if (i == data::Item::items().end()) {
+			Debug::info() << "Item " << item.name() << " not in database" << endl;
 			continue; // item not in database, shouldn't happen very often
-		_extrinsics_updated |= i->second->properties();
+		}
+		_extrinsics_from_items |= i->second->properties();
 	}
 	/* TODO: items that give extrinsics by only carrying them (ie. longbow of diana) */
 	_extrinsics_updated = true;
