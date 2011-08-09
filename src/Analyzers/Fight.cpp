@@ -227,6 +227,8 @@ void Fight::analyze() {
 		// TODO: can't kite if mob has motion-affecting statuses
 		int speed = m->second->data() ? m->second->data()->moveRate() : 36;
 		bool kitable = m->second->data() && Saiph::maxSpeed() > speed && (can_shoot || Saiph::minSpeed() > speed);
+		if (m->second->attitude() == FRIENDLY || (m->second->lastSeen() - m->second->lastMoved()) > 10)
+			kitable = false; // it doesn't seem willing to follow us.
 		Debug::custom(name()) << "kitable=" << kitable << " speed=" << speed << " range=" << mon_range[m->first] << " distance=" << distance << endl;
 		if (kitable && mon_range[m->first] > 0 && distance <= 2) {
 			// mob will strike back if we attack it or move towards it, and we can avoid that
