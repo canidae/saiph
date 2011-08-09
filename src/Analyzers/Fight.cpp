@@ -162,8 +162,12 @@ void Fight::analyze() {
 			if (!p.insideMap() || World::level().tile(p).cost() >= UNPASSABLE)
 				continue;
 			bool ok = true;
-			for (map<Point,int>::const_iterator m = mon_range.begin(); m != mon_range.end(); ++m)
-				ok = ok && (Point::gridDistance(p, m->first) > m->second);
+			for (map<Point,int>::const_iterator m = mon_range.begin(); m != mon_range.end(); ++m) {
+				if (Point::gridDistance(p, m->first) <= m->second) {
+					ok = false;
+					break;
+				}
+			}
 			if (ok) {
 				//Debug::custom(name()) << "Found safe backup square " << p << endl;
 				safe_backup.insert(p);
