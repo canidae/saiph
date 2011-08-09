@@ -52,6 +52,7 @@ int Saiph::_hitpoints = 0;
 int Saiph::_hitpoints_max = 0;
 int Saiph::_power = 0;
 int Saiph::_power_max = 0;
+int Saiph::_min_moves_this_turn = 1;
 /* effects */
 bool Saiph::_blind = false;
 bool Saiph::_confused = false;
@@ -212,9 +213,9 @@ void Saiph::parseMessages(const string& messages) {
 		if (messages.find(MESSAGE_SPEED_LOSE1) != string::npos || messages.find(MESSAGE_SPEED_LOSE2) != string::npos || messages.find(MESSAGE_SPEED_LOSE3) != string::npos || messages.find(MESSAGE_SPEED_LOSE4) != string::npos || messages.find(MESSAGE_SPEED_LOSE5) != string::npos || messages.find(MESSAGE_SPEED_LOSE6) != string::npos || messages.find(MESSAGE_SPEED_LOSE7) != string::npos)
 			_intrinsics &= ~PROPERTY_SPEED;
 		if (messages.find(MESSAGE_VERYFAST_GAIN1) != string::npos || messages.find(MESSAGE_VERYFAST_GAIN2) != string::npos || messages.find(MESSAGE_VERYFAST_GAIN3) != string::npos)
-			_intrinsics |= PROPERTY_VERYFAST;
+			_extrinsics |= PROPERTY_VERYFAST;
 		if (messages.find(MESSAGE_VERYFAST_LOSE1) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE2) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE3) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE4) != string::npos)
-			_intrinsics &= ~PROPERTY_VERYFAST;
+			_extrinsics &= ~PROPERTY_VERYFAST;
 		if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos)
 			_stoned = true; // not checking for limbs turned to stone because we're dead then
 		if (messages.find(MESSAGE_YOU_FEEL_LIMBER) != string::npos)
@@ -527,4 +528,40 @@ int Saiph::role() {
 
 int Saiph::gender() {
 	return _gender;
+}
+
+int Saiph::minMovesThisTurn() {
+	return _min_moves_this_turn;
+}
+
+int Saiph::minMovesThisTurn(int set_to) {
+	_min_moves_this_turn = set_to;
+	return _min_moves_this_turn;
+}
+
+// NOT HANDLED: polyself, riding
+int Saiph::minSpeed() {
+	int moveamt = (Saiph::extrinsics() & PROPERTY_VERYFAST) ? 18 : 12;
+	switch (_encumbrance) {
+		case UNENCUMBERED: break;
+		case BURDENED: moveamt -= (moveamt / 4); break;
+		case STRESSED: moveamt -= (moveamt / 2); break;
+		case STRAINED: moveamt -= ((moveamt * 3) / 4); break;
+		case OVERTAXED: moveamt -= ((moveamt * 7) / 8); break;
+		default: break;
+	}
+	return moveamt;
+}
+
+int Saiph::maxSpeed() {
+	int moveamt = (Saiph::extrinsics() & PROPERTY_VERYFAST) ? 24 : (Saiph::intrinsics() & PROPERTY_SPEED) ? 18 : 12;
+	switch (_encumbrance) {
+		case UNENCUMBERED: break;
+		case BURDENED: moveamt -= (moveamt / 4); break;
+		case STRESSED: moveamt -= (moveamt / 2); break;
+		case STRAINED: moveamt -= ((moveamt * 3) / 4); break;
+		case OVERTAXED: moveamt -= ((moveamt * 7) / 8); break;
+		default: break;
+	}
+	return moveamt;
 }
