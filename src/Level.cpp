@@ -20,7 +20,7 @@
 #define COST_ALTAR 4 // better not fight on altars
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
-#define COST_MONSTER 128 // try not to path through monsters
+/* #define COST_MONSTER 128 */ // try not to path through monsters (in Level.h)
 #define COST_TRAP 128 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 /* max moves a monster can do before we think it's a new monster */
