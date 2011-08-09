@@ -320,10 +320,14 @@ void Level::analyze() {
 	for (vector<Point>::const_iterator c = World::changes().begin(); c != World::changes().end(); ++c)
 		updateMapPoint(*c, (unsigned char) World::view(*c), World::color(*c));
 	World::forgetChanges();
-	/* update monsters */
-	updateMonsters();
-	/* update pathmap */
-	updatePathMap();
+	/* it is damaging for us to cache information for the current internalTurn() if we don't have all the details yet
+	 * analyzers may see stale data, but they won't act on it, since a FarLook action will be forced */
+	if (farlooksNeeded().empty()) {
+		/* update monsters */
+		updateMonsters();
+		/* update pathmap */
+		updatePathMap();
+	}
 	/* set point we're standing on "fully searched" */
 	_map[Saiph::position().row()][Saiph::position().col()].search(TILE_FULLY_SEARCHED);
 
@@ -800,9 +804,6 @@ vector<Point> Level::farlooksNeeded() {
 void Level::updateMonsters() {
 	/* remove monsters that seems to be gone
 	 * and make monsters we can't see !visible */
-
-	if (farlooksNeeded().size() > 0)
-		return;
 
 	if (World::internalTurn() != _farlooked_turn)
 		_turn_farlooks.clear();
