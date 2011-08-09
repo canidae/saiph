@@ -67,6 +67,31 @@ Coordinate Monster::lastSeenPos() const {
 	return _last_seen_pos;
 }
 
+int Monster::maxMovesThisTurn() const {
+	if (!data()) return 5; // hasted air E... gotta be pessimistic
+	int speed = data()->moveRate();
+	if (_observed_turn != World::turn())
+		return (speed + 11) / 12; // why are you interested in whether an invisible monster can move?
+
+	// we're interested in energy at the END of turns
+	int max_en = 11;
+
+	// note, _movehist values are lower limits, so we cannot calculate min energy
+	for (int turns_ago = MOVE_MEMORY - 1; turns_ago >= 1; --turns_ago) {
+		max_en = std::min(max_en, 11);
+		max_en += speed;
+		max_en -= _movehist[turns_ago] * 12;
+		if (max_en < 0) {
+			Debug::warning() << "Monster " << symbol() << id() << " is moving anomalously fast" << std::endl;
+			return (((4 * speed + 2) / 3) + 11) / 12; // assume it's hasted
+		}
+	}
+
+	max_en = std::min(max_en, 11);
+	max_en += speed; // for the beginning of turn now-0
+	return max_en / 12;
+}
+
 void Monster::observed(const Coordinate& point) {
 	unindex();
 
@@ -96,7 +121,8 @@ void Monster::observed(const Coordinate& point) {
 
 	std::ostringstream buf;
 	for (int i = 0; i < MOVE_MEMORY; ++i)
-		buf << _movehist[i] << ' ';
+		buf << ' ' << _movehist[i];
+	buf << " / predicted max for current turn = " << maxMovesThisTurn();
 	Debug::info() << "Monster " << symbol() << id() << " move history:" << buf.str() << std::endl;
 
 	if (point != _last_seen_pos) {
