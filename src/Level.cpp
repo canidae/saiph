@@ -799,7 +799,6 @@ void Level::updatePathMap() {
 	start.updatePath(NOWHERE, 0, 0);
 
 	Point to = from;
-	Debug::notice() << "Huh? " << to << " | " << from << endl;
 	/* check first north node */
 	start.direction(N);
 	updatePathMapSetCost(to.moveNorth(), start);
@@ -867,7 +866,6 @@ void Level::updatePathMapSetCost(const Point& to, const Tile& prev) {
 	} else if (cost == next.cost() && cost == UNREACHABLE) {
 		next.updatePath(prev.direction(), prev.distance() + 1, UNPASSABLE);
 	}
-	Debug::notice() << "Meh: " << next << " | " << prev << endl;
 }
 
 unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& prev) {
