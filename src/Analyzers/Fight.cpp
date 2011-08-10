@@ -239,7 +239,8 @@ void Fight::analyze() {
 			int min_dist = 100;
 			for (int i = 0; i < 8; ++i) {
 				Point p = Saiph::position();
-				unsigned char dir = "hjklyubn"[i];
+				// we prioritize horizontal directions because NetHack rooms are generally much wider than tall
+				unsigned char dir = "hlyubnjk"[i];
 				p.moveDirection(dir);
 				if (safe_backup.find(p) != safe_backup.end() && Point::gridDistance(m->first, p) < min_dist) {
 					good = p;
