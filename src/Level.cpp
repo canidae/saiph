@@ -840,12 +840,10 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 		type = messages.substr(pos);
 	}
 
-	Debug::info() << "Farlook: type = '" << type << "', name = '" << name << "'" << endl;
-
 	priest = shopkeeper = false;
 
 	// shopkeepers are always white @, and their names are capitalized
-	if (symbol == '@' && color == BOLD_WHITE && type[0] >= 'A' && type[1] <= 'Z') {
+	if (symbol == '@' && color == BOLD_WHITE && type[0] >= 'A' && type[0] <= 'Z') {
 		shopkeeper = true;
 		name = type;
 		type = "shopkeeper";
@@ -857,6 +855,7 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 	}
 
 	data = data::Monster::monster(type);
+	Debug::info() << "Farlook: type = '" << type << "', name = '" << name << "'" << (data ? "" : ", not found") << endl;
 
 	return true;
 }
@@ -906,6 +905,7 @@ void Level::updateMonsters() {
 		std::string name;
 
 		parseFarlook(point, shopkeeper, priest, attitude, name, data);
+		bool fixed_name = data && (shopkeeper || priest || (data->genoFlags() & G_UNIQ) != 0);
 
 		Monster* nearest = 0;
 		// note: in the event of a named non-unique monster that is not indexed under that name, it
@@ -915,7 +915,7 @@ void Level::updateMonsters() {
 			//Debug::notice() << "name of existing monster found" << endl;
 			nearest = Monster::byID()[name];
 			nearest->called(true);
-		} else {
+		} else if (!fixed_name) {
 			/* find nearest monster */
 			int min_distance = INT_MAX;
 			// we only care about recently seen monsters here
@@ -947,7 +947,7 @@ void Level::updateMonsters() {
 		} else {
 			/* add monster */
 			string id;
-			if (data && (shopkeeper || priest || (data->genoFlags() & G_UNIQ) != 0)) {
+			if (fixed_name) {
 				id = name;
 			}
 			nearest = new Monster(id);
