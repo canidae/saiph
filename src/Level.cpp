@@ -798,22 +798,22 @@ void Level::updatePathMap() {
 	/* set node we're standing on */
 	_map[from.row()][from.col()].updatePath(NOWHERE, 0, 0);
 
-	/* check first northwest node */
-	updatePathMapSetCost(to.moveNorthwest(), from, NW, 0);
 	/* check first north node */
-	updatePathMapSetCost(to.moveEast(), from, N, 0);
-	/* check first northeast node */
-	updatePathMapSetCost(to.moveEast(), from, NE, 0);
+	updatePathMapSetCost(to.moveNorth(), from, N, 0);
 	/* check first east node */
-	updatePathMapSetCost(to.moveSouth(), from, E, 0);
-	/* check first southeast node */
-	updatePathMapSetCost(to.moveSouth(), from, SE, 0);
+	updatePathMapSetCost(to.moveSoutheast(), from, E, 0);
 	/* check first south node */
-	updatePathMapSetCost(to.moveWest(), from, S, 0);
-	/* check first southwest node */
-	updatePathMapSetCost(to.moveWest(), from, SW, 0);
+	updatePathMapSetCost(to.moveSouthwest(), from, S, 0);
 	/* check first west node */
-	updatePathMapSetCost(to.moveNorth(), from, W, 0);
+	updatePathMapSetCost(to.moveNorthwest(), from, W, 0);
+	/* check first northwest node */
+	updatePathMapSetCost(to.moveNorth(), from, NW, 0);
+	/* check first northeast node */
+	updatePathMapSetCost(to.moveEast().moveEast(), from, NE, 0);
+	/* check first southeast node */
+	updatePathMapSetCost(to.moveSouth().moveSouth(), from, SE, 0);
+	/* check first southwest node */
+	updatePathMapSetCost(to.moveWest().moveWest(), from, SW, 0);
 
 	/* calculate remaining nodes */
 	int index = 0;
@@ -824,22 +824,22 @@ void Level::updatePathMap() {
 		/* previous tile, the tile we came from */
 		Tile& prev = _map[from.row()][from.col()];
 
-		/* check northwest node */
-		updatePathMapSetCost(to.moveNorthwest(), from, prev.direction(), prev.distance());
 		/* check north node */
-		updatePathMapSetCost(to.moveEast(), from, prev.direction(), prev.distance());
-		/* check northeast node */
-		updatePathMapSetCost(to.moveEast(), from, prev.direction(), prev.distance());
-		/* check east node */
-		updatePathMapSetCost(to.moveSouth(), from, prev.direction(), prev.distance());
-		/* check southeast node */
-		updatePathMapSetCost(to.moveSouth(), from, prev.direction(), prev.distance());
-		/* check south node */
-		updatePathMapSetCost(to.moveWest(), from, prev.direction(), prev.distance());
-		/* check southwest node */
-		updatePathMapSetCost(to.moveWest(), from, prev.direction(), prev.distance());
-		/* check west node */
 		updatePathMapSetCost(to.moveNorth(), from, prev.direction(), prev.distance());
+		/* check east node */
+		updatePathMapSetCost(to.moveSoutheast(), from, prev.direction(), prev.distance());
+		/* check south node */
+		updatePathMapSetCost(to.moveSouthwest(), from, prev.direction(), prev.distance());
+		/* check west node */
+		updatePathMapSetCost(to.moveNorthwest(), from, prev.direction(), prev.distance());
+		/* check northwest node */
+		updatePathMapSetCost(to.moveNorth(), from, prev.direction(), prev.distance());
+		/* check northeast node */
+		updatePathMapSetCost(to.moveEast().moveEast(), from, prev.direction(), prev.distance());
+		/* check southeast node */
+		updatePathMapSetCost(to.moveSouth().moveSouth(), from, prev.direction(), prev.distance());
+		/* check southwest node */
+		updatePathMapSetCost(to.moveWest().moveWest(), from, prev.direction(), prev.distance());
 	}
 }
 
