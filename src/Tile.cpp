@@ -4,7 +4,7 @@
 using namespace std;
 
 /* constructors/destructor */
-Tile::Tile(const Coordinate& coordinate) : _coordinate(coordinate), _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0) {
+Tile::Tile(const Coordinate& coordinate) : _coordinate(coordinate), _symbol(SOLID_ROCK), _monster(ILLEGAL_MONSTER), _direction(ILLEGAL_DIRECTION), _search(0), _distance(UNREACHABLE), _cost(UNREACHABLE), _updated(0), _lit(-1) {
 }
 
 Tile::~Tile() {
@@ -45,6 +45,15 @@ unsigned char Tile::monster() const {
 unsigned char Tile::monster(unsigned char monster) {
 	_monster = monster;
 	return this->monster();
+}
+
+int Tile::lit() const {
+	return _lit;
+}
+
+int Tile::lit(int lit) {
+	_lit = lit;
+	return this->lit();
 }
 
 unsigned int Tile::search() const {

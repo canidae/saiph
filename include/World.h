@@ -117,6 +117,7 @@ private:
 	static void drawNormal(void*, Level&, const Point&, unsigned char&, unsigned char&);
 	static void drawDirections(void*, Level&, const Point&, unsigned char&, unsigned char&);
 	static void drawCosts(void*, Level&, const Point&, unsigned char&, unsigned char&);
+	static void drawLight(void*, Level&, const Point&, unsigned char&, unsigned char&);
 
 	static void dumpMap(Level& which);
 	static void dumpMaps();

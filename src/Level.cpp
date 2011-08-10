@@ -124,6 +124,7 @@ bool Level::_monster[UCHAR_MAX + 1] = {false};
 bool Level::_item[UCHAR_MAX + 1] = {false};
 Tile Level::_outside_map;
 map<Point,string> Level::_turn_farlooks;
+Coordinate Level::_prev_position;
 unsigned Level::_farlooked_turn = (unsigned)-1;
 
 /* constructors/destructor */
@@ -321,6 +322,15 @@ void Level::analyze() {
 	for (vector<Point>::const_iterator c = World::changes().begin(); c != World::changes().end(); ++c)
 		updateMapPoint(*c, (unsigned char) World::view(*c), World::color(*c));
 	World::forgetChanges();
+	if (_prev_position.level() == _level) {
+		for (int y = _prev_position.row() - 1; y <= _prev_position.row() + 1; ++y) {
+			for (int x = _prev_position.col() - 1; x <= _prev_position.col() + 1; ++x) {
+				Point p(y,x);
+				if (p.insideMap()) updateLight(p);
+			}
+		}
+	}
+	_prev_position = Saiph::position();
 	/* it is damaging for us to cache information for the current internalTurn() if we don't have all the details yet
 	 * analyzers may see stale data, but they won't act on it, since a FarLook action will be forced */
 	if (farlooksNeeded().empty()) {
@@ -674,6 +684,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		 * even if we already know what's beneath the monster/item. */
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
+	updateLight(point);
 	/* update items */
 	if (!Saiph::hallucinating() && _item[symbol]) {
 		map<Point, Stash>::iterator s = _stashes.find(point);
@@ -707,6 +718,29 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 	} else {
 		_monster_points.erase(point);
 	}
+}
+
+void Level::updateLight(const Point& p) {
+	Tile& t = tile(p);
+	char view = World::view(p);
+	bool within_night_vision = Point::gridDistance(p, Saiph::position()) <= 1;
+
+	// A square which is displayed as . must be lit from some source, unless
+	// it is right next to us.
+
+	if (view == '.' && !within_night_vision) t.lit(1);
+
+	// If it was displayed as ., but turned to a space, it must not have been
+	// lit after all, or it would have stayed ..
+
+	if (view == ' ' && t.symbol() == FLOOR) t.lit(0);
+
+	// Corridors are lit if and only if they are brightly colored.
+
+	if (t.symbol() == CORRIDOR) t.lit(World::color(p) == BOLD_WHITE);
+
+	// Other types of tiles cannot have light status easily determined.
+	// Fortunately, they are rare and we usually do not fight on them.
 }
 
 void Level::clearFarlookData() {
@@ -783,36 +817,35 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 	string::size_type pos_c = messages.find(" called ", pos);
 
 	string type;
-	string called;
 
 	if (pos_c != string::npos) {
-		// If the farlook string contains "called", the monster is definitely called, and therefore definitely callable.
+		// If the farlook string contains "name", the monster is definitely name, and therefore definitely callable.
 		// It does not matter that we get the name exactly right because it will just be renamed; just make sure not to accidentally get a valid name
-		// The most important confusing case is X called Y's ghost.  Also, we might chop too much off a name with a ,, ), or -.
+		// The most important confusing case is X name Y's ghost.  Also, we might chop too much off a name with a ,, ), or -.
 
-		type   = messages.substr(pos, pos_c - pos);
-		called = messages.substr(pos_c + 8);
+		type = messages.substr(pos, pos_c - pos);
+		name = messages.substr(pos_c + 8);
 	} else if ((pos_g = messages.find(" ghost", pos)) != string::npos) {
 		// must be a real ghost; anything with ghost in the call string would be caught above
 
 		type = "ghost";
-		called = messages.substr(pos, pos_g - pos);
-		if (!called.empty() && called[called.size() - 1] == 's')
-			called.erase(called.size() - 1);
-		if (!called.empty() && called[called.size() - 1] == '\'')
-			called.erase(called.size() - 1);
+		name = messages.substr(pos, pos_g - pos);
+		if (!name.empty() && name[name.size() - 1] == 's')
+			name.erase(name.size() - 1);
+		if (!name.empty() && name[name.size() - 1] == '\'')
+			name.erase(name.size() - 1);
 	} else {
 		type = messages.substr(pos);
 	}
 
-	Debug::info() << "Farlook: type = '" << type << "', called = '" << called << "'" << endl;
+	Debug::info() << "Farlook: type = '" << type << "', name = '" << name << "'" << endl;
 
 	priest = shopkeeper = false;
 
 	// shopkeepers are always white @, and their names are capitalized
 	if (symbol == '@' && color == BOLD_WHITE && type[0] >= 'A' && type[1] <= 'Z') {
 		shopkeeper = true;
-		called = type;
+		name = type;
 		type = "shopkeeper";
 	}
 

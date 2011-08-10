@@ -52,6 +52,7 @@ public:
 	static bool engulfed();
 	static bool engulfed(bool engulfed);
 	static bool inAPit();
+	static bool infravision();
 	static int skill(int which);
 	static int maxSkill(int which);
 	static void updateSkills(int* curp);

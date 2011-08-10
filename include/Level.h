@@ -66,6 +66,7 @@ private:
 	static Tile _outside_map;
 	static std::map<Point,std::string> _turn_farlooks;
 	static unsigned _farlooked_turn;
+	static Coordinate _prev_position;
 	int _level;
 	Tile _map[MAP_ROW_END + 1][MAP_COL_END + 1];
 	std::map<Point, Monster*> _monsters;
@@ -80,6 +81,7 @@ private:
 	bool _new_level;
 
 	void updateMapPoint(const Point& point, unsigned char symbol, int color);
+	void updateLight(const Point& point);
 	void updateMonsters();
 	bool parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, std::string& name, const data::Monster*& data);
 	void updatePathMap();

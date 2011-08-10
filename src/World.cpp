@@ -188,6 +188,7 @@ void World::init(const string& logfile, int connection_type) {
 	registerDrawFunc('n', &drawNormal, NULL);
 	registerDrawFunc('c', &drawCosts, NULL);
 	registerDrawFunc('d', &drawDirections, NULL);
+	registerDrawFunc('l', &drawLight, NULL);
 	_current_draw_func = _draw_funcs.find('n');
 
 	_connection = Connection::create(connection_type);
@@ -1050,6 +1051,27 @@ void World::drawNormal(void*, Level& lv, const Point& p, unsigned char& symbol, 
 		color = BOLD_CYAN;
 		symbol = '?';
 	}
+}
+
+void World::drawLight(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {
+	const Tile& t = lv.tile(p);
+
+	if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+		symbol = '@';
+	} else if (t.monster() != ILLEGAL_MONSTER) {
+		symbol = t.monster();
+	} else if (t.symbol() > 31 && t.symbol() < 127) {
+		symbol = t.symbol();
+	} else {
+		symbol = '?';
+	}
+
+	if (t.lit() == 0)
+		color = RED;
+	else if (t.lit() > 0)
+		color = BOLD_YELLOW;
+	else
+		color = NO_COLOR;
 }
 
 void World::drawCosts(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {
