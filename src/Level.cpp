@@ -843,6 +843,19 @@ void Level::updatePathMap() {
 	}
 }
 
+void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance) {
+	if (!to.insideMap())
+		return;
+	unsigned int cost = updatePathMapCalculateCost(to, from);
+	Tile& next = _map[to.row()][to.col()];
+	if (cost < next.cost()) {
+		_pathing_queue[_pathing_queue_size++] = to;
+		next.updatePath(direction, distance + 1, cost);
+	} else if (cost == next.cost() && cost == UNREACHABLE) {
+		next.updatePath(direction, distance + 1, UNPASSABLE);
+	}
+}
+
 unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& from) {
 	/* helper method for updatePathMap()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
@@ -884,17 +897,4 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 	if (next.monster() != ILLEGAL_MONSTER)
 		cost += COST_MONSTER;
 	return cost;
-}
-
-void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance) {
-	if (!to.insideMap())
-		return;
-	unsigned int cost = updatePathMapCalculateCost(to, from);
-	Tile& next = _map[to.row()][to.col()];
-	if (cost < next.cost()) {
-		_pathing_queue[_pathing_queue_size++] = to;
-		next.updatePath(direction, distance + 1, cost);
-	} else if (cost == next.cost() && cost == UNREACHABLE) {
-		next.updatePath(direction, distance + 1, UNPASSABLE);
-	}
 }
