@@ -35,6 +35,7 @@ const Command& FarLook::command() {
 		string moves = World::cursorMoves(Saiph::position(), iter->where);
 		cmdbuf.insert(cmdbuf.end(), moves.begin(), moves.end());
 		cmdbuf.push_back('.');
+		cmdbuf.push_back(' ');
 	}
 	_command = Command(cmdbuf, PRIORITY_LOOK);
 	return _command;
