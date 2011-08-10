@@ -20,8 +20,8 @@
 #define COST_ALTAR 4 // better not fight on altars
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
-#define COST_MONSTER 128 // try not to path through monsters
-#define COST_TRAP 128 // avoid traps
+#define COST_MONSTER 256 // try not to path through monsters
+#define COST_TRAP 64 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 /* max moves a monster can do before we think it's a new monster */
 #define MAX_MONSTER_MOVE 3 // if a monster is more than this distance from where we last saw it, then it's probably a new monster
@@ -792,86 +792,98 @@ void Level::updateMonsters() {
 
 void Level::updatePathMap() {
 	Point from = Saiph::position();
-	Point to = from;
 	_pathing_queue_size = 0;
 
-	/* set node we're standing on */
-	_map[from.row()][from.col()].updatePath(NOWHERE, 0, 0);
+	/* the tile we start at */
+	Tile& start = _map[from.row()][from.col()];
+	start.updatePath(NOWHERE, 0, 0);
 
+	Point to = from;
+	Debug::notice() << "Huh? " << to << " | " << from << endl;
 	/* check first north node */
-	updatePathMapSetCost(to.moveNorth(), from, N, 0);
+	start.direction(N);
+	updatePathMapSetCost(to.moveNorth(), start);
 	/* check first east node */
-	updatePathMapSetCost(to.moveSoutheast(), from, E, 0);
+	start.direction(E);
+	updatePathMapSetCost(to.moveSoutheast(), start);
 	/* check first south node */
-	updatePathMapSetCost(to.moveSouthwest(), from, S, 0);
+	start.direction(S);
+	updatePathMapSetCost(to.moveSouthwest(), start);
 	/* check first west node */
-	updatePathMapSetCost(to.moveNorthwest(), from, W, 0);
+	start.direction(W);
+	updatePathMapSetCost(to.moveNorthwest(), start);
 	/* check first northwest node */
-	updatePathMapSetCost(to.moveNorth(), from, NW, 0);
+	start.direction(NW);
+	updatePathMapSetCost(to.moveNorth(), start);
 	/* check first northeast node */
-	updatePathMapSetCost(to.moveEast().moveEast(), from, NE, 0);
+	start.direction(NE);
+	updatePathMapSetCost(to.moveEast().moveEast(), start);
 	/* check first southeast node */
-	updatePathMapSetCost(to.moveSouth().moveSouth(), from, SE, 0);
+	start.direction(SE);
+	updatePathMapSetCost(to.moveSouth().moveSouth(), start);
 	/* check first southwest node */
-	updatePathMapSetCost(to.moveWest().moveWest(), from, SW, 0);
+	start.direction(SW);
+	updatePathMapSetCost(to.moveWest().moveWest(), start);
+
+	/* reset direction of start node to ILLEGAL_DIRECTION */
+	start.direction(NOWHERE);
 
 	/* calculate remaining nodes */
 	int index = 0;
 	while (index < _pathing_queue_size) {
 		from = _pathing_queue[index++];
-		Point to = from;
 
 		/* previous tile, the tile we came from */
 		Tile& prev = _map[from.row()][from.col()];
 
+		to = from;
 		/* check north node */
-		updatePathMapSetCost(to.moveNorth(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveNorth(), prev);
 		/* check east node */
-		updatePathMapSetCost(to.moveSoutheast(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveSoutheast(), prev);
 		/* check south node */
-		updatePathMapSetCost(to.moveSouthwest(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveSouthwest(), prev);
 		/* check west node */
-		updatePathMapSetCost(to.moveNorthwest(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveNorthwest(), prev);
 		/* check northwest node */
-		updatePathMapSetCost(to.moveNorth(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveNorth(), prev);
 		/* check northeast node */
-		updatePathMapSetCost(to.moveEast().moveEast(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveEast().moveEast(), prev);
 		/* check southeast node */
-		updatePathMapSetCost(to.moveSouth().moveSouth(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveSouth().moveSouth(), prev);
 		/* check southwest node */
-		updatePathMapSetCost(to.moveWest().moveWest(), from, prev.direction(), prev.distance());
+		updatePathMapSetCost(to.moveWest().moveWest(), prev);
 	}
 }
 
-void Level::updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance) {
+void Level::updatePathMapSetCost(const Point& to, const Tile& prev) {
 	if (!to.insideMap())
 		return;
-	unsigned int cost = updatePathMapCalculateCost(to, from);
 	Tile& next = _map[to.row()][to.col()];
+	unsigned int cost = updatePathMapCalculateCost(next, prev);
 	if (cost < next.cost()) {
-		_pathing_queue[_pathing_queue_size++] = to;
-		next.updatePath(direction, distance + 1, cost);
+		_pathing_queue[_pathing_queue_size++] = next.coordinate();
+		next.updatePath(prev.direction(), prev.distance() + 1, cost);
 	} else if (cost == next.cost() && cost == UNREACHABLE) {
-		next.updatePath(direction, distance + 1, UNPASSABLE);
+		next.updatePath(prev.direction(), prev.distance() + 1, UNPASSABLE);
 	}
+	Debug::notice() << "Meh: " << next << " | " << prev << endl;
 }
 
-unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& from) {
-	/* helper method for updatePathMap()
+unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& prev) {
+	/* helper method for updatePathMapSetCost()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
-	Tile& next = _map[to.row()][to.col()];
-	Tile& prev = _map[from.row()][from.col()];
 	if (!_passable[next.symbol()])
 		return UNREACHABLE;
-	bool cardinal_move = (to.row() == from.row() || to.col() == from.col());
+	bool cardinal_move = (next.coordinate().row() == prev.coordinate().row() || next.coordinate().col() == prev.coordinate().col());
 	if (!cardinal_move) {
 		unsigned char prev_symbol = prev.symbol();
 		if (next.symbol() == OPEN_DOOR || prev_symbol == OPEN_DOOR)
 			return UNREACHABLE; // diagonally in/out of door
 		if (next.symbol() == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE || prev_symbol == UNKNOWN_TILE_DIAGONALLY_UNPASSABLE)
 			return UNREACHABLE; // don't know what tile this is, but we know we can't pass it diagonally
-		Tile& sc1 = _map[to.row()][from.col()];
-		Tile& sc2 = _map[from.row()][to.col()];
+		Tile& sc1 = _map[next.coordinate().row()][prev.coordinate().col()];
+		Tile& sc2 = _map[prev.coordinate().row()][next.coordinate().col()];
 		if (!_passable[sc1.symbol()] && !_passable[sc2.symbol()]) {
 			/* moving past two corners
 			 * while we may pass two corners if we're not carrying too much we'll just ignore this.
@@ -890,7 +902,7 @@ unsigned int Level::updatePathMapCalculateCost(const Point& to, const Point& fro
 		return UNREACHABLE;
 	if (next.symbol() == TRAP && _branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (next.monster() != ILLEGAL_MONSTER && abs(Saiph::position().row() - to.row()) <= 1 && abs(Saiph::position().col() - to.col()) <= 1)
+	if (next.monster() != ILLEGAL_MONSTER && abs(Saiph::position().row() - next.coordinate().row()) <= 1 && abs(Saiph::position().col() - next.coordinate().col()) <= 1)
 		return UNREACHABLE; // don't path through monster next to her
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += _pathcost[next.symbol()];

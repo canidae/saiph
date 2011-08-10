@@ -12,10 +12,10 @@ public:
 	virtual ~Tile();
 
 	const Coordinate& coordinate() const;
-	unsigned int cost();
-	unsigned char direction();
+	unsigned int cost() const;
+	unsigned char direction() const;
 	unsigned char direction(unsigned char direction);
-	unsigned int distance();
+	unsigned int distance() const;
 	unsigned char monster() const; // only character, most analyzers should use list of Monster from Level instead
 	unsigned char monster(unsigned char monster);
 	unsigned int search() const;
@@ -38,5 +38,5 @@ private:
 	unsigned int _updated; // last internal turn this node was updated, used for pathing
 };
 
-std::ostream& operator<<(std::ostream& os, Tile& t);
+std::ostream& operator<<(std::ostream& os, const Tile& t);
 #endif

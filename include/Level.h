@@ -69,7 +69,7 @@ private:
 	void updateMapPoint(const Point& point, unsigned char symbol, int color);
 	void updateMonsters();
 	void updatePathMap();
-	unsigned int updatePathMapCalculateCost(const Point& to, const Point& from);
-	void updatePathMapSetCost(const Point& to, const Point& from, unsigned char direction, unsigned int distance);
+	void updatePathMapSetCost(const Point& to, const Tile& prev);
+	unsigned int updatePathMapCalculateCost(const Tile& next, const Tile& prev);
 };
 #endif

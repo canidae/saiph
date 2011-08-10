@@ -15,15 +15,15 @@ const Coordinate& Tile::coordinate() const {
 	return _coordinate;
 }
 
-unsigned int Tile::cost() {
+unsigned int Tile::cost() const {
 	if (_updated != World::internalTurn() && _coordinate.level() == Saiph::position().level())
-		_cost = UNREACHABLE;
+		return UNREACHABLE;
 	return _cost;
 }
 
-unsigned char Tile::direction() {
+unsigned char Tile::direction() const {
 	if (_updated != World::internalTurn() && _coordinate.level() == Saiph::position().level())
-		_direction = ILLEGAL_DIRECTION;
+		return ILLEGAL_DIRECTION;
 	return _direction;
 }
 
@@ -32,9 +32,9 @@ unsigned char Tile::direction(unsigned char direction) {
 	return this->direction();
 }
 
-unsigned int Tile::distance() {
+unsigned int Tile::distance() const {
 	if (_updated != World::internalTurn() && _coordinate.level() == Saiph::position().level())
-		_distance = UNREACHABLE;
+		return UNREACHABLE;
 	return _distance;
 }
 
@@ -78,6 +78,6 @@ void Tile::updatePath(unsigned char direction, unsigned int distance, unsigned i
 	_updated = World::internalTurn();
 }
 
-ostream& operator<<(ostream& os, Tile& t) {
+ostream& operator<<(ostream& os, const Tile& t) {
 	return os << "(coordinate=" << t.coordinate() << ", symbol=" << t.symbol() << ", monster=" << t.monster() << ", direction=" << t.direction() << ", search=" << t.search() << ", distance=" << t.distance() << ", cost=" << t.cost() << ")";
 }
