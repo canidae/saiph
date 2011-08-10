@@ -204,7 +204,7 @@ void Fight::analyze() {
 			 * this is a too simple solution, we need to consider stuff as how hard they hit, if they steal
 			 * stuff, if they use wands, etc */
 			attack_score = m->second->data()->saiphDifficulty();
-			Debug::custom(name()) << "Attack score for monster '" << m->second->data()->name() << ": " << attack_score << endl;
+			Debug::custom(name()) << "Attack score for monster '" << m->second->data()->name() << ": " << attack_score << " (" << data::Monster::saiphDifficultyMin() << '-' << data::Monster::saiphDifficultyMax() << ")" << endl;
 		}
 		int distance = Point::gridDistance(m->first, Saiph::position());
 		bool floating_eye = (m->second->symbol() == S_EYE && m->second->color() == BLUE);
@@ -227,7 +227,6 @@ void Fight::analyze() {
 		// TODO: can't kite if mob has motion-affecting statuses
 		int speed = m->second->data() ? m->second->data()->moveRate() : 36;
 		bool kitable = m->second->data() && Saiph::maxSpeed() > speed && (can_shoot || Saiph::minSpeed() > speed);
-		Debug::info() << Saiph::race() << endl;
 		bool infravisible = Saiph::infravision() && m->second->data() && (m->second->data()->m3() & M3_INFRAVISIBLE) != 0;
 		if (!infravisible && (World::level().tile(Saiph::position()).lit() <= 0 || World::level().tile(m->first).lit() <= 0))
 			kitable = false; // no hit and run in the dark
@@ -251,7 +250,7 @@ void Fight::analyze() {
 			if (good.insideMap()) {
 				int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MELEE_MAX - PRIORITY_FIGHT_MELEE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MELEE_MIN);
 				World::setAction(new action::Move(this, World::level().tile(good), priority, false));
-				Debug::custom(name()) << "Setting action to kite '" << m->second->symbol() << "' moving to " << good << endl;
+				Debug::custom(name()) << "Setting action to kite '" << m->second->symbol() << "' moving to " << good << " at priority " << priority << endl;
 				continue;
 			}
 		}
