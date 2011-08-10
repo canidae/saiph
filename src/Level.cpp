@@ -905,7 +905,7 @@ void Level::updateMonsters() {
 		std::string name;
 
 		parseFarlook(point, shopkeeper, priest, attitude, name, data);
-		bool fixed_name = data && (shopkeeper || priest || (data->genoFlags() & G_UNIQ) != 0);
+		bool fixed_name = data && (shopkeeper || (data->genoFlags() & G_UNIQ) != 0);
 
 		Monster* nearest = 0;
 		// note: in the event of a named non-unique monster that is not indexed under that name, it

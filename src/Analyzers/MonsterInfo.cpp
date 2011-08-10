@@ -29,7 +29,7 @@ void MonsterInfo::analyze() {
 
 	vector<pair<Point, string> > christen_req;
 	for (map<Point, Monster*>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
-		if (i->second->visible() && !i->second->called() && i->second->data() && (i->second->data()->genoFlags() & G_UNIQ) == 0) {
+		if (i->second->visible() && !i->second->called() && !i->second->priest() && i->second->data() && (i->second->data()->genoFlags() & G_UNIQ) == 0) {
 			Debug::notice() << "Will name " << i->second->id() << " (" << (i->second->data() ? i->second->data()->name() : "unknown") << ") at " << i->first << endl;
 			christen_req.push_back(make_pair(i->first, i->second->id()));
 		}
