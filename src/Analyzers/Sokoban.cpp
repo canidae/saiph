@@ -522,7 +522,7 @@ void Sokoban::analyze() {
 			Tile& tl = World::level().tile(pi->first);
 			if (tl.cost() == UNREACHABLE)
 				continue;
-			if (World::view(pi->first) == '^')
+			if (World::view(pi->first) == '^' || pi->first == Saiph::position())
 				continue;
 			Debug::custom(name()) << "Something maybe worth clearing at " << tl << endl;
 			if (Point::gridDistance(Saiph::position(), pi->first) > 1)
