@@ -764,7 +764,7 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 	if (pfarlook == _turn_farlooks.end())
 		return false;
 
-	string& messages = pfarlook->second;
+	string messages = pfarlook->second;
 	if (!(messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ')) {
 		Debug::warning() << "Bogus farlook result " << messages << endl;
 		return false;
