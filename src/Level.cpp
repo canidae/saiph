@@ -737,7 +737,7 @@ void Level::updateLight(const Point& p) {
 
 	// Corridors are lit if and only if they are brightly colored.
 
-	if (t.symbol() == CORRIDOR) t.lit(World::color(p) == BOLD_WHITE);
+	if (view == '#') t.lit(World::color(p) == BOLD_WHITE);
 
 	// Other types of tiles cannot have light status easily determined.
 	// Fortunately, they are rare and we usually do not fight on them.
