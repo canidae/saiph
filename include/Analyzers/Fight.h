@@ -5,7 +5,7 @@
 #include <map>
 #include <string>
 #include "Analyzers/Analyzer.h"
-#include "Point.h"
+#include "Coordinate.h"
 
 #define PRIORITY_FIGHT_MELEE_MAX 400
 #define PRIORITY_FIGHT_MELEE_MIN 250
@@ -36,9 +36,13 @@ namespace analyzer {
 
 	private:
 		std::set<unsigned char> _projectile_slots; // slots where we got weapons we should throw
+
 		std::map<std::string, int> _boss_last_seen;
 		int _boss_waiting_since;
 		int _boss_waiting_level;
+
+		Coordinate _berserker_center;
+		int _berserker_turn;
 
 		int pointVulnerability(const Point& pt, int efactor, bool crowd, bool stalk, bool fast);
 		void checkPanic();
