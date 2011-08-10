@@ -227,6 +227,10 @@ void Fight::analyze() {
 		// TODO: can't kite if mob has motion-affecting statuses
 		int speed = m->second->data() ? m->second->data()->moveRate() : 36;
 		bool kitable = m->second->data() && Saiph::maxSpeed() > speed && (can_shoot || Saiph::minSpeed() > speed);
+		Debug::info() << Saiph::race() << endl;
+		bool infravisible = Saiph::infravision() && m->second->data() && (m->second->data()->m3() & M3_INFRAVISIBLE) != 0;
+		if (!infravisible && (World::level().tile(Saiph::position()).lit() <= 0 || World::level().tile(m->first).lit() <= 0))
+			kitable = false; // no hit and run in the dark
 		if (m->second->attitude() == FRIENDLY || (m->second->lastSeen() - m->second->lastMoved()) > 10)
 			kitable = false; // it doesn't seem willing to follow us.
 		Debug::custom(name()) << "kitable=" << kitable << " speed=" << speed << " range=" << mon_range[m->first] << " distance=" << distance << endl;

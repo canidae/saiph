@@ -420,6 +420,11 @@ bool Saiph::polymorphed(bool polymorphed) {
 	return Saiph::polymorphed();
 }
 
+bool Saiph::infravision() {
+	// TODO some polymorph forms have it
+	return race() != "human" && !polymorphed();
+}
+
 bool Saiph::engulfed() {
 	return _engulfed;
 }
