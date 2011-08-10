@@ -31,6 +31,7 @@ public:
 	int lastMoved() const;
 	Coordinate lastSeenPos() const;
 	void observed(const Coordinate& in);
+	int observedTurn() const;
 	int maxMovesThisTurn() const;
 	bool called() const;
 	bool called(bool called);

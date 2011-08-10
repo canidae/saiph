@@ -92,6 +92,10 @@ int Monster::maxMovesThisTurn() const {
 	return max_en / 12;
 }
 
+int Monster::observedTurn() const {
+	return _observed_turn;
+}
+
 void Monster::observed(const Coordinate& point) {
 	unindex();
 
