@@ -813,6 +813,8 @@ bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude,
 		attitude = FRIENDLY;
 		pos += (sizeof("peaceful ") - 1);
 	}
+	if (messages.find("Oracle") != string::npos)
+		attitude = FRIENDLY; // not meaningfully hostile
 
 	string::size_type pos_c = messages.find(" called ", pos);
 
