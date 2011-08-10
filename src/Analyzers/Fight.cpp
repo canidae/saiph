@@ -27,11 +27,8 @@ using namespace analyzer;
 using namespace event;
 using namespace std;
 
-#define BERSERK_DISTANCE 10
-#define BERSERK_PATIENCE 200
-
 /* constructors/destructor */
-Fight::Fight() : Analyzer("Fight"), _berserker_center(), _berserker_turn(BERSERK_PATIENCE) {
+Fight::Fight() : Analyzer("Fight") {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);
@@ -63,16 +60,6 @@ void Fight::analyze() {
 		World::setAction(new action::Fight(this, NW, PRIORITY_FIGHT_MELEE_MAX));
 		return;
 	}
-
-	// As a loop-breaking strategy, kill monsters that we wouldn't ordinarily kill if we're stuck (because of them?)
-	if (_berserker_center.level() != Saiph::position().level() || Point::gridDistance(_berserker_center, Saiph::position()) > BERSERK_DISTANCE) {
-		_berserker_center = Saiph::position();
-		_berserker_turn = World::turn() + BERSERK_PATIENCE;
-	}
-
-	bool berserk = World::turn() > _berserker_turn;
-	if (berserk)
-		Debug::custom(name()) << "BERSERKER MODE" << endl;
 
 	bool bosses_adjacent = false;
 
@@ -191,24 +178,21 @@ void Fight::analyze() {
 	/* fight monsters */
 	int attack_score = INT_MIN;
 	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-		if (!berserk) {
-			if (m->second->symbol() == PET)
-				continue; // we're not fighting pets :)
-			else if (m->second->attitude() == FRIENDLY && m->second->symbol() != S_HUMANOID)
-				continue; // don't attack friendlies except dwarves
-				/* I'm not sure about how good this is for her in the mines.
-				 * This was added to prevent her sticking in levels that were
-				 * being dug out - but I still sometimes see this happening
-				 * and it may have killed her. -rawrmage */
-			else if (m->second->symbol() == 'm' && m->second->color() == BLUE && Saiph::experience() < 3)
-				continue; // below level three, let strange objects be
-			else if (m->second->symbol() == 'n' && (m->second->lastSeen() - m->second->lastMoved()) >= 3)
-				continue; // let sleeping nymphs lie
-			else if (m->second->symbol() == S_UNICORN && ((m->second->color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second->color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second->color() == BLUE && Saiph::alignment() == CHAOTIC)))
-				continue; // don't attack unicorns of same alignment
-		}
-
-		if (m->second->data() == NULL) {
+		if (m->second->symbol() == PET)
+			continue; // we're not fighting pets :)
+		else if (m->second->attitude() == FRIENDLY && m->second->symbol() != S_HUMANOID)
+			continue; // don't attack friendlies except dwarves
+			/* I'm not sure about how good this is for her in the mines.
+			 * This was added to prevent her sticking in levels that were
+			 * being dug out - but I still sometimes see this happening
+			 * and it may have killed her. -rawrmage */
+		else if (m->second->symbol() == 'm' && m->second->color() == BLUE && Saiph::experience() < 3)
+			continue; // below level three, let strange objects be
+		else if (m->second->symbol() == 'n' && (m->second->lastSeen() - m->second->lastMoved()) >= 3)
+			continue; // let sleeping nymphs lie
+		else if (m->second->symbol() == S_UNICORN && ((m->second->color() == BOLD_WHITE && Saiph::alignment() == LAWFUL) || (m->second->color() == WHITE && Saiph::alignment() == NEUTRAL) || (m->second->color() == BLUE && Saiph::alignment() == CHAOTIC)))
+			continue; // don't attack unicorns of same alignment
+		else if (m->second->data() == NULL) {
 			/* seems like MonsterInfo haven't had the chance to farlook monster. set attack_score to max */
 			Debug::custom(name()) << "Found monster we don't know data about '" << m->second->symbol() << "'. Hmm" << endl;
 			attack_score = data::Monster::saiphDifficultyMax();
