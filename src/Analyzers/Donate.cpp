@@ -25,8 +25,8 @@ void Donate::analyze() {
 		_priest_loc.level(-1);
 		unsigned int nearest = UNREACHABLE;
 		for (int lev = 0; lev < (int) World::levels().size(); lev++) {
-			for (map<Point, Monster>::const_iterator i = World::level(lev).monsters().begin(); i != World::level(lev).monsters().end(); ++i) {
-				if (!i->second.priest())
+			for (map<Point, Monster*>::const_iterator i = World::level(lev).monsters().begin(); i != World::level(lev).monsters().end(); ++i) {
+				if (!i->second->priest())
 					continue;
 				Tile tile = World::shortestPath(Coordinate(lev, i->first));
 				if (tile.cost() == UNREACHABLE)
@@ -43,8 +43,8 @@ void Donate::analyze() {
 		if (_priest_loc.level() == Saiph::position().level()) {
 			/* on same level as priest, update coordinate */
 			_priest_loc.level(-1);
-			for (map<Point, Monster>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
-				if (!i->second.priest())
+			for (map<Point, Monster*>::const_iterator i = World::level().monsters().begin(); i != World::level().monsters().end(); ++i) {
+				if (!i->second->priest())
 					continue;
 				Tile tile = World::shortestPath(Coordinate(Saiph::position().level(), i->first));
 				if (tile.cost() == UNREACHABLE)

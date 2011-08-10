@@ -6,7 +6,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Pray::Pray(analyzer::Analyzer* analyzer, int priority) : Action(analyzer), _pray("#pray\n", priority) {
+Pray::Pray(analyzer::Analyzer* analyzer, int priority) : Action(analyzer, -3), _pray("#pray\n", priority) {
 }
 
 Pray::~Pray() {

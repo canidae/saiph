@@ -6,7 +6,7 @@
 using namespace action;
 
 /* constructors/destructor */
-TakeOff::TakeOff(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer), _take_off("T", priority), _take_off_key(key, PRIORITY_CONTINUE_ACTION) {
+TakeOff::TakeOff(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer, 50), _take_off("T", priority), _take_off_key(key, PRIORITY_CONTINUE_ACTION) {
 }
 
 TakeOff::~TakeOff() {

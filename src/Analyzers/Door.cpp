@@ -139,7 +139,7 @@ void Door::onEvent(Event* const event) {
 	} else if (event->id() == WantItems::ID) {
 		WantItems* e = static_cast<WantItems*> (event);
 		for (map<unsigned char, Item>::iterator i = e->items().begin(); i != e->items().end(); ++i) {
-			if ((_unlock_tool_key != ILLEGAL_ITEM && i->first == _unlock_tool_key) || wantItem(i->second))
+			if ((e->dropping() && _unlock_tool_key != ILLEGAL_ITEM && i->first == _unlock_tool_key) || wantItem(i->second))
 				i->second.want(i->second.count());
 		}
 	} else if (event->id() == ShopDetected::ID) {

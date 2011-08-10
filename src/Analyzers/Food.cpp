@@ -3,6 +3,7 @@
 #include "Debug.h"
 #include "EventBus.h"
 #include "Inventory.h"
+#include "Monster.h"
 #include "Saiph.h"
 #include "World.h"
 #include "Actions/Eat.h"
@@ -56,13 +57,6 @@ Food::Food() : Analyzer("Food") {
 
 /* methods */
 void Food::analyze() {
-	/* update prev_monster_loc with seen monsters (not standing on a stash) */
-	_prev_monster_loc.clear();
-	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-		if (m->second.visible())
-			_prev_monster_loc[m->first] = m->second.symbol();
-	}
-
 	if (Saiph::encumbrance() >= OVERTAXED)
 		return; // we can't eat while carrying too much
 
@@ -103,35 +97,7 @@ void Food::analyze() {
 	}
 }
 
-void Food::parseMessages(const string& messages) {
-	if ((messages.find(MESSAGE_YOU_KILL)) != string::npos || (messages.find(MESSAGE_YOU_DESTROY) != string::npos) || (messages.find(MESSAGE_IS_KILLED)) != string::npos || (messages.find(MESSAGE_IS_DESTROYED)) != string::npos) {
-		/* we killed a monster or saw a monster die */
-		for (map<Point, unsigned char>::iterator p = _prev_monster_loc.begin(); p != _prev_monster_loc.end(); ++p) {
-			if (p->second == 'Z' || p->second == 'M' || p->second == 'V') {
-				/* wherever monsters with symbol Z, M or V die, we'll mark as "tainted corpse" */
-				_stashes[p->first] = 0 - FOOD_CORPSE_EAT_TIME;
-			} else if (_stashes.find(p->first) == _stashes.end()) {
-				/* monster probably leaves an edible corpse */
-				_stashes[p->first] = World::turn();
-			}
-		}
-		/* mark stashes that didn't appear after a monster died as dangerous */
-		for (map<Point, Stash>::const_iterator s = World::level().stashes().begin(); s != World::level().stashes().end(); ++s) {
-			map<Point, int>::iterator t = _stashes.find(s->first);
-			if (t != _stashes.end())
-				continue;
-			/* this is a stash where a monster didn't recently die */
-			_stashes[s->first] = 0 - FOOD_CORPSE_EAT_TIME;
-		}
-		/* also clear "corpse_loc" on squares where there are no items nor monsters */
-		for (map<Point, int>::iterator c = _stashes.begin(); c != _stashes.end();) {
-			if (World::level().monsters().find(c->first) == World::level().monsters().end() && World::level().stashes().find(c->first) == World::level().stashes().end()) {
-				_stashes.erase(c++);
-				continue;
-			}
-			++c;
-		}
-	}
+void Food::parseMessages(const string&) {
 }
 
 void Food::onEvent(Event* const event) {
@@ -139,16 +105,23 @@ void Food::onEvent(Event* const event) {
 		// FIXME?: do we want/need to eat corpses in shops?
 		if (World::level().tile().symbol() != SHOP_TILE) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
-			map<Point, int>::iterator cl = _stashes.find(Saiph::position());
 			for (list<Item>::const_iterator i = e->items().begin(); i != e->items().end(); ++i) {
-				if (cl != _stashes.end() && cl->second + FOOD_CORPSE_EAT_TIME > World::turn()) {
-					/* it's safe to eat corpses here */
-					map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
-					/* check that item is a corpse, it's safe to eat and that the corpse rots */
-					if (c != data::Corpse::corpses().end() && safeToEat(c) && !(c->second->effects() & EAT_EFFECT_NEVER_ROT)) {
-						World::setAction(new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE));
-						break;
-					}
+				// TODO unique monster corpses
+				Debug::custom(name()) << "ON ground, " << i->name() << endl;
+				map<string, Monster*>::iterator mi = Monster::byID().find(i->additional());
+				if (mi == Monster::byID().end())
+					continue;
+				if (mi->second->observedTurn() + FOOD_CORPSE_EAT_TIME <= World::turn())
+					continue;
+				if (mi->second->symbol() == 'Z' || mi->second->symbol() == 'M' || mi->second->symbol() == 'V')
+					continue; // undead corpses are not fun
+				/* it's safe to eat this corpse */
+				map<const string, const data::Corpse*>::const_iterator c = data::Corpse::corpses().find(i->name());
+				/* check that item is a corpse, it's safe to eat and that the corpse rots */
+				if (c != data::Corpse::corpses().end() && safeToEat(c) && !(c->second->effects() & EAT_EFFECT_NEVER_ROT)) {
+					Debug::custom(name()) << "Setting command to eat at priority" << PRIORITY_FOOD_EAT_CORPSE << endl;
+					World::setAction(new action::EatCorpse(this, i->name(), PRIORITY_FOOD_EAT_CORPSE));
+					break;
 				}
 			}
 		}

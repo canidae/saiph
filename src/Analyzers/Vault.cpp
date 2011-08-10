@@ -2,6 +2,7 @@
 
 #include "Debug.h"
 #include "Saiph.h"
+#include "Monster.h"
 #include "World.h"
 #include "Actions/Action.h"
 #include "Actions/Answer.h"
@@ -63,10 +64,10 @@ void Vault::parseMessages(const string& messages) {
 		/* TODO: If we get caught in a vault more than once, the corridor might not be unstepped! */
 		Point target = Saiph::position();
 		bool have_target;
-		for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-			if (m->second.data() == NULL || m->second.data()->name() != "guard")
+		for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+			if (m->second->data() == NULL || m->second->data()->name() != "guard")
 				continue;
-			if (m->second.attitude() != FRIENDLY) {
+			if (m->second->attitude() != FRIENDLY) {
 				// Oops.  Well, we need to fight now.
 				_following_guard = false;
 				Debug::notice() << "No longer following angry guard." << endl;

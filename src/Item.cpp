@@ -190,10 +190,18 @@ Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEAT
 			named.clear();
 		}
 		/* if items are named something (else than "blessed", "uncursed" or "cursed"), replace name with that */
-		if (!named.empty())
-			_name = named;
-		else
+		/* exception: monster corpses get names from the living Call, and should be ignored */
+		if (!named.empty()) {
+			if (_name.find("corpse") != string::npos) {
+				// XXX maybe this should be a new field?
+				_additional = named;
+				_name.erase(pos);
+			} else {
+				_name = named;
+			}
+		} else {
 			_name.erase(pos);
+		}
 	}
 	/* if items are called something, replace name with that */
 	pos = _name.rfind(ITEM_CALLED, _name.size() - 1);

@@ -5,6 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
+// note, trapped chests, mirrors, crystal balls, cursed bells, can use more time; none are done
 Apply::Apply(analyzer::Analyzer* analyzer, unsigned char key, const int& priority, bool update_inventory) : Action(analyzer), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
 }
 

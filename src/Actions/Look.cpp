@@ -3,7 +3,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Look::Look(analyzer::Analyzer* analyzer) : Action(analyzer, false), _look(":", PRIORITY_LOOK) {
+Look::Look(analyzer::Analyzer* analyzer) : Action(analyzer, 0), _look(":", PRIORITY_LOOK) {
 }
 
 Look::~Look() {

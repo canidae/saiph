@@ -7,6 +7,30 @@
 #include "World.h"
 #include "Data/Skill.h"
 
+#define MESSAGE_SPEED_GAIN1 "  You feel quick!  "
+#define MESSAGE_SPEED_GAIN2 "  You seem faster.  "
+#define MESSAGE_SPEED_GAIN3 "  You speed up.  "
+#define MESSAGE_SPEED_GAIN4 "  Your quickness feels more natural.  "
+#define MESSAGE_SPEED_GAIN5 "  \"and thus I grant thee the gift of Speed!\"  "
+
+#define MESSAGE_SPEED_LOSE1 "  You feel slow!  "
+#define MESSAGE_SPEED_LOSE2 "  You seem slower.  "
+#define MESSAGE_SPEED_LOSE3 "  You feel slower.  "
+#define MESSAGE_SPEED_LOSE4 "  You are slowing down.  "
+#define MESSAGE_SPEED_LOSE5 "  Your limbs are getting oozy.  "
+#define MESSAGE_SPEED_LOSE6 "  You slow down.  "
+#define MESSAGE_SPEED_LOSE7 "  Your quickness feels less natural.  "
+
+#define MESSAGE_VERYFAST_LOSE1 "  You slow down.  "
+#define MESSAGE_VERYFAST_LOSE2 "  Your quickness feels less natural.  "
+#define MESSAGE_VERYFAST_LOSE3 "  You feel yourself slowing down.  "
+#define MESSAGE_VERYFAST_LOSE4 "  You feel yourself slowing down a bit.  "
+
+#define MESSAGE_VERYFAST_GAIN1 "  You are suddenly moving faster.  "
+#define MESSAGE_VERYFAST_GAIN2 "  You are suddenly moving much faster.  "
+#define MESSAGE_VERYFAST_GAIN3 "  Your knees seem more flexible now.  "
+
+
 using namespace analyzer;
 using namespace std;
 
@@ -28,6 +52,7 @@ int Saiph::_hitpoints = 0;
 int Saiph::_hitpoints_max = 0;
 int Saiph::_power = 0;
 int Saiph::_power_max = 0;
+int Saiph::_min_moves_this_turn = 1;
 /* effects */
 bool Saiph::_blind = false;
 bool Saiph::_confused = false;
@@ -183,6 +208,14 @@ void Saiph::parseMessages(const string& messages) {
 			_intrinsics |= PROPERTY_LYCANTHROPY;
 		if (messages.find(MESSAGE_LYCANTHROPY_LOSE1) != string::npos)
 			_intrinsics &= ~PROPERTY_LYCANTHROPY;
+		if (messages.find(MESSAGE_SPEED_GAIN1) != string::npos || messages.find(MESSAGE_SPEED_GAIN2) != string::npos || messages.find(MESSAGE_SPEED_GAIN3) != string::npos || messages.find(MESSAGE_SPEED_GAIN4) != string::npos || messages.find(MESSAGE_SPEED_GAIN5) != string::npos)
+			_intrinsics |= PROPERTY_SPEED;
+		if (messages.find(MESSAGE_SPEED_LOSE1) != string::npos || messages.find(MESSAGE_SPEED_LOSE2) != string::npos || messages.find(MESSAGE_SPEED_LOSE3) != string::npos || messages.find(MESSAGE_SPEED_LOSE4) != string::npos || messages.find(MESSAGE_SPEED_LOSE5) != string::npos || messages.find(MESSAGE_SPEED_LOSE6) != string::npos || messages.find(MESSAGE_SPEED_LOSE7) != string::npos)
+			_intrinsics &= ~PROPERTY_SPEED;
+		if (messages.find(MESSAGE_VERYFAST_GAIN1) != string::npos || messages.find(MESSAGE_VERYFAST_GAIN2) != string::npos || messages.find(MESSAGE_VERYFAST_GAIN3) != string::npos)
+			_extrinsics |= PROPERTY_VERYFAST;
+		if (messages.find(MESSAGE_VERYFAST_LOSE1) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE2) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE3) != string::npos || messages.find(MESSAGE_VERYFAST_LOSE4) != string::npos)
+			_extrinsics &= ~PROPERTY_VERYFAST;
 		if (messages.find(MESSAGE_SLOWING_DOWN) != string::npos || messages.find(MESSAGE_LIMBS_ARE_STIFFENING) != string::npos)
 			_stoned = true; // not checking for limbs turned to stone because we're dead then
 		if (messages.find(MESSAGE_YOU_FEEL_LIMBER) != string::npos)
@@ -387,6 +420,11 @@ bool Saiph::polymorphed(bool polymorphed) {
 	return Saiph::polymorphed();
 }
 
+bool Saiph::infravision() {
+	// TODO some polymorph forms have it
+	return race() != "human" && !polymorphed();
+}
+
 bool Saiph::engulfed() {
 	return _engulfed;
 }
@@ -495,4 +533,40 @@ int Saiph::role() {
 
 int Saiph::gender() {
 	return _gender;
+}
+
+int Saiph::minMovesThisTurn() {
+	return _min_moves_this_turn;
+}
+
+int Saiph::minMovesThisTurn(int set_to) {
+	_min_moves_this_turn = set_to;
+	return _min_moves_this_turn;
+}
+
+// NOT HANDLED: polyself, riding
+int Saiph::minSpeed() {
+	int moveamt = (Saiph::extrinsics() & PROPERTY_VERYFAST) ? 18 : 12;
+	switch (_encumbrance) {
+		case UNENCUMBERED: break;
+		case BURDENED: moveamt -= (moveamt / 4); break;
+		case STRESSED: moveamt -= (moveamt / 2); break;
+		case STRAINED: moveamt -= ((moveamt * 3) / 4); break;
+		case OVERTAXED: moveamt -= ((moveamt * 7) / 8); break;
+		default: break;
+	}
+	return moveamt;
+}
+
+int Saiph::maxSpeed() {
+	int moveamt = (Saiph::extrinsics() & PROPERTY_VERYFAST) ? 24 : (Saiph::intrinsics() & PROPERTY_SPEED) ? 18 : 12;
+	switch (_encumbrance) {
+		case UNENCUMBERED: break;
+		case BURDENED: moveamt -= (moveamt / 4); break;
+		case STRESSED: moveamt -= (moveamt / 2); break;
+		case STRAINED: moveamt -= ((moveamt * 3) / 4); break;
+		case OVERTAXED: moveamt -= ((moveamt * 7) / 8); break;
+		default: break;
+	}
+	return moveamt;
 }

@@ -52,6 +52,7 @@ public:
 	static bool engulfed();
 	static bool engulfed(bool engulfed);
 	static bool inAPit();
+	static bool infravision();
 	static int skill(int which);
 	static int maxSkill(int which);
 	static void updateSkills(int* curp);
@@ -73,6 +74,10 @@ public:
 	static const std::string& race();
 	static int role();
 	static int gender();
+	static int minSpeed();
+	static int maxSpeed();
+	static int minMovesThisTurn();
+	static int minMovesThisTurn(int min);
 
 private:
 	/* attributes */
@@ -128,5 +133,7 @@ private:
 	static int _gender;
 	/* for parsing effects */
 	static char _effects[MAX_EFFECTS][MAX_TEXT_LENGTH];
+	/* set by World to the number of guaranteed moves this turn */
+	static int _min_moves_this_turn;
 };
 #endif

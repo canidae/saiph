@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "Debug.h"
 #include "EventBus.h"
+#include "Monster.h"
 #include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
@@ -81,8 +82,8 @@ void Quest::analyze() {
 	if (World::level().depth() != 1 || World::level().branch() != BRANCH_QUEST || _status != QUEST_STATUS_READY)
 		return;
 
-	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-		if (!m->second.visible() || !m->second.data() || m->second.data()->sounds() != MS_LEADER)
+	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+		if (!m->second->visible() || !m->second->data() || m->second->data()->sounds() != MS_LEADER)
 			continue;
 		_leader_pos = m->first;
 	}

@@ -35,6 +35,7 @@ namespace analyzer {
 		void onEvent(event::Event* const event);
 
 	private:
+		std::set<std::string> _no_hitandrun;
 		std::set<unsigned char> _projectile_slots; // slots where we got weapons we should throw
 		std::map<std::string, int> _boss_last_seen;
 		int _boss_waiting_since;

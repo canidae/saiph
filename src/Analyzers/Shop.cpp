@@ -4,6 +4,7 @@
 #include "Debug.h"
 #include "Globals.h"
 #include "Inventory.h"
+#include "Monster.h"
 #include "Saiph.h"
 #include "World.h"
 #include "EventBus.h"
@@ -67,8 +68,8 @@ bool Shop::inBlockedDoorway() {
 		if (t.symbol() == HORIZONTAL_WALL || t.symbol() == VERTICAL_WALL)
 			wall++;
 
-		map<Point, Monster>::const_iterator m = World::level().monsters().find(p);
-		if (m != World::level().monsters().end() && m->second.shopkeeper())
+		map<Point, Monster*>::const_iterator m = World::level().monsters().find(p);
+		if (m != World::level().monsters().end() && m->second->shopkeeper())
 			shopkeep++;
 	}
 
@@ -182,7 +183,7 @@ void Shop::analyze() {
 		for (map<Point,int>::const_iterator ppt = World::level().symbols(OPEN_DOOR).begin(); ppt != World::level().symbols(OPEN_DOOR).end(); ++ppt)
 			reach_any = min(reach_any, World::level().tile(ppt->first).cost());
 
-		for (map<Point, Monster>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit) {
+		for (map<Point, Monster*>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit) {
 			if (Point::gridDistance(mit->first, Saiph::position()) == 1)
 				adj_shk = true;
 		}
@@ -196,8 +197,8 @@ void Shop::analyze() {
 	if (World::level().tile().symbol() != FLOOR && World::level().tile().symbol() != UNKNOWN_TILE)
 		return; // not standing on FLOOR or UNKNOWN_TILE, no shop here (or detected already)
 
-	for (map<Point, Monster>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
-		if (!m->second.shopkeeper() || !m->second.visible())
+	for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
+		if (!m->second->shopkeeper() || !m->second->visible())
 			continue;
 
 		/* figure out if we're in the same room as the shopkeeper */

@@ -12,7 +12,7 @@ using namespace action;
 using namespace std;
 
 /* constructors/destructor */
-Enhance::Enhance(analyzer::Analyzer* analyzer) : Action(analyzer, false), _do_enhance("#enhance\n", PRIORITY_LIST_PLAYER_SKILLS), _next_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _enhance_a("a", PRIORITY_CONTINUE_ACTION) {
+Enhance::Enhance(analyzer::Analyzer* analyzer) : Action(analyzer, 0), _do_enhance("#enhance\n", PRIORITY_LIST_PLAYER_SKILLS), _next_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION), _enhance_a("a", PRIORITY_CONTINUE_ACTION) {
 	for (int i = 0; i < P_NUM_SKILLS; ++i)
 		_results[i] = 0;
 }

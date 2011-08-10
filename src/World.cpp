@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <termios.h>
 #include <unistd.h>
 #include <sstream>
@@ -37,6 +38,9 @@ bool World::_menu = false;
 bool World::_question = false;
 char World::_levelname[MAX_LEVELNAME_LENGTH] = {'\0'};
 int World::_turn = 0;
+int World::_sub_turn = -1;
+int World::_min_saiph_energy = 12;
+int World::_max_saiph_energy = 12;
 unsigned int World::_internal_turn = 0;
 vector<Level> World::_levels;
 
@@ -122,6 +126,10 @@ unsigned int World::internalTurn() {
 	return _internal_turn;
 }
 
+int World::subTurn() {
+	return _sub_turn;
+}
+
 const vector<Point>& World::changes() {
 	return _changes;
 }
@@ -160,6 +168,10 @@ action::Action* World::lastAction() {
 	return _last_action;
 }
 
+std::string World::lastData() {
+	return string(_data, _data_size);
+}
+
 int World::lastActionID() {
 	/* return the id of the last action */
 	return _last_action_id;
@@ -176,6 +188,7 @@ void World::init(const string& logfile, int connection_type) {
 	registerDrawFunc('n', &drawNormal, NULL);
 	registerDrawFunc('c', &drawCosts, NULL);
 	registerDrawFunc('d', &drawDirections, NULL);
+	registerDrawFunc('l', &drawLight, NULL);
 	_current_draw_func = _draw_funcs.find('n');
 
 	_connection = Connection::create(connection_type);
@@ -291,8 +304,8 @@ unsigned char World::directLine(Point point, bool ignore_sinks, bool ignore_boul
 			break;
 		if (temp == point)
 			ok = true;
-		const map<Point, Monster>::const_iterator m = level().monsters().find(temp);
-		if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second.visible() && (realized_range < dist || m->second.attitude() == FRIENDLY))
+		const map<Point, Monster*>::const_iterator m = level().monsters().find(temp);
+		if (t.monster() != ILLEGAL_MONSTER && m != level().monsters().end() && m->second->visible() && (realized_range < dist || m->second->attitude() == FRIENDLY))
 			return ILLEGAL_DIRECTION;
 		if (realized_range == danger_range || (!ignore_sinks && t.symbol() == SINK))
 			break;
@@ -650,6 +663,8 @@ void World::doCommands() {
 void World::run(int speed) {
 	int last_turn = 0;
 	int stuck_counter = 0;
+	int last_action_turn = -1;
+	int last_action_time = 0;
 	_current_speed = speed;
 	initTermios();
 	setKeyWait(speed == SPEED_PAUSE);
@@ -669,6 +684,63 @@ void World::run(int speed) {
 		Saiph::parseMessages(_messages);
 		Inventory::parseMessages(_messages);
 		level().parseMessages(_messages);
+
+		if (!_question && !_menu && analyze_and_parse) {
+			/* we are at the beginning of a new NetHack action.  Pay attention to the timing */
+			if (last_action_turn >= 0 && last_action_time != 0) {
+				/* moreover, we remember last turn, and we did an action that takes time */
+				if (last_action_time > 1) {
+					/* last action was an extended move-oriented action.  We now know nothing about the state of monster movement */
+					_sub_turn = -1;
+					_min_saiph_energy = 12;
+					_max_saiph_energy = 11 + Saiph::maxSpeed();
+				} else if ((_turn - last_action_turn) > 1) {
+					// if we go an entire turn without actions, assume we were paralyzed
+					// note that this means move tracking won't work well if Burdened
+					// not that kiting is very useful when Burdened anyway...
+					// paralysis always wears off at the beginning of a turn, but we don't know energy
+					_sub_turn = 0;
+					_min_saiph_energy = 12;
+					_max_saiph_energy = 11 + Saiph::maxSpeed();
+				} else if (last_action_time < 0) {
+					// our last action was something that uses exactly one full turn.  punt on analysis for now
+					_sub_turn = 0;
+					_min_saiph_energy = 12;
+					_max_saiph_energy = 11 + Saiph::maxSpeed();
+				} else {
+					/* only remaining case is one-move actions, and we sure didn't get paralyzed */
+					_min_saiph_energy -= 12;
+					_max_saiph_energy -= 12;
+					if (_turn == last_action_turn) {
+						// we didn't get any extra energy, so we still have at least 12 from the same charge
+						_min_saiph_energy = std::max(12, _min_saiph_energy);
+						if (_sub_turn >= 0)
+							_sub_turn++;
+					} else {
+						_sub_turn = 0;
+						// obviously we ran out of energy, so we didn't have more than 11
+						_max_saiph_energy = std::min(11, _max_saiph_energy);
+						if (_min_saiph_energy <= _max_saiph_energy) {
+							// and a fresh charge, but don't hide contradictions 
+							_min_saiph_energy += Saiph::minSpeed();
+							_max_saiph_energy += Saiph::maxSpeed();
+							// we have at least 12 *now*, if we didn't then we'd have seen it as a paralysis
+							_min_saiph_energy = std::max(12, _min_saiph_energy);
+						}
+					}
+					if (_min_saiph_energy > _max_saiph_energy) {
+						Debug::error() << "Energy tracking for saiph has reached a contradiction.  Resetting." << endl;
+						_sub_turn = -1;
+						_min_saiph_energy = 12;
+						_max_saiph_energy = 11 + Saiph::maxSpeed();
+					}
+				}
+				int min_moves_turn = (_sub_turn >= 0 ? _sub_turn : 0) + (_min_saiph_energy / 12);
+				Debug::info() << "Energy predictions for the current turn: t=" << _turn << " i=" << _internal_turn << " s=" << _sub_turn << " min=" << _min_saiph_energy << " max=" << _max_saiph_energy << " min_moves=" << min_moves_turn << endl;
+				Saiph::minMovesThisTurn(min_moves_turn);
+			}
+			last_action_turn = _turn;
+		}
 
 		/* let Saiph, Inventory and current level analyze */
 		if (!_question && !_menu) {
@@ -745,15 +817,30 @@ void World::run(int speed) {
 				cout.flush();
 				++World::_internal_turn; // will cost a turn
 				_last_action_id = NO_ACTION;
+				last_action_time = 16;
 				executeCommand("16s");
 				continue;
 			}
 		}
 
+		if (analyze_and_parse && !_question && !_menu) {
+			last_action_time = _action->timeTaken();
+		}
+
 		/* print what we're doing */
 		cout << (unsigned char) 27 << "[1;82H";
 		cout << (unsigned char) 27 << "[K"; // erase everything to the right
-		cout << _action->analyzer()->name() << " " << _action->command();
+		string activity = _action->analyzer()->name();
+		activity += ' ';
+		activity += _action->command().command();
+		size_t nl_index;
+		while ((nl_index = activity.find('\n')) != string::npos)
+			activity.replace(nl_index, 1, "\\n");
+		if (activity.size() > 78) {
+			activity.erase(activity.begin() + 75, activity.end());
+			activity += "...";
+		}
+		cout << activity;
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << _cursor.row() + 1 << ";" << _cursor.col() + 1 << "H";
 		/* and flush cout. if we don't do this our output looks like garbage */
@@ -792,7 +879,7 @@ void World::run(int speed) {
 		/* and increase _internal_turn if the action actually cost a turn.
 		 * the turn counter in game may not increase if we're [very] fast,
 		 * but we still need to know if a turn lapsed, hence _internal_turn */
-		if (_action->command() == action::Action::NOOP && _action->increaseTurnCounter())
+		if (_action->command() == action::Action::NOOP && _action->timeTaken() != 0)
 			++World::_internal_turn;
 	}
 }
@@ -964,6 +1051,27 @@ void World::drawNormal(void*, Level& lv, const Point& p, unsigned char& symbol, 
 		color = BOLD_CYAN;
 		symbol = '?';
 	}
+}
+
+void World::drawLight(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {
+	const Tile& t = lv.tile(p);
+
+	if ((&lv == &level()) && p.row() == Saiph::position().row() && p.col() == Saiph::position().col()) {
+		symbol = '@';
+	} else if (t.monster() != ILLEGAL_MONSTER) {
+		symbol = t.monster();
+	} else if (t.symbol() > 31 && t.symbol() < 127) {
+		symbol = t.symbol();
+	} else {
+		symbol = '?';
+	}
+
+	if (t.lit() == 0)
+		color = RED;
+	else if (t.lit() > 0)
+		color = BOLD_YELLOW;
+	else
+		color = NO_COLOR;
 }
 
 void World::drawCosts(void*, Level& lv, const Point& p, unsigned char& symbol, unsigned char& color) {

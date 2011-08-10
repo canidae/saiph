@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include "Debug.h"
+#include "Monster.h"
 #include "EventBus.h"
 #include "Inventory.h"
 #include "Item.h"
@@ -20,7 +21,7 @@
 #define COST_ALTAR 4 // better not fight on altars
 #define COST_ICE 8 // slippery and risky, try to find a way around (don't try very hard, though)
 #define COST_LAVA 512 // lava, hot!
-#define COST_MONSTER 256 // try not to path through monsters
+/* #define COST_MONSTER */ // try not to path through monsters (in Level.h)
 #define COST_TRAP 64 // avoid traps
 #define COST_WATER 256 // avoid water if possible
 /* max moves a monster can do before we think it's a new monster */
@@ -122,6 +123,9 @@ bool Level::_dungeon[UCHAR_MAX + 1] = {false};
 bool Level::_monster[UCHAR_MAX + 1] = {false};
 bool Level::_item[UCHAR_MAX + 1] = {false};
 Tile Level::_outside_map;
+map<Point,string> Level::_turn_farlooks;
+Coordinate Level::_prev_position;
+unsigned Level::_farlooked_turn = (unsigned)-1;
 
 /* constructors/destructor */
 Level::Level(int level, const string& name, int branch) : _level(level), _monsters(), _stashes(), _symbols(), _name(name), _branch(branch), _walls_diggable(true), _floor_diggable(true), _new_level(true) {
@@ -294,7 +298,7 @@ Tile& Level::tile(const Point& point) {
 	return _map[point.row()][point.col()];
 }
 
-const map<Point, Monster>& Level::monsters() const {
+const map<Point, Monster*>& Level::monsters() const {
 	return _monsters;
 }
 
@@ -310,18 +314,31 @@ void Level::analyze() {
 	if (Saiph::engulfed()) {
 		/* we'll still need to update monster's "visible" while engulfed,
 		 * or she may attempt to farlook a monster she can't see */
-		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
-			m->second.visible(false);
+		for (map<Point, Monster*>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
+			m->second->visible(false);
 		return;
 	}
 	/* update changed symbols */
 	for (vector<Point>::const_iterator c = World::changes().begin(); c != World::changes().end(); ++c)
 		updateMapPoint(*c, (unsigned char) World::view(*c), World::color(*c));
 	World::forgetChanges();
-	/* update monsters */
-	updateMonsters();
-	/* update pathmap */
-	updatePathMap();
+	if (_prev_position.level() == _level) {
+		for (int y = _prev_position.row() - 1; y <= _prev_position.row() + 1; ++y) {
+			for (int x = _prev_position.col() - 1; x <= _prev_position.col() + 1; ++x) {
+				Point p(y,x);
+				if (p.insideMap()) updateLight(p);
+			}
+		}
+	}
+	_prev_position = Saiph::position();
+	/* it is damaging for us to cache information for the current internalTurn() if we don't have all the details yet
+	 * analyzers may see stale data, but they won't act on it, since a FarLook action will be forced */
+	if (farlooksNeeded().empty()) {
+		/* update monsters */
+		updateMonsters();
+		/* update pathmap */
+		updatePathMap();
+	}
 	/* set point we're standing on "fully searched" */
 	_map[Saiph::position().row()][Saiph::position().col()].search(TILE_FULLY_SEARCHED);
 
@@ -583,12 +600,6 @@ void Level::setDungeonSymbolValue(const Point& point, int value) {
 	_symbols[_map[point.row()][point.col()].symbol()][point] = value;
 }
 
-void Level::setMonster(const Point& point, const Monster& monster) {
-	if (!point.insideMap())
-		return;
-	_monsters[point] = monster;
-}
-
 bool Level::isCompletelyOpen() const {
 	if (symbols(SOLID_ROCK).size() > 0)
 		return false;
@@ -673,6 +684,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		 * even if we already know what's beneath the monster/item. */
 		setDungeonSymbol(point, UNKNOWN_TILE);
 	}
+	updateLight(point);
 	/* update items */
 	if (!Saiph::hallucinating() && _item[symbol]) {
 		map<Point, Stash>::iterator s = _stashes.find(point);
@@ -702,92 +714,287 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 
 	/* update monsters */
 	if (_monster[symbol] && point != Saiph::position()) {
-		/* add a monster, or update position of an existing monster */
-		unsigned char msymbol;
-		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
-			msymbol = PET;
-		else
-			msymbol = symbol;
-		/* find nearest monster */
-		int min_distance = INT_MAX;
-		map<Point, Monster>::iterator nearest = _monsters.end();
-		for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end(); ++m) {
-			if (m->second.symbol() != msymbol || m->second.color() != color)
-				continue; // not the same monster
-			unsigned char old_symbol;
-			if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
-				old_symbol = PET;
-			else
-				old_symbol = World::view(m->first);
-			if (m->second.symbol() == old_symbol && m->second.color() == World::color(m->first)) {
-				/* note about this "point == m->first":
-				 * the character for the monster may be updated even if it hasn't moved,
-				 * if this is the case, we should return and neither move nor add the
-				 * monster as that will screw up the data we know about the monster */
-				if (point == m->first)
-					return;
-				continue; // this monster already is on its square
-			}
-			/* see if this monster is closer than the last found monster */
-			int distance = max(abs(m->first.row() - point.row()), abs(m->first.col() - point.col()));
-			if (distance > MAX_MONSTER_MOVE)
-				continue; // too far away from where we last saw it, probably new monster
-			else if (distance >= min_distance)
-				continue;
-			else if ((m->second.priest() || m->second.shopkeeper()) && distance > 1)
-				continue; // shopkeepers and priests are very close to eachother in minetown
-			/* it is */
-			min_distance = distance;
-			nearest = m;
-		}
-		if (nearest != _monsters.end()) {
-			/* we know of this monster, move it to new location */
-			/* remove monster from _map */
-			_map[nearest->first.row()][nearest->first.col()].monster(ILLEGAL_MONSTER);
-			/* update monster */
-			nearest->second.lastMoved(World::turn());
-			_monsters[point] = nearest->second;
-			_monsters.erase(nearest);
-		} else {
-			/* add monster */
-			_monsters[point] = Monster(msymbol, color, World::turn());
-		}
-		/* set monster on tile */
-		t.monster(msymbol);
+		_monster_points.insert(point);
+	} else {
+		_monster_points.erase(point);
 	}
+}
+
+void Level::updateLight(const Point& p) {
+	Tile& t = tile(p);
+	char view = World::view(p);
+	bool within_night_vision = Point::gridDistance(p, Saiph::position()) <= 1;
+
+	// A square which is displayed as . must be lit from some source, unless
+	// it is right next to us.
+
+	if (view == '.' && !within_night_vision) t.lit(1);
+
+	// If it was displayed as ., but turned to a space, it must not have been
+	// lit after all, or it would have stayed ..
+
+	if (view == ' ' && t.symbol() == FLOOR) t.lit(0);
+
+	// Corridors are lit if and only if they are brightly colored.
+
+	if (view == '#') t.lit(World::color(p) == BOLD_WHITE);
+
+	// Other types of tiles cannot have light status easily determined.
+	// Fortunately, they are rare and we usually do not fight on them.
+}
+
+void Level::clearFarlookData() {
+	_farlooked_turn = (unsigned)-1;
+}
+
+void Level::setFarlookResults(const map<Point, string>& res) {
+	if (_farlooked_turn != World::internalTurn()) {
+		_farlooked_turn = World::internalTurn();
+		_turn_farlooks.clear();
+	}
+
+	for (map<Point, string>::const_iterator i = res.begin(); i != res.end(); ++i)
+		_turn_farlooks[i->first] = i->second;
+}
+
+bool Level::parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, std::string& name, const data::Monster*& data) {
+	map<Point,string>::iterator pfarlook = _turn_farlooks.find(c);
+	unsigned char symbol = World::view(c);
+	int color = World::color(c);
+	if (pfarlook == _turn_farlooks.end())
+		return false;
+
+	string messages = pfarlook->second;
+	if (!(messages[2] != ' ' && messages[3] == ' ' && messages[4] == ' ' && messages[5] == ' ')) {
+		Debug::warning() << "Bogus farlook result " << messages << endl;
+		return false;
+	}
+
+	Debug::info() << "Farlook: parsing " << messages << endl;
+
+	string::size_type pos = messages.find(" (");
+	if (pos == string::npos)
+		return false; // no useful data
+	pos += 2;
+
+	// Note: Trimming like this will only affect call, if even, for non-ghosts.  However, given a ghost with a name that contains trim characters, we
+	// would lose the fact that it is a ghost.  Fortunately, "ghost" itself is a workable trim end.
+	string::size_type pos_g = messages.find(" ghost", pos);
+	string::size_type pos_end = string::npos;
+	if (pos_g == string::npos) {
+		pos_end = messages.find(" - ", pos);
+		if (pos_end == string::npos)
+			pos_end = min(messages.find(")", pos), messages.find(", ", pos));
+
+		if (pos_end == string::npos) {
+			Debug::warning() << "Bogus farlook result " << messages << endl;
+			return false;
+		}
+
+		messages.erase(pos_end); // don't let the rest be fooled by [seen: warn of orcs] or similar
+	}
+
+	Debug::info() << "Farlook: main = " << messages.substr(pos) << endl;
+
+	attitude = HOSTILE;
+	// this risks finding spurious matches with ghosts, but they'll be renamed quickly anyway
+	if (messages.substr(pos,sizeof("tail of a ")-1) == "tail of a ") {
+		pos += (sizeof("tail of a ") - 1);
+	} else if (messages.substr(pos,sizeof("tail of ")-1) == "tail of ") {
+		pos += (sizeof("tail of ") - 1);
+	}
+
+	if (messages.substr(pos,sizeof("tame ")-1) == "tame ") {
+		/* it's really friendly... approximate */
+		attitude = FRIENDLY;
+		pos += (sizeof("tame ") - 1);
+	} else if (messages.substr(pos,sizeof("peaceful ")-1) == "peaceful ") {
+		/* it's friendly */
+		attitude = FRIENDLY;
+		pos += (sizeof("peaceful ") - 1);
+	}
+	if (messages.find("Oracle") != string::npos)
+		attitude = FRIENDLY; // not meaningfully hostile
+
+	string::size_type pos_c = messages.find(" called ", pos);
+
+	string type;
+
+	if (pos_c != string::npos) {
+		// If the farlook string contains "name", the monster is definitely name, and therefore definitely callable.
+		// It does not matter that we get the name exactly right because it will just be renamed; just make sure not to accidentally get a valid name
+		// The most important confusing case is X name Y's ghost.  Also, we might chop too much off a name with a ,, ), or -.
+
+		type = messages.substr(pos, pos_c - pos);
+		name = messages.substr(pos_c + 8);
+	} else if ((pos_g = messages.find(" ghost", pos)) != string::npos) {
+		// must be a real ghost; anything with ghost in the call string would be caught above
+
+		type = "ghost";
+		name = messages.substr(pos, pos_g - pos);
+		if (!name.empty() && name[name.size() - 1] == 's')
+			name.erase(name.size() - 1);
+		if (!name.empty() && name[name.size() - 1] == '\'')
+			name.erase(name.size() - 1);
+	} else {
+		type = messages.substr(pos);
+	}
+
+	priest = shopkeeper = false;
+
+	// shopkeepers are always white @, and their names are capitalized
+	if (symbol == '@' && color == BOLD_WHITE && type[0] >= 'A' && type[0] <= 'Z') {
+		shopkeeper = true;
+		name = type;
+		type = "shopkeeper";
+	}
+
+	if (type.find(" of ") != string::npos && type.find("Minion of Huhetotl") == string::npos && type.find("Master of Thieves") == string::npos && type.find("Wizard of Yendor") == string::npos) {
+		priest = true;
+		type = "aligned priest"; // TODO
+	}
+
+	data = data::Monster::monster(type);
+	Debug::info() << "Farlook: type = '" << type << "', name = '" << name << "'" << (data ? "" : ", not found") << endl;
+
+	return true;
+}
+
+vector<Point> Level::farlooksNeeded() {
+	vector<Point> ret;
+
+	if (Saiph::hallucinating())
+		return ret;
+
+	for (set<Point>::const_iterator look_at = _monster_points.begin(); look_at != _monster_points.end(); ++look_at) {
+		unsigned char symbol = World::view(*look_at);
+		int color = World::color(*look_at);
+		if (symbol == 'I' || (symbol == 'm' && color == BLUE))
+			continue; // don't farlook 'I' or 'm' monsters
+		map<Point, string>::iterator c = _turn_farlooks.find(*look_at);
+		if (c != _turn_farlooks.end() && _farlooked_turn == World::internalTurn())
+			continue; // already checked this monster this turn
+		ret.push_back(*look_at);
+	}
+
+	return ret;
 }
 
 void Level::updateMonsters() {
 	/* remove monsters that seems to be gone
 	 * and make monsters we can't see !visible */
 
-	/* Hack - don't remember monsters if we can see the entire map; speeds up exploring Val-fila and Val-filb quite a bit */
-	bool open = isCompletelyOpen();
+	if (World::internalTurn() != _farlooked_turn)
+		_turn_farlooks.clear();
 
-	for (map<Point, Monster>::iterator m = _monsters.begin(); m != _monsters.end();) {
-		unsigned char symbol;
-		int color = World::color(m->first);
+	for (set<Point>::iterator pi = _monster_points.begin(); pi != _monster_points.end(); ++pi) {
+		Point point = *pi;
+		unsigned char symbol = World::view(point);
+		int color = World::color(point);
+
+		/* add a monster, or update position of an existing monster */
+		unsigned char msymbol;
 		if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
-			symbol = PET;
+			msymbol = PET;
 		else
-			symbol = World::view(m->first);
-		/* if we don't see the monster on world->view then it's not visible */
-		m->second.visible((m->first != Saiph::position() && symbol == m->second.symbol() && color == m->second.color()));
-		if (m->second.visible()) {
-			/* monster still visible, don't remove it */
-			m->second.lastSeen(World::turn());
-			++m;
-			continue;
-		} else if (!open && Point::gridDistance(Saiph::position(), m->first) > 1) {
-			/* player is not next to where we last saw the monster */
-			++m;
-			continue;
+			msymbol = symbol;
+
+		bool shopkeeper = false, priest = false;
+		const data::Monster* data = 0;
+		int attitude = ATTITUDE_UNKNOWN;
+		std::string name;
+
+		parseFarlook(point, shopkeeper, priest, attitude, name, data);
+		bool fixed_name = data && (shopkeeper || (data->genoFlags() & G_UNIQ) != 0);
+
+		Monster* nearest = 0;
+		// note: in the event of a named non-unique monster that is not indexed under that name, it
+		// will be created with a new name and then renamed, hopefully avoiding crashes when there are five Rexes in bones
+		// but there will be issues if the bonemaker guessed an in-use identifier
+		if (!name.empty() && Monster::byID().find(name) != Monster::byID().end()) {
+			//Debug::notice() << "name of existing monster found" << endl;
+			nearest = Monster::byID()[name];
+			nearest->called(true);
+		} else if (!fixed_name) {
+			/* find nearest monster */
+			int min_distance = INT_MAX;
+			// we only care about recently seen monsters here
+			for (map<int, Monster*>::iterator m = Monster::byLastSeen().lower_bound(World::internalTurn() - MAX_MONSTER_MOVE); m != Monster::byLastSeen().end(); ++m) {
+				if (m->second->symbol() != msymbol || m->second->color() != color)
+					continue; // not the same monster
+				if ((m->second->lastSeen() == (int)World::internalTurn()) && (Point(m->second->lastSeenPos()) != point))
+					continue; // already accounted for
+				if (m->second->called())
+					continue; // would be obvious
+				if (m->second->lastSeenPos().level() != _level)
+					continue; // not interested
+				/* see if this monster is closer than the last found monster */
+				int distance = Point::gridDistance(m->second->lastSeenPos(), point);
+				if (distance > MAX_MONSTER_MOVE)
+					continue; // too far away from where we last saw it, probably new monster
+				else if (distance >= min_distance)
+					continue;
+				else if ((m->second->priest() || m->second->shopkeeper()) && distance > 1)
+					continue; // shopkeepers and priests are very close to eachother in minetown
+				/* it is */
+				min_distance = distance;
+				nearest = m->second;
+			}
 		}
-		/* remove monster from _map */
-		_map[m->first.row()][m->first.col()].monster(ILLEGAL_MONSTER);
-		/* remove monster from list */
-		_monsters.erase(m++);
+
+		if (nearest != 0) {
+			//Debug::notice() << "for " << point << ", using existing monster " << nearest->id() << endl;
+		} else {
+			/* add monster */
+			string id;
+			if (fixed_name) {
+				id = name;
+			}
+			nearest = new Monster(id);
+			nearest->called(!id.empty());
+			Debug::notice() << "for " << point << ", using new monster " << nearest->id() << endl;
+		}
+		nearest->symbol(msymbol);
+		nearest->color(color);
+		nearest->attitude(attitude);
+		nearest->shopkeeper(shopkeeper);
+		nearest->priest(priest);
+		nearest->data(data);
+		nearest->observed(Coordinate(_level, point));
 	}
+
+	for (map<Point, Monster*>::iterator m = _monsters.begin(); m != _monsters.end(); ++m)
+		_map[m->first.row()][m->first.col()].monster(ILLEGAL_MONSTER);
+	_monsters.clear();
+
+	/* set monsters on tiles */
+	for (map<int, Monster*>::iterator m = Monster::byLastSeen().lower_bound(World::internalTurn() - MAX_MONSTER_MOVE); m != Monster::byLastSeen().end(); ++m) {
+		Coordinate c = m->second->lastSeenPos();
+		if (c.level() != _level)
+			continue; // not interested
+		m->second->visible(m->second->lastSeen() == (int)World::internalTurn());
+		if (!m->second->visible() && Point::gridDistance(c, Saiph::position()) <= 1)
+			continue; // obviously not here
+		//Debug::notice() << "Marking " << m->second->id() << " tactically interesting at " << c << endl;
+		_map[c.row()][c.col()].monster(m->second->symbol());
+		_monsters[c] = m->second;
+	}
+
+	/*
+	for (int y = MAP_ROW_BEGIN; y <= MAP_ROW_END; ++y) {
+		for (int x = MAP_COL_BEGIN; x <= MAP_COL_END; ++x) {
+			Point p(y,x);
+			if (_monster_points.find(p) != _monster_points.end())
+				Debug::info() << "_monster_points contains " << p << endl;
+			if (_monsters.find(p) != _monsters.end())
+				Debug::info() << "_monsters contains " << p << endl;
+			if (_map[y][x].monster() != ILLEGAL_MONSTER)
+				Debug::info() << "_map has non-illegal at " << p << endl;
+			if (_turn_farlooks.find(p) != _turn_farlooks.end())
+				Debug::info() << "_turn_farlooks contains " << p << endl;
+		}
+	}
+	*/
 }
 
 void Level::updatePathMap() {

@@ -6,6 +6,7 @@
 #include "Actions/ApplyInDirection.h"
 #include "Actions/Call.h"
 #include "Actions/Charge.h"
+#include "Actions/Christen.h"
 #include "Actions/Donate.h"
 #include "Actions/Dip.h"
 #include "Actions/Drop.h"
@@ -76,12 +77,50 @@ const int Donate::ID = 32;
 const int Pay::ID = 33;
 const int Wish::ID = 34;
 const int Charge::ID = 35;
+const int Christen::ID = 36;
+
+/** compilation of info on nethack nomul(<0) call sites
+ *  Digesting mobs		(1 + (cwt >> 8)) * (1 + !!Slow_digestion)  "You digest"
+ *  Floating eye		2d70 or 127
+ *  Gelatinous cube		1d4  "You are frozen by"
+ *  Chest trap			5d6  "Suddenly you are frozen in place!"
+ *  Stoning			3
+ *  Fumbling			2  "Egads!  %s bite%s your %s!" "You trip over %s."  "%s %s%s on the ice."  "You trip over your own %s."  "You slip %s."  "Your %s slip out of the stirrups."  "You let go of the reins."  "You bang into the saddle-horn."  "You slide to one side of the saddle."
+ *  Clouds			3  "Kaboom!!!  Boom!!  Boom!!"
+ *  Sleeping			varies  "You wake up."
+ *  Nymphs			varies  "%s seduces you and %s off your %s."  "%s charms you.  You gladly %s your %s."
+ *  Failing to learn a spell	varies
+ *  Chatting with a skeleton	2
+ *  Temple ghost		3  "You regain your composure."
+ *  Demon summoning		3  "You are terrified, and unable to move."
+ *  Praying			3  "You finish your prayer."
+ *  Turn undead			5
+ *  Potion ghost		3  "You regain your composure."
+ *  Potion of paralysis		varies
+ *  Paralysis (thrown)		1d5  "Something seems to be holding you." / "You can move again."
+ *  Sleeping (thrown)		1d5  "You can move again."
+ *  Trapped chest		1  "You set it off!" / "You trigger a trap!"
+ *  Monster hit			1d10  "You are frozen
+ *  CLC_PARALYZE		1 (Antimagic | Free action) "You stiffen briefly." / varies "You are frozen in place!"
+ *  Dragging an iron ball	2
+ *  Eating a mimic		variest
+ *  Rotten food (possible)	1d10 "The world spins and
+ *  Fainting			>10 "You faint from lack of food"
+ *  Vomiting			2 "You stuff yourself and then vomit voluminously." / "The water is foul!  You gag and vomit." / "Gaggg... this tastes like sewage!  You vomit." / "You suddenly vomit!"
+ *  Hurtling 3rd law		varies no message with !verbose
+ *  Wearing stuff		varies
+ *  Pick axe on web		2d2
+ *  Crystal ball		1d10
+ *  "The magic-absorbing blade scares you!"	3
+ *  Cursed bell summoning	possible 2
+ *  Jumping			1
+ */
 
 /* used for the travel command "_" */
 Point Move::_last_target;
 
 /* constructors/destructor */
-Action::Action(analyzer::Analyzer* analyzer, bool increase_turn_counter) : _sequence(0), _analyzer(analyzer), _increase_turn_counter(increase_turn_counter) {
+Action::Action(analyzer::Analyzer* analyzer, int time_taken) : _sequence(0), _analyzer(analyzer), _time_taken(time_taken) {
 }
 
 Action::~Action() {
@@ -92,8 +131,8 @@ analyzer::Analyzer* Action::analyzer() {
 	return _analyzer;
 }
 
-bool Action::increaseTurnCounter() {
-	return _increase_turn_counter;
+int Action::timeTaken() {
+	return _time_taken;
 }
 
 void Action::failed() {

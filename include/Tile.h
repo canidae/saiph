@@ -21,6 +21,8 @@ public:
 	unsigned int search() const;
 	unsigned int search(unsigned int search);
 	unsigned int searchInc(int count = 1);
+	int lit() const;
+	int lit(int lit);
 	unsigned char symbol() const;
 	unsigned char symbol(unsigned char symbol);
 	void updatePath(unsigned char direction, unsigned int distance, unsigned int cost);
@@ -36,6 +38,7 @@ private:
 	unsigned int _distance; // distance to this tile when on same level
 	unsigned int _cost; // cost to this tile when on same level
 	unsigned int _updated; // last internal turn this node was updated, used for pathing
+	int _lit; // -1 if unknown else 0 or 1
 };
 
 std::ostream& operator<<(std::ostream& os, const Tile& t);
