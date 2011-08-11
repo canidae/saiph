@@ -60,6 +60,7 @@ set(HEADER_FILES
 	include/Actions/ListPlayerAttributes.h
 	include/Actions/Look.h
 	include/Actions/Loot.h
+	include/Actions/MergeStack.h
 	include/Actions/Move.h
 	include/Actions/Name.h
 	include/Actions/Open.h
@@ -224,6 +225,7 @@ set(SOURCE_FILES
 	src/Actions/ListPlayerAttributes.cpp
 	src/Actions/Look.cpp
 	src/Actions/Loot.cpp
+	src/Actions/MergeStack.cpp
 	src/Actions/Move.cpp
 	src/Actions/Name.cpp
 	src/Actions/Open.cpp

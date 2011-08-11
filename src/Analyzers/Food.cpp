@@ -8,6 +8,8 @@
 #include "World.h"
 #include "Actions/Eat.h"
 #include "Actions/EatCorpse.h"
+#include "Actions/MergeStack.h"
+#include "Actions/Name.h"
 #include "Actions/Pray.h"
 #include "Data/Corpse.h"
 #include "Data/Food.h"
@@ -156,6 +158,11 @@ void Food::onEvent(Event* const event) {
 			map<const string, const data::Food*>::const_iterator f = data::Food::foods().find(i->second.name());
 			if (f == data::Food::foods().end() || !(f->second->effects() & EAT_EFFECT_NEVER_ROT))
 				continue; // not food or the food rots
+			/* minor hack - clear the names off any unrotting corpses we pick up so they'll stack */
+			if (i->second.name().find("corpse") != string::npos && i->second.additional() != "") {
+				World::queueAction(new action::Name(this, i->first, " "));
+				World::queueAction(new action::MergeStack(this, i->first));
+			}
 			_food_items.insert(i->first);
 		}
 	} else if (event->id() == EatItem::ID) {
