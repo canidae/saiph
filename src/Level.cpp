@@ -1089,7 +1089,7 @@ void Level::updatePathMapSetCost(const Point& to, const Tile& prev, bool left_le
 	}
 }
 
-unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& prev, bool) {
+unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& prev, bool left_level) {
 	/* helper method for updatePathMapSetCost()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
 	if (!_passable[next.symbol()])
@@ -1121,8 +1121,10 @@ unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& pre
 		return UNREACHABLE;
 	if (next.symbol() == TRAP && _branch == BRANCH_SOKOBAN)
 		return UNREACHABLE;
-	if (next.monster() != ILLEGAL_MONSTER && abs(Saiph::position().row() - next.coordinate().row()) <= 1 && abs(Saiph::position().col() - next.coordinate().col()) <= 1)
-		return UNREACHABLE; // don't path through monster next to her
+	// if saiph has seen the monster recently enough to be thinking about it, she shouldn't try to pass through it
+	// when we generate the off-level version of the map, however, we need to assume that time has passed and monster positions forgotten
+	if (next.monster() != ILLEGAL_MONSTER && !left_level)
+		return UNREACHABLE;
 	unsigned int cost = prev.cost() + (cardinal_move ? COST_CARDINAL : COST_DIAGONAL);
 	cost += _pathcost[next.symbol()];
 	if (next.monster() != ILLEGAL_MONSTER)
