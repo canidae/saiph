@@ -1,9 +1,13 @@
 #include "Monster.h"
 #include "World.h"
 #include "Data/Monster.h"
+#include "Data/Polearm.h"
 #include "Debug.h"
 
 #include <sstream>
+#include <cctype>
+
+using namespace std;
 
 /* static data */
 int Monster::_next_id;
@@ -11,7 +15,7 @@ std::map<std::string, Monster*> Monster::_by_id;
 std::multimap<int, Monster*> Monster::_by_last_seen;
 
 /* constructors/destructor */
-Monster::Monster(const std::string& id) : _id(id), _symbol(ILLEGAL_MONSTER), _color(BLACK), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(0), _last_moved(0), _observed_turn(-2), _observed_subturn(0), _last_seen_pos(), _called(false), _shopkeeper(false), _priest(false), _data(0) {
+Monster::Monster(const std::string& id) : _id(id), _symbol(ILLEGAL_MONSTER), _color(BLACK), _visible(false), _attitude(ATTITUDE_UNKNOWN), _last_seen(0), _last_moved(0), _observed_turn(-2), _observed_subturn(0), _last_seen_pos(), _ranged(0), _called(false), _shopkeeper(false), _priest(false), _data(0) {
 	if (id.empty()) {
 		int newid = _next_id++;
 		std::ostringstream buf;
@@ -201,4 +205,98 @@ void Monster::unindex() {
 	while (i != _by_last_seen.end() && i->second != this) ++i;
 	if (i != _by_last_seen.end())
 		_by_last_seen.erase(i);
+}
+
+int Monster::ranged() const {
+	return _ranged;
+}
+
+void Monster::addRanged(int what) {
+	Debug::info() << id() << ": adding ranged type " << (what == RANGED_WAND ? "wand" : what == RANGED_POLEARM ? "polearm" : "missile") << endl;
+	_ranged |= what;
+}
+
+bool Monster::removeAdj(string& from, const string& adj) {
+	string cap_adj = adj;
+	cap_adj[0] = toupper(cap_adj[0]);
+
+	if (from.size() <= adj.size() || from[adj.size()] != ' ') return false;
+
+	if (from[0] != adj[0] && from[0] != toupper(adj[0])) return false;
+
+	if (from.compare(1, adj.size() - 1, adj, 1, adj.size() - 1)) return false;
+
+	from.erase(0, adj.size() + 1);
+	return true;
+}
+
+// handles called=false strings
+Monster* Monster::parseMonster(const string& str) {
+	string head = str;
+	if (head == "It") return 0;
+	if (Saiph::hallucinating()) return 0;
+	// these are actually handled at the end of x_monnam
+	removeAdj(head, "the");
+	removeAdj(head, "your");
+	removeAdj(head, "a");
+	removeAdj(head, "an");
+	// TODO: priests/minions special code
+	// TODO: !hallu shopkeepers special code
+	// I wonder if it would be better to combine these
+	removeAdj(head, "falling");
+	removeAdj(head, "poor");
+	removeAdj(head, "angry");
+	removeAdj(head, "plain");
+	removeAdj(head, "beautiful");
+	removeAdj(head, "blind");
+	removeAdj(head, "bite-covered");
+
+	removeAdj(head, "invisible");
+	removeAdj(head, "saddled");
+	// we assume all monsters that can be renamed, have been.  so no dealing with funky mplayer cases
+	string id;
+	if (head.size() > 8 && head.substr(head.size() - 8) == "'s ghost") {
+		id = head.substr(0, head.size() - 8);
+	} else {
+		id = head; // is either a call string, or the name of a unique mob
+	}
+	map<string, Monster*>::const_iterator mi = _by_id.find(id);
+	if (mi != _by_id.end()) return mi->second;
+	else return 0;
+}
+
+// Hack - we don't (can't?) completely parse monster items in messages, so just look for polearm names
+bool Monster::checkPolearm(const string& what) {
+	for (map<const string, const data::Polearm*>::const_iterator i = data::Polearm::polearms().begin(); i != data::Polearm::polearms().end(); ++i) {
+		if (what.find(i->first) != string::npos)
+			return true;
+	}
+	return false;
+}
+
+void Monster::parseMessages(const string& messages) {
+	string::size_type nextpos;
+	for (string::size_type pos = messages.find("  "); pos != string::npos; pos = nextpos) {
+		nextpos = messages.find("  ", pos + 2);
+		string message = messages.substr(pos + 2, nextpos - (pos + 2));
+
+		Monster* mob;
+		string::size_type breakpt;
+
+		if ((breakpt = message.find(" thrusts ")) != string::npos && checkPolearm(message.substr(breakpt + sizeof(" thrusts ") - 1)) && (mob = parseMonster(message.substr(0, breakpt)))) {
+			mob->addRanged(RANGED_POLEARM);
+			continue;
+		}
+
+		if ((breakpt = min(message.find(" throws "), message.find(" shoots "))) != string::npos && (mob = parseMonster(message.substr(0, breakpt)))) {
+			mob->addRanged(RANGED_MISSILES);
+			continue;
+		}
+
+		// ignore %s zaps %sself with %s!
+		if ((breakpt = message.find(" zaps a")) != string::npos && (mob = parseMonster(message.substr(0, breakpt)))) {
+			mob->addRanged(RANGED_WAND);
+			continue;
+		}
+	}
 }

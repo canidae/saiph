@@ -562,6 +562,9 @@ void Level::parseMessages(const string& messages) {
 		/* we see/feel no items on the ground */
 		_stashes.erase(Saiph::position());
 	}
+
+	// also let the monster tracker take a crack at it
+	Monster::parseMessages(messages);
 }
 
 void Level::setDirtyStash(const Point& point) {
