@@ -604,20 +604,6 @@ void Level::setDungeonSymbolValue(const Point& point, int value) {
 	_symbols[_map[point.row()][point.col()].symbol()][point] = value;
 }
 
-bool Level::isCompletelyOpen() const {
-	if (symbols(SOLID_ROCK).size() > 0)
-		return false;
-	if (symbols(TREE).size() > 0)
-		return false;
-	if (symbols(CLOSED_DOOR).size() > 0)
-		return false;
-	if (symbols(VERTICAL_WALL).size() > 0)
-		return false;
-	if (symbols(HORIZONTAL_WALL).size() > 0)
-		return false;
-	return true;
-}
-
 void Level::increaseAdjacentSearchCount(const Point& point, int count) {
 	/* increase search count for adjacent points to given point */
 	Point p = point;
