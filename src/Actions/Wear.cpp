@@ -6,7 +6,8 @@
 using namespace action;
 
 /* constructors/destructor */
-Wear::Wear(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer, 50), _wear("W", priority), _wear_key(key, PRIORITY_CONTINUE_ACTION) {
+// see comment in TakeOff
+Wear::Wear(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer, TIME_MULTIPLE), _wear("W", priority), _wear_key(key, PRIORITY_CONTINUE_ACTION) {
 }
 
 Wear::~Wear() {

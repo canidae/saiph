@@ -45,7 +45,7 @@ set(HEADER_FILES
 	include/Actions/ApplyInDirection.h
 	include/Actions/Call.h
 	include/Actions/Charge.h
-	include/Actions/Christen.h
+	include/Actions/CallMonster.h
 	include/Actions/Donate.h
 	include/Actions/DropGold.h
 	include/Actions/Drop.h
@@ -208,7 +208,7 @@ set(SOURCE_FILES
 	src/Actions/ApplyInDirection.cpp
 	src/Actions/Call.cpp
 	src/Actions/Charge.cpp
-	src/Actions/Christen.cpp
+	src/Actions/CallMonster.cpp
 	src/Actions/Dip.cpp
 	src/Actions/Donate.cpp
 	src/Actions/Drop.cpp

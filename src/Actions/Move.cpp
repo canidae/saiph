@@ -20,9 +20,10 @@ Move::Move(analyzer::Analyzer* analyzer, const Tile& target, int priority, bool 
 			}
 		}
 	}
-	if (travel)
+	if (travel) {
+		_time_taken = TIME_MULTIPLE;
 		_do_travel = Command("_", priority);
-	else if (_target.direction() == SIT)
+	} else if (_target.direction() == SIT)
 		_do_travel = Command("#sit\n", priority);
 	else
 		_do_travel = Command(_target.direction(), priority);

@@ -6,7 +6,7 @@
 #include "Actions/ApplyInDirection.h"
 #include "Actions/Call.h"
 #include "Actions/Charge.h"
-#include "Actions/Christen.h"
+#include "Actions/CallMonster.h"
 #include "Actions/Donate.h"
 #include "Actions/Dip.h"
 #include "Actions/Drop.h"
@@ -77,7 +77,7 @@ const int Donate::ID = 32;
 const int Pay::ID = 33;
 const int Wish::ID = 34;
 const int Charge::ID = 35;
-const int Christen::ID = 36;
+const int CallMonster::ID = 36;
 
 /** compilation of info on nethack nomul(<0) call sites
  *  Digesting mobs		(1 + (cwt >> 8)) * (1 + !!Slow_digestion)  "You digest"

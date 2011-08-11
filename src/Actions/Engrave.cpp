@@ -5,7 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
-// we do not currently use any slow methods of engraving
+// we do not currently use any slow methods of engraving, or engrave >9 chars at once
 Engrave::Engrave(analyzer::Analyzer* analyzer, const std::string& engrave_msg, unsigned char engrave_with, int priority, bool should_append) : Action(analyzer), _engrave("E", priority), _message(engrave_msg, PRIORITY_CONTINUE_ACTION), _item(engrave_with, PRIORITY_CONTINUE_ACTION), _append(should_append ? YES : NO, PRIORITY_CONTINUE_ACTION) {
 }
 

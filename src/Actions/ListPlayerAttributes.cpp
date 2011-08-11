@@ -5,7 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
-ListPlayerAttributes::ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, 0), _list_attributes("", PRIORITY_LIST_PLAYER_ATTRIBUTES), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
+ListPlayerAttributes::ListPlayerAttributes(analyzer::Analyzer* analyzer) : Action(analyzer, TIME_NONE), _list_attributes("", PRIORITY_LIST_PLAYER_ATTRIBUTES), _close_page(CLOSE_PAGE, PRIORITY_CONTINUE_ACTION) {
 }
 
 ListPlayerAttributes::~ListPlayerAttributes() {

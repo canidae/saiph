@@ -6,7 +6,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Search::Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer, 16), _turn_before_search(World::turn()), _search("16s", priority) {
+Search::Search(analyzer::Analyzer* analyzer, int priority) : Action(analyzer, TIME_MULTIPLE), _turn_before_search(World::turn()), _search("16s", priority) {
 }
 
 Search::~Search() {

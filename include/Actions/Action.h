@@ -4,6 +4,14 @@
 #include <string>
 #include "Command.h"
 
+// Classify time requirements of various actions for sub_turn tracking:
+#define TIME_NONE      0  // No time at all (farlook, etc)
+#define TIME_STANDARD  1  // Most actions take one move
+#define TIME_MULTIPLE  2  // Takes multiple actions and can be interrupted at any point, like eating - we know nothing afterward
+#define TIME_NOMUL     3  // Calls nomul() with a negative argument, consuming an integral number of turns
+
+// Note that if a TIME_STANDARD action takes multiple turns, it is considered TIME_NOMUL because saiph assumes she was paralyzed.
+
 #define NO_ACTION 0
 
 namespace analyzer {
@@ -16,9 +24,7 @@ namespace action {
 	public:
 		static const Command NOOP;
 
-		// time_taken values correspond to NetHack nomul values, 1,2,3, counts in moves, -1,-2,-3 count in turns
-		// values of 2 or more are counted as "indeterminate" due to interruption potential
-		Action(analyzer::Analyzer* analyzer, int time_taken = 1);
+		Action(analyzer::Analyzer* analyzer, int time_taken = TIME_STANDARD);
 		virtual ~Action();
 
 		virtual int id() = 0;
@@ -30,10 +36,10 @@ namespace action {
 
 	protected:
 		int _sequence;
+		int _time_taken;
 
 	private:
 		analyzer::Analyzer* _analyzer;
-		int _time_taken;
 	};
 }
 #endif

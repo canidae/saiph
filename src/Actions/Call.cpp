@@ -6,7 +6,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Call::Call(analyzer::Analyzer* analyzer, unsigned char item, const std::string& call) : Action(analyzer, 0), _do_call("#name\n", PRIORITY_NAME_ITEM), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(item, PRIORITY_CONTINUE_ACTION), _set_call(call + "\n", PRIORITY_CONTINUE_ACTION) {
+Call::Call(analyzer::Analyzer* analyzer, unsigned char item, const std::string& call) : Action(analyzer, TIME_NONE), _do_call("#name\n", PRIORITY_NAME_ITEM), _call_individual("n", PRIORITY_CONTINUE_ACTION), _call_item(item, PRIORITY_CONTINUE_ACTION), _set_call(call + "\n", PRIORITY_CONTINUE_ACTION) {
 }
 
 Call::~Call() {

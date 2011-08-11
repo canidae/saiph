@@ -5,7 +5,7 @@
 using namespace action;
 
 /* constructors/destructor */
-EatCorpse::EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, int priority) : Action(analyzer, 50), _eat("e", priority), _corpse(corpse), _answer_no(NO, PRIORITY_CONTINUE_ACTION), _answer_yes(YES, PRIORITY_CONTINUE_ACTION), _escape((unsigned char) 27, PRIORITY_CONTINUE_ACTION) {
+EatCorpse::EatCorpse(analyzer::Analyzer* analyzer, const std::string& corpse, int priority) : Action(analyzer, TIME_MULTIPLE), _eat("e", priority), _corpse(corpse), _answer_no(NO, PRIORITY_CONTINUE_ACTION), _answer_yes(YES, PRIORITY_CONTINUE_ACTION), _escape((unsigned char) 27, PRIORITY_CONTINUE_ACTION) {
 }
 
 EatCorpse::~EatCorpse() {

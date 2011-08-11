@@ -6,7 +6,8 @@
 using namespace action;
 
 /* constructors/destructor */
-TakeOff::TakeOff(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer, 50), _take_off("T", priority), _take_off_key(key, PRIORITY_CONTINUE_ACTION) {
+// technically it's STANDARD if oc_delay is 0, or NOMUL if positive.  But our spoilers don't have oc_delay...
+TakeOff::TakeOff(analyzer::Analyzer* analyzer, unsigned char key, int priority) : Action(analyzer, TIME_MULTIPLE), _take_off("T", priority), _take_off_key(key, PRIORITY_CONTINUE_ACTION) {
 }
 
 TakeOff::~TakeOff() {

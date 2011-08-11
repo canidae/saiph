@@ -687,53 +687,60 @@ void World::run(int speed) {
 
 		if (!_question && !_menu && analyze_and_parse) {
 			/* we are at the beginning of a new NetHack action.  Pay attention to the timing */
-			if (last_action_turn >= 0 && last_action_time != 0) {
+			if (last_action_turn >= 0 && last_action_time != TIME_NONE) {
 				/* moreover, we remember last turn, and we did an action that takes time */
-				if (last_action_time > 1) {
-					/* last action was an extended move-oriented action.  We now know nothing about the state of monster movement */
-					_sub_turn = -1;
-					_min_saiph_energy = 12;
-					_max_saiph_energy = 11 + Saiph::maxSpeed();
-				} else if ((_turn - last_action_turn) > 1) {
+				if (last_action_time == TIME_STANDARD && (_turn - last_action_turn) > 1) {
 					// if we go an entire turn without actions, assume we were paralyzed
 					// note that this means move tracking won't work well if Burdened
 					// not that kiting is very useful when Burdened anyway...
 					// paralysis always wears off at the beginning of a turn, but we don't know energy
-					_sub_turn = 0;
-					_min_saiph_energy = 12;
-					_max_saiph_energy = 11 + Saiph::maxSpeed();
-				} else if (last_action_time < 0) {
-					// our last action was something that uses exactly one full turn.  punt on analysis for now
-					_sub_turn = 0;
-					_min_saiph_energy = 12;
-					_max_saiph_energy = 11 + Saiph::maxSpeed();
-				} else {
-					/* only remaining case is one-move actions, and we sure didn't get paralyzed */
-					_min_saiph_energy -= 12;
-					_max_saiph_energy -= 12;
-					if (_turn == last_action_turn) {
-						// we didn't get any extra energy, so we still have at least 12 from the same charge
-						_min_saiph_energy = std::max(12, _min_saiph_energy);
-						if (_sub_turn >= 0)
-							_sub_turn++;
-					} else {
-						_sub_turn = 0;
-						// obviously we ran out of energy, so we didn't have more than 11
-						_max_saiph_energy = std::min(11, _max_saiph_energy);
-						if (_min_saiph_energy <= _max_saiph_energy) {
-							// and a fresh charge, but don't hide contradictions 
-							_min_saiph_energy += Saiph::minSpeed();
-							_max_saiph_energy += Saiph::maxSpeed();
-							// we have at least 12 *now*, if we didn't then we'd have seen it as a paralysis
-							_min_saiph_energy = std::max(12, _min_saiph_energy);
-						}
-					}
-					if (_min_saiph_energy > _max_saiph_energy) {
-						Debug::error() << "Energy tracking for saiph has reached a contradiction.  Resetting." << endl;
+					last_action_time = TIME_NOMUL;
+				}
+
+				switch (last_action_time) {
+					default:
+						Debug::error() << "Incorrect time value " << last_action_time << endl;
+						// fall through
+					case TIME_MULTIPLE:
+						/* last action was an extended move-oriented action.  We now know nothing about the state of monster movement */
 						_sub_turn = -1;
 						_min_saiph_energy = 12;
 						_max_saiph_energy = 11 + Saiph::maxSpeed();
-					}
+						break;
+					case TIME_NOMUL:
+						// our last action was something that uses full turns, or we were paralyzed.  punt on analysis for now
+						_sub_turn = 0;
+						_min_saiph_energy = 12;
+						_max_saiph_energy = 11 + Saiph::maxSpeed();
+						break;
+					case TIME_STANDARD:
+						/* only remaining case is one-move actions, and we sure didn't get paralyzed */
+						_min_saiph_energy -= 12;
+						_max_saiph_energy -= 12;
+						if (_turn == last_action_turn) {
+							// we didn't get any extra energy, so we still have at least 12 from the same charge
+							_min_saiph_energy = std::max(12, _min_saiph_energy);
+							if (_sub_turn >= 0)
+								_sub_turn++;
+						} else {
+							_sub_turn = 0;
+							// obviously we ran out of energy, so we didn't have more than 11
+							_max_saiph_energy = std::min(11, _max_saiph_energy);
+							if (_min_saiph_energy <= _max_saiph_energy) {
+								// and a fresh charge, but don't hide contradictions 
+								_min_saiph_energy += Saiph::minSpeed();
+								_max_saiph_energy += Saiph::maxSpeed();
+								// we have at least 12 *now*, if we didn't then we'd have seen it as a paralysis
+								_min_saiph_energy = std::max(12, _min_saiph_energy);
+							}
+						}
+						if (_min_saiph_energy > _max_saiph_energy) {
+							Debug::error() << "Energy tracking for saiph has reached a contradiction.  Resetting." << endl;
+							_sub_turn = -1;
+							_min_saiph_energy = 12;
+							_max_saiph_energy = 11 + Saiph::maxSpeed();
+						}
+						break;
 				}
 				int min_moves_turn = (_sub_turn >= 0 ? _sub_turn : 0) + (_min_saiph_energy / 12);
 				Debug::info() << "Energy predictions for the current turn: t=" << _turn << " i=" << _internal_turn << " s=" << _sub_turn << " min=" << _min_saiph_energy << " max=" << _max_saiph_energy << " min_moves=" << min_moves_turn << endl;
@@ -817,7 +824,7 @@ void World::run(int speed) {
 				cout.flush();
 				++World::_internal_turn; // will cost a turn
 				_last_action_id = NO_ACTION;
-				last_action_time = 16;
+				last_action_time = TIME_MULTIPLE;
 				executeCommand("16s");
 				continue;
 			}
@@ -879,7 +886,7 @@ void World::run(int speed) {
 		/* and increase _internal_turn if the action actually cost a turn.
 		 * the turn counter in game may not increase if we're [very] fast,
 		 * but we still need to know if a turn lapsed, hence _internal_turn */
-		if (_action->command() == action::Action::NOOP && _action->timeTaken() != 0)
+		if (_action->command() == action::Action::NOOP && _action->timeTaken() != TIME_NONE)
 			++World::_internal_turn;
 	}
 }

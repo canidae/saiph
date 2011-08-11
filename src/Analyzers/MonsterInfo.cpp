@@ -5,7 +5,7 @@
 #include "Saiph.h"
 #include "World.h"
 #include "Level.h"
-#include "Actions/Christen.h"
+#include "Actions/CallMonster.h"
 #include "Actions/FarLook.h"
 #include "Data/Monster.h"
 
@@ -35,7 +35,7 @@ void MonsterInfo::analyze() {
 		}
 	}
 	if (!christen_req.empty())
-		World::setAction(new action::Christen(this, christen_req));
+		World::setAction(new action::CallMonster(this, christen_req));
 }
 
 void MonsterInfo::actionCompleted(const string&) {

@@ -3,10 +3,10 @@
 using namespace action;
 
 /* constructors/destructor */
-Answer::Answer(analyzer::Analyzer* analyzer, const std::string& answer) : Action(analyzer, 0), _answer(answer, PRIORITY_CONTINUE_ACTION) {
+Answer::Answer(analyzer::Analyzer* analyzer, const std::string& answer) : Action(analyzer, TIME_NONE), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 }
 
-Answer::Answer(analyzer::Analyzer* analyzer, unsigned char answer) : Action(analyzer, 0), _answer(answer, PRIORITY_CONTINUE_ACTION) {
+Answer::Answer(analyzer::Analyzer* analyzer, unsigned char answer) : Action(analyzer, TIME_NONE), _answer(answer, PRIORITY_CONTINUE_ACTION) {
 }
 
 Answer::~Answer() {

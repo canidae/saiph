@@ -5,7 +5,8 @@
 using namespace action;
 
 /* constructors/destructor */
-ApplyInDirection::ApplyInDirection(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority, bool update_inventory) : Action(analyzer, 50), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _apply_direction(direction, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
+// used for picks only
+ApplyInDirection::ApplyInDirection(analyzer::Analyzer* analyzer, unsigned char key, unsigned char direction, int priority, bool update_inventory) : Action(analyzer, TIME_MULTIPLE), _do_apply("a", priority), _apply_item(key, PRIORITY_CONTINUE_ACTION), _apply_direction(direction, PRIORITY_CONTINUE_ACTION), _update_inventory(update_inventory) {
 }
 
 ApplyInDirection::~ApplyInDirection() {

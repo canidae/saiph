@@ -6,7 +6,7 @@
 using namespace action;
 
 /* constructors/destructor */
-Name::Name(analyzer::Analyzer* analyzer, unsigned char item, const std::string& name) : Action(analyzer, 0), _do_name("#name\n", PRIORITY_NAME_ITEM), _name_individual(YES, PRIORITY_CONTINUE_ACTION), _name_item(item, PRIORITY_CONTINUE_ACTION), _set_name(name + "\n", PRIORITY_CONTINUE_ACTION) {
+Name::Name(analyzer::Analyzer* analyzer, unsigned char item, const std::string& name) : Action(analyzer, TIME_NONE), _do_name("#name\n", PRIORITY_NAME_ITEM), _name_individual(YES, PRIORITY_CONTINUE_ACTION), _name_item(item, PRIORITY_CONTINUE_ACTION), _set_name(name + "\n", PRIORITY_CONTINUE_ACTION) {
 }
 
 Name::~Name() {
