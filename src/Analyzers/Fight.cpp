@@ -36,12 +36,16 @@ Fight::Fight() : Analyzer("Fight") {
 
 	for (vector<const data::Monster*>::const_iterator mi = data::Monster::monsters().begin(); mi != data::Monster::monsters().end(); ++mi) {
 		const data::Monster* m = *mi;
-		bool nokite = false;
-		if (m->m1() & M1_TPORT_CNTRL) nokite = true;
-		if (m->m2() & (M2_WERE | M2_WANDER)) nokite = true;
-		if (m->m3() & (M3_COVETOUS | M3_WAITMASK)) nokite = true;
-		if (m->rangedAttack()) nokite = true;
-		if (nokite) {
+		bool kite = true;
+		if (m->m1() & M1_TPORT_CNTRL)
+			kite = false;
+		if (m->m2() & (M2_WERE | M2_WANDER))
+			kite = false;
+		if (m->m3() & (M3_COVETOUS | M3_WAITMASK))
+			kite = false;
+		if (m->rangedAttack())
+			kite = false;
+		if (!kite) {
 			//Debug::custom(name()) << "Disallow hit and run of " << m->name() << endl;
 			_no_hitandrun.insert(m->name());
 		}
