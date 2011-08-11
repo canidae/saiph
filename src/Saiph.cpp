@@ -548,12 +548,24 @@ int Saiph::minMovesThisTurn(int set_to) {
 int Saiph::minSpeed() {
 	int moveamt = (Saiph::extrinsics() & PROPERTY_VERYFAST) ? 18 : 12;
 	switch (_encumbrance) {
-		case UNENCUMBERED: break;
-		case BURDENED: moveamt -= (moveamt / 4); break;
-		case STRESSED: moveamt -= (moveamt / 2); break;
-		case STRAINED: moveamt -= ((moveamt * 3) / 4); break;
-		case OVERTAXED: moveamt -= ((moveamt * 7) / 8); break;
-		default: break;
+		case BURDENED:
+			moveamt -= (moveamt / 4);
+			break;
+
+		case STRESSED:
+			moveamt -= (moveamt / 2);
+			break;
+
+		case STRAINED:
+			moveamt -= ((moveamt * 3) / 4);
+			break;
+
+		case OVERTAXED:
+			moveamt -= ((moveamt * 7) / 8);
+			break;
+
+		default:
+			break;
 	}
 	return moveamt;
 }
@@ -561,12 +573,24 @@ int Saiph::minSpeed() {
 int Saiph::maxSpeed() {
 	int moveamt = (Saiph::extrinsics() & PROPERTY_VERYFAST) ? 24 : (Saiph::intrinsics() & PROPERTY_SPEED) ? 18 : 12;
 	switch (_encumbrance) {
-		case UNENCUMBERED: break;
-		case BURDENED: moveamt -= (moveamt / 4); break;
-		case STRESSED: moveamt -= (moveamt / 2); break;
-		case STRAINED: moveamt -= ((moveamt * 3) / 4); break;
-		case OVERTAXED: moveamt -= ((moveamt * 7) / 8); break;
-		default: break;
+		case BURDENED:
+			moveamt -= (moveamt / 4);
+			break;
+
+		case STRESSED:
+			moveamt -= (moveamt / 2);
+			break;
+
+		case STRAINED:
+			moveamt -= ((moveamt * 3) / 4);
+			break;
+
+		case OVERTAXED:
+			moveamt -= ((moveamt * 7) / 8);
+			break;
+
+		default:
+			break;
 	}
 	return moveamt;
 }
