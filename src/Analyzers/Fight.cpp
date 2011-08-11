@@ -40,9 +40,7 @@ Fight::Fight() : Analyzer("Fight") {
 		if (m->m1() & M1_TPORT_CNTRL) nokite = true;
 		if (m->m2() & (M2_WERE | M2_WANDER)) nokite = true;
 		if (m->m3() & (M3_COVETOUS | M3_WAITMASK)) nokite = true;
-		for (vector<data::Attack>::const_iterator a = m->attacks().begin(); a != m->attacks().end(); ++a)
-			if (a->type() == AT_MAGC || ((1 << a->type()) & ((1 << AT_SPIT) | (1 << AT_BREA) | (1 << AT_GAZE))))
-				nokite = true;
+		if (m->rangedAttack()) nokite = true;
 		if (nokite) {
 			//Debug::custom(name()) << "Disallow hit and run of " << m->name() << endl;
 			_no_hitandrun.insert(m->name());
@@ -248,6 +246,8 @@ void Fight::analyze() {
 			kitable = false; // it doesn't seem willing to follow us.
 		if (m->second->data() && _no_hitandrun.find(m->second->data()->name()) != _no_hitandrun.end())
 			kitable = false; // ranged attacks or otherwise problematic
+		if (m->second->ranged())
+			kitable = false; // eep! monster won't just chase us
 		Debug::custom(name()) << "kitable=" << kitable << " speed=" << speed << " range=" << mon_range[m->first] << " distance=" << distance << endl;
 		if (kitable && mon_range[m->first] > 0 && distance <= 2) {
 			// mob will strike back if we attack it or move towards it, and we can avoid that

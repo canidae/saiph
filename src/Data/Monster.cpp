@@ -554,6 +554,15 @@ bool Monster::ignoresElbereth() const {
 	return _ignores_elbereth;
 }
 
+// note, the corresponding NetHack function also checks AT_WEAP.  We don't, optimistically, since most weapon-using monsters don't have missiles.  Check ranged() on an individual monster instead.
+bool Monster::rangedAttack() const {
+	for (vector<Attack>::const_iterator a = _attacks.begin(); a != _attacks.end(); ++a)
+		if (a->type() == AT_MAGC || ((1 << a->type()) & ((1 << AT_SPIT) | (1 << AT_BREA) | (1 << AT_GAZE))))
+			return true;
+
+	return false;
+}
+
 const vector<Attack>& Monster::attacks() const {
 	return _attacks;
 }

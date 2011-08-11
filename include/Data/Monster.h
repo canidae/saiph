@@ -255,6 +255,7 @@ namespace data {
 		int m3() const;
 		int color() const;
 		bool ignoresElbereth() const;
+		bool rangedAttack() const;
 		const std::vector<Attack>& attacks() const;
 		int saiphDifficulty() const;
 
