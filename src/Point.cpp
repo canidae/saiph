@@ -5,6 +5,36 @@
 
 using namespace std;
 
+/* inner classes */
+
+Point::adjacent_iterator::adjacent_iterator(const Point& from, bool include_self) : _agenda(include_self ? ".khljyubn" : "khljyubn"), _from(from) { find(); }
+
+Point::adjacent_iterator::adjacent_iterator(const Point& from, const char* priority) : _agenda(priority), _from(from) { find(); }
+
+Point::adjacent_iterator::operator bool() const {
+	return (*_agenda) != 0;
+}
+
+void Point::adjacent_iterator::find() {
+	while (*_agenda) {
+		_cur = _from;
+		_cur.moveDirection(*_agenda);
+		if (_cur.insideMap())
+			break;
+		++_agenda;
+	}
+}
+
+Point::adjacent_iterator& Point::adjacent_iterator::operator ++() {
+	++_agenda;
+	find();
+	return *this;
+}
+
+const Point& Point::adjacent_iterator::operator*() const {
+	return _cur;
+}
+
 /* constructors/destructor */
 Point::Point(int row, int col) : _row(row), _col(col) {
 }

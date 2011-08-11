@@ -172,22 +172,20 @@ void Fight::analyze() {
 	}
 
 	set<Point> safe_backup;
-	for (int y = Saiph::position().row() - 1; y <= Saiph::position().row() + 1; ++y) {
-		for (int x = Saiph::position().col() - 1; x <= Saiph::position().col() + 1; ++x) {
-			Point p(y,x);
-			if (!p.insideMap() || World::level().tile(p).cost() >= UNPASSABLE)
-				continue;
-			bool ok = true;
-			for (map<Point,int>::const_iterator m = mon_range.begin(); m != mon_range.end(); ++m) {
-				if (Point::gridDistance(p, m->first) <= m->second) {
-					ok = false;
-					break;
-				}
+	for (Point::adjacent_iterator ai(Saiph::position(), true); ai; ++ai) {
+		Point p = *ai;
+		if (World::level().tile(p).cost() >= UNPASSABLE)
+			continue;
+		bool ok = true;
+		for (map<Point,int>::const_iterator m = mon_range.begin(); m != mon_range.end(); ++m) {
+			if (Point::gridDistance(p, m->first) <= m->second) {
+				ok = false;
+				break;
 			}
-			if (ok) {
-				//Debug::custom(name()) << "Found safe backup square " << p << endl;
-				safe_backup.insert(p);
-			}
+		}
+		if (ok) {
+			//Debug::custom(name()) << "Found safe backup square " << p << endl;
+			safe_backup.insert(p);
 		}
 	}
 
@@ -255,11 +253,9 @@ void Fight::analyze() {
 			// mob will strike back if we attack it or move towards it, and we can avoid that
 			Point good;
 			int min_dist = 100;
-			for (int i = 0; i < 8; ++i) {
-				Point p = Saiph::position();
-				// we prioritize horizontal directions because NetHack rooms are generally much wider than tall
-				unsigned char dir = "hlyubnjk"[i];
-				p.moveDirection(dir);
+			// we prioritize horizontal directions because NetHack rooms are generally much wider than tall
+			for (Point::adjacent_iterator ai(Saiph::position(), "hlyubnjk"); ai; ++ai) {
+				Point p = *ai;
 				if (safe_backup.find(p) != safe_backup.end() && Point::gridDistance(m->first, p) < min_dist) {
 					good = p;
 					min_dist = Point::gridDistance(m->first, p);
@@ -284,14 +280,18 @@ void Fight::analyze() {
 		if (Saiph::hallucinating() || Saiph::blind() || Saiph::confused() || Saiph::stunned())
 			continue; // don't move while blind/confused/stunned
 		/* we can neither melee nor throw at the monster, move towards it */
-		Tile& tile = World::shortestPath(m->first);
-		if (tile.cost() >= UNPASSABLE)
+		Tile* tile = 0;
+		for (Point::adjacent_iterator ai(m->first); ai; ++ai) {
+			Tile& cand = World::shortestPath(*ai);
+			if (!tile || cand.cost() < tile->cost())
+				tile = &cand;
+		}
+		if (!tile || tile->cost() >= UNPASSABLE)
 			continue; // can't move to monster
 		int priority = (floating_eye ? 10 : (attack_score - data::Monster::saiphDifficultyMin()) * (PRIORITY_FIGHT_MOVE_MAX - PRIORITY_FIGHT_MOVE_MIN) / (data::Monster::saiphDifficultyMax() - data::Monster::saiphDifficultyMin()) + PRIORITY_FIGHT_MOVE_MIN);
-		int cost = std::max(0, int(tile.cost()) - COST_MONSTER);
-		priority = action::Move::calculatePriority(priority, cost);
-		World::setAction(new action::Move(this, tile, priority, false));
-		Debug::custom(name()) << "Setting action to move towards '" << m->second->symbol() << "' which is " << cost << " cost away with priority " << priority << endl;
+		priority = action::Move::calculatePriority(priority, tile->cost());
+		World::setAction(new action::Move(this, *tile, priority, false));
+		Debug::custom(name()) << "Setting action to move towards '" << m->second->symbol() << "' which is " << tile->cost() << " cost away with priority " << priority << endl;
 	}
 }
 

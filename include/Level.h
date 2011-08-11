@@ -13,8 +13,6 @@
 
 /* max amount of nodes in pathing_queue */
 #define PATHING_QUEUE_SIZE 16384
-/* Fight needs to be able to subtract this */
-#define COST_MONSTER 256
 
 namespace data {
 	class Monster;
