@@ -1002,6 +1002,7 @@ void World::detectPosition() {
 	}
 
 	/* set new position for saiph */
+	level().leftLevel();
 	Saiph::position(Coordinate(found, _cursor));
 }
 

@@ -337,7 +337,7 @@ void Level::analyze() {
 		/* update monsters */
 		updateMonsters();
 		/* update pathmap */
-		updatePathMap();
+		updatePathMap(false);
 	}
 	/* set point we're standing on "fully searched" */
 	_map[Saiph::position().row()][Saiph::position().col()].search(TILE_FULLY_SEARCHED);
@@ -1000,8 +1000,19 @@ void Level::updateMonsters() {
 	*/
 }
 
-void Level::updatePathMap() {
-	Point from = Saiph::position();
+// called when we leave a level so we can get the off-level version of the path map setup
+// importantly, this is called AFTER setting internalTurn but BEFORE setting Saiph::position; this makes Tile willing to update costs
+void Level::leftLevel() {
+	updatePathMap(true);
+}
+
+void Level::updatePathMap(bool left_level) {
+	Point from;
+	if (!left_level) {
+		from = _last_pathing_root = Saiph::position();
+	} else {
+		from = _last_pathing_root;
+	}
 	_pathing_queue_size = 0;
 
 	/* the tile we start at */
@@ -1011,28 +1022,28 @@ void Level::updatePathMap() {
 	Point to = from;
 	/* check first north node */
 	start.direction(N);
-	updatePathMapSetCost(to.moveNorth(), start);
+	updatePathMapSetCost(to.moveNorth(), start, left_level);
 	/* check first east node */
 	start.direction(E);
-	updatePathMapSetCost(to.moveSoutheast(), start);
+	updatePathMapSetCost(to.moveSoutheast(), start, left_level);
 	/* check first south node */
 	start.direction(S);
-	updatePathMapSetCost(to.moveSouthwest(), start);
+	updatePathMapSetCost(to.moveSouthwest(), start, left_level);
 	/* check first west node */
 	start.direction(W);
-	updatePathMapSetCost(to.moveNorthwest(), start);
+	updatePathMapSetCost(to.moveNorthwest(), start, left_level);
 	/* check first northwest node */
 	start.direction(NW);
-	updatePathMapSetCost(to.moveNorth(), start);
+	updatePathMapSetCost(to.moveNorth(), start, left_level);
 	/* check first northeast node */
 	start.direction(NE);
-	updatePathMapSetCost(to.moveEast().moveEast(), start);
+	updatePathMapSetCost(to.moveEast().moveEast(), start, left_level);
 	/* check first southeast node */
 	start.direction(SE);
-	updatePathMapSetCost(to.moveSouth().moveSouth(), start);
+	updatePathMapSetCost(to.moveSouth().moveSouth(), start, left_level);
 	/* check first southwest node */
 	start.direction(SW);
-	updatePathMapSetCost(to.moveWest().moveWest(), start);
+	updatePathMapSetCost(to.moveWest().moveWest(), start, left_level);
 
 	/* reset direction of start node to ILLEGAL_DIRECTION */
 	start.direction(NOWHERE);
@@ -1047,29 +1058,29 @@ void Level::updatePathMap() {
 
 		to = from;
 		/* check north node */
-		updatePathMapSetCost(to.moveNorth(), prev);
+		updatePathMapSetCost(to.moveNorth(), prev, left_level);
 		/* check east node */
-		updatePathMapSetCost(to.moveSoutheast(), prev);
+		updatePathMapSetCost(to.moveSoutheast(), prev, left_level);
 		/* check south node */
-		updatePathMapSetCost(to.moveSouthwest(), prev);
+		updatePathMapSetCost(to.moveSouthwest(), prev, left_level);
 		/* check west node */
-		updatePathMapSetCost(to.moveNorthwest(), prev);
+		updatePathMapSetCost(to.moveNorthwest(), prev, left_level);
 		/* check northwest node */
-		updatePathMapSetCost(to.moveNorth(), prev);
+		updatePathMapSetCost(to.moveNorth(), prev, left_level);
 		/* check northeast node */
-		updatePathMapSetCost(to.moveEast().moveEast(), prev);
+		updatePathMapSetCost(to.moveEast().moveEast(), prev, left_level);
 		/* check southeast node */
-		updatePathMapSetCost(to.moveSouth().moveSouth(), prev);
+		updatePathMapSetCost(to.moveSouth().moveSouth(), prev, left_level);
 		/* check southwest node */
-		updatePathMapSetCost(to.moveWest().moveWest(), prev);
+		updatePathMapSetCost(to.moveWest().moveWest(), prev, left_level);
 	}
 }
 
-void Level::updatePathMapSetCost(const Point& to, const Tile& prev) {
+void Level::updatePathMapSetCost(const Point& to, const Tile& prev, bool left_level) {
 	if (!to.insideMap())
 		return;
 	Tile& next = _map[to.row()][to.col()];
-	unsigned int cost = updatePathMapCalculateCost(next, prev);
+	unsigned int cost = updatePathMapCalculateCost(next, prev, left_level);
 	if (cost < next.cost()) {
 		_pathing_queue[_pathing_queue_size++] = next.coordinate();
 		next.updatePath(prev.direction(), prev.distance() + 1, cost);
@@ -1078,7 +1089,7 @@ void Level::updatePathMapSetCost(const Point& to, const Tile& prev) {
 	}
 }
 
-unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& prev) {
+unsigned int Level::updatePathMapCalculateCost(const Tile& next, const Tile& prev, bool) {
 	/* helper method for updatePathMapSetCost()
 	 * return UNREACHABLE if move is illegal, or the cost for reaching the node if move is legal */
 	if (!_passable[next.symbol()])

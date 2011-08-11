@@ -51,6 +51,7 @@ public:
 	static void clearFarlookData();
 	std::vector<Point> farlooksNeeded();
 	void increaseAdjacentSearchCount(const Point& point, int count = 1);
+	void leftLevel();
 
 private:
 	static Point _pathing_queue[PATHING_QUEUE_SIZE];
@@ -79,13 +80,14 @@ private:
 	bool _walls_diggable;
 	bool _floor_diggable;
 	bool _new_level;
+	Point _last_pathing_root;
 
 	void updateMapPoint(const Point& point, unsigned char symbol, int color);
 	void updateLight(const Point& point);
 	void updateMonsters();
 	bool parseFarlook(Point c, bool& shopkeeper, bool& priest, int& attitude, std::string& name, const data::Monster*& data);
-	void updatePathMap();
-	void updatePathMapSetCost(const Point& to, const Tile& prev);
-	unsigned int updatePathMapCalculateCost(const Tile& next, const Tile& prev);
+	void updatePathMap(bool left_level);
+	void updatePathMapSetCost(const Point& to, const Tile& prev, bool left_level);
+	unsigned int updatePathMapCalculateCost(const Tile& next, const Tile& prev, bool left_level);
 };
 #endif
