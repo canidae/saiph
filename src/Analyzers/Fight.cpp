@@ -254,7 +254,7 @@ void Fight::analyze() {
 			Point good;
 			int min_dist = 100;
 			// we prioritize horizontal directions because NetHack rooms are generally much wider than tall
-			for (Point::adjacent_iterator ai(Saiph::position(), "hlyubnjk"); ai; ++ai) {
+			for (Point::adjacent_iterator ai(Saiph::position(), ".hlyubnjk"); ai; ++ai) {
 				Point p = *ai;
 				if (safe_backup.find(p) != safe_backup.end() && Point::gridDistance(m->first, p) < min_dist) {
 					good = p;
