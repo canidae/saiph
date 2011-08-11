@@ -67,7 +67,8 @@ void Enhance::update(const std::string& messages) {
 			else
 				_results[which_skill] = which_level;
 
-			if (letter == 'a') has_a = true;
+			if (letter == 'a')
+				has_a = true;
 		}
 
 		_sequence = has_a ? 2 : 1;

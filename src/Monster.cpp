@@ -72,7 +72,8 @@ Coordinate Monster::lastSeenPos() const {
 }
 
 int Monster::maxMovesThisTurn() const {
-	if (!data()) return 5; // hasted air E... gotta be pessimistic
+	if (!data())
+		return 5; // hasted air E... gotta be pessimistic
 	int speed = data()->moveRate();
 	if (_observed_turn != World::turn())
 		return (speed + 11) / 12; // why are you interested in whether an invisible monster can move?
@@ -220,11 +221,12 @@ bool Monster::removeAdj(string& from, const string& adj) {
 	string cap_adj = adj;
 	cap_adj[0] = toupper(cap_adj[0]);
 
-	if (from.size() <= adj.size() || from[adj.size()] != ' ') return false;
-
-	if (from[0] != adj[0] && from[0] != toupper(adj[0])) return false;
-
-	if (from.compare(1, adj.size() - 1, adj, 1, adj.size() - 1)) return false;
+	if (from.size() <= adj.size() || from[adj.size()] != ' ')
+		return false;
+	if (from[0] != adj[0] && from[0] != toupper(adj[0]))
+		return false;
+	if (from.compare(1, adj.size() - 1, adj, 1, adj.size() - 1))
+		return false;
 
 	from.erase(0, adj.size() + 1);
 	return true;
@@ -233,8 +235,10 @@ bool Monster::removeAdj(string& from, const string& adj) {
 // handles called=false strings
 Monster* Monster::parseMonster(const string& str) {
 	string head = str;
-	if (head == "It") return 0;
-	if (Saiph::hallucinating()) return 0;
+	if (head == "It")
+		return 0;
+	if (Saiph::hallucinating())
+		return 0;
 	// these are actually handled at the end of x_monnam
 	removeAdj(head, "the");
 	removeAdj(head, "your");
@@ -255,14 +259,15 @@ Monster* Monster::parseMonster(const string& str) {
 	removeAdj(head, "saddled");
 	// we assume all monsters that can be renamed, have been.  so no dealing with funky mplayer cases
 	string id;
-	if (head.size() > 8 && head.substr(head.size() - 8) == "'s ghost") {
+	if (head.size() > 8 && head.substr(head.size() - 8) == "'s ghost")
 		id = head.substr(0, head.size() - 8);
-	} else {
+	else
 		id = head; // is either a call string, or the name of a unique mob
-	}
 	map<string, Monster*>::const_iterator mi = _by_id.find(id);
-	if (mi != _by_id.end()) return mi->second;
-	else return 0;
+	if (mi != _by_id.end())
+		return mi->second;
+	else
+		return 0;
 }
 
 // Hack - we don't (can't?) completely parse monster items in messages, so just look for polearm names

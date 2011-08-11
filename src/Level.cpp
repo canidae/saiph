@@ -326,7 +326,8 @@ void Level::analyze() {
 		for (int y = _prev_position.row() - 1; y <= _prev_position.row() + 1; ++y) {
 			for (int x = _prev_position.col() - 1; x <= _prev_position.col() + 1; ++x) {
 				Point p(y,x);
-				if (p.insideMap()) updateLight(p);
+				if (p.insideMap())
+					updateLight(p);
 			}
 		}
 	}
@@ -730,17 +731,17 @@ void Level::updateLight(const Point& p) {
 
 	// A square which is displayed as . must be lit from some source, unless
 	// it is right next to us.
-
-	if (view == '.' && !within_night_vision) t.lit(1);
+	if (view == '.' && !within_night_vision)
+		t.lit(1);
 
 	// If it was displayed as ., but turned to a space, it must not have been
 	// lit after all, or it would have stayed ..
-
-	if (view == ' ' && t.symbol() == FLOOR) t.lit(0);
+	if (view == ' ' && t.symbol() == FLOOR)
+		t.lit(0);
 
 	// Corridors are lit if and only if they are brightly colored.
-
-	if (view == '#') t.lit(World::color(p) == BOLD_WHITE);
+	if (view == '#')
+		t.lit(World::color(p) == BOLD_WHITE);
 
 	// Other types of tiles cannot have light status easily determined.
 	// Fortunately, they are rare and we usually do not fight on them.

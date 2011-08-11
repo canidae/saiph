@@ -100,7 +100,8 @@ int Embed::hook_input() {
 		iwaiting = 0;
 	}
 	int v = inputq.front();
-	if (v >= 0) inputq.pop_front();
+	if (v >= 0)
+		inputq.pop_front();
 	pthread_mutex_unlock(&mutex);
 	return v;
 }
