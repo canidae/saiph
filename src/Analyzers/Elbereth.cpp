@@ -72,9 +72,9 @@ void Elbereth::onEvent(Event* const evt) {
 						continue; // ghosts respect elbereth (won't get any monster data from ghosts)
 					if (Point::gridDistance(m->first, Saiph::position()) > 1)
 						continue; // not next to us
-					if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
+					if (m->second->data() != NULL && !m->second->data()->ignoresElbereth())
 						continue; // monster won't ignore Elbereth
-					if (m->second.symbol() != '@' && m->second.data() != NULL && m->second.data()->name().find("were") == 0)
+					if (m->second->symbol() != '@' && m->second->data() != NULL && m->second->data()->name().find("were") == 0)
 						continue; // werefoo in animal form respects Elbereth
 				}
 				/* this monster ignores elbereth and will continue to hurt us after we lay it down */
