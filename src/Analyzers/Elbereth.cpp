@@ -67,25 +67,20 @@ void Elbereth::onEvent(Event* const evt) {
 			for (map<Point, Monster*>::const_iterator m = World::level().monsters().begin(); m != World::level().monsters().end(); ++m) {
 				if (m->second->attitude() == FRIENDLY)
 					continue; // friendly monsters won't attack us
-				bool still_a_threat = false;
-
-				if (m->second->ranged() || (m->second->data() && m->second->data()->rangedAttack()))
-					still_a_threat = true; // E does nothing versus ranged attackers
-
-				if (Point::gridDistance(m->first, Saiph::position()) <= 1) {
-					if (m->second->symbol() != 'X' && // ghosts respect elbereth (won't get any monster data from ghosts)
-							(m->second->data() == NULL || m->second->data()->ignoresElbereth()) && // monster (may) ignore Elbereth
-							!(m->second->symbol() != '@' && m->second->data() != NULL && m->second->data()->name().find("were") == 0)) { // werefoo in animal form respects Elbereth
-						still_a_threat = true;
-					}
+				if (!m->second->ranged() && (!m->second->data() || !m->second->data()->rangedAttack())) {
+					if (m->second->symbol() == 'X')
+						continue; // ghosts respect elbereth (won't get any monster data from ghosts)
+					if (Point::gridDistance(m->first, Saiph::position()) > 1)
+						continue; // not next to us
+					if (m->second.data() != NULL && !m->second.data()->ignoresElbereth())
+						continue; // monster won't ignore Elbereth
+					if (m->second.symbol() != '@' && m->second.data() != NULL && m->second.data()->name().find("were") == 0)
+						continue; // werefoo in animal form respects Elbereth
 				}
-
-				if (still_a_threat) {
-					/* this monster ignores elbereth and will continue to hurt us after we lay it down */
-					_engraving_type = ELBERETH_INEFFECTIVE;
-					_elbereth_count = 0;
-					break;
-				}
+				/* this monster ignores elbereth and will continue to hurt us after we lay it down */
+				_engraving_type = ELBERETH_INEFFECTIVE;
+				_elbereth_count = 0;
+				break;
 			}
 		}
 		q->type(_engraving_type);
