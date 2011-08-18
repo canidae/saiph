@@ -23,7 +23,11 @@ protected:
 private:
 	int _sock;
 	char _ping[3];
+	bool _vt_tiledata2011;
+	int _overs_pending;
 
 	int transmit(const char* data, int length);
+	int scanOvers(const char* data, int length);
+	int removeOvers(char* data, int length);
 };
 #endif
