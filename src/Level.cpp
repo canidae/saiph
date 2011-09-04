@@ -675,7 +675,7 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 	if (!Saiph::hallucinating() && _item[symbol]) {
 		map<Point, Stash>::iterator s = _stashes.find(point);
 		if (s != _stashes.end()) {
-			if ((s->second.symbol() != symbol || s->second.color() != color)) {
+			if (s->second.symbol() != symbol || s->second.color() != color) {
 				bool broadcast = s->second.symbol() != ILLEGAL_ITEM;
 				/* top symbol/color changed, update */
 				s->second.symbol(symbol);

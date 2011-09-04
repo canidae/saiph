@@ -184,7 +184,7 @@ void Shop::analyze() {
 			reach_any = min(reach_any, World::level().tile(ppt->first).cost());
 
 		for (map<Point, Monster*>::const_iterator mit = World::level().monsters().begin(); mit != World::level().monsters().end(); ++mit) {
-			if (Point::gridDistance(mit->first, Saiph::position()) == 1)
+			if (mit->second->shopkeeper() && Point::gridDistance(mit->first, Saiph::position()) == 1)
 				adj_shk = true;
 		}
 
