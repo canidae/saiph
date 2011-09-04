@@ -43,7 +43,6 @@ private:
 	int _enchantment;
 	std::string _additional;
 	int _want; // this is used by analyzers and event::WantItem to determine how many we want of this item when looting/dropping
-	bool _is_item; // used for speeding up comparison;
 };
 
 std::ostream& operator<<(std::ostream& out, const Item& item);

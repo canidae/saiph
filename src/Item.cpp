@@ -31,13 +31,12 @@
 using namespace std;
 
 /* constructors/destructor */
-Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(want), _is_item(true) {
+Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(want) {
 	/* parse text */
 	char amount[8];
 	char name_long[128];
 	int matched = sscanf(text.c_str(), ITEM_PARSE_TEXT, amount, name_long);
 	if (matched != 2) {
-		_is_item = false;
 		return; // unable to parse text as item
 	}
 	/* figure out amount of items */
@@ -46,7 +45,6 @@ Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEAT
 	} else if (amount[0] >= '0' || amount[0] <= '9') {
 		_count = atoi(amount); // n <items>
 	} else {
-		_is_item = false;
 		return; // unable to parse text as item
 	}
 	string::size_type pos = 0;
@@ -236,7 +234,7 @@ Item::Item(const string& text, int want) : _name(""), _count(0), _beatitude(BEAT
 	_name.replace(start, stop, word);
 }
 
-Item::Item() : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(0), _is_item(false) {
+Item::Item() : _name(""), _count(0), _beatitude(BEATITUDE_UNKNOWN), _greased(false), _fixed(false), _damage(0), _unknown_enchantment(true), _enchantment(0), _additional(""), _want(0) {
 }
 
 /* methods */
@@ -332,7 +330,7 @@ int Item::want(int want) {
 
 /* operator overloading */
 bool Item::operator==(const Item& i) const {
-	return _is_item == i._is_item && _count == i._count && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
+	return _count == i._count && _beatitude == i._beatitude && _greased == i._greased && _fixed == i._fixed && _damage == i._damage && _unknown_enchantment == i._unknown_enchantment && _enchantment == i._enchantment && _name == i._name && _additional == i._additional;
 }
 
 bool Item::operator!=(const Item& i) const {
