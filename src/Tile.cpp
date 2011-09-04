@@ -56,6 +56,15 @@ int Tile::lit(int lit) {
 	return this->lit();
 }
 
+bool Tile::shop() const {
+	return _shop;
+}
+
+bool Tile::shop(bool shop) {
+	_shop = shop;
+	return this->shop();
+}
+
 unsigned int Tile::search() const {
 	return _search;
 }

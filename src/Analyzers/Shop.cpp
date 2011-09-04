@@ -48,7 +48,7 @@ int Shop::nearShop(const Coordinate& where) {
 
 	for (int y = y0; y <= y0 + 4; ++y) {
 		for (int x = x0; x <= x0 + 4; ++x) {
-			if (World::level().tile(Point(y,x)).symbol() == SHOP_TILE)
+			if (World::level().tile(Point(y,x)).shop())
 				rank = min(rank, Point::gridDistance(Point(y,x), where));
 		}
 	}
@@ -176,7 +176,7 @@ void Shop::analyze() {
 	//		}
 	//	}
 
-	if (World::level().tile().symbol() == SHOP_TILE) {
+	if (World::level().tile().shop()) {
 		unsigned int reach_any = UNREACHABLE;
 		bool adj_shk = false;
 
@@ -241,10 +241,10 @@ void Shop::analyze() {
 		ShopDetected ev(nw, se);
 		EventBus::broadcast(&ev);
 
-		/* mark all tiles within boundaries as SHOP_TILE */
+		/* mark all tiles within boundaries as a shop tile */
 		for (p.row(nw.row()); p.row() <= se.row(); p.moveSouth()) {
 			for (p.col(nw.col()); p.col() <= se.col(); p.moveEast())
-				World::level().setDungeonSymbol(p, SHOP_TILE);
+				World::level().tile(p).shop(true);
 		}
 	}
 }

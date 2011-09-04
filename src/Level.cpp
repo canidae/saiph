@@ -190,7 +190,6 @@ void Level::init() {
 	_passable[(unsigned char) UNKNOWN_TILE_DIAGONALLY_UNPASSABLE] = true;
 	_passable[(unsigned char) ROGUE_STAIRS] = true;
 	_passable[(unsigned char) MINES_FOUNTAIN] = true;
-	_passable[(unsigned char) SHOP_TILE] = true;
 	_passable[(unsigned char) WEAPON] = true;
 	_passable[(unsigned char) ARMOR] = true;
 	_passable[(unsigned char) RING] = true;
@@ -233,7 +232,6 @@ void Level::init() {
 	_dungeon[(unsigned char) BOULDER] = true; // hardly static, but we won't allow moving on to one
 	_dungeon[(unsigned char) ROGUE_STAIRS] = true; // unique, is both up & down stairs
 	_dungeon[(unsigned char) MINES_FOUNTAIN] = true; // unique, but [mostly] static
-	_dungeon[(unsigned char) SHOP_TILE] = true; // unique, but [mostly] static
 	_dungeon[(unsigned char) MAGIC_PORTAL] = true;
 	/* cost for pathing on certain tiles */
 	_pathcost[(unsigned char) FOUNTAIN] = COST_FOUNTAIN;
@@ -660,8 +658,6 @@ void Level::updateMapPoint(const Point& point, unsigned char symbol, int color) 
 		/* some special cases */
 		if (symbol == FOUNTAIN && _branch == BRANCH_MINETOWN)
 			symbol = MINES_FOUNTAIN; // to avoid dipping & such
-		else if (symbol == FLOOR && t.symbol() == SHOP_TILE)
-			symbol = SHOP_TILE;
 	}
 	if (_dungeon[symbol] || (symbol == SOLID_ROCK && t.symbol() == CORRIDOR)) {
 		/* update the map showing static stuff, also forgets disappearing corridors (ie. following guard out of vault) */

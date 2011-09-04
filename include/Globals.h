@@ -181,8 +181,7 @@
 #define UNKNOWN_TILE_UNPASSABLE 138
 #define ROGUE_STAIRS 139
 #define MINES_FOUNTAIN 140 // TODO: get rid of
-#define SHOP_TILE 141 // TODO: get rid of
-#define MAGIC_PORTAL 142
+#define MAGIC_PORTAL 141
 #define OUTSIDE_MAP 254
 
 /* trap values */

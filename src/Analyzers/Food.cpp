@@ -105,7 +105,7 @@ void Food::parseMessages(const string&) {
 void Food::onEvent(Event* const event) {
 	if (event->id() == ItemsOnGround::ID) {
 		// FIXME?: do we want/need to eat corpses in shops?
-		if (World::level().tile().symbol() != SHOP_TILE) {
+		if (!World::level().tile().shop()) {
 			ItemsOnGround* e = static_cast<ItemsOnGround*> (event);
 			for (list<Item>::const_iterator i = e->items().begin(); i != e->items().end(); ++i) {
 				// TODO unique monster corpses

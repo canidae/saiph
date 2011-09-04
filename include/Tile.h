@@ -23,6 +23,8 @@ public:
 	unsigned int searchInc(int count = 1);
 	int lit() const;
 	int lit(int lit);
+	bool shop() const;
+	bool shop(bool shop);
 	unsigned char symbol() const;
 	unsigned char symbol(unsigned char symbol);
 	void updatePath(unsigned char direction, unsigned int distance, unsigned int cost);
@@ -38,6 +40,7 @@ private:
 	unsigned int _distance; // distance to this tile when on same level
 	unsigned int _cost; // cost to this tile when on same level
 	unsigned int _updated; // last internal turn this node was updated, used for pathing
+	bool _shop; // if it's a shop tile
 	int _lit; // -1 if unknown else 0 or 1
 };
 
