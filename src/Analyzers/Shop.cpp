@@ -30,7 +30,7 @@ using namespace std;
 #define THRESHOLD 2
 
 /* constructors/destructor */
-Shop::Shop() : Analyzer("Shop") {
+Shop::Shop() : Analyzer("Shop"), _shopping(false), _payed(-1) {
 	EventBus::registerEvent(WantItems::ID, this);
 }
 
@@ -48,8 +48,8 @@ int Shop::nearShop(const Coordinate& where) {
 
 	for (int y = y0; y <= y0 + 4; ++y) {
 		for (int x = x0; x <= x0 + 4; ++x) {
-			if (World::level().tile(Point(y,x)).shop())
-				rank = min(rank, Point::gridDistance(Point(y,x), where));
+			if (World::level().tile(Point(y, x)).shop())
+				rank = min(rank, Point::gridDistance(Point(y, x), where));
 		}
 	}
 

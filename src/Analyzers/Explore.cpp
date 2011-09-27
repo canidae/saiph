@@ -19,7 +19,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Explore::Explore() : Analyzer("Explore"), _portal_level(-1) {
+Explore::Explore() : Analyzer("Explore"), _portal_level(-1), _quest_status(QUEST_STATUS_NOT_READY) {
 	EventBus::registerEvent(QuestStatus::ID, this);
 }
 

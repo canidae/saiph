@@ -50,17 +50,20 @@ void Enhance::update(const std::string& messages) {
 			string::size_type end_name_m1 = messages.find_last_not_of(' ', begin_lev_m2);
 			string::size_type begin_name_m2 = messages.rfind("  ", end_name_m1);
 
+			if (begin_name_m2 < 1)
+				continue;
+
 			string name = messages.substr(begin_name_m2 + 2, (end_name_m1 + 1) - (begin_name_m2 + 2));
 			string level = messages.substr(begin_lev_m2 + 2, ptr - (begin_lev_m2 + 2));
 
-			int which_skill = data::Skill::parse(name);
-			int which_level = data::Skill::levelParse(level);
-
-			unsigned char letter = messages[begin_name_m2-1];
-			if (messages[begin_name_m2-2] == '-')
-				letter = messages[begin_name_m2-4];
+			unsigned char letter = messages[begin_name_m2 - 1];
+			if (begin_name_m2 > 3 && messages[begin_name_m2 - 2] == '-')
+				letter = messages[begin_name_m2 - 4];
 			else if (letter != '*' && letter != '#')
 				letter = ' ';
+
+			int which_skill = data::Skill::parse(name);
+			int which_level = data::Skill::levelParse(level);
 
 			if (which_skill == 0 || which_level == 0)
 				Debug::custom("Skills") << "Found odd line <<" << letter << ">> <<" << name << ">> <<" << level << ">>" << endl;

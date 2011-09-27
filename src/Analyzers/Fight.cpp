@@ -29,7 +29,7 @@ using namespace event;
 using namespace std;
 
 /* constructors/destructor */
-Fight::Fight() : Analyzer("Fight") {
+Fight::Fight() : Analyzer("Fight"), _boss_waiting_since(-1), _boss_waiting_level(-1) {
 	/* register events */
 	EventBus::registerEvent(ChangedInventoryItems::ID, this);
 	EventBus::registerEvent(ReceivedItems::ID, this);

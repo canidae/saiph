@@ -21,7 +21,7 @@ using namespace std;
 // It also handles chatting with the leader, and picking up our rewards.
 
 /* constructors/destructor */
-Quest::Quest() : Analyzer("Quest"), _status(QUEST_STATUS_NOT_READY), _portal_level(-1) {
+Quest::Quest() : Analyzer("Quest"), _status(QUEST_STATUS_NOT_READY), _portal_level(-1), _seen_bell(false), _seen_arti(false) {
 	/* register events */
 	EventBus::registerEvent(WantItems::ID, this);
 
