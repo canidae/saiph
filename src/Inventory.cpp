@@ -106,7 +106,6 @@ void Inventory::parseMessages(const string& messages) {
 				continue;
 			}
 			unsigned char key = messages[pos - 1];
-			map<unsigned char, Item>::iterator i = _items.find(key);
 			addItem(key, item);
 			/* add item to changed.keys */
 			received.addItem(key, item);

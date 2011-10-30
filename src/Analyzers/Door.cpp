@@ -121,7 +121,6 @@ void Door::parseMessages(const string& messages) {
 void Door::onEvent(Event* const event) {
 	if (event->id() == ChangedInventoryItems::ID) {
 		/* inventory changed, see if we lost our unlocking device or got a new/better one */
-		map<unsigned char, Item>::iterator i = Inventory::items().find(_unlock_tool_key);
 		if (Inventory::items().find(_unlock_tool_key) == Inventory::items().end())
 			_unlock_tool_key = 0; // darn, we lost our unlocking device
 		ChangedInventoryItems* e = static_cast<ChangedInventoryItems*> (event);

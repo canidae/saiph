@@ -42,7 +42,6 @@ void Beatitude::analyze() {
 void Beatitude::onEvent(event::Event* const event) {
 	if (event->id() == Beatify::ID) {
 		Beatify* e = static_cast<Beatify*> (event);
-		set<unsigned char>::iterator b = _beatify.find(e->key());
 		_beatify.insert(e->key());
 		if (e->priority() > _max_priority)
 			_max_priority = e->priority();

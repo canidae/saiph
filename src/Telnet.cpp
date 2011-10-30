@@ -73,18 +73,18 @@ Telnet::Telnet() : _vt_tiledata2011(false), _overs_pending(0) {
 
 	/* and let's log in */
 	transmit("l");
-	int size = doRetrieve(discard, TELNET_BUFFER_SIZE);
+	doRetrieve(discard, TELNET_BUFFER_SIZE);
 	transmit(username);
-	size = doRetrieve(discard, TELNET_BUFFER_SIZE);
+	doRetrieve(discard, TELNET_BUFFER_SIZE);
 	transmit(password);
-	size = doRetrieve(discard, TELNET_BUFFER_SIZE);
+	doRetrieve(discard, TELNET_BUFFER_SIZE);
 	/* 19th december 2008 sporkhack was added to nao,
 	 * giving us one more menu.
 	 * send "1" for nethack and hope it'll still work
 	 * on other servers */
 	/* and about a year later it was changed so no need to send "1" anymore */
 	//transmit("1");
-	//size = doRetrieve(discard, TELNET_BUFFER_SIZE);
+	//doRetrieve(discard, TELNET_BUFFER_SIZE);
 
 	/* and start a game */
 	start();
