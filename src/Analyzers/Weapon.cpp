@@ -206,6 +206,9 @@ void Weapon::setBestWeapons() {
 	int best_score = INT_MIN;
 	int best_key = ILLEGAL_ITEM;
 	for (map<unsigned char, int>::iterator m = _melee_weapons.begin(); m != _melee_weapons.end(); ++m) {
+		map<const string, const data::Weapon*>::const_iterator w = data::Weapon::weapons().find(Inventory::itemAtKey(m->first).name());
+		if (!w->second->oneHanded() && Inventory::keyForSlot(SLOT_SHIELD) != ILLEGAL_ITEM)
+			continue;
 		int score = Inventory::itemAtKey(m->first).beatitude() == BEATITUDE_UNKNOWN ? m->second / 2 : m->second;
 		if (score > best_score) {
 			best_score = score;

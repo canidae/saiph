@@ -9,6 +9,7 @@
 #include "Actions/Answer.h"
 #include "Actions/TakeOff.h"
 #include "Actions/Wear.h"
+#include "Actions/Wield.h"
 #include "Data/Armor.h"
 #include "Events/Beatify.h"
 #include "Events/Event.h"
@@ -65,6 +66,8 @@ void Armor::analyze() {
 		if (a != data::Armor::armors().end() && betterThanCurrent(best_wear)) {
 			if (((a->second->slot() == SLOT_SHIRT || a->second->slot() == SLOT_SUIT) && Inventory::keyForSlot(SLOT_CLOAK) != ILLEGAL_ITEM))
 				World::setAction(new action::TakeOff(this, Inventory::keyForSlot(SLOT_CLOAK), ARMOR_WEAR_PRIORITY));
+			else if (a->second->slot() == SLOT_SHIELD && Inventory::keyForSlot(SLOT_WEAPON) != ILLEGAL_ITEM)
+				World::setAction(new action::Wield(this, '-', ARMOR_WEAR_PRIORITY));
 			else if (a->second->slot() == SLOT_SHIRT && Inventory::keyForSlot(SLOT_SUIT) != ILLEGAL_ITEM)
 				World::setAction(new action::TakeOff(this, Inventory::keyForSlot(SLOT_SUIT), ARMOR_WEAR_PRIORITY));
 			else if (Inventory::keyForSlot(a->second->slot()) != ILLEGAL_ITEM)
