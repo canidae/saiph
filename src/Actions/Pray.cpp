@@ -1,9 +1,12 @@
 #include "Actions/Pray.h"
+#include "Data/Monster.h"
 
 #include "Saiph.h"
 #include "World.h"
+#include "Item.h"
 
 using namespace action;
+using namespace std;
 
 /* constructors/destructor */
 Pray::Pray(analyzer::Analyzer* analyzer, int priority) : Action(analyzer, TIME_NOMUL), _pray("#pray\n", priority) {
@@ -14,10 +17,18 @@ Pray::~Pray() {
 
 /* methods */
 bool Pray::isSafeToPray() {
+	if (Saiph::polymorphed()) {
+		if (data::Monster::monster(Saiph::race())->symbol() == S_DEMON)
+			return false;
+	}
 	return World::turn() - PRAY_PRAYER_TIMEOUT > Saiph::lastPrayed();
 }
 
 bool Pray::isSafeToPrayMajorTrouble() {
+	if (Saiph::polymorphed()) {
+		if (data::Monster::monster(Saiph::race())->symbol() == S_DEMON)
+			return false;
+	}
 	return World::turn() - PRAY_MAJOR_TROUBLE > Saiph::lastPrayed();
 }
 
