@@ -8,6 +8,8 @@ TODO list for rawrmage
  X We can't kick with wounded legs - thought we'd already fixed this, but
    this was observed in Sokoban.
    - fixed, we didn't make the necessary check
+ - We can't kick when stressed or above, either...
+ - Make saiph understand "You cannot wear a shield while wielding a two-handed weapon."
  - Adopt a more "defensive" combat strategy.
  - Are we walking into vault teleporters? Why?
  - Don't go up stairs when stressed, don't try.
