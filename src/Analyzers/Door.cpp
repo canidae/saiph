@@ -73,7 +73,7 @@ void Door::analyze() {
 						return;
 					}
 				}
-				if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRAINED)) // can only kick at less than strained
+				if (!Saiph::hurtLeg() && (Saiph::encumbrance() < STRESSED)) // can only kick at less than stressed
 					World::setAction(new action::Kick(this, tile.direction(), PRIORITY_DOOR_OPEN));
 			}
 			_position = d->first;
