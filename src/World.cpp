@@ -390,6 +390,10 @@ Tile World::shortestPath(const Coordinate& target) {
 				continue; // we don't know where these stairs lead
 			else if (level_added[s->second])
 				continue; // already added this level
+			else if (Saiph::encumbrance() >= STRESSED) {
+				Debug::pathing() << "can't follow upstairs because encumbrance" << endl;
+				continue;
+			}
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
@@ -500,6 +504,10 @@ Tile World::shortestPath(unsigned char symbol) {
 				continue; // we don't know where these stairs lead
 			if (level_added[s->second])
 				continue; // already added this level
+			else if (Saiph::encumbrance() >= STRESSED) {
+				Debug::pathing() << "can't follow upstairs because encumbrance" << endl;
+				continue;
+			}
 			Tile& tile = _levels[level_queue[pivot]].tile(s->first);
 			if (tile.cost() >= UNPASSABLE)
 				continue;
