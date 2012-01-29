@@ -6,12 +6,14 @@
 #include "Inventory.h"
 #include "Saiph.h"
 #include "World.h"
-#include "Actions/Call.h"
 #include "Actions/Answer.h"
+#include "Actions/Call.h"
 #include "Actions/Engrave.h"
+#include "Actions/Look.h"
 #include "Data/Item.h"
 #include "Data/Wand.h"
 #include "Events/Beatify.h"
+#include "Events/ElberethQuery.h"
 #include "Events/ReceivedItems.h"
 #include "Events/WantItems.h"
 
@@ -32,6 +34,14 @@ void Wand::analyze() {
 		return;
 	if (!action::Engrave::canEngrave())
 		return;
+        ElberethQuery eq;
+        EventBus::broadcast(&eq);
+        if (eq.type() == ELBERETH_MUST_CHECK) {
+            World::setAction(new action::Look(this));
+            return;
+        }
+        if (eq.type() == ELBERETH_PERMANENT || eq.type() == ELBERETH_SEMIPERM)
+            return;
 	World::setAction(new action::Engrave(this, ELBERETH "\n", _engrave_test_wand_key, PRIORITY_WAND_ENGRAVE_TEST));
 }
 
