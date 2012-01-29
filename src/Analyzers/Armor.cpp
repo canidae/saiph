@@ -45,6 +45,8 @@ void Armor::analyze() {
 				continue;
 			if (Inventory::itemInSlot(a->second->slot()).beatitude() == CURSED)
 				continue; // can't take off existing armor in this slot
+                        if (a->second->slot() == SLOT_GLOVES && Inventory::itemInSlot(SLOT_WEAPON).beatitude() == CURSED)
+                                continue; // can't take off gloves with cursed weapon
 			if (a->second->slot() == SLOT_SHIRT && (Inventory::itemInSlot(SLOT_SUIT).beatitude() == CURSED || Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED))
 				continue; // can't take off armor covering this slot
 			if (a->second->slot() == SLOT_SUIT && Inventory::itemInSlot(SLOT_CLOAK).beatitude() == CURSED)

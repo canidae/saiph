@@ -1,19 +1,19 @@
 TODO list for rawrmage
  - Shopping! - far goal
  - Why is there an armor drop and pickup loop between Burdened and Stressed?
- - You can't take off your gloves when a weapon is welded to your hand.
+ X You can't take off your gloves when a weapon is welded to your hand.
  - Various loops with nymphs - why?
    - From what I've observed it looks like we want to move away from nymphs,
      but we instantly forget this and move back, causing oscillation.
  X We can't kick with wounded legs - thought we'd already fixed this, but
    this was observed in Sokoban.
    - fixed, we didn't make the necessary check
- - We can't kick when stressed or above, either...
+ X We can't kick when stressed or above, either...
  X Make saiph understand "You cannot wear a shield while wielding a two-handed weapon."
  ? Make saiph understand "The very idea of praying to a lawful god is repugnant to you."
  - Adopt a more "defensive" combat strategy.
  - Are we walking into vault teleporters? Why?
- - Don't go up stairs when stressed, don't try.
+ ? Don't go up stairs when stressed, don't try.
  - Saiph desperately needs to manage inventory better as a whole.
    - She currently likes to hoard tons of stuff and not want to get rid of it.
      Perhaps this is because we have "I want to pick this up to evaluate it"

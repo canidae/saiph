@@ -2,8 +2,11 @@
 
 #include "Inventory.h"
 #include "World.h"
+#include "Debug.h"
+#include "Actions/ListInventory.h"
 
 using namespace action;
+using namespace std;
 
 /* constructors/destructor */
 // technically it's STANDARD if oc_delay is 0, or NOMUL if positive.  But our spoilers don't have oc_delay...
@@ -32,6 +35,11 @@ const Command& TakeOff::command() {
 }
 
 void TakeOff::update(const std::string& messages) {
+        if (messages.find(MESSAGE_CURSED_WEAPON) != std::string::npos) { // cursed weapon
+                Debug::custom("takeoff") << "asdasdasd" << endl;
+                World::queueAction(new action::ListInventory(analyzer()));
+                _sequence = 2;
+        }
 	if (World::question() && messages.find(MESSAGE_WHAT_TO_TAKE_OFF) != std::string::npos) {
 		_sequence = 1;
 	} else if (_sequence == 1 || messages.find(MESSAGE_YOU_FINISH_TAKING_OFF) != std::string::npos || messages.find(TAKE_OFF_ARMOR_CURSED) != std::string::npos || messages.find(MESSAGE_YOU_WERE_WEARING) != std::string::npos) {

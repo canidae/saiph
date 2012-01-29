@@ -304,6 +304,7 @@
 #define MESSAGE_CLOSED_FOR_INVENTORY "\"Closed for inventory\"."
 #define MESSAGE_COLD_RES_GAIN1 "  You feel full of hot air.  "
 #define MESSAGE_COLD_RES_LOSE1 "  You feel cooler!  "
+#define MESSAGE_CURSED_WEAPON "  You are unable to take off your gloves while wielding that "
 #define MESSAGE_CRAWL_OUT_OF_PIT "  You crawl to the edge of the pit.  "
 #define MESSAGE_CURRENT_SKILLS "  Current skills:  "
 #define MESSAGE_DESTROY_POTION_FIRE " boils and explodes!  "
