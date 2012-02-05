@@ -16,11 +16,11 @@ public:
 		return _col = col;
 	}
 
-	bool opEquals(ref const Point p) const {
+	bool opEquals()(Point p) const {
 		return row == p.row && col == p.col;
 	}
 
-	auto opCmp(ref const Point p) const {
+	auto opCmp()(Point p) const {
 		if (row < p.row || (row == p.row && col < p.col))
 			return -1;
 		if (row > p.row || (row == p.row && col > p.col))

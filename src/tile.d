@@ -1,19 +1,14 @@
-import Level;
-import Point;
+import coordinate;
+import point;
 
 class Tile {
 public:
-	this(Level* level, ref const Point point) {
-		_level = level;
-		_point = point;
+	this(Coordinate coordinate) {
+		_coordinate = coordinate;
 	}
 
-	@property auto level() const {
-		return _level;
-	}
-
-	@property auto point() const {
-		return _point;
+	@property auto coordinate() const {
+		return _coordinate;
 	}
 
 	@property auto symbol() const {
@@ -28,9 +23,10 @@ public:
 		return _shop = shop;
 	}
 
+	alias coordinate this;
+
 private:
-	Level* _level;
-	Point _point;
+	Coordinate _coordinate;
 	char _symbol;
 	bool _shop;
 }

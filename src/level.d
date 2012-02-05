@@ -1,19 +1,26 @@
-import Point;
-import Tile;
+import std.string;
+import coordinate;
+import point;
+import tile;
 
 class Level {
 public:
-	this(int level, int depth) {
+	this(int level, string name, int depth) {
 		_level = level;
+		_name = name;
 		_depth = depth;
-		for (int r = 0; r < tiles.length; ++r) {
-			for (int c = 0; c < tiles[r].length; ++c)
-				tiles[r][c] = new Tile(&this, Point(r, c));
+		foreach (int r; 0 .. tiles.length) {
+			foreach (int c; 0 .. tiles[r].length)
+				tiles[r][c] = new Tile(Coordinate(this, Point(r, c)));
 		}
 	}
 
 	@property auto level() const {
 		return _level;
+	}
+
+	@property auto name() const {
+		return _name;
 	}
 
 	@property auto depth() const {
@@ -44,12 +51,17 @@ public:
 		return _floor_diggable = floor_diggable;
 	}
 
-	auto tileAt(ref const Point p) const {
+	auto tileAt(Point p) const {
 		return &tiles[p.row][p.col];
+	}
+
+	bool opEquals()(Level l) const {
+		return level == l.level;
 	}
 
 private:
 	int _level;
+	string _name;
 	Tile[24][80] tiles;
 	int _depth;
 	int _branch;
