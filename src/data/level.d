@@ -1,7 +1,9 @@
+module data.level;
+
 import std.string;
-import coordinate;
-import point;
-import tile;
+import data.coordinate;
+import data.point;
+import data.tile;
 
 class Level {
 public:

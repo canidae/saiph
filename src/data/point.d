@@ -1,3 +1,5 @@
+module data.point;
+
 struct Point {
 public:
 	@property auto row() const {

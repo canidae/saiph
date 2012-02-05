@@ -1,4 +1,6 @@
-import coordinate;
+module data.saiph;
+
+import data.coordinate;
 
 class Saiph {
 public:

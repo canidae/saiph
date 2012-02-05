@@ -1,4 +1,6 @@
-import level;
+module data.world;
+
+import data.level;
 
 class World {
 public:

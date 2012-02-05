@@ -1,5 +1,7 @@
-import level;
-import point;
+module data.coordinate;
+
+import data.level;
+import data.point;
 
 struct Coordinate {
 public:

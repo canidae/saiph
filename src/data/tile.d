@@ -1,5 +1,7 @@
-import coordinate;
-import point;
+module data.tile;
+
+import data.coordinate;
+import data.point;
 
 class Tile {
 public:
