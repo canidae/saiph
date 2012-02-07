@@ -18,6 +18,50 @@ public:
 		return _col = col;
 	}
 
+	auto moveNorthwest() {
+		--_row;
+		--_col;
+		return this;
+	}
+
+	auto moveNorth() {
+		--_row;
+		return this;
+	}
+
+	auto moveNortheast() {
+		--_row;
+		++_col;
+		return this;
+	}
+
+	auto moveEast() {
+		++_col;
+		return this;
+	}
+
+	auto moveSoutheast() {
+		++_row;
+		++_col;
+		return this;
+	}
+
+	auto moveSouth() {
+		++_row;
+		return this;
+	}
+
+	auto moveSouthwest() {
+		++_row;
+		--_col;
+		return this;
+	}
+
+	auto moveWest() {
+		--_col;
+		return this;
+	}
+
 	bool opEquals()(Point p) const {
 		return row == p.row && col == p.col;
 	}

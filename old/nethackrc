@@ -68,3 +68,4 @@ OPTIONS=!splash_screen
 OPTIONS=time
 OPTIONS=!timed_delay
 OPTIONS=traps:\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^\^
+OPTIONS=vt_tiledata

@@ -1,6 +1,5 @@
 module data.level;
 
-import std.string;
 import data.coordinate;
 import data.point;
 import data.tile;
