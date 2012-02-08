@@ -2,63 +2,50 @@ module data.point;
 
 struct Point {
 public:
-	@property auto row() const {
-		return _row;
-	}
-
-	@property auto row(int row) {
-		return _row = row;
-	}
-
-	@property auto col() const {
-		return _col;
-	}
-
-	@property auto col(int col) {
-		return _col = col;
-	}
+	int row;
+	int col;
 
 	auto moveNorthwest() {
-		--_row;
-		--_col;
+		--row;
+		--col;
 		return this;
 	}
 
 	auto moveNorth() {
-		--_row;
+		--row;
 		return this;
 	}
 
 	auto moveNortheast() {
-		--_row;
-		++_col;
+		--row;
+		++col;
 		return this;
 	}
 
 	auto moveEast() {
-		++_col;
+		++col;
 		return this;
 	}
 
 	auto moveSoutheast() {
-		++_row;
-		++_col;
+		++row;
+		++col;
 		return this;
 	}
 
 	auto moveSouth() {
-		++_row;
+		++row;
 		return this;
 	}
 
 	auto moveSouthwest() {
-		++_row;
-		--_col;
+		++row;
+		--col;
 		return this;
 	}
 
 	auto moveWest() {
-		--_col;
+		--col;
 		return this;
 	}
 
@@ -87,8 +74,4 @@ public:
 		assert(Point(2, 1) > Point(1, 1));
 		assert(Point(1, 2) > Point(1, 1));
 	}
-
-private:
-	int _row;
-	int _col;
 }

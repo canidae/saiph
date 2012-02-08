@@ -5,21 +5,8 @@ import data.point;
 
 struct Coordinate {
 public:
-	@property auto level() const {
-		return _level;
-	}
-
-	@property auto level(Level level) {
-		return _level = level;
-	}
-
-	@property auto point() const {
-		return _point;
-	}
-
-	@property auto point(Point point) {
-		return _point = point;
-	}
+	Level level;
+	Point point;
 
 	bool opEquals()(Coordinate c) const {
 		return level == c.level && point == c.point;
@@ -55,8 +42,4 @@ public:
 		assert(Coordinate(1, Point(1, 2)) > Coordinate(1, Point(1, 1)));
 		*/
 	}
-
-private:
-	Level _level;
-	Point _point;
 }
