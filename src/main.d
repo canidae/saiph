@@ -4,10 +4,12 @@ import io.telnet;
 
 void main() {
 	Connection conn = new Telnet();
-	//conn.connect();
+	conn.connect();
 	/* loop here */
-	while (false) {
-		conn.update(cast(char[]) "TODO");
+	bool active = true;
+	while (active) {
+		active = conn.update();
+		//conn.send(cast(char[]) "TODO");
 	}
-	//conn.disconnect();
+	conn.disconnect();
 }

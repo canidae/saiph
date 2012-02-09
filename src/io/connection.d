@@ -1,6 +1,9 @@
 module io.connection;
 
 import data.point;
+import data.world;
+import io.log;
+import std.conv;
 
 abstract class Connection {
 public:
@@ -8,81 +11,210 @@ public:
 
 	abstract void disconnect();
 
-	void update(char[] data) {
-		send(data);
-		parse(receive());
+	abstract void send(char[] data);
+
+	bool update() {
+		return parse(receive());
 	}
 
 protected:
-	abstract void send(char[] data);
-
 	abstract char[] receive(char[] inputEndsWith = []);
 
 private:
+	static Logger log; /* TODO: ask why you can't: = new Logger("connection"); */
 	Point cursor;
 	int color;
+	bool bold;
+	bool inverse;
 
-	void parse(char[] data) {
+	/* static constructor (see TODO above) */
+	static this() {
+	       	log = new Logger("connection");
+	}
+
+	/* static destructor (see TODO above) */
+	static ~this() {
+		delete log;
+	}
+
+	bool parse(char[] data) {
 		for (int i = 0; i < data.length; ++i) {
 			char c = data[i];
 			switch (c) {
-				case 0, 14, 15:
-					/* null characters and invoking character set commands we can ignore */
-					break;
-
-				case 8: 
-					/* backspace, move cursor left (west) */
-					cursor.moveWest();
-					break;
-
-				case 10:
-					/* linefeed, go down (south) */
-					cursor.moveSouth();
-					break;
-
-				case 27:
-					/* escape sequence */
-					i += parseEscapeSequence(data[++i .. $]);
-					break;
-
-				default:
-					/* add character to map and move east */
-					/* TODO */
-					cursor.moveEast();
-					break;
-
-			}
-		}
-	}
-
-	int parseEscapeSequence(char[] data) {
-		int i = 0;
-		char c = data[i];
-		switch (c) {
-			case 26, '=', '>':
-				/* we can ignore <ESC> followed by <ESC>, '=' or '>' */
+			case 0, 14, 15:
+				/* null characters and invoking character set commands we can ignore */
 				break;
 
-			case '(', ')', '*', '+':
-				/* designate character set, ignore this and the following character */
-				++i;
+			case 8: 
+				/* backspace, move cursor left (west) */
+				cursor.moveWest();
 				break;
 
-			case 'M':
-				/* reverse linefeed, move up (north) */
-				cursor.moveNorth();
+			case 10:
+				/* linefeed, go down (south) */
+				cursor.moveSouth();
 				break;
 
-			case '[':
-				/* escape code, handle it */
-				/* TODO */
+			case 13:
+				/* carriage return */
+				cursor.col = 0;
+
+			case 27:
+				/* escape sequence */
+				c = data[i++];
+				switch (c) {
+					case 27, '=', '>':
+						/* we can ignore <ESC> followed by <ESC>, '=' or '>' */
+						break;
+
+					case '(', ')', '*', '+':
+						/* designate character set, ignore this and the following character */
+						++i;
+						break;
+
+					case 'M':
+						/* reverse linefeed, move up (north) */
+						cursor.moveNorth();
+						break;
+
+					case '[':
+						/* escape code, handle it */
+						int length = parseEscapeSequence(data[++i .. $]);
+						if (length == -1)
+							return false;
+						i += length - 1;
+						break;
+
+					default:
+						/* this is bad */
+						log.error("Unexpected escape sequence character: " ~ c);
+						return false;
+				}
 				break;
 
 			default:
-				/* this is bad */
-				/* TODO */
+				/* add character to map and move east */
+				World.addChangedLocation(cursor, c, color);
+				cursor.moveEast();
 				break;
+
+			}
 		}
-		return i;
+		return true;
+	}
+
+	int parseEscapeSequence(char[] data) {
+		int divider = -1;
+		for (int i = 0; i < data.length; ++i) {
+			char c = data[i];
+			if (c == 'h' || c == 'l' || c == 'r' || c == 'z') {
+				/* these escape sequences can be safely ignored (probably) */
+				return i;
+			} else if (c == ';') {
+				/* divider for values */
+				divider = i;
+				/* no return here, we're not done with the sequence */
+			} else if (c == 'A') {
+				/* move cursor up (north) */
+				cursor.moveNorth();
+				return i;
+			} else if (c == 'B') {
+				/* move cursor down (south) */
+				cursor.moveSouth();
+				return i;
+			} else if (c == 'C') {
+				/* move cursor right (east) */
+				cursor.moveEast();
+				return i;
+			} else if (c == 'D') {
+				/* move cursor left (west) */
+				cursor.moveWest();
+				return i;
+			} else if (c == 'H') {
+				/* set cursor position */
+				if (divider < 0) {
+					/* "<ESC>[H" - set cursor to top left corner */
+					cursor.row = 0;
+					cursor.col = 0;
+				} else {
+					/* subtract 1 since terminal starts counting at 1 */
+					cursor.row = to!int(data[0 .. divider]) - 1;
+					cursor.col = to!int(data[divider + 1 .. i]) - 1;
+				}
+				return i;
+			} else if (c == 'J') {
+				/* erase in display */
+				if (data[i - 1] == '[') {
+					/* erase everything below current position */
+					for (int row = cursor.row + 1; row < World.ROWS; ++row) {
+						for (int col = 0; col < World.COLS; ++col)
+							World.addChangedLocation(Point(row, col), ' ', 0);
+					}
+				} else if (data[i - 1] == '1') {
+					/* erase everything above current position */
+					for (int row = cursor.row - 1; row >= 0; --row) {
+						for (int col = 0; col < World.COLS; ++col)
+							World.addChangedLocation(Point(row, col), ' ', 0);
+					}
+				} else if (data[i - 1] == '2') {
+					/* erase everything */
+					for (int row = 0; row < World.ROWS; ++row) {
+						for (int col = 0; col < World.COLS; ++col)
+							World.addChangedLocation(Point(row, col), ' ', 0);
+					}
+				}
+				return i;
+			} else if (c == 'K') {
+				/* erase in line */
+				if (data[i - 1] == '[') {
+					/* erase everything to the right */
+					for (int col = cursor.col; col < World.COLS; ++col)
+						World.addChangedLocation(Point(cursor.row, col), ' ', 0);
+				} else if (data[i - 1] == '1') {
+					/* erase everything to the left */
+					for (int col = 0; col < cursor.col; ++col)
+						World.addChangedLocation(Point(cursor.row, col), ' ', 0);
+				} else if (data[i - 1] == '2') {
+					/* erase entire line */
+					for (int col = 0; col < World.COLS; ++col)
+						World.addChangedLocation(Point(cursor.row, col), ' ', 0);
+				}
+				return i;
+			} else if (c == 'm') {
+				/* character set (bold, inverse, color, etc) */
+				color = 0;
+				if (i == 0)
+					break;
+				int value = to!int(data[0 .. i]);
+				switch (value) {
+				case World.NO_COLOR:
+					bold = false;
+					inverse = false;
+					break;
+
+				case World.BOLD:
+					bold = true;
+					break;
+
+				case World.INVERSE:
+					inverse = true;
+					break;
+
+				default:
+					if (bold)
+						value += World.BOLD_OFFSET;
+					if (inverse)
+						value += World.INVERSE_OFFSET;
+					color = value;
+					break;
+				}
+				return i;
+			} else if (c == 27 || i > 7) {
+				/* unexpected escape character or suspiciously long sequence, hmm */
+				return -1;
+			}
+		}
+		/* shouldn't really end up here */
+		return -1;
 	}
 }

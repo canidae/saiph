@@ -28,11 +28,16 @@ public:
 		send(cast(char[]) "p");
 	}
 
+	void disconnect() {
+		socket.close();
+	}
+
 	void send(char[] data) {
-		//writefln("Sending: %s", data);
+		writefln("Sending: %s", data);
 		socket.send(data);
 	}
 
+protected:
 	char[] receive(char[] inputEndsWith = [0x1b, '[', '3', 'z']) {
 		/* normally we expect data to end with "<ESC>[3z" (sent from NAO if option "vt_tiledata" is set) */
 		char[32768] data; // TODO: we may suddenly get more data than this (frozen by floating eye cause lots of output), need to handle it better
@@ -41,12 +46,8 @@ public:
 			//writefln("%s - |%s|", count, data[0 .. count]);
 			count += socket.receive(data[count .. $]);
 		}
-		//writefln("%s - |%s|", count, data[0 .. count]);
+		writefln("%s - |%s|", count, data[0 .. count]);
 		return data[0 .. count];
-	}
-
-	void disconnect() {
-		socket.close();
 	}
 
 private:
