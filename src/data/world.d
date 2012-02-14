@@ -18,7 +18,7 @@ public:
 
 	static void addChangedLocation(Point p, char symbol, int color) {
 		/* possible optimization: make sure that a point is only added once? */
-		writef("(%s,%s) %s %s | ", p.row, p.col, symbol, color);
+		//writef("(%s,%s) %s %s | ", p.row, p.col, symbol, color);
 		_changedLocations ~= p;
 	}
 

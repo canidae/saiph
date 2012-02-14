@@ -9,45 +9,42 @@ immutable int level = 3;
 class Logger {
 public:
 	this(string name) {
-		this.name = name;
+		/* TODO: seems to be a bug in d compiler here
+		if (!(name in files))
+			files[name] = File("logs/" ~ name ~ ".log", "w");
+		file = files[name];
+		*/
+		file = File("logs/" ~ name ~ ".log", "w"); // TODO: remove when bug is fixed (see log(T...))
 	}
 
 	~this() {
-		close(name);
+		// TODO: what if multiple classes use same file for logging?
+		file.close();
 	}
 
-	/* TODO: variadic parameters */
-	void info(lazy string message) {
+	void info(T...)(lazy string message, lazy T t) {
 		static if (level > 2)
-			log(name, "INFO", message);
+			log(file, "INFO", message, t);
 	}
 
-	void warning(lazy string message) {
+	void warning(T...)(lazy string message, lazy T t) {
 		static if (level > 1)
-			log(name, "WARNING", message);
+			log(file, "WARNING", message, t);
 	}
 
-	void error(lazy string message) {
+	void error(T...)(lazy string message, lazy T t) {
 		static if (level > 0)
-			log(name, "ERROR", message);
+			log(file, "ERROR", message, t);
 	}
 
 private:
 	static int entry;
 	static File[string] files;
-	string name;
+	File file;
 
-	static void log(string name, string level, string message) {
-		if (!(name in files))
-			files[name] = File("logs/" ~ name, "w");
+	static void log(T...)(File file, string level, string message, T t) {
 		DateTime time = cast(DateTime) Clock.currTime;
-		files[name].writefln("%06s | %s [%7s] %s", entry, time.toSimpleString(), level, message);
-	}
-
-	static void close(string name) {
-		if (name in files) {
-			files[name].close();
-			files.remove(name);
-		}
+		file.writef("%06s | %s [%.1s] ", ++entry, time.toSimpleString(), level);
+		file.writefln(message, t);
 	}
 }

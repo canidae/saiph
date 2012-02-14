@@ -1,6 +1,7 @@
 module io.telnet;
 
 import io.connection;
+import io.log;
 import std.file;
 import std.socket;
 import std.stdio;
@@ -21,8 +22,9 @@ public:
 		/* username */
 		send(cast(char[]) lines[1] ~ "\n");
 		data = receive(cast(char[]) "[8d => ");
-		/* password */
-		send(cast(char[]) lines[2] ~ "\n");
+		/* password (not using send() for this to prevent password from being logged) */
+		log.info("Sending password    : ******");
+		socket.send(cast(char[]) lines[2] ~ "\n");
 		data = receive(cast(char[]) "[22;3H=> ");
 		/* start game */
 		send(cast(char[]) "p");
@@ -33,7 +35,7 @@ public:
 	}
 
 	void send(char[] data) {
-		writefln("Sending: %s", data);
+		log.info("Sending %6s bytes: %s", data.length, data);
 		socket.send(data);
 	}
 
@@ -42,22 +44,17 @@ protected:
 		/* normally we expect data to end with "<ESC>[3z" (sent from NAO if option "vt_tiledata" is set) */
 		char[32768] data; // TODO: we may suddenly get more data than this (frozen by floating eye cause lots of output), need to handle it better
 		auto count = socket.receive(data);
-		while (inputEndsWith.length > 0 && (count < inputEndsWith.length || data[count - inputEndsWith.length .. count] != inputEndsWith)) {
-			//writefln("%s - |%s|", count, data[0 .. count]);
+		while (inputEndsWith.length > 0 && (count < inputEndsWith.length || data[count - inputEndsWith.length .. count] != inputEndsWith))
 			count += socket.receive(data[count .. $]);
-		}
-		writefln("%s - |%s|", count, data[0 .. count]);
+		log.info("Received %5s bytes: %s", count, data[0 .. count]);
 		return data[0 .. count];
 	}
 
 private:
-	Socket _socket;
+	static Logger log;
+	Socket socket;
 
-	@property auto socket() {
-		return _socket;
-	}
-
-	@property auto socket(Socket socket) {
-		return _socket = socket;
+	static this() {
+		log = new Logger("telnet");
 	}
 }

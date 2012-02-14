@@ -32,11 +32,6 @@ private:
 	       	log = new Logger("connection");
 	}
 
-	/* static destructor (see TODO above) */
-	static ~this() {
-		delete log;
-	}
-
 	bool parse(char[] data) {
 		for (int i = 0; i < data.length; ++i) {
 			char c = data[i];
@@ -58,10 +53,11 @@ private:
 			case 13:
 				/* carriage return */
 				cursor.col = 0;
+				break;
 
 			case 27:
 				/* escape sequence */
-				c = data[i++];
+				c = data[++i];
 				switch (c) {
 					case 27, '=', '>':
 						/* we can ignore <ESC> followed by <ESC>, '=' or '>' */
@@ -79,7 +75,7 @@ private:
 
 					case '[':
 						/* escape code, handle it */
-						int length = parseEscapeSequence(data[++i .. $]);
+						int length = parseEscapeSequence(data[i .. $]);
 						if (length == -1)
 							return false;
 						i += length - 1;
@@ -87,7 +83,7 @@ private:
 
 					default:
 						/* this is bad */
-						log.error("Unexpected escape sequence character: " ~ c);
+						log.error("Unexpected escape sequence character: '%s' (%s). ±9 characters: %s", c, cast(int) c, data[(i > 9 ? i - 9 : 0) .. (i + 9 < $ ? 9 : $)]);
 						return false;
 				}
 				break;
@@ -105,7 +101,8 @@ private:
 
 	int parseEscapeSequence(char[] data) {
 		int divider = -1;
-		for (int i = 0; i < data.length; ++i) {
+		/* note that we start at data[1], not data[0]. data[0] should always be '[' */
+		for (int i = 1; i < data.length; ++i) {
 			char c = data[i];
 			if (c == 'h' || c == 'l' || c == 'r' || c == 'z') {
 				/* these escape sequences can be safely ignored (probably) */
@@ -138,7 +135,7 @@ private:
 					cursor.col = 0;
 				} else {
 					/* subtract 1 since terminal starts counting at 1 */
-					cursor.row = to!int(data[0 .. divider]) - 1;
+					cursor.row = to!int(data[1 .. divider]) - 1;
 					cursor.col = to!int(data[divider + 1 .. i]) - 1;
 				}
 				return i;
@@ -185,7 +182,7 @@ private:
 				color = 0;
 				if (i == 0)
 					break;
-				int value = to!int(data[0 .. i]);
+				int value = to!int(data[1 .. i]);
 				switch (value) {
 				case World.NO_COLOR:
 					bold = false;
@@ -210,7 +207,12 @@ private:
 				}
 				return i;
 			} else if (c == 27 || i > 7) {
-				/* unexpected escape character or suspiciously long sequence, hmm */
+				/* unexpected escape character, hmm */
+				log.warning("Unexpected <ESC> character in escape sequence: %s", data);
+				return -1;
+			} else if (i > 7) {
+				/* suspiciously long sequence, hmm */
+				log.warning("Suspiciously long escape sequence: %s", data);
 				return -1;
 			}
 		}
