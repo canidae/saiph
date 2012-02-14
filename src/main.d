@@ -1,4 +1,4 @@
-import data.point;
+import data.world;
 import io.connection;
 import io.telnet;
 
@@ -9,6 +9,7 @@ void main() {
 	bool active = true;
 	while (active) {
 		active = conn.update();
+		World.updateMap();
 		//conn.send(cast(char[]) "TODO");
 	}
 	conn.disconnect();
