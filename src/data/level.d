@@ -3,6 +3,7 @@ module data.level;
 import data.coordinate;
 import data.point;
 import data.tile;
+import data.world;
 
 class Level {
 	public:
@@ -17,14 +18,14 @@ class Level {
 			this.level = level;
 			this.name = name;
 			this.depth = depth;
-			foreach (int r; 0 .. _tiles.length) {
-				foreach (int c; 0 .. _tiles[r].length)
-					_tiles[r][c] = new Tile(Coordinate(this, Point(r, c)));
+			foreach (int r; 0 .. tiles.length) {
+				foreach (int c; 0 .. tiles[r].length)
+					tiles[r][c] = new Tile(Coordinate(this, Point(r, c)));
 			}
 		}
 
-		auto tileAt(Point p) {
-			return _tiles[p.row][p.col];
+		Tile tileAt(Point p) {
+			return tiles[p.row][p.col];
 		}
 
 		bool opEquals()(Level l) {
@@ -32,5 +33,5 @@ class Level {
 		}
 
 	private:
-		Tile[24][80] _tiles;
+		Tile[MAP_COL_END + 1][MAP_ROW_END + 1] tiles; // note that array declaration is read from right to left in D, unlike left to right in C++/Java
 }

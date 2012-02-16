@@ -12,7 +12,7 @@ struct Coordinate {
 			return level == c.level && point == c.point;
 		}
 
-		auto opCmp()(Coordinate c) const {
+		int opCmp()(Coordinate c) const {
 			if (level < c.level || (level == c.level && point < c.point))
 				return -1;
 			if (level > c.level || (level == c.level && point > c.point))

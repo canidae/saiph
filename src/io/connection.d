@@ -14,12 +14,11 @@ abstract class Connection {
 		abstract void send(char[] data);
 
 		bool update() {
-			World.clearChangedLocation();
 			return parse(receive());
 		}
 
 	protected:
-		abstract char[] receive(char[] inputEndsWith = []);
+		abstract char[] receive();
 
 	private:
 		static Logger log; /* TODO: ask why you can't: = new Logger("connection"); */
@@ -34,6 +33,7 @@ abstract class Connection {
 		}
 
 		bool parse(char[] data) {
+			World.newScreen();
 			for (int i = 0; i < data.length; ++i) {
 				char c = data[i];
 				switch (c) {
@@ -79,7 +79,7 @@ abstract class Connection {
 								int length = parseEscapeSequence(data[i .. $]);
 								if (length == -1)
 									return false;
-								i += length - 1;
+								i += length;
 								break;
 
 							default:
@@ -91,11 +91,18 @@ abstract class Connection {
 
 					default:
 						/* add character to map and move east */
-						World.addChangedLocation(cursor, c, color);
+						World.updateScreen(cursor, c, color);
 						cursor.moveEast();
 						break;
 
 				}
+			}
+			/* TODO: if we get "--More--", call «send(" ");» and «parse(receive());» */
+			/* TODO: if we get a menu, we need to do something clever */
+			if (cursor.row == 0) {
+				/* cursor should only stop on row 0 when we got a question */
+				World.question = true;
+				World.menu = false; // won't have a menu when we got a question, making sure it's false
 			}
 			return true;
 		}
@@ -144,21 +151,21 @@ abstract class Connection {
 					/* erase in display */
 					if (data[i - 1] == '[') {
 						/* erase everything below current position */
-						for (int row = cursor.row + 1; row < World.ROWS; ++row) {
-							for (int col = 0; col < World.COLS; ++col)
-								World.addChangedLocation(Point(row, col), ' ', 0);
+						for (int row = cursor.row + 1; row < ROWS; ++row) {
+							for (int col = 0; col < COLS; ++col)
+								World.updateScreen(Point(row, col), ' ', 0);
 						}
 					} else if (data[i - 1] == '1') {
 						/* erase everything above current position */
 						for (int row = cursor.row - 1; row >= 0; --row) {
-							for (int col = 0; col < World.COLS; ++col)
-								World.addChangedLocation(Point(row, col), ' ', 0);
+							for (int col = 0; col < COLS; ++col)
+								World.updateScreen(Point(row, col), ' ', 0);
 						}
 					} else if (data[i - 1] == '2') {
 						/* erase everything */
-						for (int row = 0; row < World.ROWS; ++row) {
-							for (int col = 0; col < World.COLS; ++col)
-								World.addChangedLocation(Point(row, col), ' ', 0);
+						for (int row = 0; row < ROWS; ++row) {
+							for (int col = 0; col < COLS; ++col)
+								World.updateScreen(Point(row, col), ' ', 0);
 						}
 					}
 					return i;
@@ -166,16 +173,16 @@ abstract class Connection {
 					/* erase in line */
 					if (data[i - 1] == '[') {
 						/* erase everything to the right */
-						for (int col = cursor.col; col < World.COLS; ++col)
-							World.addChangedLocation(Point(cursor.row, col), ' ', 0);
+						for (int col = cursor.col; col < COLS; ++col)
+							World.updateScreen(Point(cursor.row, col), ' ', 0);
 					} else if (data[i - 1] == '1') {
 						/* erase everything to the left */
 						for (int col = 0; col < cursor.col; ++col)
-							World.addChangedLocation(Point(cursor.row, col), ' ', 0);
+							World.updateScreen(Point(cursor.row, col), ' ', 0);
 					} else if (data[i - 1] == '2') {
 						/* erase entire line */
-						for (int col = 0; col < World.COLS; ++col)
-							World.addChangedLocation(Point(cursor.row, col), ' ', 0);
+						for (int col = 0; col < COLS; ++col)
+							World.updateScreen(Point(cursor.row, col), ' ', 0);
 					}
 					return i;
 				} else if (c == 'm') {
@@ -185,24 +192,24 @@ abstract class Connection {
 						break;
 					int value = to!int(data[1 .. i]);
 					switch (value) {
-						case World.NO_COLOR:
+						case NO_COLOR:
 							bold = false;
 							inverse = false;
 							break;
 
-						case World.BOLD:
+						case BOLD:
 							bold = true;
 							break;
 
-						case World.INVERSE:
+						case INVERSE:
 							inverse = true;
 							break;
 
 						default:
 							if (bold)
-								value += World.BOLD_OFFSET;
+								value += BOLD_OFFSET;
 							if (inverse)
-								value += World.INVERSE_OFFSET;
+								value += INVERSE_OFFSET;
 							color = value;
 							break;
 					}
@@ -221,3 +228,11 @@ abstract class Connection {
 			return -1;
 		}
 }
+
+public:
+/* colors & attributes */
+immutable NO_COLOR = 0;
+immutable BOLD = 1;
+immutable INVERSE = 7;
+immutable BOLD_OFFSET = 60;
+immutable INVERSE_OFFSET = 10;

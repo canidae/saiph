@@ -3,6 +3,7 @@ module io.log;
 import std.datetime;
 import std.file;
 import std.stdio;
+import std.string;
 
 immutable int level = 3;
 
@@ -44,7 +45,7 @@ class Logger {
 
 		static void log(T...)(File file, string level, string message, T t) {
 			DateTime time = cast(DateTime) Clock.currTime;
-			file.writef("%06s | %s [%.1s] ", ++entry, time.toSimpleString(), level);
+			file.writef("%06s | %s [%.1s][%10.10s] ", ++entry, time.toSimpleString(), level, file.name[indexOf(file.name, '/') + 1 .. lastIndexOf(file.name, '.')]);
 			file.writefln(message, t);
 		}
 }

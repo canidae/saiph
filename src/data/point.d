@@ -5,46 +5,46 @@ struct Point {
 		int row;
 		int col;
 
-		auto moveNorthwest() {
+		Point moveNorthwest() {
 			--row;
 			--col;
 			return this;
 		}
 
-		auto moveNorth() {
+		Point moveNorth() {
 			--row;
 			return this;
 		}
 
-		auto moveNortheast() {
+		Point moveNortheast() {
 			--row;
 			++col;
 			return this;
 		}
 
-		auto moveEast() {
+		Point moveEast() {
 			++col;
 			return this;
 		}
 
-		auto moveSoutheast() {
+		Point moveSoutheast() {
 			++row;
 			++col;
 			return this;
 		}
 
-		auto moveSouth() {
+		Point moveSouth() {
 			++row;
 			return this;
 		}
 
-		auto moveSouthwest() {
+		Point moveSouthwest() {
 			++row;
 			--col;
 			return this;
 		}
 
-		auto moveWest() {
+		Point moveWest() {
 			--col;
 			return this;
 		}
@@ -53,7 +53,7 @@ struct Point {
 			return row == p.row && col == p.col;
 		}
 
-		auto opCmp()(Point p) const {
+		int opCmp()(Point p) const {
 			if (row < p.row || (row == p.row && col < p.col))
 				return -1;
 			if (row > p.row || (row == p.row && col > p.col))
