@@ -22,7 +22,7 @@ void main() {
 					/* TODO: if no action after ai.handleMessages(): */
 					{
 						/* only update map when we're not showing a menu or a question */
-						World.updateMap();
+						//World.updateWorld();
 						/* TODO: ai.analyze(); */
 					}
 				}

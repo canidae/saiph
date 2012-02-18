@@ -14,6 +14,10 @@ abstract class Connection {
 		abstract void send(char[] data);
 
 		bool update() {
+			World.question = false;
+			World.menu = false;
+			changedScreenLocations.length = 0;
+			++sequence;
 			return parse(receive());
 		}
 
@@ -21,8 +25,17 @@ abstract class Connection {
 		abstract char[] receive();
 
 	private:
+		struct PointData {
+			int sequence;
+			char symbol;
+			int color;
+		}
+
 		static Logger log; /* TODO: ask why you can't: = new Logger("connection"); */
 		Point cursor;
+		Point[] changedScreenLocations;
+		PointData[COLS][ROWS] screen;
+		int sequence;
 		int color;
 		bool bold;
 		bool inverse;
@@ -32,8 +45,13 @@ abstract class Connection {
 			log = new Logger("connection");
 		}
 
+		void updateScreen(Point p, char symbol, int color) {
+			if (screen[p.row][p.col].sequence != sequence)
+				changedScreenLocations ~= p;
+			screen[p.row][p.col] = PointData(sequence, symbol, color);
+		}
+
 		bool parse(char[] data) {
-			World.newScreen();
 			for (int i = 0; i < data.length; ++i) {
 				char c = data[i];
 				switch (c) {
@@ -91,7 +109,7 @@ abstract class Connection {
 
 					default:
 						/* add character to map and move east */
-						World.updateScreen(cursor, c, color);
+						updateScreen(cursor, c, color);
 						cursor.moveEast();
 						break;
 
@@ -101,8 +119,8 @@ abstract class Connection {
 			/* TODO: if we get a menu, we need to do something clever */
 			if (cursor.row == 0) {
 				/* cursor should only stop on row 0 when we got a question */
-				World.question = true;
-				World.menu = false; // won't have a menu when we got a question, making sure it's false
+				//World.question = true;
+				//World.menu = false; // won't have a menu when we got a question, making sure it's false
 			}
 			return true;
 		}
@@ -153,19 +171,19 @@ abstract class Connection {
 						/* erase everything below current position */
 						for (int row = cursor.row + 1; row < ROWS; ++row) {
 							for (int col = 0; col < COLS; ++col)
-								World.updateScreen(Point(row, col), ' ', 0);
+								updateScreen(Point(row, col), ' ', 0);
 						}
 					} else if (data[i - 1] == '1') {
 						/* erase everything above current position */
 						for (int row = cursor.row - 1; row >= 0; --row) {
 							for (int col = 0; col < COLS; ++col)
-								World.updateScreen(Point(row, col), ' ', 0);
+								updateScreen(Point(row, col), ' ', 0);
 						}
 					} else if (data[i - 1] == '2') {
 						/* erase everything */
 						for (int row = 0; row < ROWS; ++row) {
 							for (int col = 0; col < COLS; ++col)
-								World.updateScreen(Point(row, col), ' ', 0);
+								updateScreen(Point(row, col), ' ', 0);
 						}
 					}
 					return i;
@@ -174,15 +192,15 @@ abstract class Connection {
 					if (data[i - 1] == '[') {
 						/* erase everything to the right */
 						for (int col = cursor.col; col < COLS; ++col)
-							World.updateScreen(Point(cursor.row, col), ' ', 0);
+							updateScreen(Point(cursor.row, col), ' ', 0);
 					} else if (data[i - 1] == '1') {
 						/* erase everything to the left */
 						for (int col = 0; col < cursor.col; ++col)
-							World.updateScreen(Point(cursor.row, col), ' ', 0);
+							updateScreen(Point(cursor.row, col), ' ', 0);
 					} else if (data[i - 1] == '2') {
 						/* erase entire line */
 						for (int col = 0; col < COLS; ++col)
-							World.updateScreen(Point(cursor.row, col), ' ', 0);
+							updateScreen(Point(cursor.row, col), ' ', 0);
 					}
 					return i;
 				} else if (c == 'm') {
@@ -230,9 +248,12 @@ abstract class Connection {
 }
 
 public:
+/* dimensions */
+immutable int ROWS = 24;
+immutable int COLS = 80;
 /* colors & attributes */
-immutable NO_COLOR = 0;
-immutable BOLD = 1;
-immutable INVERSE = 7;
-immutable BOLD_OFFSET = 60;
-immutable INVERSE_OFFSET = 10;
+immutable int NO_COLOR = 0;
+immutable int BOLD = 1;
+immutable int INVERSE = 7;
+immutable int BOLD_OFFSET = 60;
+immutable int INVERSE_OFFSET = 10;

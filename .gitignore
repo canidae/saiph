@@ -1,6 +1,3 @@
-*.log
-*.err
 .*
 *.o
 saiph
-logs
