@@ -2,19 +2,11 @@ module ai.ai;
 
 class Ai {
 	public:
-		/* will only be called when we're shown a question, neither map nor pathing can be trusted */
-		void handleQuestion() {
+		/* called before analyze(), path map can not be trusted. should be used for handling questions/menus and doing zero turn actions */
+		void preAnalyze() {
 		}
 
-		/* will only be called when we're shown a menu, neither map nor pathing can be trusted */
-		void handleMenu() {
-		}
-
-		/* will always be called unless we're shown a question or menu, map can be trusted, but not pathing */
-		void handleMessages() {
-		}
-
-		/* will only be called when no question or menu is shown and we've not set any action, map and pathing can be trusted */
+		/* will only be called when no question or menu is shown and we've not set any action in preAnalyze(), path map can be trusted */
 		void analyze() {
 		}
 }

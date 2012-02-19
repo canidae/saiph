@@ -4,6 +4,8 @@ import data.point;
 import data.world;
 import io.log;
 import std.conv;
+import std.stdio;
+import std.string;
 
 abstract class Connection {
 	public:
@@ -14,8 +16,7 @@ abstract class Connection {
 		abstract void send(char[] data);
 
 		bool update() {
-			World.question = false;
-			World.menu = false;
+			World.newFrame();
 			changedScreenLocations.length = 0;
 			++sequence;
 			return parse(receive());
@@ -115,19 +116,55 @@ abstract class Connection {
 
 				}
 			}
-			/* TODO: if we get "--More--", call «send(" ");» and «parse(receive());» */
-			/* TODO: if we get a menu, we need to do something clever */
+			/* XXX: just dumping screen for debugging purpopses */
+			for (int r = 0; r < screen.length; ++r) {
+				for (int c = 0; c < screen[r].length; ++c)
+					write(screen[r][c]);
+				writeln();
+			}
+			if (data[$ - MORE.length .. $] == MORE) {
+				/* we got more messages waiting, parse current messages and fetch the next messages */
+				if (cursor.row == 0) {
+					/* only one line with messages, remove "--More--" and add messages */
+					string message;
+					for (int c = 0; c < screen[0].length; ++c)
+						message ~= screen[0][c].symbol;
+					World.addMessages(strip(message)[0 .. $ - MORE.length]);
+				} else {
+					/* multiple lines with messages, may be a list */
+					int r = cursor.row;
+					int c = cursor.col - cast(int) MORE.length;
+					if (c == 0 || screen[r][c - 1].symbol == ' ') {
+						/* not a list, just a wrapping long line */
+						/* TODO */
+					} else {
+						/* appears to be a list */
+						/* TODO */
+					}
+				}
+				/* then send space and parse the remaining messages */
+				send([' ']);
+				parse(receive());
+			}
 			if (cursor.row == 0) {
 				/* cursor should only stop on row 0 when we got a question */
 				//World.question = true;
 				//World.menu = false; // won't have a menu when we got a question, making sure it's false
+			}
+			/* TODO: if we get a menu, we need to do something clever */
+			if (!World.menu) {
+				/* no menu and no "--More--", may be a message at first line */
+				string message;
+				for (int c = 0; c < screen[0].length; ++c)
+					message ~= screen[0][c].symbol;
+				World.addMessages(message);
 			}
 			return true;
 		}
 
 		int parseEscapeSequence(char[] data) {
 			int divider = -1;
-			/* note that we start at data[1], not data[0]. data[0] should always be '[' */
+			/* note that we start at data[1], not data[0]. data[0] usually is '[' (with some few exceptions for 'J' and 'K' commands) */
 			for (int i = 1; i < data.length; ++i) {
 				char c = data[i];
 				if (c == 'h' || c == 'l' || c == 'r' || c == 'z') {
@@ -232,13 +269,13 @@ abstract class Connection {
 							break;
 					}
 					return i;
-				} else if (c == 27 || i > 7) {
+				} else if (c == 27) {
 					/* unexpected escape character, hmm */
-					log.warning("Unexpected <ESC> character in escape sequence: %s", data);
+					log.error("Unexpected <ESC> character in escape sequence: %s", data[0 .. i]);
 					return -1;
 				} else if (i > 7) {
 					/* suspiciously long sequence, hmm */
-					log.warning("Suspiciously long escape sequence: %s", data);
+					log.error("Suspiciously long escape sequence: %s", data[0 .. i]);
 					return -1;
 				}
 			}
@@ -251,9 +288,6 @@ public:
 /* dimensions */
 immutable int ROWS = 24;
 immutable int COLS = 80;
-/* colors & attributes */
-immutable int NO_COLOR = 0;
-immutable int BOLD = 1;
-immutable int INVERSE = 7;
-immutable int BOLD_OFFSET = 60;
-immutable int INVERSE_OFFSET = 10;
+/* stuff we look for in data */
+immutable string MORE = "--More--";
+immutable string END = "(end) ";

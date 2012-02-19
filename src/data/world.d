@@ -3,29 +3,66 @@ module data.world;
 import data.level;
 import data.point;
 import io.log;
+import std.array;
 import std.stdio;
+import std.string;
 
 class World {
 	public:
-		static bool question;
-		static bool menu;
+		@property static bool question() {
+			return _question;
+		}
+
+		@property static bool menu() {
+			return _menu;
+		}
+
+		@property static string[] messages() {
+			return _messages;
+		}
+
+		/* the following methods are intended to only be used by "Connection", how should we solve this more neatly?
+		   we could move "Connection" to this module and make the methods private, that's equivalent of "friend" declaration in c++ */
+		static void newFrame() {
+			_question = false;
+			_menu = false;
+			_messages.length = 0;
+			changedMapLocations.length = 0;
+		}
 
 		static void updateLevel(string name) {
 			/* TODO */
 		}
 
 		static void updateMapPoint(Point p, char symbol, int color) {
+			/* remap ambiguous symbols */
 			if (false /* TODO: isRogueLevel */)
 				symbol = remapRogueDungeonSymbol(symbol);
 			else if (isDungeon(symbol))
 				symbol = remapDungeonSymbol(symbol, color);
-			/* TODO: update map? */
+			/* update map */
+			/* TODO */
+			/* update items & monsters */
 			if (isItem(symbol)) {
-				/* TODO: update item? */
+				/* TODO */
 			} else if (isMonster(symbol)) {
 				if ((color >= INVERSE_BLACK && color <= INVERSE_WHITE) || (color >= INVERSE_BOLD_BLACK && color <= INVERSE_BOLD_WHITE))
 					symbol = PET;
-				/* TODO: update monster? */
+				/* TODO */
+			}
+		}
+
+		static void addMessages(string message) {
+			message = strip(message);
+			if (message == "")
+				return;
+			string[] splitted = split(message, "  ");
+			foreach (string s; splitted) {
+				s = strip(s);
+				if (s != "") {
+					writefln("Adding message: %s", s);
+					_messages ~= s;
+				}
 			}
 		}
 
@@ -33,6 +70,9 @@ class World {
 		static Logger log;
 		static Level[] levels;
 		static Point[] changedMapLocations;
+		static bool _question;
+		static bool _menu;
+		static string[] _messages;
 
 		static this() {
 			log = new Logger("world");

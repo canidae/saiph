@@ -12,20 +12,10 @@ void main() {
 		active = conn.update();
 		/* TODO: if in the middle of an action, continue that, else: */
 		{
-			if (World.menu) {
-				/* TODO: ai.handleMenu() */
-			} else {
-				if (World.question) {
-					/* TODO: ai.handleQuestion() */
-				} else {
-					/* TODO: ai.handleMessages(); */
-					/* TODO: if no action after ai.handleMessages(): */
-					{
-						/* only update map when we're not showing a menu or a question */
-						//World.updateWorld();
-						/* TODO: ai.analyze(); */
-					}
-				}
+			/* TODO: ai.preAnalyze(); */
+			if (!World.menu && ! World.question /* && no action set */) {
+				/* TODO: update path map */
+				/* TODO: ai.analyze(); */
 			}
 		}
 		conn.send(cast(char[]) "#quit\ny q");
