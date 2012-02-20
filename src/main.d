@@ -1,3 +1,5 @@
+module main;
+
 import data.world;
 import io.connection;
 import io.telnet;
@@ -9,7 +11,7 @@ void main() {
 	/* loop here */
 	bool active = true;
 	while (active) {
-		active = conn.update();
+		active = update(conn);
 		/* TODO: if in the middle of an action, continue that, else: */
 		{
 			/* TODO: ai.preAnalyze(); */

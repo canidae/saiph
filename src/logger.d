@@ -1,4 +1,4 @@
-module io.log;
+module logger;
 
 import std.datetime;
 import std.file;

@@ -1,7 +1,7 @@
 module io.telnet;
 
 import io.connection;
-import io.log;
+import logger;
 import std.file;
 import std.socket;
 import std.stdio;
@@ -39,7 +39,6 @@ class Telnet : Connection {
 			socket.send(data);
 		}
 
-	protected:
 		char[] receive() {
 			return doReceive([0x1b, '[', '3', 'z'], true);
 		}
